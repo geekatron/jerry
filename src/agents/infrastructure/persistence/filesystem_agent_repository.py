@@ -4,7 +4,7 @@
 """
 FilesystemAgentRepository - Reads canonical agent files from the filesystem.
 
-Reads .agent.yaml + .prompt.md pairs from skills/*/composition/ directories.
+Reads .jerry.yaml + .jerry.prompt.md pairs from skills/*/composition/ directories.
 
 References:
     - ADR-PROJ010-003: LLM Portability Architecture
@@ -27,7 +27,7 @@ from src.agents.domain.value_objects.tool_tier import ToolTier
 class FilesystemAgentRepository(IAgentRepository):
     """Reads canonical agent definitions from the filesystem.
 
-    Scans skills/*/composition/ for .agent.yaml + .prompt.md pairs.
+    Scans skills/*/composition/ for .jerry.yaml + .jerry.prompt.md pairs.
 
     Attributes:
         _skills_dir: Path to the skills/ directory.
@@ -55,7 +55,7 @@ class FilesystemAgentRepository(IAgentRepository):
             if not comp_dir.is_dir():
                 continue
 
-            yaml_path = comp_dir / f"{agent_name}.agent.yaml"
+            yaml_path = comp_dir / f"{agent_name}.jerry.yaml"
             if yaml_path.exists():
                 return self._load_agent(yaml_path)
 
@@ -88,7 +88,7 @@ class FilesystemAgentRepository(IAgentRepository):
             return []
 
         agents: list[CanonicalAgent] = []
-        for yaml_path in sorted(comp_dir.glob("*.agent.yaml")):
+        for yaml_path in sorted(comp_dir.glob("*.jerry.yaml")):
             agent = self._load_agent(yaml_path)
             if agent:
                 agents.append(agent)
@@ -106,10 +106,10 @@ class FilesystemAgentRepository(IAgentRepository):
         return self._skills_dir / skill / "composition"
 
     def _load_agent(self, yaml_path: Path) -> CanonicalAgent | None:
-        """Load a canonical agent from a .agent.yaml file.
+        """Load a canonical agent from a .jerry.yaml file.
 
         Args:
-            yaml_path: Path to the .agent.yaml file.
+            yaml_path: Path to the .jerry.yaml file.
 
         Returns:
             Parsed CanonicalAgent, or None if parsing fails.
@@ -120,8 +120,8 @@ class FilesystemAgentRepository(IAgentRepository):
             if not isinstance(data, dict):
                 return None
 
-            # Load companion .prompt.md
-            prompt_path = yaml_path.with_suffix("").with_suffix(".prompt.md")
+            # Load companion .jerry.prompt.md
+            prompt_path = yaml_path.with_suffix("").with_suffix(".jerry.prompt.md")
             prompt_body = ""
             if prompt_path.exists():
                 full_text = prompt_path.read_text(encoding="utf-8")
@@ -141,7 +141,7 @@ class FilesystemAgentRepository(IAgentRepository):
 
         Args:
             data: Parsed YAML dictionary.
-            prompt_body: System prompt content from .prompt.md.
+            prompt_body: System prompt content from .jerry.prompt.md.
 
         Returns:
             Parsed CanonicalAgent entity.

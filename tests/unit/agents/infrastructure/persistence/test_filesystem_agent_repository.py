@@ -70,16 +70,16 @@ def _write_agent_pair(
     yaml_data: dict[str, Any] | None = None,
     prompt_content: str | None = None,
 ) -> None:
-    """Write a .agent.yaml + .prompt.md pair to comp_dir."""
+    """Write a .jerry.yaml + .jerry.prompt.md pair to comp_dir."""
     comp_dir.mkdir(parents=True, exist_ok=True)
     data = yaml_data if yaml_data is not None else dict(_MINIMAL_AGENT_YAML)
     data["name"] = agent_name
 
-    yaml_path = comp_dir / f"{agent_name}.agent.yaml"
+    yaml_path = comp_dir / f"{agent_name}.jerry.yaml"
     yaml_path.write_text(yaml.dump(data), encoding="utf-8")
 
     if prompt_content is not None:
-        prompt_path = comp_dir / f"{agent_name}.prompt.md"
+        prompt_path = comp_dir / f"{agent_name}.jerry.prompt.md"
         prompt_path.write_text(prompt_content, encoding="utf-8")
 
 
@@ -178,7 +178,7 @@ class TestListAll:
         comp_dir = tmp_path / "skill" / "composition"
         comp_dir.mkdir(parents=True)
         _write_agent_pair(comp_dir, "good-agent")
-        (comp_dir / "bad-agent.agent.yaml").write_text(": invalid: yaml: [\n", encoding="utf-8")
+        (comp_dir / "bad-agent.jerry.yaml").write_text(": invalid: yaml: [\n", encoding="utf-8")
         repo = FilesystemAgentRepository(tmp_path)
 
         # Act
@@ -242,7 +242,7 @@ class TestListBySkill:
         # Act
         agents = repo.list_by_skill("my-skill")
 
-        # Assert — sorted by filename (glob("*.agent.yaml") is sorted)
+        # Assert — sorted by filename (glob("*.jerry.yaml") is sorted)
         names = [a.name for a in agents]
         assert names == sorted(names)
 
@@ -264,7 +264,7 @@ class TestLoadAgent:
             prompt_content="# load-agent System Prompt\n\n## Identity\n\nRole content.\n",
         )
         repo = FilesystemAgentRepository(tmp_path)
-        yaml_path = comp_dir / "load-agent.agent.yaml"
+        yaml_path = comp_dir / "load-agent.jerry.yaml"
 
         # Act
         agent = repo._load_agent(yaml_path)
@@ -282,7 +282,7 @@ class TestLoadAgent:
             prompt_content="# my-agent System Prompt\n\n## Identity\n\nRole.\n",
         )
         repo = FilesystemAgentRepository(tmp_path)
-        yaml_path = comp_dir / "my-agent.agent.yaml"
+        yaml_path = comp_dir / "my-agent.jerry.yaml"
 
         # Act
         agent = repo._load_agent(yaml_path)
@@ -293,12 +293,12 @@ class TestLoadAgent:
         assert "Identity" in agent.prompt_body
 
     def test_load_agent_missing_prompt_uses_empty_body(self, tmp_path: Path) -> None:
-        # Arrange — .agent.yaml only, no .prompt.md
+        # Arrange — .jerry.yaml only, no .jerry.prompt.md
         comp_dir = tmp_path / "skill" / "composition"
         _write_agent_pair(comp_dir, "no-prompt-agent")
         # Do not write prompt.md
         repo = FilesystemAgentRepository(tmp_path)
-        yaml_path = comp_dir / "no-prompt-agent.agent.yaml"
+        yaml_path = comp_dir / "no-prompt-agent.jerry.yaml"
 
         # Act
         agent = repo._load_agent(yaml_path)
@@ -311,7 +311,7 @@ class TestLoadAgent:
         # Arrange — broken YAML content
         comp_dir = tmp_path / "skill" / "composition"
         comp_dir.mkdir(parents=True)
-        bad_yaml = comp_dir / "bad-agent.agent.yaml"
+        bad_yaml = comp_dir / "bad-agent.jerry.yaml"
         bad_yaml.write_text(": broken: yaml: [unclosed\n", encoding="utf-8")
         repo = FilesystemAgentRepository(tmp_path)
 
@@ -325,7 +325,7 @@ class TestLoadAgent:
         # Arrange — YAML that parses to a list, not a dict
         comp_dir = tmp_path / "skill" / "composition"
         comp_dir.mkdir(parents=True)
-        list_yaml = comp_dir / "list-agent.agent.yaml"
+        list_yaml = comp_dir / "list-agent.jerry.yaml"
         list_yaml.write_text("- item1\n- item2\n", encoding="utf-8")
         repo = FilesystemAgentRepository(tmp_path)
 

@@ -757,7 +757,7 @@ def _add_agents_namespace(
     build_parser = agents_subparsers.add_parser(
         "build",
         help="Build vendor-specific agent files from canonical source",
-        description="Generate vendor-specific agent files from canonical .agent.yaml + .prompt.md source.",
+        description="Generate vendor-specific agent files from canonical .jerry.yaml + .jerry.prompt.md source.",
     )
     build_parser.add_argument(
         "--vendor",
@@ -780,7 +780,7 @@ def _add_agents_namespace(
     extract_parser = agents_subparsers.add_parser(
         "extract",
         help="Extract canonical source from existing vendor files",
-        description="Reverse-engineer canonical .agent.yaml + .prompt.md from existing agent files.",
+        description="Reverse-engineer canonical .jerry.yaml + .jerry.prompt.md from existing agent files.",
     )
     extract_parser.add_argument(
         "--agent",

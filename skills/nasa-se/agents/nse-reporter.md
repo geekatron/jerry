@@ -3,6 +3,8 @@ name: nse-reporter
 description: NASA Systems Engineering Status Reporter
 model: haiku
 tools: Read, Write, Glob, Grep, WebFetch
+permissionMode: default
+background: false
 ---
 <identity>
 <role>NASA SE Status Reporter</role>

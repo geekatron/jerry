@@ -18,15 +18,17 @@ from src.agents.application.handlers.commands.compose_agents_command_handler imp
 )
 from src.agents.domain.entities.generated_artifact import GeneratedArtifact
 from src.agents.domain.services.defaults_composer import DefaultsComposer
+from src.agents.domain.value_objects.vendor_override_spec import (
+    CLAUDE_CODE_OVERRIDE_SPEC,
+    VendorOverrideSpec,
+)
 from src.agents.domain.value_objects.vendor_target import VendorTarget
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
-_DEFAULTS = {
-    "permissionMode": "default",
-    "background": False,
+_GOVERNANCE_DEFAULTS = {
     "version": "1.0.0",
     "persona": {
         "tone": "professional",
@@ -41,6 +43,11 @@ _DEFAULTS = {
         ],
         "fallback_behavior": "warn_and_retry",
     },
+}
+
+_VENDOR_DEFAULTS = {
+    "permissionMode": "default",
+    "background": False,
 }
 
 
@@ -80,7 +87,10 @@ def _make_gov_artifact(name: str, agents_dir: Path) -> GeneratedArtifact:
 def _make_handler(
     agents: list[Any],
     tmp_path: Path,
-    defaults: dict[str, Any] | None = None,
+    governance_defaults: dict[str, Any] | None = None,
+    vendor_defaults: dict[str, Any] | None = None,
+    vendor_override_provider: Any | None = None,
+    vendor_override_spec: VendorOverrideSpec | None = None,
 ) -> tuple[ComposeAgentsCommandHandler, MagicMock, MagicMock]:
     """Build handler with mocked repository and adapter.
 
@@ -110,7 +120,10 @@ def _make_handler(
         repository=mock_repo,
         adapters={"claude_code": mock_adapter},
         defaults_composer=DefaultsComposer(),
-        defaults=defaults or dict(_DEFAULTS),
+        governance_defaults=governance_defaults or dict(_GOVERNANCE_DEFAULTS),
+        vendor_defaults=vendor_defaults if vendor_defaults is not None else dict(_VENDOR_DEFAULTS),
+        vendor_override_provider=vendor_override_provider,
+        vendor_override_spec=vendor_override_spec,
     )
     return handler, mock_repo, mock_adapter
 
@@ -200,7 +213,7 @@ class TestHandleSuccessfulCompose:
         # Parse frontmatter
         end = content.find("---", 3)
         fm = yaml.safe_load(content[3:end])
-        # Defaults should be present
+        # Vendor defaults should be present
         assert fm["permissionMode"] == "default"
         assert fm["background"] is False
         # Agent-specific should override
@@ -316,3 +329,246 @@ class TestHandleExtraYaml:
         fm = yaml.safe_load(content[3:end])
         assert fm.get("maxTurns") == 5
         assert fm.get("isolation") is True
+
+
+# ---------------------------------------------------------------------------
+# handle() — 4-layer merge with vendor overrides
+# ---------------------------------------------------------------------------
+
+
+class TestHandleVendorOverrides:
+    """Tests for 4-layer merge with per-agent vendor overrides."""
+
+    def test_vendor_override_applied(self, make_canonical_agent: Any, tmp_path: Path) -> None:
+        """Per-agent vendor override (layer 4) overrides vendor defaults (layer 2)."""
+        mock_override_provider = MagicMock()
+        mock_override_provider.get_overrides.return_value = {"maxTurns": 5, "background": True}
+
+        agent = make_canonical_agent(name="override-agent", skill="test-skill")
+        handler, _, _ = _make_handler(
+            [agent],
+            tmp_path,
+            vendor_override_provider=mock_override_provider,
+            vendor_override_spec=CLAUDE_CODE_OVERRIDE_SPEC,
+        )
+        command = ComposeAgentsCommand(
+            vendor="claude_code",
+            agent_name="override-agent",
+        )
+        handler.handle(command)
+
+        composed_file = tmp_path / "skills" / "test-skill" / "agents" / "override-agent.md"
+        content = composed_file.read_text(encoding="utf-8")
+        end = content.find("---", 3)
+        fm = yaml.safe_load(content[3:end])
+        assert fm["maxTurns"] == 5
+        assert fm["background"] is True
+
+    def test_no_override_provider_works(self, make_canonical_agent: Any, tmp_path: Path) -> None:
+        """Handler works without vendor override provider (backward compat)."""
+        agent = make_canonical_agent(name="no-override", skill="skill")
+        handler, _, _ = _make_handler([agent], tmp_path)
+        command = ComposeAgentsCommand(
+            vendor="claude_code",
+            agent_name="no-override",
+        )
+        result = handler.handle(command)
+        assert result.composed == 1
+
+    def test_empty_overrides_no_effect(self, make_canonical_agent: Any, tmp_path: Path) -> None:
+        """Empty override dict doesn't change the composed output."""
+        mock_override_provider = MagicMock()
+        mock_override_provider.get_overrides.return_value = {}
+
+        agent = make_canonical_agent(name="empty-override", skill="skill")
+        handler, _, _ = _make_handler(
+            [agent],
+            tmp_path,
+            vendor_override_provider=mock_override_provider,
+        )
+        command = ComposeAgentsCommand(
+            vendor="claude_code",
+            agent_name="empty-override",
+        )
+        result = handler.handle(command)
+        assert result.composed == 1
+
+    def test_governance_injection_raises_error(
+        self, make_canonical_agent: Any, tmp_path: Path
+    ) -> None:
+        """Governance field in vendor override produces a failed compose."""
+        mock_override_provider = MagicMock()
+        mock_override_provider.get_overrides.return_value = {"constitution": {"evil": True}}
+
+        agent = make_canonical_agent(name="evil-agent", skill="skill")
+        handler, _, _ = _make_handler(
+            [agent],
+            tmp_path,
+            vendor_override_provider=mock_override_provider,
+            vendor_override_spec=CLAUDE_CODE_OVERRIDE_SPEC,
+        )
+        command = ComposeAgentsCommand(
+            vendor="claude_code",
+            agent_name="evil-agent",
+        )
+        result = handler.handle(command)
+        assert result.failed == 1
+        assert any("constitution" in e for e in result.errors)
+
+    def test_override_provider_called_with_correct_args(
+        self, make_canonical_agent: Any, tmp_path: Path
+    ) -> None:
+        mock_override_provider = MagicMock()
+        mock_override_provider.get_overrides.return_value = {}
+
+        agent = make_canonical_agent(name="ps-arch", skill="problem-solving")
+        handler, _, _ = _make_handler(
+            [agent],
+            tmp_path,
+            vendor_override_provider=mock_override_provider,
+        )
+        command = ComposeAgentsCommand(
+            vendor="claude_code",
+            agent_name="ps-arch",
+        )
+        handler.handle(command)
+
+        mock_override_provider.get_overrides.assert_called_once_with(
+            agent_name="ps-arch",
+            skill="problem-solving",
+            vendor="claude_code",
+        )
+
+
+# ---------------------------------------------------------------------------
+# handle() — governance/vendor split defaults
+# ---------------------------------------------------------------------------
+
+
+class TestHandleSplitDefaults:
+    """Tests for split governance + vendor defaults."""
+
+    def test_governance_defaults_stripped_from_frontmatter(
+        self, make_canonical_agent: Any, tmp_path: Path
+    ) -> None:
+        """Governance defaults are stripped — only vendor fields survive in frontmatter."""
+        agent = make_canonical_agent(name="gov-test", skill="skill")
+        handler, _, _ = _make_handler(
+            [agent],
+            tmp_path,
+            governance_defaults={"persona": {"tone": "analytical"}, "custom_gov_field": "present"},
+            vendor_defaults={},
+        )
+        command = ComposeAgentsCommand(vendor="claude_code", agent_name="gov-test")
+        handler.handle(command)
+
+        composed_file = tmp_path / "skills" / "skill" / "agents" / "gov-test.md"
+        content = composed_file.read_text(encoding="utf-8")
+        end = content.find("---", 3)
+        fm = yaml.safe_load(content[3:end])
+        # Governance fields must NOT appear in frontmatter
+        assert "custom_gov_field" not in fm
+        assert "persona" not in fm
+
+    def test_vendor_defaults_applied(self, make_canonical_agent: Any, tmp_path: Path) -> None:
+        agent = make_canonical_agent(name="vendor-test", skill="skill")
+        handler, _, _ = _make_handler(
+            [agent],
+            tmp_path,
+            governance_defaults={},
+            vendor_defaults={"permissionMode": "dontAsk"},
+        )
+        command = ComposeAgentsCommand(vendor="claude_code", agent_name="vendor-test")
+        handler.handle(command)
+
+        composed_file = tmp_path / "skills" / "skill" / "agents" / "vendor-test.md"
+        content = composed_file.read_text(encoding="utf-8")
+        end = content.find("---", 3)
+        fm = yaml.safe_load(content[3:end])
+        assert fm["permissionMode"] == "dontAsk"
+
+    def test_layer_precedence_governance_vendor_agent(
+        self, make_canonical_agent: Any, tmp_path: Path
+    ) -> None:
+        """Layer 3 (agent) overrides Layer 2 (vendor) which overrides Layer 1 (governance)."""
+        mock_override_provider = MagicMock()
+        mock_override_provider.get_overrides.return_value = {"background": True}
+
+        agent = make_canonical_agent(name="precedence-test", skill="skill")
+        handler, _, _ = _make_handler(
+            [agent],
+            tmp_path,
+            governance_defaults={"background": "gov-value", "persona": {"tone": "gov-tone"}},
+            vendor_defaults={"background": False, "permissionMode": "default"},
+            vendor_override_provider=mock_override_provider,
+            vendor_override_spec=CLAUDE_CODE_OVERRIDE_SPEC,
+        )
+        command = ComposeAgentsCommand(vendor="claude_code", agent_name="precedence-test")
+        handler.handle(command)
+
+        composed_file = tmp_path / "skills" / "skill" / "agents" / "precedence-test.md"
+        content = composed_file.read_text(encoding="utf-8")
+        end = content.find("---", 3)
+        fm = yaml.safe_load(content[3:end])
+        # Layer 4 override wins for background
+        assert fm["background"] is True
+        assert fm["permissionMode"] == "default"
+
+
+# ---------------------------------------------------------------------------
+# _filter_vendor_frontmatter() — unit tests
+# ---------------------------------------------------------------------------
+
+
+class TestFilterVendorFrontmatter:
+    """Tests for _filter_vendor_frontmatter static method."""
+
+    def test_filter_vendor_frontmatter_keeps_only_official_fields(self) -> None:
+        """Only Claude Code's 13 official fields survive filtering."""
+        composed = {
+            "name": "test",
+            "description": "desc",
+            "model": "sonnet",
+            "tools": "Read, Write",
+            "permissionMode": "default",
+            "background": False,
+            # Governance fields that should be stripped
+            "version": "1.0.0",
+            "persona": {"tone": "professional"},
+            "guardrails": {"fallback_behavior": "warn_and_retry"},
+            "constitution": {"principles_applied": ["P-003"]},
+            "identity": {"role": "Test"},
+            "tool_tier": "T2",
+            "enforcement": {"tier": "C2"},
+        }
+        result = ComposeAgentsCommandHandler._filter_vendor_frontmatter(composed)
+        assert "version" not in result
+        assert "persona" not in result
+        assert "guardrails" not in result
+        assert "constitution" not in result
+        assert "identity" not in result
+        assert "tool_tier" not in result
+        assert "enforcement" not in result
+        # Vendor fields preserved
+        assert result["name"] == "test"
+        assert result["description"] == "desc"
+        assert result["model"] == "sonnet"
+        assert result["permissionMode"] == "default"
+
+    def test_filter_vendor_frontmatter_preserves_field_order(self) -> None:
+        """Filtered output follows _VENDOR_FIELDS order."""
+        composed = {
+            "background": True,
+            "name": "test",
+            "model": "opus",
+            "description": "desc",
+            "version": "1.0.0",
+        }
+        result = ComposeAgentsCommandHandler._filter_vendor_frontmatter(composed)
+        keys = list(result.keys())
+        assert keys == ["name", "description", "model", "background"]
+
+    def test_filter_vendor_frontmatter_handles_empty_dict(self) -> None:
+        """Empty input produces empty output."""
+        result = ComposeAgentsCommandHandler._filter_vendor_frontmatter({})
+        assert result == {}

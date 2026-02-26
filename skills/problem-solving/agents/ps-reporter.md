@@ -3,6 +3,8 @@ name: ps-reporter
 description: Status reporting agent for phase progress, constraint status, and knowledge summaries with L0/L1/L2 output levels
 model: haiku
 tools: Read, Write, Edit, Glob, Grep, Bash
+permissionMode: default
+background: false
 ---
 <agent>
 

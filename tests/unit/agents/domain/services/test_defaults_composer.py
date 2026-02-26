@@ -224,3 +224,124 @@ class TestCompose:
         # Inherited defaults
         assert result["permissionMode"] == "default"
         assert result["background"] is False
+
+
+# ---------------------------------------------------------------------------
+# compose_layered()
+# ---------------------------------------------------------------------------
+
+
+class TestComposeLayered:
+    """Tests for DefaultsComposer.compose_layered()."""
+
+    def test_four_layer_precedence(self) -> None:
+        governance = {"permissionMode": "default", "persona": {"tone": "professional"}}
+        vendor = {"permissionMode": "default", "background": False}
+        agent = {"name": "test-agent", "persona": {"tone": "technical"}}
+        overrides = {"permissionMode": "bypassPermissions"}
+
+        result = DefaultsComposer.compose_layered(governance, vendor, agent, overrides)
+
+        assert result["permissionMode"] == "bypassPermissions"
+        assert result["name"] == "test-agent"
+        assert result["persona"]["tone"] == "technical"
+        assert result["background"] is False
+
+    def test_deep_merge_across_layers(self) -> None:
+        governance = {"persona": {"tone": "professional", "style": "consultative"}}
+        vendor = {"persona": {"vendor_field": "vendor_val"}}
+        agent = {"persona": {"tone": "technical"}}
+
+        result = DefaultsComposer.compose_layered(governance, vendor, agent)
+
+        assert result["persona"]["tone"] == "technical"
+        assert result["persona"]["style"] == "consultative"
+        assert result["persona"]["vendor_field"] == "vendor_val"
+
+    def test_empty_overrides_omitted(self) -> None:
+        governance = {"a": 1}
+        vendor = {"b": 2}
+        agent = {"c": 3}
+
+        result = DefaultsComposer.compose_layered(governance, vendor, agent)
+
+        assert result == {"a": 1, "b": 2, "c": 3}
+
+    def test_none_overrides_omitted(self) -> None:
+        governance = {"a": 1}
+        vendor = {"b": 2}
+        agent = {"c": 3}
+
+        result = DefaultsComposer.compose_layered(governance, vendor, agent, None)
+
+        assert result == {"a": 1, "b": 2, "c": 3}
+
+    def test_array_replacement_across_layers(self) -> None:
+        governance = {"tools": ["Read", "Write", "Grep"]}
+        vendor = {}
+        agent = {"tools": ["Read"]}
+
+        result = DefaultsComposer.compose_layered(governance, vendor, agent)
+
+        assert result["tools"] == ["Read"]
+
+    def test_does_not_modify_governance_defaults(self) -> None:
+        governance = {"persona": {"tone": "professional"}}
+        vendor = {"background": False}
+        agent = {"persona": {"tone": "technical"}}
+        overrides = {"background": True}
+
+        DefaultsComposer.compose_layered(governance, vendor, agent, overrides)
+
+        assert governance["persona"]["tone"] == "professional"
+
+    def test_with_resolver(self) -> None:
+        governance = {"project": "${jerry.project.name}"}
+        vendor = {}
+        agent = {}
+
+        def resolver(key: str) -> str | None:
+            return "PROJ-012" if key == "jerry.project.name" else None
+
+        result = DefaultsComposer.compose_layered(governance, vendor, agent, resolver=resolver)
+
+        assert result["project"] == "PROJ-012"
+
+    def test_vendor_overrides_win_over_agent(self) -> None:
+        governance = {}
+        vendor = {}
+        agent = {"maxTurns": 10}
+        overrides = {"maxTurns": 5}
+
+        result = DefaultsComposer.compose_layered(governance, vendor, agent, overrides)
+
+        assert result["maxTurns"] == 5
+
+    def test_realistic_four_layer_scenario(self) -> None:
+        governance = {
+            "version": "1.0.0",
+            "persona": {"tone": "professional", "communication_style": "consultative"},
+            "guardrails": {
+                "output_filtering": ["no_secrets", "no_exec"],
+                "fallback_behavior": "warn_and_retry",
+            },
+            "constitution": {"principles_applied": ["P-003", "P-020", "P-022"]},
+        }
+        vendor = {"permissionMode": "default", "background": False}
+        agent = {
+            "name": "ps-architect",
+            "model": "opus",
+            "persona": {"tone": "analytical"},
+        }
+        overrides = {"maxTurns": 5, "background": True}
+
+        result = DefaultsComposer.compose_layered(governance, vendor, agent, overrides)
+
+        assert result["name"] == "ps-architect"
+        assert result["model"] == "opus"
+        assert result["permissionMode"] == "default"
+        assert result["background"] is True
+        assert result["maxTurns"] == 5
+        assert result["persona"]["tone"] == "analytical"
+        assert result["persona"]["communication_style"] == "consultative"
+        assert result["constitution"]["principles_applied"] == ["P-003", "P-020", "P-022"]

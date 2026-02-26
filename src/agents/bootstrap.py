@@ -27,12 +27,16 @@ import yaml
 from src.agents.domain.services.defaults_composer import DefaultsComposer
 from src.agents.domain.services.prompt_transformer import PromptTransformer
 from src.agents.domain.services.tool_mapper import ToolMapper
+from src.agents.domain.value_objects.vendor_override_spec import CLAUDE_CODE_OVERRIDE_SPEC
 from src.agents.infrastructure.adapters.claude_code_adapter import ClaudeCodeAdapter
 from src.agents.infrastructure.persistence.filesystem_agent_repository import (
     FilesystemAgentRepository,
 )
 from src.agents.infrastructure.persistence.filesystem_defaults_provider import (
     FilesystemDefaultsProvider,
+)
+from src.agents.infrastructure.persistence.filesystem_vendor_override_provider import (
+    FilesystemVendorOverrideProvider,
 )
 
 
@@ -66,13 +70,33 @@ def _get_schema_path() -> Path:
     return _get_project_root() / "docs" / "schemas" / "agent-canonical-v1.schema.json"
 
 
+def _get_schemas_dir() -> Path:
+    """Resolve the schemas directory path.
+
+    Returns:
+        Path to docs/schemas/ directory.
+    """
+    return _get_project_root() / "docs" / "schemas"
+
+
+def _get_governance_defaults_path() -> Path:
+    """Resolve the governance defaults YAML path.
+
+    Returns:
+        Path to jerry-agent-defaults.yaml.
+    """
+    return _get_schemas_dir() / "jerry-agent-defaults.yaml"
+
+
 def _get_defaults_path() -> Path:
-    """Resolve the defaults YAML path.
+    """Resolve the legacy defaults YAML path.
+
+    Retained for backward compatibility with code that uses the combined file.
 
     Returns:
         Path to jerry-claude-agent-defaults.yaml.
     """
-    return _get_project_root() / "docs" / "schemas" / "jerry-claude-agent-defaults.yaml"
+    return _get_schemas_dir() / "jerry-claude-agent-defaults.yaml"
 
 
 def _create_tool_mapper() -> ToolMapper:
@@ -181,6 +205,12 @@ def create_agents_list_handler() -> Any:
 def create_agents_compose_handler() -> Any:
     """Create a fully configured ComposeAgentsCommandHandler.
 
+    Uses the 4-layer merge architecture:
+      1. jerry-agent-defaults.yaml (governance)
+      2. jerry-claude-code-defaults.yaml (vendor)
+      3. Per-agent config from canonical source
+      4. Per-agent vendor overrides from composition dirs
+
     Returns:
         ComposeAgentsCommandHandler ready for use.
     """
@@ -189,15 +219,24 @@ def create_agents_compose_handler() -> Any:
     )
 
     skills_dir = _get_skills_dir()
+    schemas_dir = _get_schemas_dir()
     repository = FilesystemAgentRepository(skills_dir)
     adapter = _create_claude_code_adapter()
-    defaults_provider = FilesystemDefaultsProvider(_get_defaults_path())
+
+    defaults_provider = FilesystemDefaultsProvider(
+        governance_defaults_path=_get_governance_defaults_path(),
+        vendor_defaults_dir=schemas_dir,
+    )
+    vendor_override_provider = FilesystemVendorOverrideProvider(skills_dir)
     defaults_composer = DefaultsComposer()
 
     return ComposeAgentsCommandHandler(
         repository=repository,
         adapters={"claude_code": adapter},
         defaults_composer=defaults_composer,
-        defaults=defaults_provider.get_defaults(),
+        governance_defaults=defaults_provider.get_defaults(),
+        vendor_defaults=defaults_provider.get_vendor_defaults("claude_code"),
+        vendor_override_provider=vendor_override_provider,
+        vendor_override_spec=CLAUDE_CODE_OVERRIDE_SPEC,
         config_var_resolver=defaults_provider.get_config_var,
     )

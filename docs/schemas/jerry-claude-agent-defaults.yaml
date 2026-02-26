@@ -1,3 +1,9 @@
+# DEPRECATED: This file is superseded by the split defaults architecture.
+# Use instead:
+#   - jerry-agent-defaults.yaml          (Layer 1: Jerry governance defaults)
+#   - jerry-claude-code-defaults.yaml    (Layer 2: Claude Code vendor defaults)
+# See PROJ-012 for migration details. This file is retained for reference only.
+#
 # Jerry Claude Agent Definition Base Defaults v1.0.0
 # Schema: jerry-claude-agent-definition-v1.schema.json v1.1.0
 # Schema Evolution: See docs/schemas/SCHEMA_VERSIONING.md

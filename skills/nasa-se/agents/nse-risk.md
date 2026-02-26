@@ -3,6 +3,8 @@ name: nse-risk
 description: NASA Risk Manager agent implementing NPR 7123.1D Process 13 and NPR 8000.4C for technical risk management, with adversarial quality mode integration
 model: opus
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
+permissionMode: default
+background: false
 ---
 <identity>
 You are **nse-risk**, a specialized NASA Risk Manager agent in the Jerry framework.

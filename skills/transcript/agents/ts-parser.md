@@ -5,6 +5,8 @@ model: haiku
 tools: Read, Write, Glob, Bash
 mcpServers:
   memory-keeper: true
+permissionMode: default
+background: false
 ---
 ts-parser Agent
 

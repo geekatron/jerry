@@ -31,6 +31,17 @@ class IDefaultsProvider(ABC):
         """
 
     @abstractmethod
+    def get_vendor_defaults(self, vendor: str) -> dict[str, Any]:
+        """Load vendor-specific defaults configuration.
+
+        Args:
+            vendor: Vendor identifier (e.g., 'claude_code').
+
+        Returns:
+            Parsed vendor defaults dictionary. Empty dict if not found.
+        """
+
+    @abstractmethod
     def get_config_var(self, key: str) -> str | None:
         """Resolve a ${jerry.*} config variable.
 

@@ -3,6 +3,8 @@ name: ts-mindmap-ascii
 description: Generates ASCII art mindmap visualizations as fallback for non-Mermaid environments
 model: sonnet
 tools: Read, Write, Glob
+permissionMode: default
+background: false
 ---
 ts-mindmap-ascii Agent
 

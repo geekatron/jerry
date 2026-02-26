@@ -4,6 +4,8 @@ description: Session voice agent — generates McConkey-style conversational res
   (pep talks, playful critiques, perspective shifts). Loads persona and boundary conditions on demand.
 model: opus
 tools: Read, Glob, Grep
+permissionMode: default
+background: false
 ---
 <agent>
 
@@ -60,7 +62,6 @@ Generate conversational responses in the McConkey session voice. Apply the 5 voi
 - `skills/saucer-boy-framework-voice/references/boundary-conditions.md` — Detailed boundary condition explanations
 - `skills/saucer-boy-framework-voice/references/audience-adaptation.md` — Context-specific voice rules
 - `skills/saucer-boy-framework-voice/references/vocabulary-reference.md` — Term substitutions and forbidden constructions
-- `skills/saucer-boy-framework-voice/references/llm-tell-patterns.md` — LLM writing marker detection and avoidance
 - `skills/saucer-boy-framework-voice/references/visual-vocabulary.md` — ASCII, emoji, formatting guidance
 - `skills/saucer-boy-framework-voice/references/implementation-notes.md` — FEAT-004/006/007 guidance
 

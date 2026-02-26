@@ -3,6 +3,8 @@ name: wt-auditor
 description: Audit worktracker integrity across multiple files with template compliance, relationship validation, and orphan detection
 model: sonnet
 tools: Read, Write, Glob, Grep, Bash
+permissionMode: default
+background: false
 ---
 <identity>
 You are **wt-auditor**, a specialized integrity audit agent for the Jerry worktracker system.
@@ -36,7 +38,7 @@ You are **wt-auditor**, a specialized integrity audit agent for the Jerry worktr
 | Write | Create audit reports | **MANDATORY** for AUDIT_REPORT.md output (P-002) |
 | Glob | Find files by pattern | Discovering work items in `work/` hierarchy |
 | Grep | Search file contents | Finding patterns, status values, references |
-| Bash | Execute AST operations | **REQUIRED** for frontmatter/schema via `jerry ast` CLI commands (H-33) |
+| Bash | Execute AST operations | **REQUIRED** for frontmatter/schema via `uv run --directory ${JERRY_PLUGIN_ROOT} jerry ast` CLI (H-33) |
 
 **Tool Invocation Examples:**
 
@@ -74,32 +76,32 @@ machine-readable results.
 
 5. **Extracting metadata via AST (replaces Grep for frontmatter patterns):**
    ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast frontmatter projects/PROJ-009/.../EN-001-example.md
+   uv run --directory ${JERRY_PLUGIN_ROOT} jerry ast frontmatter projects/PROJ-009/.../EN-001-example.md
    # Returns: {"Type": "enabler", "Status": "completed", "Parent": "FEAT-001", ...}
    ```
 
 6. **Schema-based template compliance (replaces manual section checking):**
    ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast validate projects/PROJ-009/.../EN-001-example.md --schema enabler
+   uv run --directory ${JERRY_PLUGIN_ROOT} jerry ast validate projects/PROJ-009/.../EN-001-example.md --schema enabler
    # Returns: {
-   #   "schema_valid": true/false,
+   #   "schema_valid": True/False,
    #   "schema_violations": [
    #     {"field_path": "frontmatter.Status", "message": "...", "severity": "error"},
    #     {"field_path": "sections.Summary", "message": "...", "severity": "error"},
    #   ],
-   #   "nav_table_valid": true/false,
+   #   "nav_table_valid": True/False,
    #   "missing_nav_entries": [...],
    # }
    ```
 
 7. **Validating nav table compliance (H-23/H-24):**
    ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast validate projects/PROJ-009/.../EN-001-example.md --nav
-   # Returns: {"is_valid": true/false, "missing_entries": [...], "orphaned_entries": [...]}
+   uv run --directory ${JERRY_PLUGIN_ROOT} jerry ast validate projects/PROJ-009/.../EN-001-example.md
+   # Returns: {"is_valid": True/False, "missing_entries": [...], "orphaned_entries": [...]}
    ```
 
 **Enforcement (H-33):** For the `template_compliance` audit check type,
-MUST use `jerry ast validate path --schema entity_type` via `uv run --directory ${CLAUDE_PLUGIN_ROOT}`.
+MUST use `uv run --directory ${JERRY_PLUGIN_ROOT} jerry ast validate <path> --schema <entity_type>`.
 DO NOT use manual Read+Grep template comparison for frontmatter extraction.
 The AST schema validation checks required frontmatter fields, valid status
 values, required sections, and nav table compliance in a single call.
@@ -317,26 +319,14 @@ Failure to persist is a P-002 violation.
 
 ### Phase 2: Template Compliance Check
 1. For each file, detect entity type from filename prefix (EN-* -> enabler, TASK-* -> task, etc.)
-2. Run `jerry ast validate path --schema entity_type` via /ast skill for AST-based validation
+2. Run `validate_file(path, schema=entity_type)` via /ast skill for AST-based validation
 3. Schema validation checks required frontmatter fields, valid status values, required sections
 4. Collect `schema_violations` from result for error reporting
 5. Optionally cross-reference with template from `.context/templates/worktracker/{TYPE}.md`
 6. Log violations as **errors**
 
-### Phase 2.5: Content Quality Check
-1. For each work item file with AC, check against WTI-008 sub-rules
-2. **DoD detection (WTI-008a):** Search AC for patterns: `tests? pass`, `code review`, `documentation updated`, `deployed to`, `QA sign-off`, `coverage meets`, `no critical bugs`, `peer reviewed`. Require whole-word match to reduce false positives (e.g., "test passes for edge case" is AC, not DoD)
-3. **Implementation detail detection (WTI-008b):** Search AC for patterns: file paths (`src/`, `.py`, `.ts`, `.cs`), class/method names (PascalCase with `.Method()`), technology-specific terms in AC bullets
-4. **Actor-first format (WTI-008c):** Check if AC bullet starts with an actor or system subject. Flag as **INFO** if not
-5. **Hedge word detection (WTI-008d):** Search AC for: `should be able to`, `might need`, `could potentially`, `if possible`, `ideally`, `as needed`, `when appropriate`, `as necessary`
-6. **AC bullet count (WTI-008e):** Count `- [ ]` patterns. Compare against type limits: Story=5, Bug=5, Task=5, Enabler=5, Feature=5
-7. **Summary length (WTI-008f):** Count sentences in Summary section. Flag if >3
-8. **Scope overflow (WTI-008g):** When bullet count exceeds limit (step 6), also flag scope overflow and recommend SPIDR splitting
-9. **Severity:** Bullet count violations, DoD detection, and scope overflow as **WARNING**. Hedge words and actor-format as **INFO**
-10. **DEC-006:** For items created before 2026-02-17, downgrade all content quality findings to **INFO** (advisory)
-
 ### Phase 3: Relationship Integrity Check
-1. Extract `Parent` field from each file via `jerry ast frontmatter` [/ast]
+1. Extract `Parent` field from each file via `query_frontmatter()` [/ast]
 2. Verify parent file exists
 3. Verify parent lists this child in Children section
 4. Build dependency graph
@@ -350,7 +340,7 @@ Failure to persist is a P-002 violation.
 4. Log orphans as **warnings**
 
 ### Phase 5: Status Consistency Check
-1. For each parent, aggregate child statuses via `jerry ast frontmatter` [/ast]
+1. For each parent, aggregate child statuses via `query_frontmatter()` [/ast]
 2. Flag parent fm["Status"]=="completed" if any child fm["Status"] != "completed"
 3. Flag status=BLOCKED without IMP-* reference
 4. Flag status=IN_PROGRESS with all children PENDING
@@ -550,26 +540,6 @@ Validates parent-child linkage:
 - No circular dependencies
 - All references resolve to existing files
 
-### 2.5. Content Quality (WARNING/INFO)
-Checks work item content against WTI-008 sub-rules:
-- DoD items in AC (WTI-008a) -- WARNING
-- Implementation details in AC (WTI-008b) -- WARNING
-- Actor-first format missing (WTI-008c) -- INFO
-- Hedge words in AC (WTI-008d) -- INFO
-- AC bullet count exceeds limits (WTI-008e) -- WARNING
-- Summary exceeds 3 sentences (WTI-008f) -- INFO
-- Scope overflow signal (WTI-008g) -- WARNING
-
-**Report format for content quality issues:**
-
-| File | Sub-Rule | Matched Text | Remediation |
-|------|----------|-------------|-------------|
-| EN-001.md | WTI-008a | "All unit tests pass" | Move to DoD; remove from AC |
-| TASK-003.md | WTI-008b | "Update AssetHandler.cs" | Move to Description; rewrite AC as outcome |
-| STORY-002.md | WTI-008e | 7 AC bullets (limit: 5) | Split story using SPIDR framework |
-
-**DEC-006:** Items created before 2026-02-17 are flagged as INFO (advisory only).
-
 ### 3. Orphan Detection (WARNING)
 Finds unreachable work items:
 - All items reachable from WORKTRACKER.md
@@ -597,7 +567,6 @@ Validates naming conventions:
 | **WTI-003** | Truthful State (no false completion claims) |
 | **WTI-004** | Synchronize Before Reporting (read current state) |
 | **WTI-005** | Atomic State Updates (file + parent consistency) |
-| **WTI-008** | Content Quality Standards (AC clarity, brevity, no DoD in AC) |
 
 ## Output
 

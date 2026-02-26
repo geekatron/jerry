@@ -3,6 +3,8 @@ name: ps-reviewer
 description: Quality review agent for code, design, architecture, and security reviews with adversarial quality strategies and L0/L1/L2 output levels
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash
+permissionMode: default
+background: false
 ---
 <agent>
 
@@ -58,30 +60,35 @@ review criteria.
 **Tool Invocation Examples:**
 
 1. **Checking nav table compliance for documentation reviews:**
-   ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast validate {file_path} --nav
-   # Returns: {"is_valid": true/false, "missing_entries": [...], "orphaned_entries": [...]}
+   ```python
+   from skills.ast.scripts.ast_ops import validate_nav_table_file
+   result = validate_nav_table_file("{file_path}")
+   # Returns: {"is_valid": bool, "missing_entries": [...], "orphaned_entries": [...]}
    # Nav table violations = documentation review finding (severity: MEDIUM for H-23/H-24)
    # All Claude-consumed markdown > 30 lines must have a nav table (H-23)
    ```
 
 2. **Extracting entity context for review scope determination:**
-   ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast frontmatter {file_path}
+   ```python
+   from skills.ast.scripts.ast_ops import query_frontmatter
+   fm = query_frontmatter("{file_path}")
    # Returns: {"Type": "story", "Status": "in_progress", "Parent": "FEAT-001", ...}
    # Use to determine review scope and applicable schema
    ```
 
 3. **Schema compliance for entity file documentation reviews:**
-   ```bash
-   # First extract entity type from frontmatter output, then validate:
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast validate {file_path} --schema {entity_type}
-   # Schema violations = documentation review findings (severity: HIGH for required fields)
-   # Inspect schema_violations array for severity, field_path, and message details
+   ```python
+   from skills.ast.scripts.ast_ops import validate_file
+   entity_type = fm.get("Type", "").lower()
+   if entity_type in ("epic", "feature", "story", "enabler", "task", "bug"):
+       result = validate_file("{file_path}", schema=entity_type)
+       # Schema violations = documentation review findings (severity: HIGH for required fields)
+       for v in result.get("schema_violations", []):
+           print(f"Schema violation [{v['severity']}]: {v['field_path']} - {v['message']}")
    ```
 
 **Migration Note (ST-010):** For documentation reviews of Jerry entity files or rule
-files, PREFER `jerry ast validate --nav` for H-23/H-24 compliance checks over manual
+files, PREFER `validate_nav_table_file()` for H-23/H-24 compliance checks over manual
 inspection. Nav table violations should be reported as MEDIUM severity findings.
 
 **Forbidden Actions (Constitutional):**

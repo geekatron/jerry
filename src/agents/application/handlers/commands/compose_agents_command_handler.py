@@ -5,17 +5,14 @@
 ComposeAgentsCommandHandler - Composes agent files with defaults.
 
 Generates vendor-specific agent files from canonical source, then
-deep-merges with base defaults to produce fully composed output.
+deep-merges with layered defaults to produce fully composed output.
 Writes to the same skill-scoped paths as build (skills/{skill}/agents/).
 
-Flow:
-  1. repository.get(name) or list_all() -> CanonicalAgent(s)
-  2. vendor_adapter.generate(agent) -> GeneratedArtifact (.md + .governance)
-  3. Parse frontmatter from generated .md artifact content
-  4. Parse governance from generated .governance.yaml artifact content
-  5. Include agent.extra_yaml fields (maxTurns, skills, hooks, memory, isolation)
-  6. Merge: defaults_composer.compose(defaults, frontmatter + governance + extra_yaml)
-  7. Write composed .md to artifact.path (skills/{skill}/agents/{agent}.md)
+4-layer merge order:
+  1. Jerry governance defaults     (jerry-agent-defaults.yaml)
+  2. Vendor defaults               (jerry-claude-code-defaults.yaml)
+  3. Canonical agent config        (from .jerry.yaml via adapter + governance + extra_yaml)
+  4. Per-agent vendor overrides    (skills/{skill}/composition/{agent}.claude-code.yaml)
 
 References:
     - PROJ-012: Agent Configuration Extraction & Schema Enforcement
@@ -39,20 +36,25 @@ from src.agents.domain.services.defaults_composer import DefaultsComposer
 if TYPE_CHECKING:
     from src.agents.application.ports.agent_repository import IAgentRepository
     from src.agents.application.ports.vendor_adapter import IVendorAdapter
+    from src.agents.application.ports.vendor_override_provider import IVendorOverrideProvider
     from src.agents.domain.entities.canonical_agent import CanonicalAgent
+    from src.agents.domain.value_objects.vendor_override_spec import VendorOverrideSpec
 
 
 class ComposeAgentsCommandHandler:
     """Handler for ComposeAgentsCommand.
 
     Reads canonical agents, generates vendor-specific output in-memory,
-    merges with defaults, and writes composed files to skill agent directories.
+    merges with layered defaults, and writes composed files to skill agent directories.
 
     Attributes:
         _repository: Repository for reading canonical agent source.
         _adapters: Map of vendor name -> adapter instance.
         _defaults_composer: Domain service for merging defaults.
-        _defaults: Base defaults dictionary.
+        _governance_defaults: Layer 1: Jerry governance defaults.
+        _vendor_defaults: Layer 2: Vendor-specific defaults.
+        _vendor_override_provider: Provider for layer 4 per-agent vendor overrides.
+        _vendor_override_spec: Allowlist spec for validating vendor overrides.
         _config_var_resolver: Callable for ${jerry.*} variable resolution.
     """
 
@@ -61,7 +63,10 @@ class ComposeAgentsCommandHandler:
         repository: IAgentRepository,
         adapters: dict[str, IVendorAdapter],
         defaults_composer: DefaultsComposer,
-        defaults: dict[str, Any],
+        governance_defaults: dict[str, Any],
+        vendor_defaults: dict[str, Any] | None = None,
+        vendor_override_provider: IVendorOverrideProvider | None = None,
+        vendor_override_spec: VendorOverrideSpec | None = None,
         config_var_resolver: Callable[[str], str | None] | None = None,
     ) -> None:
         """Initialize with dependencies.
@@ -70,13 +75,19 @@ class ComposeAgentsCommandHandler:
             repository: Repository for reading canonical agents.
             adapters: Map of vendor name -> adapter instance.
             defaults_composer: Domain service for defaults merging.
-            defaults: Base defaults dictionary.
+            governance_defaults: Layer 1: Jerry governance defaults.
+            vendor_defaults: Layer 2: Vendor-specific defaults (None = empty).
+            vendor_override_provider: Provider for layer 4 overrides (None = no overrides).
+            vendor_override_spec: Spec for validating vendor overrides (None = skip validation).
             config_var_resolver: Optional resolver for ${jerry.*} variables.
         """
         self._repository = repository
         self._adapters = adapters
         self._defaults_composer = defaults_composer
-        self._defaults = defaults
+        self._governance_defaults = governance_defaults
+        self._vendor_defaults = vendor_defaults or {}
+        self._vendor_override_provider = vendor_override_provider
+        self._vendor_override_spec = vendor_override_spec
         self._config_var_resolver = config_var_resolver
 
     def handle(self, command: ComposeAgentsCommand) -> ComposeResult:
@@ -121,7 +132,7 @@ class ComposeAgentsCommandHandler:
 
         for agent in agents:
             try:
-                composed_content, output_path = self._compose_agent(agent, adapter)
+                composed_content, output_path = self._compose_agent(agent, adapter, command.vendor)
 
                 if not command.dry_run:
                     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -135,15 +146,21 @@ class ComposeAgentsCommandHandler:
 
         return result
 
-    def _compose_agent(self, agent: CanonicalAgent, adapter: IVendorAdapter) -> tuple[str, Path]:
-        """Compose a single agent: generate, parse, merge defaults, serialize.
+    def _compose_agent(
+        self, agent: CanonicalAgent, adapter: IVendorAdapter, vendor: str
+    ) -> tuple[str, Path]:
+        """Compose a single agent: generate, parse, merge 4 layers, serialize.
 
         Args:
             agent: Canonical agent entity.
             adapter: Vendor adapter for generating base output.
+            vendor: Vendor identifier for override lookup.
 
         Returns:
             Tuple of (composed .md content, output Path).
+
+        Raises:
+            ValueError: If vendor overrides contain disallowed keys.
         """
         # 1. Generate vendor-specific artifacts in-memory
         artifacts = adapter.generate(agent)
@@ -161,25 +178,44 @@ class ComposeAgentsCommandHandler:
         if gov_artifact:
             gov_data = yaml.safe_load(gov_artifact.content) or {}
 
-        # 5. Build per-agent config: frontmatter + governance + extra_yaml
+        # 5. Build per-agent config (Layer 3): frontmatter + governance + extra_yaml
         agent_config = dict(frontmatter)
         for key, value in gov_data.items():
             if key not in agent_config:
                 agent_config[key] = value
 
-        # 6. Include extra_yaml fields (maxTurns, skills, hooks, memory, isolation, etc.)
         for key, value in agent.extra_yaml.items():
             if key not in agent_config:
                 agent_config[key] = value
 
-        # 7. Merge with defaults
-        composed = self._defaults_composer.compose(
-            self._defaults,
-            agent_config,
-            self._config_var_resolver,
+        # 6. Load per-agent vendor overrides (Layer 4)
+        vendor_overrides: dict[str, Any] = {}
+        if self._vendor_override_provider is not None:
+            vendor_overrides = self._vendor_override_provider.get_overrides(
+                agent_name=agent.name,
+                skill=agent.skill,
+                vendor=vendor,
+            )
+
+        # 7. Validate vendor overrides against allowlist
+        if vendor_overrides and self._vendor_override_spec is not None:
+            errors = self._vendor_override_spec.validate(vendor_overrides)
+            if errors:
+                raise ValueError(f"Invalid vendor overrides for {agent.name}: {'; '.join(errors)}")
+
+        # 8. Merge all 4 layers
+        composed = self._defaults_composer.compose_layered(
+            governance_defaults=self._governance_defaults,
+            vendor_defaults=self._vendor_defaults,
+            agent_config=agent_config,
+            vendor_overrides=vendor_overrides or None,
+            resolver=self._config_var_resolver,
         )
 
-        # 8. Serialize back to YAML frontmatter + body
+        # 9. Filter to vendor-only fields (Claude Code official frontmatter)
+        composed = self._filter_vendor_frontmatter(composed)
+
+        # 10. Serialize back to YAML frontmatter + body
         yaml_str = yaml.dump(
             composed,
             default_flow_style=False,
@@ -188,6 +224,43 @@ class ComposeAgentsCommandHandler:
             width=200,
         )
         return f"---\n{yaml_str}---\n{body}", output_path
+
+    # Claude Code's 12 official frontmatter fields, in documentation order.
+    _VENDOR_FIELDS: tuple[str, ...] = (
+        "name",
+        "description",
+        "model",
+        "tools",
+        "disallowedTools",
+        "mcpServers",
+        "permissionMode",
+        "maxTurns",
+        "skills",
+        "hooks",
+        "memory",
+        "background",
+        "isolation",
+    )
+
+    @staticmethod
+    def _filter_vendor_frontmatter(composed: dict[str, Any]) -> dict[str, Any]:
+        """Filter composed dict to only Claude Code official frontmatter fields.
+
+        Governance fields (version, persona, guardrails, constitution, etc.) are
+        stripped — they belong in .governance.yaml and the prompt body, not in
+        frontmatter that Claude Code silently discards.
+
+        Args:
+            composed: Fully merged configuration dict.
+
+        Returns:
+            New dict with only Claude Code official fields, in documentation order.
+        """
+        return {
+            key: composed[key]
+            for key in ComposeAgentsCommandHandler._VENDOR_FIELDS
+            if key in composed
+        }
 
     @staticmethod
     def _parse_md(content: str) -> tuple[dict[str, Any], str]:

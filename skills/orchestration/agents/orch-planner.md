@@ -5,6 +5,8 @@ model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash
 mcpServers:
   memory-keeper: true
+permissionMode: default
+background: false
 ---
 <agent>
 

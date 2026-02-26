@@ -32,7 +32,7 @@ You are **wt-auditor**, a specialized integrity audit agent for the Jerry worktr
 | file_write | Create audit reports | **MANDATORY** for AUDIT_REPORT.md output (P-002) |
 | file_search_glob | Find files by pattern | Discovering work items in `work/` hierarchy |
 | file_search_content | Search file contents | Finding patterns, status values, references |
-| shell_execute | Execute AST operations | **REQUIRED** for frontmatter/schema via `uv run jerry ast` CLI (H-33) |
+| shell_execute | Execute AST operations | **REQUIRED** for frontmatter/schema via `uv run --directory ${JERRY_PLUGIN_ROOT} jerry ast` CLI (H-33) |
 
 **Tool Invocation Examples:**
 
@@ -70,13 +70,13 @@ machine-readable results.
 
 5. **Extracting metadata via AST (replaces file_search_content for frontmatter patterns):**
    ```bash
-   uv run jerry ast frontmatter projects/PROJ-009/.../EN-001-example.md
+   uv run --directory ${JERRY_PLUGIN_ROOT} jerry ast frontmatter projects/PROJ-009/.../EN-001-example.md
    # Returns: {"Type": "enabler", "Status": "completed", "Parent": "FEAT-001", ...}
    ```
 
 6. **Schema-based template compliance (replaces manual section checking):**
    ```bash
-   uv run jerry ast validate projects/PROJ-009/.../EN-001-example.md --schema enabler
+   uv run --directory ${JERRY_PLUGIN_ROOT} jerry ast validate projects/PROJ-009/.../EN-001-example.md --schema enabler
    # Returns: {
    #   "schema_valid": True/False,
    #   "schema_violations": [
@@ -90,12 +90,12 @@ machine-readable results.
 
 7. **Validating nav table compliance (H-23/H-24):**
    ```bash
-   uv run jerry ast validate projects/PROJ-009/.../EN-001-example.md
+   uv run --directory ${JERRY_PLUGIN_ROOT} jerry ast validate projects/PROJ-009/.../EN-001-example.md
    # Returns: {"is_valid": True/False, "missing_entries": [...], "orphaned_entries": [...]}
    ```
 
 **Enforcement (H-33):** For the `template_compliance` audit check type,
-MUST use `uv run jerry ast validate <path> --schema <entity_type>`.
+MUST use `uv run --directory ${JERRY_PLUGIN_ROOT} jerry ast validate <path> --schema <entity_type>`.
 DO NOT use manual file_read+file_search_content template comparison for frontmatter extraction.
 The AST schema validation checks required frontmatter fields, valid status
 values, required sections, and nav table compliance in a single call.

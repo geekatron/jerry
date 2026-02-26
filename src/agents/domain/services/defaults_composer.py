@@ -102,6 +102,46 @@ class DefaultsComposer:
         return composed
 
     @staticmethod
+    def compose_layered(
+        governance_defaults: dict[str, Any],
+        vendor_defaults: dict[str, Any],
+        agent_config: dict[str, Any],
+        vendor_overrides: dict[str, Any] | None = None,
+        resolver: Callable[[str], str | None] | None = None,
+    ) -> dict[str, Any]:
+        """Compose a full agent config from 4 layers.
+
+        Merge order:
+          1. governance_defaults (Jerry governance)
+          2. vendor_defaults (vendor-specific, e.g. Claude Code)
+          3. agent_config (per-agent from adapter + governance + extra_yaml)
+          4. vendor_overrides (per-agent vendor overrides)
+
+        Each layer overrides the previous via deep_merge.
+
+        Args:
+            governance_defaults: Layer 1 - Jerry governance defaults (not modified).
+            vendor_defaults: Layer 2 - Vendor-specific defaults (not modified).
+            agent_config: Layer 3 - Per-agent configuration.
+            vendor_overrides: Layer 4 - Per-agent vendor overrides (optional).
+            resolver: Optional config variable resolver for ${jerry.*} substitution.
+
+        Returns:
+            Fully composed configuration dictionary.
+        """
+        composed = copy.deepcopy(governance_defaults)
+        DefaultsComposer.deep_merge(composed, vendor_defaults)
+        DefaultsComposer.deep_merge(composed, agent_config)
+
+        if vendor_overrides:
+            DefaultsComposer.deep_merge(composed, vendor_overrides)
+
+        if resolver is not None:
+            composed = DefaultsComposer.substitute_config_vars(composed, resolver)
+
+        return composed
+
+    @staticmethod
     def _replace_vars_in_string(
         value: str,
         resolver: Callable[[str], str | None],

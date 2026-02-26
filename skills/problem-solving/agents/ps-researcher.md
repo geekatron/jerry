@@ -5,6 +5,8 @@ model: opus
 tools: Read, Write, Edit, Glob, Grep, WebSearch, WebFetch, Bash
 mcpServers:
   context7: true
+permissionMode: default
+background: false
 ---
 <agent>
 

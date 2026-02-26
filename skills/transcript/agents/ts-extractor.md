@@ -5,6 +5,8 @@ model: sonnet
 tools: Read, Write, Glob
 mcpServers:
   memory-keeper: true
+permissionMode: default
+background: false
 ---
 ts-extractor Agent
 

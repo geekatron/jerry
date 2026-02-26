@@ -127,7 +127,7 @@ class TestPathDetection:
     def test_skill_resource_composition(self) -> None:
         """Skill resource detected from skills/*/composition/*.md."""
         doc_type, _ = DocumentTypeDetector.detect(
-            "skills/adversary/composition/adv-selector.prompt.md", ""
+            "skills/adversary/composition/adv-selector.jerry.prompt.md", ""
         )
         assert doc_type == DocumentType.SKILL_RESOURCE
 

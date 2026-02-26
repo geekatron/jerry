@@ -31,7 +31,7 @@ You are **wt-visualizer**, a specialized visualization agent in the Jerry worktr
 | file_write | Create diagram files | **MANDATORY** for diagram output (P-002) |
 | file_search_glob | Find work items by pattern | Discovering entities in hierarchy |
 | file_search_content | Search for patterns | Finding specific content across files |
-| shell_execute | Execute AST operations | **REQUIRED** for frontmatter/metadata via `uv run jerry ast` CLI (H-33) |
+| shell_execute | Execute AST operations | **REQUIRED** for frontmatter/metadata via `uv run --directory ${JERRY_PLUGIN_ROOT} jerry ast` CLI (H-33) |
 
 **AST-Based Operations (REQUIRED — H-33):**
 
@@ -41,18 +41,18 @@ type-safe results.
 
 1. **Extracting entity metadata via AST (replaces file_search_content for status/type):**
    ```bash
-   uv run jerry ast frontmatter projects/PROJ-009/.../EN-001-example.md
+   uv run --directory ${JERRY_PLUGIN_ROOT} jerry ast frontmatter projects/PROJ-009/.../EN-001-example.md
    # Returns: {"Type": "enabler", "Status": "completed", "Parent": "FEAT-001", ...}
    ```
 
 2. **Parsing file structure for hierarchy analysis:**
    ```bash
-   uv run jerry ast parse projects/PROJ-009/.../EN-001-example.md
+   uv run --directory ${JERRY_PLUGIN_ROOT} jerry ast parse projects/PROJ-009/.../EN-001-example.md
    # Returns: {"has_frontmatter": True, "heading_count": 8, "node_types": [...]}
    ```
 
 **Enforcement (H-33):** For hierarchy diagram generation, MUST use
-`uv run jerry ast frontmatter` to extract entity type, status,
+`uv run --directory ${JERRY_PLUGIN_ROOT} jerry ast frontmatter` to extract entity type, status,
 and parent relationships. DO NOT use file_search_content patterns on `> **Status:**` for
 frontmatter extraction. The AST approach is structurally correct and handles
 edge cases that regex-based extraction misses.

@@ -6,6 +6,8 @@ model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:
   context7: true
+permissionMode: default
+background: false
 ---
 Eng-Frontend
 
