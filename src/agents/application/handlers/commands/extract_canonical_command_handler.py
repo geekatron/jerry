@@ -62,10 +62,10 @@ class ExtractCanonicalCommandHandler:
         Raises:
             ValueError: If the specified adapter is not available.
         """
-        adapter = self._adapters.get(command.source_adapter)
+        adapter = self._adapters.get(command.source_vendor)
         if adapter is None:
             available = ", ".join(sorted(self._adapters.keys()))
-            raise ValueError(f"Unknown adapter: {command.source_adapter!r}. Available: {available}")
+            raise ValueError(f"Unknown vendor: {command.source_vendor!r}. Available: {available}")
 
         result = ExtractResult()
 
