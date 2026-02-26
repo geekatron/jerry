@@ -106,7 +106,7 @@ class TestNoOldPathsInProject:
         pattern = re.compile(rf"docs/(research|synthesis|analysis|decisions)/PROJ-{proj_num}")
 
         for md_file in directory.glob("*.md"):
-            content = md_file.read_text()
+            content = md_file.read_text(encoding="utf-8")
             matches = pattern.findall(content)
             assert len(matches) == 0, (
                 f"Found {len(matches)} old path reference(s) in {md_file.name}:\nMatches: {matches}"
@@ -133,7 +133,7 @@ class TestAllPathsAreProjectCentric:
             if "tests" in str(md_file):
                 continue
 
-            content = md_file.read_text()
+            content = md_file.read_text(encoding="utf-8")
 
             # Find all path references
             old_matches = old_pattern.findall(content)
@@ -181,7 +181,7 @@ class TestGrepCommandEquivalence:
             if "BUG-ANALYSIS" in md_file.name or "BUG-" in md_file.name:
                 continue
 
-            content = md_file.read_text()
+            content = md_file.read_text(encoding="utf-8")
             matches = python_pattern.findall(content)
             python_total += len(matches)
 
