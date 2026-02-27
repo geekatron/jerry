@@ -19,6 +19,7 @@
 | [Session Voice Skill Agents](#session-voice-skill-agents) | sb-voice agent (1 total) |
 | [Eng-Team Skill Agents](#eng-team-skill-agents) | eng-* agents (10 total) |
 | [Red-Team Skill Agents](#red-team-skill-agents) | red-* agents (11 total) |
+| [Diataxis Skill Agents](#diataxis-skill-agents) | diataxis-* agents (6 total) |
 | [MCP Tool Access](#mcp-tool-access) | Context7 and Memory-Keeper agent matrix |
 | [Agent Handoff Protocol](#agent-handoff-protocol) | Multi-agent coordination |
 | [Adding New Agents](#adding-new-agents) | Extension guide |
@@ -51,13 +52,14 @@ to specific skills. This provides:
 | Session Voice Agents | 1 | `/saucer-boy` skill |
 | Eng-Team Agents | 10 | `/eng-team` skill |
 | Red-Team Agents | 11 | `/red-team` skill |
-| **Total** | **58** | |
+| Diataxis Agents | 6 | `/diataxis` skill |
+| **Total** | **64** | |
 
 > **Verification:** Agent counts verified against filesystem scan (`skills/*/agents/*.md`).
-> 62 total files found; 4 template/extension files excluded from counts:
+> 68 total files found; 4 template/extension files excluded from counts:
 > `NSE_AGENT_TEMPLATE.md`, `NSE_EXTENSION.md`, `PS_AGENT_TEMPLATE.md`, `PS_EXTENSION.md`.
-> Per-skill sum: 9 + 10 + 3 + 3 + 3 + 5 + 3 + 1 + 10 + 11 = 58 invokable agents.
-> Last verified: 2026-02-22.
+> Per-skill sum: 9 + 10 + 3 + 3 + 3 + 5 + 3 + 1 + 10 + 11 + 6 = 64 invokable agents.
+> Last verified: 2026-02-26.
 
 ---
 
@@ -234,6 +236,40 @@ These agents parse, extract, and format transcript files.
 **Invocation**: Use `/transcript` skill for transcript processing.
 
 **Hybrid Architecture**: ts-parser delegates VTT files to Python parser (1,250x cost reduction), uses LLM fallback for SRT/plain text.
+
+---
+
+## Diataxis Skill Agents
+
+These agents implement Diataxis four-quadrant documentation methodology through the `/diataxis` skill. Four writer agents produce quadrant-specific documentation, a classifier routes requests to the correct quadrant, and an auditor evaluates existing documentation quality.
+
+| Agent | File | Role | Cognitive Mode |
+|-------|------|------|----------------|
+| diataxis-tutorial | `skills/diataxis/agents/diataxis-tutorial.md` | Tutorial Writer | Systematic |
+| diataxis-howto | `skills/diataxis/agents/diataxis-howto.md` | How-To Guide Writer | Systematic |
+| diataxis-reference | `skills/diataxis/agents/diataxis-reference.md` | Reference Writer | Systematic |
+| diataxis-explanation | `skills/diataxis/agents/diataxis-explanation.md` | Explanation Writer | Divergent |
+| diataxis-classifier | `skills/diataxis/agents/diataxis-classifier.md` | Documentation Classifier | Convergent |
+| diataxis-auditor | `skills/diataxis/agents/diataxis-auditor.md` | Documentation Auditor | Systematic |
+
+**Key Capabilities:**
+
+| Agent | Primary Use Case | Output Type |
+|-------|------------------|-------------|
+| diataxis-tutorial | Learning-oriented docs with step-by-step guided experience | Tutorial documents |
+| diataxis-howto | Goal-oriented docs for competent users solving specific problems | How-to guide documents |
+| diataxis-reference | Information-oriented docs with structured, neutral descriptions | Reference documents |
+| diataxis-explanation | Understanding-oriented docs with context, connections, and rationale | Explanation documents |
+| diataxis-classifier | Classify requests into Diataxis quadrants using two-axis test | Classification results |
+| diataxis-auditor | Audit existing docs against per-quadrant quality criteria | Audit reports |
+
+**Invocation**: Use `/diataxis` skill. Classifier routes requests; writer agents produce documents; auditor evaluates quality.
+
+**Model Tiers:** diataxis-explanation (opus), diataxis-classifier (haiku); all others (sonnet).
+
+**Tool Tiers:** diataxis-classifier and diataxis-auditor are T1 (read-only); all writer agents are T2 (read-write).
+
+**Artifact Location**: `projects/${JERRY_PROJECT}/docs/{quadrant}/{topic-slug}.md`
 
 ---
 

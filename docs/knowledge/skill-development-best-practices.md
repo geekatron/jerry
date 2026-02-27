@@ -2,6 +2,10 @@
 
 > Synthesized from [Anthropic's Complete Guide to Building Skills for Claude](anthropic-skill-development-guide.pdf) and Jerry's established skill conventions (adversary, problem-solving, orchestration, worktracker, nasa-se, architecture, transcript, bootstrap).
 
+> **Scope:** This document covers structural requirements and conventions for Jerry skill development. It does not cover agent definition standards (see `.context/rules/agent-development-standards.md`), quality enforcement thresholds (see `.context/rules/quality-enforcement.md`), or per-quadrant documentation writing standards (see `skills/diataxis/rules/diataxis-standards.md`).
+
+<!-- Diataxis classification: This knowledge document is primarily REFERENCE (structured specifications) with HOW-TO sections (registration steps, checklist) and EXPLANATION sections (design rationale). Future decomposition: extract registration steps into a how-to guide, extract rationale paragraphs into companion explanation. -->
+
 ## Document Sections
 
 | Section | Purpose |
@@ -343,6 +347,8 @@ Agent files define:
 
 ### Registration Requirements
 
+<!-- Diataxis note: This section contains HOW-TO content (imperative registration steps). For the full step-by-step guide, see the companion how-to: projects/PROJ-013-diataxis/work/samples/howto-register-skill.md -->
+
 When a new skill is added to Jerry, it MUST be registered in:
 
 | File | What to Add |
@@ -397,6 +403,8 @@ When a new skill is added to Jerry, it MUST be registered in:
 
 ## Gap Analysis Template
 
+<!-- Diataxis note: This template section serves a HOW-TO function (procedural evaluation). Consider extracting into a standalone how-to guide: "How to evaluate a skill against best practices." -->
+
 Use this to evaluate an existing skill against best practices:
 
 ```markdown
@@ -448,5 +456,15 @@ Use this to evaluate an existing skill against best practices:
 
 ---
 
+## Related
+
+- **Tutorial:** [Learn to create a Jerry skill](../../projects/PROJ-013-diataxis/work/samples/tutorial-create-jerry-skill.md) -- Hands-on introduction to building your first skill
+- **How-To Guide:** [How to register a skill](../../projects/PROJ-013-diataxis/work/samples/howto-register-skill.md) -- Step-by-step registration process
+- **Reference:** [Skill Development Standards](../../.context/rules/skill-standards.md) -- HARD/MEDIUM rule specifications (H-25, H-26)
+- **Explanation:** [About Jerry's Context Rot Problem](../../projects/PROJ-013-diataxis/work/samples/explanation-context-rot.md) -- Why skills use progressive disclosure
+
+---
+
 *Synthesized: 2026-02-19*
+*Diataxis audit: 2026-02-27 (see projects/PROJ-013-diataxis/work/audits/audit-skill-development-best-practices.md)*
 *Sources: Anthropic Skill Guide (Jan 2026), Jerry Framework Skills v0.2.3*
