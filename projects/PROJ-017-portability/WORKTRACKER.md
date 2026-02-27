@@ -17,7 +17,7 @@
 | BUG-017-003 | Symlinks need privileges | Major | Windows | [#115](https://github.com/geekatron/jerry/issues/115) | Open |
 | BUG-017-004 | Missing .gitattributes | Minor | All | [#116](https://github.com/geekatron/jerry/issues/116) | Open |
 | BUG-017-005 | Hardcoded path separator | Minor | Windows | [#117](https://github.com/geekatron/jerry/issues/117) | Open |
-| BUG-017-006 | macOS symlink resolution | Major | macOS | [#118](https://github.com/geekatron/jerry/issues/118) | Open |
+| BUG-017-006 | macOS symlink resolution | Major | macOS | [#118](https://github.com/geekatron/jerry/issues/118) | Implementation Ready |
 | BUG-017-007 | /tmp in docstrings | Minor | Windows | [#119](https://github.com/geekatron/jerry/issues/119) | Open |
 
 ## Progress
