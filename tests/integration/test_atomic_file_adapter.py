@@ -56,7 +56,7 @@ class TestConcurrentFileAccess:
         assert len(results) == 80  # 4 threads * 20 iterations
 
         # File should be valid (one complete line)
-        content = target_file.read_text()
+        content = target_file.read_text(encoding="utf-8")
         assert content.startswith("Thread ")
         assert "iteration" in content
 
@@ -142,7 +142,7 @@ class TestAtomicWriteReliability:
         adapter.write_atomic(target_file, large_content)
 
         # Read back and verify
-        content = target_file.read_text()
+        content = target_file.read_text(encoding="utf-8")
         assert content == large_content
         assert content.endswith("\nEND\n")
 
@@ -171,7 +171,7 @@ class TestAtomicWriteReliability:
         adapter.write_atomic(target_file, original)
 
         # Verify original is there
-        assert target_file.read_text() == original
+        assert target_file.read_text(encoding="utf-8") == original
 
         # The atomic write pattern ensures no partial writes
         # because we write to temp then rename
@@ -188,7 +188,7 @@ class TestAtomicWriteReliability:
             expected_final = content
 
         # Final content should be the last write
-        assert target_file.read_text() == expected_final
+        assert target_file.read_text(encoding="utf-8") == expected_final
 
     def test_write_creates_parent_directories(self, tmp_path: Path) -> None:
         """Atomic write should work even if parent directory doesn't exist."""
@@ -202,7 +202,7 @@ class TestAtomicWriteReliability:
         adapter.write_atomic(nested_file, "content in nested path\n")
 
         assert nested_file.exists()
-        assert nested_file.read_text() == "content in nested path\n"
+        assert nested_file.read_text(encoding="utf-8") == "content in nested path\n"
 
 
 class TestFileAdapterEdgeCases:
@@ -224,7 +224,7 @@ class TestFileAdapterEdgeCases:
         adapter.write_atomic(target_file, "")
 
         assert target_file.exists()
-        assert target_file.read_text() == ""
+        assert target_file.read_text(encoding="utf-8") == ""
 
     def test_unicode_content_preserved(self, tmp_path: Path) -> None:
         """Unicode content should be preserved correctly."""
@@ -234,7 +234,7 @@ class TestFileAdapterEdgeCases:
         unicode_content = "Unicode test: \u4e2d\u6587 \U0001f604 \u03b1\u03b2\u03b3\n"
         adapter.write_atomic(target_file, unicode_content)
 
-        assert target_file.read_text() == unicode_content
+        assert target_file.read_text(encoding="utf-8") == unicode_content
 
     def test_special_characters_in_content(self, tmp_path: Path) -> None:
         """Special characters should be preserved."""
@@ -244,4 +244,4 @@ class TestFileAdapterEdgeCases:
         special_content = "Newlines:\nTabs:\t\tQuotes:\"'`\nBackslash:\\\n"
         adapter.write_atomic(target_file, special_content)
 
-        assert target_file.read_text() == special_content
+        assert target_file.read_text(encoding="utf-8") == special_content

@@ -218,7 +218,7 @@ class JerryDocument:
                 new_inline_map[token.map[0]] = token.content
 
         # Reconstruct modified source by substituting changed inline content
-        source_lines = self._source.split("\n")
+        source_lines = self._source.splitlines()
         result_lines = list(source_lines)
 
         for line_idx, new_content in new_inline_map.items():

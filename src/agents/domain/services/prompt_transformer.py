@@ -161,7 +161,7 @@ class PromptTransformer:
         Returns:
             Content with ## headings replaced by ### headings.
         """
-        lines = content.split("\n")
+        lines = content.splitlines()
         result_lines: list[str] = []
         in_code_block = False
 
@@ -264,7 +264,7 @@ class PromptTransformer:
         current_lines: list[str] = []
         in_code_block = False
 
-        for line in body.split("\n"):
+        for line in body.splitlines():
             # Track fenced code blocks
             stripped = line.strip()
             if stripped.startswith("```"):
@@ -286,8 +286,10 @@ class PromptTransformer:
             else:
                 current_lines.append(line)
 
-        # Save last section
-        if current_heading is not None or current_lines:
+        # Save last section; always emit at least one preamble section so
+        # callers can rely on a non-empty return value (splitlines() on ""
+        # yields no iterations, but the contract is one preamble with "").
+        if current_heading is not None or current_lines or not sections:
             sections.append((current_heading, "\n".join(current_lines)))
 
         return sections

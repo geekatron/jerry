@@ -126,7 +126,7 @@ class FilesystemAgentRepository(IAgentRepository):
             if prompt_path.exists():
                 full_text = prompt_path.read_text(encoding="utf-8")
                 # Strip the "# agent-name System Prompt" header line
-                lines = full_text.split("\n")
+                lines = full_text.splitlines()
                 if lines and lines[0].startswith("# "):
                     prompt_body = "\n".join(lines[1:]).lstrip("\n")
                 else:

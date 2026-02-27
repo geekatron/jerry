@@ -47,7 +47,7 @@ def record(test_id: str, name: str, passed: bool, detail: str = "") -> None:
     results.append({"id": test_id, "name": name, "passed": passed, "detail": detail})
     print(f"  [{status}] {test_id}: {name}")
     if detail:
-        for line in detail.split("\n"):
+        for line in detail.splitlines():
             print(f"         {line}")
 
 
@@ -283,7 +283,7 @@ def main() -> None:
             if not r["passed"]:
                 print(f"  - {r['id']}: {r['name']}")
                 if r["detail"]:
-                    for line in r["detail"].split("\n"):
+                    for line in r["detail"].splitlines():
                         print(f"    {line}")
 
     sys.exit(0 if failed == 0 else 1)

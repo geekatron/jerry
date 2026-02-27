@@ -50,7 +50,7 @@ def _fix_mixed_yaml(text):
 
     This removes the array items so the block parses as a pure mapping.
     """
-    lines = text.split("\n")
+    lines = text.splitlines()
     out = []
     skip = False
     for line in lines:
