@@ -1,0 +1,661 @@
+# ORCHESTRATION.yaml — PROJ-014 Negative Prompting Research
+# Workflow state. This file is the authoritative execution state.
+# ORCHESTRATION_PLAN.md is the human-readable plan.
+# Update status fields as phases complete.
+#
+# QUALITY MODEL: Per-agent adversary gates.
+# Every creator agent output goes through its own /adversary C4 gate
+# BEFORE flowing downstream. Barriers receive already-gated outputs
+# and run their own gate on the cross-pollination synthesis.
+# Adversary feedback is addressed by re-invoking the creator agent
+# (never in the main context window).
+
+workflow:
+  id: "neg-prompting-20260227-001"
+  name: "Negative Prompting Research"
+  project_id: "PROJ-014"
+  status: "PLANNED"
+  created: "2026-02-27"
+  github_issue: "https://github.com/geekatron/jerry/issues/122"
+  criticality: "C4"
+  quality_threshold: 0.95
+  orch_planner_version: "2.2.0"
+
+paths:
+  base: "projects/PROJ-014-negative-prompting-research/"
+  research: "projects/PROJ-014-negative-prompting-research/research/"
+  analysis: "projects/PROJ-014-negative-prompting-research/analysis/"
+  decisions: "projects/PROJ-014-negative-prompting-research/decisions/"
+  synthesis: "projects/PROJ-014-negative-prompting-research/synthesis/"
+  orchestration_state: "projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/"
+  barrier: "projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/barrier-{N}/"
+  adversary: "projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/adversary/"
+  agent_gates: "projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/agent-gates/"
+
+adversary_pipeline:
+  description: "3-agent adversary pipeline for every quality gate in this workflow"
+  agents:
+    - id: "adv-selector"
+      role: "Map C4 criticality to strategy set (all 10 strategies for C4)"
+    - id: "adv-executor"
+      role: "Execute strategy templates against the deliverable"
+    - id: "adv-scorer"
+      role: "Score using S-014 LLM-as-Judge with 6-dimension weighted rubric"
+  threshold: 0.95
+  max_iterations: 5
+  feedback_handling: "Re-invoke creator agent with adversary findings in agent context (via Task tool) — NEVER address feedback in the main context window"
+  strategies_at_c4:
+    - "S-001"  # Red Team Analysis
+    - "S-002"  # Devil's Advocate
+    - "S-003"  # Steelman Technique
+    - "S-004"  # Pre-Mortem Analysis
+    - "S-007"  # Constitutional AI Critique
+    - "S-010"  # Self-Refine
+    - "S-011"  # Chain-of-Verification
+    - "S-012"  # FMEA
+    - "S-013"  # Inversion Technique
+    - "S-014"  # LLM-as-Judge
+  gate_loop: |
+    creator produces output
+    -> adv-selector selects strategies (C4 = all 10)
+    -> adv-executor executes strategy templates against deliverable
+    -> adv-scorer scores using S-014 rubric (6 dimensions, weighted composite)
+    -> if score < 0.95 AND iteration < 5: re-invoke creator agent with adversary findings (in agent context via Task tool)
+    -> if score >= 0.95: PASS, proceed downstream
+    -> if score < 0.95 after 5 iterations: STOP, escalate to user
+
+pipelines:
+  ps:
+    name: "Problem-Solving Pipeline"
+    alias: "ps"
+    skill_source: "problem-solving"
+    status: "PLANNED"
+    phases:
+      - id: "phase-1"
+        name: "Literature Research"
+        pattern: "fan-out"
+        status: "NOT STARTED"
+        worktracker_tasks: ["TASK-001", "TASK-002", "TASK-003"]
+        agents:
+          - id: "ps-researcher-001"
+            task: "TASK-001"
+            output: "research/academic-survey.md"
+            data_sources: ["WebSearch", "WebFetch"]
+            source_target: 25
+            status: "NOT STARTED"
+            quality_gate:
+              type: "adversary-c4"
+              threshold: 0.95
+              max_iterations: 5
+              agents: ["adv-selector", "adv-executor", "adv-scorer"]
+              feedback_handling: "re-invoke ps-researcher-001 with findings"
+              gate_output: "orchestration/neg-prompting-20260227-001/agent-gates/ps-researcher-001-gate.md"
+              current_score: null
+              current_iteration: 0
+              result: "NOT RUN"
+          - id: "ps-researcher-002"
+            task: "TASK-002"
+            output: "research/industry-survey.md"
+            data_sources: ["WebSearch", "WebFetch"]
+            source_target: 25
+            status: "NOT STARTED"
+            quality_gate:
+              type: "adversary-c4"
+              threshold: 0.95
+              max_iterations: 5
+              agents: ["adv-selector", "adv-executor", "adv-scorer"]
+              feedback_handling: "re-invoke ps-researcher-002 with findings"
+              gate_output: "orchestration/neg-prompting-20260227-001/agent-gates/ps-researcher-002-gate.md"
+              current_score: null
+              current_iteration: 0
+              result: "NOT RUN"
+          - id: "ps-researcher-003"
+            task: "TASK-003"
+            output: "research/context7-survey.md"
+            data_sources: ["Context7", "WebSearch"]
+            context7_libraries:
+              - "anthropic"
+              - "openai"
+              - "langchain"
+              - "llamaindex"
+              - "dspy"
+            status: "NOT STARTED"
+            quality_gate:
+              type: "adversary-c4"
+              threshold: 0.95
+              max_iterations: 5
+              agents: ["adv-selector", "adv-executor", "adv-scorer"]
+              feedback_handling: "re-invoke ps-researcher-003 with findings"
+              gate_output: "orchestration/neg-prompting-20260227-001/agent-gates/ps-researcher-003-gate.md"
+              current_score: null
+              current_iteration: 0
+              result: "NOT RUN"
+
+      - id: "phase-2"
+        name: "Evidence Analysis"
+        pattern: "fan-out"
+        status: "NOT STARTED"
+        prerequisite_barrier: "barrier-1"
+        worktracker_tasks: ["TASK-005", "TASK-006"]
+        agents:
+          - id: "ps-analyst-001"
+            task: "TASK-005"
+            output: "analysis/claim-validation.md"
+            data_sources: ["barrier-1 synthesis", "WebSearch", "WebFetch"]
+            status: "NOT STARTED"
+            quality_gate:
+              type: "adversary-c4"
+              threshold: 0.95
+              max_iterations: 5
+              agents: ["adv-selector", "adv-executor", "adv-scorer"]
+              feedback_handling: "re-invoke ps-analyst-001 with findings"
+              gate_output: "orchestration/neg-prompting-20260227-001/agent-gates/ps-analyst-001-gate.md"
+              current_score: null
+              current_iteration: 0
+              result: "NOT RUN"
+          - id: "ps-analyst-002"
+            task: "TASK-006"
+            output: "analysis/comparative.md"
+            data_sources: ["barrier-1 synthesis", "WebSearch", "WebFetch"]
+            analysis_dimensions: ["accuracy", "compliance", "hallucination", "instruction-following", "creativity"]
+            status: "NOT STARTED"
+            quality_gate:
+              type: "adversary-c4"
+              threshold: 0.95
+              max_iterations: 5
+              agents: ["adv-selector", "adv-executor", "adv-scorer"]
+              feedback_handling: "re-invoke ps-analyst-002 with findings"
+              gate_output: "orchestration/neg-prompting-20260227-001/agent-gates/ps-analyst-002-gate.md"
+              current_score: null
+              current_iteration: 0
+              result: "NOT RUN"
+
+      - id: "phase-3"
+        name: "Negative Prompting Taxonomy"
+        pattern: "sequential"
+        status: "NOT STARTED"
+        prerequisite_barrier: "barrier-2"
+        worktracker_tasks: ["TASK-008"]
+        agents:
+          - id: "ps-analyst-003"
+            step: 1
+            task: "TASK-008"
+            output: "analysis/taxonomy.md"
+            data_sources: ["barrier-2 synthesis"]
+            status: "NOT STARTED"
+            quality_gate:
+              type: "adversary-c4"
+              threshold: 0.95
+              max_iterations: 5
+              agents: ["adv-selector", "adv-executor", "adv-scorer"]
+              feedback_handling: "re-invoke ps-analyst-003 with findings"
+              gate_output: "orchestration/neg-prompting-20260227-001/agent-gates/ps-analyst-003-gate.md"
+              current_score: null
+              current_iteration: 0
+              result: "NOT RUN"
+          - id: "ps-architect-001"
+            step: 2
+            task: "TASK-008"
+            output: "decisions/pattern-catalog.md"
+            data_sources: ["analysis/taxonomy.md", "barrier-2 synthesis"]
+            status: "NOT STARTED"
+            quality_gate:
+              type: "adversary-c4"
+              threshold: 0.95
+              max_iterations: 5
+              agents: ["adv-selector", "adv-executor", "adv-scorer"]
+              feedback_handling: "re-invoke ps-architect-001 with findings"
+              gate_output: "orchestration/neg-prompting-20260227-001/agent-gates/ps-architect-001-gate.md"
+              current_score: null
+              current_iteration: 0
+              result: "NOT RUN"
+
+      - id: "phase-4"
+        name: "Jerry Application Analysis"
+        pattern: "fan-out"
+        status: "NOT STARTED"
+        prerequisite_barrier: "barrier-3"
+        worktracker_tasks: ["TASK-010", "TASK-011", "TASK-012", "TASK-013", "TASK-014"]
+        agents:
+          - id: "ps-analyst-004"
+            task: "TASK-010"
+            output: "analysis/skills-analysis.md"
+            reads: ["skills/*/SKILL.md"]
+            data_sources: ["Jerry codebase", "barrier-3 approved artifacts"]
+            status: "NOT STARTED"
+            quality_gate:
+              type: "adversary-c4"
+              threshold: 0.95
+              max_iterations: 5
+              agents: ["adv-selector", "adv-executor", "adv-scorer"]
+              feedback_handling: "re-invoke ps-analyst-004 with findings"
+              gate_output: "orchestration/neg-prompting-20260227-001/agent-gates/ps-analyst-004-gate.md"
+              current_score: null
+              current_iteration: 0
+              result: "NOT RUN"
+          - id: "ps-analyst-005"
+            task: "TASK-011"
+            output: "analysis/agents-analysis.md"
+            reads: ["skills/*/agents/*.md"]
+            data_sources: ["Jerry codebase", "barrier-3 approved artifacts"]
+            status: "NOT STARTED"
+            quality_gate:
+              type: "adversary-c4"
+              threshold: 0.95
+              max_iterations: 5
+              agents: ["adv-selector", "adv-executor", "adv-scorer"]
+              feedback_handling: "re-invoke ps-analyst-005 with findings"
+              gate_output: "orchestration/neg-prompting-20260227-001/agent-gates/ps-analyst-005-gate.md"
+              current_score: null
+              current_iteration: 0
+              result: "NOT RUN"
+          - id: "ps-analyst-006"
+            task: "TASK-012"
+            output: "analysis/rules-analysis.md"
+            reads: [".context/rules/*.md"]
+            data_sources: ["Jerry codebase", "barrier-3 approved artifacts"]
+            escalation_note: "AE-002 applies — .context/rules/ changes = auto-C3+"
+            status: "NOT STARTED"
+            quality_gate:
+              type: "adversary-c4"
+              threshold: 0.95
+              max_iterations: 5
+              agents: ["adv-selector", "adv-executor", "adv-scorer"]
+              feedback_handling: "re-invoke ps-analyst-006 with findings"
+              gate_output: "orchestration/neg-prompting-20260227-001/agent-gates/ps-analyst-006-gate.md"
+              current_score: null
+              current_iteration: 0
+              result: "NOT RUN"
+          - id: "ps-analyst-007"
+            task: "TASK-013"
+            output: "analysis/patterns-analysis.md"
+            reads: ["docs/knowledge/*.md", ".context/rules/prompt-quality.md", ".context/rules/prompt-templates.md"]
+            data_sources: ["Jerry codebase", "barrier-3 approved artifacts"]
+            status: "NOT STARTED"
+            quality_gate:
+              type: "adversary-c4"
+              threshold: 0.95
+              max_iterations: 5
+              agents: ["adv-selector", "adv-executor", "adv-scorer"]
+              feedback_handling: "re-invoke ps-analyst-007 with findings"
+              gate_output: "orchestration/neg-prompting-20260227-001/agent-gates/ps-analyst-007-gate.md"
+              current_score: null
+              current_iteration: 0
+              result: "NOT RUN"
+          - id: "ps-analyst-008"
+            task: "TASK-014"
+            output: "analysis/templates-analysis.md"
+            reads: [".context/templates/**/*"]
+            data_sources: ["Jerry codebase", "barrier-3 approved artifacts"]
+            status: "NOT STARTED"
+            quality_gate:
+              type: "adversary-c4"
+              threshold: 0.95
+              max_iterations: 5
+              agents: ["adv-selector", "adv-executor", "adv-scorer"]
+              feedback_handling: "re-invoke ps-analyst-008 with findings"
+              gate_output: "orchestration/neg-prompting-20260227-001/agent-gates/ps-analyst-008-gate.md"
+              current_score: null
+              current_iteration: 0
+              result: "NOT RUN"
+
+      - id: "phase-5"
+        name: "Implementation Planning"
+        pattern: "sequential"
+        status: "NOT STARTED"
+        prerequisite_barrier: "barrier-4"
+        worktracker_tasks: ["TASK-016"]
+        agents:
+          - id: "ps-architect-002"
+            step: 1
+            output: "decisions/ADR-014-001-skills-negative-prompting.md"
+            status: "NOT STARTED"
+            quality_gate:
+              type: "adversary-c4"
+              threshold: 0.95
+              max_iterations: 5
+              agents: ["adv-selector", "adv-executor", "adv-scorer"]
+              feedback_handling: "re-invoke ps-architect-002 with findings"
+              gate_output: "orchestration/neg-prompting-20260227-001/agent-gates/ps-architect-002-gate.md"
+              current_score: null
+              current_iteration: 0
+              result: "NOT RUN"
+          - id: "ps-architect-003"
+            step: 2
+            output: "decisions/ADR-014-002-agents-negative-prompting.md"
+            status: "NOT STARTED"
+            quality_gate:
+              type: "adversary-c4"
+              threshold: 0.95
+              max_iterations: 5
+              agents: ["adv-selector", "adv-executor", "adv-scorer"]
+              feedback_handling: "re-invoke ps-architect-003 with findings"
+              gate_output: "orchestration/neg-prompting-20260227-001/agent-gates/ps-architect-003-gate.md"
+              current_score: null
+              current_iteration: 0
+              result: "NOT RUN"
+          - id: "ps-architect-004"
+            step: 3
+            output: "decisions/ADR-014-003-rules-negative-prompting.md"
+            escalation_note: "AE-002 + AE-003 apply"
+            status: "NOT STARTED"
+            quality_gate:
+              type: "adversary-c4"
+              threshold: 0.95
+              max_iterations: 5
+              agents: ["adv-selector", "adv-executor", "adv-scorer"]
+              feedback_handling: "re-invoke ps-architect-004 with findings"
+              gate_output: "orchestration/neg-prompting-20260227-001/agent-gates/ps-architect-004-gate.md"
+              current_score: null
+              current_iteration: 0
+              result: "NOT RUN"
+          - id: "ps-architect-005"
+            step: 4
+            output: "decisions/ADR-014-004-patterns-templates-negative-prompting.md"
+            status: "NOT STARTED"
+            quality_gate:
+              type: "adversary-c4"
+              threshold: 0.95
+              max_iterations: 5
+              agents: ["adv-selector", "adv-executor", "adv-scorer"]
+              feedback_handling: "re-invoke ps-architect-005 with findings"
+              gate_output: "orchestration/neg-prompting-20260227-001/agent-gates/ps-architect-005-gate.md"
+              current_score: null
+              current_iteration: 0
+              result: "NOT RUN"
+
+      - id: "phase-6"
+        name: "Final Synthesis and C4 Tournament"
+        pattern: "sequential"
+        status: "NOT STARTED"
+        prerequisite_barrier: "barrier-5"
+        worktracker_tasks: ["TASK-018", "TASK-019"]
+        agents:
+          - id: "ps-synthesizer-004"
+            step: 1
+            output: "synthesis/final-synthesis.md"
+            status: "NOT STARTED"
+            quality_gate:
+              type: "adversary-c4"
+              threshold: 0.95
+              max_iterations: 5
+              agents: ["adv-selector", "adv-executor", "adv-scorer"]
+              feedback_handling: "re-invoke ps-synthesizer-004 with findings"
+              gate_output: "orchestration/neg-prompting-20260227-001/agent-gates/ps-synthesizer-004-gate.md"
+              current_score: null
+              current_iteration: 0
+              result: "NOT RUN"
+          - id: "ps-architect-006"
+            step: 2
+            output: "synthesis/implementation-roadmap.md"
+            status: "NOT STARTED"
+            quality_gate:
+              type: "adversary-c4"
+              threshold: 0.95
+              max_iterations: 5
+              agents: ["adv-selector", "adv-executor", "adv-scorer"]
+              feedback_handling: "re-invoke ps-architect-006 with findings"
+              gate_output: "orchestration/neg-prompting-20260227-001/agent-gates/ps-architect-006-gate.md"
+              current_score: null
+              current_iteration: 0
+              result: "NOT RUN"
+          - id: "adversary-c4-tournament"
+            step: 3
+            type: "c4-tournament"
+            strategies: ["S-001", "S-002", "S-003", "S-004", "S-007", "S-010", "S-011", "S-012", "S-013", "S-014"]
+            inputs: ["synthesis/final-synthesis.md", "synthesis/implementation-roadmap.md"]
+            output_dir: "orchestration/neg-prompting-20260227-001/adversary/c4-tournament/"
+            max_iterations: 5
+            threshold: 0.95
+            status: "NOT STARTED"
+
+barriers:
+  barrier-1:
+    id: "barrier-1"
+    name: "Research Cross-Pollination"
+    type: "fan-in-with-adversary"
+    note: "Receives ALREADY quality-gated outputs from ps-researcher-001/002/003"
+    status: "NOT STARTED"
+    worktracker_task: "TASK-004"
+    prerequisite_phases: ["phase-1"]
+    prerequisite_agent_gates:
+      - "ps-researcher-001"
+      - "ps-researcher-002"
+      - "ps-researcher-003"
+    prerequisite_files:
+      - "research/academic-survey.md"
+      - "research/industry-survey.md"
+      - "research/context7-survey.md"
+    synthesis_agent: "ps-synthesizer-001"
+    synthesis_output: "orchestration/neg-prompting-20260227-001/barrier-1/synthesis.md"
+    synthesis_quality_gate:
+      type: "adversary-c4"
+      threshold: 0.95
+      max_iterations: 5
+      agents: ["adv-selector", "adv-executor", "adv-scorer"]
+      feedback_handling: "re-invoke ps-synthesizer-001 with findings"
+      output: "orchestration/neg-prompting-20260227-001/barrier-1/adversary-gate.md"
+      required_checks:
+        - "minimum_50_unique_sources"
+        - "no_unsourced_claims"
+        - "no_training_data_only_assertions"
+        - "source_quality_appropriate"
+      current_score: null
+      current_iteration: 0
+      result: "NOT RUN"
+
+  barrier-2:
+    id: "barrier-2"
+    name: "Analysis Cross-Pollination"
+    type: "fan-in-with-adversary"
+    note: "Receives ALREADY quality-gated outputs from ps-analyst-001/002"
+    status: "NOT STARTED"
+    worktracker_task: "TASK-007"
+    prerequisite_phases: ["phase-2"]
+    prerequisite_agent_gates:
+      - "ps-analyst-001"
+      - "ps-analyst-002"
+    prerequisite_files:
+      - "analysis/claim-validation.md"
+      - "analysis/comparative.md"
+    synthesis_agent: "ps-synthesizer-002"
+    synthesis_output: "orchestration/neg-prompting-20260227-001/barrier-2/synthesis.md"
+    synthesis_quality_gate:
+      type: "adversary-c4"
+      threshold: 0.95
+      max_iterations: 5
+      agents: ["adv-selector", "adv-executor", "adv-scorer"]
+      feedback_handling: "re-invoke ps-synthesizer-002 with findings"
+      output: "orchestration/neg-prompting-20260227-001/barrier-2/adversary-gate.md"
+      required_checks:
+        - "all_claims_traced_to_primary_sources"
+        - "claim_validation_includes_methodology_critique"
+        - "comparative_covers_all_5_dimensions"
+        - "contradictions_resolved_or_documented"
+      current_score: null
+      current_iteration: 0
+      result: "NOT RUN"
+
+  barrier-3:
+    id: "barrier-3"
+    name: "Taxonomy Quality Gate"
+    type: "adversary-only"
+    note: "Receives ALREADY quality-gated outputs from ps-analyst-003 and ps-architect-001 — barrier gate validates cross-artifact coherence"
+    status: "NOT STARTED"
+    worktracker_task: "TASK-009"
+    prerequisite_phases: ["phase-3"]
+    prerequisite_agent_gates:
+      - "ps-analyst-003"
+      - "ps-architect-001"
+    prerequisite_files:
+      - "analysis/taxonomy.md"
+      - "decisions/pattern-catalog.md"
+    gate:
+      type: "adversary-c4"
+      threshold: 0.95
+      max_iterations: 5
+      agents: ["adv-selector", "adv-executor", "adv-scorer"]
+      feedback_handling: "re-invoke ps-analyst-003 and/or ps-architect-001 with findings"
+      output: "orchestration/neg-prompting-20260227-001/barrier-3/gate.md"
+      required_checks:
+        - "taxonomy_covers_all_pattern_types_in_research"
+        - "each_pattern_has_evidence_basis"
+        - "catalog_actionable_for_jerry"
+        - "catalog_templates_concrete"
+        - "anti_patterns_section_present"
+      current_score: null
+      current_iteration: 0
+      result: "NOT RUN"
+
+  barrier-4:
+    id: "barrier-4"
+    name: "Application Cross-Pollination"
+    type: "fan-in-with-adversary"
+    note: "Receives ALREADY quality-gated outputs from ps-analyst-004/005/006/007/008"
+    status: "NOT STARTED"
+    worktracker_task: "TASK-015"
+    prerequisite_phases: ["phase-4"]
+    prerequisite_agent_gates:
+      - "ps-analyst-004"
+      - "ps-analyst-005"
+      - "ps-analyst-006"
+      - "ps-analyst-007"
+      - "ps-analyst-008"
+    prerequisite_files:
+      - "analysis/skills-analysis.md"
+      - "analysis/agents-analysis.md"
+      - "analysis/rules-analysis.md"
+      - "analysis/patterns-analysis.md"
+      - "analysis/templates-analysis.md"
+    synthesis_agent: "ps-synthesizer-003"
+    synthesis_output: "orchestration/neg-prompting-20260227-001/barrier-4/synthesis.md"
+    synthesis_quality_gate:
+      type: "adversary-c4"
+      threshold: 0.95
+      max_iterations: 5
+      agents: ["adv-selector", "adv-executor", "adv-scorer"]
+      feedback_handling: "re-invoke ps-synthesizer-003 with findings"
+      output: "orchestration/neg-prompting-20260227-001/barrier-4/adversary-gate.md"
+      required_checks:
+        - "cross_domain_conflicts_identified_and_resolved"
+        - "recommendations_traceable_to_taxonomy_and_literature"
+        - "priority_ranking_justified"
+        - "sequence_plan_accounts_for_ae002_risk"
+      current_score: null
+      current_iteration: 0
+      result: "NOT RUN"
+
+  barrier-5:
+    id: "barrier-5"
+    name: "Implementation Quality Gate"
+    type: "adversary-only"
+    note: "Receives ALREADY quality-gated ADRs from ps-architect-002/003/004/005 — barrier gate validates cross-ADR coherence"
+    status: "NOT STARTED"
+    worktracker_task: "TASK-017"
+    prerequisite_phases: ["phase-5"]
+    prerequisite_agent_gates:
+      - "ps-architect-002"
+      - "ps-architect-003"
+      - "ps-architect-004"
+      - "ps-architect-005"
+    prerequisite_files:
+      - "decisions/ADR-014-001-skills-negative-prompting.md"
+      - "decisions/ADR-014-002-agents-negative-prompting.md"
+      - "decisions/ADR-014-003-rules-negative-prompting.md"
+      - "decisions/ADR-014-004-patterns-templates-negative-prompting.md"
+    gate:
+      type: "adversary-c4"
+      threshold: 0.95
+      max_iterations: 5
+      agents: ["adv-selector", "adv-executor", "adv-scorer"]
+      feedback_handling: "re-invoke relevant ps-architect with findings"
+      output: "orchestration/neg-prompting-20260227-001/barrier-5/gate.md"
+      required_checks:
+        - "all_adrs_in_nygard_format"
+        - "minimum_2_options_considered_per_adr"
+        - "decisions_traceable_to_evidence"
+        - "consequences_cover_positive_and_negative"
+        - "adr_003_includes_ae002_escalation_impact"
+      current_score: null
+      current_iteration: 0
+      result: "NOT RUN"
+
+quality:
+  threshold: 0.95
+  criticality: "C4"
+  scoring_mechanism: "S-014"
+  quality_model: "per-agent-adversary-gates"
+  quality_model_description: |
+    Every creator agent output is gated by a 3-agent adversary pipeline
+    (adv-selector -> adv-executor -> adv-scorer) BEFORE flowing downstream.
+    Barriers receive already-gated outputs and run their own gate on synthesis.
+    Feedback is addressed by re-invoking the creator agent — NEVER in main context.
+  auto_escalation_triggered:
+    - rule: "AE-002"
+      reason: "Touches .context/rules/ (Phase 4C and ADR-014-003)"
+    - rule: "AE-003"
+      reason: "New ADRs created (Phase 5)"
+  required_strategies:
+    - "S-001"  # Red Team Analysis
+    - "S-002"  # Devil's Advocate
+    - "S-003"  # Steelman Technique
+    - "S-004"  # Pre-Mortem Analysis
+    - "S-007"  # Constitutional AI Critique
+    - "S-010"  # Self-Refine
+    - "S-011"  # Chain-of-Verification
+    - "S-012"  # FMEA
+    - "S-013"  # Inversion Technique
+    - "S-014"  # LLM-as-Judge
+  optional_strategies: []  # C4: no optional — all required
+  agent_gate_scores: {}    # Populated by orch-tracker as agent gates complete
+  phase_scores: {}         # Populated by orch-tracker as phases complete
+  barrier_scores: {}       # Populated by orch-tracker as barriers pass
+  workflow_quality: {}     # Populated by orch-tracker at workflow completion
+
+data_source_constraints:
+  never_use_training_data: true
+  never_state_facts_without_citation: true
+  minimum_unique_sources: 50
+  required_sources:
+    - type: "WebSearch"
+      phases: ["phase-1", "phase-2"]
+    - type: "WebFetch"
+      phases: ["phase-1", "phase-2"]
+    - type: "Context7"
+      phases: ["phase-1"]
+      mandatory_libraries: ["anthropic", "openai", "langchain"]
+
+metrics:
+  phases_total: 6
+  agents_total: 17
+  agent_quality_gates_total: 17
+  barriers_total: 5
+  barrier_quality_gates_total: 5
+  final_tournament: 1
+  total_quality_gates: 23  # 17 agent gates + 5 barrier gates + 1 tournament
+  sources_required: 50
+  quality_threshold: 0.95
+  max_iterations_per_gate: 5
+  adversary_agents_per_gate: 3  # adv-selector, adv-executor, adv-scorer
+
+worktracker_mapping:
+  TASK-001: "phase-1 / ps-researcher-001 / Academic Literature + per-agent /adversary C4 gate"
+  TASK-002: "phase-1 / ps-researcher-002 / Industry Sources + per-agent /adversary C4 gate"
+  TASK-003: "phase-1 / ps-researcher-003 / Context7 Libraries + per-agent /adversary C4 gate"
+  TASK-004: "barrier-1 / cross-pollination (on gated inputs) + /adversary C4 on synthesis"
+  TASK-005: "phase-2 / ps-analyst-001 / Claim Validation + per-agent /adversary C4 gate"
+  TASK-006: "phase-2 / ps-analyst-002 / Comparative Analysis + per-agent /adversary C4 gate"
+  TASK-007: "barrier-2 / cross-pollination (on gated inputs) + /adversary C4 on synthesis"
+  TASK-008: "phase-3 / ps-analyst-003 + ps-architect-001 / Taxonomy + per-agent /adversary C4 gates"
+  TASK-009: "barrier-3 / /adversary C4 quality gate on cross-artifact coherence"
+  TASK-010: "phase-4 / ps-analyst-004 / Skills Analysis + per-agent /adversary C4 gate"
+  TASK-011: "phase-4 / ps-analyst-005 / Agents Analysis + per-agent /adversary C4 gate"
+  TASK-012: "phase-4 / ps-analyst-006 / Rules Analysis + per-agent /adversary C4 gate"
+  TASK-013: "phase-4 / ps-analyst-007 / Patterns Analysis + per-agent /adversary C4 gate"
+  TASK-014: "phase-4 / ps-analyst-008 / Templates Analysis + per-agent /adversary C4 gate"
+  TASK-015: "barrier-4 / cross-pollination (on gated inputs) + /adversary C4 on synthesis"
+  TASK-016: "phase-5 / ps-architect-002 through 005 / ADRs + per-agent /adversary C4 gates"
+  TASK-017: "barrier-5 / /adversary C4 quality gate on cross-ADR coherence"
+  TASK-018: "phase-6 / ps-synthesizer-004 + ps-architect-006 / Final Synthesis + per-agent /adversary C4 gates"
+  TASK-019: "phase-6 / /adversary C4 tournament (all 10 strategies)"
+  TASK-020: "documentation and commit"
