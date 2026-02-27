@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
 """
 Architecture tests for cross-platform (Windows) compatibility.
 
@@ -45,9 +48,9 @@ UNIX_ONLY_MODULES = {
 # Files where split("\n") on in-memory-constructed data is acceptable.
 # Each entry is (file_stem, line_number) for known-safe usages.
 SPLIT_N_ALLOWLIST = {
-    # toon_serializer line 290: splits output of _encode_object which
+    # toon_serializer line 293: splits output of _encode_object which
     # builds strings with "\n".join() - never from file I/O
-    ("toon_serializer", 290),
+    ("toon_serializer", 293),
 }
 
 
@@ -207,12 +210,18 @@ class TestFileEncoding:
             except (UnicodeDecodeError, PermissionError):
                 continue
 
-            for i, line in enumerate(content.splitlines(), start=1):
+            all_lines = content.splitlines()
+            for i, line in enumerate(all_lines, start=1):
                 if ".write_text(" in line and "encoding" not in line:
                     # Skip comments
                     stripped = line.strip()
-                    if not stripped.startswith("#"):
-                        violations.append(f"{f}:{i}: {stripped}")
+                    if stripped.startswith("#"):
+                        continue
+                    # Multi-line call: check next few lines for encoding= before )
+                    lookahead = all_lines[i : i + 5]
+                    if any("encoding" in la for la in lookahead):
+                        continue
+                    violations.append(f"{f}:{i}: {stripped}")
 
         assert not violations, (
             f"write_text() without encoding= found in {len(violations)} location(s). "

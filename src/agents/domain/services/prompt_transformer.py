@@ -161,7 +161,7 @@ class PromptTransformer:
         Returns:
             Content with ## headings replaced by ### headings.
         """
-        lines = content.split("\n")
+        lines = content.splitlines()
         result_lines: list[str] = []
         in_code_block = False
 
@@ -264,7 +264,7 @@ class PromptTransformer:
         current_lines: list[str] = []
         in_code_block = False
 
-        for line in body.split("\n"):
+        for line in body.splitlines():
             # Track fenced code blocks
             stripped = line.strip()
             if stripped.startswith("```"):
