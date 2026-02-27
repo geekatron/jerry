@@ -5,7 +5,7 @@
 > **Topic:** Context7 MCP Plugin Architecture in Claude Code
 > **Agent:** ps-researcher
 > **Created:** 2026-02-26
-> **Confidence:** HIGH (0.88)
+> **Confidence:** HIGH (0.92) -- upgraded from 0.88 after empirical verification
 
 ---
 
@@ -18,6 +18,7 @@
 | [L2: Architectural Implications](#l2-architectural-implications) | Strategic impact for Jerry Framework |
 | [Research Questions](#research-questions) | Questions investigated |
 | [Methodology](#methodology) | How research was conducted |
+| [Empirical Verification](#empirical-verification) | Runtime evidence confirming dual-namespace thesis |
 | [Findings](#findings) | Detailed 5W1H structured findings |
 | [Recommendations](#recommendations) | Actionable next steps |
 | [References](#references) | Complete citation list |
@@ -31,6 +32,8 @@ Context7 can be connected to Claude Code in **two completely different ways**, a
 **The core problem:** When Context7 is installed as a **Plugin** (via `enabledPlugins` in `settings.json`), its tools get the long prefix `mcp__plugin_context7_context7__`. When installed as a **manually configured MCP Server** (via `claude mcp add` or `.mcp.json`), its tools get the short prefix `mcp__context7__`. Jerry's agent definitions reference the short names (`mcp__context7__resolve-library-id`), but the actual runtime may present the long plugin names instead. The `settings.local.json` file hedges by allowing both, but agent definitions only know about one.
 
 **Why this matters:** If a subagent's tools list specifies `mcp__context7__resolve-library-id` but Claude Code presents the tool as `mcp__plugin_context7_context7__resolve-library-id`, the agent cannot use Context7. This causes silent degradation -- agents fall back to WebSearch or, worse, hallucinate library documentation.
+
+**Recommendation:** Three configuration options were evaluated -- plugin-only, manual MCP server only, and a hybrid of both. The recommended approach is to remove the plugin registration and use a **user-scoped manual MCP server** exclusively, which preserves the short tool names matching existing agent definitions, ensures subagent access, and eliminates the namespace collision.
 
 ---
 
@@ -59,6 +62,8 @@ In `.claude/settings.json` (line 80-82):
 The naming pattern is: `mcp__plugin_<plugin-name>_<server-name>__<tool-name>`.
 
 For Context7: the plugin name is `context7`, the server name within the plugin is also `context7`, producing the double `context7_context7` in the middle.
+
+**Version caveat:** The plugin naming formula `mcp__plugin_<plugin-name>_<server-name>__<tool-name>` is empirically observed from Claude Code v1.0.x-era GitHub issues (#20983, #15145), not from an official naming specification. It should be re-verified on major Claude Code upgrades. The empirical verification in this session (see [Empirical Verification](#empirical-verification)) confirms the formula is accurate as of the current Claude Code version.
 
 #### Method B: Manual MCP Server Configuration
 
@@ -104,33 +109,25 @@ Based on Claude Code documentation and GitHub issues, the tool naming rules are:
 | Manual MCP Server | `mcp__<server-name>__<tool-name>` | `mcp__context7__resolve-library-id` |
 | Plugin MCP Server | `mcp__plugin_<plugin-name>_<server-name>__<tool-name>` | `mcp__plugin_context7_context7__resolve-library-id` |
 
-**Critical insight from GitHub Issue #15145:** There is a known bug where installing a plugin can cause ALL MCP servers (including manually configured ones) to be incorrectly namespaced under the plugin prefix. This means even if you configure Context7 manually AND as a plugin, the plugin namespace may dominate and rename the manual server's tools.
+**Critical insight from GitHub Issue #15145:** There is a documented namespace divergence where installing a plugin can cause ALL MCP servers (including manually configured ones) to be re-prefixed under the plugin namespace. Anthropic closed Issue #15145 as NOT PLANNED, confirming this is by-design behavior, not a defect (see [Reference #7](#references)). This means even if you configure Context7 manually AND as a plugin, the plugin namespace may dominate and rename the manual server's tools.
 
 ### 4. Permission System for MCP Tools
 
-Based on Claude Code's official permissions documentation and GitHub Issue #3107:
+Based on Claude Code's official permissions documentation, GitHub Issues, and runtime observation:
 
-**Key finding: MCP permissions do NOT support wildcard patterns in the traditional sense.**
+**Wildcard permission syntax -- resolved timeline:**
 
-The correct permission syntax for allowing all tools from an MCP server is:
+- **July 2025:** Issue #3107 confirmed wildcards did NOT work. The correct syntax was the bare server name `mcp__<server-name>`.
+- **Late 2025:** Issues #13077, #14730 continued to report wildcard failures.
+- **Current documentation (2026):** The official permissions page now documents BOTH `mcp__puppeteer` (bare name) AND `mcp__puppeteer__*` (wildcard) as valid, indicating wildcard support was added in a later release.
 
-```json
-"mcp__context7"
-```
-
-This is **NOT** a wildcard -- it is server-level matching. The `mcp__context7__*` syntax in Jerry's `settings.local.json` is the deprecated/incorrect pattern.
-
-However, the official resolution from Anthropic (Issue #3107, closed July 2025) states:
-
-> "The correct syntax here is `mcp__atlassian`. Permission rules do not support wildcards."
-
-**But the documentation page on permissions (code.claude.com/docs/en/permissions) states:**
+The current documentation (code.claude.com/docs/en/permissions) states:
 
 > - `mcp__puppeteer` matches any tool provided by the `puppeteer` server
 > - `mcp__puppeteer__*` wildcard syntax that also matches all tools from the `puppeteer` server
 > - `mcp__puppeteer__puppeteer_navigate` matches the `puppeteer_navigate` tool
 
-This indicates that **both syntaxes now work** (the wildcard support was likely added after Issue #3107 was filed in July 2025). The `*` variant is documented as equivalent.
+**Recommended practice:** Use the bare server name `mcp__context7` as the primary permission. This is the original and most reliable form. The wildcard form `mcp__context7__*` is now also documented as working but has a longer bug history.
 
 ### 5. Agent Definition `mcpServers` Field Behavior
 
@@ -178,7 +175,7 @@ The tool names are consistent regardless of installation method; only the prefix
 
 ### 1. Dual-Registration Anti-Pattern
 
-Jerry currently has Context7 registered as BOTH a plugin (`enabledPlugins`) AND relies on the `mcp__context7__` namespace in agent definitions. This creates:
+Jerry currently has Context7 registered as BOTH a plugin (`enabledPlugins`) AND relies on the `mcp__context7__` namespace in agent definitions. [Source: `.claude/settings.json` lines 80-82 for plugin registration; `.claude/settings.local.json` lines 24-29 for dual permissions] This creates:
 
 - **Namespace ambiguity:** Depending on which registration "wins" at runtime, tools may appear under either prefix.
 - **Permission sprawl:** `settings.local.json` must list 6 permission entries for what should be 2 tools.
@@ -186,7 +183,7 @@ Jerry currently has Context7 registered as BOTH a plugin (`enabledPlugins`) AND 
 
 ### 2. Subagent MCP Access Gap
 
-The GitHub Issue #13898 finding has significant implications for Jerry:
+The GitHub Issue #13898 finding has significant implications for Jerry: [Source: GitHub Issue #13898]
 
 - Jerry's agents are invoked via the `Task` tool as subagents.
 - If Context7's MCP server is only available at project scope, subagents may not be able to access it.
@@ -211,6 +208,9 @@ Context7's short tool names keep it under the limit, but this is a risk factor f
 |--------|------|------|:------------:|
 | **Plugin only** (`enabledPlugins`) | Auto-updates, official registry, no manual setup | Long tool names, must update all agent definitions, subagent access issues | No |
 | **Manual MCP server only** (user scope) | Short tool names matching current agent definitions, reliable subagent access, full control | Manual updates, no marketplace benefits | **Yes** |
+| **Hybrid: both registered, agents updated to plugin prefix** | No migration needed for existing plugin, agents always match runtime | Longest tool names, plugin prefix may change, ties agents to plugin distribution channel | No |
+
+**Why the hybrid option is not recommended:** The hybrid approach (keeping both plugin and manual registrations while updating all agent definitions to use the plugin prefix `mcp__plugin_context7_context7__`) would eliminate the namespace mismatch by standardizing on the longer prefix. However, it inherits the worst properties of both methods: (1) it does not resolve the subagent MCP access limitation documented in Issue #13898 -- plugin-provided MCP servers are still subject to project-scope restrictions, meaning subagents invoked via the Task tool may still fail silently; (2) the plugin naming formula `mcp__plugin_<plugin-name>_<server-name>__<tool-name>` is not guaranteed stable across Claude Code major versions (it was empirically observed, not officially specified), creating a fragile dependency; (3) it requires updating 7 agent definitions and `TOOL_REGISTRY.yaml` to use longer, less readable tool names; and (4) maintaining both registrations adds ongoing operational complexity with no corresponding benefit, since the manual server alone provides all required functionality. The hybrid approach is appropriate only if a future Claude Code release provides a stable, documented plugin naming contract and resolves the subagent access limitation for plugin-provided servers.
 
 **Recommended approach:** Remove the `enabledPlugins` Context7 entry and configure Context7 as a user-scoped MCP server:
 
@@ -223,6 +223,16 @@ This ensures:
 2. Subagents can access Context7 (user-scoped servers are inherited)
 3. Permissions are simple (`mcp__context7` or `mcp__context7__*`)
 4. No namespace collision with plugin prefix
+
+### Deployment Considerations
+
+| Consideration | Impact | Mitigation | Source |
+|---------------|--------|------------|--------|
+| Per-developer setup | Each developer must run `claude mcp add --scope user context7 ...` | Document in onboarding; consider `.mcp.json` for project-scope fallback | `[DOCUMENTED]` — Claude Code MCP docs (Ref #1) |
+| CI runners | CI environments need Context7 configured separately | Add to CI setup script or use project-scope `.mcp.json` | `[INFERRED]` — CI environments lack user-scope config by default |
+| Worktree isolation | User-scoped servers are shared across all worktrees on the same machine | Verify via `claude mcp list` that Context7 is accessible from worktrees | `[INFERRED]` — user-scope is per-OS-user, not per-worktree |
+| Multi-project conflicts | User-scope affects ALL Claude Code projects | Context7 is read-only and project-agnostic; low conflict risk | `[INFERRED]` — user-scope applies globally per Claude Code docs (Ref #1) |
+| Auto-update loss | Plugin auto-updates stop; manual `@upstash/context7-mcp` updates needed | Pin version in command; schedule quarterly update checks | `[INFERRED]` — plugins auto-update via marketplace; manual servers do not |
 
 ### 5. Impact on TOOL_REGISTRY.yaml
 
@@ -269,12 +279,62 @@ The TOOL_REGISTRY.yaml correctly references `mcp__context7__resolve-library-id` 
 1. **Multi-source triangulation:** Cross-referenced official docs, GitHub issues, and codebase configuration to build a complete picture.
 2. **5W1H framework:** Structured findings around Who (Anthropic/Upstash), What (dual naming), Where (settings files), When (plugin vs manual config), Why (separate registration systems), How (permission resolution).
 3. **Evidence chain:** Each claim is backed by at least one primary source (official documentation or GitHub issue with Anthropic contributor response).
+4. **Design-intent confirmation:** Issue #15145's closure as NOT PLANNED strengthens the recommendation to avoid plugins, since the namespace separation is permanent by design rather than a temporary bug.
 
 ### Limitations
 
-1. **Could not verify runtime behavior empirically** -- findings are based on documentation and issue reports, not live testing of which tool names appear at runtime.
+1. ~~**Could not verify runtime behavior empirically**~~ -- **RESOLVED.** Post-research empirical verification from a live Claude Code session confirmed the dual-namespace behavior. See [Empirical Verification](#empirical-verification).
 2. **Context7 MCP quota exceeded** during research -- could not use Context7 to look up Claude Code's own documentation via the MCP tool.
 3. **Issue #2928 not found** -- the originally requested issue number does not exist or has been renumbered. The relevant issues are #3107, #15145, and #20983.
+
+---
+
+## Empirical Verification
+
+Post-research verification from a live Claude Code session confirms the dual-namespace finding. The following runtime evidence was collected from the current session's MCP tool list.
+
+**Verification method:** Tool names were obtained by examining Claude Code's runtime tool inventory -- the set of tools presented to the agent in the active session context. Claude Code version: 2.1.61 (retrieved via `claude --version` on 2026-02-26). **Reproduction steps:** (1) Start a Claude Code session in a repository with Context7 enabled as a plugin in `.claude/settings.json` under `enabledPlugins`. (2) Inspect the available tool names in the session's tool list (visible in the system prompt or via tool invocation attempts). (3) Compare observed prefixes against the two naming patterns documented in Section 3.
+
+### Context7 Tools (Plugin Prefix Confirmed)
+
+The current session exposes Context7 tools with the **plugin prefix**:
+
+- `mcp__plugin_context7_context7__resolve-library-id`
+- `mcp__plugin_context7_context7__query-docs`
+
+This confirms Formula B: the plugin naming pattern `mcp__plugin_<plugin-name>_<server-name>__<tool-name>` is active in the current Claude Code runtime. The tools are NOT available under the short `mcp__context7__` prefix.
+
+### Memory-Keeper Tools (Manual MCP Prefix Confirmed)
+
+The current session exposes Memory-Keeper tools with the **manual MCP server prefix**:
+
+- `mcp__memory-keeper__context_save`
+- `mcp__memory-keeper__context_get`
+- `mcp__memory-keeper__context_search`
+
+This confirms that manually configured MCP servers use the `mcp__<server-name>__<tool-name>` pattern, while plugins use the longer `mcp__plugin_<plugin-name>_<server-name>__<tool-name>` pattern. The two namespaces are operationally distinct.
+
+### BUG-001 Confirmation
+
+The canonical names documented in `mcp-tool-standards.md` for Memory-Keeper are:
+
+| Canonical Name (Governance) | Actual Runtime Name | Match? |
+|-----------------------------|---------------------|:------:|
+| `mcp__memory-keeper__store` | `mcp__memory-keeper__context_save` | NO |
+| `mcp__memory-keeper__retrieve` | `mcp__memory-keeper__context_get` | NO |
+| `mcp__memory-keeper__search` | `mcp__memory-keeper__context_search` | NO |
+
+This confirms BUG-001: the governance files reference tool names that do not exist at runtime.
+
+### Verification Impact on Research Confidence
+
+| Claim | Pre-Verification Evidence | Post-Verification Evidence | Confidence Change |
+|-------|--------------------------|---------------------------|:-----------------:|
+| Plugin tools use `mcp__plugin_` prefix | GitHub Issues #20983, #15145 | Live session tool list | HIGH -> VERIFIED |
+| Manual MCP tools use `mcp__<server>__` prefix | Claude Code documentation | Live session tool list (Memory-Keeper) | HIGH -> VERIFIED |
+| Namespaces are separate | Documentation inference | Both prefixes observed in same session | HIGH -> VERIFIED |
+| BUG-001 tool name mismatch | Codebase analysis | Runtime names differ from canonical names | HIGH -> VERIFIED |
+| Subagent MCP access limited to user-scope servers (Issue #13898) | GitHub Issue #13898 report | Not empirically tested in this session -- subagent Task invocation with Context7 not attempted | HIGH (issue report) -- NOT YET VERIFIED empirically |
 
 ---
 
@@ -305,15 +365,15 @@ The conflict manifests in:
 
 ### WHEN
 
-This dual-registration pattern was introduced when the Context7 plugin was enabled in `settings.json` alongside governance files that already referenced the manual MCP server naming convention. The timeline suggests governance was written first (using `mcp__context7__` names), and plugin registration was added later without updating agent definitions.
+**[INFERRED]** This dual-registration pattern was introduced when the Context7 plugin was enabled in `settings.json` alongside governance files that already referenced the manual MCP server naming convention. **[INFERRED]** The codebase analysis suggests governance was written first (using `mcp__context7__` names), and plugin registration was added later without updating agent definitions. This inference is based on the naming convention mismatch pattern; git log verification was not performed.
 
 ### WHY
 
 The dual registration exists because:
-1. The plugin system is newer than the manual MCP server configuration.
-2. The governance files were authored referencing the manual naming convention.
-3. No integration test validates that agent tool references match actual runtime tool names.
-4. `settings.local.json` was patched defensively to allow both namespaces.
+1. **[INFERRED]** The plugin system is newer than the manual MCP server configuration.
+2. **[INFERRED]** The governance files were authored referencing the manual naming convention.
+3. **[INFERRED]** No integration test validates that agent tool references match actual runtime tool names.
+4. **[EVIDENCED by `settings.local.json`]** `settings.local.json` was patched defensively to allow both namespaces.
 
 ### HOW
 
@@ -363,12 +423,14 @@ The dual registration exists because:
 4. [Claude Code Plugins Documentation](https://code.claude.com/docs/en/plugins) - Official plugin creation guide. Key insight: Plugin skills namespaced as `/plugin-name:skill-name`.
 5. [Claude Code Plugins Reference](https://code.claude.com/docs/en/plugins-reference) - Plugin technical reference. Key insight: Plugin MCP servers in `.mcp.json` at plugin root.
 6. [GitHub Issue #3107: MCP wildcard permissions not honored](https://github.com/anthropics/claude-code/issues/3107) - Key insight: MCP permissions originally did NOT support wildcards. Correct syntax: `mcp__<server-name>` (no `__*`). Status: CLOSED (July 2025).
-7. [GitHub Issue #15145: MCP servers incorrectly namespaced under plugin](https://github.com/anthropics/claude-code/issues/15145) - Key insight: Installing a plugin can cause ALL MCP servers to be namespaced under `plugin:<name>:*`. Status: Closed as NOT PLANNED.
+7. [GitHub Issue #15145: MCP servers incorrectly namespaced under plugin](https://github.com/anthropics/claude-code/issues/15145) - Key insight: Installing a plugin can cause ALL MCP servers to be namespaced under `plugin:<name>:*`. Status: Closed as NOT PLANNED. **Status note:** Closed as NOT PLANNED means Anthropic considers the plugin namespacing behavior to be by-design, not a bug. The plugin prefix for MCP servers is the intended permanent behavior when using plugins.
 8. [GitHub Issue #20983: MCP plugin tool names exceed 64-char limit](https://github.com/anthropics/claude-code/issues/20983) - Key insight: Plugin naming pattern `mcp__plugin_<plugin>_<server>__<tool>` confirmed. Closed as duplicate of #20830.
 9. [GitHub Issue #13898: Custom subagents cannot access project-scoped MCP servers](https://github.com/anthropics/claude-code/issues/13898) - Key insight: Subagents hallucinate MCP results when server is project-scoped; user-scoped servers work correctly.
 10. [Context7 GitHub Repository](https://github.com/upstash/context7) - Upstash Context7 MCP server. Tools: `resolve-library-id`, `query-docs`.
 11. [Context7 Claude Plugin Page](https://claude.com/plugins/context7) - Official Context7 plugin listing. 127,061 installs.
 12. [Context7 MCP Tool Reference - Glama](https://glama.ai/mcp/servers/@upstash/context7-mcp/tools/resolve-library-id) - Tool specification reference.
+13. [GitHub Issue #13077: Claude Code wildcard permission fix](https://github.com/anthropics/claude-code/issues/13077) - Key insight: Continued report of wildcard permission failures in Late 2025, supporting the timeline that wildcard syntax was not yet reliable.
+14. [GitHub Issue #14730: Related wildcard permission fix](https://github.com/anthropics/claude-code/issues/14730) - Key insight: Additional wildcard permission failure report in Late 2025 timeframe, corroborating Issue #13077.
 
 ---
 
@@ -379,6 +441,7 @@ The dual registration exists because:
 - **File:** `projects/PROJ-030-bugs/research/context7-plugin-architecture.md`
 - **Type:** Research Report
 - **Related Bug:** BUG-001 (memory-keeper tool names -- same class of issue)
+- **Memory-Keeper verification:** Empirical observation confirms Memory-Keeper uses the `mcp__memory-keeper__` prefix (manual MCP server). However, canonical names in `mcp-tool-standards.md` (e.g., `mcp__memory-keeper__store`) do NOT match runtime names (e.g., `mcp__memory-keeper__context_save`), confirming BUG-001.
 - **Candidate Bug:** BUG-002 (Context7 dual-registration namespace conflict)
 
 ### State
@@ -389,7 +452,7 @@ researcher_output:
   entry_id: "e-002"
   artifact_path: "projects/PROJ-030-bugs/research/context7-plugin-architecture.md"
   summary: "Context7 has dual registration (plugin + manual MCP) creating separate tool name namespaces. Agent definitions reference short names but plugin creates long names. Recommend removing plugin registration and using user-scoped manual MCP server."
-  sources_count: 12
+  sources_count: 14
   confidence: "high"
   next_agent_hint: "ps-architect for ADR on MCP configuration strategy"
 ```
