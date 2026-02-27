@@ -11,7 +11,7 @@
       "name": "jerry",
       "description": "Behavior and workflow guardrails with knowledge accrual for Claude Code. 12 skills and 58 specialized agents covering problem-solving, work tracking, systems engineering, orchestration, adversarial quality review, secure engineering, offensive security, and transcript parsing.",
       "source": "./",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "category": "productivity",
       "keywords": ["problem-solving", "work-tracking", "knowledge-management", "agents", "workflows"]
     }
