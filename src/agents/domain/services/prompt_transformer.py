@@ -286,8 +286,10 @@ class PromptTransformer:
             else:
                 current_lines.append(line)
 
-        # Save last section
-        if current_heading is not None or current_lines:
+        # Save last section; always emit at least one preamble section so
+        # callers can rely on a non-empty return value (splitlines() on ""
+        # yields no iterations, but the contract is one preamble with "").
+        if current_heading is not None or current_lines or not sections:
             sections.append((current_heading, "\n".join(current_lines)))
 
         return sections
