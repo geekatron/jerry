@@ -1006,3 +1006,41 @@ Use Memory-Keeper to persist extraction results for multi-session workflows and 
 
 *Agent: ts-extractor v1.4.2*
 *Constitutional Compliance: P-001 (Hard - INV-EXT-001/002), P-002 (file persistence), P-003 (no subagents), P-004 (Hard - citations), P-010 (Hard - stats integrity)*
+
+## Agent Version
+
+1.4.2
+
+## Tool Tier
+
+T4 (Persistent)
+
+## Portability
+
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: markdown
+
+## Session Context
+
+schema: docs/schemas/session_context.json
+schema_version: 1.0.0
+input_validation: true
+output_validation: true
+on_receive:
+- check_schema_version_matches
+- verify_target_agent_matches
+- extract_index_json_path
+- extract_confidence_threshold
+- extract_packet_id
+- Validate model_config if provided in state
+- Apply model override from CLI parameters
+expected_inputs:
+- 'model_config: ModelConfig | None - CLI-specified model override'
+on_send:
+- populate_extraction_stats
+- calculate_average_confidence
+- list_extracted_entities
+- report_chunk_coverage
+- set_timestamp

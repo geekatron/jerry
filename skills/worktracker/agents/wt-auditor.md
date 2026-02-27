@@ -262,6 +262,7 @@ This agent enforces the following WTI rules from `.context/templates/worktracker
 | **WTI-003** | Truthful State | Flag items marked complete without evidence |
 | **WTI-004** | Synchronize Before Reporting | Read current file state (not cached) |
 | **WTI-005** | Atomic State Updates | Check parent + child both updated together |
+| **WTI-008** | Content Quality Standards | Check AC clarity, brevity, no DoD in AC |
 
 **Example WTI-003 violation:**
 ```yaml
@@ -324,6 +325,18 @@ Failure to persist is a P-002 violation.
 4. Collect `schema_violations` from result for error reporting
 5. Optionally cross-reference with template from `.context/templates/worktracker/{TYPE}.md`
 6. Log violations as **errors**
+
+### Phase 2.5: Content Quality Check
+1. For each work item file with AC, check against WTI-008 sub-rules
+2. **DoD detection (WTI-008a):** Search AC for patterns: `tests? pass`, `code review`, `documentation updated`, `deployed to`, `QA sign-off`, `coverage meets`, `no critical bugs`, `peer reviewed`. Require whole-word match to reduce false positives (e.g., "test passes for edge case" is AC, not DoD)
+3. **Implementation detail detection (WTI-008b):** Search AC for patterns: file paths (`src/`, `.py`, `.ts`, `.cs`), class/method names (PascalCase with `.Method()`), technology-specific terms in AC bullets
+4. **Actor-first format (WTI-008c):** Check if AC bullet starts with an actor or system subject. Flag as **INFO** if not
+5. **Hedge word detection (WTI-008d):** Search AC for: `should be able to`, `might need`, `could potentially`, `if possible`, `ideally`, `as needed`, `when appropriate`, `as necessary`
+6. **AC bullet count (WTI-008e):** Count `- [ ]` patterns. Compare against type limits: Story=5, Bug=5, Task=5, Enabler=5, Feature=5
+7. **Summary length (WTI-008f):** Count sentences in Summary section. Flag if >3
+8. **Scope overflow (WTI-008g):** When bullet count exceeds limit (step 6), also flag scope overflow and recommend SPIDR splitting
+9. **Severity:** Bullet count violations, DoD detection, and scope overflow as **WARNING**. Hedge words and actor-format as **INFO**
+10. **DEC-006:** For items created before 2026-02-17, downgrade all content quality findings to **INFO** (advisory)
 
 ### Phase 3: Relationship Integrity Check
 1. Extract `Parent` field from each file via `query_frontmatter()` [/ast]
@@ -540,6 +553,26 @@ Validates parent-child linkage:
 - No circular dependencies
 - All references resolve to existing files
 
+### 2.5. Content Quality (WARNING/INFO)
+Checks work item content against WTI-008 sub-rules:
+- DoD items in AC (WTI-008a) -- WARNING
+- Implementation details in AC (WTI-008b) -- WARNING
+- Actor-first format missing (WTI-008c) -- INFO
+- Hedge words in AC (WTI-008d) -- INFO
+- AC bullet count exceeds limits (WTI-008e) -- WARNING
+- Summary exceeds 3 sentences (WTI-008f) -- INFO
+- Scope overflow signal (WTI-008g) -- WARNING
+
+**Report format for content quality issues:**
+
+| File | Sub-Rule | Matched Text | Remediation |
+|------|----------|-------------|-------------|
+| EN-001.md | WTI-008a | "All unit tests pass" | Move to DoD; remove from AC |
+| TASK-003.md | WTI-008b | "Update AssetHandler.cs" | Move to Description; rewrite AC as outcome |
+| STORY-002.md | WTI-008e | 7 AC bullets (limit: 5) | Split story using SPIDR framework |
+
+**DEC-006:** Items created before 2026-02-17 are flagged as INFO (advisory only).
+
 ### 3. Orphan Detection (WARNING)
 Finds unreachable work items:
 - All items reachable from WORKTRACKER.md
@@ -567,6 +600,7 @@ Validates naming conventions:
 | **WTI-003** | Truthful State (no false completion claims) |
 | **WTI-004** | Synchronize Before Reporting (read current state) |
 | **WTI-005** | Atomic State Updates (file + parent consistency) |
+| **WTI-008** | Content Quality Standards (AC clarity, brevity, no DoD in AC) |
 
 ## Output
 
@@ -614,3 +648,23 @@ Validates naming conventions:
 *Constitutional Compliance: Jerry Constitution v1.0*
 *Created: 2026-02-02*
 *Purpose: Support AC-7 (template references work correctly) and worktracker integrity*
+
+## Agent Version
+
+1.0.0
+
+## Tool Tier
+
+T2 (Read-Write)
+
+## Enforcement
+
+tier: medium
+escalation_path: Warn on issues → Generate remediation plan → Await user approval
+
+## Portability
+
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: markdown

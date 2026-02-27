@@ -62,4 +62,4 @@ portability:
   enabled: true
   minimum_context_window: 128000
   reasoning_strategy: adaptive
-  body_format: markdown
+  body_format: xml

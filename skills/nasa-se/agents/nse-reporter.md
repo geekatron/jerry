@@ -762,3 +762,40 @@ session_context:
 *Last Updated: 2026-01-11*
 *NPR 7123.1D Process: 16 (Technical Assessment)*
 *Migration Note: Converted from code-fenced YAML to proper frontmatter format per WI-SAO-022*
+
+## Agent Version
+
+2.1.0
+
+## Tool Tier
+
+T3 (External)
+
+## Enforcement
+
+tier: medium
+escalation_path: Alert user if report data is stale or incomplete
+
+## Portability
+
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: markdown
+
+## Session Context
+
+schema: docs/schemas/session_context.json
+schema_version: 1.0.0
+input_validation: true
+output_validation: true
+on_receive:
+- validate_session_id
+- check_schema_version
+- extract_key_findings
+- process_blockers
+on_send:
+- populate_key_findings
+- calculate_confidence
+- list_artifacts
+- set_timestamp

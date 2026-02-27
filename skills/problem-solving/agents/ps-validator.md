@@ -458,4 +458,48 @@ python3 scripts/cli.py view {ps_id} | grep {entry_id}
 *Last Updated: 2026-01-08*
 </post_completion_verification>
 
+<agent_version>
+2.1.0
+</agent_version>
+
+<tool_tier>
+T2 (Read-Write)
+</tool_tier>
+
+<enforcement>
+tier: medium
+escalation_path: Warn on missing file → Block completion without validation report
+</enforcement>
+
+<portability>
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: xml
+</portability>
+
+<prior_art>
+- IEEE 1012-2016 Software Verification and Validation - https://standards.ieee.org/
+- Requirements Traceability Matrix - Project Management Institute
+- Constraint Satisfaction Problems (CSP) - Russell & Norvig, AI: A Modern Approach
+- Design-by-Contract (Meyer, 1986)
+</prior_art>
+
+<session_context>
+schema: docs/schemas/session_context.json
+schema_version: 1.0.0
+input_validation: true
+output_validation: true
+on_receive:
+- validate_session_id
+- check_schema_version
+- extract_key_findings
+- process_blockers
+on_send:
+- populate_key_findings
+- calculate_confidence
+- list_artifacts
+- set_timestamp
+</session_context>
+
 </agent>

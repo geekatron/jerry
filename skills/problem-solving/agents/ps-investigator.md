@@ -505,4 +505,48 @@ python3 scripts/cli.py view {ps_id} | grep {entry_id}
 *Last Updated: 2026-02-14*
 </post_completion_verification>
 
+<agent_version>
+2.2.0
+</agent_version>
+
+<tool_tier>
+T3 (External)
+</tool_tier>
+
+<enforcement>
+tier: medium
+escalation_path: Warn on missing file → Block completion without investigation report
+</enforcement>
+
+<portability>
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: xml
+</portability>
+
+<prior_art>
+- Ohno, T. (1988). Toyota Production System - 5 Whys
+- Ishikawa, K. (1990). Introduction to Quality Control - Fishbone Diagram
+- NASA (2007). Systems Engineering Handbook - FMEA
+- Six Sigma DMAIC Methodology
+</prior_art>
+
+<session_context>
+schema: docs/schemas/session_context.json
+schema_version: 1.0.0
+input_validation: true
+output_validation: true
+on_receive:
+- validate_session_id
+- check_schema_version
+- extract_key_findings
+- process_blockers
+on_send:
+- populate_key_findings
+- calculate_confidence
+- list_artifacts
+- set_timestamp
+</session_context>
+
 </agent>

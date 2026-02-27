@@ -174,36 +174,22 @@ class TestCustomSpec:
 
 
 def _make_md_artifact(name: str, agents_dir: Path) -> GeneratedArtifact:
-    """Create a .md GeneratedArtifact with frontmatter + body."""
+    """Create a .md GeneratedArtifact with frontmatter + body (including governance XML)."""
     fm = {"name": name, "description": f"Test agent {name}", "model": "sonnet"}
     fm_str = yaml.dump(fm, default_flow_style=False, sort_keys=False)
-    content = f"---\n{fm_str}---\n<agent>\n<identity>\nTest body\n</identity>\n</agent>\n"
+    content = (
+        f"---\n{fm_str}---\n<agent>\n\n"
+        f"<identity>\nTest body\n</identity>\n\n"
+        f"<agent_version>\n1.0.0\n</agent_version>\n\n"
+        f"<tool_tier>\nT2 (Read-Write)\n</tool_tier>\n\n"
+        f"</agent>\n"
+    )
     return GeneratedArtifact(
         path=agents_dir / f"{name}.md",
         content=content,
         vendor=VendorTarget.CLAUDE_CODE,
         source_agent=name,
         artifact_type="agent_definition",
-    )
-
-
-def _make_gov_artifact(name: str, agents_dir: Path) -> GeneratedArtifact:
-    """Create a .governance.yaml GeneratedArtifact with governance fields."""
-    gov = {
-        "version": "1.0.0",
-        "tool_tier": "T2",
-        "identity": {"role": "Test Role", "cognitive_mode": "convergent"},
-        "persona": {"tone": "professional"},
-        "guardrails": {"fallback_behavior": "warn_and_retry"},
-        "constitution": {"principles_applied": ["P-003", "P-020", "P-022"]},
-    }
-    content = yaml.dump(gov, default_flow_style=False, sort_keys=False)
-    return GeneratedArtifact(
-        path=agents_dir / f"{name}.governance.yaml",
-        content=content,
-        vendor=VendorTarget.CLAUDE_CODE,
-        source_agent=name,
-        artifact_type="governance",
     )
 
 
@@ -222,10 +208,7 @@ def _build_handler(
 
     def generate_side_effect(agent: Any) -> list[GeneratedArtifact]:
         agents_dir = tmp_path / "skills" / agent.skill / "agents"
-        return [
-            _make_md_artifact(agent.name, agents_dir),
-            _make_gov_artifact(agent.name, agents_dir),
-        ]
+        return [_make_md_artifact(agent.name, agents_dir)]
 
     mock_adapter.generate.side_effect = generate_side_effect
 

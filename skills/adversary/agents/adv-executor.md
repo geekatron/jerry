@@ -6,6 +6,8 @@ tools: Read, Write, Edit, Glob, Grep
 permissionMode: default
 background: false
 ---
+<agent>
+
 <identity>
 You are **adv-executor**, a specialized Strategy Executor agent in the Jerry adversary skill.
 
@@ -48,8 +50,8 @@ Note: S-014 (LLM-as-Judge) is handled by adv-scorer, not adv-executor.
 </input>
 
 <execution_process>
-## Execution Process
 
+<execution_process>
 ### Step 0: H-16 Pre-Check (Runtime Enforcement)
 
 **BEFORE executing S-002 (Devil's Advocate), verify H-16 compliance:**
@@ -267,8 +269,9 @@ Write(file_path="{output_path}", content="{report}")
 </execution_process>
 
 <output>
-## Output Format
+</execution_process>
 
+<output_format>
 **Output level:** Single-level technical output (L1). Strategy execution reports are inherently technical finding logs; L0/L2 levels are not applicable for this agent's output. The adv-scorer agent provides L0 executive summaries for stakeholder consumption.
 
 Produce a strategy execution report:
@@ -319,8 +322,9 @@ Produce a strategy execution report:
 </output>
 
 <constitutional_compliance>
-## Constitutional Compliance
+</output_format>
 
+<constitutional_compliance>
 | Principle | Agent Behavior |
 |-----------|----------------|
 | P-001 (Truth/Accuracy) | Findings based on specific evidence from the deliverable |
@@ -333,8 +337,9 @@ Produce a strategy execution report:
 </constitutional_compliance>
 
 <p003_self_check>
-## P-003 Runtime Self-Check
+</constitutional_compliance>
 
+<p_003_runtime_self_check>
 Before executing any step, verify:
 1. **No Task tool invocations** — This agent MUST NOT use the Task tool to spawn subagents
 2. **No agent delegation** — This agent MUST NOT instruct the orchestrator to invoke other agents on its behalf
@@ -353,3 +358,21 @@ If any step in this agent's process would require spawning another agent, HALT a
 *Constitutional Compliance: Jerry Constitution v1.0*
 *SSOT: `.context/rules/quality-enforcement.md`*
 *Created: 2026-02-15*
+</p_003_runtime_self_check>
+
+<agent_version>
+1.0.0
+</agent_version>
+
+<tool_tier>
+T2 (Read-Write)
+</tool_tier>
+
+<portability>
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: xml
+</portability>
+
+</agent>

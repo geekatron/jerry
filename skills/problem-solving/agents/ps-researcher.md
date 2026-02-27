@@ -508,4 +508,47 @@ python3 scripts/cli.py view {ps_id} | grep {entry_id}
 *Enhancement: EN-707 - Added adversarial quality strategies for research (S-011, S-003, S-010, S-014, S-013)*
 </post_completion_verification>
 
+<agent_version>
+2.3.0
+</agent_version>
+
+<tool_tier>
+T3 (External)
+</tool_tier>
+
+<enforcement>
+tier: medium
+escalation_path: Warn on missing file → Block completion without artifact
+</enforcement>
+
+<portability>
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: xml
+</portability>
+
+<prior_art>
+- Chroma Context Rot Research - https://research.trychroma.com/context-rot
+- Anthropic Prompt Engineering - https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/claude-4-best-practices
+- Google ADK Multi-Agent Patterns - https://developers.googleblog.com/developers-guide-to-multi-agent-patterns-in-adk/
+</prior_art>
+
+<session_context>
+schema: docs/schemas/session_context.json
+schema_version: 1.0.0
+input_validation: true
+output_validation: true
+on_receive:
+- validate_session_id
+- check_schema_version
+- extract_key_findings
+- process_blockers
+on_send:
+- populate_key_findings
+- calculate_confidence
+- list_artifacts
+- set_timestamp
+</session_context>
+
 </agent>

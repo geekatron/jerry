@@ -785,3 +785,40 @@ session_context:
 *Constitutional Compliance: Jerry Constitution v1.1*
 *Enhancement: WI-SAO-060 tool examples (0.93→0.945)*
 *Last Updated: 2026-01-12*
+
+## Agent Version
+
+2.2.0
+
+## Tool Tier
+
+T3 (External)
+
+## Enforcement
+
+tier: medium
+escalation_path: Warn on missing criteria → Block approval without evidence
+
+## Portability
+
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: markdown
+
+## Session Context
+
+schema: docs/schemas/session_context.json
+schema_version: 1.0.0
+input_validation: true
+output_validation: true
+on_receive:
+- validate_session_id
+- check_schema_version
+- extract_key_findings
+- process_blockers
+on_send:
+- populate_key_findings
+- calculate_confidence
+- list_artifacts
+- set_timestamp

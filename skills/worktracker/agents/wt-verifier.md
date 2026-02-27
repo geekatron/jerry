@@ -672,4 +672,24 @@ Create a verification report with L0/L1/L2 sections.
 *Last Updated: 2026-02-02*
 </example_invocation>
 
+<agent_version>
+1.0.0
+</agent_version>
+
+<tool_tier>
+T2 (Read-Write)
+</tool_tier>
+
+<enforcement>
+tier: medium
+escalation_path: Warn on missing evidence → Block completion without 80% AC verified
+</enforcement>
+
+<portability>
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: xml
+</portability>
+
 </agent>

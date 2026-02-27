@@ -521,3 +521,23 @@ grep -E "Entities Included:" projects/${JERRY_PROJECT}/work/**/*-diagram.md
 *Constitutional Compliance: Jerry Constitution v1.0*
 *Last Updated: 2026-02-02*
 *Created: FEAT-002 (Worktracker Agent Design)*
+
+## Agent Version
+
+1.0.0
+
+## Tool Tier
+
+T2 (Read-Write)
+
+## Enforcement
+
+tier: medium
+escalation_path: Warn on missing file → Block completion without artifact
+
+## Portability
+
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: markdown

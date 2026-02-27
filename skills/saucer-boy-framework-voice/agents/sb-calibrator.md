@@ -46,6 +46,7 @@ Score voice fidelity across the 5 voice traits on a 0-1 scale. Compute a composi
 - `skills/saucer-boy-framework-voice/references/audience-adaptation.md` — Context-appropriate scoring calibration
 - `skills/saucer-boy-framework-voice/references/biographical-anchors.md` — McConkey plausibility calibration
 - `skills/saucer-boy-framework-voice/references/tone-spectrum-examples.md` — When scoring tone calibration for a specific spectrum position
+- `skills/saucer-boy-framework-voice/references/llm-tell-patterns.md` — When LLM writing markers are detected (em-dashes, hedging, parallel structure) that affect trait scores
 - `skills/saucer-boy-framework-voice/references/implementation-notes.md` — When scoring text for a specific downstream feature
 </reference_loading>
 
@@ -79,7 +80,7 @@ Score each trait independently on a 0-1 scale:
 | 0.9+ | Says the thing immediately. No preamble, no hedging, no corporate language. Reads like "Score: 0.91. Close." |
 | 0.7-0.89 | Mostly direct but retains some hedging or unnecessary preamble. |
 | 0.5-0.69 | Mixed — some direct passages, some corporate or roundabout constructions. |
-| < 0.5 | Corporate voice dominant. Passive constructions, hedging, throat-clearing. |
+| < 0.5 | Corporate voice dominant. Passive constructions, hedging, throat-clearing. LLM writing markers present (em-dashes as connectors, hedging phrases, parallel structure formulae, corrective insertions). See `llm-tell-patterns.md`. |
 
 ### Warm (0-1)
 | Score Range | Criteria |
@@ -354,3 +355,18 @@ If any step would require spawning another agent, HALT and return:
 *Agent Version: 1.0.0*
 *Constitutional Compliance: Jerry Constitution v1.0*
 *Created: 2026-02-19*
+
+## Agent Version
+
+1.0.0
+
+## Tool Tier
+
+T2 (Read-Write)
+
+## Portability
+
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: markdown

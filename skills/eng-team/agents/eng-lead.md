@@ -96,3 +96,22 @@ This agent operates under the standalone capable design (AD-010). Three degradat
 - P-003: No recursive subagent spawning
 - P-020: User authority respected; never override user decisions
 - P-022: No deception; limitations disclosed; confidence indicators adjust for unvalidated claims
+
+## Agent Version
+
+1.0.0
+
+## Tool Tier
+
+T3 (External)
+
+## Portability
+
+enabled: true
+minimum_context_window: 128000
+model_preferences:
+- anthropic/claude-sonnet-4
+- openai/gpt-4o
+- google/gemini-2.5-pro
+reasoning_strategy: adaptive
+body_format: markdown

@@ -359,6 +359,134 @@ class TestComposePipeline:
         assert result.failed == 1
         assert any("constitution" in e for e in result.errors)
 
+    def test_composed_agent_body_contains_governance_sections(self, tmp_path: Path) -> None:
+        """Governance fields round-trip through compose: present in body, absent from frontmatter."""
+        # Arrange — canonical source with governance fields that trigger GovernanceSectionBuilder
+        skills_dir = tmp_path / "skills"
+        composition_dir = skills_dir / "test-skill" / "composition"
+        composition_dir.mkdir(parents=True, exist_ok=True)
+
+        yaml_data: dict[str, Any] = {
+            "name": "governance-agent",
+            "version": "2.3.1",
+            "description": "Agent with governance fields for round-trip test",
+            "skill": "test-skill",
+            "identity": {
+                "role": "Governance Test Role",
+                "expertise": ["testing", "governance"],
+                "cognitive_mode": "systematic",
+            },
+            "model": {"tier": "reasoning_standard"},
+            "tools": {"native": ["file_read"]},
+            "tool_tier": "T3",
+            "enforcement": {
+                "quality_gate_tier": "C2",
+                "escalation_path": "warn_and_retry",
+            },
+            "portability": {
+                "enabled": True,
+                "minimum_context_window": 128000,
+                "reasoning_strategy": "adaptive",
+                "body_format": "xml",
+            },
+            "guardrails": {
+                "input_validation": [{"field_format": "^.+$"}],
+                "output_filtering": [
+                    "no_secrets_in_output",
+                    "no_executable_code_without_confirmation",
+                    "all_claims_must_have_citations",
+                ],
+                "fallback_behavior": "warn_and_retry",
+            },
+            "constitution": {
+                "principles_applied": [
+                    "P-003: No Recursive Subagents (Hard)",
+                    "P-020: User Authority (Hard)",
+                    "P-022: No Deception (Hard)",
+                ],
+                "forbidden_actions": [
+                    "Spawn recursive subagents (P-003)",
+                    "Override user decisions (P-020)",
+                    "Misrepresent capabilities or confidence (P-022)",
+                ],
+            },
+        }
+        yaml_path = composition_dir / "governance-agent.jerry.yaml"
+        yaml_path.write_text(
+            yaml.dump(yaml_data, default_flow_style=False, sort_keys=False),
+            encoding="utf-8",
+        )
+        prompt_path = composition_dir / "governance-agent.jerry.prompt.md"
+        prompt_path.write_text(
+            "## Identity\n\nYou are governance-agent.\n\n## Purpose\n\nGovernance round-trip testing.\n",
+            encoding="utf-8",
+        )
+
+        infra_dir = tmp_path / "infra"
+        infra_dir.mkdir()
+        _create_mappings_yaml(infra_dir)
+        mappings = yaml.safe_load((infra_dir / "mappings.yaml").read_text(encoding="utf-8"))
+
+        tool_mapper = ToolMapper.from_mappings(mappings)
+        prompt_transformer = PromptTransformer()
+        adapter = ClaudeCodeAdapter(tool_mapper, prompt_transformer, skills_dir)
+        repository = FilesystemAgentRepository(skills_dir)
+
+        handler = ComposeAgentsCommandHandler(
+            repository=repository,
+            adapters={"claude_code": adapter},
+            defaults_composer=DefaultsComposer(),
+            governance_defaults={},
+            vendor_defaults={},
+        )
+
+        command = ComposeAgentsCommand(
+            vendor="claude_code",
+            agent_name="governance-agent",
+        )
+
+        # Act
+        result = handler.handle(command)
+
+        # Assert — compose succeeded
+        assert result.composed == 1
+        assert result.failed == 0
+
+        composed_file = skills_dir / "test-skill" / "agents" / "governance-agent.md"
+        assert composed_file.exists()
+        content = composed_file.read_text(encoding="utf-8")
+
+        # Parse frontmatter
+        assert content.startswith("---\n"), "Missing opening frontmatter delimiter"
+        end = content.find("---", 3)
+        assert end > 3, "Missing closing frontmatter delimiter"
+        fm = yaml.safe_load(content[3:end])
+
+        # Governance fields MUST NOT appear in frontmatter
+        governance_fields = {"version", "tool_tier", "enforcement", "portability"}
+        leaked = set(fm.keys()) & governance_fields
+        assert leaked == set(), f"Governance fields leaked into frontmatter: {leaked}"
+
+        # Governance data MUST appear in the body
+        body = content[end + 3 :].strip()
+        assert len(body) > 0, "Composed output has empty prompt body"
+
+        # version -> "## Agent Version" section (rendered as <agent_version> in XML body)
+        assert "2.3.1" in body, "Agent version not found in composed body"
+
+        # tool_tier -> "## Tool Tier" section
+        assert "T3" in body, "Tool tier not found in composed body"
+
+        # enforcement -> "## Enforcement" section
+        assert "quality_gate_tier" in body, "Enforcement data not found in composed body"
+        assert "C2" in body, "Enforcement quality_gate_tier value not found in composed body"
+
+        # portability -> "## Portability" section
+        assert "minimum_context_window" in body, "Portability data not found in composed body"
+        assert "128000" in body, (
+            "Portability minimum_context_window value not found in composed body"
+        )
+
     def test_composed_output_has_all_required_components(self, tmp_path: Path) -> None:
         """Composed output must contain vendor frontmatter, governance frontmatter, and prompt body."""
         # Arrange
@@ -454,3 +582,134 @@ class TestComposePipeline:
         assert "<agent>" in body, "Prompt body missing <agent> wrapper"
         assert "<identity>" in body, "Prompt body missing <identity> section"
         assert "complete-agent" in body, "Prompt body missing agent name"
+
+    def test_compose_extract_round_trip_preserves_governance(self, tmp_path: Path) -> None:
+        """Compose -> extract round-trip preserves governance data without .governance.yaml.
+
+        Verifies that governance fields injected into the prompt body by compose
+        are correctly extracted back by extract(), preventing degraded defaults
+        (version="1.0.0", tool_tier=T1) when no .governance.yaml exists.
+        """
+        # Arrange — canonical source with governance fields
+        skills_dir = tmp_path / "skills"
+        composition_dir = skills_dir / "roundtrip-skill" / "composition"
+        composition_dir.mkdir(parents=True, exist_ok=True)
+
+        yaml_data: dict[str, Any] = {
+            "name": "roundtrip-agent",
+            "version": "2.3.1",
+            "description": "Agent for compose-extract round-trip test",
+            "skill": "roundtrip-skill",
+            "identity": {
+                "role": "Round-Trip Tester",
+                "expertise": ["integration testing", "governance"],
+                "cognitive_mode": "systematic",
+            },
+            "model": {"tier": "reasoning_standard"},
+            "tools": {"native": ["file_read"]},
+            "tool_tier": "T3",
+            "enforcement": {
+                "quality_gate_tier": "C2",
+                "escalation_path": "warn_and_retry",
+            },
+            "portability": {
+                "enabled": True,
+                "minimum_context_window": 128000,
+                "reasoning_strategy": "adaptive",
+                "body_format": "xml",
+            },
+            "session_context": {
+                "on_receive": ["validate_handoff_schema"],
+                "on_send": ["include_key_findings"],
+            },
+            "prior_art": [
+                "ADR-PROJ010-003: LLM Portability Architecture",
+                "ADR-PROJ012-001: Agent Optimization",
+            ],
+            "guardrails": {
+                "input_validation": [{"field_format": "^.+$"}],
+                "output_filtering": [
+                    "no_secrets_in_output",
+                    "no_executable_code_without_confirmation",
+                    "all_claims_must_have_citations",
+                ],
+                "fallback_behavior": "warn_and_retry",
+            },
+            "constitution": {
+                "principles_applied": [
+                    "P-003: No Recursive Subagents (Hard)",
+                    "P-020: User Authority (Hard)",
+                    "P-022: No Deception (Hard)",
+                ],
+                "forbidden_actions": [
+                    "Spawn recursive subagents (P-003)",
+                    "Override user decisions (P-020)",
+                    "Misrepresent capabilities or confidence (P-022)",
+                ],
+            },
+        }
+        yaml_path = composition_dir / "roundtrip-agent.jerry.yaml"
+        yaml_path.write_text(
+            yaml.dump(yaml_data, default_flow_style=False, sort_keys=False),
+            encoding="utf-8",
+        )
+        prompt_path = composition_dir / "roundtrip-agent.jerry.prompt.md"
+        prompt_path.write_text(
+            "## Identity\n\nYou are roundtrip-agent.\n\n## Purpose\n\nRound-trip testing.\n",
+            encoding="utf-8",
+        )
+
+        infra_dir = tmp_path / "infra"
+        infra_dir.mkdir()
+        _create_mappings_yaml(infra_dir)
+        mappings = yaml.safe_load((infra_dir / "mappings.yaml").read_text(encoding="utf-8"))
+
+        tool_mapper = ToolMapper.from_mappings(mappings)
+        prompt_transformer = PromptTransformer()
+        adapter = ClaudeCodeAdapter(tool_mapper, prompt_transformer, skills_dir)
+        repository = FilesystemAgentRepository(skills_dir)
+
+        handler = ComposeAgentsCommandHandler(
+            repository=repository,
+            adapters={"claude_code": adapter},
+            defaults_composer=DefaultsComposer(),
+            governance_defaults={},
+            vendor_defaults={},
+        )
+
+        command = ComposeAgentsCommand(
+            vendor="claude_code",
+            agent_name="roundtrip-agent",
+        )
+
+        # Act — Step 1: Compose canonical source to .md
+        compose_result = handler.handle(command)
+        assert compose_result.composed == 1, f"Compose failed: {compose_result.errors}"
+
+        composed_file = skills_dir / "roundtrip-skill" / "agents" / "roundtrip-agent.md"
+        assert composed_file.exists(), "Composed file not found"
+
+        # Act — Step 2: Extract from composed .md with NO .governance.yaml
+        extracted = adapter.extract(str(composed_file))
+
+        # Assert — governance fields preserved (not degraded to defaults)
+        assert extracted.version == "2.3.1", (
+            f"Version degraded to {extracted.version!r}, expected '2.3.1'"
+        )
+        assert extracted.tool_tier.value == "T3", (
+            f"Tool tier degraded to {extracted.tool_tier.value!r}, expected 'T3'"
+        )
+        assert extracted.enforcement, "Enforcement dict is empty after round-trip"
+        assert extracted.enforcement.get("quality_gate_tier") == "C2", (
+            f"Enforcement quality_gate_tier lost: {extracted.enforcement}"
+        )
+        assert extracted.portability, "Portability dict is empty after round-trip"
+        assert extracted.portability.get("minimum_context_window") == 128000, (
+            f"Portability minimum_context_window lost: {extracted.portability}"
+        )
+        assert extracted.session_context, "Session context is empty after round-trip"
+        assert "on_receive" in extracted.session_context, (
+            f"Session context on_receive lost: {extracted.session_context}"
+        )
+        assert extracted.prior_art, "Prior art is empty after round-trip"
+        assert len(extracted.prior_art) == 2, f"Prior art count changed: {extracted.prior_art}"

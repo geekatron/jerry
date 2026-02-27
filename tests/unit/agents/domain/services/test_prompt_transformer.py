@@ -308,6 +308,13 @@ class TestHeadingToTag:
             ("Output Specification", "output"),
             ("Output Requirements", "output"),
             ("Constitutional Compliance", "constitutional_compliance"),
+            # Governance section mappings
+            ("Agent Version", "agent_version"),
+            ("Tool Tier", "tool_tier"),
+            ("Enforcement", "enforcement"),
+            ("Portability", "portability"),
+            ("Prior Art", "prior_art"),
+            ("Session Context", "session_context"),
         ],
     )
     def test_known_heading_returns_canonical_tag(
@@ -590,6 +597,86 @@ class TestMarkdownToXml:
         # Assert – no XML tags; content returned as-is (preamble path)
         assert "<" not in result
         assert "Just plain text." in result
+
+    def test_markdown_to_xml_converts_agent_version_heading(
+        self, prompt_transformer: PromptTransformer
+    ) -> None:
+        # Arrange
+        body = "## Agent Version\n\n1.2.0\n"
+
+        # Act
+        result = prompt_transformer.to_format(body, BodyFormat.XML)
+
+        # Assert
+        assert "<agent_version>" in result
+        assert "1.2.0" in result
+        assert "</agent_version>" in result
+
+    def test_markdown_to_xml_converts_tool_tier_heading(
+        self, prompt_transformer: PromptTransformer
+    ) -> None:
+        # Arrange
+        body = "## Tool Tier\n\nT3 (External)\n"
+
+        # Act
+        result = prompt_transformer.to_format(body, BodyFormat.XML)
+
+        # Assert
+        assert "<tool_tier>" in result
+        assert "T3 (External)" in result
+        assert "</tool_tier>" in result
+
+    def test_markdown_to_xml_converts_enforcement_heading(
+        self, prompt_transformer: PromptTransformer
+    ) -> None:
+        # Arrange
+        body = "## Enforcement\n\nquality_gate_tier: C2\n"
+
+        # Act
+        result = prompt_transformer.to_format(body, BodyFormat.XML)
+
+        # Assert
+        assert "<enforcement>" in result
+        assert "</enforcement>" in result
+
+    def test_markdown_to_xml_converts_portability_heading(
+        self, prompt_transformer: PromptTransformer
+    ) -> None:
+        # Arrange
+        body = "## Portability\n\nenabled: true\n"
+
+        # Act
+        result = prompt_transformer.to_format(body, BodyFormat.XML)
+
+        # Assert
+        assert "<portability>" in result
+        assert "</portability>" in result
+
+    def test_markdown_to_xml_converts_prior_art_heading(
+        self, prompt_transformer: PromptTransformer
+    ) -> None:
+        # Arrange
+        body = "## Prior Art\n\n- ADR-001\n- Phase 3 Synthesis\n"
+
+        # Act
+        result = prompt_transformer.to_format(body, BodyFormat.XML)
+
+        # Assert
+        assert "<prior_art>" in result
+        assert "</prior_art>" in result
+
+    def test_markdown_to_xml_converts_session_context_heading(
+        self, prompt_transformer: PromptTransformer
+    ) -> None:
+        # Arrange
+        body = "## Session Context\n\non_receive: validate\n"
+
+        # Act
+        result = prompt_transformer.to_format(body, BodyFormat.XML)
+
+        # Assert
+        assert "<session_context>" in result
+        assert "</session_context>" in result
 
 
 # ---------------------------------------------------------------------------

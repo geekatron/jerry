@@ -6,6 +6,18 @@
 """
 Jerry Framework - Agent Template Conformance Checker
 
+DEPRECATION NOTICE (PROJ-012):
+This script validates the pre-PROJ-012 agent architecture where governance
+fields (version, identity, persona, capabilities, guardrails, etc.) were
+stored in YAML frontmatter. Post-PROJ-012, governance data lives in the
+prompt body as XML sections and canonical validation is performed at
+compose-time against docs/schemas/agent-canonical-v1.schema.json.
+
+This script is retained for backward compatibility with nse-* and ps-*
+agent families but should not be used as the primary conformance check.
+Use `uv run jerry agents compose --vendor claude_code` for canonical
+schema validation of agent definitions.
+
 This script validates that agent files conform to their respective templates.
 It checks for required YAML frontmatter sections and reports deviations.
 
@@ -39,11 +51,12 @@ import argparse
 import json
 import re
 import sys
+import warnings
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-# Required YAML sections per template family
+# Required YAML sections per template family (legacy .governance.yaml architecture)
 # Source: NSE_AGENT_TEMPLATE.md v1.0, PS_AGENT_TEMPLATE.md v2.0
 REQUIRED_SECTIONS: dict[str, dict[str, list[str]]] = {
     "nse": {
@@ -115,6 +128,21 @@ REQUIRED_SECTIONS: dict[str, dict[str, list[str]]] = {
         ],
     },
 }
+
+# PROJ-012: Frontmatter-only fields for agents using single-file architecture
+# (no companion .governance.yaml). Governance data is in the prompt body as XML tags.
+FRONTMATTER_ONLY_FIELDS: list[str] = ["name", "description", "model"]
+
+# PROJ-012: Governance XML tags expected in the prompt body for migrated agents.
+# These correspond to the sections injected by GovernanceSectionBuilder.
+GOVERNANCE_XML_TAGS: list[str] = [
+    "agent_version",
+    "tool_tier",
+    "enforcement",
+    "portability",
+    "prior_art",
+    "session_context",
+]
 
 # Agent file patterns
 AGENT_PATTERNS: dict[str, str] = {
@@ -228,11 +256,85 @@ def parse_yaml_frontmatter(content: str) -> dict[str, Any] | None:
     return result
 
 
+def _has_governance_yaml(agent_path: Path) -> bool:
+    """Check if a companion .governance.yaml file exists for the agent.
+
+    Args:
+        agent_path: Path to agent .md file.
+
+    Returns:
+        True if a companion .governance.yaml exists alongside the .md file.
+    """
+    gov_path = agent_path.with_suffix("").with_suffix(".governance.yaml")
+    return gov_path.exists()
+
+
+def _extract_body(content: str) -> str:
+    """Extract the body content (after YAML frontmatter) from a markdown file.
+
+    Args:
+        content: Full file content with YAML frontmatter.
+
+    Returns:
+        Body string after the closing --- delimiter, or empty string.
+    """
+    pattern = r"^---\s*\n.*?\n---\s*\n?"
+    match = re.match(pattern, content, re.DOTALL)
+    if not match:
+        return ""
+    return content[match.end() :]
+
+
+def _check_governance_xml_tags(
+    agent_path: Path,
+    body: str,
+    result: AgentConformanceResult,
+) -> None:
+    """Check that governance XML tags are present in the prompt body.
+
+    For agents using the PROJ-012 single-file architecture (no .governance.yaml),
+    governance data lives in the prompt body as XML sections injected by
+    GovernanceSectionBuilder.
+
+    Args:
+        agent_path: Path to agent .md file (for issue reporting).
+        body: Prompt body content after frontmatter.
+        result: AgentConformanceResult to append findings to.
+    """
+    for tag in GOVERNANCE_XML_TAGS:
+        result.sections_checked += 1
+        open_tag = f"<{tag}>"
+        close_tag = f"</{tag}>"
+        if open_tag in body and close_tag in body:
+            result.sections_passed += 1
+        else:
+            # Governance XML tags are advisory (warning) — the canonical
+            # validation at compose-time is the authoritative check.
+            result.issues.append(
+                ConformanceIssue(
+                    agent_file=str(agent_path),
+                    section=f"body.{tag}",
+                    issue_type="missing_section",
+                    message=f"Missing governance XML tag in body: <{tag}>",
+                    severity="warning",
+                )
+            )
+
+
 def check_agent_conformance(
     agent_path: Path,
     family: str,
 ) -> AgentConformanceResult:
     """Check if an agent file conforms to its template.
+
+    Supports two architectures:
+    - Legacy: governance in YAML frontmatter + .governance.yaml companion
+    - PROJ-012: governance in prompt body as XML tags (no .governance.yaml)
+
+    Detection: if no .governance.yaml companion exists, the agent uses the
+    PROJ-012 single-file architecture and only frontmatter-only fields
+    (name, description, model) are validated in YAML. Governance is checked
+    in the prompt body instead.
 
     Args:
         agent_path: Path to agent markdown file
@@ -276,56 +378,81 @@ def check_agent_conformance(
         )
         return result
 
-    # Get required sections for this family
-    requirements = REQUIRED_SECTIONS.get(family)
-    if not requirements:
-        result.issues.append(
-            ConformanceIssue(
-                agent_file=str(agent_path),
-                section="config",
-                issue_type="invalid_value",
-                message=f"Unknown agent family: {family}",
-                severity="warning",
-            )
-        )
-        return result
+    # PROJ-012: Detect single-file architecture (no companion .governance.yaml)
+    uses_single_file = not _has_governance_yaml(agent_path)
 
-    # Check top-level sections
-    for section in requirements["top_level"]:
-        result.sections_checked += 1
-        if section not in yaml_data:
-            result.is_conformant = False
+    if uses_single_file:
+        # Single-file architecture: only check frontmatter-only fields
+        for field_name in FRONTMATTER_ONLY_FIELDS:
+            result.sections_checked += 1
+            if field_name not in yaml_data:
+                result.is_conformant = False
+                result.issues.append(
+                    ConformanceIssue(
+                        agent_file=str(agent_path),
+                        section=field_name,
+                        issue_type="missing_section",
+                        message=f"Missing required frontmatter field: {field_name}",
+                    )
+                )
+            else:
+                result.sections_passed += 1
+
+        # Check governance XML tags in the prompt body
+        body = _extract_body(content)
+        _check_governance_xml_tags(agent_path, body, result)
+
+    else:
+        # Legacy architecture: full YAML frontmatter validation
+        requirements = REQUIRED_SECTIONS.get(family)
+        if not requirements:
             result.issues.append(
                 ConformanceIssue(
                     agent_file=str(agent_path),
-                    section=section,
-                    issue_type="missing_section",
-                    message=f"Missing required top-level section: {section}",
+                    section="config",
+                    issue_type="invalid_value",
+                    message=f"Unknown agent family: {family}",
+                    severity="warning",
                 )
             )
-        else:
-            result.sections_passed += 1
+            return result
 
-            # Check nested fields if section has nested requirements
-            if section in requirements and section != "top_level":
-                section_data = yaml_data.get(section, {})
-                if isinstance(section_data, dict):
-                    for nested_field in requirements[section]:
-                        result.sections_checked += 1
-                        if nested_field not in section_data:
-                            result.is_conformant = False
-                            result.issues.append(
-                                ConformanceIssue(
-                                    agent_file=str(agent_path),
-                                    section=f"{section}.{nested_field}",
-                                    issue_type="missing_field",
-                                    message=f"Missing required field: {section}.{nested_field}",
+        # Check top-level sections
+        for section in requirements["top_level"]:
+            result.sections_checked += 1
+            if section not in yaml_data:
+                result.is_conformant = False
+                result.issues.append(
+                    ConformanceIssue(
+                        agent_file=str(agent_path),
+                        section=section,
+                        issue_type="missing_section",
+                        message=f"Missing required top-level section: {section}",
+                    )
+                )
+            else:
+                result.sections_passed += 1
+
+                # Check nested fields if section has nested requirements
+                if section in requirements and section != "top_level":
+                    section_data = yaml_data.get(section, {})
+                    if isinstance(section_data, dict):
+                        for nested_field in requirements[section]:
+                            result.sections_checked += 1
+                            if nested_field not in section_data:
+                                result.is_conformant = False
+                                result.issues.append(
+                                    ConformanceIssue(
+                                        agent_file=str(agent_path),
+                                        section=f"{section}.{nested_field}",
+                                        issue_type="missing_field",
+                                        message=f"Missing required field: {section}.{nested_field}",
+                                    )
                                 )
-                            )
-                        else:
-                            result.sections_passed += 1
+                            else:
+                                result.sections_passed += 1
 
-    # Validate name format
+    # Validate name format (both architectures)
     name = yaml_data.get("name", "")
     expected_prefix = f"{family}-"
     if not name.startswith(expected_prefix):
@@ -544,6 +671,13 @@ def main() -> int:
     Returns:
         Exit code (0 = all pass, 1 = failures, 2 = error)
     """
+    warnings.warn(
+        "check_agent_conformance.py validates pre-PROJ-012 architecture. "
+        "Use 'jerry agents compose' for canonical schema validation.",
+        DeprecationWarning,
+        stacklevel=1,
+    )
+
     parser = argparse.ArgumentParser(
         description="Check agent template conformance",
         formatter_class=argparse.RawDescriptionHelpFormatter,

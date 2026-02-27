@@ -11,7 +11,7 @@ Writes to the same skill-scoped paths as build (skills/{skill}/agents/).
 4-layer merge order:
   1. Jerry governance defaults     (jerry-agent-defaults.yaml)
   2. Vendor defaults               (jerry-claude-code-defaults.yaml)
-  3. Canonical agent config        (from .jerry.yaml via adapter + governance + extra_yaml)
+  3. Canonical agent config        (from .jerry.yaml via adapter frontmatter + extra_yaml)
   4. Per-agent vendor overrides    (skills/{skill}/composition/{agent}.claude-code.yaml)
 
 References:
@@ -172,23 +172,14 @@ class ComposeAgentsCommandHandler:
         # 3. Parse frontmatter from the .md artifact
         frontmatter, body = self._parse_md(md_artifact.content)
 
-        # 4. Parse governance from the .governance.yaml artifact
-        gov_artifact = next((a for a in artifacts if a.artifact_type == "governance"), None)
-        gov_data: dict[str, Any] = {}
-        if gov_artifact:
-            gov_data = yaml.safe_load(gov_artifact.content) or {}
-
-        # 5. Build per-agent config (Layer 3): frontmatter + governance + extra_yaml
+        # 4. Build per-agent config (Layer 3): frontmatter + extra_yaml
+        #    Governance data is now in the prompt body (not a separate YAML file)
         agent_config = dict(frontmatter)
-        for key, value in gov_data.items():
-            if key not in agent_config:
-                agent_config[key] = value
-
         for key, value in agent.extra_yaml.items():
             if key not in agent_config:
                 agent_config[key] = value
 
-        # 6. Load per-agent vendor overrides (Layer 4)
+        # 5. Load per-agent vendor overrides (Layer 4)
         vendor_overrides: dict[str, Any] = {}
         if self._vendor_override_provider is not None:
             vendor_overrides = self._vendor_override_provider.get_overrides(
@@ -197,13 +188,13 @@ class ComposeAgentsCommandHandler:
                 vendor=vendor,
             )
 
-        # 7. Validate vendor overrides against allowlist
+        # 6. Validate vendor overrides against allowlist
         if vendor_overrides and self._vendor_override_spec is not None:
             errors = self._vendor_override_spec.validate(vendor_overrides)
             if errors:
                 raise ValueError(f"Invalid vendor overrides for {agent.name}: {'; '.join(errors)}")
 
-        # 8. Merge all 4 layers
+        # 7. Merge all 4 layers
         composed = self._defaults_composer.compose_layered(
             governance_defaults=self._governance_defaults,
             vendor_defaults=self._vendor_defaults,
@@ -212,10 +203,10 @@ class ComposeAgentsCommandHandler:
             resolver=self._config_var_resolver,
         )
 
-        # 9. Filter to vendor-only fields (Claude Code official frontmatter)
+        # 8. Filter to vendor-only fields (Claude Code official frontmatter)
         composed = self._filter_vendor_frontmatter(composed)
 
-        # 10. Serialize back to YAML frontmatter + body
+        # 9. Serialize back to YAML frontmatter + body
         yaml_str = yaml.dump(
             composed,
             default_flow_style=False,
@@ -247,7 +238,7 @@ class ComposeAgentsCommandHandler:
         """Filter composed dict to only Claude Code official frontmatter fields.
 
         Governance fields (version, persona, guardrails, constitution, etc.) are
-        stripped — they belong in .governance.yaml and the prompt body, not in
+        stripped — they are injected into the prompt body as XML sections (PROJ-012 single-file architecture), not in
         frontmatter that Claude Code silently discards.
 
         Args:
@@ -256,6 +247,11 @@ class ComposeAgentsCommandHandler:
         Returns:
             New dict with only Claude Code official fields, in documentation order.
         """
+        # PROJ-012: Governance defaults from Layer 1-2 YAML files (e.g., version, tool_tier,
+        # identity, persona, guardrails) are intentionally stripped from frontmatter.
+        # These fields flow through the prompt body path via GovernanceSectionBuilder,
+        # not the YAML frontmatter merge path. Only Claude Code's 12 official fields
+        # are permitted in frontmatter (H-34).
         return {
             key: composed[key]
             for key in ComposeAgentsCommandHandler._VENDOR_FIELDS

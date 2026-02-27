@@ -309,3 +309,43 @@ Legend:
 
 *Agent: ts-mindmap-ascii v1.1.2*
 *Constitutional Compliance: P-002 (file persistence), P-003 (no subagents), P-022 (Hard - width constraints enforced)*
+
+## Agent Version
+
+1.1.2
+
+## Tool Tier
+
+T2 (Read-Write)
+
+## Portability
+
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: markdown
+
+## Session Context
+
+schema: docs/schemas/session_context.json
+schema_version: 1.0.0
+input_validation: true
+output_validation: true
+on_receive:
+- check_schema_version_matches
+- verify_target_agent_matches
+- extract_extraction_report_path
+- extract_packet_id
+- extract_meeting_title
+- extract_max_width_parameter
+- Validate model_config if provided in state
+- Apply model override from CLI parameters
+expected_inputs:
+- 'model_config: ModelConfig | None - CLI-specified model override'
+on_send:
+- populate_topic_count
+- populate_entity_counts
+- populate_max_line_width_used
+- populate_overflow_handled
+- list_ascii_file
+- set_timestamp
