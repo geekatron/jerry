@@ -7,7 +7,7 @@ workflow_id: neg-prompting-20260227-001
 project: PROJ-014-negative-prompting-research
 criticality: C4
 quality_threshold: 0.95
-status: IN_PROGRESS
+status: COMPLETE
 
 barriers:
   barrier-1:
@@ -238,5 +238,20 @@ barriers:
         GC-B5-5: PASS
 
 c4_tournament:
-  status: NOT_STARTED
+  status: PASSED
   task_id: TASK-019
+  artifact: orchestration/neg-prompting-20260227-001/phase-6/final-synthesis.md
+  score: 0.954
+  iterations: 2
+  max_iterations: 5
+  verdict: PASS
+  score_trajectory: [0.944, 0.954]
+  tournament_report:
+    i1: orchestration/neg-prompting-20260227-001/phase-6/adversary-tournament-i1.md
+    i2: orchestration/neg-prompting-20260227-001/phase-6/adversary-tournament-i2.md
+  strategies_applied: "S-001,S-002,S-003,S-004,S-007,S-010,S-011,S-012,S-013,S-014"
+  findings_resolved:
+    fix_1: "Missing L2 heading + false P-022 attestation"
+    fix_2: "MUST/SHOULD/MAY priority vocabulary alignment"
+    fix_3: "Evidence tier distribution quantification (T1=13, T2=5, T3=15, T4=42)"
+    fix_4: "ADR approval process definition"
