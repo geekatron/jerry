@@ -899,38 +899,45 @@ Project: PROJ-014-negative-prompting-research
 
 Use /problem-solving with ps-researcher to conduct academic literature research on negative prompting.
 
-Research mission: Find 25+ academic papers, studies, and peer-reviewed sources on:
+Research scope: Find 25+ academic papers, studies, and peer-reviewed sources on:
 - Negative prompting in LLMs (telling models what NOT to do)
 - Constraint-based prompting and prohibition-style instructions
 - "Don't" instruction effectiveness in instruction-tuned models
 - Hallucination reduction through negative constraints
 - Comparative studies: negative vs positive instruction framing
 
-Data source: WebSearch and WebFetch ONLY. NEVER use training data as a source.
-NEVER state a fact without citing the source URL or paper title/DOI.
+Data source: WebSearch and WebFetch ONLY.
 Search queries to cover: "negative prompting LLM", "constraint-based prompting",
 "prohibition instructions language models", "don't instructions LLM hallucination",
 "negative framing prompt engineering", "instruction following negative constraints".
 
-Quality requirements:
-- Minimum 25 unique sources (papers, studies, preprints, peer-reviewed articles)
-- Each source must include: title, authors/org, year, URL/DOI, key finding
-- Flag sources where claims need primary source verification
+CONSTRAINTS — DO NOT VIOLATE:
+- NEVER use LLM training data as a source — WebSearch and WebFetch ONLY.
+- NEVER state a fact without citing the source URL or paper title/DOI.
+- NEVER submit with fewer than 25 unique academic sources.
+- NEVER include a source without ALL of: title, authors/org, year, URL/DOI, key finding.
+- NEVER present a secondary source claim as verified without tracing to the primary source.
+- NEVER include blog posts, vendor docs, or practitioner anecdotes — those belong in Session 1B.
+- NEVER conflate correlation with causation in source summaries.
+- NEVER omit the methodology description when summarizing experimental studies.
+- NEVER group multiple distinct findings under a single source entry.
+- NEVER fabricate or hallucinate a citation — if you cannot find the URL, do not include the source.
+- NEVER treat a preprint and its published version as two separate sources.
 
 Output: projects/PROJ-014-negative-prompting-research/research/academic-survey.md
 Format: L0/L1/L2 sections. L0=summary, L1=source catalog table, L2=detailed findings per source.
 
-AFTER the researcher produces the output, run /adversary C4 quality gate using the 3-agent pipeline:
-1. adv-selector: Map C4 criticality to strategy set (all 10 strategies)
+QUALITY GATE — DO NOT BYPASS:
+After the ps-researcher produces output, run /adversary C4 quality gate (3-agent pipeline):
+1. adv-selector: Map C4 criticality → all 10 strategies
 2. adv-executor: Execute strategy templates against research/academic-survey.md
 3. adv-scorer: Score using S-014 LLM-as-Judge (6-dimension weighted rubric)
 
-Quality threshold: >= 0.95. Maximum 5 iterations.
-If score < 0.95: re-invoke ps-researcher with the specific adversary findings to revise.
-  NEVER address adversary feedback in the main context — always re-invoke the creator agent.
-  The re-invoked researcher receives: (a) its original output, (b) adversary critique, (c) instruction to revise.
-If score >= 0.95 after any iteration: gate PASSES.
-If score < 0.95 after 5 iterations: STOP, escalate to user with current best score and gap list.
+- NEVER let a score below 0.95 pass the gate.
+- NEVER run more than 5 iterations.
+- NEVER address adversary feedback in the main context — always re-invoke the creator agent.
+- NEVER proceed downstream with an ungated artifact.
+- If score < 0.95 after 5 iterations: STOP. Do NOT continue. Escalate to user with current best score and specific gaps remaining.
 
 Adversary gate output: projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/agent-gates/ps-researcher-001-gate.md
 
@@ -945,36 +952,44 @@ Project: PROJ-014-negative-prompting-research
 
 Use /problem-solving with ps-researcher to conduct industry and practitioner research on negative prompting.
 
-Research mission: Find 25+ industry sources, vendor documentation, blog posts, and empirical reports on:
+Research scope: Find 25+ industry sources, vendor documentation, blog posts, and empirical reports on:
 - Vendor best practices for negative prompting (Anthropic, OpenAI, Google, Cohere docs)
 - Practitioner reports comparing negative vs positive prompting effectiveness
 - Real-world applications and A/B tests of prohibition-style instructions
 - Production systems using negative constraints for quality control
 - Framework documentation (LangChain, LlamaIndex, DSPy) on negative prompting
 
-Data source: WebSearch and WebFetch ONLY. NEVER use training data as a source.
-NEVER state a fact without citing the source URL.
+Data source: WebSearch and WebFetch ONLY.
 Search queries: "negative prompting best practices", "prompt engineering prohibitions",
 "negative instructions production LLM", vendor documentation searches for each major provider.
 
-Quality requirements:
-- Minimum 25 unique sources (vendor docs, blog posts, case studies, tutorials)
-- Each source: title, org, year, URL, key finding
-- Distinguish: vendor recommendation vs empirical evidence vs anecdote
+CONSTRAINTS — DO NOT VIOLATE:
+- NEVER use LLM training data as a source — WebSearch and WebFetch ONLY.
+- NEVER state a fact without citing the source URL.
+- NEVER submit with fewer than 25 unique industry sources.
+- NEVER include a source without ALL of: title, org, year, URL, key finding.
+- NEVER include academic papers or peer-reviewed studies — those belong in Session 1A.
+- NEVER conflate vendor marketing claims with empirical evidence.
+- NEVER present a "best practice" without stating who recommends it and based on what evidence.
+- NEVER omit the evidence tier classification for each source: vendor recommendation | empirical evidence | practitioner anecdote.
+- NEVER accept a vendor claim at face value — note whether it is backed by published benchmarks or is aspirational guidance.
+- NEVER treat two blog posts from the same author on the same topic as separate sources.
+- NEVER include a source older than 2020 without noting its age and assessing relevance to current models.
 
 Output: projects/PROJ-014-negative-prompting-research/research/industry-survey.md
 Format: L0/L1/L2 sections.
 
-AFTER the researcher produces the output, run /adversary C4 quality gate using the 3-agent pipeline:
-1. adv-selector: Map C4 criticality to strategy set (all 10 strategies)
+QUALITY GATE — DO NOT BYPASS:
+After the ps-researcher produces output, run /adversary C4 quality gate (3-agent pipeline):
+1. adv-selector: Map C4 criticality → all 10 strategies
 2. adv-executor: Execute strategy templates against research/industry-survey.md
 3. adv-scorer: Score using S-014 LLM-as-Judge (6-dimension weighted rubric)
 
-Quality threshold: >= 0.95. Maximum 5 iterations.
-If score < 0.95: re-invoke ps-researcher with the specific adversary findings to revise.
-  NEVER address adversary feedback in the main context — always re-invoke the creator agent.
-If score >= 0.95 after any iteration: gate PASSES.
-If score < 0.95 after 5 iterations: STOP, escalate to user.
+- NEVER let a score below 0.95 pass the gate.
+- NEVER run more than 5 iterations.
+- NEVER address adversary feedback in the main context — always re-invoke the creator agent.
+- NEVER proceed downstream with an ungated artifact.
+- If score < 0.95 after 5 iterations: STOP. Do NOT continue. Escalate to user with current best score and specific gaps remaining.
 
 Adversary gate output: projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/agent-gates/ps-researcher-002-gate.md
 
@@ -989,7 +1004,7 @@ Project: PROJ-014-negative-prompting-research
 
 Use /problem-solving with ps-researcher to research negative prompting in library documentation via Context7.
 
-Research mission: Use Context7 (mcp__context7__resolve-library-id then mcp__context7__query-docs)
+Research scope: Use Context7 (mcp__context7__resolve-library-id then mcp__context7__query-docs)
 to find documented negative prompting patterns in:
 1. Anthropic Claude documentation
 2. OpenAI documentation
@@ -1005,27 +1020,33 @@ For each library:
 3. Extract all documented patterns, examples, and recommendations
 
 If Context7 returns no results for a library, fall back to WebSearch and note "Context7 no coverage".
-NEVER state a fact without the Context7 source (library + query) or WebSearch URL.
 
-Quality requirements:
-- Cover all 6 library categories above
-- Document the exact query used for each Context7 call
-- Include code examples where available
-- Note which frameworks have explicit negative prompting guidance
+CONSTRAINTS — DO NOT VIOLATE:
+- NEVER skip a library in the required list above — all 6 categories must be covered.
+- NEVER report "no results" for a library without trying at least 3 different query variations.
+- NEVER omit the exact Context7 query used — every finding must be reproducible.
+- NEVER conflate Context7 documentation results with your training data knowledge.
+- NEVER state a finding without the Context7 source (library ID + query) or WebSearch URL.
+- NEVER fall back to WebSearch without first exhausting Context7 queries and noting "Context7 no coverage".
+- NEVER include a code example without the library and version it comes from.
+- NEVER summarize documentation in your own words when a direct quote is available and concise.
+- NEVER omit which frameworks have explicit negative prompting guidance vs which are silent on it.
+- NEVER treat absence of documentation as evidence that negative prompting is unsupported.
 
 Output: projects/PROJ-014-negative-prompting-research/research/context7-survey.md
 Format: L0/L1/L2 sections.
 
-AFTER the researcher produces the output, run /adversary C4 quality gate using the 3-agent pipeline:
-1. adv-selector: Map C4 criticality to strategy set (all 10 strategies)
+QUALITY GATE — DO NOT BYPASS:
+After the ps-researcher produces output, run /adversary C4 quality gate (3-agent pipeline):
+1. adv-selector: Map C4 criticality → all 10 strategies
 2. adv-executor: Execute strategy templates against research/context7-survey.md
 3. adv-scorer: Score using S-014 LLM-as-Judge (6-dimension weighted rubric)
 
-Quality threshold: >= 0.95. Maximum 5 iterations.
-If score < 0.95: re-invoke ps-researcher with the specific adversary findings to revise.
-  NEVER address adversary feedback in the main context — always re-invoke the creator agent.
-If score >= 0.95 after any iteration: gate PASSES.
-If score < 0.95 after 5 iterations: STOP, escalate to user.
+- NEVER let a score below 0.95 pass the gate.
+- NEVER run more than 5 iterations.
+- NEVER address adversary feedback in the main context — always re-invoke the creator agent.
+- NEVER proceed downstream with an ungated artifact.
+- If score < 0.95 after 5 iterations: STOP. Do NOT continue. Escalate to user with current best score and specific gaps remaining.
 
 Adversary gate output: projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/agent-gates/ps-researcher-003-gate.md
 
@@ -1046,36 +1067,42 @@ Verify all 3 QUALITY-GATED research files exist:
 - projects/PROJ-014-negative-prompting-research/research/academic-survey.md (gated by ps-researcher-001 adversary gate)
 - projects/PROJ-014-negative-prompting-research/research/industry-survey.md (gated by ps-researcher-002 adversary gate)
 - projects/PROJ-014-negative-prompting-research/research/context7-survey.md (gated by ps-researcher-003 adversary gate)
-If any file is missing or any per-agent gate did not pass, STOP and report the blocker.
 
 Use /problem-solving with ps-synthesizer to cross-pollinate the 3 ALREADY GATED research outputs.
 
-Synthesis tasks:
+Synthesis scope:
 1. Merge source catalogs — deduplicate overlapping sources across all 3 surveys
 2. Identify agreements: where academic, industry, and library docs align
 3. Identify gaps: claims made in one survey with no corroboration in others
 4. Identify conflicts: contradictory findings across surveys
-5. Count total unique sources (must be >= 50)
+5. Count total unique sources
 6. Flag any claims without citation evidence
+
+CONSTRAINTS — DO NOT VIOLATE:
+- NEVER proceed if any upstream file is missing or any per-agent gate did not pass — STOP and report the blocker.
+- NEVER synthesize without deduplicating sources across all 3 surveys first.
+- NEVER accept fewer than 50 total unique sources in the merged synthesis.
+- NEVER leave a contradiction between surveys unresolved without explicitly documenting it and stating which evidence is stronger.
+- NEVER omit gap identification — claims appearing in one survey with no corroboration in others must be flagged.
+- NEVER let unsourced claims pass through to the synthesis — every assertion must have a citation.
+- NEVER include training-data-only assertions — all claims must trace to WebSearch, WebFetch, or Context7.
+- NEVER double-count the same source that appears in multiple surveys.
+- NEVER treat agreement between surveys as proof — note when all surveys cite the same original source.
+- NEVER omit source quality assessment — peer-reviewed vs vendor docs vs practitioner anecdote.
 
 Output: projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/barrier-1/synthesis.md
 
-AFTER the synthesizer produces the output, run /adversary C4 quality gate on the synthesis using the 3-agent pipeline:
-1. adv-selector: Map C4 criticality to strategy set (all 10 strategies)
+QUALITY GATE — DO NOT BYPASS:
+After the ps-synthesizer produces output, run /adversary C4 quality gate (3-agent pipeline):
+1. adv-selector: Map C4 criticality → all 10 strategies
 2. adv-executor: Execute strategy templates against barrier-1/synthesis.md
 3. adv-scorer: Score using S-014 LLM-as-Judge (6-dimension weighted rubric)
 
-Quality threshold: >= 0.95. Maximum 5 iterations.
-Required checks:
-- Minimum 50 unique sources cited in the synthesis
-- No unsourced claims (every assertion has a citation)
-- No training-data-only assertions (all from WebSearch or Context7)
-- Source quality is appropriate (peer-reviewed or authoritative vendor docs)
-
-If score < 0.95: re-invoke ps-synthesizer with the specific adversary findings to revise.
-  NEVER address adversary feedback in the main context — always re-invoke the creator agent.
-If score >= 0.95 after any iteration: gate PASSES. Proceed.
-If score < 0.95 after 5 iterations: STOP, escalate to user with current best score and gap list.
+- NEVER let a score below 0.95 pass the gate.
+- NEVER run more than 5 iterations.
+- NEVER address adversary feedback in the main context — always re-invoke the creator agent.
+- NEVER proceed downstream with an ungated artifact.
+- If score < 0.95 after 5 iterations: STOP. Do NOT continue. Escalate to user with current best score and specific gaps remaining.
 
 /adversary gate output: projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/barrier-1/adversary-gate.md
 
@@ -1099,7 +1126,7 @@ Load context:
 
 Use /problem-solving with ps-analyst to validate the 60% hallucination reduction claim.
 
-Analysis mission:
+Analysis scope:
 1. Locate the specific source(s) that make the "60% hallucination reduction" claim
 2. Trace to primary source: who conducted the study, what methodology, what conditions
 3. Assess methodology quality: was it a controlled experiment? what was the baseline?
@@ -1108,23 +1135,35 @@ Analysis mission:
 6. Find contradictory evidence: are there studies showing smaller or no reduction?
 7. Synthesize: is the 60% claim supported, qualified, refuted, or unsubstantiated?
 
-NEVER state a fact without citing source. Use WebSearch and WebFetch to access primary sources
-identified in Barrier 1 synthesis. NEVER rely on training data for quantitative claims.
+Use WebSearch and WebFetch to access primary sources identified in Barrier 1 synthesis.
+
+CONSTRAINTS — DO NOT VIOLATE:
+- NEVER accept the 60% claim without tracing to the primary source methodology — secondary citations are insufficient.
+- NEVER omit conditions or limitations of any study cited in the validation.
+- NEVER conflate universal claims with context-specific findings — state the exact scope of each study.
+- NEVER skip contradictory evidence — if studies show smaller or no reduction, they must be included.
+- NEVER rate methodology quality without stating the criteria used (e.g., controlled experiment, sample size, baseline).
+- NEVER present a verdict without the full evidence chain from claim to primary source to assessment.
+- NEVER state a fact without citing the source URL or paper title/DOI.
+- NEVER rely on training data for quantitative claims — WebSearch and WebFetch ONLY.
+- NEVER conflate "no evidence found" with "evidence the claim is false."
+- NEVER omit the verdict classification: supported | qualified | refuted | unsubstantiated.
 
 Output: projects/PROJ-014-negative-prompting-research/analysis/claim-validation.md
 Include: claim assessment verdict (supported/qualified/refuted/unsubstantiated),
 evidence chain, methodology critique, conditions and limitations, recommendation.
 
-AFTER the analyst produces the output, run /adversary C4 quality gate using the 3-agent pipeline:
-1. adv-selector: Map C4 criticality to strategy set (all 10 strategies)
+QUALITY GATE — DO NOT BYPASS:
+After the ps-analyst produces output, run /adversary C4 quality gate (3-agent pipeline):
+1. adv-selector: Map C4 criticality → all 10 strategies
 2. adv-executor: Execute strategy templates against analysis/claim-validation.md
 3. adv-scorer: Score using S-014 LLM-as-Judge (6-dimension weighted rubric)
 
-Quality threshold: >= 0.95. Maximum 5 iterations.
-If score < 0.95: re-invoke ps-analyst with the specific adversary findings to revise.
-  NEVER address adversary feedback in the main context — always re-invoke the creator agent.
-If score >= 0.95 after any iteration: gate PASSES.
-If score < 0.95 after 5 iterations: STOP, escalate to user.
+- NEVER let a score below 0.95 pass the gate.
+- NEVER run more than 5 iterations.
+- NEVER address adversary feedback in the main context — always re-invoke the creator agent.
+- NEVER proceed downstream with an ungated artifact.
+- If score < 0.95 after 5 iterations: STOP. Do NOT continue. Escalate to user with current best score and specific gaps remaining.
 
 Adversary gate output: projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/agent-gates/ps-analyst-001-gate.md
 
@@ -1142,35 +1181,43 @@ Load context:
 
 Use /problem-solving with ps-analyst to conduct comparative effectiveness analysis.
 
-Analysis mission: Compare positive vs negative prompting across 5 dimensions:
+Analysis scope: Compare positive vs negative prompting across 5 dimensions:
 1. Accuracy: Does negative prompting produce more accurate outputs?
 2. Compliance: Do models follow negative constraints more reliably than positive directions?
 3. Hallucination: Does negative prompting reduce hallucination more than positive prompting?
 4. Instruction-following: Are prohibitions ("never X") obeyed more strictly than directives ("do X")?
 5. Creativity: Does negative prompting constrain or enable creative outputs differently?
 
-For each dimension:
-- What does the evidence show? (cite sources from Barrier 1 synthesis)
-- What are the conditions under which each approach excels?
-- What are the failure modes of each approach?
-- Use WebSearch/WebFetch to access primary sources where needed
+For each dimension: state the evidence, the conditions under which each approach excels,
+and the failure modes of each approach. Use WebSearch/WebFetch to access primary sources where needed.
 
-NEVER state a fact without citing source. NEVER use training data for comparative claims.
+CONSTRAINTS — DO NOT VIOLATE:
+- NEVER skip any of the 5 analysis dimensions — all must be covered with equal rigor.
+- NEVER compare approaches without stating the conditions under which each excels.
+- NEVER omit failure modes for each approach in each dimension.
+- NEVER present a dimension verdict without citing evidence from Barrier 1 synthesis or primary sources.
+- NEVER confuse "no evidence" with "evidence of absence" — state explicitly when evidence is lacking.
+- NEVER state a fact without citing the source URL or paper title/DOI.
+- NEVER use training data for comparative claims — WebSearch and WebFetch ONLY for new evidence.
+- NEVER present a single study as representative of the entire dimension without acknowledging sample size.
+- NEVER omit the overall recommendation or gaps and open questions section.
+- NEVER collapse multiple dimensions into a single verdict — each dimension must have its own assessment.
 
 Output: projects/PROJ-014-negative-prompting-research/analysis/comparative.md
 Include: dimension-by-dimension comparison table, synthesized verdict per dimension,
 overall recommendation, gaps and open questions.
 
-AFTER the analyst produces the output, run /adversary C4 quality gate using the 3-agent pipeline:
-1. adv-selector: Map C4 criticality to strategy set (all 10 strategies)
+QUALITY GATE — DO NOT BYPASS:
+After the ps-analyst produces output, run /adversary C4 quality gate (3-agent pipeline):
+1. adv-selector: Map C4 criticality → all 10 strategies
 2. adv-executor: Execute strategy templates against analysis/comparative.md
 3. adv-scorer: Score using S-014 LLM-as-Judge (6-dimension weighted rubric)
 
-Quality threshold: >= 0.95. Maximum 5 iterations.
-If score < 0.95: re-invoke ps-analyst with the specific adversary findings to revise.
-  NEVER address adversary feedback in the main context — always re-invoke the creator agent.
-If score >= 0.95 after any iteration: gate PASSES.
-If score < 0.95 after 5 iterations: STOP, escalate to user.
+- NEVER let a score below 0.95 pass the gate.
+- NEVER run more than 5 iterations.
+- NEVER address adversary feedback in the main context — always re-invoke the creator agent.
+- NEVER proceed downstream with an ungated artifact.
+- If score < 0.95 after 5 iterations: STOP. Do NOT continue. Escalate to user with current best score and specific gaps remaining.
 
 Adversary gate output: projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/agent-gates/ps-analyst-002-gate.md
 
@@ -1194,31 +1241,36 @@ Load context:
 
 Use /problem-solving with ps-synthesizer to cross-pollinate the 2 ALREADY GATED analysis outputs.
 
-Synthesis tasks:
+Synthesis scope:
 1. Align claim validation verdict with comparative effectiveness findings
 2. Identify any contradictions between the two analyses
 3. Consolidate: what is now established with high confidence?
 4. Consolidate: what remains uncertain or context-dependent?
 5. Summarize: what is the evidence-based answer to the core hypothesis?
 
+CONSTRAINTS — DO NOT VIOLATE:
+- NEVER proceed if claim validation and comparative analysis contradict each other without explicit resolution documenting which evidence is stronger and why.
+- NEVER leave uncertainty undocumented — every uncertain finding must state what additional evidence would resolve it.
+- NEVER present the hypothesis verdict without the full evidence chain from primary sources through analysis to conclusion.
+- NEVER omit the claim validation methodology critique from the synthesis.
+- NEVER accept that the comparative analysis covered all 5 dimensions without verifying each is present.
+- NEVER drop a finding from either upstream analysis — if it was gated and passed, it must appear in the synthesis.
+- NEVER conflate high-confidence findings with context-dependent ones — they must be in separate sections.
+- NEVER introduce new claims not present in the upstream gated analyses.
+
 Output: projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/barrier-2/synthesis.md
 
-AFTER the synthesizer produces the output, run /adversary C4 quality gate using the 3-agent pipeline:
-1. adv-selector: Map C4 criticality to strategy set (all 10 strategies)
+QUALITY GATE — DO NOT BYPASS:
+After the ps-synthesizer produces output, run /adversary C4 quality gate (3-agent pipeline):
+1. adv-selector: Map C4 criticality → all 10 strategies
 2. adv-executor: Execute strategy templates against barrier-2/synthesis.md
 3. adv-scorer: Score using S-014 LLM-as-Judge (6-dimension weighted rubric)
 
-Quality threshold: >= 0.95. Maximum 5 iterations.
-Required checks:
-- All claims traced to primary sources
-- Claim validation includes methodology critique
-- Comparative analysis covers all 5 dimensions
-- Contradictions explicitly resolved or documented
-
-If score < 0.95: re-invoke ps-synthesizer with the specific adversary findings to revise.
-  NEVER address adversary feedback in the main context — always re-invoke the creator agent.
-If score >= 0.95 after any iteration: gate PASSES.
-If score < 0.95 after 5 iterations: STOP, escalate to user.
+- NEVER let a score below 0.95 pass the gate.
+- NEVER run more than 5 iterations.
+- NEVER address adversary feedback in the main context — always re-invoke the creator agent.
+- NEVER proceed downstream with an ungated artifact.
+- If score < 0.95 after 5 iterations: STOP. Do NOT continue. Escalate to user with current best score and specific gaps remaining.
 
 /adversary gate output: projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/barrier-2/adversary-gate.md
 
@@ -1242,7 +1294,7 @@ Load context:
 
 STEP 1: Use /problem-solving with ps-analyst to build a taxonomy of negative prompting patterns.
 
-Taxonomy mission:
+Taxonomy scope:
 1. Identify distinct types of negative prompting from the literature
    Examples: categorical prohibitions, output format prohibitions, scope limitations,
    tone prohibitions, factual boundary setting, persona constraints, process prohibitions
@@ -1251,26 +1303,37 @@ Taxonomy mission:
 4. Map to positive-prompting equivalents: for each negative pattern, what is the positive analog?
 5. Rate each pattern by evidence strength: strong evidence, moderate evidence, anecdotal only
 
+CONSTRAINTS — DO NOT VIOLATE (STEP 1):
+- NEVER create a taxonomy pattern without an evidence basis from the research phases — every pattern must cite at least one source.
+- NEVER omit the positive-prompting equivalent for each negative pattern — the comparison is essential for downstream analysis.
+- NEVER include a pattern rated "strong evidence" without multiple supporting sources from different survey tracks.
+- NEVER omit anti-patterns — negative prompts that backfire or reduce performance must be documented.
+- NEVER conflate distinct pattern types — each type must have clear boundaries and distinguishing criteria.
+- NEVER omit the "when it fails" column for any pattern — failure modes are as important as success conditions.
+- NEVER rate evidence strength without stating the basis (number of sources, study type, replication status).
+- NEVER introduce a pattern not grounded in the Barrier 2 synthesis or upstream research.
+
 Output: projects/PROJ-014-negative-prompting-research/analysis/taxonomy.md
 Format: taxonomy table (pattern type / description / when it works / when it fails / evidence strength)
 plus detailed sections per pattern type.
 
-AFTER ps-analyst-003 produces taxonomy.md, run /adversary C4 quality gate using the 3-agent pipeline:
-1. adv-selector: Map C4 criticality to strategy set (all 10 strategies)
+QUALITY GATE — DO NOT BYPASS (STEP 1):
+After ps-analyst-003 produces taxonomy.md, run /adversary C4 quality gate (3-agent pipeline):
+1. adv-selector: Map C4 criticality → all 10 strategies
 2. adv-executor: Execute strategy templates against analysis/taxonomy.md
 3. adv-scorer: Score using S-014 LLM-as-Judge (6-dimension weighted rubric)
 
-Quality threshold: >= 0.95. Maximum 5 iterations.
-If score < 0.95: re-invoke ps-analyst-003 with the specific adversary findings to revise.
-  NEVER address adversary feedback in the main context — always re-invoke the creator agent.
-If score >= 0.95: gate PASSES, proceed to STEP 2.
-If score < 0.95 after 5 iterations: STOP, escalate to user.
+- NEVER let a score below 0.95 pass the gate.
+- NEVER run more than 5 iterations.
+- NEVER address adversary feedback in the main context — always re-invoke the creator agent.
+- NEVER proceed to STEP 2 with an ungated taxonomy artifact.
+- If score < 0.95 after 5 iterations: STOP. Do NOT continue. Escalate to user with current best score and specific gaps remaining.
 
 Adversary gate output: projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/agent-gates/ps-analyst-003-gate.md
 
 STEP 2: Use /problem-solving with ps-architect to design a negative prompting pattern catalog for Jerry.
 
-Catalog mission:
+Catalog scope:
 1. Map each taxonomy pattern to Jerry's constraint language (HARD/MEDIUM/SOFT tiers)
 2. Show how Jerry's existing positive directives could be rewritten as negative constraints
 3. Design a template for negative-constraint rule files
@@ -1278,18 +1341,29 @@ Catalog mission:
 5. Propose naming conventions for negative constraints (e.g., NEVER- prefix for HARD)
 
 Input: GATED analysis/taxonomy.md from STEP 1
+
+CONSTRAINTS — DO NOT VIOLATE (STEP 2):
+- NEVER design templates too abstract to guide implementation — every template must be concrete enough to copy-paste and fill in.
+- NEVER map to Jerry constraint tiers (HARD/MEDIUM/SOFT) without justification from the taxonomy evidence basis.
+- NEVER omit the before/after comparison showing the existing positive directive and its proposed negative rewrite.
+- NEVER propose a naming convention without showing at least 3 examples of it applied to real Jerry rules.
+- NEVER omit the agent guardrails template — it is a separate deliverable from the rule files template.
+- NEVER create catalog entries that contradict the taxonomy evidence basis from STEP 1.
+- NEVER include a pattern in the catalog that was classified as an anti-pattern in the taxonomy.
+
 Output: decisions/pattern-catalog.md
 
-AFTER ps-architect-001 produces pattern-catalog.md, run /adversary C4 quality gate using the 3-agent pipeline:
-1. adv-selector: Map C4 criticality to strategy set (all 10 strategies)
+QUALITY GATE — DO NOT BYPASS (STEP 2):
+After ps-architect-001 produces pattern-catalog.md, run /adversary C4 quality gate (3-agent pipeline):
+1. adv-selector: Map C4 criticality → all 10 strategies
 2. adv-executor: Execute strategy templates against decisions/pattern-catalog.md
 3. adv-scorer: Score using S-014 LLM-as-Judge (6-dimension weighted rubric)
 
-Quality threshold: >= 0.95. Maximum 5 iterations.
-If score < 0.95: re-invoke ps-architect-001 with the specific adversary findings to revise.
-  NEVER address adversary feedback in the main context — always re-invoke the creator agent.
-If score >= 0.95: gate PASSES.
-If score < 0.95 after 5 iterations: STOP, escalate to user.
+- NEVER let a score below 0.95 pass the gate.
+- NEVER run more than 5 iterations.
+- NEVER address adversary feedback in the main context — always re-invoke the creator agent.
+- NEVER proceed downstream with an ungated artifact.
+- If score < 0.95 after 5 iterations: STOP. Do NOT continue. Escalate to user with current best score and specific gaps remaining.
 
 Adversary gate output: projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/agent-gates/ps-architect-001-gate.md
 
@@ -1315,19 +1389,23 @@ Run /adversary C4 quality gate on CROSS-ARTIFACT COHERENCE using the 3-agent pip
 2. adv-executor: Execute strategy templates against both gated artifacts together
 3. adv-scorer: Score using S-014 LLM-as-Judge (6-dimension weighted rubric)
 
-Criticality: C4. Threshold: >= 0.95. Maximum 5 iterations.
+Criticality: C4.
 
-Gate requirements (cross-artifact coherence):
-- Taxonomy covers all pattern types evidenced in the research (cross-check against Barrier 2 synthesis)
-- Each taxonomy pattern has explicit evidence basis (no training-data-only patterns)
-- Pattern catalog is actionable for Jerry (maps to real Jerry artifacts)
-- Pattern catalog templates are concrete enough to guide implementation
-- Anti-patterns section is present and evidence-based
+CONSTRAINTS — DO NOT VIOLATE:
+- NEVER pass if the taxonomy and catalog are incoherent — every catalog entry must trace to a taxonomy pattern.
+- NEVER accept patterns without an evidence basis — no training-data-only patterns permitted.
+- NEVER accept templates that are not concrete enough to implement — abstract guidance without copy-paste examples fails.
+- NEVER pass if the anti-patterns section is missing or not evidence-based.
+- NEVER pass if the taxonomy omits pattern types that are evidenced in the Barrier 2 synthesis.
+- NEVER pass if the catalog fails to map to real Jerry artifacts (skill files, agent definitions, rule files).
+- NEVER accept a catalog entry that contradicts its corresponding taxonomy pattern.
 
-If score < 0.95: re-invoke ps-analyst-003 and/or ps-architect-001 with the specific adversary findings to revise.
-  NEVER address adversary feedback in the main context — always re-invoke the creator agent.
-If score >= 0.95: gate PASSES.
-If score < 0.95 after 5 iterations: STOP, escalate to user.
+QUALITY GATE — DO NOT BYPASS:
+- NEVER let a score below 0.95 pass the gate.
+- NEVER run more than 5 iterations.
+- NEVER address adversary feedback in the main context — always re-invoke ps-analyst-003 and/or ps-architect-001.
+- NEVER proceed downstream with an ungated artifact.
+- If score < 0.95 after 5 iterations: STOP. Do NOT continue. Escalate to user with current best score and specific gaps remaining.
 
 /adversary gate output: projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/barrier-3/gate.md
 
@@ -1355,7 +1433,7 @@ Load context:
 
 Use /problem-solving with ps-analyst to analyze Jerry skills for negative prompting opportunities.
 
-Analysis mission:
+Analysis scope:
 1. Use Glob to find all skill definition files: skills/*/SKILL.md
 2. Read each SKILL.md file
 3. For each skill: identify all positive directives that could be rewritten as negative constraints
@@ -1363,23 +1441,33 @@ Analysis mission:
 5. Rate each opportunity: high / medium / low impact on skill quality
 6. Identify any skills where negative prompting would be harmful (note why)
 
-NEVER make up findings — base all analysis on actual file content read.
 Read files in batches (max 500 lines per read per CB-05).
+
+CONSTRAINTS — DO NOT VIOLATE:
+- NEVER make up findings — base all analysis on actual file content read via Glob and Read tools.
+- NEVER propose a change without citing the specific SKILL.md file and the exact directive being rewritten.
+- NEVER omit impact assessment (high/medium/low) for each proposed change.
+- NEVER propose a change that contradicts the taxonomy evidence basis from Phase 3.
+- NEVER skip skills where negative prompting would be harmful — document why it would be harmful.
+- NEVER classify an opportunity by taxonomy type without referencing the pattern catalog entry.
+- NEVER omit the recommendations section summarizing priority order across all skills.
+- NEVER treat all skills as equally important — prioritize by frequency of invocation and downstream impact.
 
 Output: projects/PROJ-014-negative-prompting-research/analysis/skills-analysis.md
 Format: table of opportunities (skill / directive / proposed negative form / taxonomy type / impact)
 plus recommendations section.
 
-AFTER the analyst produces the output, run /adversary C4 quality gate using the 3-agent pipeline:
-1. adv-selector: Map C4 criticality to strategy set (all 10 strategies)
+QUALITY GATE — DO NOT BYPASS:
+After the ps-analyst produces output, run /adversary C4 quality gate (3-agent pipeline):
+1. adv-selector: Map C4 criticality → all 10 strategies
 2. adv-executor: Execute strategy templates against analysis/skills-analysis.md
 3. adv-scorer: Score using S-014 LLM-as-Judge (6-dimension weighted rubric)
 
-Quality threshold: >= 0.95. Maximum 5 iterations.
-If score < 0.95: re-invoke ps-analyst-004 with the specific adversary findings to revise.
-  NEVER address adversary feedback in the main context — always re-invoke the creator agent.
-If score >= 0.95: gate PASSES.
-If score < 0.95 after 5 iterations: STOP, escalate to user.
+- NEVER let a score below 0.95 pass the gate.
+- NEVER run more than 5 iterations.
+- NEVER address adversary feedback in the main context — always re-invoke the creator agent.
+- NEVER proceed downstream with an ungated artifact.
+- If score < 0.95 after 5 iterations: STOP. Do NOT continue. Escalate to user with current best score and specific gaps remaining.
 
 Adversary gate output: projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/agent-gates/ps-analyst-004-gate.md
 
@@ -1398,7 +1486,7 @@ Load context:
 
 Use /problem-solving with ps-analyst to analyze Jerry agent definitions for negative prompting opportunities.
 
-Analysis mission:
+Analysis scope:
 1. Use Glob to find all agent definition files: skills/*/agents/*.md
 2. Read each agent definition
 3. For each agent: identify guardrails, forbidden_actions, and behavioral constraints
@@ -1407,23 +1495,33 @@ Analysis mission:
 6. Apply pattern catalog taxonomy to each proposed change
 7. Identify high-value agents to prioritize (those with weakest negative constraint usage)
 
-NEVER make up findings — base all analysis on actual file content read.
 Read files in batches (max 500 lines per read per CB-05).
+
+CONSTRAINTS — DO NOT VIOLATE:
+- NEVER make up findings — base all analysis on actual file content read via Glob and Read tools.
+- NEVER propose a change without citing the specific agent file, section (guardrails/forbidden_actions/methodology), and exact directive.
+- NEVER omit the current form alongside the proposed negative form — the before/after comparison is required.
+- NEVER propose a change that contradicts the taxonomy evidence basis from Phase 3.
+- NEVER ignore the .governance.yaml companion files — they contain forbidden_actions and guardrails that must be analyzed.
+- NEVER omit priority ranking — agents with weakest negative constraint usage must be identified and ranked.
+- NEVER conflate the YAML frontmatter (official Claude Code fields) with the markdown body (system prompt) — analyze both but note which section each change targets.
+- NEVER propose removing existing forbidden_actions — only propose additions or rewrites.
 
 Output: projects/PROJ-014-negative-prompting-research/analysis/agents-analysis.md
 Format: table of opportunities (agent / section / current form / proposed negative form / taxonomy type)
 plus priority ranking.
 
-AFTER the analyst produces the output, run /adversary C4 quality gate using the 3-agent pipeline:
-1. adv-selector: Map C4 criticality to strategy set (all 10 strategies)
+QUALITY GATE — DO NOT BYPASS:
+After the ps-analyst produces output, run /adversary C4 quality gate (3-agent pipeline):
+1. adv-selector: Map C4 criticality → all 10 strategies
 2. adv-executor: Execute strategy templates against analysis/agents-analysis.md
 3. adv-scorer: Score using S-014 LLM-as-Judge (6-dimension weighted rubric)
 
-Quality threshold: >= 0.95. Maximum 5 iterations.
-If score < 0.95: re-invoke ps-analyst-005 with the specific adversary findings to revise.
-  NEVER address adversary feedback in the main context — always re-invoke the creator agent.
-If score >= 0.95: gate PASSES.
-If score < 0.95 after 5 iterations: STOP, escalate to user.
+- NEVER let a score below 0.95 pass the gate.
+- NEVER run more than 5 iterations.
+- NEVER address adversary feedback in the main context — always re-invoke the creator agent.
+- NEVER proceed downstream with an ungated artifact.
+- If score < 0.95 after 5 iterations: STOP. Do NOT continue. Escalate to user with current best score and specific gaps remaining.
 
 Adversary gate output: projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/agent-gates/ps-analyst-005-gate.md
 
@@ -1442,7 +1540,7 @@ Load context:
 
 Use /problem-solving with ps-analyst to analyze Jerry rule files for negative prompting opportunities.
 
-Analysis mission:
+Analysis scope:
 1. Use Glob to find all rule files: .context/rules/*.md
 2. Read each rule file
 3. For each rule: is it expressed as a positive directive (MUST do X) or negative constraint (NEVER do Y)?
@@ -1451,23 +1549,35 @@ Analysis mission:
 6. Identify rules where negative framing would increase precision and reduce ambiguity
 7. Note: AE-002 applies — any changes to .context/rules/ are auto-C3+
 
-NEVER make up findings — base all analysis on actual file content read.
 Read files in batches (max 500 lines per read per CB-05).
+
+CONSTRAINTS — DO NOT VIOLATE:
+- NEVER make up findings — base all analysis on actual file content read via Glob and Read tools.
+- NEVER propose a change without citing the specific rule file, rule ID (e.g., H-13), and exact current wording.
+- NEVER omit impact assessment for each proposed change — state what behavior improves and what risks arise.
+- NEVER propose a change that contradicts the taxonomy evidence basis from Phase 3.
+- NEVER ignore AE-002 escalation risk — every proposed rules change must note that it triggers auto-C3+ escalation.
+- NEVER propose changing a HARD rule without documenting the impact on the HARD rule ceiling (25/25).
+- NEVER omit the current positive/negative classification for each existing rule — the baseline assessment is required.
+- NEVER propose changes to L2-REINJECT markers without noting the 850-token L2 budget impact.
+- NEVER conflate rules that are already negative with those that need conversion — separate them clearly.
+- NEVER omit the auto-escalation risk summary section at the end.
 
 Output: projects/PROJ-014-negative-prompting-research/analysis/rules-analysis.md
 Format: rule-by-rule assessment table plus summary of conversion recommendations.
 Note auto-escalation risk for any proposed changes.
 
-AFTER the analyst produces the output, run /adversary C4 quality gate using the 3-agent pipeline:
-1. adv-selector: Map C4 criticality to strategy set (all 10 strategies)
+QUALITY GATE — DO NOT BYPASS:
+After the ps-analyst produces output, run /adversary C4 quality gate (3-agent pipeline):
+1. adv-selector: Map C4 criticality → all 10 strategies
 2. adv-executor: Execute strategy templates against analysis/rules-analysis.md
 3. adv-scorer: Score using S-014 LLM-as-Judge (6-dimension weighted rubric)
 
-Quality threshold: >= 0.95. Maximum 5 iterations.
-If score < 0.95: re-invoke ps-analyst-006 with the specific adversary findings to revise.
-  NEVER address adversary feedback in the main context — always re-invoke the creator agent.
-If score >= 0.95: gate PASSES.
-If score < 0.95 after 5 iterations: STOP, escalate to user.
+- NEVER let a score below 0.95 pass the gate.
+- NEVER run more than 5 iterations.
+- NEVER address adversary feedback in the main context — always re-invoke the creator agent.
+- NEVER proceed downstream with an ungated artifact.
+- If score < 0.95 after 5 iterations: STOP. Do NOT continue. Escalate to user with current best score and specific gaps remaining.
 
 Adversary gate output: projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/agent-gates/ps-analyst-006-gate.md
 
@@ -1486,7 +1596,7 @@ Load context:
 
 Use /problem-solving with ps-analyst to analyze Jerry patterns for negative prompting opportunities.
 
-Analysis mission:
+Analysis scope:
 1. Use Glob to find pattern-related files:
    - docs/knowledge/*.md
    - Any pattern sections in SKILL.md files (especially orchestration, problem-solving, nasa-se)
@@ -1497,21 +1607,33 @@ Analysis mission:
 5. Identify: where would "anti-pattern" descriptions benefit from explicit negative prompting?
 6. Propose: how should the prompt quality guide be updated to recommend negative prompting?
 
-NEVER make up findings — base all analysis on actual file content read.
+Read files in batches (max 500 lines per read per CB-05).
+
+CONSTRAINTS — DO NOT VIOLATE:
+- NEVER make up findings — base all analysis on actual file content read via Glob and Read tools.
+- NEVER propose a change without citing the specific file path and the exact pattern or section being rewritten.
+- NEVER omit impact assessment for each proposed change.
+- NEVER propose a change that contradicts the taxonomy evidence basis from Phase 3.
+- NEVER skip the prompt-quality.md and prompt-templates.md files — they are primary targets for this analysis.
+- NEVER ignore existing anti-pattern sections — assess whether they already use negative framing effectively.
+- NEVER omit the recommendation for how the prompt quality rubric (C7 Positive Framing criterion) should be updated.
+- NEVER conflate pattern documentation changes with pattern behavior changes — note which type each proposal is.
+- NEVER propose changes to workflow patterns without considering downstream impact on orchestration.
 
 Output: projects/PROJ-014-negative-prompting-research/analysis/patterns-analysis.md
 Format: pattern-by-pattern assessment plus recommendations for prompt-quality.md and prompt-templates.md.
 
-AFTER the analyst produces the output, run /adversary C4 quality gate using the 3-agent pipeline:
-1. adv-selector: Map C4 criticality to strategy set (all 10 strategies)
+QUALITY GATE — DO NOT BYPASS:
+After the ps-analyst produces output, run /adversary C4 quality gate (3-agent pipeline):
+1. adv-selector: Map C4 criticality → all 10 strategies
 2. adv-executor: Execute strategy templates against analysis/patterns-analysis.md
 3. adv-scorer: Score using S-014 LLM-as-Judge (6-dimension weighted rubric)
 
-Quality threshold: >= 0.95. Maximum 5 iterations.
-If score < 0.95: re-invoke ps-analyst-007 with the specific adversary findings to revise.
-  NEVER address adversary feedback in the main context — always re-invoke the creator agent.
-If score >= 0.95: gate PASSES.
-If score < 0.95 after 5 iterations: STOP, escalate to user.
+- NEVER let a score below 0.95 pass the gate.
+- NEVER run more than 5 iterations.
+- NEVER address adversary feedback in the main context — always re-invoke the creator agent.
+- NEVER proceed downstream with an ungated artifact.
+- If score < 0.95 after 5 iterations: STOP. Do NOT continue. Escalate to user with current best score and specific gaps remaining.
 
 Adversary gate output: projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/agent-gates/ps-analyst-007-gate.md
 
@@ -1530,7 +1652,7 @@ Load context:
 
 Use /problem-solving with ps-analyst to analyze Jerry templates for negative prompting opportunities.
 
-Analysis mission:
+Analysis scope:
 1. Use Glob to find all template files: .context/templates/**/*
 2. Read each template
 3. For each template: identify directives, instructions, and behavioral guidance
@@ -1539,21 +1661,33 @@ Analysis mission:
 6. For worktracker templates (.context/templates/worktracker/): assess field instruction language
 7. Propose concrete negative-prompting rewrites for high-impact templates
 
-NEVER make up findings — base all analysis on actual file content read.
+Read files in batches (max 500 lines per read per CB-05).
+
+CONSTRAINTS — DO NOT VIOLATE:
+- NEVER make up findings — base all analysis on actual file content read via Glob and Read tools.
+- NEVER propose a change without citing the specific template file path and the exact directive being rewritten.
+- NEVER omit impact assessment for each proposed change.
+- NEVER propose a change that contradicts the taxonomy evidence basis from Phase 3.
+- NEVER skip adversarial strategy templates — they are the most likely to benefit from negative prompting given their evaluative nature.
+- NEVER skip worktracker templates — field instruction language directly affects data quality.
+- NEVER propose abstract rewrites — every proposed negative-prompting rewrite must show the concrete before/after text.
+- NEVER omit the priority ranking across all templates — high-impact templates must be clearly identified.
+- NEVER conflate template structure changes with template instruction changes — note which type each proposal is.
 
 Output: projects/PROJ-014-negative-prompting-research/analysis/templates-analysis.md
 Format: template-by-template table plus priority-ranked recommendations.
 
-AFTER the analyst produces the output, run /adversary C4 quality gate using the 3-agent pipeline:
-1. adv-selector: Map C4 criticality to strategy set (all 10 strategies)
+QUALITY GATE — DO NOT BYPASS:
+After the ps-analyst produces output, run /adversary C4 quality gate (3-agent pipeline):
+1. adv-selector: Map C4 criticality → all 10 strategies
 2. adv-executor: Execute strategy templates against analysis/templates-analysis.md
 3. adv-scorer: Score using S-014 LLM-as-Judge (6-dimension weighted rubric)
 
-Quality threshold: >= 0.95. Maximum 5 iterations.
-If score < 0.95: re-invoke ps-analyst-008 with the specific adversary findings to revise.
-  NEVER address adversary feedback in the main context — always re-invoke the creator agent.
-If score >= 0.95: gate PASSES.
-If score < 0.95 after 5 iterations: STOP, escalate to user.
+- NEVER let a score below 0.95 pass the gate.
+- NEVER run more than 5 iterations.
+- NEVER address adversary feedback in the main context — always re-invoke the creator agent.
+- NEVER proceed downstream with an ungated artifact.
+- If score < 0.95 after 5 iterations: STOP. Do NOT continue. Escalate to user with current best score and specific gaps remaining.
 
 Adversary gate output: projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/agent-gates/ps-analyst-008-gate.md
 
@@ -1576,11 +1710,10 @@ Verify all 5 QUALITY-GATED analysis files exist:
 - projects/PROJ-014-negative-prompting-research/analysis/rules-analysis.md (gated by ps-analyst-006 adversary gate)
 - projects/PROJ-014-negative-prompting-research/analysis/patterns-analysis.md (gated by ps-analyst-007 adversary gate)
 - projects/PROJ-014-negative-prompting-research/analysis/templates-analysis.md (gated by ps-analyst-008 adversary gate)
-If any file is missing or any per-agent gate did not pass, STOP and report the blocker.
 
 Use /problem-solving with ps-synthesizer to cross-pollinate all 5 ALREADY GATED application analyses.
 
-Synthesis tasks:
+Synthesis scope:
 1. Identify cross-domain dependencies (e.g., a rule change that requires an agent change)
 2. Identify conflicts: if a rule change contradicts a template recommendation, resolve it
 3. Priority ranking: which changes have highest impact across multiple domains?
@@ -1588,24 +1721,31 @@ Synthesis tasks:
 5. Sequence: what order should changes be implemented to minimize disruption?
 6. Risk assessment: which changes carry highest risk (note AE-002 for rules changes)
 
+CONSTRAINTS — DO NOT VIOLATE:
+- NEVER proceed if any upstream file is missing or any per-agent gate did not pass — STOP and report the blocker.
+- NEVER proceed if cross-domain conflicts between the 5 analyses are unresolved — every conflict must have an explicit resolution with justification.
+- NEVER omit dependency mapping between domains — a rule change requiring an agent change must be linked.
+- NEVER rank priority without justification from taxonomy evidence and cross-domain impact assessment.
+- NEVER ignore AE-002 escalation risk for rules changes — every rules recommendation must note auto-C3+ escalation.
+- NEVER present a recommendation without tracing it to both the taxonomy and the upstream literature.
+- NEVER omit effort estimation — every change must be classified as trivial / moderate / significant.
+- NEVER propose a sequence that implements dependent changes out of order.
+- NEVER drop a recommendation from any of the 5 upstream analyses without documenting why.
+- NEVER conflate cross-domain conflicts with within-domain issues — they require different resolution approaches.
+
 Output: projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/barrier-4/synthesis.md
 
-AFTER the synthesizer produces the output, run /adversary C4 quality gate using the 3-agent pipeline:
-1. adv-selector: Map C4 criticality to strategy set (all 10 strategies)
+QUALITY GATE — DO NOT BYPASS:
+After the ps-synthesizer produces output, run /adversary C4 quality gate (3-agent pipeline):
+1. adv-selector: Map C4 criticality → all 10 strategies
 2. adv-executor: Execute strategy templates against barrier-4/synthesis.md
 3. adv-scorer: Score using S-014 LLM-as-Judge (6-dimension weighted rubric)
 
-Quality threshold: >= 0.95. Maximum 5 iterations.
-Required checks:
-- Cross-domain conflicts identified and resolved
-- Each recommendation traceable to taxonomy and literature
-- Priority ranking is justified with evidence
-- Sequence plan accounts for AE-002 escalation risk for rules changes
-
-If score < 0.95: re-invoke ps-synthesizer with the specific adversary findings to revise.
-  NEVER address adversary feedback in the main context — always re-invoke the creator agent.
-If score >= 0.95: gate PASSES.
-If score < 0.95 after 5 iterations: STOP, escalate to user.
+- NEVER let a score below 0.95 pass the gate.
+- NEVER run more than 5 iterations.
+- NEVER address adversary feedback in the main context — always re-invoke the creator agent.
+- NEVER proceed downstream with an ungated artifact.
+- If score < 0.95 after 5 iterations: STOP. Do NOT continue. Escalate to user with current best score and specific gaps remaining.
 
 /adversary gate output: projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/barrier-4/adversary-gate.md
 

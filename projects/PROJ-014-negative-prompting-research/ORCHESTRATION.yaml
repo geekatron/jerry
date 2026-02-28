@@ -14,7 +14,7 @@ workflow:
   id: "neg-prompting-20260227-001"
   name: "Negative Prompting Research"
   project_id: "PROJ-014"
-  status: "PLANNED"
+  status: "IN PROGRESS"
   created: "2026-02-27"
   github_issue: "https://github.com/geekatron/jerry/issues/122"
   criticality: "C4"
@@ -69,12 +69,12 @@ pipelines:
     name: "Problem-Solving Pipeline"
     alias: "ps"
     skill_source: "problem-solving"
-    status: "PLANNED"
+    status: "IN PROGRESS"
     phases:
       - id: "phase-1"
         name: "Literature Research"
         pattern: "fan-out"
-        status: "NOT STARTED"
+        status: "COMPLETE"
         worktracker_tasks: ["TASK-001", "TASK-002", "TASK-003"]
         agents:
           - id: "ps-researcher-001"
@@ -82,7 +82,7 @@ pipelines:
             output: "research/academic-survey.md"
             data_sources: ["WebSearch", "WebFetch"]
             source_target: 25
-            status: "NOT STARTED"
+            status: "DONE"
             quality_gate:
               type: "adversary-c4"
               threshold: 0.95
@@ -90,15 +90,15 @@ pipelines:
               agents: ["adv-selector", "adv-executor", "adv-scorer"]
               feedback_handling: "re-invoke ps-researcher-001 with findings"
               gate_output: "orchestration/neg-prompting-20260227-001/agent-gates/ps-researcher-001-gate.md"
-              current_score: null
-              current_iteration: 0
-              result: "NOT RUN"
+              current_score: 0.950
+              current_iteration: 5
+              result: "PASS"
           - id: "ps-researcher-002"
             task: "TASK-002"
             output: "research/industry-survey.md"
             data_sources: ["WebSearch", "WebFetch"]
             source_target: 25
-            status: "NOT STARTED"
+            status: "DONE"
             quality_gate:
               type: "adversary-c4"
               threshold: 0.95
@@ -106,9 +106,9 @@ pipelines:
               agents: ["adv-selector", "adv-executor", "adv-scorer"]
               feedback_handling: "re-invoke ps-researcher-002 with findings"
               gate_output: "orchestration/neg-prompting-20260227-001/agent-gates/ps-researcher-002-gate.md"
-              current_score: null
-              current_iteration: 0
-              result: "NOT RUN"
+              current_score: 0.9325
+              current_iteration: 5
+              result: "USER-ACCEPTED (0.9325 >= H-13 0.92, below C4 0.95)"
           - id: "ps-researcher-003"
             task: "TASK-003"
             output: "research/context7-survey.md"
@@ -119,7 +119,7 @@ pipelines:
               - "langchain"
               - "llamaindex"
               - "dspy"
-            status: "NOT STARTED"
+            status: "DONE"
             quality_gate:
               type: "adversary-c4"
               threshold: 0.95
@@ -127,9 +127,9 @@ pipelines:
               agents: ["adv-selector", "adv-executor", "adv-scorer"]
               feedback_handling: "re-invoke ps-researcher-003 with findings"
               gate_output: "orchestration/neg-prompting-20260227-001/agent-gates/ps-researcher-003-gate.md"
-              current_score: null
-              current_iteration: 0
-              result: "NOT RUN"
+              current_score: 0.935
+              current_iteration: 6
+              result: "USER-ACCEPTED (0.935 >= H-13 0.92, below C4 0.95, 6 iter user-authorized)"
 
       - id: "phase-2"
         name: "Evidence Analysis"
@@ -607,8 +607,12 @@ quality:
     - "S-013"  # Inversion Technique
     - "S-014"  # LLM-as-Judge
   optional_strategies: []  # C4: no optional — all required
-  agent_gate_scores: {}    # Populated by orch-tracker as agent gates complete
-  phase_scores: {}         # Populated by orch-tracker as phases complete
+  agent_gate_scores:
+    ps-researcher-001: { score: 0.950, iterations: 5, result: "PASS" }
+    ps-researcher-002: { score: 0.9325, iterations: 5, result: "USER-ACCEPTED" }
+    ps-researcher-003: { score: 0.935, iterations: 6, result: "USER-ACCEPTED" }
+  phase_scores:
+    phase-1: { status: "COMPLETE", agents_passed: 3, agents_total: 3 }
   barrier_scores: {}       # Populated by orch-tracker as barriers pass
   workflow_quality: {}     # Populated by orch-tracker at workflow completion
 
