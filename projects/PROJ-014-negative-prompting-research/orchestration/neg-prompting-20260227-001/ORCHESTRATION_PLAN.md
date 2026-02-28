@@ -2,7 +2,7 @@
 
 > Workflow: neg-prompting-20260227-001 | Criticality: C4 | Threshold: >= 0.95
 > Hypothesis: Negative prompting outperforms positive prompting for LLM behavioral compliance.
-> Updated: 2026-02-27
+> Updated: 2026-02-28
 
 ## Document Sections
 
@@ -49,7 +49,7 @@ These directives govern the entire orchestration run. You must not violate them.
 | Phase 1 | Literature Research (academic + industry + context7) | **COMPLETE** | Barrier 1: **PASSED** (0.953 synthesis + 0.951 supplemental) |
 | Phase 2 | Evidence Analysis (claim validation + comparative effectiveness) | **COMPLETE** | Barrier 2: **PASSED** (0.959 claim-validation + 0.933 comparative-effectiveness + 0.950 synthesis) |
 | Phase 3 | Negative Prompting Taxonomy & Pattern Catalog | **COMPLETE** | Barrier 3: **PASSED** (0.957, 3 iter) |
-| Phase 4 | Jerry Framework Application Analysis (5 sub-tasks) | NOT STARTED | Barrier 4 |
+| Phase 4 | Jerry Framework Application Analysis (5 sub-tasks) | **COMPLETE** (all 5 sub-tasks) | Barrier 4: PENDING GATE |
 | Phase 5 | Implementation Planning (4 ADRs) | NOT STARTED | Barrier 5 |
 | Phase 6 | Final Synthesis & Recommendations | NOT STARTED | C4 Tournament |
 
@@ -218,8 +218,18 @@ All paths relative to `projects/PROJ-014-negative-prompting-research/orchestrati
 | Adversary I2 | `phase-3/adversary-taxonomy-i2.md` | — |
 | Adversary I3 | `phase-3/adversary-taxonomy-i3.md` | — |
 
+### Phase 4 Application Analysis (COMPLETE — awaiting Barrier 4 gate)
+
+| Artifact | Path | Task | Notes |
+|----------|------|------|-------|
+| Skills update analysis (TASK-010) | `phase-4/skills-update-analysis.md` | TASK-010 | ps-analyst output |
+| Agents update analysis (TASK-011) | `phase-4/agents-update-analysis.md` | TASK-011 | ps-analyst output |
+| Rules update analysis (TASK-012) | `phase-4/rules-update-analysis.md` | TASK-012 | ps-analyst output — auto-C3 per AE-002 |
+| Patterns update analysis (TASK-013) | `phase-4/patterns-update-analysis.md` | TASK-013 | ps-analyst output |
+| Templates update analysis (TASK-014) | `phase-4/templates-update-analysis.md` | TASK-014 | ps-analyst output — 2026-02-28 |
+
 ---
 
 *GitHub Issue: [#122](https://github.com/geekatron/jerry/issues/122)*
-*ORCHESTRATION.yaml: Updated 2026-02-28 with Phase 3 completion*
+*ORCHESTRATION.yaml: Updated 2026-02-28 with Phase 4 completion*
 *All paths relative to `projects/PROJ-014-negative-prompting-research/`*

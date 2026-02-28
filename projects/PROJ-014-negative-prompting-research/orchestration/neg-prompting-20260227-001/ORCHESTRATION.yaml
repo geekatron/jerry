@@ -1,7 +1,7 @@
 ---
 # PROJ-014 Negative Prompting Research — Orchestration State
 # Workflow: neg-prompting-20260227-001
-# Updated: 2026-02-28
+# Updated: 2026-02-27
 
 workflow_id: neg-prompting-20260227-001
 project: PROJ-014-negative-prompting-research
@@ -131,19 +131,60 @@ barriers:
 
   barrier-4:
     name: "Application Cross-Pollination"
-    status: NOT_STARTED
+    status: PASSED
     task_id: TASK-015
     inputs:
       - task: TASK-010
-        status: NOT_STARTED
+        artifact: orchestration/neg-prompting-20260227-001/phase-4/skills-update-analysis.md
+        status: DONE
+        score: 0.951
+        iterations: 2
+        verdict: PASS
       - task: TASK-011
-        status: NOT_STARTED
+        artifact: orchestration/neg-prompting-20260227-001/phase-4/agents-update-analysis.md
+        status: DONE
+        score: 0.951
+        iterations: 3
+        verdict: PASS
       - task: TASK-012
-        status: NOT_STARTED
+        artifact: orchestration/neg-prompting-20260227-001/phase-4/rules-update-analysis.md
+        status: DONE
+        score: 0.953
+        iterations: 3
+        verdict: PASS
+        note: "auto-C3 per AE-002; self-gated by ps-analyst agent"
       - task: TASK-013
-        status: NOT_STARTED
+        artifact: orchestration/neg-prompting-20260227-001/phase-4/patterns-update-analysis.md
+        status: DONE
+        score: 0.950
+        iterations: 5
+        verdict: PASS
+        note: "A-11 hallucinated citation removed in I5; max iterations reached"
       - task: TASK-014
-        status: NOT_STARTED
+        artifact: orchestration/neg-prompting-20260227-001/phase-4/templates-update-analysis.md
+        status: DONE
+        score: 0.955
+        iterations: 3
+        verdict: PASS
+    synthesis:
+      artifact: orchestration/neg-prompting-20260227-001/barrier-4/synthesis.md
+      revision: v4.0.0
+      score: 0.950
+      iterations: 4
+      max_iterations: 5
+      verdict: PASS
+    adversary_gate:
+      score_trajectory: [0.931, 0.940, 0.947, 0.950]
+      critical_findings_resolved: 0
+      major_findings_resolved: 8
+      residual_minors: 4
+      residual_note: "Post-PASS optional improvements deferred to Phase 5 (REQ-REC classification, ADR cross-refs, ADR-003 5v6 distinction, NPT-013 justification)"
+      barrier4_gate_checks:
+        GC-B4-1: PASS
+        GC-B4-2: PASS
+        GC-B4-3: PASS
+        GC-B4-4: PASS
+        GC-B4-5: PASS
 
   barrier-5:
     name: "Implementation Quality Gate"

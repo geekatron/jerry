@@ -220,9 +220,10 @@ pipelines:
           - id: "ps-analyst-004"
             task: "TASK-010"
             output: "analysis/skills-analysis.md"
+            actual_output: "orchestration/neg-prompting-20260227-001/phase-4/skills-update-analysis.md"
             reads: ["skills/*/SKILL.md"]
             data_sources: ["Jerry codebase", "barrier-3 approved artifacts"]
-            status: "NOT STARTED"
+            status: "DRAFT — awaiting /adversary C4 gate"
             quality_gate:
               type: "adversary-c4"
               threshold: 0.95

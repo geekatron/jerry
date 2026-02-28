@@ -22,7 +22,7 @@
 | Criticality | C4 (Critical) |
 | Quality Threshold | >= 0.95 |
 | Orchestration | `neg-prompting-20260227-001` |
-| Progress | 55% (Phase 1 COMPLETE, Phase 2 COMPLETE, Phase 3 COMPLETE — Barrier 3 PASSED 0.957, 3 iter) |
+| Progress | 80% (Phase 1 COMPLETE, Phase 2 COMPLETE, Phase 3 COMPLETE, Phase 4 COMPLETE — all 5 sub-task gates + Barrier 4 PASSED; Phase 5 NOT STARTED) |
 
 ## Work Items
 
@@ -32,7 +32,7 @@
 |----|------|-------|--------|--------|
 | EPIC-001 | Epic | Literature Research & Evidence Gathering | DONE | — |
 | EPIC-002 | Epic | Comparative Analysis & Taxonomy | DONE | — |
-| EPIC-003 | Epic | Jerry Framework Application | NOT STARTED | — |
+| EPIC-003 | Epic | Jerry Framework Application | DONE | — |
 | EPIC-004 | Epic | Final Synthesis & Recommendations | NOT STARTED | — |
 | TASK-001 | Task | Phase 1: Academic Literature Research (25+ sources) + per-agent /adversary C4 gate | DONE (0.950, 5 iter) | EPIC-001 |
 | TASK-002 | Task | Phase 1: Industry & Practitioner Research (25+ sources) + per-agent /adversary C4 gate | DONE (0.9325, 5 iter, user-accepted) | EPIC-001 |
@@ -43,12 +43,12 @@
 | TASK-007 | Task | Barrier 2: Analysis cross-pollination (gated inputs) + /adversary C4 on synthesis | DONE (0.950, 3 iter) | TASK-005, TASK-006 |
 | TASK-008 | Task | Phase 3: Negative Prompting Taxonomy & Pattern Catalog + per-agent /adversary C4 gates | DONE (0.957, 3 iter) | EPIC-002 |
 | TASK-009 | Task | Barrier 3: Taxonomy quality gate — /adversary C4 on cross-artifact coherence | DONE (0.957, 3 iter) | TASK-008 |
-| TASK-010 | Task | Phase 4: Jerry Skills Update Analysis + per-agent /adversary C4 gate | NOT STARTED | EPIC-003 |
-| TASK-011 | Task | Phase 4: Jerry Agents Update Analysis + per-agent /adversary C4 gate | NOT STARTED | EPIC-003 |
-| TASK-012 | Task | Phase 4: Jerry Rules Update Analysis + per-agent /adversary C4 gate (AE-002) | NOT STARTED | EPIC-003 |
-| TASK-013 | Task | Phase 4: Jerry Patterns Update Analysis + per-agent /adversary C4 gate | NOT STARTED | EPIC-003 |
-| TASK-014 | Task | Phase 4: Jerry Templates Update Analysis + per-agent /adversary C4 gate | NOT STARTED | EPIC-003 |
-| TASK-015 | Task | Barrier 4: Application cross-pollination (gated inputs) + /adversary C4 on synthesis | NOT STARTED | TASK-010 through TASK-014 |
+| TASK-010 | Task | Phase 4: Jerry Skills Update Analysis + per-agent /adversary C4 gate | DONE (0.951, 2 iter) — Artifact: `orchestration/neg-prompting-20260227-001/phase-4/skills-update-analysis.md` | EPIC-003 |
+| TASK-011 | Task | Phase 4: Jerry Agents Update Analysis + per-agent /adversary C4 gate | DONE (0.951, 3 iter) — Artifact: `orchestration/neg-prompting-20260227-001/phase-4/agents-update-analysis.md` | EPIC-003 |
+| TASK-012 | Task | Phase 4: Jerry Rules Update Analysis + per-agent /adversary C4 gate (AE-002) | DONE (0.953, 3 iter) — Artifact: `orchestration/neg-prompting-20260227-001/phase-4/rules-update-analysis.md` | EPIC-003 |
+| TASK-013 | Task | Phase 4: Jerry Patterns Update Analysis + per-agent /adversary C4 gate | DONE (0.950, 5 iter) — Artifact: `orchestration/neg-prompting-20260227-001/phase-4/patterns-update-analysis.md` | EPIC-003 |
+| TASK-014 | Task | Phase 4: Jerry Templates Update Analysis + per-agent /adversary C4 gate | DONE (0.955, 3 iter) — Artifact: `orchestration/neg-prompting-20260227-001/phase-4/templates-update-analysis.md` | EPIC-003 |
+| TASK-015 | Task | Barrier 4: Application cross-pollination (gated inputs) + /adversary C4 on synthesis | DONE (0.950, 4 iter) — Artifact: `orchestration/neg-prompting-20260227-001/barrier-4/synthesis.md` | TASK-010 through TASK-014 |
 | TASK-016 | Task | Phase 5: Implementation Planning (4 ADRs) + per-agent /adversary C4 gates | NOT STARTED | EPIC-003 |
 | TASK-017 | Task | Barrier 5: Implementation quality gate — /adversary C4 on cross-ADR coherence | NOT STARTED | TASK-016 |
 | TASK-018 | Task | Phase 6: Final Synthesis & Implementation Roadmap + per-agent /adversary C4 gates | NOT STARTED | EPIC-004 |
