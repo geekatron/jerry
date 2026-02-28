@@ -43,6 +43,37 @@ barriers:
       critical_findings_resolved: 3
       major_findings_resolved: 30+
       residual_minors: 1
+    supplemental:
+      artifact: orchestration/neg-prompting-20260227-001/barrier-1/supplemental-vendor-evidence.md
+      revision: R4
+      score: 0.951
+      iterations: 4
+      max_iterations: 5
+      verdict: PASS
+      content: "Vendor self-practice evidence, session empirical observations, innovator's gap analysis, A/B testing design"
+      adversary_gate:
+        artifact: orchestration/neg-prompting-20260227-001/barrier-1/supplemental-adversary-gate.md
+        score_trajectory: [0.843, 0.876, 0.925, 0.951]
+        critical_findings_resolved: 6
+        major_findings_resolved: 13
+      downstream_mandatory: true
+      note: "Must not be omitted from downstream phase inputs"
+
+  ab_testing:
+    retrospective:
+      condition_a: "PROJ-014 (negative prompting framing)"
+      condition_b: "Prior sessions PROJ-006, PROJ-007 (positive prompting framing)"
+      metrics: [quality_gate_scores, iteration_counts, scope_violation_rate, user_intervention_frequency]
+      status: DESIGNED
+    controlled_experiment:
+      sample_size: 270
+      pairs_per_category: 54
+      task_categories: 5
+      models: [claude_opus, claude_sonnet, claude_haiku]
+      scoring: S-014
+      power_calculation: "McNemar corrected, n=270, 80% power, alpha=0.05"
+      status: DESIGNED
+      phase: Phase 2 (TASK-005, TASK-006)
 
   barrier-2:
     name: "Analysis Cross-Pollination"
