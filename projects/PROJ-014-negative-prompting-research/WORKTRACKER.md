@@ -54,6 +54,12 @@
 | TASK-018 | Task | Phase 6: Final Synthesis & Implementation Roadmap + per-agent /adversary C4 gates | DONE (0.954, 2 iter) — Artifact: `orchestration/neg-prompting-20260227-001/phase-6/final-synthesis.md` | EPIC-004 |
 | TASK-019 | Task | Phase 6: /adversary C4 tournament (all 10 strategies, >= 0.95, max 5 iter) | DONE (0.954, 2 iter) — Tournament report: `orchestration/neg-prompting-20260227-001/phase-6/adversary-tournament-i2.md` | TASK-018 |
 | TASK-020 | Task | Documentation & commit | DONE | TASK-019 |
+| EPIC-005 | Epic | ADR Implementation | IN PROGRESS | — |
+| FEAT-001 | Feature | Implement ADR-001: NPT-014 Elimination | IN PROGRESS | EPIC-005 |
+| TASK-021 | Task | Phase 1: Baseline capture — identify all NPT-014 instances + quality metrics | NOT STARTED | FEAT-001 |
+| TASK-022 | Task | Phase 2: Rule files — upgrade NPT-014 to NPT-009/NPT-013 in .context/rules/ | NOT STARTED | FEAT-001 |
+| TASK-023 | Task | Phase 3: Agent definitions — upgrade forbidden_actions in skills/*/agents/ | NOT STARTED | FEAT-001 |
+| TASK-024 | Task | Phase 4: SKILL.md files — upgrade "Do NOT use when:" sections | NOT STARTED | FEAT-001 |
 
 ---
 
