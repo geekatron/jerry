@@ -47,7 +47,7 @@ These directives govern the entire orchestration run. You must not violate them.
 | Phase | Description | Status | Barrier |
 |-------|-------------|--------|---------|
 | Phase 1 | Literature Research (academic + industry + context7) | **COMPLETE** | Barrier 1: **PASSED** (0.953 synthesis + 0.951 supplemental) |
-| Phase 2 | Evidence Analysis (claim validation + comparative effectiveness) | NOT STARTED | Barrier 2 |
+| Phase 2 | Evidence Analysis (claim validation + comparative effectiveness) | **COMPLETE** | Barrier 2: **PASSED** (0.959 claim-validation + 0.933 comparative-effectiveness + 0.950 synthesis) |
 | Phase 3 | Negative Prompting Taxonomy & Pattern Catalog | NOT STARTED | Barrier 3 |
 | Phase 4 | Jerry Framework Application Analysis (5 sub-tasks) | NOT STARTED | Barrier 4 |
 | Phase 5 | Implementation Planning (4 ADRs) | NOT STARTED | Barrier 5 |
@@ -200,6 +200,13 @@ All paths relative to `projects/PROJ-014-negative-prompting-research/orchestrati
 | Scorer (primary, I4) | `barrier-1/adversary-scorer-i4.md` | — |
 | Executor findings (supplemental, I1-I3) | `barrier-1/supplemental-adversary-findings-i{1,2,3}.md` | — |
 | Scorer (supplemental, I4) | `barrier-1/supplemental-adversary-scorer-i4.md` | — |
+
+### Phase 2 Analysis (IN PROGRESS)
+
+| Artifact | Path | Score |
+|----------|------|-------|
+| Claim validation (TASK-005) | `phase-2/claim-validation.md` | Pending adversary gate |
+| Comparative effectiveness analysis (TASK-006) | `phase-2/comparative-effectiveness.md` | Pending adversary gate |
 
 ---
 

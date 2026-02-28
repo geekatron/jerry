@@ -22,7 +22,7 @@
 | Criticality | C4 (Critical) |
 | Quality Threshold | >= 0.95 |
 | Orchestration | `neg-prompting-20260227-001` |
-| Progress | 20% (Phase 1 COMPLETE — 3/3 research + Barrier 1 DONE, Phase 2 ready) |
+| Progress | 45% (Phase 1 COMPLETE, Phase 2 COMPLETE — Barrier 2 PASSED 0.950, 3 iter) |
 
 ## Work Items
 
@@ -30,7 +30,7 @@
 
 | ID | Type | Title | Status | Parent |
 |----|------|-------|--------|--------|
-| EPIC-001 | Epic | Literature Research & Evidence Gathering | IN PROGRESS | — |
+| EPIC-001 | Epic | Literature Research & Evidence Gathering | DONE | — |
 | EPIC-002 | Epic | Comparative Analysis & Taxonomy | NOT STARTED | — |
 | EPIC-003 | Epic | Jerry Framework Application | NOT STARTED | — |
 | EPIC-004 | Epic | Final Synthesis & Recommendations | NOT STARTED | — |
@@ -38,9 +38,9 @@
 | TASK-002 | Task | Phase 1: Industry & Practitioner Research (25+ sources) + per-agent /adversary C4 gate | DONE (0.9325, 5 iter, user-accepted) | EPIC-001 |
 | TASK-003 | Task | Phase 1: Context7 Library Documentation Research + per-agent /adversary C4 gate | DONE (0.935, 6 iter, user-accepted) | EPIC-001 |
 | TASK-004 | Task | Barrier 1: Research cross-pollination (gated inputs) + /adversary C4 on synthesis | DONE (0.953, 4 iter) | TASK-001, TASK-002, TASK-003 |
-| TASK-005 | Task | Phase 2: Claim Validation (60% hallucination) + per-agent /adversary C4 gate | NOT STARTED | EPIC-001 |
-| TASK-006 | Task | Phase 2: Comparative Effectiveness Analysis (5 dimensions) + per-agent /adversary C4 gate | NOT STARTED | EPIC-001 |
-| TASK-007 | Task | Barrier 2: Analysis cross-pollination (gated inputs) + /adversary C4 on synthesis | NOT STARTED | TASK-005, TASK-006 |
+| TASK-005 | Task | Phase 2: Claim Validation (60% hallucination) + per-agent /adversary C4 gate | DONE (0.959, 4 iter) | EPIC-001 |
+| TASK-006 | Task | Phase 2: Comparative Effectiveness Analysis (5 dimensions) + per-agent /adversary C4 gate | DONE (0.933, 5 iter, max-iterations) | EPIC-001 |
+| TASK-007 | Task | Barrier 2: Analysis cross-pollination (gated inputs) + /adversary C4 on synthesis | DONE (0.950, 3 iter) | TASK-005, TASK-006 |
 | TASK-008 | Task | Phase 3: Negative Prompting Taxonomy & Pattern Catalog + per-agent /adversary C4 gates | NOT STARTED | EPIC-002 |
 | TASK-009 | Task | Barrier 3: Taxonomy quality gate — /adversary C4 on cross-artifact coherence | NOT STARTED | TASK-008 |
 | TASK-010 | Task | Phase 4: Jerry Skills Update Analysis + per-agent /adversary C4 gate | NOT STARTED | EPIC-003 |

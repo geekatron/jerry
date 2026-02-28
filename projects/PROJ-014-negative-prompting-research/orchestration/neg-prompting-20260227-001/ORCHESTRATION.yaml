@@ -1,7 +1,7 @@
 ---
 # PROJ-014 Negative Prompting Research — Orchestration State
 # Workflow: neg-prompting-20260227-001
-# Updated: 2026-02-27
+# Updated: 2026-02-28
 
 workflow_id: neg-prompting-20260227-001
 project: PROJ-014-negative-prompting-research
@@ -77,13 +77,35 @@ barriers:
 
   barrier-2:
     name: "Analysis Cross-Pollination"
-    status: NOT_STARTED
+    status: PASSED
     task_id: TASK-007
     inputs:
       - task: TASK-005
-        status: NOT_STARTED
+        artifact: orchestration/neg-prompting-20260227-001/phase-2/claim-validation.md
+        status: DONE
+        score: 0.959
+        iterations: 4
+        verdict: PASS
       - task: TASK-006
-        status: NOT_STARTED
+        artifact: orchestration/neg-prompting-20260227-001/phase-2/comparative-effectiveness.md
+        status: DONE
+        score: 0.933
+        iterations: 5
+        verdict: MAX_ITERATIONS
+        note: "Remaining gap from irreducible external constraints (I-28/I-32 URLs, structural circularity)"
+    synthesis:
+      artifact: orchestration/neg-prompting-20260227-001/barrier-2/synthesis.md
+      revision: v3.0.0
+      score: 0.950
+      iterations: 3
+      max_iterations: 5
+      verdict: PASS
+    adversary_gate:
+      score_trajectory: [0.868, 0.927, 0.950]
+      critical_findings_resolved: 5
+      major_findings_resolved: 19
+      residual_minors: 2
+      residual_note: "Deferred with rationale (researcher circularity, external methods validation)"
 
   barrier-3:
     name: "Taxonomy Quality Gate"
