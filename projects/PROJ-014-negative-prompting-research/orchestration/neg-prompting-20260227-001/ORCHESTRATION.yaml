@@ -1,0 +1,91 @@
+---
+# PROJ-014 Negative Prompting Research — Orchestration State
+# Workflow: neg-prompting-20260227-001
+# Updated: 2026-02-27
+
+workflow_id: neg-prompting-20260227-001
+project: PROJ-014-negative-prompting-research
+criticality: C4
+quality_threshold: 0.95
+status: IN_PROGRESS
+
+barriers:
+  barrier-1:
+    name: "Research Cross-Pollination"
+    status: PASSED
+    task_id: TASK-004
+    inputs:
+      - task: TASK-001
+        artifact: research/academic-survey.md
+        status: DONE
+        score: 0.950
+      - task: TASK-002
+        artifact: research/industry-survey.md
+        status: DONE
+        score: 0.9325
+      - task: TASK-003
+        artifact: research/context7-survey.md
+        status: DONE
+        score: 0.935
+    synthesis:
+      artifact: orchestration/neg-prompting-20260227-001/barrier-1/synthesis.md
+      revision: R4
+      score: 0.953
+      iterations: 4
+      max_iterations: 5
+      verdict: PASS
+    adversary_gate:
+      artifact: orchestration/neg-prompting-20260227-001/barrier-1/adversary-gate.md
+      strategy_count: 10
+      strategy_set: "S-001,S-002,S-003,S-004,S-007,S-010,S-011,S-012,S-013,S-014"
+      h16_compliant: true
+      score_trajectory: [0.83, 0.90, 0.93, 0.953]
+      critical_findings_resolved: 3
+      major_findings_resolved: 30+
+      residual_minors: 1
+
+  barrier-2:
+    name: "Analysis Cross-Pollination"
+    status: NOT_STARTED
+    task_id: TASK-007
+    inputs:
+      - task: TASK-005
+        status: NOT_STARTED
+      - task: TASK-006
+        status: NOT_STARTED
+
+  barrier-3:
+    name: "Taxonomy Quality Gate"
+    status: NOT_STARTED
+    task_id: TASK-009
+    inputs:
+      - task: TASK-008
+        status: NOT_STARTED
+
+  barrier-4:
+    name: "Application Cross-Pollination"
+    status: NOT_STARTED
+    task_id: TASK-015
+    inputs:
+      - task: TASK-010
+        status: NOT_STARTED
+      - task: TASK-011
+        status: NOT_STARTED
+      - task: TASK-012
+        status: NOT_STARTED
+      - task: TASK-013
+        status: NOT_STARTED
+      - task: TASK-014
+        status: NOT_STARTED
+
+  barrier-5:
+    name: "Implementation Quality Gate"
+    status: NOT_STARTED
+    task_id: TASK-017
+    inputs:
+      - task: TASK-016
+        status: NOT_STARTED
+
+c4_tournament:
+  status: NOT_STARTED
+  task_id: TASK-019

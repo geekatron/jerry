@@ -22,7 +22,7 @@
 | Criticality | C4 (Critical) |
 | Quality Threshold | >= 0.95 |
 | Orchestration | `neg-prompting-20260227-001` |
-| Progress | 15% (Phase 1 COMPLETE — 3/3 research tasks DONE, Barrier 1 ready) |
+| Progress | 20% (Phase 1 COMPLETE — 3/3 research + Barrier 1 DONE, Phase 2 ready) |
 
 ## Work Items
 
@@ -37,7 +37,7 @@
 | TASK-001 | Task | Phase 1: Academic Literature Research (25+ sources) + per-agent /adversary C4 gate | DONE (0.950, 5 iter) | EPIC-001 |
 | TASK-002 | Task | Phase 1: Industry & Practitioner Research (25+ sources) + per-agent /adversary C4 gate | DONE (0.9325, 5 iter, user-accepted) | EPIC-001 |
 | TASK-003 | Task | Phase 1: Context7 Library Documentation Research + per-agent /adversary C4 gate | DONE (0.935, 6 iter, user-accepted) | EPIC-001 |
-| TASK-004 | Task | Barrier 1: Research cross-pollination (gated inputs) + /adversary C4 on synthesis | NOT STARTED | TASK-001, TASK-002, TASK-003 |
+| TASK-004 | Task | Barrier 1: Research cross-pollination (gated inputs) + /adversary C4 on synthesis | DONE (0.953, 4 iter) | TASK-001, TASK-002, TASK-003 |
 | TASK-005 | Task | Phase 2: Claim Validation (60% hallucination) + per-agent /adversary C4 gate | NOT STARTED | EPIC-001 |
 | TASK-006 | Task | Phase 2: Comparative Effectiveness Analysis (5 dimensions) + per-agent /adversary C4 gate | NOT STARTED | EPIC-001 |
 | TASK-007 | Task | Barrier 2: Analysis cross-pollination (gated inputs) + /adversary C4 on synthesis | NOT STARTED | TASK-005, TASK-006 |
