@@ -22,7 +22,7 @@
 | Criticality | C4 (Critical) |
 | Quality Threshold | >= 0.95 |
 | Orchestration | `neg-prompting-20260227-001` |
-| Progress | 80% (Phase 1 COMPLETE, Phase 2 COMPLETE, Phase 3 COMPLETE, Phase 4 COMPLETE — all 5 sub-task gates + Barrier 4 PASSED; Phase 5 NOT STARTED) |
+| Progress | 90% (Phase 1 COMPLETE, Phase 2 COMPLETE, Phase 3 COMPLETE, Phase 4 COMPLETE, Phase 5 COMPLETE — 4 ADRs + Barrier 5 PASSED; Phase 6 NOT STARTED) |
 
 ## Work Items
 
@@ -49,8 +49,8 @@
 | TASK-013 | Task | Phase 4: Jerry Patterns Update Analysis + per-agent /adversary C4 gate | DONE (0.950, 5 iter) — Artifact: `orchestration/neg-prompting-20260227-001/phase-4/patterns-update-analysis.md` | EPIC-003 |
 | TASK-014 | Task | Phase 4: Jerry Templates Update Analysis + per-agent /adversary C4 gate | DONE (0.955, 3 iter) — Artifact: `orchestration/neg-prompting-20260227-001/phase-4/templates-update-analysis.md` | EPIC-003 |
 | TASK-015 | Task | Barrier 4: Application cross-pollination (gated inputs) + /adversary C4 on synthesis | DONE (0.950, 4 iter) — Artifact: `orchestration/neg-prompting-20260227-001/barrier-4/synthesis.md` | TASK-010 through TASK-014 |
-| TASK-016 | Task | Phase 5: Implementation Planning (4 ADRs) + per-agent /adversary C4 gates | NOT STARTED | EPIC-003 |
-| TASK-017 | Task | Barrier 5: Implementation quality gate — /adversary C4 on cross-ADR coherence | NOT STARTED | TASK-016 |
+| TASK-016 | Task | Phase 5: Implementation Planning (4 ADRs) + per-agent /adversary C4 gates | DONE — ADR-001 (0.952, 4 iter), ADR-002 (0.951, 3 iter), ADR-003 (0.957, 4 iter), ADR-004 (0.955, 3 iter) | EPIC-003 |
+| TASK-017 | Task | Barrier 5: Implementation quality gate — /adversary C4 on cross-ADR coherence | DONE (0.956, 2 iter) — Artifact: `orchestration/neg-prompting-20260227-001/barrier-5/synthesis.md` | TASK-016 |
 | TASK-018 | Task | Phase 6: Final Synthesis & Implementation Roadmap + per-agent /adversary C4 gates | NOT STARTED | EPIC-004 |
 | TASK-019 | Task | Phase 6: /adversary C4 tournament (all 10 strategies, >= 0.95, max 5 iter) | NOT STARTED | TASK-018 |
 | TASK-020 | Task | Documentation & commit | NOT STARTED | TASK-019 |

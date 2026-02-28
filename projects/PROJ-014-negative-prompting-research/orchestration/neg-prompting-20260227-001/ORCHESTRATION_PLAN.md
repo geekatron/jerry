@@ -2,7 +2,7 @@
 
 > Workflow: neg-prompting-20260227-001 | Criticality: C4 | Threshold: >= 0.95
 > Hypothesis: Negative prompting outperforms positive prompting for LLM behavioral compliance.
-> Updated: 2026-02-28
+> Updated: 2026-02-28 (Phase 5 complete)
 
 ## Document Sections
 
@@ -49,8 +49,8 @@ These directives govern the entire orchestration run. You must not violate them.
 | Phase 1 | Literature Research (academic + industry + context7) | **COMPLETE** | Barrier 1: **PASSED** (0.953 synthesis + 0.951 supplemental) |
 | Phase 2 | Evidence Analysis (claim validation + comparative effectiveness) | **COMPLETE** | Barrier 2: **PASSED** (0.959 claim-validation + 0.933 comparative-effectiveness + 0.950 synthesis) |
 | Phase 3 | Negative Prompting Taxonomy & Pattern Catalog | **COMPLETE** | Barrier 3: **PASSED** (0.957, 3 iter) |
-| Phase 4 | Jerry Framework Application Analysis (5 sub-tasks) | **COMPLETE** (all 5 sub-tasks) | Barrier 4: PENDING GATE |
-| Phase 5 | Implementation Planning (4 ADRs) | NOT STARTED | Barrier 5 |
+| Phase 4 | Jerry Framework Application Analysis (5 sub-tasks) | **COMPLETE** | Barrier 4: **PASSED** (0.950, 4 iter) |
+| Phase 5 | Implementation Planning (4 ADRs) | **COMPLETE** | Barrier 5: **PASSED** (0.956, 2 iter) |
 | Phase 6 | Final Synthesis & Recommendations | NOT STARTED | C4 Tournament |
 
 ---
@@ -218,7 +218,17 @@ All paths relative to `projects/PROJ-014-negative-prompting-research/orchestrati
 | Adversary I2 | `phase-3/adversary-taxonomy-i2.md` | — |
 | Adversary I3 | `phase-3/adversary-taxonomy-i3.md` | — |
 
-### Phase 4 Application Analysis (COMPLETE — awaiting Barrier 4 gate)
+### Phase 4 Application Analysis (COMPLETE)
+
+### Barrier 4 (PASSED)
+
+| Artifact | Path | Score |
+|----------|------|-------|
+| Synthesis (v4.0.0) | `barrier-4/synthesis.md` | 0.950 |
+| Adversary gate I1 | `barrier-4/adversary-gate-i1.md` | 0.931 |
+| Adversary gate I2 | `barrier-4/adversary-gate-i2.md` | 0.940 |
+| Adversary gate I3 | `barrier-4/adversary-gate-i3.md` | 0.947 |
+| Adversary gate I4 | `barrier-4/adversary-gate-i4.md` | 0.950 (PASS) |
 
 | Artifact | Path | Task | Notes |
 |----------|------|------|-------|
@@ -228,8 +238,41 @@ All paths relative to `projects/PROJ-014-negative-prompting-research/orchestrati
 | Patterns update analysis (TASK-013) | `phase-4/patterns-update-analysis.md` | TASK-013 | ps-analyst output |
 | Templates update analysis (TASK-014) | `phase-4/templates-update-analysis.md` | TASK-014 | ps-analyst output — 2026-02-28 |
 
+### Phase 5 Implementation Planning (COMPLETE)
+
+| Artifact | Path | Score | Iterations |
+|----------|------|-------|------------|
+| ADR-001: NPT-014 Elimination Policy | `phase-5/ADR-001-npt014-elimination.md` | 0.952 | 4 |
+| ADR-002: Constitutional Upgrades | `phase-5/ADR-002-constitutional-upgrades.md` | 0.951 | 3 |
+| ADR-003: Routing Disambiguation | `phase-5/ADR-003-routing-disambiguation.md` | 0.957 | 4 |
+| ADR-004: Compaction Resilience | `phase-5/ADR-004-compaction-resilience.md` | 0.955 | 3 |
+
+### Barrier 5 (PASSED)
+
+| Artifact | Path | Score |
+|----------|------|-------|
+| Synthesis (v1.1.0) | `barrier-5/synthesis.md` | 0.956 |
+| Adversary gate I1 | `barrier-5/adversary-gate-i1.md` | 0.9035 |
+| Adversary gate I2 | `barrier-5/adversary-gate-i2.md` | 0.956 (PASS) |
+
+| Artifact | Path | Notes |
+|----------|------|-------|
+| ADR-001 adversary I2 | `phase-5/adversary-adr001-i2.md` | 0.9455 |
+| ADR-001 adversary I3 | `phase-5/adversary-adr001-i3.md` | 0.9445 (regression) |
+| ADR-001 adversary I4 | `phase-5/adversary-adr001-i4.md` | 0.952 (PASS) |
+| ADR-002 adversary I1 | `phase-5/adversary-adr002-i1.md` | 0.853 |
+| ADR-002 adversary I2 | `phase-5/adversary-adr002-i2.md` | 0.924 |
+| ADR-002 adversary I3 | `phase-5/adversary-adr002-i3.md` | 0.951 (PASS) |
+| ADR-003 adversary I1 | `phase-5/adversary-adr003-i1.md` | 0.836 |
+| ADR-003 adversary I2 | `phase-5/adversary-adr003-i2.md` | 0.909 |
+| ADR-003 adversary I3 | `phase-5/adversary-adr003-i3.md` | 0.943 |
+| ADR-003 adversary I4 | `phase-5/adversary-adr003-i4.md` | 0.957 (PASS) |
+| ADR-004 adversary I1 | `phase-5/adversary-adr004-i1.md` | 0.874 |
+| ADR-004 adversary I2 | `phase-5/adversary-adr004-i2.md` | 0.925 |
+| ADR-004 adversary I3 | `phase-5/adversary-adr004-i3.md` | 0.955 (PASS) |
+
 ---
 
 *GitHub Issue: [#122](https://github.com/geekatron/jerry/issues/122)*
-*ORCHESTRATION.yaml: Updated 2026-02-28 with Phase 4 completion*
+*ORCHESTRATION.yaml: Updated 2026-02-28 with Phase 5 completion*
 *All paths relative to `projects/PROJ-014-negative-prompting-research/`*

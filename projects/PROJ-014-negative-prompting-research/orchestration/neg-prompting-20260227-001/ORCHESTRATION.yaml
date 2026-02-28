@@ -1,7 +1,7 @@
 ---
 # PROJ-014 Negative Prompting Research — Orchestration State
 # Workflow: neg-prompting-20260227-001
-# Updated: 2026-02-27
+# Updated: 2026-02-28
 
 workflow_id: neg-prompting-20260227-001
 project: PROJ-014-negative-prompting-research
@@ -188,11 +188,54 @@ barriers:
 
   barrier-5:
     name: "Implementation Quality Gate"
-    status: NOT_STARTED
+    status: PASSED
     task_id: TASK-017
     inputs:
       - task: TASK-016
-        status: NOT_STARTED
+        status: DONE
+        sub_tasks:
+          - id: ADR-001
+            title: "NPT-014 Elimination Policy"
+            artifact: orchestration/neg-prompting-20260227-001/phase-5/ADR-001-npt014-elimination.md
+            score: 0.952
+            iterations: 4
+            verdict: PASS
+          - id: ADR-002
+            title: "Constitutional Triplet & High-Framing Upgrades"
+            artifact: orchestration/neg-prompting-20260227-001/phase-5/ADR-002-constitutional-upgrades.md
+            score: 0.951
+            iterations: 3
+            verdict: PASS
+          - id: ADR-003
+            title: "Routing Disambiguation Standard"
+            artifact: orchestration/neg-prompting-20260227-001/phase-5/ADR-003-routing-disambiguation.md
+            score: 0.957
+            iterations: 4
+            verdict: PASS
+          - id: ADR-004
+            title: "Context Compaction Resilience"
+            artifact: orchestration/neg-prompting-20260227-001/phase-5/ADR-004-compaction-resilience.md
+            score: 0.955
+            iterations: 3
+            verdict: PASS
+    synthesis:
+      artifact: orchestration/neg-prompting-20260227-001/barrier-5/synthesis.md
+      revision: v1.1.0
+      score: 0.956
+      iterations: 2
+      max_iterations: 5
+      verdict: PASS
+    adversary_gate:
+      score_trajectory: [0.9035, 0.956]
+      critical_findings_resolved: 0
+      major_findings_resolved: 2
+      residual_minors: 0
+      barrier5_gate_checks:
+        GC-B5-1: PASS
+        GC-B5-2: PASS
+        GC-B5-3: PASS
+        GC-B5-4: PASS
+        GC-B5-5: PASS
 
 c4_tournament:
   status: NOT_STARTED
