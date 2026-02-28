@@ -1,0 +1,232 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jerry-framework.dev/schemas/agent-governance/v1.0.0",
+  "title": "Jerry Agent Governance Schema",
+  "description": "Validates .governance.yaml companion files for Jerry Framework agents. Separated from agent-definition-v1 per Claude Code official frontmatter restructure.",
+  "type": "object",
+  "required": ["version", "tool_tier", "identity"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version in MAJOR.MINOR.PATCH format. (AR-008)"
+    },
+    "tool_tier": {
+      "type": "string",
+      "enum": ["T1", "T2", "T3", "T4", "T5"],
+      "description": "Security tier. T1=Read-Only, T2=Read-Write, T3=External, T4=Persistent, T5=Full."
+    },
+    "identity": {
+      "type": "object",
+      "required": ["role", "expertise", "cognitive_mode"],
+      "properties": {
+        "role": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Clear, singular role title. Unique within parent skill. (PR-001)"
+        },
+        "expertise": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 2,
+          "description": "Domain competencies. Minimum 2 entries, specific not generic. (PR-003)"
+        },
+        "cognitive_mode": {
+          "type": "string",
+          "enum": ["divergent", "convergent", "integrative", "systematic", "forensic"],
+          "description": "Reasoning approach. See agent-development-standards.md Section 5. (PR-002)"
+        }
+      },
+      "additionalProperties": true
+    },
+    "persona": {
+      "type": "object",
+      "properties": {
+        "tone": {
+          "type": "string",
+          "description": "Output voice tone. Free-form string (e.g., professional, analytical, rigorous)."
+        },
+        "communication_style": {
+          "type": "string",
+          "description": "Communication approach. Free-form string (e.g., consultative, direct, evidence-based)."
+        },
+        "audience_level": {
+          "type": "string",
+          "enum": ["adaptive", "expert", "intermediate", "beginner"]
+        }
+      },
+      "additionalProperties": true,
+      "description": "Output voice configuration. (PR-005)"
+    },
+    "capabilities": {
+      "type": "object",
+      "properties": {
+        "forbidden_actions": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 3,
+          "description": "Actions the agent must not perform. Must reference P-003, P-020, P-022. (AR-012)"
+        },
+        "output_formats": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["markdown", "yaml", "json", "text", "mermaid", "structured_yaml", "text/plain", "text/x-ascii-art"]
+          },
+          "description": "Supported output format types."
+        },
+        "required_features": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Features required for agent operation."
+        }
+      },
+      "additionalProperties": true
+    },
+    "guardrails": {
+      "type": "object",
+      "required": ["fallback_behavior"],
+      "properties": {
+        "input_validation": {
+          "oneOf": [
+            {
+              "type": "array",
+              "minItems": 1,
+              "description": "Array-format input validation rules."
+            },
+            {
+              "type": "object",
+              "description": "Object-format input validation rules."
+            }
+          ],
+          "description": "Input format validation rules. (SR-002)"
+        },
+        "output_filtering": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Output safety filters. (SR-003)"
+        },
+        "fallback_behavior": {
+          "type": "string",
+          "pattern": "^[a-z_]+$",
+          "description": "Error recovery strategy. Standard values: warn_and_retry, escalate_to_user, persist_and_halt. Domain-specific values allowed. (SR-009)"
+        }
+      },
+      "additionalProperties": true
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "required": {
+          "type": "boolean",
+          "description": "Whether the agent must produce an output artifact."
+        },
+        "location": {
+          "type": "string",
+          "description": "Artifact file path template with variables. (AR-010)"
+        },
+        "template": {
+          "type": "string",
+          "description": "Output template reference."
+        },
+        "levels": {
+          "oneOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["L0", "L1", "L2"]
+              }
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "content": { "type": "string" }
+                }
+              }
+            }
+          ],
+          "description": "Supported output disclosure levels. Both enum-array and object-array formats accepted. (PR-008)"
+        }
+      },
+      "if": {
+        "properties": { "required": { "const": true } }
+      },
+      "then": {
+        "required": ["location"]
+      },
+      "additionalProperties": true
+    },
+    "constitution": {
+      "type": "object",
+      "required": ["principles_applied"],
+      "properties": {
+        "reference": {
+          "type": "string",
+          "description": "Path to constitution document."
+        },
+        "principles_applied": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 3,
+          "description": "Constitutional principles. Must include P-003, P-020, P-022. (SR-001)"
+        }
+      },
+      "additionalProperties": true
+    },
+    "validation": {
+      "type": "object",
+      "properties": {
+        "file_must_exist": { "type": "boolean" },
+        "link_artifact_required": { "type": "boolean" },
+        "post_completion_checks": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": true,
+      "description": "Post-completion validation checks. (QR-003)"
+    },
+    "prior_art": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Referenced prior art citations."
+    },
+    "enforcement": {
+      "type": "object",
+      "properties": {
+        "tier": {
+          "type": "string",
+          "enum": ["hard", "medium", "soft"]
+        },
+        "escalation_path": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "session_context": {
+      "type": "object",
+      "properties": {
+        "schema": { "type": "string" },
+        "on_receive": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "on_send": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": true,
+      "description": "Handoff protocol configuration. (HR-001, HR-002)"
+    },
+    "portability": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Cross-skill portability metadata."
+    }
+  },
+  "additionalProperties": true
+}

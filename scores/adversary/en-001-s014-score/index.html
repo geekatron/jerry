@@ -1,0 +1,2450 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Framework for behavior/workflow guardrails. Accrues knowledge, wisdom, experience.">
+      
+      
+        <meta name="author" content="Geekatron">
+      
+      
+        <link rel="canonical" href="https://jerry.geekatron.org/scores/adversary/en-001-s014-score/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.3">
+    
+    
+      
+        <title>Quality Score Report: EN-001 Session Voice Reference Architecture Fix - Jerry Framework</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/saucer-boy.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="saucer-boy" data-md-color-primary="deep-purple" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#quality-score-report-en-001-session-voice-reference-architecture-fix" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Jerry Framework" class="md-header__button md-logo" aria-label="Jerry Framework" data-md-component="logo">
+      
+  <img src="../../../assets/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Jerry Framework
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Quality Score Report: EN-001 Session Voice Reference Architecture Fix
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="saucer-boy" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="saucer-boy-dark" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/geekatron/jerry" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    geekatron/jerry
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Jerry Framework" class="md-nav__button md-logo" aria-label="Jerry Framework" data-md-component="logo">
+      
+  <img src="../../../assets/logo.svg" alt="logo">
+
+    </a>
+    Jerry Framework
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/geekatron/jerry" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    geekatron/jerry
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../INSTALLATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../BOOTSTRAP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bootstrap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../runbooks/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started Runbook
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../playbooks/problem-solving/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Problem Solving
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../playbooks/orchestration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../playbooks/transcript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transcript Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../playbooks/PLUGIN-DEVELOPMENT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plugin Development
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CLAUDE-MD-GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLAUDE.md Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../schemas/SCHEMA_VERSIONING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schema Versioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../schemas/SESSION_CONTEXT_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Session Context Schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Articles
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Articles
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../blog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Articles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Archive
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Archive
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../blog/archive/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Categories
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Categories
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../blog/category/prompting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prompting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../research/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../research/single-vs-multi-agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single vs. Multi-Agent Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../research/adversarial-strategy-catalog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adversarial Strategy Catalog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../research/strategy-selection-enforcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Strategy Selection & Enforcement (ADRs)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../research/adversarial-deep-dives/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adversarial Quality Deep Dives
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../research/skill-compliance-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Skill Compliance Framework
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../research/governance-constitutional-ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Governance & Constitutional AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../research/context-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Context Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../research/oss-methodology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OSS Methodology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../research/architecture-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../research/claude-code-ecosystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claude Code Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_12" id="__nav_6_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM Deception Study
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    LLM Deception Study
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../research/llm-deception/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../research/llm-deception/the-85-problem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 85% Problem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../research/llm-deception/methodology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methodology & Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../research/llm-deception/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture & Recommendations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Governance
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Governance
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../governance/JERRY_CONSTITUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jerry Constitution
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#document-sections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Document Sections
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#l0-executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L0 Executive Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scoring-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scoring Context
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#score-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Score Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dimension-scores" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dimension Scores
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#detailed-dimension-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Detailed Dimension Analysis
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Detailed Dimension Analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#completeness-093100-minor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Completeness (0.93/1.00) -- Minor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#internal-consistency-093100-minor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Internal Consistency (0.93/1.00) -- Minor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methodological-rigor-088100-minor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Methodological Rigor (0.88/1.00) -- Minor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evidence-quality-087100-minor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidence Quality (0.87/1.00) -- Minor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#actionability-091100-minor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Actionability (0.91/1.00) -- Minor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#traceability-088100-minor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Traceability (0.88/1.00) -- Minor
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#improvement-recommendations-priority-ordered" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Improvement Recommendations (Priority Ordered)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scoring-impact-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scoring Impact Analysis
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scoring Impact Analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dimension-impact-on-composite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dimension Impact on Composite
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verdict-rationale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verdict Rationale
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#leniency-bias-check-h-15-self-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Leniency Bias Check (H-15 Self-Review)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="quality-score-report-en-001-session-voice-reference-architecture-fix">Quality Score Report: EN-001 Session Voice Reference Architecture Fix<a class="headerlink" href="#quality-score-report-en-001-session-voice-reference-architecture-fix" title="Permanent link">&para;</a></h1>
+<h2 id="document-sections">Document Sections<a class="headerlink" href="#document-sections" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Section</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#l0-executive-summary">L0 Executive Summary</a></td>
+<td>Score, verdict, one-line assessment</td>
+</tr>
+<tr>
+<td><a href="#scoring-context">Scoring Context</a></td>
+<td>Deliverable metadata and scoring parameters</td>
+</tr>
+<tr>
+<td><a href="#score-summary">Score Summary</a></td>
+<td>Composite score and threshold comparison</td>
+</tr>
+<tr>
+<td><a href="#dimension-scores">Dimension Scores</a></td>
+<td>Per-dimension scores with evidence summary</td>
+</tr>
+<tr>
+<td><a href="#detailed-dimension-analysis">Detailed Dimension Analysis</a></td>
+<td>Evidence, gaps, improvement path per dimension</td>
+</tr>
+<tr>
+<td><a href="#improvement-recommendations-priority-ordered">Improvement Recommendations</a></td>
+<td>Priority-ordered actionable recommendations</td>
+</tr>
+<tr>
+<td><a href="#scoring-impact-analysis">Scoring Impact Analysis</a></td>
+<td>Gap-to-threshold analysis per dimension</td>
+</tr>
+<tr>
+<td><a href="#leniency-bias-check-h-15-self-review">Leniency Bias Check</a></td>
+<td>H-15 self-review validation</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="l0-executive-summary">L0 Executive Summary<a class="headerlink" href="#l0-executive-summary" title="Permanent link">&para;</a></h2>
+<p><strong>Score:</strong> 0.90/1.00 | <strong>Verdict:</strong> REVISE | <strong>Weakest Dimension:</strong> Evidence Quality (0.87)</p>
+<p><strong>One-line assessment:</strong> Near-threshold deliverable with strong completeness and internal consistency; targeted improvements to evidence quality (pair selection rationale), methodological formalization (@ import failure modes), and traceability (ambient-persona source attribution) would close the 0.02 gap.</p>
+<hr />
+<h2 id="scoring-context">Scoring Context<a class="headerlink" href="#scoring-context" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Deliverable:</strong> Composite of 3 files:</li>
+<li><code>skills/saucer-boy/SKILL.md</code> (370 lines)</li>
+<li><code>skills/saucer-boy/references/ambient-persona.md</code> (128 lines)</li>
+<li><code>skills/saucer-boy/agents/sb-voice.md</code> (218 lines)</li>
+<li><strong>Deliverable Type:</strong> Enabler implementation (architecture)</li>
+<li><strong>Criticality Level:</strong> C2 (Standard)</li>
+<li><strong>Scoring Strategy:</strong> S-014 (LLM-as-Judge)</li>
+<li><strong>SSOT Reference:</strong> .context/rules/quality-enforcement.md</li>
+<li><strong>Scored By:</strong> adv-scorer (v1.0.0)</li>
+<li><strong>Scored:</strong> 2026-02-20T00:00:00Z</li>
+<li><strong>Iteration:</strong> 1 (first S-014 score; deliverable has been through S-010, S-003, S-007, S-002 review with fixes applied)</li>
+</ul>
+<hr />
+<h2 id="score-summary">Score Summary<a class="headerlink" href="#score-summary" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Weighted Composite</strong></td>
+<td>0.90</td>
+</tr>
+<tr>
+<td><strong>Threshold (H-13)</strong></td>
+<td>0.92</td>
+</tr>
+<tr>
+<td><strong>Verdict</strong></td>
+<td>REVISE</td>
+</tr>
+<tr>
+<td><strong>Strategy Findings Incorporated</strong></td>
+<td>Yes (4 strategies: S-010, S-003, S-007, S-002 — 4 CC findings fixed, 7 DA findings addressed)</td>
+</tr>
+<tr>
+<td><strong>Prior Score (if re-scoring)</strong></td>
+<td>N/A</td>
+</tr>
+<tr>
+<td><strong>Improvement Delta</strong></td>
+<td>N/A</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="dimension-scores">Dimension Scores<a class="headerlink" href="#dimension-scores" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th>Weight</th>
+<th>Score</th>
+<th>Weighted</th>
+<th>Severity</th>
+<th>Evidence Summary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Completeness</td>
+<td>0.20</td>
+<td>0.93</td>
+<td>0.186</td>
+<td>Minor</td>
+<td>All 6 EN-001 tasks complete; all prior adversarial findings addressed; all H-25 through H-30 standards met</td>
+</tr>
+<tr>
+<td>Internal Consistency</td>
+<td>0.20</td>
+<td>0.93</td>
+<td>0.186</td>
+<td>Minor</td>
+<td>No contradictions across 3 files; voice traits, boundary conditions, and routing logic aligned</td>
+</tr>
+<tr>
+<td>Methodological Rigor</td>
+<td>0.20</td>
+<td>0.88</td>
+<td>0.176</td>
+<td>Minor</td>
+<td>Sound dual-mode architecture; skill standards followed; lacks formal ADR and @ import failure mode documentation</td>
+</tr>
+<tr>
+<td>Evidence Quality</td>
+<td>0.15</td>
+<td>0.87</td>
+<td>0.1305</td>
+<td>Minor</td>
+<td>Most claims supported with references and examples; pair selection rationale is thin assertion</td>
+</tr>
+<tr>
+<td>Actionability</td>
+<td>0.15</td>
+<td>0.91</td>
+<td>0.1365</td>
+<td>Minor</td>
+<td>Routing decision table, 3 invocation methods, fallback instructions, coordination rule with grep command</td>
+</tr>
+<tr>
+<td>Traceability</td>
+<td>0.10</td>
+<td>0.88</td>
+<td>0.088</td>
+<td>Minor</td>
+<td>SKILL.md traces to canonical source and cross-skill references; ambient-persona.md lacks explicit source attribution</td>
+</tr>
+<tr>
+<td><strong>TOTAL</strong></td>
+<td><strong>1.00</strong></td>
+<td></td>
+<td><strong>0.90</strong></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="detailed-dimension-analysis">Detailed Dimension Analysis<a class="headerlink" href="#detailed-dimension-analysis" title="Permanent link">&para;</a></h2>
+<h3 id="completeness-093100-minor">Completeness (0.93/1.00) -- Minor<a class="headerlink" href="#completeness-093100-minor" title="Permanent link">&para;</a></h3>
+<p><strong>Evidence:</strong></p>
+<p>All 6 EN-001 tasks are complete with acceptance criteria met:
+- TASK-001: 4 voice-guide pairs (pairs 1, 2, 5, 7) embedded in SKILL.md "Voice in Action" section (lines 253-281).
+- TASK-002: ambient-persona.md created at 128 lines (under 150-line target), containing core thesis, biographical anchors, voice traits, 6 calibration examples, anti-patterns, boundary conditions, energy calibration.
+- TASK-003: Dual-mode routing documented in SKILL.md "Voice Modes" section (lines 179-224) with decision table and default behavior.
+- TASK-004: sb-voice.md reference_loading updated with voice-guide.md and biographical-anchors.md as always-load (lines 103-105).
+- TASK-005: @ import investigation documented in EN-001 enabler; pattern used in SKILL.md line 198.
+- TASK-006: Comparative validation executed with quantitative results.</p>
+<p>All prior adversarial findings addressed:
+- S-007: 4 constitutional compliance fixes (nav tables, H-29 repo-relative path).
+- S-002: 7 devil's advocate findings addressed (fallback instructions, tiebreaker default, conversational examples, loading comment simplification, stability contract, ambient fallback).</p>
+<p>SKILL.md includes all required sections per H-25 through H-30: YAML frontmatter with name/description/version/allowed-tools/activation-keywords, Document Sections navigation table, Document Audience triple-lens, Purpose, When to Use, Available Agents, P-003 Compliance, Invoking an Agent, domain-specific content sections, Constitutional Compliance, Integration Points, References.</p>
+<p><strong>Gaps:</strong></p>
+<ul>
+<li>No runtime proof that the <code>@skills/saucer-boy/references/ambient-persona.md</code> import actually resolves correctly. The TASK-005 investigation documents the mechanism as a "Jerry convention" but the deliverables do not include a verification test of the import itself.</li>
+<li>No explicit change log or version history section within SKILL.md (the EN-001 enabler tracks history, but the deliverable files themselves do not).</li>
+</ul>
+<p><strong>Improvement Path:</strong></p>
+<ul>
+<li>Add a brief verification note or test result confirming the @ import resolves correctly at runtime (could be added to SKILL.md or as a reference in the enabler).</li>
+</ul>
+<hr />
+<h3 id="internal-consistency-093100-minor">Internal Consistency (0.93/1.00) -- Minor<a class="headerlink" href="#internal-consistency-093100-minor" title="Permanent link">&para;</a></h3>
+<p><strong>Evidence:</strong></p>
+<p>Cross-file alignment verified across all 3 deliverables:</p>
+<ol>
+<li>
+<p><strong>Voice traits consistency:</strong> SKILL.md voice traits table (lines 243-249) uses identical trait names, definitions, and examples as ambient-persona.md voice traits table (lines 52-58). Five traits: Direct, Warm, Confident, Occasionally Absurd, Technically Precise.</p>
+</li>
+<li>
+<p><strong>Reference loading alignment:</strong> SKILL.md routing instructions state "Explicit mode: Main context spawns sb-voice via Task tool. Subagent loads full reference set" (line 213-214). sb-voice.md always-load section confirms: <code>voice-guide.md</code> and <code>biographical-anchors.md</code> (lines 104-105). Consistent.</p>
+</li>
+<li>
+<p><strong>Boundary conditions alignment:</strong> SKILL.md boundary conditions table (lines 303-311) lists 6 hard gates. ambient-persona.md "When Personality Is OFF" (lines 100-106) summarizes the 3 highest-priority gates. sb-voice.md constraints section (lines 179-196) maps to the same gates. No contradictions.</p>
+</li>
+<li>
+<p><strong>Routing logic consistency:</strong> SKILL.md states "Default: When the mode is ambiguous, use ambient" (line 190). This aligns with DA-002 fix. sb-voice.md's role description ("explicit persona responses") confirms it is the non-default path. Consistent.</p>
+</li>
+<li>
+<p><strong>Model specification:</strong> SKILL.md Available Agents table specifies "sonnet" for sb-voice (line 101). sb-voice.md YAML frontmatter confirms <code>model: sonnet</code> (line 5). Consistent.</p>
+</li>
+</ol>
+<p><strong>Gaps:</strong></p>
+<ul>
+<li>SKILL.md line 194 states the ambient prompt is "~120 lines, under 500 tokens." ambient-persona.md is 128 lines. The tilde approximation is acceptable but imprecise. This is not a true contradiction but could confuse a developer checking the actual line count.</li>
+</ul>
+<p><strong>Improvement Path:</strong></p>
+<ul>
+<li>Update SKILL.md line 194 to say "~130 lines" or "under 150 lines" to match the actual ambient-persona.md length more precisely.</li>
+</ul>
+<hr />
+<h3 id="methodological-rigor-088100-minor">Methodological Rigor (0.88/1.00) -- Minor<a class="headerlink" href="#methodological-rigor-088100-minor" title="Permanent link">&para;</a></h3>
+<p><strong>Evidence:</strong></p>
+<ul>
+<li>The dual-mode architecture follows a principled approach: separate ambient (lightweight, main context) from explicit (full reference set, subagent) based on invocation pattern. This is architecturally sound and matches patterns used by other Jerry skills (e.g., worktracker uses @ import for rules).</li>
+<li>All 3 deliverables follow Jerry skill standards (H-25 through H-30) rigorously: correct filename, kebab-case folder, no README.md, description under 1024 chars, repo-relative paths, registered in CLAUDE.md and AGENTS.md.</li>
+<li>Prior adversarial review cycle was systematic: S-010 (self-review) -&gt; S-003 (steelman) -&gt; S-007 (constitutional compliance) -&gt; S-002 (devil's advocate). All findings were addressed with specific fixes documented.</li>
+<li>The ambient-persona.md follows TASK-002's design principle: "what the main context needs to <em>be</em> the voice, not what a subagent needs to <em>follow rules about</em> the voice." This is a well-articulated design principle that shaped the output.</li>
+</ul>
+<p><strong>Gaps:</strong></p>
+<ul>
+<li>No formal ADR documenting the dual-mode architecture decision. The EN-001 enabler's "Technical Approach" section provides rationale but is not a formal decision record. For a C2 enabler touching skill architecture, an ADR would strengthen the methodological foundation.</li>
+<li>The <code>@</code> import mechanism is documented as a "Jerry convention" (TASK-005), but its failure modes are incompletely formalized: DA-001 added a fallback instruction, but the deliverables do not document what happens if the file is missing vs. renamed vs. moved, or how to detect a silent import failure.</li>
+<li>The pair selection (pairs 1, 2, 5, 7 from 9 available) includes a brief rationale ("selected to cover the 4 primary tone-spectrum positions") but does not document why the other 5 pairs were not selected or what criteria were used beyond tone-spectrum coverage.</li>
+</ul>
+<p><strong>Improvement Path:</strong></p>
+<ul>
+<li>Document <code>@</code> import failure modes explicitly in SKILL.md or a reference: (1) file missing -&gt; fallback to embedded SKILL.md content (already documented), (2) file renamed -&gt; import fails silently (document this risk), (3) file path incorrect -&gt; same as missing.</li>
+<li>Add 1-2 sentences explaining why pairs 3, 4, 6, 8, 9 were not embedded (e.g., "Pairs 3/4/6 cover framework output contexts not relevant to session voice; pairs 8/9 are minor variants of selected pairs").</li>
+</ul>
+<hr />
+<h3 id="evidence-quality-087100-minor">Evidence Quality (0.87/1.00) -- Minor<a class="headerlink" href="#evidence-quality-087100-minor" title="Permanent link">&para;</a></h3>
+<p><strong>Evidence:</strong></p>
+<ul>
+<li>SKILL.md embeds 4 concrete before/after voice-guide pairs (lines 257-279) with explicit source attribution: "Pairs 1 (Celebration), 2 (Encouragement), 5 (Presence), 7 (Full Energy) selected to cover the 4 primary tone-spectrum positions for ambient calibration. Remaining 5 pairs available when sb-voice loads voice-guide.md explicitly" (line 281).</li>
+<li>ambient-persona.md includes 6 calibration examples (lines 62-87): 4 matching SKILL.md pairs + 2 conversational examples added per DA-003 ("Conversational (routine acknowledgment)" and "Conversational (debugging support)").</li>
+<li>SKILL.md References table (lines 354-361) traces to 6 specific source documents with repo-relative paths.</li>
+<li>Constitutional compliance table (lines 332-338) maps 4 specific principles to skill behavior.</li>
+<li>sb-voice.md reference_loading section (lines 97-112) cites specific files with descriptions of content and purpose.</li>
+<li>EN-001 validation test (TASK-006) provides quantitative scoring data: ambient 0.81 vs baseline 0.83, explicit 0.73.</li>
+</ul>
+<p><strong>Gaps:</strong></p>
+<ul>
+<li>The pair selection rationale ("selected to cover the 4 primary tone-spectrum positions") is a brief assertion without documented analysis. Which 4 tone-spectrum positions? Why do pairs 1, 2, 5, 7 map to those positions better than alternatives? The S-003 steelman noted this was added, but the rationale remains surface-level.</li>
+<li>No evidence linking the embedded pairs to measured voice quality improvement. The TASK-006 test results live in the EN-001 enabler, not in the deliverables themselves. A reader of SKILL.md alone cannot assess whether the embedded pairs are the right ones.</li>
+<li>The "Core Thesis" is stated as foundational ("Joy and excellence are not trade-offs. They're multipliers.") but has no cited origin beyond "Source: docs/knowledge/saucer-boy-persona.md." The persona doc is the source, but the thesis itself is an assertion without evidence.</li>
+</ul>
+<p><strong>Improvement Path:</strong></p>
+<ul>
+<li>Add explicit tone-spectrum position mapping to the voice-guide pair attribution (e.g., "Pair 1 = Celebration (full energy), Pair 2 = Encouragement (calibrated warmth), Pair 5 = Presence (routine warmth), Pair 7 = Full Energy (powder day)"). Two of these appear to be in the "full energy" range (Celebration and Full Energy); clarify the distinction.</li>
+<li>Alternatively, add a sentence to the SKILL.md noting that TASK-006 validation confirmed these pairs produce ambient mode quality within 0.02 of the unstructured baseline.</li>
+</ul>
+<hr />
+<h3 id="actionability-091100-minor">Actionability (0.91/1.00) -- Minor<a class="headerlink" href="#actionability-091100-minor" title="Permanent link">&para;</a></h3>
+<p><strong>Evidence:</strong></p>
+<ol>
+<li>
+<p><strong>Routing decision table</strong> (SKILL.md lines 185-190): Clear signal-to-mode mapping with 2 rows (routine = ambient, explicit request = explicit). Default behavior documented: "When the mode is ambiguous, use ambient." Immediately actionable.</p>
+</li>
+<li>
+<p><strong>Three invocation methods</strong> (SKILL.md lines 135-175): Natural language examples, <code>/saucer-boy</code> command, and Task tool code block with complete Python invocation pattern. A developer can copy-paste the Task tool invocation.</p>
+</li>
+<li>
+<p><strong>Fallback instructions</strong> (SKILL.md lines 199-200): "If the ambient persona file cannot be loaded, use the Voice Traits, Voice in Action examples, and Boundary Conditions embedded in this SKILL.md as minimum viable voice calibration." Clear fallback path.</p>
+</li>
+<li>
+<p><strong>Coordination rule</strong> (SKILL.md line 363): "Any rename, move, or structural change to files in <code>skills/saucer-boy-framework-voice/references/</code> MUST include a search for consumers (<code>grep -r 'saucer-boy-framework-voice/references'</code>) and update all references in the same commit." Concrete grep command provided.</p>
+</li>
+<li>
+<p><strong>sb-voice 5-step process</strong> (sb-voice.md lines 129-176): Assess Context -&gt; Check Boundary Conditions -&gt; Generate Response -&gt; Anti-Pattern Check -&gt; Output. Each step has concrete substeps.</p>
+</li>
+<li>
+<p><strong>Boundary conditions table</strong> (SKILL.md lines 303-311): 6 specific contexts with voice behavior and rationale. Not abstract rules but specific situations with prescribed responses.</p>
+</li>
+</ol>
+<p><strong>Gaps:</strong></p>
+<ul>
+<li>The stability contract (DA-005, SKILL.md line 363) is buried in a dense paragraph at the end of the References section. A developer maintaining the codebase would need to know to look in References for a maintenance rule. This would be more actionable as a standalone subsection or a MEDIUM rule in a rules file.</li>
+<li>No troubleshooting guidance for when voice quality is wrong. If a developer loads <code>/saucer-boy</code> and the personality is flat (under-expression) or over-the-top (constant high energy), there is no diagnostic path. A brief "If the voice sounds wrong" section would improve actionability.</li>
+<li>The anti-pattern "Under-Expression" signal ("If you stripped the attribution, would anyone know this was Saucer Boy?") is a self-detection heuristic, not an actionable correction. What should the agent DO when it detects under-expression? Re-read the ambient persona? Inject more warmth?</li>
+</ul>
+<p><strong>Improvement Path:</strong></p>
+<ul>
+<li>Move the stability contract from a paragraph in References to a standalone subsection (e.g., "Cross-Skill Reference Stability") or add it to the skill's rules directory.</li>
+<li>Add a brief troubleshooting subsection: "If voice is under-expressed, re-read ambient-persona.md. If voice is over-expressed, check boundary conditions."</li>
+</ul>
+<hr />
+<h3 id="traceability-088100-minor">Traceability (0.88/1.00) -- Minor<a class="headerlink" href="#traceability-088100-minor" title="Permanent link">&para;</a></h3>
+<p><strong>Evidence:</strong></p>
+<ul>
+<li>SKILL.md canonical source attribution: "Canonical Source: Persona doc (<code>docs/knowledge/saucer-boy-persona.md</code>) via DEC-001 D-002" (line 27). Full traceability to the decision record that established the persona.</li>
+<li>SKILL.md References table (lines 354-361) provides 6 cross-references with repo-relative paths to: persona source doc, voice-guide, boundary conditions, biographical anchors, quality enforcement SSOT, constitution.</li>
+<li>Voice-guide pair attribution (SKILL.md line 281) traces embedded pairs to specific pair numbers (1, 2, 5, 7) in <code>skills/saucer-boy-framework-voice/references/voice-guide.md</code>.</li>
+<li>sb-voice.md reference_loading (lines 97-112) traces to specific files with descriptions, organized into always-load and on-demand categories.</li>
+<li>Integration points table (SKILL.md lines 343-349) traces cross-skill relationships with mechanism and direction.</li>
+<li>Constitutional compliance table (SKILL.md lines 332-338) traces principles to skill behavior.</li>
+</ul>
+<p><strong>Gaps:</strong></p>
+<ul>
+<li>ambient-persona.md has NO explicit source attribution. The file contains biographical facts, voice traits, and examples derived from <code>docs/knowledge/saucer-boy-persona.md</code> and <code>skills/saucer-boy-framework-voice/references/voice-guide.md</code>, but the file does not cite these sources. By design (TASK-002: "Reads as a personality prompt, not a specification"), but this creates a traceability gap. A reader of ambient-persona.md alone cannot trace its content to canonical sources.</li>
+<li>No version traceability for which version of voice-guide.md the embedded pairs were selected from. If voice-guide.md is updated, there is no indication that the SKILL.md pairs may be stale.</li>
+<li>The cross-skill reference dependency paragraph (SKILL.md line 363) mentions a stability contract but does not trace to a formal dependency management mechanism (e.g., a CI check, a dependency manifest).</li>
+</ul>
+<p><strong>Improvement Path:</strong></p>
+<ul>
+<li>Add a source attribution line to ambient-persona.md (e.g., in the blockquote header): "Derived from: <code>docs/knowledge/saucer-boy-persona.md</code> and <code>skills/saucer-boy-framework-voice/references/voice-guide.md</code>". This preserves the personality prompt feel while adding traceability.</li>
+<li>Add a version note to the embedded pairs section in SKILL.md: "Selected from voice-guide.md v1.0.0."</li>
+</ul>
+<hr />
+<h2 id="improvement-recommendations-priority-ordered">Improvement Recommendations (Priority Ordered)<a class="headerlink" href="#improvement-recommendations-priority-ordered" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Priority</th>
+<th>Dimension</th>
+<th>Current</th>
+<th>Target</th>
+<th>Recommendation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Evidence Quality</td>
+<td>0.87</td>
+<td>0.92</td>
+<td>Add explicit tone-spectrum position mapping for the 4 selected pairs (e.g., "Pair 1 = full energy celebration, Pair 2 = calibrated warmth encouragement, Pair 5 = routine warmth presence, Pair 7 = peak celebration") and a 1-sentence note explaining why pairs 3, 4, 6, 8, 9 were not embedded.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Methodological Rigor</td>
+<td>0.88</td>
+<td>0.92</td>
+<td>Document <code>@</code> import failure modes explicitly: file missing -&gt; fallback triggers, file renamed -&gt; silent failure (risk), path incorrect -&gt; same as missing. Add this to the Voice Modes ambient section or a technical notes subsection.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Traceability</td>
+<td>0.88</td>
+<td>0.92</td>
+<td>Add source attribution to ambient-persona.md blockquote header: "Derived from: <code>docs/knowledge/saucer-boy-persona.md</code> and <code>skills/saucer-boy-framework-voice/references/voice-guide.md</code>". Add version note to SKILL.md embedded pairs: "Selected from voice-guide.md v1.0.0."</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Actionability</td>
+<td>0.91</td>
+<td>0.92</td>
+<td>Move the stability contract paragraph from References to a standalone "Cross-Skill Reference Stability" subsection. Add brief troubleshooting guidance: "If voice is under-expressed, re-read ambient-persona.md."</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Internal Consistency</td>
+<td>0.93</td>
+<td>0.93</td>
+<td>Update SKILL.md line 194 from "~120 lines" to "~130 lines" to match actual ambient-persona.md length of 128 lines.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Implementation Guidance:</strong></p>
+<p>Priorities 1-3 address the three lowest-scoring dimensions and would collectively close the 0.02 gap to the 0.92 threshold. Priority 1 (Evidence Quality) has the highest weighted impact (0.15 weight * 0.05 improvement = 0.0075 composite gain). All three recommendations can be implemented independently with minimal effort (estimated &lt;10 minutes total). Priority 4 is optional but would polish the highest-weighted dimension that is still below threshold. Priority 5 is a minor precision fix.</p>
+<hr />
+<h2 id="scoring-impact-analysis">Scoring Impact Analysis<a class="headerlink" href="#scoring-impact-analysis" title="Permanent link">&para;</a></h2>
+<h3 id="dimension-impact-on-composite">Dimension Impact on Composite<a class="headerlink" href="#dimension-impact-on-composite" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th>Weight</th>
+<th>Score</th>
+<th>Weighted Contribution</th>
+<th>Gap to 0.92 Target</th>
+<th>Weighted Gap</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Completeness</td>
+<td>0.20</td>
+<td>0.93</td>
+<td>0.186</td>
+<td>-0.01 (exceeds)</td>
+<td>0.000</td>
+</tr>
+<tr>
+<td>Internal Consistency</td>
+<td>0.20</td>
+<td>0.93</td>
+<td>0.186</td>
+<td>-0.01 (exceeds)</td>
+<td>0.000</td>
+</tr>
+<tr>
+<td>Methodological Rigor</td>
+<td>0.20</td>
+<td>0.88</td>
+<td>0.176</td>
+<td>0.04</td>
+<td>0.008</td>
+</tr>
+<tr>
+<td>Evidence Quality</td>
+<td>0.15</td>
+<td>0.87</td>
+<td>0.1305</td>
+<td>0.05</td>
+<td>0.0075</td>
+</tr>
+<tr>
+<td>Actionability</td>
+<td>0.15</td>
+<td>0.91</td>
+<td>0.1365</td>
+<td>0.01</td>
+<td>0.0015</td>
+</tr>
+<tr>
+<td>Traceability</td>
+<td>0.10</td>
+<td>0.88</td>
+<td>0.088</td>
+<td>0.04</td>
+<td>0.004</td>
+</tr>
+<tr>
+<td><strong>TOTAL</strong></td>
+<td><strong>1.00</strong></td>
+<td></td>
+<td><strong>0.903</strong></td>
+<td></td>
+<td><strong>0.021</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Interpretation:</strong>
+- <strong>Current composite:</strong> 0.90/1.00 (rounded from 0.903)
+- <strong>Target composite:</strong> 0.92/1.00 (H-13 threshold)
+- <strong>Total weighted gap:</strong> 0.02 (0.921 needed for PASS after rounding)
+- <strong>Largest improvement opportunity:</strong> Methodological Rigor (0.008 weighted gap available, highest weight among below-threshold dimensions)
+- <strong>Second-largest opportunity:</strong> Evidence Quality (0.0075 weighted gap available)
+- <strong>Closing the gap:</strong> Improving Methodological Rigor from 0.88 to 0.92 (+0.008) and Evidence Quality from 0.87 to 0.92 (+0.0075) would yield composite of ~0.92, exactly at threshold.</p>
+<h3 id="verdict-rationale">Verdict Rationale<a class="headerlink" href="#verdict-rationale" title="Permanent link">&para;</a></h3>
+<p><strong>Verdict:</strong> REVISE</p>
+<p><strong>Rationale:</strong>
+The weighted composite score of 0.90 falls below the H-13 quality gate threshold of 0.92, placing the deliverable in the REVISE band (0.85-0.91). No Critical findings were identified (all dimensions &gt;= 0.85). All prior adversarial findings from S-010, S-003, S-007, and S-002 have been addressed. The deliverable is near-threshold with a 0.02 gap. Completeness and Internal Consistency are strong (0.93 each). The gap is concentrated in three dimensions: Evidence Quality (pair selection rationale), Methodological Rigor (@ import failure modes), and Traceability (ambient-persona source attribution). These are targeted improvements estimated at &lt;10 minutes of effort. This is a classic REVISE-band deliverable: fundamentally sound with specific, addressable refinements needed.</p>
+<hr />
+<h2 id="leniency-bias-check-h-15-self-review">Leniency Bias Check (H-15 Self-Review)<a class="headerlink" href="#leniency-bias-check-h-15-self-review" title="Permanent link">&para;</a></h2>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Each dimension scored independently (no cross-dimension influence)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Evidence documented for each score (specific quotes, line references, gap descriptions for all 6 dimensions)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Uncertain scores resolved downward (Methodological Rigor considered at 0.90, downgraded to 0.88 due to lack of formal ADR and incomplete @ import failure mode docs; Evidence Quality considered at 0.89, downgraded to 0.87 due to thin pair selection rationale)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> First-draft calibration considered (NOT a first draft: deliverable has been through S-010, S-003, S-007, S-002 review cycles with fixes applied; scoring above 0.85 is justified for a revised deliverable)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> No dimension scored above 0.95 without exceptional evidence (highest scores: 0.93 for Completeness and Internal Consistency)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> High-scoring dimensions verified (&gt;0.90):</li>
+<li><strong>Completeness (0.93):</strong> (1) All 6 EN-001 tasks complete with acceptance criteria met; (2) All 11 prior adversarial findings addressed (4 CC fixes, 7 DA fixes); (3) All H-25 through H-30 skill standards met with navigation tables, triple-lens audience, all required sections present across 3 files</li>
+<li><strong>Internal Consistency (0.93):</strong> (1) Voice traits table identical across SKILL.md (lines 243-249) and ambient-persona.md (lines 52-58); (2) Reference loading paths consistent between SKILL.md routing (line 213-214) and sb-voice.md always-load (lines 104-105); (3) Boundary conditions aligned: SKILL.md 6 gates, ambient-persona.md 3 priority gates, sb-voice.md constraints section -- all mutually consistent</li>
+<li><strong>Actionability (0.91):</strong> (1) Routing decision table with 2 modes and explicit default (line 190); (2) Three invocation methods including copy-paste Task tool code (lines 156-174); (3) Fallback instructions with concrete fallback path (lines 199-200)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Low-scoring dimensions verified:</li>
+<li><strong>Evidence Quality (0.87):</strong> Pair selection rationale is "selected to cover the 4 primary tone-spectrum positions" -- a brief assertion without analysis of why pairs 3, 4, 6, 8, 9 were excluded</li>
+<li><strong>Methodological Rigor (0.88):</strong> No formal ADR for dual-mode decision; @ import failure modes incompletely documented despite DA-001 fallback addition</li>
+<li><strong>Traceability (0.88):</strong> ambient-persona.md lacks any source attribution; version traceability absent for embedded pairs</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Weighted composite matches mathematical calculation: (0.93 * 0.20) + (0.93 * 0.20) + (0.88 * 0.20) + (0.87 * 0.15) + (0.91 * 0.15) + (0.88 * 0.10) = 0.186 + 0.186 + 0.176 + 0.1305 + 0.1365 + 0.088 = 0.903 -&gt; 0.90 VERIFIED</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Verdict matches score range table (0.90 in 0.85-0.91 band -&gt; REVISE per H-13; VERIFIED)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Improvement recommendations are specific and actionable (each recommendation identifies exact content to add, which file, and which section)</li>
+</ul>
+<p><strong>Leniency Bias Counteraction Notes:</strong></p>
+<ul>
+<li>Methodological Rigor was initially considered at 0.90 based on the sound dual-mode architecture and rigorous skill standards compliance. Downgraded to 0.88 because: (a) absence of a formal ADR for the dual-mode decision is a methodological gap for a C2 architecture enabler; (b) the @ import mechanism's failure modes are documented only at the "add a fallback" level, not at the "enumerate all failure modes and their consequences" level. When uncertain between 0.88 and 0.90, chose the lower score per leniency bias counteraction rule 3.</li>
+<li>Evidence Quality was initially considered at 0.89 based on the 4 embedded pairs with source attribution and 6 source references. Downgraded to 0.87 because: (a) the pair selection rationale is a one-line assertion, not an analysis; (b) the "Core Thesis" is stated as foundational without cited evidence beyond a source document path; (c) the quantitative TASK-006 evidence lives in the EN-001 enabler, not in the scored deliverables. When uncertain between 0.87 and 0.89, chose the lower score.</li>
+<li>Completeness and Internal Consistency were scored at 0.93, which is below the 0.95 exceptional evidence threshold. These scores are justified by the evidence documented in the high-scoring dimension verification above (3 evidence points each).</li>
+</ul>
+<hr />
+<p><em>Score Report Version: 1.0.0</em>
+<em>Scorer: adv-scorer (v1.0.0)</em>
+<em>SSOT: <code>.context/rules/quality-enforcement.md</code></em>
+<em>Template: <code>.context/templates/adversarial/s-014-llm-as-judge.md</code></em>
+<em>Scored: 2026-02-20</em></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+  
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 Geekatron — Apache License 2.0
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+  <div class="md-footer-meta__inner md-grid" style="text-align: center; padding-bottom: 0.5rem;">
+    <span class="sb-tagline">Quality with soul.</span>
+  </div>
+
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

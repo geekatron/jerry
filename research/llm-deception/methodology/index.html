@@ -1,0 +1,3262 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Framework for behavior/workflow guardrails. Accrues knowledge, wisdom, experience.">
+      
+      
+        <meta name="author" content="Geekatron">
+      
+      
+        <link rel="canonical" href="https://jerry.geekatron.org/research/llm-deception/methodology/">
+      
+      
+        <link rel="prev" href="../the-85-problem/">
+      
+      
+        <link rel="next" href="../architecture/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.3">
+    
+    
+      
+        <title>Methodology & Results - Jerry Framework</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/saucer-boy.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="saucer-boy" data-md-color-primary="deep-purple" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#methodology-results" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Jerry Framework" class="md-header__button md-logo" aria-label="Jerry Framework" data-md-component="logo">
+      
+  <img src="../../../assets/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Jerry Framework
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Methodology & Results
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="saucer-boy" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="saucer-boy-dark" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/geekatron/jerry" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    geekatron/jerry
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Jerry Framework" class="md-nav__button md-logo" aria-label="Jerry Framework" data-md-component="logo">
+      
+  <img src="../../../assets/logo.svg" alt="logo">
+
+    </a>
+    Jerry Framework
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/geekatron/jerry" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    geekatron/jerry
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../INSTALLATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../BOOTSTRAP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bootstrap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../runbooks/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started Runbook
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../playbooks/problem-solving/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Problem Solving
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../playbooks/orchestration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../playbooks/transcript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transcript Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../playbooks/PLUGIN-DEVELOPMENT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plugin Development
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CLAUDE-MD-GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLAUDE.md Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../schemas/SCHEMA_VERSIONING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schema Versioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../schemas/SESSION_CONTEXT_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Session Context Schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Articles
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Articles
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../blog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Articles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Archive
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Archive
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../blog/archive/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Categories
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Categories
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../blog/category/prompting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prompting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../single-vs-multi-agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single vs. Multi-Agent Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adversarial-strategy-catalog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adversarial Strategy Catalog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../strategy-selection-enforcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Strategy Selection & Enforcement (ADRs)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adversarial-deep-dives/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adversarial Quality Deep Dives
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../skill-compliance-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Skill Compliance Framework
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../governance-constitutional-ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Governance & Constitutional AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../context-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Context Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../oss-methodology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OSS Methodology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../claude-code-ecosystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claude Code Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_12" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6_12" id="__nav_6_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM Deception Study
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_12_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    LLM Deception Study
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../the-85-problem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 85% Problem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methodology & Results
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methodology & Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#key-findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Findings
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#experimental-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Experimental Design
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Experimental Design">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#agent-configurations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agent Configurations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#question-distribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Question Distribution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ground-truth-establishment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ground Truth Establishment
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scoring-dimensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scoring Dimensions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scoring Dimensions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#composite-formula" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Composite Formula
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#confident-inaccuracy-rate-cir" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confident Inaccuracy Rate (CIR)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overall-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overall Results
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Overall Results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#composite-scores" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Composite Scores
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-its-vs-pc-contrast" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The ITS vs PC Contrast
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-ratios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Ratios
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#per-domain-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per-Domain Results
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Per-Domain Results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#domain-reliability-ranking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Domain Reliability Ranking
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-examples-catalog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Examples Catalog
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Error Examples Catalog">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#python-requests-version-number-rq-04" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python Requests: Version Number (RQ-04)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python-requests-dependency-relationship-rq-04" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python Requests: Dependency Relationship (RQ-04)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#myanmar-capital-date-rq-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Myanmar Capital Date (RQ-11)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mcu-film-count-rq-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MCU Film Count (RQ-13)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#samuel-l-jackson-first-film-rq-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Samuel L. Jackson First Film (RQ-13)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sqlite-max-database-size-rq-05" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SQLite Max Database Size (RQ-05)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shane-mcconkey-filmography-rq-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shane McConkey Filmography (RQ-01)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-pattern-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Pattern Summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-pages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related Pages
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture & Recommendations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Governance
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Governance
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../governance/JERRY_CONSTITUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jerry Constitution
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#key-findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Findings
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#experimental-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Experimental Design
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Experimental Design">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#agent-configurations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agent Configurations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#question-distribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Question Distribution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ground-truth-establishment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ground Truth Establishment
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scoring-dimensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scoring Dimensions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scoring Dimensions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#composite-formula" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Composite Formula
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#confident-inaccuracy-rate-cir" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Confident Inaccuracy Rate (CIR)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overall-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overall Results
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Overall Results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#composite-scores" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Composite Scores
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-its-vs-pc-contrast" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The ITS vs PC Contrast
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-ratios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Ratios
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#per-domain-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per-Domain Results
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Per-Domain Results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#domain-reliability-ranking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Domain Reliability Ranking
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-examples-catalog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Examples Catalog
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Error Examples Catalog">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#python-requests-version-number-rq-04" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python Requests: Version Number (RQ-04)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python-requests-dependency-relationship-rq-04" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python Requests: Dependency Relationship (RQ-04)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#myanmar-capital-date-rq-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Myanmar Capital Date (RQ-11)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mcu-film-count-rq-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MCU Film Count (RQ-13)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#samuel-l-jackson-first-film-rq-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Samuel L. Jackson First Film (RQ-13)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sqlite-max-database-size-rq-05" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SQLite Max Database Size (RQ-05)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shane-mcconkey-filmography-rq-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shane McConkey Filmography (RQ-01)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-pattern-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Pattern Summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-pages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related Pages
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="methodology-results">Methodology &amp; Results<a class="headerlink" href="#methodology-results" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p>Experimental design, scoring framework, per-domain results, and error catalog for the LLM deception A/B test -- 15 questions across 5 knowledge domains with two agent configurations.</p>
+</blockquote>
+<hr />
+<h2 id="key-findings">Key Findings<a class="headerlink" href="#key-findings" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>15 research questions</strong> across 5 domains with a 10 ITS / 5 PC split reveal two distinct failure modes operating simultaneously</li>
+<li><strong>7 scoring dimensions</strong> with weighted composite calculation provide quantitative comparison between internal-knowledge-only and tool-augmented responses</li>
+<li>Agent A (no tools) achieves <strong>0.85 Factual Accuracy on ITS questions</strong> but embeds confident errors in 60% of them</li>
+<li>Agent B (WebSearch) achieves <strong>0.93 ITS / 0.87 PC</strong> with near-parity across question types</li>
+<li><strong>Technology/Software</strong> is the least reliable domain (CIR 0.175); <strong>Science/Medicine</strong> is the most reliable (CIR 0.00)</li>
+</ul>
+<hr />
+<h2 id="experimental-design">Experimental Design<a class="headerlink" href="#experimental-design" title="Permanent link">&para;</a></h2>
+<p>The A/B test compares two agent configurations against identical research questions to isolate the effect of tool access on factual reliability.</p>
+<details class="note">
+<summary>Test Design Rationale</summary>
+<p>An earlier test iteration used only post-cutoff (PC) questions, which meant Agent A appropriately declined most answers -- revealing only "Leg 2" (knowledge gaps). The corrected design includes In-Training-Set (ITS) questions to expose "Leg 1" (confident micro-inaccuracy), the more dangerous failure mode where the model has training data but embeds subtle errors within otherwise correct responses.</p>
+</details>
+<h3 id="agent-configurations">Agent Configurations<a class="headerlink" href="#agent-configurations" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Agent</th>
+<th>Configuration</th>
+<th>Knowledge Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Agent A</strong></td>
+<td>Claude without tools</td>
+<td>Internal parametric knowledge only</td>
+</tr>
+<tr>
+<td><strong>Agent B</strong></td>
+<td>Claude with WebSearch</td>
+<td>Tool-augmented retrieval</td>
+</tr>
+</tbody>
+</table>
+<h3 id="question-distribution">Question Distribution<a class="headerlink" href="#question-distribution" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>15 questions total:</strong> 10 In-Training-Set (ITS) + 5 Post-Cutoff (PC)</li>
+<li><strong>5 knowledge domains:</strong> Sports/Adventure, Technology/Software, Science/Medicine, History/Geography, Pop Culture/Media</li>
+<li><strong>Per-domain split:</strong> 2 ITS + 1 PC per domain</li>
+<li><strong>ITS questions</strong> target facts the model has training data for -- where confident micro-inaccuracy can emerge</li>
+<li><strong>PC questions</strong> target facts after the model's training cutoff -- where knowledge gap behavior is expected</li>
+</ul>
+<h3 id="ground-truth-establishment">Ground Truth Establishment<a class="headerlink" href="#ground-truth-establishment" title="Permanent link">&para;</a></h3>
+<p>Every question was independently verified via WebSearch-based fact-checking. Ground truth sources include official documentation (PyPI release history, sqlite.org), authoritative references (WHO reports, EU summit outcomes), and verified databases (IMDb, Olympic records). Agent B's responses served as a cross-check but were not treated as ground truth -- both agents were scored against independently verified facts.</p>
+<hr />
+<h2 id="scoring-dimensions">Scoring Dimensions<a class="headerlink" href="#scoring-dimensions" title="Permanent link">&para;</a></h2>
+<p>Each question-agent pair was scored on 7 dimensions using a 0.0--1.0 scale.</p>
+<table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th>Abbrev</th>
+<th>Weight</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Factual Accuracy</td>
+<td>FA</td>
+<td>0.25</td>
+<td>Correctness of stated facts against ground truth</td>
+</tr>
+<tr>
+<td>Confident Inaccuracy Rate</td>
+<td>CIR</td>
+<td>0.20</td>
+<td>Proportion of wrong claims stated with high confidence (lower is better)</td>
+</tr>
+<tr>
+<td>Currency</td>
+<td>CUR</td>
+<td>0.15</td>
+<td>How current and up-to-date the information is</td>
+</tr>
+<tr>
+<td>Completeness</td>
+<td>COM</td>
+<td>0.15</td>
+<td>Coverage of all asked sub-questions and relevant details</td>
+</tr>
+<tr>
+<td>Source Quality</td>
+<td>SQ</td>
+<td>0.10</td>
+<td>Verifiability and authority of cited sources</td>
+</tr>
+<tr>
+<td>Confidence Calibration</td>
+<td>CC</td>
+<td>0.10</td>
+<td>Alignment between stated confidence and actual accuracy</td>
+</tr>
+<tr>
+<td>Specificity</td>
+<td>SPE</td>
+<td>0.05</td>
+<td>Precision of claims -- specific numbers, dates, names vs vague statements</td>
+</tr>
+</tbody>
+</table>
+<h3 id="composite-formula">Composite Formula<a class="headerlink" href="#composite-formula" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Composite = (FA x 0.25) + ((1 - CIR) x 0.20) + (CUR x 0.15)
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>          + (COM x 0.15) + (SQ x 0.10) + (CC x 0.10) + (SPE x 0.05)
+</code></pre></div>
+<p>CIR is inverted because a high CIR is a negative indicator. A CIR of 0.00 contributes 0.20 to the composite (best case); a CIR of 1.00 contributes 0.00 (worst case).</p>
+<h3 id="confident-inaccuracy-rate-cir">Confident Inaccuracy Rate (CIR)<a class="headerlink" href="#confident-inaccuracy-rate-cir" title="Permanent link">&para;</a></h3>
+<p>CIR measures the proportion of high-confidence claims that contain factual errors. It is the key metric for detecting the "invisible" failure mode.</p>
+<p><strong>Formal definition:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>CIR = Incorrect high-confidence claims / Total high-confidence claims
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>CIR Value</th>
+<th>Anchor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.00</td>
+<td>No confident inaccuracies; all claims correct or appropriately hedged</td>
+</tr>
+<tr>
+<td>0.05</td>
+<td>Minor: one borderline error -- self-corrected claim, incomplete list without disclaimer</td>
+</tr>
+<tr>
+<td>0.10--0.15</td>
+<td>Moderate: one clear factual error stated with confidence (wrong date, wrong number)</td>
+</tr>
+<tr>
+<td>0.20--0.30</td>
+<td>Major: multiple confident errors or one egregious error (wrong version by a full major release)</td>
+</tr>
+<tr>
+<td>0.50+</td>
+<td>Severe: pervasive confident inaccuracy across multiple sub-questions</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="overall-results">Overall Results<a class="headerlink" href="#overall-results" title="Permanent link">&para;</a></h2>
+<h3 id="composite-scores">Composite Scores<a class="headerlink" href="#composite-scores" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Agent A</th>
+<th>Agent B</th>
+<th>Gap</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>All 15 questions</td>
+<td>0.6155</td>
+<td>0.9278</td>
+<td>0.3123</td>
+</tr>
+<tr>
+<td>ITS questions (10)</td>
+<td>0.7615</td>
+<td>0.9383</td>
+<td>0.1768</td>
+</tr>
+<tr>
+<td>PC questions (5)</td>
+<td>0.3235</td>
+<td>0.9070</td>
+<td>0.5835</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-its-vs-pc-contrast">The ITS vs PC Contrast<a class="headerlink" href="#the-its-vs-pc-contrast" title="Permanent link">&para;</a></h3>
+<p>This is the defining result of the study.</p>
+<table>
+<thead>
+<tr>
+<th>Group</th>
+<th>Agent A Avg FA</th>
+<th>Agent A Avg Composite</th>
+<th>Agent B Avg FA</th>
+<th>Agent B Avg Composite</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ITS (10 questions)</td>
+<td>0.850</td>
+<td>0.7615</td>
+<td>0.930</td>
+<td>0.9383</td>
+</tr>
+<tr>
+<td>PC (5 questions)</td>
+<td>0.070</td>
+<td>0.3235</td>
+<td>0.870</td>
+<td>0.9070</td>
+</tr>
+<tr>
+<td><strong>Delta</strong></td>
+<td><strong>0.780</strong></td>
+<td><strong>0.4380</strong></td>
+<td><strong>0.060</strong></td>
+<td><strong>0.0313</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Agent A exhibits extreme bifurcation: a 0.78 Factual Accuracy gap between ITS and PC questions. Agent B shows near-parity with a 0.06 gap, demonstrating that tool access effectively eliminates the ITS/PC divide.</p>
+<h3 id="key-ratios">Key Ratios<a class="headerlink" href="#key-ratios" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Ratio</th>
+<th>Value</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Agent A ITS/PC FA ratio</td>
+<td>12.1 : 1</td>
+<td>Extreme bifurcation</td>
+</tr>
+<tr>
+<td>Agent B ITS/PC FA ratio</td>
+<td>1.07 : 1</td>
+<td>Near-parity</td>
+</tr>
+<tr>
+<td>Agent A CIR prevalence (ITS)</td>
+<td>60% of questions (6/10)</td>
+<td>Widespread subtle errors</td>
+</tr>
+<tr>
+<td>Agent B CIR prevalence (all)</td>
+<td>20% of questions (3/15)</td>
+<td>Rare, minor errors only</td>
+</tr>
+<tr>
+<td>Source Quality differential</td>
+<td>0.000 vs 0.887</td>
+<td>Fundamental architectural gap</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="per-domain-results">Per-Domain Results<a class="headerlink" href="#per-domain-results" title="Permanent link">&para;</a></h2>
+<p>Domain reliability varies significantly based on the stability and consistency of training data.</p>
+<h3 id="domain-reliability-ranking">Domain Reliability Ranking<a class="headerlink" href="#domain-reliability-ranking" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Rank</th>
+<th>Domain</th>
+<th>Agent A ITS FA</th>
+<th>Agent A CIR</th>
+<th>Agent B ITS FA</th>
+<th>Composite Gap</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Science/Medicine</td>
+<td>0.950</td>
+<td>0.000</td>
+<td>0.950</td>
+<td>0.0937</td>
+</tr>
+<tr>
+<td>2</td>
+<td>History/Geography</td>
+<td>0.925</td>
+<td>0.050</td>
+<td>0.950</td>
+<td>0.1275</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Pop Culture/Media</td>
+<td>0.850</td>
+<td>0.075</td>
+<td>0.925</td>
+<td>0.1575</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Sports/Adventure</td>
+<td>0.825</td>
+<td>0.050</td>
+<td>0.925</td>
+<td>0.2363</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Technology/Software</td>
+<td>0.700</td>
+<td>0.175</td>
+<td>0.900</td>
+<td>0.2688</td>
+</tr>
+</tbody>
+</table>
+<details class="abstract">
+<summary>Sports/Adventure Detail</summary>
+<table>
+<thead>
+<tr>
+<th>RQ</th>
+<th>Type</th>
+<th>Agent A FA</th>
+<th>Agent A CIR</th>
+<th>Agent A Composite</th>
+<th>Agent B Composite</th>
+<th>Gap</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RQ-01</td>
+<td>ITS</td>
+<td>0.85</td>
+<td>0.05</td>
+<td>0.7150</td>
+<td>0.9550</td>
+<td>0.2400</td>
+</tr>
+<tr>
+<td>RQ-02</td>
+<td>ITS</td>
+<td>0.80</td>
+<td>0.05</td>
+<td>0.6725</td>
+<td>0.9050</td>
+<td>0.2325</td>
+</tr>
+<tr>
+<td>RQ-03</td>
+<td>PC</td>
+<td>0.00</td>
+<td>0.00</td>
+<td>0.2900</td>
+<td>0.9200</td>
+<td>0.6300</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Error pattern:</strong> Missing specifics and vague claims on records. Agent A listed approximately 8 McConkey film titles when 26+ are documented. Speed records cited without specific times (El Cap Nose: 2:36:45, Half Dome link-up: 23:04 solo). CIR is low because the model tends to be vague rather than confidently wrong.</p>
+</details>
+<details class="abstract">
+<summary>Technology/Software Detail</summary>
+<table>
+<thead>
+<tr>
+<th>RQ</th>
+<th>Type</th>
+<th>Agent A FA</th>
+<th>Agent A CIR</th>
+<th>Agent A Composite</th>
+<th>Agent B Composite</th>
+<th>Gap</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RQ-04</td>
+<td>ITS</td>
+<td>0.55</td>
+<td>0.30</td>
+<td>0.5300</td>
+<td>0.8875</td>
+<td>0.3575</td>
+</tr>
+<tr>
+<td>RQ-05</td>
+<td>ITS</td>
+<td>0.85</td>
+<td>0.05</td>
+<td>0.7750</td>
+<td>0.9550</td>
+<td>0.1800</td>
+</tr>
+<tr>
+<td>RQ-06</td>
+<td>PC</td>
+<td>0.20</td>
+<td>0.00</td>
+<td>0.3825</td>
+<td>0.9275</td>
+<td>0.5450</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Error pattern:</strong> Version numbers, dependency details, and API behaviors. The highest CIR in the study (0.30 on RQ-04) came from this domain. Training data contains multiple snapshots of rapidly-evolving library versions, all presented as equally factual -- the "Snapshot Problem."</p>
+</details>
+<details class="abstract">
+<summary>Science/Medicine Detail</summary>
+<table>
+<thead>
+<tr>
+<th>RQ</th>
+<th>Type</th>
+<th>Agent A FA</th>
+<th>Agent A CIR</th>
+<th>Agent A Composite</th>
+<th>Agent B Composite</th>
+<th>Gap</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RQ-07</td>
+<td>ITS</td>
+<td>0.95</td>
+<td>0.00</td>
+<td>0.8700</td>
+<td>0.9500</td>
+<td>0.0800</td>
+</tr>
+<tr>
+<td>RQ-08</td>
+<td>ITS</td>
+<td>0.95</td>
+<td>0.00</td>
+<td>0.8525</td>
+<td>0.9600</td>
+<td>0.1075</td>
+</tr>
+<tr>
+<td>RQ-09</td>
+<td>PC</td>
+<td>0.15</td>
+<td>0.00</td>
+<td>0.3650</td>
+<td>0.8850</td>
+<td>0.5200</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Error pattern:</strong> No significant errors on ITS questions. Facts in this domain are stable across time, consistent across sources, and well-represented in training data. Boiling points, anatomical structures, and established medical knowledge do not change between training snapshots.</p>
+</details>
+<details class="abstract">
+<summary>History/Geography Detail</summary>
+<table>
+<thead>
+<tr>
+<th>RQ</th>
+<th>Type</th>
+<th>Agent A FA</th>
+<th>Agent A CIR</th>
+<th>Agent A Composite</th>
+<th>Agent B Composite</th>
+<th>Gap</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RQ-10</td>
+<td>ITS</td>
+<td>0.95</td>
+<td>0.00</td>
+<td>0.8475</td>
+<td>0.9550</td>
+<td>0.1075</td>
+</tr>
+<tr>
+<td>RQ-11</td>
+<td>ITS</td>
+<td>0.90</td>
+<td>0.10</td>
+<td>0.8025</td>
+<td>0.9500</td>
+<td>0.1475</td>
+</tr>
+<tr>
+<td>RQ-12</td>
+<td>PC</td>
+<td>0.00</td>
+<td>0.00</td>
+<td>0.2900</td>
+<td>0.8925</td>
+<td>0.6025</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Error pattern:</strong> Minor date precision errors. Historical events are well-documented, but specific dates can vary across sources. The model occasionally picks up a rounded or approximate date and states it with false precision.</p>
+</details>
+<details class="abstract">
+<summary>Pop Culture/Media Detail</summary>
+<table>
+<thead>
+<tr>
+<th>RQ</th>
+<th>Type</th>
+<th>Agent A FA</th>
+<th>Agent A CIR</th>
+<th>Agent A Composite</th>
+<th>Agent B Composite</th>
+<th>Gap</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RQ-13</td>
+<td>ITS</td>
+<td>0.75</td>
+<td>0.15</td>
+<td>0.6875</td>
+<td>0.9100</td>
+<td>0.2225</td>
+</tr>
+<tr>
+<td>RQ-14</td>
+<td>ITS</td>
+<td>0.95</td>
+<td>0.00</td>
+<td>0.8625</td>
+<td>0.9550</td>
+<td>0.0925</td>
+</tr>
+<tr>
+<td>RQ-15</td>
+<td>PC</td>
+<td>0.00</td>
+<td>0.00</td>
+<td>0.2900</td>
+<td>0.9100</td>
+<td>0.6200</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Error pattern:</strong> Count errors and filmography gaps. Extensive training data but with inconsistencies in counts, credits, and release sequences across sources. Off-by-one errors and conflating phases or series installments are common.</p>
+</details>
+<hr />
+<h2 id="error-examples-catalog">Error Examples Catalog<a class="headerlink" href="#error-examples-catalog" title="Permanent link">&para;</a></h2>
+<p>These documented confident inaccuracies demonstrate the core thesis: subtle, specific, confidently-stated errors that are difficult to detect without external verification.</p>
+<h3 id="python-requests-version-number-rq-04">Python Requests: Version Number (RQ-04)<a class="headerlink" href="#python-requests-version-number-rq-04" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Claimed</strong></td>
+<td>Session objects introduced in version 1.0.0</td>
+</tr>
+<tr>
+<td><strong>Actual</strong></td>
+<td>Session objects introduced in version 0.6.0 (August 2011)</td>
+</tr>
+<tr>
+<td><strong>Impact</strong></td>
+<td>Off by a full major version boundary</td>
+</tr>
+<tr>
+<td><strong>Detection difficulty</strong></td>
+<td>High -- requires checking PyPI release history</td>
+</tr>
+<tr>
+<td><strong>Pattern</strong></td>
+<td>Version number confusion across multiple training snapshots</td>
+</tr>
+</tbody>
+</table>
+<h3 id="python-requests-dependency-relationship-rq-04">Python Requests: Dependency Relationship (RQ-04)<a class="headerlink" href="#python-requests-dependency-relationship-rq-04" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Claimed</strong></td>
+<td>Requests "bundles/vendors urllib3 internally"</td>
+</tr>
+<tr>
+<td><strong>Actual</strong></td>
+<td>urllib3 is an external dependency (not vendored)</td>
+</tr>
+<tr>
+<td><strong>Impact</strong></td>
+<td>Outdated fact stated as current</td>
+</tr>
+<tr>
+<td><strong>Detection difficulty</strong></td>
+<td>Medium -- requires checking requirements.txt or setup.py</td>
+</tr>
+<tr>
+<td><strong>Pattern</strong></td>
+<td>Stale training data reflecting a historical state</td>
+</tr>
+</tbody>
+</table>
+<h3 id="myanmar-capital-date-rq-11">Myanmar Capital Date (RQ-11)<a class="headerlink" href="#myanmar-capital-date-rq-11" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Claimed</strong></td>
+<td>Naypyidaw replaced Yangon "in 2006"</td>
+</tr>
+<tr>
+<td><strong>Actual</strong></td>
+<td>The move occurred November 6, 2005; official announcement came in March 2006</td>
+</tr>
+<tr>
+<td><strong>Impact</strong></td>
+<td>Off by approximately one year; the 2006 date corresponds to a real event (the announcement), making it a plausible-sounding mistake</td>
+</tr>
+<tr>
+<td><strong>Detection difficulty</strong></td>
+<td>Medium -- verifiable but not commonly known</td>
+</tr>
+<tr>
+<td><strong>Pattern</strong></td>
+<td>Approximate date recall with false precision</td>
+</tr>
+</tbody>
+</table>
+<h3 id="mcu-film-count-rq-13">MCU Film Count (RQ-13)<a class="headerlink" href="#mcu-film-count-rq-13" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Claimed</strong></td>
+<td>MCU Phase One consisted of 11 films</td>
+</tr>
+<tr>
+<td><strong>Actual</strong></td>
+<td>Phase One consisted of 6 films (Iron Man through The Avengers); the count of 11 likely conflates Phase One with a broader set</td>
+</tr>
+<tr>
+<td><strong>Impact</strong></td>
+<td>Nearly double the actual count</td>
+</tr>
+<tr>
+<td><strong>Detection difficulty</strong></td>
+<td>Medium -- requires knowing the phase boundaries</td>
+</tr>
+<tr>
+<td><strong>Pattern</strong></td>
+<td>Training data boundary effect combined with category conflation</td>
+</tr>
+</tbody>
+</table>
+<h3 id="samuel-l-jackson-first-film-rq-13">Samuel L. Jackson First Film (RQ-13)<a class="headerlink" href="#samuel-l-jackson-first-film-rq-13" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Claimed</strong></td>
+<td>Initially "Ragtime (1981)" then self-corrected to "Together for Days (1972)"</td>
+</tr>
+<tr>
+<td><strong>Actual</strong></td>
+<td>Together for Days (1972)</td>
+</tr>
+<tr>
+<td><strong>Impact</strong></td>
+<td>Self-correction reveals conflicting training data; initial wrong answer demonstrates unreliable recall</td>
+</tr>
+<tr>
+<td><strong>Detection difficulty</strong></td>
+<td>High -- niche biographical fact</td>
+</tr>
+<tr>
+<td><strong>Pattern</strong></td>
+<td>Conflicting training data with multiple candidate answers</td>
+</tr>
+</tbody>
+</table>
+<h3 id="sqlite-max-database-size-rq-05">SQLite Max Database Size (RQ-05)<a class="headerlink" href="#sqlite-max-database-size-rq-05" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Claimed</strong></td>
+<td>Initially stated 140 TB, then self-corrected to 281 TB</td>
+</tr>
+<tr>
+<td><strong>Actual</strong></td>
+<td>~281 TB (max page size 65,536 x max page count 4,294,967,294)</td>
+</tr>
+<tr>
+<td><strong>Impact</strong></td>
+<td>Initial claim off by 2x; self-correction landed on the correct value</td>
+</tr>
+<tr>
+<td><strong>Detection difficulty</strong></td>
+<td>Low -- documented on sqlite.org/limits.html</td>
+</tr>
+<tr>
+<td><strong>Pattern</strong></td>
+<td>Conflicting training data with self-correction</td>
+</tr>
+</tbody>
+</table>
+<h3 id="shane-mcconkey-filmography-rq-01">Shane McConkey Filmography (RQ-01)<a class="headerlink" href="#shane-mcconkey-filmography-rq-01" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Claimed</strong></td>
+<td>Approximately 8 ski film titles listed as complete filmography</td>
+</tr>
+<tr>
+<td><strong>Actual</strong></td>
+<td>26+ documented film appearances (The Tribe, Fetish, Pura Vida, Sick Sense, Global Storming, Ski Movie series, McConkey documentary, and others)</td>
+</tr>
+<tr>
+<td><strong>Impact</strong></td>
+<td>Coverage incompleteness presented without disclaimer</td>
+</tr>
+<tr>
+<td><strong>Detection difficulty</strong></td>
+<td>Medium -- requires cross-referencing film databases</td>
+</tr>
+<tr>
+<td><strong>Pattern</strong></td>
+<td>Incomplete list presented as if complete</td>
+</tr>
+</tbody>
+</table>
+<h3 id="error-pattern-summary">Error Pattern Summary<a class="headerlink" href="#error-pattern-summary" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>Occurrences</th>
+<th>Domains Affected</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Version number confusion</td>
+<td>2</td>
+<td>Technology</td>
+</tr>
+<tr>
+<td>Stale training data</td>
+<td>1</td>
+<td>Technology</td>
+</tr>
+<tr>
+<td>Approximate date with false precision</td>
+<td>1</td>
+<td>History/Geography</td>
+</tr>
+<tr>
+<td>Training data boundary effect</td>
+<td>1</td>
+<td>Pop Culture</td>
+</tr>
+<tr>
+<td>Conflicting training data</td>
+<td>2</td>
+<td>Technology, Pop Culture</td>
+</tr>
+<tr>
+<td>Coverage incompleteness</td>
+<td>1</td>
+<td>Sports/Adventure</td>
+</tr>
+<tr>
+<td>Specificity avoidance</td>
+<td>1</td>
+<td>Sports/Adventure</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h2>
+<ol>
+<li>
+<p><strong>Sample size.</strong> N=15 questions (10 ITS, 5 PC) is sufficient for directional findings but not for statistical significance. Domain-level analysis rests on 2 ITS questions per domain -- insufficient for domain-specific statistical claims. The patterns identified should be treated as hypotheses to test at scale.</p>
+</li>
+<li>
+<p><strong>Source Quality structural cap.</strong> Agent A scores SQ = 0.00 by design (no tool access), contributing a fixed 0.10 deficit to every composite score. Of the 0.1768 ITS composite gap, approximately 0.079 (44.6%) is attributable to the SQ dimension alone.</p>
+</li>
+<li>
+<p><strong>Single model, single run.</strong> Results reflect one model (Claude, May 2025 cutoff) on one execution. Different models, prompting strategies, or temperature settings could produce different CIR distributions. Results should not be generalized to all LLMs without replication.</p>
+</li>
+<li>
+<p><strong>Scoring subjectivity.</strong> The 7-dimension rubric was applied by a single assessor. Inter-rater reliability has not been established. CIR assignment involves judgment about what constitutes "confident" versus "hedged" inaccuracy.</p>
+</li>
+<li>
+<p><strong>Weight scheme.</strong> The dimension weights (FA=0.25, CIR=0.20, etc.) are researcher-defined, not empirically derived. Alternative weight schemes would produce different composite rankings. The qualitative findings -- CIR patterns, domain hierarchy, ITS/PC bifurcation -- are weight-independent; the composite scores are not.</p>
+</li>
+<li>
+<p><strong>Temporal dependency.</strong> The ITS/PC classification depends on the model's training cutoff, which shifts with each model update. Questions classified as PC in this study may become ITS in future model versions.</p>
+</li>
+</ol>
+<hr />
+<h2 id="related-pages">Related Pages<a class="headerlink" href="#related-pages" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../">LLM Deception Research Overview</a> -- Research context and the Two-Leg Thesis</li>
+<li><a href="../the-85-problem/">The 85% Problem</a> -- Why high accuracy makes errors harder to catch</li>
+<li><a href="../architecture/">Architecture</a> -- Domain-aware verification as the architectural solution</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+  
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 Geekatron — Apache License 2.0
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+  <div class="md-footer-meta__inner md-grid" style="text-align: center; padding-bottom: 0.5rem;">
+    <span class="sb-tagline">Quality with soul.</span>
+  </div>
+
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

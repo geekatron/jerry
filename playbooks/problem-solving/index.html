@@ -1,0 +1,2656 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Framework for behavior/workflow guardrails. Accrues knowledge, wisdom, experience.">
+      
+      
+        <meta name="author" content="Geekatron">
+      
+      
+        <link rel="canonical" href="https://jerry.geekatron.org/playbooks/problem-solving/">
+      
+      
+        <link rel="prev" href="../../runbooks/getting-started/">
+      
+      
+        <link rel="next" href="../orchestration/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.3">
+    
+    
+      
+        <title>Problem Solving - Jerry Framework</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/saucer-boy.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="saucer-boy" data-md-color-primary="deep-purple" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#problem-solving-playbook" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Jerry Framework" class="md-header__button md-logo" aria-label="Jerry Framework" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Jerry Framework
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Problem Solving
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="saucer-boy" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="saucer-boy-dark" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/geekatron/jerry" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    geekatron/jerry
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Jerry Framework" class="md-nav__button md-logo" aria-label="Jerry Framework" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    Jerry Framework
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/geekatron/jerry" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    geekatron/jerry
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INSTALLATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../BOOTSTRAP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bootstrap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started Runbook
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Problem Solving
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Problem Solving
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#document-sections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Document Sections
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-to-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to Use
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="When to Use">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-this-skill-when" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use this skill when:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#do-not-use-this-skill-when" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Do NOT use this skill when:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-by-step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step-by-Step
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step-by-Step">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#primary-path-natural-language-request" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Primary Path: Natural language request
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optional-path-explicit-agent-request" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optional Path: Explicit agent request
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#agent-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agent Reference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#agent-selection-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agent Selection Table
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creator-critic-revision-cycle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creator-Critic-Revision Cycle
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Examples
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-1-researching-a-new-technology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 1: Researching a new technology
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-2-finding-the-root-cause-of-a-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 2: Finding the root cause of a failure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-3-creating-an-architecture-decision-record" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 3: Creating an architecture decision record
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-4-explicit-agent-invocation-for-an-investigation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 4: Explicit agent invocation for an investigation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related Resources
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../orchestration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../transcript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transcript Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PLUGIN-DEVELOPMENT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plugin Development
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CLAUDE-MD-GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLAUDE.md Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../schemas/SCHEMA_VERSIONING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schema Versioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../schemas/SESSION_CONTEXT_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Session Context Schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Articles
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Articles
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Articles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Archive
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Archive
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/archive/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Categories
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Categories
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/category/prompting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prompting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/single-vs-multi-agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single vs. Multi-Agent Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/adversarial-strategy-catalog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adversarial Strategy Catalog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/strategy-selection-enforcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Strategy Selection & Enforcement (ADRs)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/adversarial-deep-dives/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adversarial Quality Deep Dives
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/skill-compliance-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Skill Compliance Framework
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/governance-constitutional-ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Governance & Constitutional AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/context-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Context Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/oss-methodology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OSS Methodology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/architecture-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/claude-code-ecosystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claude Code Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_12" id="__nav_6_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM Deception Study
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    LLM Deception Study
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/llm-deception/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/llm-deception/the-85-problem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 85% Problem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/llm-deception/methodology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methodology & Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/llm-deception/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture & Recommendations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Governance
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Governance
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../governance/JERRY_CONSTITUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jerry Constitution
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#document-sections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Document Sections
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-to-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to Use
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="When to Use">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-this-skill-when" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use this skill when:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#do-not-use-this-skill-when" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Do NOT use this skill when:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-by-step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step-by-Step
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step-by-Step">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#primary-path-natural-language-request" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Primary Path: Natural language request
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optional-path-explicit-agent-request" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optional Path: Explicit agent request
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#agent-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agent Reference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#agent-selection-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agent Selection Table
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creator-critic-revision-cycle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creator-Critic-Revision Cycle
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Examples
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-1-researching-a-new-technology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 1: Researching a new technology
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-2-finding-the-root-cause-of-a-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 2: Finding the root cause of a failure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-3-creating-an-architecture-decision-record" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 3: Creating an architecture decision record
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-4-explicit-agent-invocation-for-an-investigation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 4: Explicit agent invocation for an investigation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related Resources
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="problem-solving-playbook">Problem-Solving Playbook<a class="headerlink" href="#problem-solving-playbook" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Skill:</strong> problem-solving
+<strong>SKILL.md:</strong> <a href="https://github.com/geekatron/jerry/blob/main/skills/problem-solving/SKILL.md">problem-solving/SKILL.md</a>
+<strong>Trigger keywords:</strong> research, analyze, investigate, explore, root cause, why</p>
+</blockquote>
+<h2 id="document-sections">Document Sections<a class="headerlink" href="#document-sections" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Section</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#when-to-use">When to Use</a></td>
+<td>Activation criteria and exclusions</td>
+</tr>
+<tr>
+<td><a href="#prerequisites">Prerequisites</a></td>
+<td>What must be in place before invoking</td>
+</tr>
+<tr>
+<td><a href="#step-by-step">Step-by-Step</a></td>
+<td>Primary invocation path</td>
+</tr>
+<tr>
+<td><a href="#agent-reference">Agent Reference</a></td>
+<td>All 9 agents with roles, triggers, and output locations</td>
+</tr>
+<tr>
+<td><a href="#agent-selection-table">Agent Selection Table</a></td>
+<td>Keyword-to-agent decision table</td>
+</tr>
+<tr>
+<td><a href="#creator-critic-revision-cycle">Creator-Critic-Revision Cycle</a></td>
+<td>Quality workflow for C2+ deliverables</td>
+</tr>
+<tr>
+<td><a href="#examples">Examples</a></td>
+<td>Concrete invocation examples</td>
+</tr>
+<tr>
+<td><a href="#troubleshooting">Troubleshooting</a></td>
+<td>Common failure modes</td>
+</tr>
+<tr>
+<td><a href="#related-resources">Related Resources</a></td>
+<td>Cross-references to other playbooks and SKILL.md</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="when-to-use">When to Use<a class="headerlink" href="#when-to-use" title="Permanent link">&para;</a></h2>
+<h3 id="use-this-skill-when">Use this skill when:<a class="headerlink" href="#use-this-skill-when" title="Permanent link">&para;</a></h3>
+<ul>
+<li>You need to <strong>research</strong> a new technology, approach, or unfamiliar topic</li>
+<li>You need to <strong>analyze</strong> data, code behavior, or a system to understand patterns or gaps</li>
+<li>You need to <strong>investigate</strong> a failure, incident, or unexpected behavior</li>
+<li>You need to <strong>explore</strong> options or approaches before making a decision</li>
+<li>You need to determine the <strong>root cause</strong> of a problem (bugs, performance issues, test failures, outages)</li>
+<li>You are asking <strong>why</strong> something is happening and need structured evidence before concluding</li>
+<li>You are making an architecture decision that needs documented rationale (ADR)</li>
+<li>You need to validate that constraints or requirements are satisfied with evidence</li>
+<li>You need to synthesize findings across multiple prior documents into themes or recommendations</li>
+<li>You need a code, design, or security quality review</li>
+<li>You need a status or progress report with metrics</li>
+</ul>
+<h3 id="do-not-use-this-skill-when">Do NOT use this skill when:<a class="headerlink" href="#do-not-use-this-skill-when" title="Permanent link">&para;</a></h3>
+<ul>
+<li>You need iterative improvement of a deliverable with formal adversarial strategies — use <code>/adversary</code> for standalone adversarial reviews, tournament scoring, or formal strategy application (S-001 through S-014)</li>
+<li>You need to manage tasks and issues — use <code>/worktracker</code></li>
+<li>You need to run a multi-phase orchestrated workflow with gates — use <code>/orchestration</code></li>
+<li>The task is a simple one-step lookup or clarification that does not require a persisted artifact</li>
+<li>You need to parse a transcript file — use <code>/transcript</code> with the CLI command</li>
+</ul>
+<hr />
+<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>JERRY_PROJECT</code> environment variable is set to an active project (<a href="https://github.com/geekatron/jerry/blob/main/.context/rules/quality-enforcement.md#hard-rule-index">H-04</a> — session will not proceed without this)</li>
+<li>A Jerry session is active (<code>jerry session start</code> has been run)</li>
+<li>You have a clear problem statement, question, or topic to investigate</li>
+<li>For research or analysis tasks: relevant prior documents are accessible in the repository (optional but recommended — agents will scan for existing context)</li>
+<li>For code review tasks: the code to be reviewed is committed or staged in the repository</li>
+<li>For investigation tasks: symptoms, error logs, or failure evidence are available</li>
+</ul>
+<hr />
+<h2 id="step-by-step">Step-by-Step<a class="headerlink" href="#step-by-step" title="Permanent link">&para;</a></h2>
+<h3 id="primary-path-natural-language-request">Primary Path: Natural language request<a class="headerlink" href="#primary-path-natural-language-request" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p>State your request in natural language, using one of the trigger keywords: <code>research</code>, <code>analyze</code>, <code>investigate</code>, <code>explore</code>, <code>root cause</code>, or <code>why</code>. Example: "Research the trade-offs between SQLite and PostgreSQL for this use case."</p>
+</li>
+<li>
+<p>The orchestrator reads your request and selects the appropriate agent based on the detected keywords and context. You do not need to name the agent explicitly unless you want a specific one.</p>
+</li>
+</ol>
+<blockquote>
+<p><strong>Note on keyword detection:</strong> Keyword detection is probabilistic — the LLM interprets your intent from context, not via exact string matching. If your message contains keywords for multiple skills (e.g., "analyze this orchestration workflow"), the orchestrator uses context to disambiguate. If the wrong skill or agent activates, use explicit invocation as a guaranteed alternative: name the agent directly (e.g., "Use ps-analyst to...") or use the <code>/problem-solving</code> slash command.</p>
+</blockquote>
+<ol>
+<li>
+<p>The selected agent begins work. For C2+ deliverables (reversible in 1 day, 3–10 files), expect a <strong>creator-critic-revision cycle</strong> — the agent will produce an initial deliverable, critique it, and revise. See <a href="#creator-critic-revision-cycle">Creator-Critic-Revision Cycle</a> for details.</p>
+</li>
+<li>
+<p>The agent persists all output to a file in the project's <code>docs/</code> subdirectory (e.g., <code>docs/research/</code>, <code>docs/analysis/</code>, <code>docs/decisions/</code>). You will see the file path in the response.</p>
+</li>
+<li>
+<p>Review the persisted artifact. If it does not fully address your need, make a follow-up request — referencing the output file explicitly if you want the same agent to continue from it.</p>
+</li>
+<li>
+<p>For complex problems requiring multiple perspectives, chain agents sequentially: researcher -&gt; analyst -&gt; architect -&gt; validator. Each agent references the previous agent's output file.</p>
+</li>
+</ol>
+<h3 id="optional-path-explicit-agent-request">Optional Path: Explicit agent request<a class="headerlink" href="#optional-path-explicit-agent-request" title="Permanent link">&para;</a></h3>
+<p>If you know which agent you need, name it directly:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>&quot;Use ps-researcher to explore graph database options.&quot;
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>&quot;Have ps-analyst do a 5 Whys on the login failures.&quot;
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>&quot;I need ps-architect to create an ADR for the new persistence layer.&quot;
+</code></pre></div>
+<hr />
+<h2 id="agent-reference">Agent Reference<a class="headerlink" href="#agent-reference" title="Permanent link">&para;</a></h2>
+<p>All 9 problem-solving agents, their roles, invocation triggers, and output locations:</p>
+<table>
+<thead>
+<tr>
+<th>Agent</th>
+<th>Role</th>
+<th>Invoke When You Need</th>
+<th>Output Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ps-researcher</code></td>
+<td>Research Specialist — Gathers information with citations from codebase, web, and prior documents</td>
+<td>To <strong>research</strong>, <strong>explore</strong>, <strong>find</strong>, or <strong>gather</strong> information on a topic</td>
+<td><code>docs/research/</code></td>
+</tr>
+<tr>
+<td><code>ps-analyst</code></td>
+<td>Analysis Specialist — Deep analysis using 5 Whys, FMEA, trade-off analysis, gap analysis, risk assessment</td>
+<td>To <strong>analyze</strong>, find the <strong>root cause</strong>, assess <strong>trade-offs</strong>, perform a gap or risk analysis</td>
+<td><code>docs/analysis/</code></td>
+</tr>
+<tr>
+<td><code>ps-architect</code></td>
+<td>Architecture Specialist — Creates Architecture Decision Records (ADRs) in Nygard format with L0/L1/L2 explanations</td>
+<td>To document an <strong>ADR</strong>, make an <strong>architecture decision</strong>, <strong>choose</strong> between options</td>
+<td><code>docs/decisions/</code></td>
+</tr>
+<tr>
+<td><code>ps-critic</code></td>
+<td>Quality Evaluator — Iterative refinement using S-014 (LLM-as-Judge) with quality scores</td>
+<td>To <strong>critique</strong>, score, or iteratively <strong>improve</strong> a deliverable; part of H-14 creator-critic cycles</td>
+<td><code>docs/critiques/</code></td>
+</tr>
+<tr>
+<td><code>ps-validator</code></td>
+<td>Validation Specialist — Verifies constraints and requirements with evidence and traceability matrices</td>
+<td>To <strong>validate</strong>, <strong>verify</strong>, check <strong>constraints</strong>, or confirm a requirement is met</td>
+<td><code>docs/analysis/</code></td>
+</tr>
+<tr>
+<td><code>ps-synthesizer</code></td>
+<td>Synthesis Specialist — Pattern extraction and knowledge generation across multiple documents</td>
+<td>To <strong>synthesize</strong>, find <strong>patterns</strong> or <strong>themes</strong>, combine findings, perform meta-analysis</td>
+<td><code>docs/synthesis/</code></td>
+</tr>
+<tr>
+<td><code>ps-reviewer</code></td>
+<td>Review Specialist — Code, design, architecture, and security quality assessment</td>
+<td>To <strong>review</strong> code quality, design quality, or security posture (OWASP)</td>
+<td><code>docs/reviews/</code></td>
+</tr>
+<tr>
+<td><code>ps-investigator</code></td>
+<td>Investigation Specialist — Root cause of failures and incidents using 5 Whys, Ishikawa diagrams, FMEA</td>
+<td>To <strong>investigate</strong> a failure, incident, outage, or debug <strong>what happened</strong></td>
+<td><code>docs/investigations/</code></td>
+</tr>
+<tr>
+<td><code>ps-reporter</code></td>
+<td>Reporting Specialist — Status reports with health metrics and progress tracking</td>
+<td>To generate a <strong>report</strong>, <strong>status</strong> update, <strong>progress</strong> summary, or health metrics</td>
+<td><code>docs/reports/</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Output file naming convention:</strong> <code>{ps-id}-{entry-id}-{topic-slug}.md</code> — for example, <code>work-024-e-001-test-performance.md</code>.</p>
+<p>All agents produce output at three levels:
+- <strong>L0 (ELI5):</strong> Executive summary for non-technical stakeholders
+- <strong>L1 (Software Engineer):</strong> Technical implementation details
+- <strong>L2 (Principal Architect):</strong> Strategic implications and trade-offs</p>
+<hr />
+<h2 id="agent-selection-table">Agent Selection Table<a class="headerlink" href="#agent-selection-table" title="Permanent link">&para;</a></h2>
+<p>Use the detected keywords or context clues to select the right agent:</p>
+<table>
+<thead>
+<tr>
+<th>Detected Keywords / Context</th>
+<th>Recommended Agent</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>research, explore, find, gather, learn about</td>
+<td><code>ps-researcher</code></td>
+<td>Topic is new; need information gathering with citations</td>
+</tr>
+<tr>
+<td>analyze, root cause, trade-off, gap, risk, 5 whys, FMEA, why is X happening</td>
+<td><code>ps-analyst</code></td>
+<td>Need structured analysis with causal reasoning</td>
+</tr>
+<tr>
+<td>ADR, architecture decision, design choice, choose between, decide on</td>
+<td><code>ps-architect</code></td>
+<td>Need a documented, reasoned decision record</td>
+</tr>
+<tr>
+<td>critique, quality score, evaluate quality, improvement feedback, iterative refinement</td>
+<td><code>ps-critic</code></td>
+<td>Need structured quality scoring and revision feedback</td>
+</tr>
+<tr>
+<td>validate, verify, constraint, requirement met, evidence, traceability</td>
+<td><code>ps-validator</code></td>
+<td>Need compliance verification with evidence</td>
+</tr>
+<tr>
+<td>synthesize, patterns, themes, combine, meta-analysis, across documents</td>
+<td><code>ps-synthesizer</code></td>
+<td>Need cross-document pattern extraction</td>
+</tr>
+<tr>
+<td>review, code review, quality, security, OWASP</td>
+<td><code>ps-reviewer</code></td>
+<td>Need quality assessment of an existing artifact</td>
+</tr>
+<tr>
+<td>investigate, failure, incident, debug, what happened, outage</td>
+<td><code>ps-investigator</code></td>
+<td>Need failure root cause with corrective actions</td>
+</tr>
+<tr>
+<td>report, status, progress, metrics, health</td>
+<td><code>ps-reporter</code></td>
+<td>Need structured reporting with metrics</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Disambiguation — ps-analyst vs ps-investigator:</strong>
+- Use <code>ps-analyst</code> when analyzing a problem prospectively (trade-offs, gaps, risks, design decisions).
+- Use <code>ps-investigator</code> when analyzing a failure retrospectively (incident, outage, bug that already occurred).</p>
+<p><strong>Disambiguation — ps-critic vs /adversary:</strong>
+- Use <code>ps-critic</code> when inside a creator-critic-revision loop — iterative improvement of a deliverable in progress.
+- Use <code>/adversary</code> when you want a standalone adversarial assessment, tournament scoring, or formal strategy application outside the improvement loop.</p>
+<hr />
+<h2 id="creator-critic-revision-cycle">Creator-Critic-Revision Cycle<a class="headerlink" href="#creator-critic-revision-cycle" title="Permanent link">&para;</a></h2>
+<p>For C2+ deliverables (reversible in up to 1 day, touching 3–10 files), the problem-solving skill enforces a <strong>minimum 3-iteration creator-critic-revision cycle</strong> per H-14 (HARD rule).</p>
+<p><strong>You will observe this cycle when:</strong>
+- An agent produces a deliverable, then another pass critiques it and provides a quality score
+- The agent revises and re-scores, repeating until the quality threshold is met
+- This may happen 3 or more times before the deliverable is presented as final</p>
+<p><strong>Quality threshold (H-13):</strong> The weighted composite score must reach <strong>&gt;= 0.92</strong> for C2+ deliverables. Deliverables below this threshold are rejected and require revision. The six scoring dimensions and their weights are:</p>
+<table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th>Weight</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Completeness</td>
+<td>0.20</td>
+</tr>
+<tr>
+<td>Internal Consistency</td>
+<td>0.20</td>
+</tr>
+<tr>
+<td>Methodological Rigor</td>
+<td>0.20</td>
+</tr>
+<tr>
+<td>Evidence Quality</td>
+<td>0.15</td>
+</tr>
+<tr>
+<td>Actionability</td>
+<td>0.15</td>
+</tr>
+<tr>
+<td>Traceability</td>
+<td>0.10</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Score bands:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Band</th>
+<th>Score</th>
+<th>Outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PASS</td>
+<td>&gt;= 0.92</td>
+<td>Deliverable accepted</td>
+</tr>
+<tr>
+<td>REVISE</td>
+<td>0.85 – 0.91</td>
+<td>Near-threshold — targeted revision required</td>
+</tr>
+<tr>
+<td>REJECTED</td>
+<td>&lt; 0.85</td>
+<td>Significant rework required</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Circuit breaker:</strong> After the minimum 3 iterations, if no improvement occurs over 2 consecutive cycles, the agent will either accept the deliverable with caveats documented or escalate to the user.</p>
+<p><strong>Criticality auto-escalation rules</strong> apply to problem-solving artifacts:
+- Artifacts touching <code>docs/governance/JERRY_CONSTITUTION.md</code> = auto-C4 (all 10 adversarial strategies required)
+- Artifacts touching <code>.context/rules/</code> or <code>.claude/rules/</code> = auto-C3 minimum
+- New or modified ADRs = auto-C3 minimum</p>
+<hr />
+<h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
+<h3 id="example-1-researching-a-new-technology">Example 1: Researching a new technology<a class="headerlink" href="#example-1-researching-a-new-technology" title="Permanent link">&para;</a></h3>
+<p><strong>User request:</strong> "Research best practices for event sourcing in Python"</p>
+<p><strong>System behavior:</strong> The orchestrator detects the keyword <code>research</code> and invokes <code>ps-researcher</code>. The agent gathers information from the codebase, web sources, and any prior research documents in <code>docs/research/</code>. It produces a persisted artifact at a path such as <code>docs/research/work-024-e-001-event-sourcing.md</code>. The artifact includes an L0 executive summary, L1 technical details, and L2 strategic implications. Sources are cited. The agent performs a self-review (H-15, S-010 Self-Refine) before presenting the output.</p>
+<hr />
+<h3 id="example-2-finding-the-root-cause-of-a-failure">Example 2: Finding the root cause of a failure<a class="headerlink" href="#example-2-finding-the-root-cause-of-a-failure" title="Permanent link">&para;</a></h3>
+<p><strong>User request:</strong> "Analyze why our test suite is running so slowly — root cause"</p>
+<p><strong>System behavior:</strong> The orchestrator detects <code>analyze</code> and <code>root cause</code> and invokes <code>ps-analyst</code>. The agent applies structured analysis techniques (5 Whys, gap analysis) to the test execution patterns. For a C2 deliverable, a creator-critic-revision cycle runs: the analyst produces an initial root cause analysis, <code>ps-critic</code> scores it against the 6-dimension rubric, and revisions are made until the score reaches &gt;= 0.92. The final output is persisted at <code>docs/analysis/work-024-e-002-root-cause.md</code>, with corrective action recommendations at all three audience levels (L0/L1/L2).</p>
+<hr />
+<h3 id="example-3-creating-an-architecture-decision-record">Example 3: Creating an architecture decision record<a class="headerlink" href="#example-3-creating-an-architecture-decision-record" title="Permanent link">&para;</a></h3>
+<p><strong>User request:</strong> "Create an ADR for choosing PostgreSQL over SQLite for the persistence layer"</p>
+<p><strong>System behavior:</strong> The orchestrator detects <code>ADR</code> and <code>architecture decision</code> and invokes <code>ps-architect</code>. The agent checks <code>docs/decisions/</code> for prior ADRs to ensure numbering and formatting consistency. It creates a new ADR in Nygard format at <code>docs/decisions/work-024-e-003-adr-persistence.md</code> with Status: PROPOSED. Because ADRs are auto-C3 (AE-003), a full C3 strategy set applies — the critic applies Devil's Advocate (S-002) and Pre-Mortem Analysis (S-004) in addition to the baseline quality score. The ADR includes L0 (why we chose this), L1 (technical rationale), and L2 (strategic trade-offs).</p>
+<hr />
+<h3 id="example-4-explicit-agent-invocation-for-an-investigation">Example 4: Explicit agent invocation for an investigation<a class="headerlink" href="#example-4-explicit-agent-invocation-for-an-investigation" title="Permanent link">&para;</a></h3>
+<p><strong>User request:</strong> "Use ps-investigator to investigate the production API timeout that occurred last night"</p>
+<p><strong>System behavior:</strong> <code>ps-investigator</code> is invoked directly (no keyword detection needed — explicit agent name was provided). The agent applies 5 Whys and Ishikawa analysis to available logs, error messages, and system state evidence. It produces a root cause report with corrective actions at <code>docs/investigations/work-024-e-004-api-timeout.md</code>. The report distinguishes immediate corrective actions (L1) from systemic preventive measures (L2).</p>
+<hr />
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Cause</th>
+<th>Resolution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"JERRY_PROJECT not set" or session fails to start</td>
+<td>H-04 constraint: no active project is configured</td>
+<td>Run <code>jerry session start</code> and ensure <code>JERRY_PROJECT</code> is set in the environment. See <code>docs/runbooks/getting-started.md</code> for setup procedure.</td>
+</tr>
+<tr>
+<td>Agent produces output but no file appears in <code>docs/</code></td>
+<td><a href="../../governance/JERRY_CONSTITUTION/#p-002-file-persistence">P-002</a> persistence constraint violated — the agent did not write its output to disk</td>
+<td>Re-invoke the agent with an explicit instruction: "Persist your findings to a file in <code>docs/research/</code>." All agents MUST write output files per <a href="../../governance/JERRY_CONSTITUTION/#p-002-file-persistence">P-002</a>.</td>
+</tr>
+<tr>
+<td>Creator-critic cycle runs more than 5 times without reaching 0.92</td>
+<td>Deliverable has a fundamental structural problem; the critic is finding the same gap each iteration</td>
+<td>Review the latest critique artifact in <code>docs/critiques/</code>. Identify the dimension with the lowest sub-score. Re-state the request with explicit guidance addressing that dimension.</td>
+</tr>
+<tr>
+<td>Wrong agent was selected for my request</td>
+<td>Keyword detection selected a different agent than intended</td>
+<td>Use explicit agent naming: "Use ps-investigator to..." — this bypasses keyword selection and directly invokes the named agent.</td>
+</tr>
+<tr>
+<td>Agent references a prior document that does not contain the expected content</td>
+<td>File naming mismatch or document was moved</td>
+<td>Ask Claude to search for all markdown files under <code>docs/</code> (e.g., "find all .md files in docs/") to verify the actual paths of prior artifacts, then re-invoke the agent with the correct file path.</td>
+</tr>
+<tr>
+<td>ADR is created but not linked to existing decisions</td>
+<td>New ADR lacks cross-references to prior related ADRs in <code>docs/decisions/</code></td>
+<td>Ask <code>ps-architect</code> to review existing ADRs and add cross-reference links: "Update the ADR to reference related prior decisions in <code>docs/decisions/</code>."</td>
+</tr>
+<tr>
+<td>Quality score stuck at REVISE band (0.85–0.91)</td>
+<td>Near-threshold deliverable — one or two dimensions consistently underscoring</td>
+<td>Read the critique artifact. Identify the specific dimension gap (e.g., Traceability). Ask the creator agent to address it: "Improve traceability — add explicit links from each recommendation to its evidence source."</td>
+</tr>
+<tr>
+<td>Agent fails mid-execution (partial output or no output)</td>
+<td>Agent encountered an error, token budget exhaustion, or session interruption during processing</td>
+<td><strong>1. Identify:</strong> Check for a partial artifact in the expected output directory (e.g., <code>docs/research/</code>). <strong>2. Salvage:</strong> If a partial file exists, it can be used as input for a follow-up invocation. <strong>3. Recover:</strong> Re-invoke the same agent with an explicit file reference: "Use ps-researcher to continue the research from <code>docs/research/partial-file.md</code>." The agent will read the existing file and continue from where it left off.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="related-resources">Related Resources<a class="headerlink" href="#related-resources" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://github.com/geekatron/jerry/blob/main/skills/problem-solving/SKILL.md">SKILL.md</a> — Authoritative technical reference for this skill, including agent details, orchestration flow examples, adversarial quality mode, and template locations</li>
+<li><a href="../orchestration/">Orchestration Playbook</a> — When to use the orchestration skill for multi-phase workflows that chain problem-solving agents across gates</li>
+<li><a href="../transcript/">Transcript Playbook</a> — When to use the transcript skill for structured CLI-based transcript parsing before applying problem-solving agents to extracted content</li>
+<li><a href="https://github.com/geekatron/jerry/blob/main/.context/rules/quality-enforcement.md">Quality Enforcement Standards</a> — Authoritative SSOT for quality gate thresholds, criticality levels (C1–C4), strategy catalog (S-001–S-014), and auto-escalation rules (AE-001–AE-006)</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+  
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 Geekatron — Apache License 2.0
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+  <div class="md-footer-meta__inner md-grid" style="text-align: center; padding-bottom: 0.5rem;">
+    <span class="sb-tagline">Quality with soul.</span>
+  </div>
+
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

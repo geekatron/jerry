@@ -1,0 +1,2542 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Framework for behavior/workflow guardrails. Accrues knowledge, wisdom, experience.">
+      
+      
+        <meta name="author" content="Geekatron">
+      
+      
+        <link rel="canonical" href="https://jerry.geekatron.org/security/security-test-cases-agents-bounded-context/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.3">
+    
+    
+      
+        <title>Security Test Cases — agents Bounded Context - Jerry Framework</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/saucer-boy.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="saucer-boy" data-md-color-primary="deep-purple" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#security-test-cases-agents-bounded-context" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Jerry Framework" class="md-header__button md-logo" aria-label="Jerry Framework" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Jerry Framework
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Security Test Cases — agents Bounded Context
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="saucer-boy" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="saucer-boy-dark" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/geekatron/jerry" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    geekatron/jerry
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Jerry Framework" class="md-nav__button md-logo" aria-label="Jerry Framework" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    Jerry Framework
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/geekatron/jerry" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    geekatron/jerry
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INSTALLATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../BOOTSTRAP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bootstrap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started Runbook
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/problem-solving/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Problem Solving
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/orchestration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/transcript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transcript Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/PLUGIN-DEVELOPMENT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plugin Development
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CLAUDE-MD-GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLAUDE.md Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../schemas/SCHEMA_VERSIONING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schema Versioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../schemas/SESSION_CONTEXT_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Session Context Schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Articles
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Articles
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Articles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Archive
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Archive
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/archive/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Categories
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Categories
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/category/prompting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prompting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/single-vs-multi-agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single vs. Multi-Agent Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/adversarial-strategy-catalog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adversarial Strategy Catalog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/strategy-selection-enforcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Strategy Selection & Enforcement (ADRs)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/adversarial-deep-dives/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adversarial Quality Deep Dives
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/skill-compliance-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Skill Compliance Framework
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/governance-constitutional-ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Governance & Constitutional AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/context-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Context Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/oss-methodology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OSS Methodology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/architecture-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/claude-code-ecosystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claude Code Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_12" id="__nav_6_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM Deception Study
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    LLM Deception Study
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/llm-deception/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/llm-deception/the-85-problem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 85% Problem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/llm-deception/methodology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methodology & Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/llm-deception/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture & Recommendations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Governance
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Governance
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../governance/JERRY_CONSTITUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jerry Constitution
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#document-sections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Document Sections
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#l0-executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L0 Executive Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#l1-security-test-case-list" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L1 Security Test Case List
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="L1 Security Test Case List">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#finding-1-yaml-anchoralias-memory-amplification-cwe-400-medium" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finding 1 — YAML Anchor/Alias Memory Amplification (CWE-400, Medium)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finding-2-silent-yaml-error-swallow-causes-data-loss-cwe-755-low" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finding 2 — Silent YAML Error Swallow Causes Data Loss (CWE-755, Low)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finding-3-prompt-body-xml-tag-breakout-cwe-116-medium" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finding 3 — Prompt Body XML Tag Breakout (CWE-116, Medium)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finding-4-tool-name-substitution-via-substring-replace-cwe-116-low" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finding 4 — Tool Name Substitution Via Substring Replace (CWE-116, Low)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finding-5-path-traversal-in-skill-and-agent-name-cwe-22-high" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finding 5 — Path Traversal in Skill and Agent Name (CWE-22, High)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finding-6-tool-escalation-task-via-alternate-abstract-name-cwe-285-medium" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finding 6 — Tool Escalation: Task Via Alternate Abstract Name (CWE-285, Medium)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finding-7-constitutional-bypass-via-substring-match-cwe-287-analog-high" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finding 7 — Constitutional Bypass Via Substring Match (CWE-287 analog, High)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finding-8-_strip_agent_wrapper-mid-content-truncation-cwe-116-low" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finding 8 — _strip_agent_wrapper Mid-Content Truncation (CWE-116, Low)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finding-9-unvalidated-extra_yaml-field-accepted-and-stored-cwe-20-info" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finding 9 — Unvalidated extra_yaml Field Accepted and Stored (CWE-20, Info)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finding-10-bodyformatfrom_string-raises-valueerror-on-unknown-input-info" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finding 10 — BodyFormat.from_string Raises ValueError on Unknown Input (Info)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#l2-strategic-implications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L2 Strategic Implications
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="L2 Strategic Implications">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#systemic-pattern-1-trust-boundary-at-yaml-intake-is-absent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Systemic Pattern 1: Trust Boundary at YAML Intake Is Absent
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#systemic-pattern-2-security-controls-operate-on-abstract-names-not-invariants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Systemic Pattern 2: Security Controls Operate on Abstract Names, Not Invariants
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#systemic-pattern-3-path-construction-has-no-root-confinement-discipline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Systemic Pattern 3: Path Construction Has No Root-Confinement Discipline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#threat-model-correlation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Threat Model Correlation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#asvs-50-chapter-verification-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ASVS 5.0 Chapter Verification Status
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="security-test-cases-agents-bounded-context">Security Test Cases — agents Bounded Context<a class="headerlink" href="#security-test-cases-agents-bounded-context" title="Permanent link">&para;</a></h1>
+<!-- Generated by: eng-security | Date: 2026-02-24 -->
+<!-- Scope: src/agents/ manual code review -->
+<!-- Reference: CWE Top 25 2025, OWASP ASVS 5.0 -->
+
+<h2 id="document-sections">Document Sections<a class="headerlink" href="#document-sections" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Section</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#l0-executive-summary">L0 Executive Summary</a></td>
+<td>Finding counts, top risks, immediate actions</td>
+</tr>
+<tr>
+<td><a href="#l1-security-test-case-list">L1 Security Test Case List</a></td>
+<td>All test cases mapped to findings</td>
+</tr>
+<tr>
+<td><a href="#l2-strategic-implications">L2 Strategic Implications</a></td>
+<td>Systemic patterns, architecture recommendations</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="l0-executive-summary">L0 Executive Summary<a class="headerlink" href="#l0-executive-summary" title="Permanent link">&para;</a></h2>
+<p><strong>Overall security assessment:</strong> MEDIUM-HIGH risk. Five vulnerability categories identified across the four files.
+No single finding enables unauthenticated remote code execution in isolation, but two finding chains
+(YAML anchor amplification + silent swallow, and constitutional bypass + tool escalation) represent
+compound risks that could undermine the integrity of the agent build pipeline.</p>
+<p><strong>Finding counts by severity:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Severity</th>
+<th>Count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>High</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>5</td>
+</tr>
+<tr>
+<td>Low</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Info</td>
+<td>2</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>13</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Top 3 risk areas:</strong></p>
+<ol>
+<li>
+<p><strong>Path traversal in repository lookup and generation (High, CWE-22)</strong> — <code>skill</code> and <code>agent_name</code>
+   parameters accepted from YAML files and CLI arguments flow directly into <code>pathlib.Path</code> joins with
+   no sanitization. An attacker-controlled <code>.agent.yaml</code> with <code>skill: ../../../etc</code> writes generated
+   artifacts outside the skills tree.</p>
+</li>
+<li>
+<p><strong>Constitutional bypass via substring matching (High, CWE-287 analog)</strong> — <code>_ensure_constitutional_triplet</code>
+   uses <code>any(code in p for p in principles)</code> substring matching. A principle string
+   <code>"P-003-waived: Recursive Subagents Permitted"</code> satisfies the P-003 check while asserting the
+   inverse intent. The function also fires only in the <code>extract()</code> path, leaving the <code>generate()</code> path
+   without triplet enforcement.</p>
+</li>
+<li>
+<p><strong>Tool escalation through declaration bypass (Medium, CWE-285)</strong> — The worker agent Task-tool
+   exclusion filter (<code>t != "agent_delegate"</code>) operates on abstract names only. A second abstract tool
+   name mapped to vendor name "Task" in <code>mappings.yaml</code> bypasses the filter. Additionally, <code>forbidden_tools</code>
+   is populated during <code>extract()</code> but never consulted by <code>_build_frontmatter()</code> to block emission.</p>
+</li>
+</ol>
+<p><strong>Recommended immediate actions:</strong></p>
+<ol>
+<li>Canonicalize and validate all path components from YAML fields before joining with <code>pathlib.Path</code>.</li>
+<li>Replace substring-match constitutional checks with exact-match against a defined allowlist of valid
+   principle strings.</li>
+<li>Add a post-generation assertion that no output <code>.md</code> file's tools list contains the word "Task" for
+   agents whose <code>tool_tier</code> is not T5.</li>
+</ol>
+<hr />
+<h2 id="l1-security-test-case-list">L1 Security Test Case List<a class="headerlink" href="#l1-security-test-case-list" title="Permanent link">&para;</a></h2>
+<h3 id="finding-1-yaml-anchoralias-memory-amplification-cwe-400-medium">Finding 1 — YAML Anchor/Alias Memory Amplification (CWE-400, Medium)<a class="headerlink" href="#finding-1-yaml-anchoralias-memory-amplification-cwe-400-medium" title="Permanent link">&para;</a></h3>
+<p><strong>Location:</strong> <code>src/agents/infrastructure/persistence/filesystem_agent_repository.py:119</code>
+and <code>src/agents/infrastructure/adapters/claude_code_adapter.py:129,394</code></p>
+<p><strong>Evidence:</strong> <code>yaml.safe_load</code> is used at all three call sites. Python's PyYAML <code>safe_load</code> expands
+YAML anchors and aliases into in-memory Python objects before returning. A crafted <code>.agent.yaml</code> or
+<code>.governance.yaml</code> with exponentially nested aliases (billion-laughs pattern) will cause unbounded
+memory expansion at load time. <code>safe_load</code> does NOT defend against this; it only defends against
+arbitrary Python object instantiation.</p>
+<p><strong>CVSS 3.1:</strong> AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H — 5.5 Medium (requires write access to
+the skills directory to plant a crafted file).</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>FILE: tests/unit/agents/infrastructure/persistence/test_filesystem_agent_repository_security.py
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>- test_yaml_anchor_alias_expansion_raises_or_limits_memory
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>  # Craft a YAML string with 10-level nested anchor amplification.
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>  # Verify that _load_agent raises an exception or returns None
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>  # rather than expanding exponentially. Assert memory usage stays
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>  # below a reasonable bound (e.g., 50 MB for a trivially small file).
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>- test_yaml_aliases_in_agent_yaml_do_not_produce_unexpected_structure
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>  # Craft .agent.yaml using YAML anchors where &amp;anchor declares a
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>  # tool name of &quot;agent_delegate&quot; and an alias reuses it in native_tools.
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>  # Verify the alias expansion does not bypass tool-name filtering and
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>  # that native_tools list is validated as strings only.
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>- test_yaml_merge_keys_do_not_escalate_tool_tier
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>  # Craft .agent.yaml using YAML merge key (&lt;&lt;) to merge a dict that
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>  # sets tool_tier: T5 into a base dict that declares tool_tier: T1.
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>  # Verify that the parsed CanonicalAgent reflects the explicit value
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>  # from the merge rather than an escalated value, and that merge key
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>  # expansion does not produce unexpected keys in the parsed dict.
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>FILE: tests/unit/agents/infrastructure/adapters/test_claude_code_adapter_security.py
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>- test_governance_yaml_anchor_amplification_does_not_crash_extract
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>  # Provide a governance YAML with a billion-laughs anchor structure to
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>  # extract(). Verify it raises a known exception type or returns safely
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>  # and does not consume unbounded memory. Uses resource.setrlimit or
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>  # tracemalloc for memory assertion.
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>- test_governance_yaml_safe_load_rejects_python_object_tags
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>  # Provide a governance YAML with !!python/object/apply:os.system call.
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>  # Verify safe_load does NOT execute the tag (PyYAML safe_load guarantee).
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>  # Explicit regression test; documents the safe_load contract is present.
+</code></pre></div>
+<hr />
+<h3 id="finding-2-silent-yaml-error-swallow-causes-data-loss-cwe-755-low">Finding 2 — Silent YAML Error Swallow Causes Data Loss (CWE-755, Low)<a class="headerlink" href="#finding-2-silent-yaml-error-swallow-causes-data-loss-cwe-755-low" title="Permanent link">&para;</a></h3>
+<p><strong>Location:</strong> <code>src/agents/infrastructure/adapters/claude_code_adapter.py:393-397</code></p>
+<p><strong>Evidence:</strong> <code>_parse_md</code> catches <code>yaml.YAMLError</code> and returns <code>{}</code> with no log, no exception
+propagation, and no caller notification. A malformed frontmatter in a <code>.md</code> file (e.g., tabs in YAML,
+unbalanced quotes) produces an empty frontmatter dict. The caller in <code>extract()</code> then populates
+<code>CanonicalAgent.name</code> from <code>frontmatter.get("name", md_path.stem)</code>, so the agent silently acquires
+the filename as its name. This masks corruption.</p>
+<p><strong>CVSS 3.1:</strong> AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:L/A:N — 3.3 Low</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>FILE: tests/unit/agents/infrastructure/adapters/test_claude_code_adapter_security.py
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>- test_malformed_frontmatter_yaml_returns_empty_dict_not_raises
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>  # Provide MD content where frontmatter contains a tab character
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>  # (invalid YAML). Verify _parse_md returns ({}, body) tuple not an
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>  # exception. Documents the silent-swallow behavior is at least known.
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>- test_malformed_frontmatter_propagates_as_filename_stem_name
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>  # Full extract() call with malformed YAML frontmatter. Verify
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>  # CanonicalAgent.name equals the file stem (md_path.stem) not a
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>  # value from YAML. Asserts the degraded-path behavior is predictable.
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>- test_parse_md_with_valid_yaml_containing_injected_keys_is_filtered
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>  # Provide frontmatter with a non-official Claude Code field
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>  # (e.g., __proto__: ..., or constructor: ...) to check that
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>  # only recognized fields are consumed downstream.
+</code></pre></div>
+<hr />
+<h3 id="finding-3-prompt-body-xml-tag-breakout-cwe-116-medium">Finding 3 — Prompt Body XML Tag Breakout (CWE-116, Medium)<a class="headerlink" href="#finding-3-prompt-body-xml-tag-breakout-cwe-116-medium" title="Permanent link">&para;</a></h3>
+<p><strong>Location:</strong> <code>src/agents/domain/services/prompt_transformer.py:134-138</code></p>
+<p><strong>Evidence:</strong> <code>_xml_to_markdown</code> uses the regex <code>&lt;([a-z_]+)&gt;\s*\n?(.*?)\n?\s*&lt;/\1&gt;</code> with <code>re.DOTALL</code>.
+The lazy quantifier <code>.*?</code> (rather than a true possessive/atomic group) can be exploited when prompt
+content inside an XML tag itself contains a closing sequence. For example, if the content of an
+<code>&lt;identity&gt;</code> block contains the literal string <code>&lt;/identity&gt;</code> (e.g., in a code example or table),
+the regex matches the FIRST <code>&lt;/identity&gt;</code> and assigns truncated content to the section, leaving the
+remainder of the original content unmatched and dropped from output.</p>
+<p>Additionally, <code>_heading_to_tag</code> auto-derives XML tag names from unknown headings. A markdown heading
+like <code>## &lt;/identity&gt;&lt;new_section&gt;</code> would pass through <code>re.sub(r"[^a-z0-9]+", "_", ...)</code> and produce
+<code>_identity_new_section_</code> — the special characters are stripped — but a heading of <code>## agent</code> would
+produce the tag name <code>agent</code>, which collides with the outer <code>&lt;agent&gt;</code> wrapper applied in <code>_build_body</code>.</p>
+<p><strong>CVSS 3.1 (tag breakout / content truncation):</strong> AV:L/AC:M/PR:L/UI:N/S:U/C:N/I:M/A:N — 4.2 Medium</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>FILE: tests/unit/agents/domain/services/test_prompt_transformer_security.py
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>- test_xml_content_containing_closing_tag_is_not_truncated
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>  # Create an XML body where &lt;identity&gt; block content contains the
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>  # literal string &quot;&lt;/identity&gt;&quot; (e.g., in a markdown code block).
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>  # Call from_xml() and verify the full content is preserved and not
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>  # split at the inner &lt;/identity&gt; occurrence. Regression for the
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>  # greedy-match truncation risk.
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>- test_xml_to_markdown_preserves_content_with_nested_xml_examples
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>  # Similar to above but with &lt;identity&gt;...&lt;example_tag&gt;...&lt;/example_tag&gt;...&lt;/identity&gt;.
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>  # Verify nested tag-like strings in content are treated as content not structure.
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>- test_heading_to_tag_with_agent_name_produces_collision
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>  # Call _heading_to_tag(&quot;agent&quot;) and verify it returns &quot;agent&quot;.
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>  # Then call _markdown_to_xml() on a body with &quot;## agent&quot; section.
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>  # Verify the generated output contains &lt;agent&gt;...&lt;/agent&gt; section,
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>  # and that _build_body wrapping adds a SECOND &lt;agent&gt; wrapper,
+<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>  # resulting in nested &lt;agent&gt; tags in the output. Documents collision.
+<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>
+<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>- test_heading_to_tag_with_xml_special_chars_is_sanitized
+<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>  # Call _heading_to_tag with a heading containing &quot;&lt;&quot;, &quot;&gt;&quot;, &quot;&amp;&quot;, &#39;&quot;&#39;.
+<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a>  # Verify returned tag contains only [a-z0-9_] characters.
+<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>  # Verify no angle brackets reach the output XML.
+<a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a>
+<a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a>- test_heading_with_closing_tag_in_name_does_not_break_output_xml
+<a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a>  # Markdown body with heading &quot;## &lt;/identity&gt;&quot; (angle brackets present).
+<a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a>  # After _markdown_to_xml(), verify output XML parses as valid XML or
+<a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a>  # at minimum that no closing tags from the heading escape into structure.
+</code></pre></div>
+<hr />
+<h3 id="finding-4-tool-name-substitution-via-substring-replace-cwe-116-low">Finding 4 — Tool Name Substitution Via Substring Replace (CWE-116, Low)<a class="headerlink" href="#finding-4-tool-name-substitution-via-substring-replace-cwe-116-low" title="Permanent link">&para;</a></h3>
+<p><strong>Location:</strong> <code>src/agents/domain/services/tool_mapper.py:167-168</code></p>
+<p><strong>Evidence:</strong> <code>substitute_tool_names_in_text</code> uses <code>str.replace(old, new)</code> with no word-boundary
+enforcement. Replacements are sorted longest-first to reduce partial hits, but the logic does not
+use regex word boundaries (<code>\b</code>). A prompt body containing the phrase "Read the file carefully"
+would have "Read" replaced with "file_read" during reverse substitution if "Read" is the claude_code
+vendor name for file_read. More critically, if a tool vendor name is a common English word (e.g.,
+"Write", "Edit", "Bash", "Task"), arbitrary prose in the prompt body is silently mutated. An agent
+that mentions the word "Task" in documentation prose would have that word replaced with "agent_delegate"
+during reverse-map, or vice versa in forward map — producing corrupted prompt output.</p>
+<p><strong>CVSS 3.1:</strong> AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:L/A:N — 3.3 Low</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>FILE: tests/unit/agents/domain/services/test_tool_mapper_security.py
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>- test_substitute_tool_names_does_not_replace_substring_within_word
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>  # Prompt text: &quot;Read carefully about ReadFile operations.&quot;
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>  # Forward substitution with claude_code target replaces &quot;Read&quot; -&gt; &quot;file_read&quot;.
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>  # Verify &quot;ReadFile&quot; is NOT mutated (it contains &quot;Read&quot; as a substring).
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>  # Documents the absent word-boundary protection as a known gap.
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>- test_substitute_does_not_corrupt_xml_tag_names_containing_tool_words
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>  # Prompt text with XML tag &lt;bash_execute&gt;...&lt;/bash_execute&gt;.
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>  # Verify that forward substitution does NOT replace &quot;bash&quot; within the
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>  # tag name, and that the XML structure is preserved after substitution.
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>- test_substitute_reverse_map_task_word_in_prose
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>  # Prompt body: &quot;Complete the Task by following instructions.&quot;
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>  # Reverse substitution from claude_code. Verify &quot;Task&quot; in prose is
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>  # replaced with &quot;agent_delegate&quot;. Documents that prose mentioning
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>  # &quot;Task&quot; (capital T) is corrupted by reverse substitution — or verify
+<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>  # it is NOT corrupted if word-boundary protection exists.
+<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a>
+<a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a>- test_substitute_does_not_expand_empty_tool_name_to_replace_everywhere
+<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a>  # If a tool maps to an empty string &quot;&quot; for a vendor, verify substitute
+<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a>  # does not call str.replace(&quot;&quot;, ...) which replaces between every character.
+<a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a>  # tool_map entry: {&quot;some_tool&quot;: {&quot;claude_code&quot;: &quot;&quot;}}. Should skip or raise.
+</code></pre></div>
+<hr />
+<h3 id="finding-5-path-traversal-in-skill-and-agent-name-cwe-22-high">Finding 5 — Path Traversal in Skill and Agent Name (CWE-22, High)<a class="headerlink" href="#finding-5-path-traversal-in-skill-and-agent-name-cwe-22-high" title="Permanent link">&para;</a></h3>
+<p><strong>Location:</strong>
+- <code>src/agents/infrastructure/persistence/filesystem_agent_repository.py:58, 86, 106</code>
+- <code>src/agents/infrastructure/adapters/claude_code_adapter.py:79, 117</code></p>
+<p><strong>Evidence:</strong></p>
+<p><code>FilesystemAgentRepository.list_by_skill(skill)</code> joins <code>self._skills_dir / skill / "composition"</code> where
+<code>skill</code> comes from directory iteration in <code>list_all()</code> (safe) but also from the external caller in
+<code>ClaudeCodeAdapter.generate()</code> at line 79 where <code>agent.skill</code> is set from <code>.agent.yaml</code> data field.
+An <code>.agent.yaml</code> with <code>skill: ../../../tmp</code> would cause <code>generate()</code> to write output artifacts to
+<code>skills/../../../tmp/agents/</code>, which resolves to <code>/tmp/agents/</code>.</p>
+<p><code>FilesystemAgentRepository.get(agent_name)</code> joins <code>comp_dir / f"{agent_name}.agent.yaml"</code> where
+<code>agent_name</code> is supplied externally. <code>agent_name = "../../secret"</code> produces a path that traverses
+out of the composition directory.</p>
+<p><code>ClaudeCodeAdapter.extract(agent_md_path)</code> at line 117 accepts a raw string and calls <code>Path(agent_md_path)</code>,
+then <code>md_path.read_text()</code>. No check that the resolved path is under an expected root. A caller passing
+<code>/etc/passwd</code> reads that file.</p>
+<p><strong>CVSS 3.1 (write-side via generate):</strong> AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:L — 6.1 High
+<strong>CVSS 3.1 (read-side via extract):</strong> AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N — 5.5 Medium</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>FILE: tests/unit/agents/infrastructure/persistence/test_filesystem_agent_repository_security.py
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>- test_path_traversal_in_agent_name_get_raises_or_returns_none
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>  # Call repo.get(&quot;../../../etc/passwd&quot;). Verify the method does NOT
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>  # attempt to read /etc/passwd and either raises ValueError or returns None.
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>  # Uses a tmp_path fixture; assert no file outside tmp_path is accessed.
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>- test_path_traversal_in_skill_name_list_by_skill_raises_or_returns_empty
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>  # Call repo.list_by_skill(&quot;../../../etc&quot;). Verify the method returns []
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>  # or raises ValueError and does NOT access paths outside skills_dir.
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>  # Use tmp_path; assert resolved comp_dir is under skills_dir.
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>- test_path_traversal_in_get_composition_dir_raises_or_returns_safe
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>  # Call repo.get_composition_dir(&quot;../../../etc&quot;). Verify returned path
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>  # is still under skills_dir or method raises ValueError.
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>- test_agent_name_with_null_byte_is_rejected
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>  # Call repo.get(&quot;agent\x00.evil&quot;). Verify it raises or returns None
+<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a>  # and does not produce a filesystem access with null byte in path.
+<a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a>
+<a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a>- test_skill_name_with_absolute_path_is_rejected
+<a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a>  # Call repo.list_by_skill(&quot;/etc&quot;). Verify it raises or returns []
+<a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a>  # and does not traverse to an absolute path outside skills_dir.
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>FILE: tests/unit/agents/infrastructure/adapters/test_claude_code_adapter_security.py
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>- test_path_traversal_in_agent_skill_during_generate
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>  # Provide a CanonicalAgent with skill=&quot;../../../tmp&quot;. Call generate().
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>  # Verify the returned GeneratedArtifact.path is under skills_dir or
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>  # that generate() raises ValueError before producing the artifact.
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>- test_path_traversal_in_agent_name_during_generate
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>  # Provide a CanonicalAgent with name=&quot;../../evil-agent&quot;. Call generate().
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>  # Verify the returned GeneratedArtifact.path is under skills_dir or raises.
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>- test_extract_with_path_outside_skills_dir_is_rejected
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>  # Call extract(&quot;/etc/passwd&quot;). Verify it raises ValueError or FileNotFoundError
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>  # before reading file contents, asserting that absolute paths outside the
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>  # expected directory tree are rejected.
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>
+<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a>- test_extract_with_relative_path_traversal_is_rejected
+<a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a>  # Call extract(&quot;../../sensitive.md&quot;). Verify rejection without file read.
+</code></pre></div>
+<hr />
+<h3 id="finding-6-tool-escalation-task-via-alternate-abstract-name-cwe-285-medium">Finding 6 — Tool Escalation: Task Via Alternate Abstract Name (CWE-285, Medium)<a class="headerlink" href="#finding-6-tool-escalation-task-via-alternate-abstract-name-cwe-285-medium" title="Permanent link">&para;</a></h3>
+<p><strong>Location:</strong> <code>src/agents/infrastructure/adapters/claude_code_adapter.py:252-253</code></p>
+<p><strong>Evidence:</strong> The worker-agent Task exclusion in <code>_build_frontmatter</code> is:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">tools_to_map</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">agent</span><span class="o">.</span><span class="n">native_tools</span> <span class="k">if</span> <span class="n">t</span> <span class="o">!=</span> <span class="s2">&quot;agent_delegate&quot;</span><span class="p">]</span>
+</code></pre></div>
+<p>This checks abstract name equality. If <code>mappings.yaml</code> is modified (or an alternate ToolMapper instance
+is constructed) to map a second abstract name — for example <code>task_execute</code> — to vendor name "Task",
+then an agent declaring <code>native_tools: [task_execute]</code> passes the filter unimpeded and receives "Task"
+in its generated frontmatter. The filter enforces only the single string "agent_delegate".</p>
+<p><strong>CVSS 3.1:</strong> AV:L/AC:M/PR:H/UI:N/S:U/C:N/I:H/A:N — 4.4 Medium
+(requires write access to mappings.yaml or ToolMapper construction, which is privileged; but the
+absence of vendor-name-level gating means the control is incomplete.)</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>FILE: tests/unit/agents/infrastructure/adapters/test_claude_code_adapter_security.py
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>- test_task_tool_excluded_by_abstract_name_agent_delegate
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>  # Standard case: agent with native_tools=[&quot;agent_delegate&quot;] at T1 tier.
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>  # Verify &quot;Task&quot; does NOT appear in generated frontmatter tools string.
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>- test_task_tool_escalation_via_alternate_abstract_name
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>  # Construct ToolMapper where &quot;task_execute&quot; maps to claude_code=&quot;Task&quot;.
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>  # Create ClaudeCodeAdapter with this mapper.
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>  # Create CanonicalAgent with tool_tier=T1, native_tools=[&quot;task_execute&quot;].
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>  # Call generate(). Verify &quot;Task&quot; DOES appear in the output tools string,
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>  # documenting the gap. (This test documents the vulnerability, not correct
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>  # behavior; it is expected to FAIL if a fix is applied that checks vendor names.)
+<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a>
+<a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a>- test_build_frontmatter_never_emits_task_for_non_t5_agent_regardless_of_abstract_name
+<a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a>  # Same setup as above but asserts the DESIRED behavior: even when an
+<a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a>  # alternate abstract name maps to &quot;Task&quot;, a T1/T2/T3/T4 agent&#39;s
+<a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a>  # generated frontmatter must not contain &quot;Task&quot;. This test is the
+<a id="__codelineno-8-18" name="__codelineno-8-18" href="#__codelineno-8-18"></a>  # acceptance criterion for the fix.
+<a id="__codelineno-8-19" name="__codelineno-8-19" href="#__codelineno-8-19"></a>
+<a id="__codelineno-8-20" name="__codelineno-8-20" href="#__codelineno-8-20"></a>- test_forbidden_tools_field_is_consulted_during_generate
+<a id="__codelineno-8-21" name="__codelineno-8-21" href="#__codelineno-8-21"></a>  # CanonicalAgent with forbidden_tools=[&quot;agent_delegate&quot;] but
+<a id="__codelineno-8-22" name="__codelineno-8-22" href="#__codelineno-8-22"></a>  # native_tools=[&quot;agent_delegate&quot;] (contradictory). Verify that
+<a id="__codelineno-8-23" name="__codelineno-8-23" href="#__codelineno-8-23"></a>  # _build_frontmatter excludes &quot;Task&quot; from output. Documents whether
+<a id="__codelineno-8-24" name="__codelineno-8-24" href="#__codelineno-8-24"></a>  # forbidden_tools is actually enforced during generation (currently it is not).
+<a id="__codelineno-8-25" name="__codelineno-8-25" href="#__codelineno-8-25"></a>
+<a id="__codelineno-8-26" name="__codelineno-8-26" href="#__codelineno-8-26"></a>- test_extract_t5_agent_does_not_add_agent_delegate_to_forbidden_tools
+<a id="__codelineno-8-27" name="__codelineno-8-27" href="#__codelineno-8-27"></a>  # Provide an .md file with tool_tier=T5 in governance YAML.
+<a id="__codelineno-8-28" name="__codelineno-8-28" href="#__codelineno-8-28"></a>  # Call extract(). Verify forbidden_tools is [] (not [&quot;agent_delegate&quot;]).
+<a id="__codelineno-8-29" name="__codelineno-8-29" href="#__codelineno-8-29"></a>  # Verify the extracted CanonicalAgent has has_delegation=True.
+<a id="__codelineno-8-30" name="__codelineno-8-30" href="#__codelineno-8-30"></a>
+<a id="__codelineno-8-31" name="__codelineno-8-31" href="#__codelineno-8-31"></a>- test_extract_non_t5_agent_adds_agent_delegate_to_forbidden_tools
+<a id="__codelineno-8-32" name="__codelineno-8-32" href="#__codelineno-8-32"></a>  # Provide an .md with tool_tier=T1. Call extract().
+<a id="__codelineno-8-33" name="__codelineno-8-33" href="#__codelineno-8-33"></a>  # Verify forbidden_tools == [&quot;agent_delegate&quot;].
+</code></pre></div>
+<hr />
+<h3 id="finding-7-constitutional-bypass-via-substring-match-cwe-287-analog-high">Finding 7 — Constitutional Bypass Via Substring Match (CWE-287 analog, High)<a class="headerlink" href="#finding-7-constitutional-bypass-via-substring-match-cwe-287-analog-high" title="Permanent link">&para;</a></h3>
+<p><strong>Location:</strong> <code>src/agents/infrastructure/adapters/claude_code_adapter.py:435-450</code></p>
+<p><strong>Evidence:</strong> <code>_ensure_constitutional_triplet</code> uses:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">code</span> <span class="ow">in</span> <span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">principles</span><span class="p">):</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>    <span class="n">principles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">full_text</span><span class="p">)</span>
+</code></pre></div>
+<p><code>code in p</code> is Python <code>str.__contains__</code>, a substring check. Any string containing the substring
+<code>"P-003"</code> — including <code>"P-003-waived"</code>, <code>"not-P-003"</code>, <code>"P-003 does not apply"</code> — passes the check.
+The method considers the principle satisfied and does NOT append the required principle text.</p>
+<p>Additionally, <code>_ensure_constitutional_triplet</code> is only called in the <code>extract()</code> path (line 176).
+The <code>generate()</code> path calls <code>_build_governance_yaml()</code> which writes <code>agent.constitution</code> as-is
+without verifying the triplet is present. An agent with <code>constitution: {}</code> passes through <code>generate()</code>
+without complaint.</p>
+<p><strong>CVSS 3.1 (principle spoofing):</strong> AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:N — 5.5 Medium
+<strong>CVSS 3.1 (generate path missing enforcement):</strong> AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:M/A:N — 4.0 Medium
+Combined rating for the finding: High (5.5, with systemic bypass implication).</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>FILE: tests/unit/agents/infrastructure/adapters/test_claude_code_adapter_security.py
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>- test_constitutional_triplet_bypass_via_negating_prefix
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>  # constitution = {&quot;principles_applied&quot;: [&quot;P-003-waived: subagents allowed&quot;]}
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>  # Call _ensure_constitutional_triplet(). Verify it does NOT append
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>  # &quot;P-003: No Recursive Subagents (Hard)&quot; — i.e., the method incorrectly
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>  # considers P-003 satisfied. Documents the substring-match vulnerability.
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>- test_constitutional_triplet_bypass_via_mid_string_code
+<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>  # constitution = {&quot;principles_applied&quot;: [&quot;ANTI-P-003 policy override&quot;]}
+<a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a>  # Call _ensure_constitutional_triplet(). Verify P-003 check passes
+<a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a>  # (contains &quot;P-003&quot;), documenting that adversarial strings satisfy the check.
+<a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a>
+<a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a>- test_constitutional_triplet_requires_exact_code_match_not_substring
+<a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a>  # Desired behavior test (acceptance criterion for the fix).
+<a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a>  # A principle string that CONTAINS &quot;P-003&quot; but is not a valid principle
+<a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a>  # statement should NOT satisfy the check. Verify required principle is
+<a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a>  # appended when the string is &quot;not-P-003-compliant&quot;.
+<a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a>
+<a id="__codelineno-10-19" name="__codelineno-10-19" href="#__codelineno-10-19"></a>- test_constitutional_triplet_empty_principles_list_adds_all_three
+<a id="__codelineno-10-20" name="__codelineno-10-20" href="#__codelineno-10-20"></a>  # constitution = {&quot;principles_applied&quot;: []}
+<a id="__codelineno-10-21" name="__codelineno-10-21" href="#__codelineno-10-21"></a>  # Verify all three (P-003, P-020, P-022) are appended. Baseline positive case.
+<a id="__codelineno-10-22" name="__codelineno-10-22" href="#__codelineno-10-22"></a>
+<a id="__codelineno-10-23" name="__codelineno-10-23" href="#__codelineno-10-23"></a>- test_constitutional_triplet_missing_one_principle_adds_only_missing
+<a id="__codelineno-10-24" name="__codelineno-10-24" href="#__codelineno-10-24"></a>  # constitution has P-003 and P-020 but not P-022.
+<a id="__codelineno-10-25" name="__codelineno-10-25" href="#__codelineno-10-25"></a>  # Verify only P-022 is appended; P-003 and P-020 entry counts unchanged.
+<a id="__codelineno-10-26" name="__codelineno-10-26" href="#__codelineno-10-26"></a>
+<a id="__codelineno-10-27" name="__codelineno-10-27" href="#__codelineno-10-27"></a>- test_constitutional_triplet_forbidden_actions_bypass_via_substring
+<a id="__codelineno-10-28" name="__codelineno-10-28" href="#__codelineno-10-28"></a>  # constitution = {&quot;forbidden_actions&quot;: [&quot;P-003 is permitted here&quot;]}
+<a id="__codelineno-10-29" name="__codelineno-10-29" href="#__codelineno-10-29"></a>  # Verify _ensure_constitutional_triplet() does NOT append the required
+<a id="__codelineno-10-30" name="__codelineno-10-30" href="#__codelineno-10-30"></a>  # &quot;Spawn recursive subagents (P-003)&quot; action, documenting the gap.
+<a id="__codelineno-10-31" name="__codelineno-10-31" href="#__codelineno-10-31"></a>
+<a id="__codelineno-10-32" name="__codelineno-10-32" href="#__codelineno-10-32"></a>- test_generate_path_does_not_enforce_constitutional_triplet
+<a id="__codelineno-10-33" name="__codelineno-10-33" href="#__codelineno-10-33"></a>  # CanonicalAgent with empty constitution={}. Call generate().
+<a id="__codelineno-10-34" name="__codelineno-10-34" href="#__codelineno-10-34"></a>  # Read the generated .governance.yaml content. Verify it does NOT
+<a id="__codelineno-10-35" name="__codelineno-10-35" href="#__codelineno-10-35"></a>  # contain principles_applied with all three codes — documenting that
+<a id="__codelineno-10-36" name="__codelineno-10-36" href="#__codelineno-10-36"></a>  # generate() silently omits triplet enforcement (gap, not fix).
+<a id="__codelineno-10-37" name="__codelineno-10-37" href="#__codelineno-10-37"></a>
+<a id="__codelineno-10-38" name="__codelineno-10-38" href="#__codelineno-10-38"></a>- test_generate_path_with_empty_constitution_should_enforce_triplet
+<a id="__codelineno-10-39" name="__codelineno-10-39" href="#__codelineno-10-39"></a>  # Desired behavior: CanonicalAgent with empty constitution={} passed to
+<a id="__codelineno-10-40" name="__codelineno-10-40" href="#__codelineno-10-40"></a>  # generate() should produce a governance YAML that includes at minimum
+<a id="__codelineno-10-41" name="__codelineno-10-41" href="#__codelineno-10-41"></a>  # the constitutional triplet. Acceptance criterion for a fix.
+</code></pre></div>
+<hr />
+<h3 id="finding-8-_strip_agent_wrapper-mid-content-truncation-cwe-116-low">Finding 8 — _strip_agent_wrapper Mid-Content Truncation (CWE-116, Low)<a class="headerlink" href="#finding-8-_strip_agent_wrapper-mid-content-truncation-cwe-116-low" title="Permanent link">&para;</a></h3>
+<p><strong>Location:</strong> <code>src/agents/infrastructure/adapters/claude_code_adapter.py:454-480</code></p>
+<p><strong>Evidence:</strong> <code>_strip_agent_wrapper</code> strips the last <code>&lt;/agent&gt;</code> from the body using:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="k">if</span> <span class="n">stripped</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;&lt;/agent&gt;&quot;</span><span class="p">):</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>    <span class="n">stripped</span> <span class="o">=</span> <span class="n">stripped</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>    <span class="n">stripped</span> <span class="o">=</span> <span class="n">stripped</span><span class="p">[:</span> <span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="s2">&quot;&lt;/agent&gt;&quot;</span><span class="p">)]</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p>If the body content legitimately contains <code>&lt;/agent&gt;</code> mid-document (e.g., in a code block showing an
+agent tag example, or in documentation prose), the last such occurrence is stripped even though it is
+not the structural wrapper. Content after that point is silently discarded.</p>
+<p>The corrupted-variant handler (<code>agent&gt;</code> without <code>&lt;</code>) at line 472 also strips ANY body beginning with
+the string "agent&gt;" — a body whose first non-whitespace content is a heading like <code>agent&gt; some text</code>
+in the corrupted format would be unintentionally stripped.</p>
+<p><strong>CVSS 3.1:</strong> AV:L/AC:M/PR:L/UI:N/S:U/C:N/I:L/A:N — 3.1 Low</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>FILE: tests/unit/agents/infrastructure/adapters/test_claude_code_adapter_security.py
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>- test_strip_agent_wrapper_preserves_mid_content_closing_tag
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>  # Body: &quot;&lt;agent&gt;\n\nSome content with &lt;/agent&gt; in a code block.\n\n&lt;/agent&gt;&quot;
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>  # Verify _strip_agent_wrapper preserves the inner &lt;/agent&gt; in the code block
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>  # and only removes the outermost structural tags.
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>- test_strip_agent_wrapper_corrupted_variant_does_not_strip_legitimate_content
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>  # Body: &quot;agent&gt; is a special syntax used in...&quot; (starts with &quot;agent&gt;&quot; coincidentally).
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>  # Verify _strip_agent_wrapper does NOT treat this as a corrupted wrapper
+<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>  # and strip the opening &quot;agent&gt;&quot; from legitimate content.
+<a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a>
+<a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a>- test_strip_agent_wrapper_multiple_closing_tags_removes_only_last
+<a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a>  # Body with multiple &lt;/agent&gt; tags; only the structural final tag should be removed.
+<a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a>  # Verify the inner &lt;/agent&gt; occurrences are preserved.
+</code></pre></div>
+<hr />
+<h3 id="finding-9-unvalidated-extra_yaml-field-accepted-and-stored-cwe-20-info">Finding 9 — Unvalidated <code>extra_yaml</code> Field Accepted and Stored (CWE-20, Info)<a class="headerlink" href="#finding-9-unvalidated-extra_yaml-field-accepted-and-stored-cwe-20-info" title="Permanent link">&para;</a></h3>
+<p><strong>Location:</strong> <code>src/agents/infrastructure/persistence/filesystem_agent_repository.py:194</code></p>
+<p><strong>Evidence:</strong> <code>_parse_agent</code> extracts all YAML keys not in <code>known_keys</code> into <code>extra_yaml</code> and
+passes them directly to <code>CanonicalAgent</code>. While <code>extra_yaml</code> is not used in security-relevant logic
+within these four files, it represents an unvalidated pass-through channel. Future code that reads
+from <code>extra_yaml</code> without validation inherits this risk. No size limit or key count validation exists.</p>
+<p><strong>CVSS 3.1:</strong> N/A (informational; no current exploitable path identified)</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>FILE: tests/unit/agents/infrastructure/persistence/test_filesystem_agent_repository_security.py
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>- test_extra_yaml_does_not_accept_known_security_keys
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>  # Agent YAML with extra key &quot;constitution&quot; misspelled as &quot;constitutoin&quot; and
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>  # &quot;tool_tier&quot; as &quot;toolTier&quot;. Verify these end up in extra_yaml, not in the
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>  # named fields — documenting that typo-attacks on known fields go to extra_yaml
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>  # and not the intended security-relevant field.
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>- test_extra_yaml_keys_with_path_traversal_values_are_not_interpreted
+<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>  # Agent YAML with extra key &quot;custom_path: ../../etc/passwd&quot;.
+<a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a>  # Verify extra_yaml[&quot;custom_path&quot;] stores the string value unchanged
+<a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a>  # and that no filesystem access occurs during _parse_agent.
+</code></pre></div>
+<hr />
+<h3 id="finding-10-bodyformatfrom_string-raises-valueerror-on-unknown-input-info">Finding 10 — BodyFormat.from_string Raises ValueError on Unknown Input (Info)<a class="headerlink" href="#finding-10-bodyformatfrom_string-raises-valueerror-on-unknown-input-info" title="Permanent link">&para;</a></h3>
+<p><strong>Location:</strong> <code>src/agents/domain/value_objects/body_format.py:47</code></p>
+<p><strong>Evidence:</strong> <code>BodyFormat.from_string</code> raises <code>ValueError</code> for unrecognized format strings. In
+<code>_parse_agent</code>, <code>body_format = BodyFormat.from_string(body_format_str)</code> is called with a value
+from the YAML <code>portability.body_format</code> field. If this field contains an unexpected value, the
+entire <code>_load_agent</code> call is caught by the broad <code>except Exception: return None</code> at line 136 of
+<code>filesystem_agent_repository.py</code>. The exception is silently swallowed, the agent is not loaded,
+and there is no indication to the operator. This is an availability concern for malformed input.</p>
+<p><strong>CVSS 3.1:</strong> AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:L — 3.3 Low</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>FILE: tests/unit/agents/infrastructure/persistence/test_filesystem_agent_repository_security.py
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>- test_invalid_body_format_in_yaml_causes_load_agent_to_return_none
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>  # Craft .agent.yaml with portability.body_format = &quot;unknown_format&quot;.
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>  # Verify _load_agent returns None (not raises) due to except Exception swallow.
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>  # Verify no agent is added to the list_all() results.
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>- test_invalid_tool_tier_in_yaml_causes_load_agent_to_return_none
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>  # Craft .agent.yaml with tool_tier: &quot;T9&quot;. Verify _load_agent returns None.
+<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>  # Verify the broad exception swallow logs or surfaces enough for debugging.
+</code></pre></div>
+<hr />
+<h2 id="l2-strategic-implications">L2 Strategic Implications<a class="headerlink" href="#l2-strategic-implications" title="Permanent link">&para;</a></h2>
+<h3 id="systemic-pattern-1-trust-boundary-at-yaml-intake-is-absent">Systemic Pattern 1: Trust Boundary at YAML Intake Is Absent<a class="headerlink" href="#systemic-pattern-1-trust-boundary-at-yaml-intake-is-absent" title="Permanent link">&para;</a></h3>
+<p>All four files treat filesystem-sourced YAML as trusted. There is no input validation layer between
+raw YAML content and domain object construction. The <code>_parse_agent</code> broad <code>except Exception: return None</code>
+functions as a de-facto silencer of all parsing errors. This means malformed or adversarial input
+produces no observable error — it simply results in agents not being built, with no operator notification.</p>
+<p><strong>Architectural recommendation:</strong> Introduce a dedicated <code>CanonicalAgentValidator</code> at the application
+layer that runs schema validation (JSON Schema against <code>agent-canonical-v1.schema.json</code>) before
+<code>CanonicalAgent</code> construction. This validator should raise a typed exception (<code>ValidationError</code>) not
+swallow it.</p>
+<h3 id="systemic-pattern-2-security-controls-operate-on-abstract-names-not-invariants">Systemic Pattern 2: Security Controls Operate on Abstract Names, Not Invariants<a class="headerlink" href="#systemic-pattern-2-security-controls-operate-on-abstract-names-not-invariants" title="Permanent link">&para;</a></h3>
+<p>The tool escalation filter (<code>t != "agent_delegate"</code>) and the constitutional check (<code>code in p</code>) both
+operate on mutable string values rather than stable semantic invariants. Strings can be crafted to
+satisfy checks while violating intent. This is a systemic design gap: security-relevant classification
+(is this agent a worker? does it comply with P-003?) should be enforced via typed enums or verified
+against a closed allowlist, not substring matching.</p>
+<p><strong>Architectural recommendation:</strong> Replace all security-relevant string checks with typed value-object
+comparisons. The constitutional triplet enforcement should match against an exact allowlist of canonical
+principle strings stored as module-level constants, not <code>code in p</code> on arbitrary strings.</p>
+<h3 id="systemic-pattern-3-path-construction-has-no-root-confinement-discipline">Systemic Pattern 3: Path Construction Has No Root-Confinement Discipline<a class="headerlink" href="#systemic-pattern-3-path-construction-has-no-root-confinement-discipline" title="Permanent link">&para;</a></h3>
+<p><code>pathlib.Path</code> joins do not enforce that the result stays under the intended root directory. The
+standard Python pattern for root-confinement is <code>resolved_path.resolve().is_relative_to(root.resolve())</code>.
+None of the four files apply this pattern. All path-construction sites in <code>FilesystemAgentRepository</code>
+and <code>ClaudeCodeAdapter.generate()</code> are vulnerable to the same class of path traversal.</p>
+<p><strong>Architectural recommendation:</strong> Create a single <code>safe_join(root: Path, *parts: str) -&gt; Path</code> utility
+in the shared kernel that resolves the joined path and asserts it is under <code>root</code>. All repository and
+adapter path construction should use this utility exclusively.</p>
+<h3 id="threat-model-correlation">Threat Model Correlation<a class="headerlink" href="#threat-model-correlation" title="Permanent link">&para;</a></h3>
+<p>The path traversal findings (Finding 5) and tool escalation findings (Finding 6) correspond to the
+STRIDE category <strong>Elevation of Privilege</strong>. The constitutional bypass (Finding 7) corresponds to
+<strong>Tampering</strong> with security metadata. The YAML amplification (Finding 1) corresponds to <strong>Denial of
+Service</strong>. These are consistent with what an eng-architect threat model of a build pipeline accepting
+developer-controlled YAML files would predict as the primary risk surface.</p>
+<h3 id="asvs-50-chapter-verification-status">ASVS 5.0 Chapter Verification Status<a class="headerlink" href="#asvs-50-chapter-verification-status" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Chapter</th>
+<th>Requirement</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>V5.1 Input Validation</td>
+<td>5.1.1 — All user-controllable data validated</td>
+<td>FAIL — YAML fields not validated before use</td>
+</tr>
+<tr>
+<td>V5.1 Input Validation</td>
+<td>5.1.3 — Structured data validated against schema</td>
+<td>FAIL — schema validation not called in build path</td>
+</tr>
+<tr>
+<td>V5.2 Sanitization and Sandboxing</td>
+<td>5.2.1 — All untrusted HTML/XML output encoded</td>
+<td>PARTIAL — XML tags auto-derived but not entity-encoded</td>
+</tr>
+<tr>
+<td>V8.1 General Data Protection</td>
+<td>8.1.1 — Sensitive data not stored unnecessarily</td>
+<td>PASS — no credentials handled</td>
+</tr>
+<tr>
+<td>V4.1 General Access Control</td>
+<td>4.1.1 — Access controls enforced at trust boundary</td>
+<td>FAIL — no confinement check on path joins</td>
+</tr>
+<tr>
+<td>V4.2 Operation Level Access Control</td>
+<td>4.2.1 — Sensitive operations protected</td>
+<td>FAIL — tool escalation filter incomplete</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>Generated by: eng-security</em>
+<em>Review method: Manual data-flow tracing, CWE Top 25 2025 checklist</em>
+<em>SSDF alignment: PW.7 (Review human-readable code to identify vulnerabilities)</em>
+<em>Date: 2026-02-24</em></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+  
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 Geekatron — Apache License 2.0
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+  <div class="md-footer-meta__inner md-grid" style="text-align: center; padding-bottom: 0.5rem;">
+    <span class="sb-tagline">Quality with soul.</span>
+  </div>
+
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
