@@ -48,7 +48,7 @@ These directives govern the entire orchestration run. You must not violate them.
 |-------|-------------|--------|---------|
 | Phase 1 | Literature Research (academic + industry + context7) | **COMPLETE** | Barrier 1: **PASSED** (0.953 synthesis + 0.951 supplemental) |
 | Phase 2 | Evidence Analysis (claim validation + comparative effectiveness) | **COMPLETE** | Barrier 2: **PASSED** (0.959 claim-validation + 0.933 comparative-effectiveness + 0.950 synthesis) |
-| Phase 3 | Negative Prompting Taxonomy & Pattern Catalog | NOT STARTED | Barrier 3 |
+| Phase 3 | Negative Prompting Taxonomy & Pattern Catalog | **COMPLETE** | Barrier 3: **PASSED** (0.957, 3 iter) |
 | Phase 4 | Jerry Framework Application Analysis (5 sub-tasks) | NOT STARTED | Barrier 4 |
 | Phase 5 | Implementation Planning (4 ADRs) | NOT STARTED | Barrier 5 |
 | Phase 6 | Final Synthesis & Recommendations | NOT STARTED | C4 Tournament |
@@ -201,15 +201,25 @@ All paths relative to `projects/PROJ-014-negative-prompting-research/orchestrati
 | Executor findings (supplemental, I1-I3) | `barrier-1/supplemental-adversary-findings-i{1,2,3}.md` | — |
 | Scorer (supplemental, I4) | `barrier-1/supplemental-adversary-scorer-i4.md` | — |
 
-### Phase 2 Analysis (IN PROGRESS)
+### Phase 2 Analysis (COMPLETE)
 
 | Artifact | Path | Score |
 |----------|------|-------|
-| Claim validation (TASK-005) | `phase-2/claim-validation.md` | Pending adversary gate |
-| Comparative effectiveness analysis (TASK-006) | `phase-2/comparative-effectiveness.md` | Pending adversary gate |
+| Claim validation (TASK-005) | `phase-2/claim-validation.md` | 0.959 |
+| Comparative effectiveness analysis (TASK-006) | `phase-2/comparative-effectiveness.md` | 0.933 (max-iter) |
+| Barrier 2 synthesis (TASK-007) | `barrier-2/synthesis.md` | 0.950 |
+
+### Phase 3 Taxonomy (COMPLETE)
+
+| Artifact | Path | Score |
+|----------|------|-------|
+| Taxonomy & Pattern Catalog (v3.0.0) | `phase-3/taxonomy-pattern-catalog.md` | 0.957 |
+| Adversary I1 | `phase-3/adversary-taxonomy-i1.md` | — |
+| Adversary I2 | `phase-3/adversary-taxonomy-i2.md` | — |
+| Adversary I3 | `phase-3/adversary-taxonomy-i3.md` | — |
 
 ---
 
 *GitHub Issue: [#122](https://github.com/geekatron/jerry/issues/122)*
-*ORCHESTRATION.yaml: Updated 2026-02-27 with supplemental report and A/B testing design*
+*ORCHESTRATION.yaml: Updated 2026-02-28 with Phase 3 completion*
 *All paths relative to `projects/PROJ-014-negative-prompting-research/`*

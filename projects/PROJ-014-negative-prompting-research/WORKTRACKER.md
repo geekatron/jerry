@@ -22,7 +22,7 @@
 | Criticality | C4 (Critical) |
 | Quality Threshold | >= 0.95 |
 | Orchestration | `neg-prompting-20260227-001` |
-| Progress | 45% (Phase 1 COMPLETE, Phase 2 COMPLETE — Barrier 2 PASSED 0.950, 3 iter) |
+| Progress | 55% (Phase 1 COMPLETE, Phase 2 COMPLETE, Phase 3 COMPLETE — Barrier 3 PASSED 0.957, 3 iter) |
 
 ## Work Items
 
@@ -31,7 +31,7 @@
 | ID | Type | Title | Status | Parent |
 |----|------|-------|--------|--------|
 | EPIC-001 | Epic | Literature Research & Evidence Gathering | DONE | — |
-| EPIC-002 | Epic | Comparative Analysis & Taxonomy | NOT STARTED | — |
+| EPIC-002 | Epic | Comparative Analysis & Taxonomy | DONE | — |
 | EPIC-003 | Epic | Jerry Framework Application | NOT STARTED | — |
 | EPIC-004 | Epic | Final Synthesis & Recommendations | NOT STARTED | — |
 | TASK-001 | Task | Phase 1: Academic Literature Research (25+ sources) + per-agent /adversary C4 gate | DONE (0.950, 5 iter) | EPIC-001 |
@@ -41,8 +41,8 @@
 | TASK-005 | Task | Phase 2: Claim Validation (60% hallucination) + per-agent /adversary C4 gate | DONE (0.959, 4 iter) | EPIC-001 |
 | TASK-006 | Task | Phase 2: Comparative Effectiveness Analysis (5 dimensions) + per-agent /adversary C4 gate | DONE (0.933, 5 iter, max-iterations) | EPIC-001 |
 | TASK-007 | Task | Barrier 2: Analysis cross-pollination (gated inputs) + /adversary C4 on synthesis | DONE (0.950, 3 iter) | TASK-005, TASK-006 |
-| TASK-008 | Task | Phase 3: Negative Prompting Taxonomy & Pattern Catalog + per-agent /adversary C4 gates | NOT STARTED | EPIC-002 |
-| TASK-009 | Task | Barrier 3: Taxonomy quality gate — /adversary C4 on cross-artifact coherence | NOT STARTED | TASK-008 |
+| TASK-008 | Task | Phase 3: Negative Prompting Taxonomy & Pattern Catalog + per-agent /adversary C4 gates | DONE (0.957, 3 iter) | EPIC-002 |
+| TASK-009 | Task | Barrier 3: Taxonomy quality gate — /adversary C4 on cross-artifact coherence | DONE (0.957, 3 iter) | TASK-008 |
 | TASK-010 | Task | Phase 4: Jerry Skills Update Analysis + per-agent /adversary C4 gate | NOT STARTED | EPIC-003 |
 | TASK-011 | Task | Phase 4: Jerry Agents Update Analysis + per-agent /adversary C4 gate | NOT STARTED | EPIC-003 |
 | TASK-012 | Task | Phase 4: Jerry Rules Update Analysis + per-agent /adversary C4 gate (AE-002) | NOT STARTED | EPIC-003 |

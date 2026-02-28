@@ -109,11 +109,25 @@ barriers:
 
   barrier-3:
     name: "Taxonomy Quality Gate"
-    status: NOT_STARTED
+    status: PASSED
     task_id: TASK-009
     inputs:
       - task: TASK-008
-        status: NOT_STARTED
+        artifact: orchestration/neg-prompting-20260227-001/phase-3/taxonomy-pattern-catalog.md
+        status: DONE
+        score: 0.957
+        iterations: 3
+        verdict: PASS
+    adversary_gate:
+      score_trajectory: [0.845, 0.938, 0.957]
+      critical_findings_resolved: 4
+      major_findings_resolved: 11
+      residual_minors: 1
+      residual_note: "NEW-003 cosmetic: session context YAML summary field version mismatch"
+      phase3_gate_checks:
+        GC1: PASS
+        GC2: PASS
+        GC3: PASS
 
   barrier-4:
     name: "Application Cross-Pollination"
