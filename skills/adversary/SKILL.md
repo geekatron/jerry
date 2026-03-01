@@ -40,7 +40,7 @@ This SKILL.md serves multiple audiences:
 
 | Level | Audience | Sections to Focus On |
 |-------|----------|---------------------|
-| **L0 (ELI5)** | New users, stakeholders | [Purpose](#purpose), [When to Use](#when-to-use-this-skill), [When to Use /adversary vs ps-critic](#when-to-use-adversary-vs-ps-critic), [Quick Reference](#quick-reference) |
+| **L0 (ELI5)** | New users, stakeholders | [Purpose](#purpose), [When to Use](#when-to-use-this-skill), [Routing Disambiguation](#routing-disambiguation), [When to Use /adversary vs ps-critic](#when-to-use-adversary-vs-ps-critic), [Quick Reference](#quick-reference) |
 | **L1 (Engineer)** | Developers invoking agents | [Invoking an Agent](#invoking-an-agent), [Available Agents](#available-agents), [Dependencies](#dependencies--prerequisites), [Adversarial Quality Mode](#adversarial-quality-mode) |
 | **L2 (Architect)** | Workflow designers | [P-003 Compliance](#p-003-compliance), [H-14 Integration](#integration-with-creator-critic-revision-cycle-h-14), [Constitutional Compliance](#constitutional-compliance), [Strategy Templates](#strategy-templates) |
 
@@ -79,6 +79,8 @@ Activate when:
 - Working on routine code changes at C1 criticality — use self-review (S-010) only without full adversarial overhead
 - Fixing defects or bugs with obvious solutions — use `/problem-solving` for root-cause analysis instead
 - User explicitly requests a quick review without adversarial rigor — respect user preference per P-020
+
+See [Routing Disambiguation](#routing-disambiguation) for full exclusion conditions with consequences.
 
 > **Note:** Use `/adversary` for adversarial code review (e.g., red team security review, tournament quality assessment of code artifacts). Use `ps-reviewer` for routine defect detection.
 
@@ -405,6 +407,22 @@ All agents adhere to the **Jerry Constitution v1.0**:
 | select, pick, which strategies, criticality, C1/C2/C3/C4 | adv-selector |
 | run, execute, apply, template, strategy, findings | adv-executor |
 | score, judge, rubric, dimensions, threshold, 0.92 | adv-scorer |
+
+---
+
+## Routing Disambiguation
+
+> When this skill is the wrong choice and what happens if misrouted.
+
+| Condition | Use Instead | Consequence of Misrouting |
+|-----------|-------------|--------------------------|
+| Iterative creator-critic-revision loop needed | `/problem-solving` (ps-critic) | Adversarial one-shot assessment applied to iterative work produces premature rejection without revision pathway; ps-critic operates within H-14 revision cycles while /adversary produces standalone assessments |
+| Routine code review for quick defect checks | `/problem-solving` (ps-reviewer) | Full adversarial strategy template execution (S-001 through S-014) applied to routine defect detection wastes significant context budget on strategy selection and template loading |
+| Constraint validation (pass/fail compliance) | `/problem-solving` (ps-validator) | Adversarial strategies assess quality dimensions, not binary constraint compliance; ps-validator produces traceability matrices while /adversary produces quality scores |
+| Research, analysis, or root cause investigation | `/problem-solving` (ps-researcher or ps-investigator) | Adversarial agents evaluate existing deliverables, not produce new analysis; no research methodology or causal investigation capability |
+| Security-hardened software design or threat modeling | `/eng-team` | /adversary applies quality assessment strategies (S-001 Red Team Analysis is quality-focused); /eng-team provides STRIDE/DREAD threat modeling and OWASP compliance |
+| Offensive security testing or penetration testing | `/red-team` | /adversary "red team" keyword refers to S-001 quality strategy; /red-team provides MITRE ATT&CK kill chain methodology for authorized penetration testing |
+| C1 routine work with obvious solutions | Self-review (S-010) only | Full adversarial overhead (adv-selector, adv-executor, adv-scorer) applied to C1 routine tasks consumes disproportionate context budget for low-risk work |
 
 ---
 

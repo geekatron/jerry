@@ -19,6 +19,7 @@ paths:
 |---------|---------|
 | [HARD Rules](#hard-rules) | Testing constraints H-20, H-21 |
 | [Standards (MEDIUM)](#standards-medium) | Test structure, naming, mocking, tools |
+| [Compaction Testing (PG-004)](#compaction-testing-pg-004) | Compaction survival testing for constraint-bearing artifacts |
 | [Guidance (SOFT)](#guidance-soft) | Optional practices |
 
 ---
@@ -86,6 +87,41 @@ Override requires documented justification.
 **pytest:** `uv run pytest` with markers: `unit`, `integration`, `e2e`, `architecture`.
 **mypy:** Strict mode. `disallow_untyped_defs = true`. Override for `tests/` and `scripts/`.
 **ruff:** `target-version = "py311"`, `line-length = 100`. Select: E, W, F, I, B, C4, UP, ARG, SIM, TCH, PTH, ERA, PL, RUF.
+
+---
+
+## Compaction Testing (PG-004)
+
+> MEDIUM standard. Override requires documented justification.
+
+Constraint-bearing artifacts SHOULD be tested for context compaction survival. When a compaction event occurs (AE-006e), the LLM context is summarized and prior content is discarded. Constraints embedded only in L1 (session-start) content are vulnerable to loss.
+
+### Artifact Types Requiring Compaction Testing
+
+| Artifact Type | Compaction Risk | Test Priority |
+|--------------|----------------|---------------|
+| Rule files with L2-REINJECT markers | Low (L2 re-injection survives compaction) | Verify L2 markers cover critical constraints |
+| Rule files without L2-REINJECT markers | High (L1-only, lost on compaction) | Verify Tier B compensating controls exist |
+| SKILL.md files | Medium (Tier 1 metadata reloaded; methodology lost) | Verify trigger keywords survive in routing layer |
+| Agent definitions (.md + .governance.yaml) | Medium (reloaded on Task invocation) | Verify schema validation gates are deterministic (L3/L5) |
+| Templates (.context/templates/) | High (loaded on-demand, not re-injected) | Verify template constraints have external enforcement |
+
+### Test Structure
+
+Compaction tests follow a three-step structure:
+
+1. **Load:** Identify the critical constraints in the artifact (HARD rules, invariants, containment rules, state machine constraints).
+2. **Simulate:** Assume compaction has occurred -- only L2-REINJECT content, deterministic gates (L3/L5), and compensating controls remain.
+3. **Verify:** Confirm that each critical constraint has at least one compaction-resilient enforcement mechanism (L2 marker, L3 pre-tool gate, L5 CI check, or skill/hook enforcement).
+
+### C3+ Quality Gate Integration
+
+For C3+ deliverables that modify constraint-bearing artifacts:
+
+- [ ] Each HARD rule in the artifact has at least one compaction-resilient enforcement mechanism
+- [ ] L2-REINJECT markers cover the artifact's highest-priority constraints
+- [ ] Tier B rules (no L2 marker) have documented compensating controls
+- [ ] Template constraints have failure mode documentation (T-004)
 
 ---
 

@@ -42,6 +42,7 @@ Let's get your bindings adjusted so you don't have any Jerry moments.
 | [Constitutional Compliance](#constitutional-compliance) | Principle mapping |
 | [Integration with Other Skills](#integration-with-other-skills) | Cross-skill dependencies |
 | [Templates](#templates) | Template usage |
+| [Routing Disambiguation](#routing-disambiguation) | When this skill is the wrong choice |
 | [References](#references) | Canonical sources |
 
 ---
@@ -210,6 +211,21 @@ The bootstrap skill is foundational and does not integrate with other skills. Ho
 ## Templates
 
 The bootstrap skill does not use templates. It operates directly on the `.context/` directory structure.
+
+---
+
+## Routing Disambiguation
+
+> When this skill is the wrong choice and what happens if misrouted.
+
+| Condition | Use Instead | Consequence of Misrouting |
+|-----------|-------------|--------------------------|
+| Task requires research, analysis, or root cause investigation | `/problem-solving` | Bootstrap is a navigation/setup tool; invoking it for analytical tasks wastes context budget loading orientation content with no analytical capability |
+| Task requires code generation or implementation | `/problem-solving` (ps-reviewer) or direct coding | Bootstrap agents have no code generation methodology; context loaded with sync/linking logic irrelevant to implementation |
+| Task requires architectural design or ADR creation | `/architecture` or `/problem-solving` (ps-architect) | Bootstrap provides no design decision framework; architectural context entirely absent |
+| Task requires quality review or adversarial critique | `/adversary` | Bootstrap has no quality scoring or adversarial strategy capability |
+| Task requires multi-agent workflow coordination | `/orchestration` | Bootstrap has no orchestration, state tracking, or checkpoint capability |
+| Task requires security assessment or threat modeling | `/eng-team` or `/red-team` | Bootstrap has no security methodology; 10+ security agents remain uninvoked |
 
 ---
 

@@ -31,7 +31,7 @@ This SKILL.md serves multiple audiences:
 
 | Level | Audience | Sections to Focus On |
 |-------|----------|---------------------|
-| **L0 (ELI5)** | Project stakeholders, new users | Purpose, When to Use, Core Artifacts |
+| **L0 (ELI5)** | Project stakeholders, new users | Purpose, When to Use, [Routing Disambiguation](#routing-disambiguation), Core Artifacts |
 | **L1 (Engineer)** | Developers executing workflows | Quick Start, State Schema |
 | **L2 (Architect)** | Workflow designers | Workflow Patterns, Adversarial Quality Mode, Constitutional Compliance |
 
@@ -71,6 +71,8 @@ Activate when:
 - Single agent task (use problem-solving skill instead)
 - Simple sequential flow (use direct agent invocation)
 - No cross-session state needed
+
+See [Routing Disambiguation](#routing-disambiguation) for full exclusion conditions with consequences.
 
 ---
 
@@ -653,6 +655,21 @@ quality:
 | `templates/ORCHESTRATION_PLAN.template.md` | Strategic context with ASCII diagram |
 | `templates/ORCHESTRATION_WORKTRACKER.template.md` | Tactical execution tracking |
 | `templates/ORCHESTRATION.template.yaml` | Machine-readable state skeleton |
+
+---
+
+## Routing Disambiguation
+
+> When this skill is the wrong choice and what happens if misrouted.
+
+| Condition | Use Instead | Consequence of Misrouting |
+|-----------|-------------|--------------------------|
+| Single-agent task with no cross-session state | `/problem-solving` | Multi-phase coordination overhead (barrier sync, quality gates, ORCHESTRATION.yaml state tracking) applied to single-step task wastes significant context budget on unnecessary coordination infrastructure |
+| Simple sequential flow without parallel pipelines | Direct agent invocation | Orchestration creates three artifacts (ORCHESTRATION_PLAN.md, ORCHESTRATION_WORKTRACKER.md, ORCHESTRATION.yaml) for a workflow that needs none; artifact overhead exceeds task complexity |
+| Research, analysis, or root cause investigation | `/problem-solving` | Orchestration agents (orch-planner, orch-tracker, orch-synthesizer) coordinate workflows but have no research or analytical methodology |
+| Requirements engineering or V&V activities | `/nasa-se` | Orchestration manages workflow state, not requirements traceability; NPR-compliant artifacts not generated |
+| Adversarial quality review or scoring | `/adversary` | Orchestration has no quality scoring rubric or adversarial strategy templates; orch-synthesizer produces workflow synthesis, not quality assessment |
+| Transcript parsing or meeting note extraction | `/transcript` | Orchestration has no VTT/SRT parser; transcript-specific agents not available |
 
 ---
 

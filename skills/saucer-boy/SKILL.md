@@ -45,6 +45,7 @@ activation-keywords:
 | [Anti-Patterns](#anti-patterns) | What this voice is NEVER |
 | [Constitutional Compliance](#constitutional-compliance) | Principle mapping |
 | [Integration Points](#integration-points) | Cross-skill connections |
+| [Routing Disambiguation](#routing-disambiguation) | When this skill is the wrong choice |
 | [References](#references) | Source documents |
 
 ## Document Audience (Triple-Lens)
@@ -91,6 +92,8 @@ Activate when:
 - Security-relevant operations — precision only
 - User explicitly requests formal/neutral tone (P-020 user authority)
 - Writing internal design docs, ADRs, or research artifacts -- personality voice is inappropriate for governance artifacts; use neutral technical voice for these output types
+
+See [Routing Disambiguation](#routing-disambiguation) for full exclusion conditions with consequences.
 
 ---
 
@@ -348,6 +351,21 @@ These define what the session voice is NEVER:
 | `/adversary` | Session voice does not interfere with adversarial reviews | Boundary |
 | `/problem-solving` | Session personality can color status updates during research | Optional |
 | P-020 | User can disable personality at any time | Override |
+
+---
+
+## Routing Disambiguation
+
+> When this skill is the wrong choice and what happens if misrouted.
+
+| Condition | Use Instead | Consequence of Misrouting |
+|-----------|-------------|--------------------------|
+| Producing framework output (quality gates, error messages, hooks) | `/saucer-boy-framework-voice` | Conversational voice applied to framework documentation violates voice consistency standards; output requires complete rewrite to match framework voice constraints |
+| Writing internal design docs, ADRs, or research artifacts | Neutral technical voice (no skill invocation) | Personality voice in governance artifacts undermines precision and auditability; McConkey energy in an ADR is information displacement (Anti-Pattern) |
+| Constitutional failure or governance escalation | No personality skill | Personality during hard stops obscures critical information; McConkey respected danger -- precision only |
+| Security-relevant operations | `/eng-team` or `/red-team` | Personality flair in security contexts reduces clarity; stakes demand precision over warmth |
+| Adversarial quality review or scoring | `/adversary` | Saucer Boy voice has no scoring rubric or strategy templates; personality does not substitute for quality assessment methodology |
+| Voice fidelity scoring or persona compliance review | `/saucer-boy-framework-voice` | Session voice skill loads conversational calibration, not framework voice scoring rubric; persona compliance check requires framework voice methodology |
 
 ---
 

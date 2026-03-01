@@ -304,6 +304,15 @@ Once DONE, a spike CANNOT be reopened (research is complete).
 
 ---
 
+## Compaction Resilience (T-004)
+
+| Constraint | Failure Mode if Lost | Compensating Control | Detection |
+|-----------|---------------------|---------------------|-----------|
+| INV-SP01: timebox is REQUIRED (1-336 hours) | Spike created without timebox, research runs unbounded | L3 AST validation (H-33) | `jerry ast validate` rejects missing timebox |
+| INV-SP03: Spike cannot have children | Tasks created under Spike | /worktracker skill enforcement (WTI rules) | Worktracker audit detects children under Spike |
+| INV-SP04: Spike does NOT require quality gates | Quality gates incorrectly applied to Spike | Template body states exception | Manual review |
+| INV-SP02: findings documented when DONE | Spike closed without documenting findings | /worktracker skill enforcement | Manual review at completion |
+
 <!--
 JERRY ALIGNMENT:
   existing_type: "WorkType.SPIKE"

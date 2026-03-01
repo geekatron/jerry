@@ -395,6 +395,15 @@ Source: ONTOLOGY-v1.md Section 3.4.2 - system_mapping
 
 ---
 
+## Compaction Resilience (T-004)
+
+| Constraint | Failure Mode if Lost | Compensating Control | Detection |
+|-----------|---------------------|---------------------|-----------|
+| Status values: pending, in_progress, completed | Invalid status written to entity file | L3 AST validation (H-33) | `jerry ast validate` rejects invalid status |
+| Containment: children must be Capability or Feature | Wrong child type created under Epic | /worktracker skill enforcement (WTI rules) | Worktracker audit detects hierarchy violation |
+| Parent must be Initiative or top-level | Epic placed under invalid parent | /worktracker skill enforcement (WTI rules) | Worktracker audit detects containment violation |
+| INV-E01: Cannot mix Capabilities and Features | Mixed children created | /worktracker skill enforcement | Manual review of WORKTRACKER.md |
+
 <!--
 DESIGN RATIONALE:
 Epic is universal across all systems. The additional WSJF properties

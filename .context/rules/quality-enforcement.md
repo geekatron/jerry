@@ -173,6 +173,7 @@ Rules are classified by their enforcement reliability:
 | Rules | L2 Source | Count |
 |-------|-----------|-------|
 | H-01, H-02, H-03 | quality-enforcement.md rank 1 | 3 |
+| H-04 | project-workflow.md rank 8 | 1 |
 | H-05 | python-environment.md rank 3 | 1 |
 | H-07, H-10 | architecture-standards.md rank 4 | 2 |
 | H-11 | coding-standards.md rank 7 | 1 |
@@ -183,32 +184,31 @@ Rules are classified by their enforcement reliability:
 | H-22 | mandatory-skill-usage.md rank 6 | 1 |
 | H-23 | markdown-navigation.md rank 7 | 1 |
 | H-25, H-26 | skill-standards.md rank 7 | 2 |
+| H-32 | project-workflow.md rank 9 | 1 |
 | H-33 | quality-enforcement.md rank 10 | 1 |
 | H-34 | agent-development-standards.md rank 5 | 1 |
 | H-36 | agent-routing-standards.md rank 6 | 1 |
-| **Tier A Total** | | **20** |
+| **Tier A Total** | | **22** |
 
 **Tier B** — Structural L2 (L1 awareness only, compensating controls prevent bypass):
 
 | Rule | Compensating Controls | Count |
 |------|----------------------|-------|
-| H-04 (active project) | SessionStart hook enforcement (L3), CLI validation | 1 |
 | H-16 (steelman before critique) | /adversary skill enforcement, L1 rule awareness | 1 |
 | H-17 (quality scoring) | /adversary + /problem-solving skill enforcement | 1 |
 | H-18 (constitutional compliance) | S-007 strategy enforcement in /adversary skill | 1 |
-| H-32 (GitHub Issue parity) | /worktracker skill enforcement, CI workflow | 1 |
-| **Tier B Total** | | **5** |
+| **Tier B Total** | | **3** |
 
-**Total:** 25 HARD rules (20 Tier A + 5 Tier B)
+**Total:** 25 HARD rules (22 Tier A + 3 Tier B)
 
-> **Note:** Tier B rules are candidates for L2 marker addition pending effectiveness measurement (DEC-005). Current compensating controls provide adequate enforcement through deterministic mechanisms (hooks, skills, CI gates).
+> **Note:** Tier B rules are candidates for L2 marker addition pending effectiveness measurement (DEC-005). Current compensating controls provide adequate enforcement through deterministic mechanisms (hooks, skills, CI gates). H-04 and H-32 were promoted from Tier B to Tier A via PROJ-014 ADR-004 (compaction resilience).
 
 ### HARD Rule Ceiling Derivation
 
 The ceiling of 25 HARD rules is derived from three independent constraint families (EN-002, C4 derivation scored 0.95 PASS, 2 iterations):
 
 1. **Cognitive Load** — LLM instruction-following reliability degrades when rule sets exceed ~20-25 items, consistent with chunking limits observed in structured prompt compliance benchmarks. At 25 rules, the framework operates at the practical upper bound; beyond this, enforcement reliability drops measurably.
-2. **Enforcement Coverage** — L2 per-prompt re-injection operates within an 850-token budget. Current 25 rules consume 559/850 tokens (65.8%) via 16 L2-REINJECT markers. Each additional rule requires ~30-50 tokens of reinforcement capacity, leaving room for ~6 additional markers before budget exhaustion.
+2. **Enforcement Coverage** — L2 per-prompt re-injection operates within an 850-token budget. Current 25 rules consume ~619/850 tokens (72.8%) via 18 L2-REINJECT markers. Each additional rule requires ~30-50 tokens of reinforcement capacity, leaving room for ~4-5 additional markers before budget exhaustion.
 3. **Governance Burden** — Each HARD rule requires: (a) constitutional justification, (b) at least one enforcement mechanism (L2 marker, L3 AST gate, L5 CI check, or skill enforcement), and (c) ongoing maintenance. At 25 rules, governance overhead is manageable; beyond 28, the review burden for ceiling exceptions approaches the cost of the rules themselves.
 
 **Convergence:** All three families independently converge on 25 as the practical upper bound. The absolute maximum (28) is enforced by an independent constant in the L5 gate script, preventing self-referential ceiling manipulation.

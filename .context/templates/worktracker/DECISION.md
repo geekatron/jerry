@@ -362,6 +362,15 @@ supersedes: {{SUPERSEDES}}
 
 ---
 
+## Compaction Resilience (T-004)
+
+| Constraint | Failure Mode if Lost | Compensating Control | Detection |
+|-----------|---------------------|---------------------|-----------|
+| ACCEPTED/SUPERSEDED are terminal states | Finalized decision reopened or modified | State machine reference in template body | Manual review detects invalid transition |
+| D-NNN structure: Question + Decision + Rationale required | Decision recorded without rationale, losing context | Template structure guides creation | Code review catches incomplete D-NNN entries |
+| Co-location: MUST be in parent's folder | Decision placed in wrong directory | /worktracker skill enforcement (WTI rules) | Worktracker audit detects misplaced decision |
+| Participants array REQUIRED (REQ-DEC-008) | Decision made without accountability tracking | L3 AST validation (H-33) | `jerry ast validate` rejects missing participants |
+
 <!--
 DESIGN RATIONALE:
 

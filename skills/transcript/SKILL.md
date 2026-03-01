@@ -221,7 +221,7 @@ This SKILL.md serves multiple audiences:
 
 | Level | Audience | Sections to Focus On | Why This Matters |
 |-------|----------|---------------------|------------------|
-| **L0 (ELI5)** | New users, stakeholders | Purpose, When to Use, Quick Reference | Learn what the skill does and how to invoke it |
+| **L0 (ELI5)** | New users, stakeholders | Purpose, When to Use, [Routing Disambiguation](#routing-disambiguation), Quick Reference | Learn what the skill does and how to invoke it |
 | **L1 (Engineer)** | Developers using the skill | Invoking the Skill, Agent Pipeline, File Persistence | Understand the technical workflow and outputs |
 | **L2 (Architect)** | Workflow designers | Architecture, State Management, Self-Critique | Design integrations and ensure quality |
 
@@ -3415,6 +3415,21 @@ Verification:
 - [RUNBOOK.md](./docs/RUNBOOK.md) - Operational procedures
 - [VTT Parser](./src/parser/vtt_parser.py) - Python VTT parser (v2.0)
 - [Transcript Chunker](./src/chunker/transcript_chunker.py) - Python chunker (v2.0)
+
+---
+
+## Routing Disambiguation
+
+> When this skill is the wrong choice and what happens if misrouted.
+
+| Condition | Use Instead | Consequence of Misrouting |
+|-----------|-------------|--------------------------|
+| Non-transcript file analysis (code, markdown, config files) | `/problem-solving` or Read tool directly | Transcript parsing agents (ts-parser, ts-extractor) applied to non-VTT/SRT files produce parsing failures; hybrid Python+LLM architecture expects transcript-format input |
+| General text processing or summarization | `/problem-solving` (ps-analyst or ps-synthesizer) | Transcript agents apply speaker identification, timestamp extraction, and domain-specific entity extraction patterns that are irrelevant to general text; 1,250x cost multiplier if Task agents invoked unnecessarily vs. direct text processing |
+| Requirements engineering or design work | `/nasa-se` | Transcript skill extracts meeting content; requirements formalization and V&V traceability require NASA-SE methodology |
+| Adversarial quality review of deliverables | `/adversary` | Transcript agents score extraction quality against transcript-specific criteria, not the S-014 LLM-as-Judge rubric for deliverable quality |
+| Research, analysis, or root cause investigation | `/problem-solving` | Transcript agents have no analytical methodology beyond extraction; research and causal investigation require ps-researcher or ps-investigator |
+| Security assessment or threat modeling | `/eng-team` | Transcript skill has no security methodology; security-engineering domain context provides STRIDE/DREAD extraction but does not replace eng-team threat modeling |
 
 ---
 

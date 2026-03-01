@@ -35,7 +35,7 @@ This SKILL.md serves multiple audiences:
 
 | Level | Audience | Sections to Focus On |
 |-------|----------|---------------------|
-| **L0 (ELI5)** | New users, stakeholders | [Purpose](#purpose), [When to Use](#when-to-use-this-skill), [Quick Reference](#quick-reference) |
+| **L0 (ELI5)** | New users, stakeholders | [Purpose](#purpose), [When to Use](#when-to-use-this-skill), [Routing Disambiguation](#routing-disambiguation), [Quick Reference](#quick-reference) |
 | **L1 (Engineer)** | Developers invoking agents | [Invoking an Agent](#invoking-an-agent), [Agent Details](#agent-details), [Adversarial Quality Mode](#adversarial-quality-mode) |
 | **L2 (Architect)** | Workflow designers | [Orchestration Flow](#orchestration-flow), [State Passing](#state-passing-between-agents), [Adversarial Quality Mode](#adversarial-quality-mode) |
 
@@ -417,6 +417,22 @@ Problem-solving artifacts should use standardized templates to ensure consistenc
 | `use-case-template.md` | Use case specifications | `docs/knowledge/exemplars/templates/use-case-template.md` |
 
 **Usage:** When creating a new artifact, read the appropriate template first to ensure consistent structure and sections.
+
+---
+
+## Routing Disambiguation
+
+> When this skill is the wrong choice and what happens if misrouted.
+
+| Condition | Use Instead | Consequence of Misrouting |
+|-----------|-------------|--------------------------|
+| Simple multi-agent workflow coordination without research | `/orchestration` | Problem-solving loads 9 agent definitions (ps-researcher, ps-analyst, ps-architect, ps-critic, ps-validator, ps-synthesizer, ps-reviewer, ps-investigator, ps-reporter) when task only needs workflow state tracking and checkpoint coordination |
+| Requirements engineering, V&V, or formal technical reviews (SRR/PDR/CDR) | `/nasa-se` | Problem-solving produces research artifacts and ADRs; NASA SE traceability matrices, VCRM tables, and NPR-compliant review packages not generated |
+| Transcript parsing or meeting note extraction (VTT/SRT files) | `/transcript` | Problem-solving has no VTT/SRT parser; transcript-specific agents (ts-parser, ts-extractor) with hybrid Python+LLM architecture not invoked |
+| Standalone adversarial quality review or tournament scoring | `/adversary` | Problem-solving ps-critic operates within creator-critic-revision loops (H-14); standalone one-shot adversarial assessment with strategy template selection requires /adversary |
+| Security-hardened software design or threat modeling | `/eng-team` | Problem-solving lacks STRIDE/DREAD methodology, OWASP ASVS verification, and NIST SSDF governance; security-specific agent team (10 agents) not loaded |
+| Offensive security testing or penetration testing | `/red-team` | Problem-solving produces research artifacts, not attack narratives; no MITRE ATT&CK kill chain coverage or engagement authorization methodology |
+| Work item tracking or entity management | `/worktracker` | Problem-solving has no entity hierarchy management; WORKTRACKER.md manifest operations and WTI integrity rules not available |
 
 ---
 

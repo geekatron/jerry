@@ -32,6 +32,7 @@ activation-keywords:
 | [When to Use This Skill](#when-to-use-this-skill) | Triggers and use cases |
 | [Operations Reference](#operations-reference) | All available CLI commands |
 | [Quick Reference](#quick-reference) | Copy-paste examples for common tasks |
+| [Routing Disambiguation](#routing-disambiguation) | When this skill is the wrong choice |
 | [Architecture Notes](#architecture-notes) | Layer compliance and design |
 
 ---
@@ -68,6 +69,8 @@ Invoke `/ast` when you need to:
 Do NOT use `/ast` for:
 - Reading raw file content (use Read tool directly).
 - Writing arbitrary content to files (use Write/Edit tools directly).
+
+See [Routing Disambiguation](#routing-disambiguation) for full exclusion conditions with consequences.
 
 ---
 
@@ -230,6 +233,20 @@ uv run jerry ast parse .context/rules/quality-enforcement.md
 ```bash
 uv run jerry ast validate --schema story projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/FEAT-001-ast-strategy/ST-005-ast-skill/ST-005-ast-skill.md
 ```
+
+---
+
+## Routing Disambiguation
+
+> When this skill is the wrong choice and what happens if misrouted.
+
+| Condition | Use Instead | Consequence of Misrouting |
+|-----------|-------------|--------------------------|
+| Reading raw file content without structural parsing | Read tool directly | AST parsing overhead applied to simple file reads wastes CLI invocation cost; JSON output format adds unnecessary complexity for content retrieval |
+| Writing arbitrary content to files | Write/Edit tools directly | AST modify is scoped to frontmatter field updates only; arbitrary content writes require direct file tools |
+| General text processing on non-entity markdown | Read/Write/Edit tools directly | AST validation schema applied to non-entity markdown produces false-positive structural errors; entity schema enforcement rejects valid non-worktracker files |
+| Research, analysis, or investigation tasks | `/problem-solving` | AST provides structural parsing only; no analytical methodology, no research capability, no root cause investigation |
+| Validating content quality or adversarial review | `/adversary` | AST validates structural compliance (H-23/H-24 nav tables, entity schemas), not content quality; no S-014 scoring rubric |
 
 ---
 

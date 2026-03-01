@@ -45,6 +45,7 @@ activation-keywords:
 | [Constitutional Compliance](#constitutional-compliance) | Principle mapping |
 | [Integration with Other Skills](#integration-with-other-skills) | Cross-skill workflows |
 | [Quick Reference](#quick-reference) | Common tasks and decision workflows |
+| [Routing Disambiguation](#routing-disambiguation) | When this skill is the wrong choice |
 | [References](#references) | Canonical sources |
 
 ---
@@ -445,6 +446,21 @@ The architecture skill integrates with other Jerry skills:
 | 3. Evaluate trade-offs | Use `/nasa-se` for formal trade study | Trade study matrix |
 | 4. Document decision | `@architecture decision "<title>"` | ADR in `docs/design/` |
 | 5. Validate compliance | `@architecture analyze <path>` | Compliance report |
+
+---
+
+## Routing Disambiguation
+
+> When this skill is the wrong choice and what happens if misrouted.
+
+| Condition | Use Instead | Consequence of Misrouting |
+|-----------|-------------|--------------------------|
+| Root cause analysis or debugging needed | `/problem-solving` (ps-investigator) | Architecture methodology (layer dependency rules, CQRS patterns, hexagonal structure) applied to investigation tasks produces structural design artifacts instead of causal chains; root cause not isolated |
+| Requirements engineering or V&V needed | `/nasa-se` | Requirements expressed as architectural decisions; V&V traceability lost; compliance gaps not detected |
+| Offensive security testing or penetration testing | `/red-team` | Architecture compliance checks applied to offensive engagement produce structural diagrams instead of attack narratives; engagement methodology entirely absent |
+| Adversarial quality review or tournament scoring | `/adversary` | Architecture review checklists applied instead of adversarial strategy templates; S-014 scoring rubric not loaded |
+| Security hardening or threat modeling | `/eng-team` | Architecture skill lacks STRIDE/DREAD methodology; security-specific governance layers (OWASP, NIST SSDF) not available |
+| Multi-agent workflow coordination | `/orchestration` | Architecture commands are single-step operations; no state tracking, checkpointing, or sync barrier capability |
 
 ---
 

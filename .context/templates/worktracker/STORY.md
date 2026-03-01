@@ -514,6 +514,15 @@ Source: ONTOLOGY-v1.md Section 3.4.5 - system_mapping
 
 ---
 
+## Compaction Resilience (T-004)
+
+| Constraint | Failure Mode if Lost | Compensating Control | Detection |
+|-----------|---------------------|---------------------|-----------|
+| INV-ST01: Story must have Feature as parent | Story placed under wrong parent type | /worktracker skill enforcement (WTI rules) | Worktracker audit detects containment violation |
+| INV-ST03: acceptance_criteria before completed | Story completed without verified AC | /worktracker skill enforcement | Manual review at completion |
+| WTI-008a: AC must not contain DoD items | DoD items mixed into AC (tests, code review) | Quick Creation Guide in template body | Code review catches DoD-in-AC pattern |
+| Status values: pending, in_progress, completed | Invalid status written to entity file | L3 AST validation (H-33) | `jerry ast validate` rejects invalid status |
+
 <!--
 DESIGN RATIONALE:
 "Story" chosen over "PBI" because: (1) more intuitive for users,

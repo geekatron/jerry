@@ -69,6 +69,7 @@ activation-keywords:
 | [Constitutional Compliance](#constitutional-compliance) | Governing principles |
 | [Quick Reference](#quick-reference) | Common workflows and agent selection hints |
 | [Agent Details](#agent-details) | Agent file paths |
+| [Routing Disambiguation](#routing-disambiguation) | When this skill is the wrong choice |
 | [References and Traceability](#references-and-traceability) | ADR baseline, architecture decisions, research provenance |
 
 ## Document Audience (Triple-Lens)
@@ -401,6 +402,22 @@ For detailed agent specifications, see:
 - `skills/eng-team/agents/eng-security.md`
 - `skills/eng-team/agents/eng-reviewer.md`
 - `skills/eng-team/agents/eng-incident.md`
+
+---
+
+## Routing Disambiguation
+
+> When this skill is the wrong choice and what happens if misrouted.
+
+| Condition | Use Instead | Consequence of Misrouting |
+|-----------|-------------|--------------------------|
+| Offensive security testing or penetration testing | `/red-team` | Defensive security methodology (STRIDE/DREAD threat modeling, OWASP ASVS compliance) applied to offensive tasks produces security architecture artifacts instead of attack narratives; 10 security-focused agents loaded when task requires offensive methodology |
+| Adversarial quality review or tournament scoring | `/adversary` | Eng-team agents evaluate security compliance, not deliverable quality; S-014 scoring rubric and adversarial strategy templates not loaded |
+| General code review without security focus | `/problem-solving` (ps-reviewer) | 10 security-specific agents loaded into context when task requires routine defect detection; OWASP/NIST/CIS governance overhead applied to non-security review |
+| Root cause analysis or debugging | `/problem-solving` (ps-investigator) | Security methodology (STRIDE, CWE analysis) applied to general investigation produces threat models instead of causal chains; root cause not isolated |
+| Requirements engineering or V&V | `/nasa-se` | Eng-team produces security requirements and threat models, not general requirements; NASA SE traceability and V&V methodology absent |
+| Architecture design without security requirements | `/architecture` | Eng-team loads security governance layers (NIST SSDF, MS SDL, SLSA) that add overhead when task is pure structural design; hexagonal architecture methodology is in `/architecture` |
+| General research or landscape survey | `/problem-solving` (ps-researcher) | Eng-team agents are implementation-focused; no divergent research methodology for technology surveys |
 
 ---
 

@@ -47,7 +47,7 @@ This SKILL.md serves multiple audiences:
 
 | Level | Audience | Sections to Focus On |
 |-------|----------|---------------------|
-| **L0 (Stakeholder)** | Engagement managers, leadership | [Purpose](#purpose), [When to Use This Skill](#when-to-use-this-skill), [Mandatory Authorization](#mandatory-authorization), [Quick Reference](#quick-reference) |
+| **L0 (Stakeholder)** | Engagement managers, leadership | [Purpose](#purpose), [When to Use This Skill](#when-to-use-this-skill), [Routing Disambiguation](#routing-disambiguation), [Mandatory Authorization](#mandatory-authorization), [Quick Reference](#quick-reference) |
 | **L1 (Practitioner)** | Security testers invoking agents | [Available Agents](#available-agents), [Invoking an Agent](#invoking-an-agent), [Orchestration Flow](#orchestration-flow), [Cross-Skill Integration Points](#cross-skill-integration-points) |
 | **L2 (Architect)** | Framework designers, governance reviewers | [Authorization Architecture](#authorization-architecture), [Circuit Breaker Integration](#circuit-breaker-integration), [Safety Alignment Compatibility](#safety-alignment-compatibility), [Constitutional Compliance](#constitutional-compliance) |
 
@@ -102,6 +102,8 @@ Activate when:
 - Conducting general security research without an engagement context (use `/problem-solving` instead)
 - No active scope document exists and no engagement is being planned
 - The target is outside any authorized engagement boundary
+
+See [Routing Disambiguation](#routing-disambiguation) for full exclusion conditions with consequences.
 
 ---
 
@@ -626,6 +628,21 @@ All agents adhere to the **Jerry Constitution v1.0**:
 | red-lateral | Network-level | Traffic signaling, protocol tunneling |
 | red-persist | Persistence-phase | Indicator removal, rootkits, timestomping |
 | red-exfil | Exfiltration-phase | Data encoding, encrypted channels |
+
+---
+
+## Routing Disambiguation
+
+> When this skill is the wrong choice and what happens if misrouted.
+
+| Condition | Use Instead | Consequence of Misrouting |
+|-----------|-------------|--------------------------|
+| Building secure software or defensive security design | `/eng-team` | Offensive methodology (reconnaissance, exploitation, kill chain progression) applied to defensive design produces attack narratives instead of security architecture; STRIDE/DREAD threat modeling and OWASP ASVS compliance not available |
+| Adversarial quality review of deliverables | `/adversary` | Red team "red team" refers to offensive security testing (MITRE ATT&CK); /adversary "red team" refers to S-001 quality review strategy; loading 11 offensive agents for quality assessment wastes context budget on irrelevant methodology |
+| General security research without engagement context | `/problem-solving` (ps-researcher) | Red team requires active scope document and authorization; 11 engagement-scoped agents loaded when task needs general-purpose research methodology |
+| No active scope document and no engagement being planned | No skill invocation | Red team agents require red-lead authorization before any operation; invoking without scope document triggers mandatory authorization block |
+| Root cause analysis or debugging | `/problem-solving` (ps-investigator) | Red team methodology follows kill chain progression, not causal investigation; exploit analysis methodology does not isolate root cause |
+| Requirements engineering or V&V | `/nasa-se` | Red team produces engagement reports, not requirements artifacts; NPR-compliant traceability and V&V methodology absent |
 
 ---
 

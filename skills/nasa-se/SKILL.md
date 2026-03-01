@@ -56,7 +56,7 @@ This SKILL.md serves multiple audiences:
 
 | Level | Audience | Sections to Focus On |
 |-------|----------|---------------------|
-| **L0 (ELI5)** | Project stakeholders, new users | [Purpose](#purpose), [When to Use](#when-to-use-this-skill), [Quick Reference](#quick-reference) |
+| **L0 (ELI5)** | Project stakeholders, new users | [Purpose](#purpose), [When to Use](#when-to-use-this-skill), [Routing Disambiguation](#routing-disambiguation), [Quick Reference](#quick-reference) |
 | **L1 (Engineer)** | Engineers invoking agents | [Invoking an Agent](#invoking-an-agent), [Adversarial Quality Mode](#adversarial-quality-mode), [Agent Details](#agent-details) |
 | **L2 (Architect)** | SE workflow designers | [Orchestration Flow](#orchestration-flow), [State Passing](#state-passing-between-agents), [NPR Processes](#nasa-common-technical-processes-npr-71231d) |
 
@@ -507,6 +507,22 @@ All agents adhere to the **Jerry Constitution v1.0** plus NASA SE extensions:
 | **explore, alternatives, trade study, options, brainstorm, divergent** | **nse-explorer** |
 | **QA, audit, compliance, artifact validation, work product quality** | **nse-qa** |
 | status, metrics, report, progress, health | nse-reporter |
+
+---
+
+## Routing Disambiguation
+
+> When this skill is the wrong choice and what happens if misrouted.
+
+| Condition | Use Instead | Consequence of Misrouting |
+|-----------|-------------|--------------------------|
+| Root cause analysis or debugging | `/problem-solving` (ps-investigator) | NASA-SE methodology applied to investigation tasks produces requirements artifacts instead of causal chains; compliance vocabulary (shall statements, VCRMs) obscures root cause isolation |
+| General research or technology survey | `/problem-solving` (ps-researcher) | NASA-SE produces formal requirements and review packages; divergent research methodology for landscape exploration is in ps-researcher, not nse-explorer (which explores design options within a requirements context) |
+| Adversarial quality review or tournament scoring | `/adversary` | NASA-SE nse-reviewer conducts formal technical reviews (SRR/PDR/CDR), not adversarial strategy-template-based quality assessment; S-014 rubric not loaded |
+| Transcript parsing or meeting note extraction | `/transcript` | NASA-SE has no VTT/SRT parser; meeting content extraction requires transcript-specific agents |
+| Offensive security testing | `/red-team` | NASA-SE produces V&V artifacts, not attack narratives; MITRE ATT&CK methodology absent |
+| Security-hardened software design | `/eng-team` | NASA-SE addresses systems engineering risk (NPR 8000.4C), not software security (STRIDE/DREAD, OWASP); security-specific governance layers not available |
+| Simple single-agent task without formal SE rigor | `/problem-solving` | NASA-SE loads 10 agents with NPR-compliant methodology; excessive overhead for tasks not requiring formal systems engineering process |
 
 ---
 
