@@ -1,6 +1,6 @@
 # Mandatory Skill Usage
 
-> Proactive skill invocation rules. DO NOT wait for user to invoke.
+> Proactive skill invocation rules. DO NOT wait for user to invoke -- delayed invocation causes H-22 violation, skill context is not loaded, and work quality degrades. Instead: trigger skills proactively when keyword conditions in the trigger map match.
 
 <!-- L2-REINJECT: rank=6, content="Proactive skill invocation REQUIRED (H-22). /problem-solving for research. /nasa-se for design. /orchestration for workflows. /transcript for transcript parsing and meeting notes. /adversary for standalone adversarial reviews, tournament scoring, formal strategy application. /ast for frontmatter extraction and entity validation (H-33). /eng-team for secure engineering, threat modeling, DevSecOps. /red-team for penetration testing, offensive security, engagement methodology." -->
 

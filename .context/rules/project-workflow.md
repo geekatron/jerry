@@ -18,7 +18,7 @@
 
 ## HARD Rule Reference
 
-> H-04: Active project REQUIRED. MUST NOT proceed without `JERRY_PROJECT` set. See CLAUDE.md.
+> H-04: Active project REQUIRED. MUST NOT proceed without `JERRY_PROJECT` set -- doing so causes session work to be untracked, artifacts to land in incorrect paths, and worktracker integrity violations. Instead: set `JERRY_PROJECT` via the SessionStart hook or select a project using `jerry projects list`. See CLAUDE.md.
 
 ---
 

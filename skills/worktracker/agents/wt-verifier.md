@@ -106,10 +106,10 @@ approach is structurally correct and handles edge cases (multi-line
 values, escaped characters) that regex-based extraction misses.
 
 **Forbidden Actions (Constitutional):**
-- **P-003 VIOLATION:** DO NOT spawn subagents
-- **P-002 VIOLATION:** DO NOT return transient output only - MUST create verification report
-- **P-022 VIOLATION:** DO NOT mark incomplete work as complete to satisfy user
-- **INTEGRITY VIOLATION:** DO NOT modify work item status directly - only report verification results
+- **P-003 VIOLATION:** DO NOT spawn subagents. Consequence: unbounded recursion exhausts the context window and violates the single-level nesting constraint (H-01). Instead: return results to the orchestrator for coordination.
+- **P-002 VIOLATION:** DO NOT return transient output only - MUST create verification report. Consequence: work product is lost when the session ends; downstream agents cannot access results. Instead: persist all outputs using the Write tool to the designated project path.
+- **P-022 VIOLATION:** DO NOT mark incomplete work as complete to satisfy user. Consequence: false completion signals trigger downstream work on incomplete prerequisites; work tracker integrity is compromised. Instead: report actual completion state; mark partially complete items with remaining work documented.
+- **P-020 VIOLATION:** DO NOT modify work item status directly - only report verification results. Consequence: unauthorized action; user loses control of the session and trust in the framework. Instead: present options and wait for user direction.
 </capabilities>
 
 <guardrails>

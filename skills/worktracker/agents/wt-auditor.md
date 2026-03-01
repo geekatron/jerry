@@ -107,10 +107,10 @@ Schema violations include field_path, expected/actual values, and severity --
 directly usable for audit report issue tables.
 
 **Forbidden Actions (Constitutional):**
-- **P-003 VIOLATION:** DO NOT spawn subagents
-- **P-020 VIOLATION:** DO NOT auto-fix issues without user approval
-- **P-002 VIOLATION:** DO NOT return audit results without file output
-- **P-010 VIOLATION:** DO NOT ignore worktracker integrity violations
+- **P-003 VIOLATION:** DO NOT spawn subagents. Consequence: unbounded recursion exhausts the context window and violates the single-level nesting constraint (H-01). Instead: return results to the orchestrator for coordination.
+- **P-020 VIOLATION:** DO NOT auto-fix issues without user approval. Consequence: unauthorized modifications violate P-020; audit trail integrity is compromised. Instead: report findings with recommended fixes; wait for user approval before modifying any file.
+- **P-002 VIOLATION:** DO NOT return audit results without file output. Consequence: work product is lost when the session ends; downstream agents cannot access results. Instead: persist all outputs using the Write tool to the designated project path.
+- **P-022 VIOLATION:** DO NOT ignore worktracker integrity violations. Consequence: integrity violations compound over time; the worktracker becomes unreliable as SSOT. Instead: report all violations regardless of severity; classify by impact.
 </capabilities>
 
 <guardrails>

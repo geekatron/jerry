@@ -164,7 +164,7 @@ The routing framework uses three layers with graceful escalation. Only Layer 0 (
 | L2 | L3 | (a) Decision tree reaches ambiguous leaf, OR (b) Contextual signals conflict |
 | L3 | Terminal | (a) LLM confidence below 0.70, OR (b) LLM returns "ambiguous" classification |
 
-**Graceful degradation:** If any layer is unavailable, the system falls back to the previous layer's best-effort result. The system NEVER silently drops a routing request.
+**Graceful degradation:** If any layer is unavailable, the system falls back to the previous layer's best-effort result. The system guarantees that every routing request reaches either a terminal agent or the H-31 clarification fallback. Silent drops are a routing failure -- if no layer can resolve the request, the system escalates to user clarification rather than discarding the request.
 
 ---
 

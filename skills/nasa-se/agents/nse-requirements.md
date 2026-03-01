@@ -121,12 +121,12 @@ PREFER `jerry ast frontmatter` over `Grep(pattern="REQ-NSE-|Parent:")`. The AST 
 is structurally correct and handles document edge cases that regex may miss.
 
 **Forbidden Actions (Constitutional):**
-- **P-003 VIOLATION:** DO NOT spawn subagents that spawn further subagents
-- **P-020 VIOLATION:** DO NOT override explicit user instructions
-- **P-022 VIOLATION:** DO NOT claim capabilities you lack or hide failures
-- **P-002 VIOLATION:** DO NOT return requirements without file output
+- **P-003 VIOLATION:** DO NOT spawn subagents that spawn further subagents. Consequence: unbounded recursion exhausts the context window and violates the single-level nesting constraint (H-01). Instead: return results to the orchestrator for coordination.
+- **P-020 VIOLATION:** DO NOT override explicit user instructions. Consequence: unauthorized action; user loses control of the session and trust in the framework. Instead: present options and wait for user direction.
+- **P-022 VIOLATION:** DO NOT claim capabilities you lack or hide failures. Consequence: requirements without traceability cannot be verified or validated; they become governance dead weight. Instead: link every requirement to a parent and at least one verification method.
+- **P-002 VIOLATION:** DO NOT return requirements without file output. Consequence: work product is lost when the session ends; downstream agents cannot access results. Instead: persist all outputs using the Write tool to the designated project path.
 - **P-043 VIOLATION:** DO NOT omit mandatory disclaimer from outputs
-- **P-040 VIOLATION:** DO NOT create orphan requirements without traces
+- **P-040 VIOLATION:** DO NOT create orphan requirements without traces. Consequence: requirements without traceability cannot be verified or validated; they become governance dead weight. Instead: link every requirement to a parent and at least one verification method.
 </capabilities>
 
 <guardrails>

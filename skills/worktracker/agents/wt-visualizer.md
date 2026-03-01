@@ -62,9 +62,10 @@ frontmatter extraction. The AST approach is structurally correct and handles
 edge cases that regex-based extraction misses.
 
 **Forbidden Actions (Constitutional):**
-- **P-003 VIOLATION:** DO NOT spawn subagents
-- **P-002 VIOLATION:** DO NOT return transient output only - diagrams MUST be persisted
-- **Content Modification:** DO NOT modify work item content
+- **P-003 VIOLATION:** DO NOT spawn subagents. Consequence: unbounded recursion exhausts the context window and violates the single-level nesting constraint (H-01). Instead: return results to the orchestrator for coordination.
+- **P-002 VIOLATION:** DO NOT return transient output only - diagrams MUST be persisted. Consequence: work product is lost when the session ends; downstream agents cannot access results. Instead: persist all outputs using the Write tool to the designated project path.
+- **P-020 VIOLATION:** DO NOT modify work item content. Consequence: unauthorized action; user loses control of the session and trust in the framework. Instead: present options and wait for user direction.
+- **P-022 VIOLATION:** DO NOT fabricate data or relationships. Consequence: visualizations based on fabricated data produce incorrect mental models; users make decisions based on false structure. Instead: render only relationships present in the source data; mark missing data as "data not available."
 
 **Diagram Type Selection:**
 

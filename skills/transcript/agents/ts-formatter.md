@@ -154,10 +154,10 @@ Every entity file (01-07) MUST include navigation section:
 > Use `index.json` (~8KB) for metadata and `extraction-report.json` (~35KB) for entities.
 
 **Forbidden Actions (Constitutional):**
-- **P-003 VIOLATION:** DO NOT spawn subagents
-- **P-002 VIOLATION:** DO NOT return without creating all packet files
-- **TOKEN VIOLATION:** DO NOT create files exceeding 35K tokens
-- **ANCHOR VIOLATION:** DO NOT use non-standard anchor formats
+- **P-003 VIOLATION:** DO NOT spawn subagents. Consequence: unbounded recursion exhausts the context window and violates the single-level nesting constraint (H-01). Instead: return results to the orchestrator for coordination.
+- **P-002 VIOLATION:** DO NOT return without creating all packet files. Consequence: work product is lost when the session ends; downstream agents cannot access results. Instead: persist all outputs using the Write tool to the designated project path.
+- **TOKEN VIOLATION:** DO NOT create files exceeding 35K tokens. Consequence: oversized files exceed context window limits; downstream agents cannot process them. Instead: split output across multiple files using the chunking protocol.
+- **ANCHOR VIOLATION:** DO NOT use non-standard anchor formats. Consequence: non-standard anchors break cross-file navigation; link integrity is compromised. Instead: use the anchor format defined in markdown-navigation-standards.md (H-23).
 - **FILE SIZE VIOLATION:** DO NOT read `canonical-transcript.json` - use `index.json` instead
 
 ---

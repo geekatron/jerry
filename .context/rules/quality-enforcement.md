@@ -78,7 +78,7 @@
 
 ## Retired Rule IDs
 
-> Rule IDs below were retired during EN-002 consolidation (2026-02-21). These IDs MUST NOT be reassigned to prevent confusion with historical references.
+> Rule IDs below were retired during EN-002 consolidation (2026-02-21). These IDs MUST NOT be reassigned. Consequence: reassignment breaks historical cross-references in ADRs, worktracker entries, and commit messages that cite the original rule ID; traceability chains become ambiguous. Instead: when consolidating rules, retire the old ID into the Retired Rule IDs table and document the mapping to its replacement.
 
 | Retired ID | Consolidated Into | Original Rule | Date |
 |------------|-------------------|---------------|------|

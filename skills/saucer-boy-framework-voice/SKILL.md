@@ -281,6 +281,8 @@ P-003 AGENT HIERARCHY:
 
   Agents CANNOT invoke other agents.
   Agents CANNOT spawn subagents.
+  Consequence: cross-agent invocation violates P-003 (single-level nesting); the session incurs unbounded recursion and context exhaustion.
+  Instead: return results to the orchestrator for coordination with other agents.
   Only MAIN CONTEXT orchestrates the sequence.
 ```
 

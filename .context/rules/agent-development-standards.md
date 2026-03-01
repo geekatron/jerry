@@ -183,8 +183,8 @@ MAIN CONTEXT (orchestrator)
 ```
 
 **Constraints:**
-- Only one nesting level: orchestrator to worker. Workers MUST NOT spawn sub-workers.
-- Worker agents MUST NOT include `Task` in `capabilities.allowed_tools` (H-35).
+- Only one nesting level: orchestrator to worker. Workers MUST NOT spawn sub-workers. Consequence: unbounded recursion exhausts the context window, violates P-003, and breaks the orchestrator's coordination authority. Instead: return results to the orchestrator, which coordinates all worker invocations.
+- Worker agents MUST NOT include `Task` in `capabilities.allowed_tools` (H-35). Consequence: including Task enables recursive delegation, violating the single-level nesting constraint (P-003/H-01). Instead: declare only T1-T4 tier tools; the Task tool is reserved for T5 orchestrator agents.
 - Orchestrator agents MUST be T5 (Full) tier to access the Task tool.
 - Error amplification is ~1.3x with structured handoffs (vs. 17x for uncoordinated topologies per Google DeepMind).
 
