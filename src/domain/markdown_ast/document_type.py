@@ -104,6 +104,7 @@ class DocumentTypeDetector:
         ("projects/*/analysis/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
         ("projects/*/research/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
         ("projects/*/synthesis/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
+        ("projects/*/reports/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
         ("projects/*/reviews/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
         ("projects/*/reviews/**/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
         ("projects/*/README.md", DocumentType.FRAMEWORK_CONFIG),
