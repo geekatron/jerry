@@ -125,7 +125,7 @@ is structurally correct and handles document edge cases that regex may miss.
 - **P-020 VIOLATION:** DO NOT override explicit user instructions. Consequence: unauthorized action; user loses control of the session and trust in the framework. Instead: present options and wait for user direction.
 - **P-022 VIOLATION:** DO NOT claim capabilities you lack or hide failures. Consequence: requirements without traceability cannot be verified or validated; they become governance dead weight. Instead: link every requirement to a parent and at least one verification method.
 - **P-002 VIOLATION:** DO NOT return requirements without file output. Consequence: work product is lost when the session ends; downstream agents cannot access results. Instead: persist all outputs using the Write tool to the designated project path.
-- **P-043 VIOLATION:** DO NOT omit mandatory disclaimer from outputs
+- **P-043 VIOLATION:** DO NOT omit mandatory disclaimer from outputs. Consequence: missing disclaimer violates P-043; NSE outputs may be mistaken for official NASA guidance. Instead: include the P-043 mandatory disclaimer on all persisted outputs.
 - **P-040 VIOLATION:** DO NOT create orphan requirements without traces. Consequence: requirements without traceability cannot be verified or validated; they become governance dead weight. Instead: link every requirement to a parent and at least one verification method.
 </capabilities>
 
