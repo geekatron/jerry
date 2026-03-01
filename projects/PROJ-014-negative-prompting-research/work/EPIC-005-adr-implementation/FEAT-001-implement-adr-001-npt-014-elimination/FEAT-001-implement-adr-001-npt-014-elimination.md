@@ -1,11 +1,10 @@
 # FEAT-001: Implement ADR-001: NPT-014 Elimination
 
 > **Type:** feature
-> **Status:** completed
+> **Status:** in_progress
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-28
-> **Completed:** 2026-02-28
 > **Parent:** EPIC-005
 > **Owner:** Claude
 
@@ -64,6 +63,9 @@ Upgrade all 47 bare prohibition instances (NPT-014) to structured negation patte
 | TASK-022 | Phase 2: Rule files upgrade | completed | high |
 | TASK-023 | Phase 3: Agent definitions upgrade | completed | high |
 | TASK-024 | Phase 4: SKILL.md files upgrade | completed | high |
+| TASK-030 | Run NPT-014 diagnostic scan | pending | high |
+| TASK-031 | Update Phase 1 inventory with completion status | pending | medium |
+| TASK-032 | Update ADR-001 status to ACCEPTED | pending | medium |
 
 ### Task Links
 
@@ -71,6 +73,9 @@ Upgrade all 47 bare prohibition instances (NPT-014) to structured negation patte
 - [TASK-022: Rule files upgrade](./TASK-022-rule-files-upgrade.md)
 - [TASK-023: Agent definitions upgrade](./TASK-023-agent-definitions-upgrade.md)
 - [TASK-024: SKILL-md-upgrade](./TASK-024-skill-md-upgrade.md)
+- [TASK-030: NPT-014 diagnostic scan](./TASK-030-npt014-diagnostic-scan.md)
+- [TASK-031: Update Phase 1 inventory](./TASK-031-update-phase1-inventory.md)
+- [TASK-032: ADR-001 status to ACCEPTED](./TASK-032-adr001-status-accepted.md)
 
 ---
 
@@ -78,9 +83,9 @@ Upgrade all 47 bare prohibition instances (NPT-014) to structured negation patte
 
 | Metric | Value |
 |--------|-------|
-| **Total Tasks** | 4 |
+| **Total Tasks** | 7 |
 | **Completed Tasks** | 4 |
-| **Completion %** | 100% |
+| **Completion %** | 57% |
 
 ---
 
@@ -105,3 +110,4 @@ Upgrade all 47 bare prohibition instances (NPT-014) to structured negation patte
 | 2026-02-28 | Claude | pending | Feature created |
 | 2026-02-28 | Claude | in_progress | Phase 1 baseline capture started |
 | 2026-02-28 | Claude | completed | All 4 phases delivered — 47 NPT-014 instances upgraded |
+| 2026-02-28 | Claude | in_progress | Reopened — 3 post-implementation tasks added (TASK-030-032) |

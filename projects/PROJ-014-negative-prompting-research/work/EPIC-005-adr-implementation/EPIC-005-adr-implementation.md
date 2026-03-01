@@ -1,11 +1,10 @@
 # EPIC-005: ADR Implementation
 
 > **Type:** epic
-> **Status:** completed
+> **Status:** in_progress
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-28
-> **Completed:** 2026-02-28
 > **Parent:** —
 > **Owner:** Claude
 
@@ -25,12 +24,13 @@
 
 ## Summary
 
-Implement the ADRs produced by PROJ-014 Phase 5. ADR-001 (NPT-014 Elimination) is the first and highest-priority implementation target, upgrading all bare prohibition patterns (NPT-014) across the Jerry codebase to structured negation patterns (NPT-009/NPT-013) with consequence and alternative text.
+Implement all 4 ADRs produced by PROJ-014 Phase 5. ADR-001 (NPT-014 Elimination) core implementation is complete. Remaining: ADR-001 post-implementation tasks, ADR-002 (Constitutional Triplet Upgrades), ADR-003 (Routing Disambiguation), ADR-004 (Compaction Resilience).
 
 **Key Objectives:**
-- Eliminate all NPT-014 (Bare Prohibition) instances from the codebase
-- Upgrade to NPT-009 (Structured Negation) with consequence + alternative
-- Maintain behavioral equivalence — no functional changes
+- ADR-001: Eliminate all NPT-014 instances (core DONE; post-implementation pending)
+- ADR-002: Update guardrails template + governance schema (Phase 5A immediate; Phase 5B conditional on A/B testing)
+- ADR-003: Add routing disambiguation sections to all 13 skills (Component A immediate; Component B conditional)
+- ADR-004: PG-004 compaction testing + L2-REINJECT markers for H-04/H-32 + T-004 failure mode docs
 
 ---
 
@@ -40,11 +40,17 @@ Implement the ADRs produced by PROJ-014 Phase 5. ADR-001 (NPT-014 Elimination) i
 
 | ID | Title | Status | Priority | Progress |
 |----|-------|--------|----------|----------|
-| FEAT-001 | Implement ADR-001: NPT-014 Elimination | completed | high | 100% |
+| FEAT-001 | Implement ADR-001: NPT-014 Elimination | in_progress | high | 57% |
+| FEAT-002 | Implement ADR-002: Constitutional Triplet Upgrades | pending | medium | 0% |
+| FEAT-003 | Implement ADR-003: Routing Disambiguation | pending | medium | 0% |
+| FEAT-004 | Implement ADR-004: Compaction Resilience | pending | medium | 0% |
 
 ### Feature Links
 
 - [FEAT-001: Implement ADR-001: NPT-014 Elimination](./FEAT-001-implement-adr-001-npt-014-elimination/FEAT-001-implement-adr-001-npt-014-elimination.md)
+- [FEAT-002: Implement ADR-002: Constitutional Triplet Upgrades](./FEAT-002-implement-adr-002-constitutional-upgrades/FEAT-002-implement-adr-002-constitutional-upgrades.md)
+- [FEAT-003: Implement ADR-003: Routing Disambiguation](./FEAT-003-implement-adr-003-routing-disambiguation/FEAT-003-implement-adr-003-routing-disambiguation.md)
+- [FEAT-004: Implement ADR-004: Compaction Resilience](./FEAT-004-implement-adr-004-compaction-resilience/FEAT-004-implement-adr-004-compaction-resilience.md)
 
 ---
 
@@ -52,9 +58,9 @@ Implement the ADRs produced by PROJ-014 Phase 5. ADR-001 (NPT-014 Elimination) i
 
 | Metric | Value |
 |--------|-------|
-| **Total Features** | 1 |
-| **Completed Features** | 1 |
-| **Feature Completion %** | 100% |
+| **Total Features** | 4 |
+| **Completed Features** | 0 |
+| **Feature Completion %** | 0% |
 
 ---
 
@@ -81,4 +87,5 @@ Implement the ADRs produced by PROJ-014 Phase 5. ADR-001 (NPT-014 Elimination) i
 |------|--------|--------|-------|
 | 2026-02-28 | Claude | pending | Epic created |
 | 2026-02-28 | Claude | in_progress | FEAT-001 execution started |
-| 2026-02-28 | Claude | completed | All features delivered |
+| 2026-02-28 | Claude | completed | FEAT-001 core implementation delivered |
+| 2026-02-28 | Claude | in_progress | Reopened — FEAT-002/003/004 added for ADR-002/003/004; FEAT-001 post-implementation tasks added |
