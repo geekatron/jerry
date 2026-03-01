@@ -1,7 +1,7 @@
 # TASK-030: Run NPT-014 Diagnostic Scan
 
 > **Type:** task
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Created:** 2026-02-28
 > **Parent:** FEAT-001
@@ -35,11 +35,11 @@ Execute a comprehensive scan of all files modified during FEAT-001 implementatio
 
 ### Acceptance Criteria
 
-- [ ] All rule files (.context/rules/) scanned — zero NPT-014 remaining
-- [ ] All agent definitions (skills/*/agents/) scanned — zero NPT-014 remaining
-- [ ] All SKILL.md files scanned — zero NPT-014 remaining
-- [ ] Diagnostic report produced with before/after comparison
-- [ ] Phase 1 inventory cross-referenced for completeness
+- [x] All rule files (.context/rules/) scanned — zero NPT-014 remaining
+- [x] All agent definitions (skills/*/agents/) scanned — zero NPT-014 remaining (8 residuals found and fixed)
+- [x] All SKILL.md files scanned — zero NPT-014 remaining
+- [x] Diagnostic report produced with before/after comparison
+- [x] Phase 1 inventory cross-referenced for completeness (55 actual vs 47 inventoried)
 
 ### Related Items
 
@@ -55,11 +55,11 @@ Execute a comprehensive scan of all files modified during FEAT-001 implementatio
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| Diagnostic scan report | Validation artifact | TBD |
+| Diagnostic scan report | Validation artifact | `work/EPIC-005.../FEAT-001.../diagnostic-scan-report.md` |
 
 ### Verification
 
-- [ ] Acceptance criteria verified
+- [x] Acceptance criteria verified
 
 ---
 
@@ -68,3 +68,4 @@ Execute a comprehensive scan of all files modified during FEAT-001 implementatio
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-28 | Created | Initial creation |
+| 2026-02-28 | Completed | CONDITIONAL PASS — 8 residual NSE P-043 lines found and fixed (a4ab091d) |

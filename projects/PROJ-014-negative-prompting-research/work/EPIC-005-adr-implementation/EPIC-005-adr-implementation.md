@@ -40,8 +40,8 @@ Implement all 4 ADRs produced by PROJ-014 Phase 5. ADR-001 (NPT-014 Elimination)
 
 | ID | Title | Status | Priority | Progress |
 |----|-------|--------|----------|----------|
-| FEAT-001 | Implement ADR-001: NPT-014 Elimination | in_progress | high | 57% |
-| FEAT-002 | Implement ADR-002: Constitutional Triplet Upgrades | pending | medium | 0% |
+| FEAT-001 | Implement ADR-001: NPT-014 Elimination | completed | high | 100% |
+| FEAT-002 | Implement ADR-002: Constitutional Triplet Upgrades | in_progress | medium | 67% |
 | FEAT-003 | Implement ADR-003: Routing Disambiguation | pending | medium | 0% |
 | FEAT-004 | Implement ADR-004: Compaction Resilience | pending | medium | 0% |
 
@@ -59,8 +59,8 @@ Implement all 4 ADRs produced by PROJ-014 Phase 5. ADR-001 (NPT-014 Elimination)
 | Metric | Value |
 |--------|-------|
 | **Total Features** | 4 |
-| **Completed Features** | 0 |
-| **Feature Completion %** | 0% |
+| **Completed Features** | 1 |
+| **Feature Completion %** | 25% |
 
 ---
 

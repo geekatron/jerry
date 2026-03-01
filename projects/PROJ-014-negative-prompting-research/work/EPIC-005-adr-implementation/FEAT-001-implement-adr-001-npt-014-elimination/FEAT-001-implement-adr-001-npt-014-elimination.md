@@ -1,7 +1,7 @@
 # FEAT-001: Implement ADR-001: NPT-014 Elimination
 
 > **Type:** feature
-> **Status:** in_progress
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-02-28
@@ -63,9 +63,9 @@ Upgrade all 47 bare prohibition instances (NPT-014) to structured negation patte
 | TASK-022 | Phase 2: Rule files upgrade | completed | high |
 | TASK-023 | Phase 3: Agent definitions upgrade | completed | high |
 | TASK-024 | Phase 4: SKILL.md files upgrade | completed | high |
-| TASK-030 | Run NPT-014 diagnostic scan | pending | high |
-| TASK-031 | Update Phase 1 inventory with completion status | pending | medium |
-| TASK-032 | Update ADR-001 status to ACCEPTED | pending | medium |
+| TASK-030 | Run NPT-014 diagnostic scan | completed | high |
+| TASK-031 | Update Phase 1 inventory with completion status | completed | medium |
+| TASK-032 | Update ADR-001 status to ACCEPTED | completed | medium |
 
 ### Task Links
 
@@ -84,8 +84,8 @@ Upgrade all 47 bare prohibition instances (NPT-014) to structured negation patte
 | Metric | Value |
 |--------|-------|
 | **Total Tasks** | 7 |
-| **Completed Tasks** | 4 |
-| **Completion %** | 57% |
+| **Completed Tasks** | 7 |
+| **Completion %** | 100% |
 
 ---
 
@@ -111,3 +111,4 @@ Upgrade all 47 bare prohibition instances (NPT-014) to structured negation patte
 | 2026-02-28 | Claude | in_progress | Phase 1 baseline capture started |
 | 2026-02-28 | Claude | completed | All 4 phases delivered — 47 NPT-014 instances upgraded |
 | 2026-02-28 | Claude | in_progress | Reopened — 3 post-implementation tasks added (TASK-030-032) |
+| 2026-02-28 | Claude | completed | All 7 tasks done — scan passed, inventory updated, ADR-001 ACCEPTED |

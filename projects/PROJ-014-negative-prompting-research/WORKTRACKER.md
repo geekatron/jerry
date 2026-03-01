@@ -22,7 +22,7 @@
 | Criticality | C4 (Critical) |
 | Quality Threshold | >= 0.95 |
 | Orchestration | `neg-prompting-20260227-001` |
-| Progress | Phases 1-6 COMPLETE, ADR-001 core DONE — ADR-002/003/004 + post-impl + validation pending (EPIC-005, EPIC-006) |
+| Progress | Phases 1-6 COMPLETE. FEAT-001 (ADR-001) DONE. FEAT-002 Phase 5A DONE (TASK-035 blocked). ADR-003/004 + validation pending (EPIC-005, EPIC-006) |
 
 ## Work Items
 
@@ -55,17 +55,17 @@
 | TASK-019 | Task | Phase 6: /adversary C4 tournament (all 10 strategies, >= 0.95, max 5 iter) | DONE (0.954, 2 iter) — Tournament report: `orchestration/neg-prompting-20260227-001/phase-6/adversary-tournament-i2.md` | TASK-018 |
 | TASK-020 | Task | Documentation & commit | DONE | TASK-019 |
 | EPIC-005 | Epic | ADR Implementation | IN PROGRESS | — |
-| FEAT-001 | Feature | Implement ADR-001: NPT-014 Elimination | IN PROGRESS | EPIC-005 |
+| FEAT-001 | Feature | Implement ADR-001: NPT-014 Elimination | DONE | EPIC-005 |
 | TASK-021 | Task | Phase 1: Baseline capture — identify all NPT-014 instances + quality metrics | DONE — 47 NPT-014, 28 NPT-009, 36 NPT-013 identified | FEAT-001 |
 | TASK-022 | Task | Phase 2: Rule files — upgrade NPT-014 to NPT-009/NPT-013 in .context/rules/ | DONE — 8 instances across 7 files upgraded | FEAT-001 |
 | TASK-023 | Task | Phase 3: Agent definitions — upgrade forbidden_actions in skills/*/agents/ | DONE — 28 agent files upgraded (Phase 3A batch + Phase 3B individual) | FEAT-001 |
 | TASK-024 | Task | Phase 4: SKILL.md files — upgrade "Do NOT use when:" sections | DONE — 4 instances across 2 SKILL.md files upgraded | FEAT-001 |
-| TASK-030 | Task | Run NPT-014 diagnostic scan on all modified files | PENDING | FEAT-001 |
-| TASK-031 | Task | Update Phase 1 inventory with completion status | PENDING | FEAT-001 |
-| TASK-032 | Task | Update ADR-001 status to ACCEPTED (requires user approval per P-020) | PENDING | FEAT-001 |
-| FEAT-002 | Feature | Implement ADR-002: Constitutional Triplet and High-Framing Upgrades | PENDING | EPIC-005 |
-| TASK-033 | Task | Phase 5A: Update guardrails template to NPT-009 format | PENDING | FEAT-002 |
-| TASK-034 | Task | Phase 5A: Add forbidden_action_format field to governance schema | PENDING | FEAT-002 |
+| TASK-030 | Task | Run NPT-014 diagnostic scan on all modified files | DONE — CONDITIONAL PASS, 8 residuals fixed | FEAT-001 |
+| TASK-031 | Task | Update Phase 1 inventory with completion status | DONE | FEAT-001 |
+| TASK-032 | Task | Update ADR-001 status to ACCEPTED | DONE — ADR-001 PROPOSED -> ACCEPTED | FEAT-001 |
+| FEAT-002 | Feature | Implement ADR-002: Constitutional Triplet and High-Framing Upgrades | IN PROGRESS (67%) | EPIC-005 |
+| TASK-033 | Task | Phase 5A: Update guardrails template to NPT-009 format | DONE (cf1342a2) | FEAT-002 |
+| TASK-034 | Task | Phase 5A: Add forbidden_action_format field to governance schema | DONE (cf1342a2) | FEAT-002 |
 | TASK-035 | Task | Phase 5B: Full adoption or contingency (blocked by TASK-025 A/B testing) | PENDING | FEAT-002 |
 | FEAT-003 | Feature | Implement ADR-003: Routing Disambiguation Standard | PENDING | EPIC-005 |
 | TASK-036 | Task | Component A: Add routing disambiguation sections to all 13 skills | PENDING | FEAT-003 |

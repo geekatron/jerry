@@ -23,6 +23,7 @@
 | [Group 4: Templates](#group-4-templates) | `.context/templates/` and constitution |
 | [Priority Upgrade Queue](#priority-upgrade-queue) | Ordered list of NPT-014 instances first |
 | [Evidence Notes](#evidence-notes) | Classification rationale for borderline cases |
+| [Implementation Completion Status](#implementation-completion-status) | Post-implementation results (added 2026-02-28) |
 
 ---
 
@@ -1127,4 +1128,52 @@ Key inputs for template work:
 *Scan Methodology: Grep + Read of all production framework files*
 *Classification Method: Three-tier NPT-014/NPT-009/NPT-013 per ADR-001 definition*
 *Analyst: ps-analyst*
+
+---
+
+## Implementation Completion Status
+
+> **Added:** 2026-02-28 (post-implementation, TASK-031)
+> **Diagnostic scan:** See `diagnostic-scan-report.md` in FEAT-001 directory
+
+### Pre/Post Implementation Comparison
+
+| Classification | Pre-Implementation | Post-Implementation | Delta |
+|----------------|-------------------|---------------------|-------|
+| NPT-014 (bare) | 55 actual (47 inventoried + 8 undercounted) | 2 remaining (Group 4 exclusions) | -53 |
+| NPT-009 (partial) | 28 | Not re-counted (secondary queue) | -- |
+| NPT-013 (complete) | 36 | Increased by ~53 upgrades | -- |
+
+### Inventory Accuracy Correction
+
+The original inventory identified 47 NPT-014 instances. The diagnostic scan (TASK-030) found 8 additional NPT-014 instances in NSE agent files (P-043/DISCLAIMER lines) that were present but undercounted. The actual pre-implementation total was 55 NPT-014 instances.
+
+**Root cause:** The inventory at G2-016 described NSE agents with "4 bare DO NOT items" referring to P-003/P-020/P-022/P-002. Each NSE agent also has a P-043 line (a 5th constitutional item) within the listed line ranges but not separately counted. The orch-* agents' P-043 lines WERE counted and upgraded; the NSE agents' were missed.
+
+### Group-Level Results
+
+| Group | Original NPT-014 | Corrected NPT-014 | Upgraded | Remaining | Status |
+|-------|-------------------|--------------------|----------|-----------|--------|
+| Group 1: Rule files | 18 | 18 | 18 | 0 | COMPLETE |
+| Group 2: Agent definitions | 19 | 27 (19 + 8 undercounted) | 27 | 0 | COMPLETE |
+| Group 3: SKILL.md files | 4 | 4 | 4 | 0 | COMPLETE |
+| Group 4: Templates + Constitution | 6 | 6 | 0 | 2 (E-04 exclusion) | EXCLUDED (C4 review needed) |
+| **Total** | **47** | **55** | **49** | **2** | -- |
+
+### Group 4 Exclusions (Unchanged per E-04)
+
+| Item | File | Status | Required Action |
+|------|------|--------|-----------------|
+| G4-004 | `docs/governance/JERRY_CONSTITUTION.md:181-185` | NPT-014 | Requires separate C4 quality gate (AE-001) |
+| G4-012 | `.context/templates/worktracker/SPIKE.md:119` | NPT-014 | Low-effort separate change |
+
+### Implementation Commits
+
+| Commit | Phase | Files Changed | Description |
+|--------|-------|---------------|-------------|
+| 47451ef6 | Phases 2-4 | 41 files | Core NPT-014 elimination across framework |
+| a4ab091d | Post-scan fix | 8 files | NSE agent P-043 residual fixes |
+
+*Completion Date: 2026-02-28*
+*Verified by: TASK-030 diagnostic scan*
 *Date: 2026-02-28*

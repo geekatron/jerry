@@ -1,7 +1,7 @@
 # TASK-033: Phase 5A — Update Guardrails Template to NPT-009 Format
 
 > **Type:** task
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Created:** 2026-02-28
 > **Parent:** FEAT-002

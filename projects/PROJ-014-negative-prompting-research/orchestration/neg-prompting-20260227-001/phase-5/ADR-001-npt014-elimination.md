@@ -4,7 +4,7 @@
 > **Task:** TASK-016
 > **Phase:** Phase 5 -- Architecture Decision Records
 > **Created:** 2026-02-28
-> **Status:** PROPOSED
+> **Status:** ACCEPTED
 > **Agent:** ps-architect
 > **Workflow:** neg-prompting-20260227-001
 > **Criticality:** C4 (irreversible architectural policy; auto-C3 per AE-003; elevated to C4 per AE-004 as this establishes a new framework-wide enforcement standard)

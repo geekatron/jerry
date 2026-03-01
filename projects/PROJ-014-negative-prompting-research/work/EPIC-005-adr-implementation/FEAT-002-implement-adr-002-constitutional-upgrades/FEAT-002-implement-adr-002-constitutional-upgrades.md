@@ -1,7 +1,7 @@
 # FEAT-002: Implement ADR-002: Constitutional Triplet and High-Framing Upgrades
 
 > **Type:** feature
-> **Status:** pending
+> **Status:** in_progress
 > **Priority:** medium
 > **Impact:** medium
 > **Created:** 2026-02-28
@@ -38,18 +38,18 @@ Implement ADR-002 (Constitutional Triplet and High-Framing Upgrades) in two phas
 
 ### Definition of Done
 
-- [ ] Phase 5A: agent-development-standards.md guardrails template updated to NPT-009 format
-- [ ] Phase 5A: forbidden_action_format enum field added to agent-governance-v1.schema.json
-- [ ] Phase 5A: Schema description field recommendation added for forbidden_actions format
+- [x] Phase 5A: agent-development-standards.md guardrails template updated to NPT-009 format
+- [x] Phase 5A: forbidden_action_format enum field added to agent-governance-v1.schema.json
+- [x] Phase 5A: Schema description field recommendation added for forbidden_actions format
 - [ ] Phase 5B: Conditional implementation based on TASK-025 A/B testing results
 
 ### Functional Criteria
 
 | # | Criterion | Verified |
 |---|-----------|----------|
-| AC-1 | Guardrails template minimum example uses NPT-009 format with VIOLATION label | [ ] |
-| AC-2 | Governance schema has optional forbidden_action_format enum field | [ ] |
-| AC-3 | Existing agent files still validate against updated schema | [ ] |
+| AC-1 | Guardrails template minimum example uses NPT-009 format with VIOLATION label | [x] |
+| AC-2 | Governance schema has optional forbidden_action_format enum field | [x] |
+| AC-3 | Existing agent files still validate against updated schema | [x] |
 
 ---
 
@@ -59,8 +59,8 @@ Implement ADR-002 (Constitutional Triplet and High-Framing Upgrades) in two phas
 
 | ID | Title | Status | Priority |
 |----|-------|--------|----------|
-| TASK-033 | Phase 5A: Update guardrails template to NPT-009 format | pending | high |
-| TASK-034 | Phase 5A: Add forbidden_action_format field to governance schema | pending | high |
+| TASK-033 | Phase 5A: Update guardrails template to NPT-009 format | completed | high |
+| TASK-034 | Phase 5A: Add forbidden_action_format field to governance schema | completed | high |
 | TASK-035 | Phase 5B: Full adoption or contingency (blocked by A/B testing) | pending | low |
 
 ### Task Links
@@ -76,8 +76,8 @@ Implement ADR-002 (Constitutional Triplet and High-Framing Upgrades) in two phas
 | Metric | Value |
 |--------|-------|
 | **Total Tasks** | 3 |
-| **Completed Tasks** | 0 |
-| **Completion %** | 0% |
+| **Completed Tasks** | 2 |
+| **Completion %** | 67% |
 
 ---
 
@@ -98,3 +98,4 @@ Implement ADR-002 (Constitutional Triplet and High-Framing Upgrades) in two phas
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-28 | Claude | pending | Feature created |
+| 2026-02-28 | Claude | in_progress | TASK-033 + TASK-034 (Phase 5A) completed. TASK-035 blocked by A/B testing. |

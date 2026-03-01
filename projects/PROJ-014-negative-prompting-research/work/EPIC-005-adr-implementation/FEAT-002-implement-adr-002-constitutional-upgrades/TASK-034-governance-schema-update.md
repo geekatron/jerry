@@ -1,7 +1,7 @@
 # TASK-034: Phase 5A — Add forbidden_action_format Field to Governance Schema
 
 > **Type:** task
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Created:** 2026-02-28
 > **Parent:** FEAT-002
