@@ -129,7 +129,8 @@ Validated by `docs/schemas/agent-governance-v1.schema.json`. Sub-objects (`ident
 | Field | Type | Purpose | Source |
 |-------|------|---------|--------|
 | `persona` | object | Tone (free-form string), communication_style (free-form string), audience_level, character | PR-005 |
-| `capabilities.forbidden_actions` | array | Min 3 entries; MUST include P-003, P-020, P-022 references | AR-012 |
+| `capabilities.forbidden_actions` | array | Min 3 entries; MUST include P-003, P-020, P-022 references. RECOMMENDED NPT-009 format: `{PRINCIPLE} VIOLATION: NEVER {action} -- Consequence: {impact}` | AR-012, ADR-002 |
+| `capabilities.forbidden_action_format` | enum | Optional. Tracks NPT format level: `NPT-009-complete`, `NPT-009-partial`, `NPT-014`. Omission implies NPT-014 (legacy). | ADR-002 D-003 |
 | `guardrails.input_validation` | array or object | Both formats accepted. Min 1 validation rule. | SR-002 |
 | `guardrails.output_filtering` | array | Min 3 entries (strings) | SR-003 |
 | `guardrails.fallback_behavior` | string | Pattern: `^[a-z_]+$`. Standard values: `warn_and_retry`, `escalate_to_user`, `persist_and_halt`. Domain-specific values allowed. | SR-009 |
@@ -320,14 +321,19 @@ guardrails:
   fallback_behavior: "warn_and_retry"
 
 capabilities:
-  # --- FORBIDDEN ACTIONS (AR-012) ---
+  # --- FORBIDDEN ACTIONS (AR-012, NPT-009 format) ---
+  # Minimum 3 entries. RECOMMENDED format:
+  #   "{PRINCIPLE} VIOLATION: NEVER {action} -- Consequence: {impact}"
+  # Minimum acceptable: "{description} ({principle-reference})"
   forbidden_actions:
-    - "Spawn recursive subagents (P-003)"
-    - "Override user decisions (P-020)"
-    - "Misrepresent capabilities or confidence (P-022)"
+    - "P-003 VIOLATION: NEVER spawn recursive subagents -- Consequence: agent hierarchy violation breaks orchestrator-worker topology and causes uncontrolled token consumption."
+    - "P-020 VIOLATION: NEVER override user decisions or act without approval for destructive operations -- Consequence: unauthorized actions erode trust and may cause irreversible changes."
+    - "P-022 VIOLATION: NEVER misrepresent capabilities, confidence levels, or actions taken -- Consequence: deceptive output undermines governance and prevents accurate quality assessment."
 ```
 
-> **Minimum set notice:** The entries above represent the MINIMUM required set per H-34 and H-35. Agent definitions SHOULD add domain-specific entries beyond these minimums. For example, a T3 research agent should add citation guardrails to `output_filtering`; an orchestration agent should add delegation boundary guardrails to `forbidden_actions`. See [Guardrail Selection by Agent Type](#guardrail-selection-by-agent-type) for type-specific guidance on extending beyond minimums.
+> **Minimum set notice:** The entries above represent the MINIMUM required set per H-34 and H-35. The `forbidden_actions` entries use NPT-009 format (structured negation with consequence) per ADR-002. Agent definitions SHOULD add domain-specific entries beyond these minimums. For example, a T3 research agent should add citation guardrails to `output_filtering`; an orchestration agent should add delegation boundary guardrails to `forbidden_actions`. See [Guardrail Selection by Agent Type](#guardrail-selection-by-agent-type) for type-specific guidance on extending beyond minimums.
+>
+> **VIOLATION label format guidance:** The recommended format `{PRINCIPLE} VIOLATION: NEVER {action} -- Consequence: {impact}` provides three components: (1) the violated principle for traceability, (2) the prohibited action, (3) the consequence for LLM instruction-following effectiveness. T2+ agents SHOULD include tier-specific consequence detail (e.g., "unauthorized file writes corrupt shared state" for T2; "external data ingested without citation degrades research quality" for T3).
 
 ### Guardrail Selection by Agent Type
 
