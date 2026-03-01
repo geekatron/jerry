@@ -19,7 +19,7 @@ from src.agents.domain.entities.canonical_agent import CanonicalAgent
 class IAgentRepository(ABC):
     """Port for reading canonical agent definitions from the filesystem.
 
-    Reads .agent.yaml + .prompt.md pairs from skills/*/composition/
+    Reads .jerry.yaml + .jerry.prompt.md pairs from skills/*/composition/
     and returns parsed CanonicalAgent entities.
     """
 

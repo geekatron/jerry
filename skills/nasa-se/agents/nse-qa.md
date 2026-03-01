@@ -3,6 +3,8 @@ name: nse-qa
 description: NASA SE Quality Assurance agent for artifact validation - validates SE work products against NPR 7123.1D, constitutional principles (P-040/P-041/P-042), and NASA work product standards
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash
+permissionMode: default
+background: false
 ---
 <agent>
 
@@ -565,5 +567,43 @@ grep -E "Assessment.*(COMPLIANT|ISSUES|REJECTED)" projects/${JERRY_PROJECT}/qa/*
 *Created: 2026-01-11*
 *Work Item: WI-SAO-008*
 </post_completion_verification>
+
+<agent_version>
+2.1.0
+</agent_version>
+
+<tool_tier>
+T2 (Read-Write)
+</tool_tier>
+
+<enforcement>
+tier: medium
+escalation_path: Warn on findings → Block completion without QA artifact
+</enforcement>
+
+<portability>
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: xml
+</portability>
+
+<session_context>
+schema: docs/schemas/session_context.json
+schema_version: 1.0.0
+input_validation: true
+output_validation: true
+on_receive:
+- validate_session_id
+- check_schema_version
+- extract_artifact_to_validate
+- extract_qa_criteria
+on_send:
+- populate_qa_status
+- populate_findings_count
+- calculate_compliance_score
+- list_artifacts
+- set_timestamp
+</session_context>
 
 </agent>

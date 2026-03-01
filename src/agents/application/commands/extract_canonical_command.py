@@ -19,8 +19,8 @@ class ExtractCanonicalCommand:
 
     Attributes:
         agent_name: Specific agent to extract. None = extract all.
-        source_adapter: Source vendor format (default: 'claude_code').
+        source_vendor: Source vendor format (default: 'claude_code').
     """
 
     agent_name: str | None = None
-    source_adapter: str = "claude_code"
+    source_vendor: str = "claude_code"

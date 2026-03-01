@@ -757,12 +757,12 @@ def _add_agents_namespace(
     build_parser = agents_subparsers.add_parser(
         "build",
         help="Build vendor-specific agent files from canonical source",
-        description="Generate vendor-specific agent files from canonical .agent.yaml + .prompt.md source.",
+        description="Generate vendor-specific agent files from canonical .jerry.yaml + .jerry.prompt.md source.",
     )
     build_parser.add_argument(
-        "--adapter",
+        "--vendor",
         default="claude_code",
-        help="Target vendor adapter (default: claude_code)",
+        help="Target vendor (default: claude_code)",
     )
     build_parser.add_argument(
         "--agent",
@@ -780,7 +780,7 @@ def _add_agents_namespace(
     extract_parser = agents_subparsers.add_parser(
         "extract",
         help="Extract canonical source from existing vendor files",
-        description="Reverse-engineer canonical .agent.yaml + .prompt.md from existing agent files.",
+        description="Reverse-engineer canonical .jerry.yaml + .jerry.prompt.md from existing agent files.",
     )
     extract_parser.add_argument(
         "--agent",
@@ -788,9 +788,38 @@ def _add_agents_namespace(
         help="Specific agent to extract (default: all)",
     )
     extract_parser.add_argument(
-        "--source-adapter",
+        "--source-vendor",
         default="claude_code",
         help="Source vendor format (default: claude_code)",
+    )
+
+    # agents compose
+    compose_parser = agents_subparsers.add_parser(
+        "compose",
+        help="Compose agent files with defaults for deployment",
+        description="Generate composed agent files by merging canonical source with base defaults.",
+    )
+    compose_parser.add_argument(
+        "--vendor",
+        default="claude_code",
+        help="Target vendor (default: claude_code)",
+    )
+    compose_parser.add_argument(
+        "--agent",
+        default=None,
+        help="Specific agent to compose (default: all)",
+    )
+    compose_parser.add_argument(
+        "--clean",
+        action="store_true",
+        default=False,
+        help="Remove existing agent .md files before composing",
+    )
+    compose_parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        default=False,
+        help="Show what would be generated without writing files",
     )
 
     # agents validate
@@ -829,9 +858,9 @@ def _add_agents_namespace(
         help="Specific agent to diff (default: all)",
     )
     diff_parser.add_argument(
-        "--adapter",
+        "--vendor",
         default="claude_code",
-        help="Vendor adapter to compare against (default: claude_code)",
+        help="Vendor to compare against (default: claude_code)",
     )
 
 

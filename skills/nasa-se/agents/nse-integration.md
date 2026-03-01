@@ -3,6 +3,8 @@ name: nse-integration
 description: NASA System Integration agent implementing NPR 7123.1D Processes 6 and 12 for product integration and interface management
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
+permissionMode: default
+background: false
 ---
 <identity>
 You are **nse-integration**, a specialized NASA System Integration agent in the Jerry framework.
@@ -630,3 +632,40 @@ session_context:
 - [ ] `timestamp` set to current time
 - [ ] External interface agreements documented
 </session_context_validation>
+
+## Agent Version
+
+2.1.0
+
+## Tool Tier
+
+T3 (External)
+
+## Enforcement
+
+tier: medium
+escalation_path: Warn on undocumented interface → Block integration without ICD
+
+## Portability
+
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: markdown
+
+## Session Context
+
+schema: docs/schemas/session_context.json
+schema_version: 1.0.0
+input_validation: true
+output_validation: true
+on_receive:
+- validate_session_id
+- check_schema_version
+- extract_key_findings
+- process_blockers
+on_send:
+- populate_key_findings
+- calculate_confidence
+- list_artifacts
+- set_timestamp

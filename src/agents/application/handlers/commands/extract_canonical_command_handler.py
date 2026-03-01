@@ -29,7 +29,7 @@ class ExtractCanonicalCommandHandler:
     """Handler for ExtractCanonicalCommand.
 
     Reads existing vendor-specific agent files and produces canonical
-    .agent.yaml + .prompt.md source files.
+    .jerry.yaml + .jerry.prompt.md source files.
 
     Attributes:
         _adapters: Map of vendor name -> adapter instance.
@@ -62,10 +62,10 @@ class ExtractCanonicalCommandHandler:
         Raises:
             ValueError: If the specified adapter is not available.
         """
-        adapter = self._adapters.get(command.source_adapter)
+        adapter = self._adapters.get(command.source_vendor)
         if adapter is None:
             available = ", ".join(sorted(self._adapters.keys()))
-            raise ValueError(f"Unknown adapter: {command.source_adapter!r}. Available: {available}")
+            raise ValueError(f"Unknown vendor: {command.source_vendor!r}. Available: {available}")
 
         result = ExtractResult()
 
@@ -123,9 +123,9 @@ class ExtractCanonicalCommandHandler:
         composition_dir = self._skills_dir / agent.skill / "composition"
         composition_dir.mkdir(parents=True, exist_ok=True)
 
-        # Write .agent.yaml
+        # Write .jerry.yaml
         yaml_data = self._build_yaml_data(agent)
-        yaml_path = composition_dir / f"{agent.name}.agent.yaml"
+        yaml_path = composition_dir / f"{agent.name}.jerry.yaml"
         yaml_content = yaml.dump(
             yaml_data,
             default_flow_style=False,
@@ -140,15 +140,15 @@ class ExtractCanonicalCommandHandler:
             encoding="utf-8",
         )
 
-        # Write .prompt.md
-        prompt_path = composition_dir / f"{agent.name}.prompt.md"
+        # Write .jerry.prompt.md
+        prompt_path = composition_dir / f"{agent.name}.jerry.prompt.md"
         prompt_path.write_text(
             f"# {agent.name} System Prompt\n\n{agent.prompt_body}",
             encoding="utf-8",
         )
 
     def _build_yaml_data(self, agent: CanonicalAgent) -> dict[str, Any]:
-        """Build the YAML dictionary for an .agent.yaml file.
+        """Build the YAML dictionary for a .jerry.yaml file.
 
         Args:
             agent: Canonical agent entity.

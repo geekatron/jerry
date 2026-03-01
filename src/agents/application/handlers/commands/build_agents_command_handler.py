@@ -57,10 +57,10 @@ class BuildAgentsCommandHandler:
         Raises:
             ValueError: If the specified adapter is not available.
         """
-        adapter = self._adapters.get(command.adapter)
+        adapter = self._adapters.get(command.vendor)
         if adapter is None:
             available = ", ".join(sorted(self._adapters.keys()))
-            raise ValueError(f"Unknown adapter: {command.adapter!r}. Available: {available}")
+            raise ValueError(f"Unknown vendor: {command.vendor!r}. Available: {available}")
 
         # Get agents to build
         if command.agent_name:

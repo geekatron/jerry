@@ -5,6 +5,8 @@ model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash
 mcpServers:
   memory-keeper: true
+permissionMode: default
+background: false
 ---
 <agent>
 
@@ -385,5 +387,42 @@ mcp__memory-keeper__store(
 *Skill: orchestration*
 *Updated: 2026-02-14 - EN-709: Added quality gate planning, criticality assessment, adversarial strategy embedding*
 </memory_keeper_integration>
+
+<agent_version>
+2.2.0
+</agent_version>
+
+<tool_tier>
+T4 (Persistent)
+</tool_tier>
+
+<enforcement>
+tier: medium
+escalation_path: Warn on invalid workflow spec -> Block without valid project context
+</enforcement>
+
+<portability>
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: xml
+</portability>
+
+<session_context>
+schema: docs/schemas/session_context.json
+schema_version: 1.0.0
+input_validation: true
+output_validation: true
+on_receive:
+- validate_session_id
+- check_schema_version
+- extract_key_findings
+- process_blockers
+on_send:
+- populate_key_findings
+- calculate_confidence
+- list_artifacts
+- set_timestamp
+</session_context>
 
 </agent>

@@ -5,6 +5,8 @@ model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:
   memory-keeper: true
+permissionMode: default
+background: false
 ---
 <identity>
 You are **nse-requirements**, a specialized NASA Requirements Engineer agent in the Jerry framework.
@@ -96,28 +98,33 @@ When reading existing requirements documents for traceability or update operatio
 use the `/ast` skill instead of regex or raw text parsing.
 
 5. **Extracting status and parent from existing requirements docs:**
-   ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast frontmatter projects/${JERRY_PROJECT}/requirements/PROJ-002-e-101-propulsion-reqs.md
+   ```python
+   from skills.ast.scripts.ast_ops import query_frontmatter
+   fm = query_frontmatter("projects/${JERRY_PROJECT}/requirements/PROJ-002-e-101-propulsion-reqs.md")
    # Returns: {"Type": "story", "Status": "baselined", "Parent": "EPIC-001", ...}
-   # Use Status and Parent fields to verify traceability chain before adding new requirements
+   status = fm.get("Status", "")
+   parent = fm.get("Parent", "")
+   # Use to verify traceability chain before adding new requirements
    ```
 
 6. **Validating nav table compliance of requirements documents (H-23/H-24):**
-   ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast validate projects/${JERRY_PROJECT}/requirements/PROJ-002-e-101-propulsion-reqs.md --nav
-   # Returns: {"is_valid": true/false, "missing_entries": [...], "orphaned_entries": [...]}
+   ```python
+   from skills.ast.scripts.ast_ops import validate_nav_table_file
+   result = validate_nav_table_file("projects/${JERRY_PROJECT}/requirements/PROJ-002-e-101-propulsion-reqs.md")
+   # Returns: {"is_valid": bool, "missing_entries": [...], "orphaned_entries": [...]}
    # Missing nav entries indicate incomplete document structure
    ```
 
 7. **Parsing requirements doc structure for completeness assessment:**
-   ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast parse projects/${JERRY_PROJECT}/requirements/PROJ-002-e-101-propulsion-reqs.md
-   # Returns: {"heading_count": N, "has_frontmatter": true/false, "node_types": [...]}
+   ```python
+   from skills.ast.scripts.ast_ops import parse_file
+   info = parse_file("projects/${JERRY_PROJECT}/requirements/PROJ-002-e-101-propulsion-reqs.md")
+   # Returns: {"heading_count": N, "has_frontmatter": bool, "node_types": [...]}
    # Use heading_count to verify required sections present (L0/L1/L2 + Traceability)
    ```
 
 **Migration Note (ST-010):** For traceability checks that read existing artifacts,
-PREFER `jerry ast frontmatter` over `Grep(pattern="REQ-NSE-|Parent:")`. The AST approach
+PREFER `query_frontmatter()` over `Grep(pattern="REQ-NSE-|Parent:")`. The AST approach
 is structurally correct and handles document edge cases that regex may miss.
 
 **Forbidden Actions (Constitutional):**
@@ -616,3 +623,40 @@ Use Memory-Keeper to persist requirements context across sessions for traceabili
 *Constitutional Compliance: Jerry Constitution v1.1*
 *Enhancement: EN-708 adversarial quality mode for requirements (EPIC-002 design)*
 *Last Updated: 2026-02-14*
+
+## Agent Version
+
+2.3.0
+
+## Tool Tier
+
+T4 (Persistent)
+
+## Enforcement
+
+tier: medium
+escalation_path: Warn on missing traces → Block completion without artifact
+
+## Portability
+
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: markdown
+
+## Session Context
+
+schema: docs/schemas/session_context.json
+schema_version: 1.0.0
+input_validation: true
+output_validation: true
+on_receive:
+- validate_session_id
+- check_schema_version
+- extract_key_findings
+- process_blockers
+on_send:
+- populate_key_findings
+- calculate_confidence
+- list_artifacts
+- set_timestamp

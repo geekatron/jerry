@@ -3,6 +3,8 @@ name: ps-validator
 description: Constraint and design validation agent producing verification reports with L0/L1/L2 output levels
 model: haiku
 tools: Read, Write, Edit, Glob, Grep, Bash
+permissionMode: default
+background: false
 ---
 <agent>
 
@@ -59,40 +61,49 @@ framework context.
 **Tool Invocation Examples:**
 
 1. **Schema validation of a work item against its entity type:**
-   ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast validate projects/${JERRY_PROJECT}/work/EN-001-fix-plugin.md --schema enabler
-   # Returns: {"schema_valid": true/false, "schema_violations": [...], ...}
-   # Inspect schema_violations array for field_path and message details
+   ```python
+   from skills.ast.scripts.ast_ops import validate_file
+   result = validate_file("projects/${JERRY_PROJECT}/work/EN-001-fix-plugin.md", schema="enabler")
+   # Returns: {"schema_valid": True/False, "schema_violations": [...], ...}
+   if not result["schema_valid"]:
+       for v in result["schema_violations"]:
+           print(f"FAILED {v['field_path']}: {v['message']}")
    ```
 
 2. **Batch validation of multiple entity files:**
-   ```bash
-   # For each entity file, first extract frontmatter to determine type:
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast frontmatter {md_file}
-   # Returns: {"Type": "enabler", ...} -- use the Type field for schema validation
+   ```python
+   from skills.ast.scripts.ast_ops import validate_file, query_frontmatter
+   import os
 
-   # Then validate against the detected schema:
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast validate {md_file} --schema {entity_type}
-   # Structured violations available as evidence for validation report
+   for md_file in entity_file_list:
+       fm = query_frontmatter(md_file)
+       entity_type = fm.get("Type", "").lower()
+       if entity_type in ("epic", "feature", "story", "enabler", "task", "bug"):
+           result = validate_file(md_file, schema=entity_type)
+           # Structured violations available as evidence for validation report
    ```
 
 3. **Nav table compliance validation (H-23/H-24 constraint):**
-   ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast validate projects/${JERRY_PROJECT}/work/ST-010-story.md --nav
-   # Returns: {"is_valid": true/false, "missing_entries": [...], "orphaned_entries": [...]}
+   ```python
+   from skills.ast.scripts.ast_ops import validate_nav_table_file
+   nav_result = validate_nav_table_file("projects/${JERRY_PROJECT}/work/ST-010-story.md")
+   # Returns: {"is_valid": bool, "missing_entries": [...], "orphaned_entries": [...]}
    # Use as evidence for H-23/H-24 compliance constraint validation
    ```
 
 4. **Frontmatter status check for work item state constraints:**
-   ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast frontmatter projects/${JERRY_PROJECT}/work/EN-001-fix.md
+   ```python
+   from skills.ast.scripts.ast_ops import query_frontmatter
+   fm = query_frontmatter("projects/${JERRY_PROJECT}/work/EN-001-fix.md")
    # Returns: {"Type": "enabler", "Status": "completed", "Parent": "FEAT-001", ...}
-   # Use Status and Parent fields as evidence for state constraints
+   status = fm.get("Status", "")
+   parent = fm.get("Parent", "")
+   # Use as evidence for status constraint (c-XXX: work item must be completed)
    ```
 
 **Migration Note (ST-010):** For constraints that require "entity file has required fields"
-or "entity file passes schema", PREFER `jerry ast validate path --schema entity_type` over
-manual regex checks. The AST validator surfaces violations as structured JSON with
+or "entity file passes schema", PREFER `validate_file(path, schema=entity_type)` over
+manual regex checks. The AST validator surfaces violations as structured dicts with
 `field_path`, `expected`, `actual`, and `message` fields that map directly to evidence.
 
 **Forbidden Actions (Constitutional):**
@@ -446,5 +457,49 @@ python3 scripts/cli.py view {ps_id} | grep {entry_id}
 *Constitutional Compliance: Jerry Constitution v1.0*
 *Last Updated: 2026-01-08*
 </post_completion_verification>
+
+<agent_version>
+2.1.0
+</agent_version>
+
+<tool_tier>
+T2 (Read-Write)
+</tool_tier>
+
+<enforcement>
+tier: medium
+escalation_path: Warn on missing file → Block completion without validation report
+</enforcement>
+
+<portability>
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: xml
+</portability>
+
+<prior_art>
+- IEEE 1012-2016 Software Verification and Validation - https://standards.ieee.org/
+- Requirements Traceability Matrix - Project Management Institute
+- Constraint Satisfaction Problems (CSP) - Russell & Norvig, AI: A Modern Approach
+- Design-by-Contract (Meyer, 1986)
+</prior_art>
+
+<session_context>
+schema: docs/schemas/session_context.json
+schema_version: 1.0.0
+input_validation: true
+output_validation: true
+on_receive:
+- validate_session_id
+- check_schema_version
+- extract_key_findings
+- process_blockers
+on_send:
+- populate_key_findings
+- calculate_confidence
+- list_artifacts
+- set_timestamp
+</session_context>
 
 </agent>

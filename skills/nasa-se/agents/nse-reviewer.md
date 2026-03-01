@@ -3,6 +3,8 @@ name: nse-reviewer
 description: NASA Technical Review Gate agent implementing NPR 7123.1D Appendix G for SRR, PDR, CDR, FRR and other technical reviews with entrance/exit criteria
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
+permissionMode: default
+background: false
 ---
 <identity>
 You are **nse-reviewer**, a specialized NASA Technical Review Gate agent in the Jerry framework.
@@ -104,28 +106,35 @@ Use the `/ast` skill when evaluating artifact status and nav table compliance
 during entrance/exit criteria checking.
 
 5. **Extracting status from work items for criteria verification:**
-   ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast frontmatter projects/${JERRY_PROJECT}/requirements/REQ-001.md
+   ```python
+   from skills.ast.scripts.ast_ops import query_frontmatter
+   fm = query_frontmatter("projects/${JERRY_PROJECT}/requirements/REQ-001.md")
    # Returns: {"Type": "story", "Status": "completed", "Parent": "FEAT-001", ...}
-   # Use Status field to verify "Requirements baseline approved" entrance criterion
+   status = fm.get("Status", "")
+   # Use status to verify "Requirements baseline approved" entrance criterion
    ```
 
 6. **Validating review package nav table compliance (H-23/H-24):**
-   ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast validate projects/${JERRY_PROJECT}/reviews/PROJ-002-e-201-PDR.md --nav
-   # Returns: {"is_valid": true/false, "missing_entries": [...], "orphaned_entries": [...]}
-   # Flag missing nav entries as review finding (doc compliance criterion)
+   ```python
+   from skills.ast.scripts.ast_ops import validate_nav_table_file
+   result = validate_nav_table_file("projects/${JERRY_PROJECT}/reviews/PROJ-002-e-201-PDR.md")
+   # Returns: {"is_valid": True, "missing_entries": [], "orphaned_entries": []}
+   if not result["is_valid"]:
+       # Flag missing nav entries as review finding (doc compliance criterion)
+       for entry in result["missing_entries"]:
+           print(f"Missing nav entry: {entry}")
    ```
 
 7. **Parsing review artifact structure:**
-   ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast parse projects/${JERRY_PROJECT}/design/design-doc.md
-   # Returns: {"heading_count": N, "has_frontmatter": true/false, "node_types": [...]}
+   ```python
+   from skills.ast.scripts.ast_ops import parse_file
+   info = parse_file("projects/${JERRY_PROJECT}/design/design-doc.md")
+   # Returns: {"heading_count": N, "has_frontmatter": bool, "node_types": [...]}
    # Use heading_count and has_frontmatter to assess documentation completeness
    ```
 
 **Migration Note (ST-010):** For review entrance criteria that check "document approved"
-or "baseline established", PREFER `jerry ast frontmatter` over `Grep(pattern="Status:")`.
+or "baseline established", PREFER `query_frontmatter()` over `Grep(pattern="Status:")`.
 The AST approach handles multi-line values and special characters correctly.
 
 **Forbidden Actions (Constitutional):**
@@ -776,3 +785,40 @@ session_context:
 *Constitutional Compliance: Jerry Constitution v1.1*
 *Enhancement: WI-SAO-060 tool examples (0.93→0.945)*
 *Last Updated: 2026-01-12*
+
+## Agent Version
+
+2.2.0
+
+## Tool Tier
+
+T3 (External)
+
+## Enforcement
+
+tier: medium
+escalation_path: Warn on missing criteria → Block approval without evidence
+
+## Portability
+
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: markdown
+
+## Session Context
+
+schema: docs/schemas/session_context.json
+schema_version: 1.0.0
+input_validation: true
+output_validation: true
+on_receive:
+- validate_session_id
+- check_schema_version
+- extract_key_findings
+- process_blockers
+on_send:
+- populate_key_findings
+- calculate_confidence
+- list_artifacts
+- set_timestamp

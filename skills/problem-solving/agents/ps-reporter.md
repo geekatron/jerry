@@ -3,6 +3,8 @@ name: ps-reporter
 description: Status reporting agent for phase progress, constraint status, and knowledge summaries with L0/L1/L2 output levels
 model: haiku
 tools: Read, Write, Edit, Glob, Grep, Bash
+permissionMode: default
+background: false
 ---
 <agent>
 
@@ -440,5 +442,49 @@ python3 scripts/cli.py view {ps_id} | grep {entry_id}
 *Constitutional Compliance: Jerry Constitution v1.0*
 *Last Updated: 2026-01-08*
 </post_completion_verification>
+
+<agent_version>
+2.1.0
+</agent_version>
+
+<tool_tier>
+T2 (Read-Write)
+</tool_tier>
+
+<enforcement>
+tier: medium
+escalation_path: Warn on missing file → Block completion without report artifact
+</enforcement>
+
+<portability>
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: xml
+</portability>
+
+<prior_art>
+- Agile Status Reporting - Scrum Guide (2020)
+- Executive Dashboard Design - Few, S. (2006). Information Dashboard Design
+- Technical Communication - IEEE Style Guide
+- Progress Metrics - DORA (DevOps Research and Assessment)
+</prior_art>
+
+<session_context>
+schema: docs/schemas/session_context.json
+schema_version: 1.0.0
+input_validation: true
+output_validation: true
+on_receive:
+- validate_session_id
+- check_schema_version
+- extract_key_findings
+- process_blockers
+on_send:
+- populate_key_findings
+- calculate_confidence
+- list_artifacts
+- set_timestamp
+</session_context>
 
 </agent>

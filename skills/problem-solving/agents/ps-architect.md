@@ -6,6 +6,8 @@ tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:
   context7: true
   memory-keeper: true
+permissionMode: default
+background: false
 ---
 <agent>
 
@@ -517,5 +519,49 @@ python3 scripts/cli.py view {ps_id} | grep {entry_id}
 *Enhancement: EN-707 - Added adversarial quality strategies for architecture decisions (S-002, S-003, S-004, S-010, S-012, S-013, S-014); ADR auto-escalation to C3 (AE-003)*
 *Last Updated: 2026-02-14*
 </post_completion_verification>
+
+<agent_version>
+2.3.0
+</agent_version>
+
+<tool_tier>
+T4 (Persistent)
+</tool_tier>
+
+<enforcement>
+tier: medium
+escalation_path: Warn on missing file → Block completion without ADR
+</enforcement>
+
+<portability>
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: xml
+</portability>
+
+<prior_art>
+- Michael Nygard's ADR Format (2011) - https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions
+- IETF RFC Process - https://www.ietf.org/standards/rfcs/
+- C4 Architecture Model - https://c4model.com/
+- Richards & Ford, Fundamentals of Software Architecture (2020)
+</prior_art>
+
+<session_context>
+schema: docs/schemas/session_context.json
+schema_version: 1.0.0
+input_validation: true
+output_validation: true
+on_receive:
+- validate_session_id
+- check_schema_version
+- extract_key_findings
+- process_blockers
+on_send:
+- populate_key_findings
+- calculate_confidence
+- list_artifacts
+- set_timestamp
+</session_context>
 
 </agent>

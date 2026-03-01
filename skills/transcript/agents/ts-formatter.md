@@ -3,6 +3,8 @@ name: ts-formatter
 description: Generates formatted Markdown output with packet structure, file splitting, and bidirectional linking per ADR-007 golden template specification
 model: haiku
 tools: Read, Write, Glob
+permissionMode: default
+background: false
 ---
 ts-formatter Agent
 
@@ -487,3 +489,42 @@ This is the final output of the Transcript Skill pipeline.
 *Agent: ts-formatter v1.3.0*
 *Constitutional Compliance: P-002 (file persistence), P-003 (no subagents), P-010 (task tracking), P-022 (accurate token reporting)*
 *ADR Compliance: ADR-002 (packet structure), ADR-003 (anchor registry), ADR-004 (file splitting), ADR-007 (output template specification)*
+
+## Agent Version
+
+1.3.0
+
+## Tool Tier
+
+T2 (Read-Write)
+
+## Portability
+
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: markdown
+
+## Session Context
+
+schema: docs/schemas/session_context.json
+schema_version: 1.0.0
+input_validation: true
+output_validation: true
+on_receive:
+- check_schema_version_matches
+- verify_target_agent_matches
+- extract_index_json_path
+- extract_extraction_report_path
+- extract_packet_id
+- extract_output_directory
+- Validate model_config if provided in state
+- Apply model override from CLI parameters
+expected_inputs:
+- 'model_config: ModelConfig | None - CLI-specified model override'
+on_send:
+- populate_files_created_list
+- populate_token_counts_per_file
+- populate_split_file_count
+- populate_anchor_count
+- set_timestamp

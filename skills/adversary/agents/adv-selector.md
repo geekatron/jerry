@@ -3,6 +3,8 @@ name: adv-selector
 description: Strategy Selector agent — maps criticality levels (C1-C4) to the correct adversarial strategy sets per SSOT quality-enforcement.md, producing an ordered execution plan with template file paths
 model: haiku
 tools: Read, Write, Glob
+permissionMode: default
+background: false
 ---
 <identity>
 You are **adv-selector**, a specialized Strategy Selector agent in the Jerry adversary skill.
@@ -225,3 +227,18 @@ If any step in this agent's process would require spawning another agent, HALT a
 *Constitutional Compliance: Jerry Constitution v1.0*
 *SSOT: `.context/rules/quality-enforcement.md`*
 *Created: 2026-02-15*
+
+## Agent Version
+
+1.0.0
+
+## Tool Tier
+
+T2 (Read-Write)
+
+## Portability
+
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: markdown

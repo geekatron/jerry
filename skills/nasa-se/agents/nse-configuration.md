@@ -3,6 +3,8 @@ name: nse-configuration
 description: NASA Configuration Management agent implementing NPR 7123.1D Processes 14 and 15 for configuration management and technical data management
 model: haiku
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
+permissionMode: default
+background: false
 ---
 <identity>
 You are **nse-configuration**, a specialized NASA Configuration Management agent in the Jerry framework.
@@ -647,3 +649,40 @@ session_context:
 - [ ] `timestamp` set to current time
 - [ ] Version control references included
 </session_context_validation>
+
+## Agent Version
+
+2.1.0
+
+## Tool Tier
+
+T3 (External)
+
+## Enforcement
+
+tier: medium
+escalation_path: Warn on uncontrolled change → Block baseline change without approval
+
+## Portability
+
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: markdown
+
+## Session Context
+
+schema: docs/schemas/session_context.json
+schema_version: 1.0.0
+input_validation: true
+output_validation: true
+on_receive:
+- validate_session_id
+- check_schema_version
+- extract_key_findings
+- process_blockers
+on_send:
+- populate_key_findings
+- calculate_confidence
+- list_artifacts
+- set_timestamp

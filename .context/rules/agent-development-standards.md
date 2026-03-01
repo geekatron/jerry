@@ -1,10 +1,10 @@
 # Agent Development Standards
 
-<!-- VERSION: 1.2.0 | DATE: 2026-02-22 | SOURCE: ADR-PROJ007-001, PROJ-007 Phase 3 Synthesis, V&V Plan, EN-003 | REVISION: EN-003 gap closures (ET-M-001 extended thinking, FC-M-001 fresh context review) -->
+<!-- VERSION: 1.3.0 | DATE: 2026-02-26 | SOURCE: ADR-PROJ007-001, PROJ-007 Phase 3 Synthesis, V&V Plan, EN-003, PROJ-012 | REVISION: PROJ-012 single-file architecture — governance injected into prompt body, .governance.yaml removed from composed output -->
 
 > Canonical standards for agent definition format, structural patterns, behavioral constraints, and handoff protocols within the Jerry Framework. All agent definitions MUST reference this file.
 
-<!-- L2-REINJECT: rank=5, content="Agent definitions: YAML frontmatter MUST validate against JSON Schema (H-34). Required YAML fields: name, version, description, model, identity, capabilities, guardrails, output, constitution. Tool tiers T1-T5: always select lowest tier satisfying requirements. Cognitive modes: divergent, convergent, integrative, systematic, forensic. Constitutional triplet (P-003, P-020, P-022) REQUIRED in every agent (H-35)." -->
+<!-- L2-REINJECT: rank=5, content="Agent definitions: single-file architecture — official Claude Code frontmatter + governance in prompt body as XML sections (H-34). Governance fields (version, tool_tier, enforcement, portability, session_context) injected by compose pipeline. Tool tiers T1-T5: always select lowest tier satisfying requirements. Cognitive modes: divergent, convergent, integrative, systematic, forensic. Constitutional triplet (P-003, P-020, P-022) REQUIRED in every agent (H-35). Compose pipeline validates canonical .jerry.yaml sources (CI gate planned)." -->
 
 ## Document Sections
 
@@ -30,13 +30,14 @@
 
 | ID | Rule | Consequence | Source Requirements | Verification |
 |----|------|-------------|---------------------|--------------|
-| H-34 | Agent definitions use a dual-file architecture: (a) `.md` files with official Claude Code frontmatter only (`name`, `description`, `model`, `tools`, `mcpServers`), and (b) companion `.governance.yaml` files validated against `docs/schemas/agent-governance-v1.schema.json`. Required governance fields: `version`, `tool_tier`, `identity`. Governance schema validation MUST execute before LLM-based quality scoring for C2+ deliverables. | Agent definition rejected at CI. Structural defects propagate to runtime. | AR-001 (YAML+MD format), AR-002 (required fields), AR-003 (schema validation), QR-003 (output schema) | L5 (CI): JSON Schema validation on PR. L3 (pre-tool): Schema check before agent invocation. |
-| H-35 | Every agent MUST declare constitutional compliance with at minimum P-003 (no recursive subagents), P-020 (user authority), and P-022 (no deception) in `.governance.yaml` `constitution.principles_applied`. Worker agents (invoked via Task) MUST NOT include `Task` in the official `tools` frontmatter field. Every agent MUST declare at minimum 3 entries in `.governance.yaml` `capabilities.forbidden_actions` referencing the constitutional triplet. | Constitutional constraint bypass. Unauthorized recursive delegation. | SR-001 (constitutional compliance), AR-004 (single-level nesting), AR-006 (tool restriction), AR-012 (forbidden actions) | L3 (pre-tool): Schema validates minItems=3. L5 (CI): Grep for P-003/P-020/P-022 presence. |
+| H-34 | Agent definitions use a single-file architecture: `.md` files with official Claude Code frontmatter (12 fields) and governance metadata injected into the prompt body as XML sections by the compose pipeline. Canonical governance data lives in `.jerry.yaml` source files validated against `docs/schemas/agent-canonical-v1.schema.json`. Required governance fields in canonical source: `version`, `tool_tier`, `identity`. Schema validation of canonical sources MUST execute before LLM-based quality scoring for C2+ deliverables. | Agent definition rejected at CI. Structural defects propagate to runtime. | AR-001 (YAML+MD format), AR-002 (required fields), AR-003 (schema validation), QR-003 (output schema) | L5 (CI): JSON Schema validation on canonical `.jerry.yaml` files on PR (planned — CI job not yet implemented; currently enforced at compose-time via Python validation). L3 (pre-tool): Schema check before agent invocation. |
+| H-35 | Every agent MUST declare constitutional compliance with at minimum P-003 (no recursive subagents), P-020 (user authority), and P-022 (no deception) in the canonical `.jerry.yaml` `constitution.principles_applied` field. Worker agents (invoked via Task) MUST NOT include `Task` in the official `tools` frontmatter field. Every agent MUST declare at minimum 3 entries in `capabilities.forbidden_actions` referencing the constitutional triplet. | Constitutional constraint bypass. Unauthorized recursive delegation. | SR-001 (constitutional compliance), AR-004 (single-level nesting), AR-006 (tool restriction), AR-012 (forbidden actions) | L3 (pre-tool): Schema validates minItems=3. L5 (CI): Grep for P-003/P-020/P-022 presence. |
 
-**H-34 Architecture Note:** Agent definitions use a separation-of-concerns architecture:
+**H-34 Architecture Note:** Agent definitions use a single-file composed output architecture:
 - **`.md` YAML frontmatter**: Official Claude Code fields only (12 recognized fields: `name`, `description`, `tools`, `disallowedTools`, `model`, `permissionMode`, `maxTurns`, `skills`, `mcpServers`, `hooks`, `memory`, `background`, `isolation`). Parsed by Claude Code runtime for tool enforcement and agent discovery.
-- **`.md` markdown body**: System prompt content visible to the agent LLM. Contains identity, methodology, guardrails, and output specifications as XML-tagged or markdown sections.
-- **`.governance.yaml`**: Machine-readable governance metadata validated by `docs/schemas/agent-governance-v1.schema.json`. Contains version, tool_tier, identity, persona, capabilities, guardrails, constitution, validation, and domain-specific extensions. The deprecated `docs/schemas/agent-definition-v1.schema.json` is retained for reference only.
+- **`.md` markdown body**: System prompt content visible to the agent LLM. Contains identity, methodology, guardrails, output specifications, and governance metadata (version, tool tier, enforcement, portability, session context) as XML-tagged sections. Governance sections are injected by the compose pipeline from canonical `.jerry.yaml` sources.
+- **Canonical sources** (inputs to compose): `skills/*/composition/*.jerry.yaml` (structured governance data), `skills/*/composition/*.jerry.prompt.md` (system prompt body), `skills/*/composition/*.claude-code.yaml` (per-agent vendor overrides). CI validates canonical `.jerry.yaml` files against `docs/schemas/agent-canonical-v1.schema.json`.
+- **Deprecated schemas**: `docs/schemas/agent-governance-v1.schema.json` and `docs/schemas/agent-definition-v1.schema.json` are retained for reference only. The canonical schema is `agent-canonical-v1.schema.json`.
 
 **HARD Rule Budget:** H-34 and H-35 are consolidated into compound H-34 in `quality-enforcement.md` HARD Rule Index (H-35 retired as sub-item b). Current budget: 25/25 rules at ceiling.
 
@@ -55,7 +56,7 @@
 | AD-M-003 | Agent description SHOULD include WHAT the agent does, WHEN to invoke it, and at least one trigger keyword. Maximum 1024 characters. No XML tags. | Aligns with H-28 (skill description standards). Description quality directly affects routing accuracy (AP-01 Keyword Tunnel prevention). | AR-009 (description quality), H-28 |
 | AD-M-004 | Agents producing stakeholder-facing deliverables SHOULD declare all three output levels (`L0`, `L1`, `L2`) in `output.levels`. | L0: Executive summary. L1: Technical detail. L2: Strategic implications. Internal-only agents MAY omit L0. | PR-008 (output levels) |
 | AD-M-005 | Agent `identity.expertise` SHOULD contain at minimum 2 specific domain competencies. | Generic expertise ("analysis", "writing") degrades routing signal quality. Prefer specific: "FMEA risk analysis", "hexagonal architecture patterns". | PR-003 (expertise domains) |
-| AD-M-006 | Agents SHOULD declare `persona` (tone, communication_style, audience_level) in `.governance.yaml` for consistent output voice. | `tone` and `communication_style` are free-form strings (not enums). RECOMMENDED values -- tone: professional, technical, consultative, analytical, rigorous, methodical. communication_style: consultative, directive, analytical, direct, structured, evidence-based. audience_level enum: adaptive, expert, intermediate, beginner. `character` field MAY be added for extended persona descriptions. | PR-005 (persona) |
+| AD-M-006 | Agents SHOULD declare `persona` (tone, communication_style, audience_level) in the canonical `.jerry.yaml` source for consistent output voice. | `tone` and `communication_style` are free-form strings (not enums). RECOMMENDED values -- tone: professional, technical, consultative, analytical, rigorous, methodical. communication_style: consultative, directive, analytical, direct, structured, evidence-based. audience_level enum: adaptive, expert, intermediate, beginner. `character` field MAY be added for extended persona descriptions. | PR-005 (persona) |
 | AD-M-007 | Agents SHOULD declare `session_context` with `on_receive` and `on_send` processing steps for structured handoff participation. | Defines how the agent processes inbound handoff data and constructs outbound handoffs. See [Handoff Protocol](#handoff-protocol). | HR-001 (structured format), HR-002 (required fields) |
 | AD-M-008 | Agents SHOULD declare `validation.post_completion_checks` listing verifiable post-completion assertions. | Examples: `verify_file_created`, `verify_navigation_table`, `verify_citations_present`. Enables deterministic quality checking before LLM scoring. | QR-003 (output validation) |
 | AD-M-009 | Agent model selection SHOULD be justified per cognitive demands. | `opus` for complex reasoning, research, architecture, synthesis. `sonnet` for balanced analysis, standard production tasks. `haiku` for fast repetitive tasks, formatting, validation. | PR-007 (model selection) |
@@ -88,7 +89,7 @@
 
 ## Agent Definition Schema
 
-Agent definitions use a dual-file architecture per H-34.
+Agent definitions use a single-file composed output architecture per H-34. Canonical governance data is stored in `.jerry.yaml` source files and injected into the `.md` prompt body during composition.
 
 ### Official Frontmatter Fields (`.md` file)
 
@@ -110,9 +111,9 @@ Only Claude Code's 12 official fields are permitted in YAML frontmatter. All oth
 | `background` | boolean | No | Run as background task |
 | `isolation` | enum | No | `worktree` |
 
-### Governance Fields (`.governance.yaml` file)
+### Governance Fields (canonical `.jerry.yaml` source, injected into prompt body)
 
-Validated by `docs/schemas/agent-governance-v1.schema.json`. Sub-objects (`identity`, `persona`, `capabilities`, `guardrails`, `output`, `validation`) allow domain-specific extensions via `additionalProperties: true`.
+Governance fields are defined in canonical `.jerry.yaml` source files, validated by `docs/schemas/agent-canonical-v1.schema.json`, and injected into the composed `.md` prompt body as XML sections by the compose pipeline. Sub-objects (`identity`, `persona`, `capabilities`, `guardrails`, `output`, `validation`) allow domain-specific extensions via `additionalProperties: true`.
 
 **Required fields:**
 
@@ -156,6 +157,45 @@ The agent definition Markdown body MUST be organized using XML-tagged sections. 
 | `<guardrails>` | What the agent must not do | Domain | Constitutional compliance, input validation, output filtering, failure modes |
 
 **Hexagonal dependency rule:** Domain-layer sections (`<identity>`, `<purpose>`, `<methodology>`, `<guardrails>`) MUST NOT reference specific tool names, output format details, model-specific instructions, or MCP key patterns. Use capability descriptions instead (e.g., "search the codebase" not "use Grep"). This applies the same directional discipline as H-07 (domain layer import restrictions) to agent definition content.
+
+### Reserved Governance Headings
+
+The compose pipeline reserves the following `##` heading names for governance section injection. Agent prompt bodies (`.jerry.prompt.md` files) MUST NOT use these heading names for narrative content -- doing so will silently suppress governance injection for that field (the dedup logic skips sections where a matching heading already exists).
+
+| Reserved Heading | Governance Field | Injected By |
+|------------------|-----------------|-------------|
+| `Agent Version` | `version` | GovernanceSectionBuilder |
+| `Tool Tier` | `tool_tier` | GovernanceSectionBuilder |
+| `Enforcement` | `enforcement` | GovernanceSectionBuilder |
+| `Portability` | `portability` | GovernanceSectionBuilder |
+| `Prior Art` | `prior_art` | GovernanceSectionBuilder |
+| `Session Context` | `session_context` | GovernanceSectionBuilder |
+
+Heading comparison is case-insensitive: `## enforcement`, `## ENFORCEMENT`, and `## Enforcement` all match.
+
+### Agent Authoring Workflow
+
+Three workflows for creating and managing agent definitions:
+
+**New agent creation:**
+1. Create canonical source files in `skills/{skill}/composition/`:
+   - `{name}.jerry.yaml` -- structured governance data (version, tool_tier, identity, persona, etc.)
+   - `{name}.jerry.prompt.md` -- system prompt body (identity, methodology, guardrails, output sections)
+   - `{name}.claude-code.yaml` -- per-agent vendor overrides (optional; only needed to override defaults)
+2. Run `uv run jerry agents compose --vendor claude_code` to generate the composed `.md` agent definition in `skills/{skill}/agents/`.
+3. Verify the composed output; the pipeline injects governance fields from `.jerry.yaml` into the prompt body as XML sections.
+
+**Migration from dual-file (`.md` + `.governance.yaml`):**
+1. Run `uv run jerry agents compose --vendor claude_code` -- the pipeline generates single-file `.md` output with governance in the prompt body.
+2. Delete any residual `.governance.yaml` files from `skills/*/agents/`. These are no longer produced by the compose pipeline.
+3. See `ADR-PROJ012-001` for the architectural rationale.
+
+**Canonical source files (SSOT):**
+- `.jerry.yaml` -- machine-readable governance metadata, validated against `docs/schemas/agent-canonical-v1.schema.json`.
+- `.jerry.prompt.md` -- human-authored system prompt body. Author is responsible for `<identity>`, `<methodology>`, `<guardrails>`, `<output>`, and `<constitution>` sections.
+- `.claude-code.yaml` -- vendor-specific overrides (model, tools, mcpServers). Merged at Layer 4 of the compose pipeline.
+
+Composed `.md` files in `skills/*/agents/` are **derived artifacts** -- always regenerate via compose rather than editing directly.
 
 ---
 
@@ -412,7 +452,7 @@ Each standard maps to an enforcement layer for compliance checking.
 | L2 (Every prompt) | H-34, H-35 re-injection via L2-REINJECT comments | HTML comment re-injection | Immune |
 | L3 (Pre-tool) | Schema validation before agent invocation | JSON Schema validation (deterministic) | Immune |
 | L4 (Post-tool) | CB-01 through CB-05 context budget monitoring | Advisory -- see note below | Mixed |
-| L5 (CI/commit) | Full schema validation on all `skills/*/agents/*.md` files | CI pipeline JSON Schema check | Immune |
+| L5 (CI/commit) | Schema validation on canonical `.jerry.yaml` via compose-time Python checks | Compose-time validation (CI pipeline check planned) | Immune |
 
 **L4 Context Budget Note:** CB-01 through CB-05 are currently advisory standards. Operational monitoring of context budget usage (e.g., measuring tool result token consumption against CB-02's 50% threshold) requires future tooling that does not yet exist. Until such tooling is available, agent authors self-assess context budget compliance during development, and reviewers verify compliance qualitatively during the creator-critic-revision cycle (H-14). When L4 monitoring tooling becomes available, CB enforcement will transition from advisory to instrumented.
 
@@ -445,9 +485,9 @@ Each standard maps to an enforcement layer for compliance checking.
 
 ---
 
-<!-- VERSION: 1.2.0 | DATE: 2026-02-22 | SOURCE: ADR-PROJ007-001, PROJ-007 Phase 3 Synthesis, EN-003 | REVISION: EN-003 gap closures (ET-M-001, FC-M-001) -->
-*Standards Version: 1.2.0*
+<!-- VERSION: 1.3.0 | DATE: 2026-02-26 | SOURCE: ADR-PROJ007-001, PROJ-007 Phase 3 Synthesis, EN-003, PROJ-012 | REVISION: PROJ-012 single-file architecture -->
+*Standards Version: 1.3.0*
 *SSOT: `.context/rules/quality-enforcement.md` (H-34 compound registered, H-35 retired as sub-item)*
-*Source: PROJ-007 Agent Patterns -- ADR-PROJ007-001, Phase 3 Synthesis, V&V Plan, Integration Patterns*
+*Source: PROJ-007 Agent Patterns -- ADR-PROJ007-001, Phase 3 Synthesis, V&V Plan, Integration Patterns, PROJ-012 Agent Optimization*
 *Created: 2026-02-21*
 *Agent: ps-architect-003*

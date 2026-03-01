@@ -470,8 +470,9 @@ def _handle_agents(args: Any, json_output: bool) -> int:
         print("No agents command specified. Use 'jerry agents --help'.")
         return 1
 
-    from src.agents.infrastructure.adapters.claude_code_adapter import (
+    from src.agents.bootstrap import (
         create_agents_build_handler,
+        create_agents_compose_handler,
         create_agents_extract_handler,
         create_agents_list_handler,
         create_agents_validate_handler,
@@ -484,7 +485,7 @@ def _handle_agents(args: Any, json_output: bool) -> int:
         )
 
         command = BuildAgentsCommand(
-            adapter=getattr(args, "adapter", "claude_code"),
+            vendor=getattr(args, "vendor", "claude_code"),
             agent_name=getattr(args, "agent", None),
             dry_run=getattr(args, "dry_run", False),
         )
@@ -522,7 +523,7 @@ def _handle_agents(args: Any, json_output: bool) -> int:
 
         command = ExtractCanonicalCommand(
             agent_name=getattr(args, "agent", None),
-            source_adapter=getattr(args, "source_adapter", "claude_code"),
+            source_vendor=getattr(args, "source_vendor", "claude_code"),
         )
         result = handler.handle(command)
 
@@ -631,7 +632,7 @@ def _handle_agents(args: Any, json_output: bool) -> int:
         )
 
         command = BuildAgentsCommand(
-            adapter=getattr(args, "adapter", "claude_code"),
+            vendor=getattr(args, "vendor", "claude_code"),
             agent_name=getattr(args, "agent", None),
             dry_run=True,  # Always dry-run for diff
         )
@@ -670,6 +671,42 @@ def _handle_agents(args: Any, json_output: bool) -> int:
                 )
 
         return 1 if drift_count > 0 else 0
+
+    elif args.command == "compose":
+        handler = create_agents_compose_handler()
+        from src.agents.application.commands.compose_agents_command import (
+            ComposeAgentsCommand,
+        )
+
+        command = ComposeAgentsCommand(
+            vendor=getattr(args, "vendor", "claude_code"),
+            agent_name=getattr(args, "agent", None),
+            clean=getattr(args, "clean", False),
+            dry_run=getattr(args, "dry_run", False),
+        )
+        result = handler.handle(command)
+
+        if json_output:
+            import json
+
+            output = {
+                "composed": result.composed,
+                "failed": result.failed,
+                "dry_run": result.dry_run,
+                "output_paths": result.output_paths,
+                "errors": result.errors,
+            }
+            print(json.dumps(output, indent=2))
+        else:
+            prefix = "[DRY RUN] " if result.dry_run else ""
+            print(f"{prefix}Composed {result.composed} agent(s), {result.failed} failed.")
+            for path in result.output_paths:
+                action = "Would write" if result.dry_run else "Wrote"
+                print(f"  {action}: {path}")
+            for error in result.errors:
+                print(f"  ERROR: {error}")
+
+        return 1 if result.failed > 0 else 0
 
     print(f"Unknown agents command: {args.command}")
     return 1

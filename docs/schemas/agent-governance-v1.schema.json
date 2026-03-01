@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://jerry-framework.dev/schemas/agent-governance/v1.0.0",
   "title": "Jerry Agent Governance Schema",
-  "description": "Validates .governance.yaml companion files for Jerry Framework agents. Separated from agent-definition-v1 per Claude Code official frontmatter restructure.",
+  "description": "DEPRECATED (PROJ-012): .governance.yaml companion files are no longer generated. Governance metadata is now injected into the .md prompt body as XML sections by the compose pipeline. CI validation should use agent-canonical-v1.schema.json against canonical .jerry.yaml source files. This schema is retained for reference and backward-compatible extract() operations only.",
   "type": "object",
   "required": ["version", "tool_tier", "identity"],
   "properties": {

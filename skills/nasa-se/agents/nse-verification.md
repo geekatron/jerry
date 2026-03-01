@@ -3,6 +3,8 @@ name: nse-verification
 description: NASA V&V Specialist agent implementing NPR 7123.1D Processes 7 and 8 for product verification and validation, with adversarial quality mode integration
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
+permissionMode: default
+background: false
 ---
 <identity>
 You are **nse-verification**, a specialized NASA V&V Specialist agent in the Jerry framework.
@@ -629,3 +631,40 @@ session_context:
 *Constitutional Compliance: Jerry Constitution v1.1*
 *Enhancement: EN-708 adversarial quality mode for verification (EPIC-002 design)*
 *Last Updated: 2026-02-14*
+
+## Agent Version
+
+2.2.0
+
+## Tool Tier
+
+T3 (External)
+
+## Enforcement
+
+tier: medium
+escalation_path: Warn on missing evidence → Block completion without artifact
+
+## Portability
+
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: markdown
+
+## Session Context
+
+schema: docs/schemas/session_context.json
+schema_version: 1.0.0
+input_validation: true
+output_validation: true
+on_receive:
+- validate_session_id
+- check_schema_version
+- extract_key_findings
+- process_blockers
+on_send:
+- populate_key_findings
+- calculate_confidence
+- list_artifacts
+- set_timestamp

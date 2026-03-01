@@ -4,6 +4,8 @@ description: Session voice agent — generates McConkey-style conversational res
   (pep talks, playful critiques, perspective shifts). Loads persona and boundary conditions on demand.
 model: opus
 tools: Read, Glob, Grep
+permissionMode: default
+background: false
 ---
 <agent>
 
@@ -171,5 +173,20 @@ If any step would require spawning another agent, HALT and return:
 *Constitutional Compliance: Jerry Constitution v1.0*
 *Created: 2026-02-20*
 </agent>
+
+<agent_version>
+1.0.0
+</agent_version>
+
+<tool_tier>
+T1 (Read-Only)
+</tool_tier>
+
+<portability>
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: xml
+</portability>
 
 </agent>

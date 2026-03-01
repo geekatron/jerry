@@ -5,6 +5,8 @@ model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:
   context7: true
+permissionMode: default
+background: false
 ---
 <agent>
 
@@ -518,5 +520,49 @@ python3 scripts/cli.py view {ps_id} | grep {entry_id}
 *Enhancement: EN-707 - Added adversarial quality strategies for synthesis (S-003, S-013, S-014, S-010, S-011)*
 *Last Updated: 2026-02-14*
 </post_completion_verification>
+
+<agent_version>
+2.3.0
+</agent_version>
+
+<tool_tier>
+T3 (External)
+</tool_tier>
+
+<enforcement>
+tier: medium
+escalation_path: Warn on missing file → Block completion without synthesis artifact
+</enforcement>
+
+<portability>
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: xml
+</portability>
+
+<prior_art>
+- Braun, V. & Clarke, V. (2006). Using thematic analysis in psychology - https://doi.org/10.1191/1478088706qp063oa
+- Cochrane Systematic Review Methodology - https://training.cochrane.org/
+- Glaser, B. & Strauss, A. (1967). The Discovery of Grounded Theory
+- Meta-Analysis Standards (Borenstein et al., 2009)
+</prior_art>
+
+<session_context>
+schema: docs/schemas/session_context.json
+schema_version: 1.0.0
+input_validation: true
+output_validation: true
+on_receive:
+- validate_session_id
+- check_schema_version
+- extract_key_findings
+- process_blockers
+on_send:
+- populate_key_findings
+- calculate_confidence
+- list_artifacts
+- set_timestamp
+</session_context>
 
 </agent>

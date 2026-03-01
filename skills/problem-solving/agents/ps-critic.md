@@ -4,6 +4,8 @@ description: Quality evaluation agent for creator-critic-revision cycles with ad
   improvement recommendations
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep
+permissionMode: default
+background: false
 ---
 <agent>
 
@@ -96,29 +98,35 @@ use the `/ast` skill to extract structured information before applying the
 S-014 scoring rubric.
 
 5. **Extracting entity context for scoring setup:**
-   ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast frontmatter {artifact_path}
+   ```python
+   from skills.ast.scripts.ast_ops import query_frontmatter
+   fm = query_frontmatter("{artifact_path}")
    # Returns: {"Type": "story", "Status": "in_progress", "Parent": "FEAT-001", ...}
-   # Use the "Type" field to select the appropriate schema for Completeness scoring
+   entity_type = fm.get("Type", "unknown")
+   # Use entity_type to select the appropriate schema for Completeness scoring
    ```
 
 6. **Checking nav table compliance for Completeness dimension (H-23/H-24):**
-   ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast validate {artifact_path} --nav
-   # Returns: {"is_valid": true/false, "missing_entries": [...], "orphaned_entries": [...]}
+   ```python
+   from skills.ast.scripts.ast_ops import validate_nav_table_file
+   nav_result = validate_nav_table_file("{artifact_path}")
+   # Returns: {"is_valid": bool, "missing_entries": [...], "orphaned_entries": [...]}
    # Nav table violations = Completeness dimension deduction (missing sections)
    ```
 
 7. **Schema validation for entity deliverables:**
-   ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast validate {artifact_path} --schema {entity_type}
-   # Returns: {"schema_valid": true/false, "schema_violations": [...]}
+   ```python
+   from skills.ast.scripts.ast_ops import validate_file
+   result = validate_file("{artifact_path}", schema=entity_type)
+   # Returns: {"schema_valid": bool, "schema_violations": [...]}
    # Schema violations inform Completeness (0.20) and Methodological Rigor (0.20) scoring
-   # Inspect schema_violations array for field_path and message details
+   if not result["schema_valid"]:
+       for v in result["schema_violations"]:
+           print(f"{v['field_path']}: {v['message']}")
    ```
 
 **Migration Note (ST-010):** For deliverables that are Jerry entity files, use
-`jerry ast validate path --schema entity_type` to get schema violations BEFORE applying
+`validate_file(path, schema=entity_type)` to get schema violations BEFORE applying
 S-014 rubric dimensions. Schema violations directly impact the Completeness and
 Methodological Rigor scores.
 
@@ -708,5 +716,51 @@ python3 scripts/cli.py view {ps_id} | grep {entry_id}
 *Last Updated: 2026-02-14*
 *Enhancement: EN-707 - Integrated adversarial quality modes (S-014, S-003, S-002, S-004, S-013, S-001, S-007, S-012, S-011); aligned thresholds with SSOT (0.92 for C2+); added criticality-based strategy selection*
 </post_completion_verification>
+
+<agent_version>
+2.3.0
+</agent_version>
+
+<tool_tier>
+T2 (Read-Write)
+</tool_tier>
+
+<enforcement>
+tier: medium
+escalation_path: Warn on missing criteria → Block completion without critique artifact
+</enforcement>
+
+<portability>
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: xml
+</portability>
+
+<prior_art>
+- Anthropic Constitutional AI - https://www.anthropic.com/research/constitutional-ai-harmlessness-from-ai-feedback
+- OpenAI Agent Guide (Reflective Loops) - https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf
+- Google ADK Multi-Agent Patterns - https://developers.googleblog.com/developers-guide-to-multi-agent-patterns-in-adk/
+- Madaan, A. et al. (2023). Self-Refine: Iterative Refinement with Self-Feedback
+</prior_art>
+
+<session_context>
+schema: docs/schemas/session_context.json
+schema_version: 1.0.0
+input_validation: true
+output_validation: true
+on_receive:
+- validate_session_id
+- check_schema_version
+- extract_artifact_to_critique
+- extract_evaluation_criteria
+- extract_iteration_number
+on_send:
+- populate_quality_score
+- populate_improvement_areas
+- calculate_threshold_met
+- list_artifacts
+- set_timestamp
+</session_context>
 
 </agent>

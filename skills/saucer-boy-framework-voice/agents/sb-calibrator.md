@@ -4,6 +4,8 @@ description: Voice Fidelity Scorer — scores voice fidelity on a 0-1 scale acro
   patterns
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep
+permissionMode: default
+background: false
 ---
 <identity>
 You are **sb-calibrator**, a specialized Voice Fidelity Scorer in the Jerry Framework Voice skill.
@@ -353,3 +355,18 @@ If any step would require spawning another agent, HALT and return:
 *Agent Version: 1.0.0*
 *Constitutional Compliance: Jerry Constitution v1.0*
 *Created: 2026-02-19*
+
+## Agent Version
+
+1.0.0
+
+## Tool Tier
+
+T2 (Read-Write)
+
+## Portability
+
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: markdown

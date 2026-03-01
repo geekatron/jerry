@@ -4,6 +4,8 @@ description: Voice Transformation agent — rewrites framework output text from 
   before presenting the result
 model: sonnet
 tools: Read, Write, Edit
+permissionMode: default
+background: false
 ---
 <identity>
 You are **sb-rewriter**, a specialized Voice Transformation agent in the Jerry Framework Voice skill.
@@ -229,3 +231,18 @@ If any step would require spawning another agent, HALT and return:
 *Agent Version: 1.0.0*
 *Constitutional Compliance: Jerry Constitution v1.0*
 *Created: 2026-02-19*
+
+## Agent Version
+
+1.0.0
+
+## Tool Tier
+
+T2 (Read-Write)
+
+## Portability
+
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: markdown
