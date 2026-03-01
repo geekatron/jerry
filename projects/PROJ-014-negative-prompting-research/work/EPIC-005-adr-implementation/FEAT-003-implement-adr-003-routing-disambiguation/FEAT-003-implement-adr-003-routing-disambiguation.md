@@ -1,7 +1,7 @@
 # FEAT-003: Implement ADR-003: Routing Disambiguation Standard
 
 > **Type:** feature
-> **Status:** pending
+> **Status:** in_progress
 > **Priority:** medium
 > **Impact:** medium
 > **Created:** 2026-02-28
@@ -38,18 +38,18 @@ Implement ADR-003 (Routing Disambiguation Standard) in two components. Component
 
 ### Definition of Done
 
-- [ ] Component A: All 13 skills have routing disambiguation sections
-- [ ] Component A: Each section includes conditions, alternatives, and consequences
-- [ ] Component A: Sections grounded in trigger map collision analysis
+- [x] Component A: All 13 skills have routing disambiguation sections
+- [x] Component A: Each section includes conditions, alternatives, and consequences
+- [x] Component A: Sections grounded in trigger map collision analysis
 - [ ] Component B: Framing vocabulary standardized (conditional on TASK-025 results)
 
 ### Functional Criteria
 
 | # | Criterion | Verified |
 |---|-----------|----------|
-| AC-1 | 7 new routing disambiguation sections added (skills currently without) | [ ] |
-| AC-2 | 6 existing sections updated with consequence documentation | [ ] |
-| AC-3 | All sections follow the ADR-003 template format | [ ] |
+| AC-1 | 7 new routing disambiguation sections added (skills currently without) | [x] |
+| AC-2 | 6 existing sections updated with consequence documentation | [x] |
+| AC-3 | All sections follow the ADR-003 template format | [x] |
 
 ---
 
@@ -59,7 +59,7 @@ Implement ADR-003 (Routing Disambiguation Standard) in two components. Component
 
 | ID | Title | Status | Priority |
 |----|-------|--------|----------|
-| TASK-036 | Component A: Add routing disambiguation sections to all 13 skills | pending | high |
+| TASK-036 | Component A: Add routing disambiguation sections to all 13 skills | completed | high |
 | TASK-037 | Component B: Framing vocabulary standardization (blocked by A/B testing) | pending | low |
 
 ### Task Links
@@ -74,8 +74,8 @@ Implement ADR-003 (Routing Disambiguation Standard) in two components. Component
 | Metric | Value |
 |--------|-------|
 | **Total Tasks** | 2 |
-| **Completed Tasks** | 0 |
-| **Completion %** | 0% |
+| **Completed Tasks** | 1 |
+| **Completion %** | 50% |
 
 ---
 
@@ -96,3 +96,4 @@ Implement ADR-003 (Routing Disambiguation Standard) in two components. Component
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-28 | Claude | pending | Feature created |
+| 2026-02-28 | Claude | in_progress | TASK-036 (Component A) completed. TASK-037 blocked by A/B testing. |

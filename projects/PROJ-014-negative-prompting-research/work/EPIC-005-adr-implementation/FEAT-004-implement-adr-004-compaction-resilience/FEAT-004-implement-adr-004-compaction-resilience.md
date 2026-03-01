@@ -1,7 +1,7 @@
 # FEAT-004: Implement ADR-004: Compaction Resilience
 
 > **Type:** feature
-> **Status:** pending
+> **Status:** completed
 > **Priority:** medium
 > **Impact:** medium
 > **Created:** 2026-02-28
@@ -38,17 +38,17 @@ Implement ADR-004 (Compaction Resilience) across three independent decisions. De
 
 ### Definition of Done
 
-- [ ] Decision 1: PG-004 compaction testing requirement documented and enforced
-- [ ] Decision 2: L2-REINJECT markers added for H-04 and H-32 within token budget
-- [ ] Decision 3: T-004 failure mode documentation added to constraint-bearing templates
+- [x] Decision 1: PG-004 compaction testing requirement documented and enforced
+- [x] Decision 2: L2-REINJECT markers added for H-04 and H-32 within token budget
+- [x] Decision 3: T-004 failure mode documentation added to constraint-bearing templates
 
 ### Functional Criteria
 
 | # | Criterion | Verified |
 |---|-----------|----------|
-| AC-1 | PG-004 testing requirement integrated into quality-enforcement.md or testing-standards.md | [ ] |
-| AC-2 | H-04 and H-32 L2-REINJECT markers added within 850-token budget | [ ] |
-| AC-3 | Constraint-bearing templates include compaction failure mode section | [ ] |
+| AC-1 | PG-004 testing requirement integrated into testing-standards.md | [x] |
+| AC-2 | H-04 and H-32 L2-REINJECT markers added within 850-token budget (~619/850 = 72.8%) | [x] |
+| AC-3 | Constraint-bearing templates include compaction failure mode section (9 templates) | [x] |
 
 ---
 
@@ -58,9 +58,9 @@ Implement ADR-004 (Compaction Resilience) across three independent decisions. De
 
 | ID | Title | Status | Priority |
 |----|-------|--------|----------|
-| TASK-038 | Decision 1: PG-004 Compaction testing requirement | pending | high |
-| TASK-039 | Decision 2: Add L2-REINJECT markers for H-04 and H-32 | pending | high |
-| TASK-040 | Decision 3: T-004 Failure mode documentation in templates | pending | medium |
+| TASK-038 | Decision 1: PG-004 Compaction testing requirement | completed | high |
+| TASK-039 | Decision 2: Add L2-REINJECT markers for H-04 and H-32 | completed | high |
+| TASK-040 | Decision 3: T-004 Failure mode documentation in templates | completed | medium |
 
 ### Task Links
 
@@ -75,8 +75,8 @@ Implement ADR-004 (Compaction Resilience) across three independent decisions. De
 | Metric | Value |
 |--------|-------|
 | **Total Tasks** | 3 |
-| **Completed Tasks** | 0 |
-| **Completion %** | 0% |
+| **Completed Tasks** | 3 |
+| **Completion %** | 100% |
 
 ---
 
@@ -97,3 +97,4 @@ Implement ADR-004 (Compaction Resilience) across three independent decisions. De
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-02-28 | Claude | pending | Feature created |
+| 2026-02-28 | Claude | completed | All 3 decisions implemented. Commit: f5f892b2 |

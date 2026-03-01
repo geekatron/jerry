@@ -1,7 +1,7 @@
 # TASK-039: Decision 2 — Add L2-REINJECT Markers for H-04 and H-32
 
 > **Type:** task
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Created:** 2026-02-28
 > **Parent:** FEAT-004
@@ -37,11 +37,11 @@ Before implementation, resolve the 559 vs. 670 token discrepancy (documented in 
 
 ### Acceptance Criteria
 
-- [ ] Exact token count of current L2-REINJECT markers performed
-- [ ] H-04 L2-REINJECT marker added to project-workflow.md or CLAUDE.md
-- [ ] H-32 L2-REINJECT marker added to project-workflow.md
-- [ ] Total L2 token consumption verified within 850-token budget
-- [ ] quality-enforcement.md Two-Tier Enforcement Model updated (H-04/H-32 moved to Tier A)
+- [x] Exact token count of current L2-REINJECT markers performed
+- [x] H-04 L2-REINJECT marker added to project-workflow.md (rank=8)
+- [x] H-32 L2-REINJECT marker added to project-workflow.md (rank=9)
+- [x] Total L2 token consumption verified within 850-token budget (~619/850 = 72.8%)
+- [x] quality-enforcement.md Two-Tier Enforcement Model updated (H-04/H-32 moved to Tier A, 22 Tier A / 3 Tier B)
 
 ### Related Items
 
@@ -62,7 +62,7 @@ Before implementation, resolve the 559 vs. 670 token discrepancy (documented in 
 
 ### Verification
 
-- [ ] Acceptance criteria verified
+- [x] Acceptance criteria verified
 
 ---
 
@@ -71,3 +71,4 @@ Before implementation, resolve the 559 vs. 670 token discrepancy (documented in 
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-28 | Created | Initial creation |
+| 2026-02-28 | Completed | L2-REINJECT markers added; Tier A/B updated. Commit: f5f892b2 |

@@ -22,7 +22,7 @@
 | Criticality | C4 (Critical) |
 | Quality Threshold | >= 0.95 |
 | Orchestration | `neg-prompting-20260227-001` |
-| Progress | Phases 1-6 COMPLETE. FEAT-001 (ADR-001) DONE. FEAT-002 Phase 5A DONE (TASK-035 blocked). ADR-003/004 + validation pending (EPIC-005, EPIC-006) |
+| Progress | Phases 1-6 COMPLETE. FEAT-001 (ADR-001) DONE. FEAT-002 Phase 5A DONE (TASK-035 blocked). FEAT-003 Component A DONE (TASK-037 blocked). FEAT-004 DONE. Remaining: blocked tasks (TASK-025 A/B testing) + EPIC-006. |
 
 ## Work Items
 
@@ -67,13 +67,13 @@
 | TASK-033 | Task | Phase 5A: Update guardrails template to NPT-009 format | DONE (cf1342a2) | FEAT-002 |
 | TASK-034 | Task | Phase 5A: Add forbidden_action_format field to governance schema | DONE (cf1342a2) | FEAT-002 |
 | TASK-035 | Task | Phase 5B: Full adoption or contingency (blocked by TASK-025 A/B testing) | PENDING | FEAT-002 |
-| FEAT-003 | Feature | Implement ADR-003: Routing Disambiguation Standard | PENDING | EPIC-005 |
-| TASK-036 | Task | Component A: Add routing disambiguation sections to all 13 skills | PENDING | FEAT-003 |
+| FEAT-003 | Feature | Implement ADR-003: Routing Disambiguation Standard | IN PROGRESS (50%) | EPIC-005 |
+| TASK-036 | Task | Component A: Add routing disambiguation sections to all 13 skills | DONE (f5f892b2) | FEAT-003 |
 | TASK-037 | Task | Component B: Framing vocabulary standardization (blocked by TASK-025) | PENDING | FEAT-003 |
-| FEAT-004 | Feature | Implement ADR-004: Compaction Resilience | PENDING | EPIC-005 |
-| TASK-038 | Task | Decision 1: PG-004 Compaction testing requirement | PENDING | FEAT-004 |
-| TASK-039 | Task | Decision 2: Add L2-REINJECT markers for H-04 and H-32 | PENDING | FEAT-004 |
-| TASK-040 | Task | Decision 3: T-004 Failure mode documentation in templates | PENDING | FEAT-004 |
+| FEAT-004 | Feature | Implement ADR-004: Compaction Resilience | DONE | EPIC-005 |
+| TASK-038 | Task | Decision 1: PG-004 Compaction testing requirement | DONE (f5f892b2) | FEAT-004 |
+| TASK-039 | Task | Decision 2: Add L2-REINJECT markers for H-04 and H-32 | DONE (f5f892b2) | FEAT-004 |
+| TASK-040 | Task | Decision 3: T-004 Failure mode documentation in templates | DONE (f5f892b2) | FEAT-004 |
 | EPIC-006 | Epic | Validation & Publication | PENDING | — |
 | TASK-025 | Task | A/B Testing: Positive vs Negative vs Negative with Consequence | PENDING | EPIC-006 |
 | TASK-026 | Task | Write Jerry MD Docs Site Article | PENDING | EPIC-006 |

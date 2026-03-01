@@ -1,7 +1,7 @@
 # TASK-040: Decision 3 — T-004 Failure Mode Documentation in Templates
 
 > **Type:** task
-> **Status:** pending
+> **Status:** completed
 > **Priority:** medium
 > **Created:** 2026-02-28
 > **Parent:** FEAT-004
@@ -35,10 +35,10 @@ ADR-004 Decision 3 (unconditional). Addresses WT-GAP-005 from TASK-014. No entit
 
 ### Acceptance Criteria
 
-- [ ] All constraint-bearing templates identified
-- [ ] Failure mode documentation section added to each template
-- [ ] Each section answers the 4 required questions
-- [ ] Template format standardized across all affected templates
+- [x] All constraint-bearing templates identified (9 templates: EPIC, FEATURE, STORY, TASK, BUG, ENABLER, SPIKE, DISCOVERY, DECISION)
+- [x] Failure mode documentation section added to each template
+- [x] Each section answers the 4 required questions (constraint, failure mode, compensating control, detection)
+- [x] Template format standardized across all affected templates
 
 ### Related Items
 
@@ -58,7 +58,7 @@ ADR-004 Decision 3 (unconditional). Addresses WT-GAP-005 from TASK-014. No entit
 
 ### Verification
 
-- [ ] Acceptance criteria verified
+- [x] Acceptance criteria verified
 
 ---
 
@@ -67,3 +67,4 @@ ADR-004 Decision 3 (unconditional). Addresses WT-GAP-005 from TASK-014. No entit
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-28 | Created | Initial creation |
+| 2026-02-28 | Completed | T-004 sections added to 9 templates. Commit: f5f892b2 |

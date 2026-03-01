@@ -42,8 +42,8 @@ Implement all 4 ADRs produced by PROJ-014 Phase 5. ADR-001 (NPT-014 Elimination)
 |----|-------|--------|----------|----------|
 | FEAT-001 | Implement ADR-001: NPT-014 Elimination | completed | high | 100% |
 | FEAT-002 | Implement ADR-002: Constitutional Triplet Upgrades | in_progress | medium | 67% |
-| FEAT-003 | Implement ADR-003: Routing Disambiguation | pending | medium | 0% |
-| FEAT-004 | Implement ADR-004: Compaction Resilience | pending | medium | 0% |
+| FEAT-003 | Implement ADR-003: Routing Disambiguation | in_progress | medium | 50% |
+| FEAT-004 | Implement ADR-004: Compaction Resilience | completed | medium | 100% |
 
 ### Feature Links
 
@@ -59,8 +59,8 @@ Implement all 4 ADRs produced by PROJ-014 Phase 5. ADR-001 (NPT-014 Elimination)
 | Metric | Value |
 |--------|-------|
 | **Total Features** | 4 |
-| **Completed Features** | 1 |
-| **Feature Completion %** | 25% |
+| **Completed Features** | 2 |
+| **Feature Completion %** | 50% |
 
 ---
 
@@ -89,3 +89,4 @@ Implement all 4 ADRs produced by PROJ-014 Phase 5. ADR-001 (NPT-014 Elimination)
 | 2026-02-28 | Claude | in_progress | FEAT-001 execution started |
 | 2026-02-28 | Claude | completed | FEAT-001 core implementation delivered |
 | 2026-02-28 | Claude | in_progress | Reopened — FEAT-002/003/004 added for ADR-002/003/004; FEAT-001 post-implementation tasks added |
+| 2026-02-28 | Claude | in_progress | FEAT-003 Component A done (TASK-036). FEAT-004 completed (TASK-038/039/040). 2/4 features done. |

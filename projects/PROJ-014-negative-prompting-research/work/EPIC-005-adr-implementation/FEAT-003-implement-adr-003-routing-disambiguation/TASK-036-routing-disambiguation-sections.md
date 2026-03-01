@@ -1,7 +1,7 @@
 # TASK-036: Component A — Add Routing Disambiguation Sections to All 13 Skills
 
 > **Type:** task
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Created:** 2026-02-28
 > **Parent:** FEAT-003
@@ -38,11 +38,11 @@ Group 2 (6 skills needing consequence additions): problem-solving, nasa-se, orch
 
 ### Acceptance Criteria
 
-- [ ] 7 new routing disambiguation sections added (Group 1 skills)
-- [ ] 6 existing sections updated with consequence documentation (Group 2 skills)
-- [ ] Each section includes: conditions, correct alternatives, consequences of misrouting
-- [ ] Sections grounded in trigger map collision analysis (mandatory-skill-usage.md)
-- [ ] All sections follow the ADR-003 template format
+- [x] 7 new routing disambiguation sections added (Group 1 skills)
+- [x] 6 existing sections updated with consequence documentation (Group 2 skills)
+- [x] Each section includes: conditions, correct alternatives, consequences of misrouting
+- [x] Sections grounded in trigger map collision analysis (mandatory-skill-usage.md)
+- [x] All sections follow the ADR-003 template format
 
 ### Related Items
 
@@ -62,7 +62,7 @@ Group 2 (6 skills needing consequence additions): problem-solving, nasa-se, orch
 
 ### Verification
 
-- [ ] Acceptance criteria verified
+- [x] Acceptance criteria verified
 
 ---
 
@@ -71,3 +71,4 @@ Group 2 (6 skills needing consequence additions): problem-solving, nasa-se, orch
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-28 | Created | Initial creation |
+| 2026-02-28 | Completed | All 13 skills updated. Commit: f5f892b2 |

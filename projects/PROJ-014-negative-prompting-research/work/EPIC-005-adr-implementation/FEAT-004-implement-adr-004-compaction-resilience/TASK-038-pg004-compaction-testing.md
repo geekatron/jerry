@@ -1,7 +1,7 @@
 # TASK-038: Decision 1 — PG-004 Compaction Testing Requirement
 
 > **Type:** task
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Created:** 2026-02-28
 > **Parent:** FEAT-004
@@ -35,10 +35,10 @@ ADR-004 Decision 1 (unconditional). Establish the PG-004 mandatory testing requi
 
 ### Acceptance Criteria
 
-- [ ] PG-004 compaction testing requirement documented in quality-enforcement.md or testing-standards.md
-- [ ] Scope defined: which artifact types require compaction testing
-- [ ] Test structure documented (load, simulate compaction, verify presence)
-- [ ] Requirement integrated into C3+ quality gate checklist
+- [x] PG-004 compaction testing requirement documented in testing-standards.md
+- [x] Scope defined: which artifact types require compaction testing
+- [x] Test structure documented (load, simulate compaction, verify presence)
+- [x] Requirement integrated into C3+ quality gate checklist
 
 ### Related Items
 
@@ -57,7 +57,7 @@ ADR-004 Decision 1 (unconditional). Establish the PG-004 mandatory testing requi
 
 ### Verification
 
-- [ ] Acceptance criteria verified
+- [x] Acceptance criteria verified
 
 ---
 
@@ -66,3 +66,4 @@ ADR-004 Decision 1 (unconditional). Establish the PG-004 mandatory testing requi
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-02-28 | Created | Initial creation |
+| 2026-02-28 | Completed | PG-004 section added to testing-standards.md. Commit: f5f892b2 |
