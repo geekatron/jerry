@@ -16,13 +16,13 @@
 | Metric | Value |
 |--------|-------|
 | Project | PROJ-014-negative-prompting-research |
-| Status | DONE |
+| Status | IN PROGRESS |
 | Created | 2026-02-27 |
 | GitHub Issue | [#122](https://github.com/geekatron/jerry/issues/122) |
 | Criticality | C4 (Critical) |
 | Quality Threshold | >= 0.95 |
 | Orchestration | `neg-prompting-20260227-001` |
-| Progress | 100% (All 6 phases COMPLETE — Phases 1-5 + Phase 6 Final Synthesis + C4 Tournament PASSED) |
+| Progress | Phases 1-6 COMPLETE, ADR-001 COMPLETE — Validation & Publication pending (EPIC-006) |
 
 ## Work Items
 
@@ -60,6 +60,12 @@
 | TASK-022 | Task | Phase 2: Rule files — upgrade NPT-014 to NPT-009/NPT-013 in .context/rules/ | DONE — 8 instances across 7 files upgraded | FEAT-001 |
 | TASK-023 | Task | Phase 3: Agent definitions — upgrade forbidden_actions in skills/*/agents/ | DONE — 28 agent files upgraded (Phase 3A batch + Phase 3B individual) | FEAT-001 |
 | TASK-024 | Task | Phase 4: SKILL.md files — upgrade "Do NOT use when:" sections | DONE — 4 instances across 2 SKILL.md files upgraded | FEAT-001 |
+| EPIC-006 | Epic | Validation & Publication | PENDING | — |
+| TASK-025 | Task | A/B Testing: Positive vs Negative vs Negative with Consequence | PENDING | EPIC-006 |
+| TASK-026 | Task | Write Jerry MD Docs Site Article | PENDING | EPIC-006 |
+| TASK-027 | Task | Write Medium Article | PENDING | EPIC-006 |
+| TASK-028 | Task | Write Tweet and Cross-Post Medium + Jerry Articles | PENDING | EPIC-006 |
+| TASK-029 | Task | Slack Message Announcement | PENDING | EPIC-006 |
 
 ---
 
