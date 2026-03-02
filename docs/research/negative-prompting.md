@@ -194,7 +194,7 @@ TASK-025 ran a controlled A/B test to validate the taxonomy findings empirically
 
     **Constraint breakdown:** 67% of all violations (6/9) occurred on behavioral timing constraint H-22. Structured negation eliminated this vulnerability entirely.
 
-[:octicons-link-external-16: A/B Test Go-No-Go Determination](https://github.com/geekatron/jerry/blob/feat/proj-014-negative-prompting-research/projects/PROJ-014-negative-prompting-research/orchestration/ab-testing-20260301-001/phase-3-analysis/go-no-go-determination.md)
+[:octicons-link-external-16: A/B Test Go-No-Go Determination](https://github.com/geekatron/jerry/blob/main/projects/PROJ-014-negative-prompting-research/orchestration/ab-testing-20260301-001/phase-3-analysis/go-no-go-determination.md)
 
 ---
 
@@ -246,7 +246,7 @@ The research produced four architecture decision records and five features:
 | FEAT-004 | Compaction resilience: L2 re-injection for H-04 and H-32 |
 | FEAT-005 | New `/prompt-engineering` skill with pe-builder, pe-constraint-gen, and pe-scorer agents |
 
-[:octicons-link-external-16: ADR-001: NPT-014 Elimination](https://github.com/geekatron/jerry/blob/feat/proj-014-negative-prompting-research/projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/phase-5/ADR-001-npt014-elimination.md) | [:octicons-link-external-16: ADR-002: Constitutional Upgrades](https://github.com/geekatron/jerry/blob/feat/proj-014-negative-prompting-research/projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/phase-5/ADR-002-constitutional-upgrades.md) | [:octicons-link-external-16: ADR-003: Routing Disambiguation](https://github.com/geekatron/jerry/blob/feat/proj-014-negative-prompting-research/projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/phase-5/ADR-003-routing-disambiguation.md) | [:octicons-link-external-16: ADR-004: Compaction Resilience](https://github.com/geekatron/jerry/blob/feat/proj-014-negative-prompting-research/projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/phase-5/ADR-004-compaction-resilience.md)
+[:octicons-link-external-16: ADR-001: NPT-014 Elimination](https://github.com/geekatron/jerry/blob/main/projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/phase-5/ADR-001-npt014-elimination.md) | [:octicons-link-external-16: ADR-002: Constitutional Upgrades](https://github.com/geekatron/jerry/blob/main/projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/phase-5/ADR-002-constitutional-upgrades.md) | [:octicons-link-external-16: ADR-003: Routing Disambiguation](https://github.com/geekatron/jerry/blob/main/projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/phase-5/ADR-003-routing-disambiguation.md) | [:octicons-link-external-16: ADR-004: Compaction Resilience](https://github.com/geekatron/jerry/blob/main/projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/phase-5/ADR-004-compaction-resilience.md)
 
 ---
 
@@ -268,7 +268,7 @@ Every quality gate used the S-014 LLM-as-Judge rubric with six weighted dimensio
 
 The pipeline ran via `/orchestration` with barrier-sync gates between phases -- downstream work could not proceed until the upstream phase cleared the quality gate. That sequencing is why the null finding in Phase 2 (the 60% hallucination claim didn't hold up) didn't contaminate the Phase 3 taxonomy. Each phase built on verified output.
 
-[:octicons-link-external-16: Final Synthesis (Phase 6)](https://github.com/geekatron/jerry/blob/feat/proj-014-negative-prompting-research/projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/phase-6/final-synthesis.md) | [:octicons-link-external-16: NPT Pattern Catalog](https://github.com/geekatron/jerry/blob/feat/proj-014-negative-prompting-research/projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/phase-3/taxonomy-pattern-catalog.md) | [:octicons-link-external-16: PROJ-014 Work Tracker](https://github.com/geekatron/jerry/blob/feat/proj-014-negative-prompting-research/projects/PROJ-014-negative-prompting-research/WORKTRACKER.md)
+[:octicons-link-external-16: Final Synthesis (Phase 6)](https://github.com/geekatron/jerry/blob/main/projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/phase-6/final-synthesis.md) | [:octicons-link-external-16: NPT Pattern Catalog](https://github.com/geekatron/jerry/blob/main/projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/phase-3/taxonomy-pattern-catalog.md) | [:octicons-link-external-16: PROJ-014 Work Tracker](https://github.com/geekatron/jerry/blob/main/projects/PROJ-014-negative-prompting-research/WORKTRACKER.md)
 
 ---
 
@@ -282,13 +282,13 @@ The pipeline ran via `/orchestration` with barrier-sync gates between phases -- 
 | Wen et al., "Structured Constraints for Behavioral Compliance in LLMs," *EMNLP 2024* ([ACL Anthology](https://aclanthology.org/venues/emnlp/)) | +7.3-8% compliance with structured vs. blunt negative framing | Confirms structured > blunt across multiple model families |
 | Barreto & Jana, "Negation Reasoning in Instruction-Following Models," *EMNLP 2025 Findings* ([ACL Anthology](https://aclanthology.org/venues/emnlp/)) | +25.14% negation reasoning accuracy for structured negation | Supports negation *comprehension* (not behavioral compliance); important distinction for interpreting the NPT taxonomy |
 
-These three citations anchor the evidence base. The full Phase 1 literature survey covered 75 unique sources across academic venues, industry publications, and vendor documentation -- see the [:octicons-link-external-16: Phase 1 survey output](https://github.com/geekatron/jerry/blob/feat/proj-014-negative-prompting-research/projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/phase-1/) for the complete source inventory.
+These three citations anchor the evidence base. The full Phase 1 literature survey covered 75 unique sources across academic venues, industry publications, and vendor documentation -- see the [:octicons-link-external-16: Phase 1 survey output](https://github.com/geekatron/jerry/blob/main/projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/phase-1/) for the complete source inventory.
 
 ### Related Reading
 
 [:octicons-arrow-right-24: Full Article](../blog/posts/structured-negation-constraint-enforcement.md)
 
-[:octicons-link-external-16: Prompt Engineering SKILL.md](https://github.com/geekatron/jerry/blob/feat/proj-014-negative-prompting-research/skills/prompt-engineering/SKILL.md) | [:octicons-link-external-16: NPT Pattern Reference](https://github.com/geekatron/jerry/blob/feat/proj-014-negative-prompting-research/skills/prompt-engineering/rules/npt-pattern-reference.md)
+[:octicons-link-external-16: Prompt Engineering SKILL.md](https://github.com/geekatron/jerry/blob/main/skills/prompt-engineering/SKILL.md) | [:octicons-link-external-16: NPT Pattern Reference](https://github.com/geekatron/jerry/blob/main/skills/prompt-engineering/rules/npt-pattern-reference.md)
 
 ---
 
