@@ -114,14 +114,14 @@ jobs:
           BUMP_TYPE="none"
 
           # Check for BREAKING CHANGE (MAJOR)
-          if echo "$COMMITS" | grep -qE "^[a-z]+(\([a-z0-9_-]+\))?!:" || \
+          if echo "$COMMITS" | grep -qE "^[a-z]+(\([a-zA-Z0-9_-]+\))?!:" || \
              git log "$RANGE" --pretty=format:"%B" 2>/dev/null | grep -q "^BREAKING CHANGE:"; then
             BUMP_TYPE="major"
           # Check for feat (MINOR)
-          elif echo "$COMMITS" | grep -qE "^feat(\([a-z0-9_-]+\))?:"; then
+          elif echo "$COMMITS" | grep -qE "^feat(\([a-zA-Z0-9_-]+\))?:"; then
             BUMP_TYPE="minor"
           # Check for fix or perf (PATCH)
-          elif echo "$COMMITS" | grep -qE "^(fix|perf)(\([a-z0-9_-]+\))?:"; then
+          elif echo "$COMMITS" | grep -qE "^(fix|perf)(\([a-zA-Z0-9_-]+\))?:"; then
             BUMP_TYPE="patch"
           fi
 
