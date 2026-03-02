@@ -1,0 +1,10 @@
+# =============================================================================
+# .gitattributes protection (RED-116-F006: Self-referential trust problem)
+# Any modification to .gitattributes requires maintainer approval to prevent
+# a PR from altering the rules by which it is reviewed.
+#
+# NOTE: Consider creating a @geekatron/security-reviewers team and replacing
+# @geekatron below for bus-factor resilience (red-team recommendation).
+# =============================================================================
+.gitattributes       @geekatron
+*/.gitattributes     @geekatron

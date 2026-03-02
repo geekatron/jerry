@@ -528,6 +528,240 @@ jobs:
         run: uv run python scripts/check_hard_rule_ceiling.py
 
   # ===========================================================================
+  # Line-Ending Check & .gitattributes Security Validation (PROJ-011)
+  # ===========================================================================
+  # Validates cross-platform line ending consistency and enforces security
+  # constraints on .gitattributes to prevent supply chain attacks.
+  #
+  # Addresses: RED-116-F003, RED-116-F006, RED-116-F007, RED-116-F008,
+  #            RED-116-F009, RED-116-F010
+  # ===========================================================================
+  line-ending-check:
+    name: Line-Ending Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      # -----------------------------------------------------------------------
+      # Step 1: Detect .gitattributes modifications in PRs (RED-116-F006)
+      # -----------------------------------------------------------------------
+      - name: Detect .gitattributes modifications
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "Checking for .gitattributes modifications in this PR..."
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+
+          CHANGED_GITATTR=$(git diff --name-only "$BASE_SHA".."$HEAD_SHA" -- '*.gitattributes' '.gitattributes' '*/.gitattributes' || true)
+
+          if [ -n "$CHANGED_GITATTR" ]; then
+            echo "::warning title=.gitattributes Modified::The following .gitattributes files were modified in this PR. This requires security-aware maintainer review (RED-116-F006):%0A${CHANGED_GITATTR//$'\n'/%0A}"
+            echo "GITATTR_MODIFIED=true" >> "$GITHUB_ENV"
+            echo "---"
+            echo "Modified .gitattributes files:"
+            echo "$CHANGED_GITATTR"
+            echo "---"
+          else
+            echo "No .gitattributes modifications detected."
+            echo "GITATTR_MODIFIED=false" >> "$GITHUB_ENV"
+          fi
+
+      # -----------------------------------------------------------------------
+      # Step 2: Block subdirectory .gitattributes creation (RED-116-F007)
+      # -----------------------------------------------------------------------
+      - name: Block subdirectory .gitattributes
+        run: |
+          echo "Checking for subdirectory .gitattributes files (RED-116-F007)..."
+
+          # Find all .gitattributes files that are NOT in the repository root
+          SUBDIR_GITATTR=$(find . -name '.gitattributes' -not -path './.gitattributes' -not -path './.git/*' 2>/dev/null || true)
+
+          if [ -n "$SUBDIR_GITATTR" ]; then
+            echo "::error title=Subdirectory .gitattributes Detected::Subdirectory .gitattributes files are prohibited (RED-116-F007). Found:%0A${SUBDIR_GITATTR//$'\n'/%0A}"
+            echo "FAILED: Subdirectory .gitattributes files detected:"
+            echo "$SUBDIR_GITATTR"
+            exit 1
+          fi
+          echo "No subdirectory .gitattributes files found. OK."
+
+      # -----------------------------------------------------------------------
+      # Step 3: Validate .gitattributes rules (RED-116-F003, F008, F010)
+      # -----------------------------------------------------------------------
+      - name: Validate .gitattributes rules
+        run: |
+          echo "Validating .gitattributes rule security constraints..."
+          FAILED=0
+
+          if [ ! -f .gitattributes ]; then
+            echo "::error title=Missing .gitattributes::.gitattributes file not found in repository root."
+            exit 1
+          fi
+
+          # --- RED-116-F003: Reject binary/-diff/-text on source extensions ---
+          echo ""
+          echo "=== RED-116-F003: Checking for binary/-diff/-text on source extensions ==="
+
+          # Define source extensions that MUST NOT be marked binary, -diff, or -text
+          SOURCE_PATTERNS=(
+            '\.py'  '\.ts'  '\.sh'  '\.yaml' '\.yml'
+            '\.json' '\.toml' '\.ini' '\.cfg'  '\.md'
+            '\.txt' '\.rst'  '\.html' '\.css'  '\.xml'
+            '\.feature' '\.mmd' '\.vtt' '\.srt' '\.svg'
+          )
+
+          for pat in "${SOURCE_PATTERNS[@]}"; do
+            # Check for 'binary' attribute on source extensions
+            if grep -qE "^\*\\${pat}\s+.*\bbinary\b" .gitattributes 2>/dev/null; then
+              echo "::error title=Binary on Source Extension::Found 'binary' attribute on *${pat} (RED-116-F003)"
+              FAILED=1
+            fi
+
+            # Check for '-diff' on source extensions (*.lock is allowlisted separately)
+            if grep -qE "^\*\\${pat}\s+.*-diff" .gitattributes 2>/dev/null; then
+              echo "::error title=-diff on Source Extension::Found '-diff' attribute on *${pat} (RED-116-F003)"
+              FAILED=1
+            fi
+
+            # Check for '-text' on source extensions
+            if grep -qE "^\*\\${pat}\s+.*-text" .gitattributes 2>/dev/null; then
+              echo "::error title=-text on Source Extension::Found '-text' attribute on *${pat} (RED-116-F003)"
+              FAILED=1
+            fi
+          done
+
+          if [ "$FAILED" -eq 0 ]; then
+            echo "No binary/-diff/-text on source extensions. OK."
+          fi
+
+          # --- RED-116-F010: Reject filter attributes except lfs ---
+          echo ""
+          echo "=== RED-116-F010: Checking for unauthorized filter attributes ==="
+
+          # Find any 'filter=' that is NOT 'filter=lfs'
+          UNAUTHORIZED_FILTERS=$(grep -nE '\bfilter=' .gitattributes | grep -vE '\bfilter=lfs\b' | grep -v '^\s*#' || true)
+
+          if [ -n "$UNAUTHORIZED_FILTERS" ]; then
+            echo "::error title=Unauthorized Filter Attribute::Found filter attributes other than 'lfs' (RED-116-F010):%0A${UNAUTHORIZED_FILTERS//$'\n'/%0A}"
+            echo "FAILED: Unauthorized filter attributes:"
+            echo "$UNAUTHORIZED_FILTERS"
+            FAILED=1
+          else
+            echo "No unauthorized filter attributes. OK."
+          fi
+
+          # --- RED-116-F008: Reject whitespace negation rules ---
+          echo ""
+          echo "=== RED-116-F008: Checking for whitespace negation rules ==="
+
+          WHITESPACE_NEGATION=$(grep -nE '\bwhitespace\s*=\s*-' .gitattributes | grep -v '^\s*#' || true)
+
+          if [ -n "$WHITESPACE_NEGATION" ]; then
+            echo "::error title=Whitespace Negation Rule::Found whitespace negation rules (RED-116-F008):%0A${WHITESPACE_NEGATION//$'\n'/%0A}"
+            echo "FAILED: Whitespace negation rules detected:"
+            echo "$WHITESPACE_NEGATION"
+            FAILED=1
+          else
+            echo "No whitespace negation rules. OK."
+          fi
+
+          # --- Additional: Reject eol=crlf on shell scripts (RED-116-F001) ---
+          echo ""
+          echo "=== RED-116-F001: Checking for eol=crlf on shell scripts ==="
+
+          if grep -qE '^\*\.sh\s+.*eol=crlf' .gitattributes 2>/dev/null; then
+            echo "::error title=CRLF on Shell Scripts::Found eol=crlf on *.sh files (RED-116-F001)"
+            FAILED=1
+          else
+            echo "No eol=crlf on shell scripts. OK."
+          fi
+
+          # --- Final verdict ---
+          echo ""
+          if [ "$FAILED" -ne 0 ]; then
+            echo "================================================"
+            echo "FAILED: .gitattributes rule validation failed."
+            echo "================================================"
+            exit 1
+          fi
+          echo "All .gitattributes rule validations passed."
+
+      # -----------------------------------------------------------------------
+      # Step 4: Check for CRLF line endings using base-branch rules
+      #         (RED-116-F009)
+      # -----------------------------------------------------------------------
+      - name: Check for CRLF line endings
+        run: |
+          echo "Checking for CRLF line endings in text files..."
+
+          # RED-116-F009: For PRs, use base-branch .gitattributes for validation
+          # to prevent a PR from disabling its own validation.
+          # Uses commit SHA (not branch name) for determinism per rt-004 Section 2.5.
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "PR detected: using base-branch .gitattributes for validation (RED-116-F009)"
+
+            if [ -f .gitattributes ]; then
+              cp .gitattributes /tmp/pr-gitattributes
+            fi
+
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+            git show "${BASE_SHA}:.gitattributes" > /tmp/base-gitattributes 2>/dev/null || true
+
+            if [ -f /tmp/base-gitattributes ] && [ -s /tmp/base-gitattributes ]; then
+              cp /tmp/base-gitattributes .gitattributes
+              echo "Using base-branch (SHA: ${BASE_SHA:0:8}) .gitattributes for CRLF validation."
+            else
+              echo "No .gitattributes on base branch. Using PR's .gitattributes (or none)."
+              if [ -f /tmp/pr-gitattributes ]; then
+                cp /tmp/pr-gitattributes .gitattributes
+              fi
+            fi
+          fi
+
+          # Check all known text extensions for CRLF bytes
+          CRLF_FILES=$(git grep -rlI $'\r' -- \
+            '*.py' '*.md' '*.yaml' '*.yml' '*.json' '*.toml' '*.ini' '*.cfg' \
+            '*.txt' '*.rst' '*.sh' '*.html' '*.css' '*.ts' '*.xml' '*.svg' \
+            '*.feature' '*.mmd' '*.vtt' '*.srt' \
+            'Makefile' 'LICENSE' 'NOTICE' 'CNAME' \
+            '.gitignore' '.gitkeep' '.gitattributes' \
+            || true)
+
+          if [ -n "$CRLF_FILES" ]; then
+            FILE_COUNT=$(echo "$CRLF_FILES" | wc -l | tr -d ' ')
+            echo "::error title=CRLF Line Endings Detected::Found CRLF line endings in ${FILE_COUNT} file(s):%0A${CRLF_FILES//$'\n'/%0A}"
+            echo ""
+            echo "================================================"
+            echo "FAILED: CRLF line endings found in ${FILE_COUNT} file(s):"
+            echo "================================================"
+            echo "$CRLF_FILES"
+            echo ""
+            echo "Fix: Run 'git add --renormalize .' after ensuring .gitattributes is configured."
+            exit 1
+          fi
+
+          echo "No CRLF line endings found. OK."
+
+          # Restore PR's .gitattributes if we overrode it
+          if [ -f /tmp/pr-gitattributes ]; then
+            cp /tmp/pr-gitattributes .gitattributes
+            echo "Restored PR's .gitattributes after validation."
+          fi
+
+      # -----------------------------------------------------------------------
+      # Step 5: Validate .gitattributes file exists
+      # -----------------------------------------------------------------------
+      - name: Validate .gitattributes exists
+        run: |
+          if [ ! -f .gitattributes ]; then
+            echo "::error title=Missing .gitattributes::.gitattributes file not found in repository root. Required for cross-platform consistency (PROJ-011)."
+            exit 1
+          fi
+          echo ".gitattributes found. OK."
+
+  # ===========================================================================
   # Final Status Check
   # ===========================================================================
   # Both pip and uv test jobs must pass for CI to succeed
@@ -535,7 +769,7 @@ jobs:
   ci-success:
     name: CI Success
     runs-on: ubuntu-latest
-    needs: [lint, type-check, security, plugin-validation, template-validation, license-headers, cli-integration, test-pip, test-uv, version-sync, hard-rule-ceiling]
+    needs: [lint, type-check, security, plugin-validation, template-validation, license-headers, cli-integration, test-pip, test-uv, version-sync, hard-rule-ceiling, line-ending-check]
     if: always()
     steps:
       - name: Check all jobs passed
@@ -550,7 +784,8 @@ jobs:
              [[ "${{ needs.test-pip.result }}" != "success" ]] || \
              [[ "${{ needs.test-uv.result }}" != "success" ]] || \
              [[ "${{ needs.version-sync.result }}" != "success" ]] || \
-             [[ "${{ needs.hard-rule-ceiling.result }}" != "success" ]]; then
+             [[ "${{ needs.hard-rule-ceiling.result }}" != "success" ]] || \
+             [[ "${{ needs.line-ending-check.result }}" != "success" ]]; then
             echo "One or more jobs failed"
             echo "  lint: ${{ needs.lint.result }}"
             echo "  type-check: ${{ needs.type-check.result }}"
@@ -563,6 +798,7 @@ jobs:
             echo "  test-uv: ${{ needs.test-uv.result }}"
             echo "  version-sync: ${{ needs.version-sync.result }}"
             echo "  hard-rule-ceiling: ${{ needs.hard-rule-ceiling.result }}"
+            echo "  line-ending-check: ${{ needs.line-ending-check.result }}"
             exit 1
           fi
           echo "All CI checks passed!"
@@ -577,3 +813,4 @@ jobs:
           echo "  - Tests (uv): OK"
           echo "  - Version sync: OK"
           echo "  - HARD rule ceiling: OK"
+          echo "  - Line-ending check: OK"
