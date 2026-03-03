@@ -1,0 +1,52 @@
+# Canonical skill source for nasa-se
+# Validated against: docs/schemas/skill-canonical-v1.schema.json
+# Source: PROJ-012 skill composition pipeline
+name: nasa-se
+version: "1.2.0"
+agents:
+  - nse-architecture
+  - nse-configuration
+  - nse-explorer
+  - nse-integration
+  - nse-qa
+  - nse-reporter
+  - nse-requirements
+  - nse-reviewer
+  - nse-risk
+  - nse-verification
+activation-keywords:
+  - "systems engineering"
+  - "NASA SE"
+  - "NPR 7123"
+  - "requirements engineering"
+  - "verification and validation"
+  - "V&V"
+  - "risk management"
+  - "technical review"
+  - "SRR"
+  - "PDR"
+  - "CDR"
+  - "FRR"
+  - "system integration"
+  - "configuration management"
+  - "traceability matrix"
+  - "VCRM"
+  - "interface control"
+  - "ICD"
+  - "risk register"
+  - "5x5 matrix"
+  - "trade study"
+  - "trade-off"
+  - "alternative analysis"
+  - "decision analysis"
+  - "concept exploration"
+  - "explore options"
+  - "what are our options"
+  - "divergent thinking"
+  - "brainstorm"
+  - "quality assurance"
+  - "QA audit"
+  - "artifact validation"
+  - "compliance check"
+  - "NPR compliance"
+  - "work product quality"

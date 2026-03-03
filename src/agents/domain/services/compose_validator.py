@@ -26,57 +26,23 @@ References:
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
 import yaml
 
+from src.agents.domain.value_objects.compose_validation_result import (
+    ComposeValidationResult,
+)
+from src.agents.domain.value_objects.validation_finding import ValidationFinding
+
+# Re-export for backward compatibility — consuming modules may import from here
+__all__ = ["ComposeValidationResult", "ComposeValidator", "ValidationFinding"]
+
 try:
     import jsonschema
 except ImportError:  # pragma: no cover
     jsonschema = None  # type: ignore[assignment]
-
-
-@dataclass
-class ValidationFinding:
-    """A single validation finding from compose output checking.
-
-    Attributes:
-        check_id: Check identifier (CV-001 through CV-007).
-        severity: 'error' or 'warning'.
-        message: Human-readable description.
-        agent_name: Agent that triggered the finding.
-    """
-
-    check_id: str
-    severity: str
-    message: str
-    agent_name: str = ""
-
-
-@dataclass
-class ComposeValidationResult:
-    """Result of validating a single composed agent output.
-
-    Attributes:
-        agent_name: Name of the validated agent.
-        errors: List of error-severity findings.
-        warnings: List of warning-severity findings.
-    """
-
-    agent_name: str = ""
-    errors: list[ValidationFinding] = field(default_factory=list)
-    warnings: list[ValidationFinding] = field(default_factory=list)
-
-    @property
-    def is_valid(self) -> bool:
-        """Check if no errors were found."""
-        return len(self.errors) == 0
-
-    def all_findings(self) -> list[ValidationFinding]:
-        """Return all findings (errors + warnings)."""
-        return self.errors + self.warnings
 
 
 # Regex for code blocks to exclude from pattern matching
@@ -304,13 +270,15 @@ class ComposeValidator:
         if not governance_source:
             return
 
-        body_lower = body.lower()
-
         for field_key, (md_heading, xml_tag) in _GOVERNANCE_HEADINGS.items():
             if field_key in governance_source and governance_source[field_key]:
-                # Check for either markdown heading or XML tag
-                has_md = md_heading.lower() in body_lower
-                has_xml = f"<{xml_tag}>" in body_lower
+                # Check for structural markdown heading (not substring in paragraph)
+                heading_pattern = re.compile(
+                    rf"^##\s+{re.escape(md_heading)}\s*$",
+                    re.MULTILINE | re.IGNORECASE,
+                )
+                has_md = bool(heading_pattern.search(body))
+                has_xml = f"<{xml_tag}>" in body.lower()
                 if not has_md and not has_xml:
                     result.warnings.append(
                         ValidationFinding(
@@ -389,7 +357,7 @@ class ComposeValidator:
             agent_name: Agent name for reporting.
             result: Result to append findings to.
         """
-        leaked = set(frontmatter.keys()) & _GOVERNANCE_FRONTMATTER_FIELDS
+        leaked = {k for k in frontmatter if k.lower() in _GOVERNANCE_FRONTMATTER_FIELDS}
         for leaked_field in sorted(leaked):
             result.errors.append(
                 ValidationFinding(

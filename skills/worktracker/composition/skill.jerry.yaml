@@ -1,0 +1,18 @@
+# Canonical skill source for worktracker
+# Validated against: docs/schemas/skill-canonical-v1.schema.json
+# Source: PROJ-012 skill composition pipeline
+name: worktracker
+version: "1.1.0"
+agents:
+  - wt-auditor
+  - wt-verifier
+  - wt-visualizer
+activation-keywords:
+  - "work tracker"
+  - "worktracker"
+  - "work-tracker"
+  - "update the work tracker"
+  - "update the work-tracker"
+  - "update the worktracker"
+  - "/worktracker"
+  - "/jerry:worktracker"

@@ -20,6 +20,9 @@ compatibility rules for all machine-readable schemas in the Jerry framework.
 | Tool Registry | `TOOL_REGISTRY.yaml` | 1.0.0 |
 | Orchestration Template | `skills/orchestration/templates/ORCHESTRATION.template.yaml` | 2.0.0 |
 | Agent Template | `.claude/agents/TEMPLATE.md` | 1.0.0 |
+| Anthropic Skill Frontmatter | `docs/schemas/anthropic-skill-frontmatter-v1.schema.json` | 1.0.0 |
+| Skill Canonical Source | `docs/schemas/skill-canonical-v1.schema.json` | 1.0.0 |
+| Jerry Skill Frontmatter (DEPRECATED) | `docs/schemas/jerry-skill-frontmatter-v1.schema.json` | 1.0.0 |
 | PS Skill Contract | `skills/problem-solving/contracts/PS_SKILL_CONTRACT.yaml` | 1.0.0 |
 | NSE Skill Contract | `skills/nasa-se/contracts/NSE_SKILL_CONTRACT.yaml` | 1.0.0 |
 | Cross-Skill Handoff | `skills/shared/contracts/CROSS_SKILL_HANDOFF.yaml` | 1.0.0 |
@@ -267,6 +270,9 @@ Schemas should reference this document:
 | 2026-01-12 | PS_SKILL_CONTRACT.yaml | 1.0.0 | Initial release |
 | 2026-01-12 | NSE_SKILL_CONTRACT.yaml | 1.0.0 | Initial release |
 | 2026-01-12 | CROSS_SKILL_HANDOFF.yaml | 1.0.0 | Initial release |
+| 2026-03-02 | anthropic-skill-frontmatter-v1.schema.json | 1.0.0 | Initial release (PROJ-012 skill composition pipeline) |
+| 2026-03-02 | skill-canonical-v1.schema.json | 1.0.0 | Initial release (PROJ-012 skill composition pipeline) |
+| 2026-03-02 | jerry-skill-frontmatter-v1.schema.json | 1.0.0 | DEPRECATED — replaced by two separate schemas |
 
 ---
 

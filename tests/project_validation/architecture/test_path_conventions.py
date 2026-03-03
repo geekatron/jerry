@@ -199,7 +199,7 @@ class TestCategoryConventions:
         ARCHITECTURE: Only valid category directories should exist.
         """
         # Also allow hidden directories and special directories
-        allowed_extras = {"tests", ".jerry", "work"}
+        allowed_extras = {"tests", ".jerry", "work", "plans"}
         all_allowed = valid_categories | allowed_extras
 
         for item in proj_root.iterdir():

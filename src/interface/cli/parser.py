@@ -102,6 +102,9 @@ Examples:
     # AST namespace (ST-004: jerry ast commands)
     _add_ast_namespace(subparsers)
 
+    # Skills namespace (PROJ-012: Skill Composition Pipeline)
+    _add_skills_namespace(subparsers)
+
     # Agents namespace (ADR-PROJ010-003: Canonical agent build pipeline)
     _add_agents_namespace(subparsers)
 
@@ -723,6 +726,67 @@ def _add_ast_namespace(
     metadata_parser.add_argument(
         "file",
         help="Path to markdown file",
+    )
+
+
+def _add_skills_namespace(
+    subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
+) -> None:
+    """Add skills namespace commands.
+
+    Commands:
+        - compose: Compose SKILL.md files with governance sections
+        - validate: Validate composed SKILL.md files
+
+    References:
+        - PROJ-012: Skill Composition Pipeline
+    """
+    skills_parser = subparsers.add_parser(
+        "skills",
+        help="Skill composition pipeline",
+        description="Compose and validate SKILL.md files with governance sections.",
+    )
+
+    skills_subparsers = skills_parser.add_subparsers(
+        title="commands",
+        dest="command",
+        metavar="<command>",
+    )
+
+    # skills compose
+    compose_parser = skills_subparsers.add_parser(
+        "compose",
+        help="Compose SKILL.md files with governance sections",
+        description="Inject governance sections from canonical skill.jerry.yaml into SKILL.md body.",
+    )
+    compose_parser.add_argument(
+        "--skill",
+        default=None,
+        help="Specific skill to compose (default: all)",
+    )
+    compose_parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        default=False,
+        help="Show what would be generated without writing files",
+    )
+
+    # skills validate
+    validate_parser = skills_subparsers.add_parser(
+        "validate",
+        help="Validate composed SKILL.md files",
+        description="Validate all composed SKILL.md files against SCV-001 through SCV-006 checks.",
+    )
+    validate_parser.add_argument(
+        "--skill",
+        default=None,
+        help="Specific skill to validate (default: all)",
+    )
+    validate_parser.add_argument(
+        "--composed",
+        action="store_true",
+        default=False,
+        help="Validate composed SKILL.md files (SCV-001 through SCV-006 checks)",
     )
 
 

@@ -1,18 +1,7 @@
 ---
 name: prompt-engineering
 description: Structured prompt construction and quality validation for Jerry Framework. Invoke when building structured prompts, generating NPT-009/NPT-013 constraints, or scoring prompt quality. Guides users through the 5-element prompt anatomy, generates formatted constraints with XML wrapping, and scores prompts against the 7-criterion rubric.
-version: "1.0.0"
 allowed-tools: Read, Write, Edit, Glob, Grep
-activation-keywords:
-  - "/prompt-engineering"
-  - "build prompt"
-  - "create prompt"
-  - "prompt template"
-  - "NPT pattern"
-  - "constraint generation"
-  - "prompt quality"
-  - "score prompt"
-
 ---
 
 # Prompt Engineering Skill

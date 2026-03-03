@@ -119,6 +119,8 @@ def main() -> int:
         return _handle_context(args)
     elif args.namespace == "ast":
         return _handle_ast(args, json_output)
+    elif args.namespace == "skills":
+        return _handle_skills(args, json_output)
     elif args.namespace == "agents":
         return _handle_agents(args, json_output)
     elif args.namespace == "hooks":
@@ -447,6 +449,107 @@ def _handle_ast(args: Any, json_output: bool) -> int:
         return ast_metadata(args.file)
 
     print(f"Unknown ast command: {args.command}")
+    return 1
+
+
+def _handle_skills(args: Any, json_output: bool) -> int:
+    """Route skills namespace commands.
+
+    Does not require the CLIAdapter; uses its own bootstrap wiring
+    for the agents bounded context.
+
+    Args:
+        args: Parsed arguments with .command.
+        json_output: Whether JSON output was requested.
+
+    Returns:
+        Exit code: 0 (success), 1 (error).
+
+    References:
+        - PROJ-012: Skill Composition Pipeline
+    """
+    if args.command is None:
+        print("No skills command specified. Use 'jerry skills --help'.")
+        return 1
+
+    from src.agents.bootstrap import (
+        create_skills_compose_handler,
+    )
+
+    if args.command == "compose":
+        handler = create_skills_compose_handler()
+        from src.agents.application.commands.compose_skills_command import (
+            ComposeSkillsCommand,
+        )
+
+        command = ComposeSkillsCommand(
+            skill_name=getattr(args, "skill", None),
+            dry_run=getattr(args, "dry_run", False),
+        )
+        result = handler.handle(command)
+
+        if json_output:
+            import json
+
+            output = {
+                "composed": result.composed,
+                "failed": result.failed,
+                "dry_run": result.dry_run,
+                "output_paths": result.output_paths,
+                "errors": result.errors,
+                "warnings": result.warnings,
+            }
+            print(json.dumps(output, indent=2))
+        else:
+            prefix = "[DRY RUN] " if result.dry_run else ""
+            print(f"{prefix}Composed {result.composed} skill(s), {result.failed} failed.")
+            for path in result.output_paths:
+                action = "Would write" if result.dry_run else "Wrote"
+                print(f"  {action}: {path}")
+            for warning in result.warnings:
+                print(f"  WARNING: {warning}")
+            for error in result.errors:
+                print(f"  ERROR: {error}")
+
+        return 1 if result.failed > 0 else 0
+
+    elif args.command == "validate":
+        handler = create_skills_compose_handler()
+        from src.agents.application.commands.compose_skills_command import (
+            ComposeSkillsCommand,
+        )
+
+        command = ComposeSkillsCommand(
+            skill_name=getattr(args, "skill", None),
+            dry_run=True,  # Validate = dry-run compose + check results
+        )
+        result = handler.handle(command)
+
+        if json_output:
+            import json
+
+            output = {
+                "total": result.composed + result.failed,
+                "passed": result.composed,
+                "failed": result.failed,
+                "is_valid": result.failed == 0,
+                "errors": result.errors,
+                "warnings": result.warnings,
+            }
+            print(json.dumps(output, indent=2))
+        else:
+            is_valid = result.failed == 0
+            status = "PASS" if is_valid else "FAIL"
+            total = result.composed + result.failed
+            print(f"Skill validation {status}: {result.composed}/{total} passed.")
+            for error in result.errors:
+                print(f"  ERROR: {error}")
+            for warning in result.warnings:
+                print(f"  WARNING: {warning}")
+
+        return 0 if result.failed == 0 else 1
+
+    print(f"Unknown skills command: {args.command}")
     return 1
 
 

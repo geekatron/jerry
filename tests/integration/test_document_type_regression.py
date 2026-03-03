@@ -56,6 +56,8 @@ EXPECTED_UNKNOWN: frozenset[str] = frozenset(
     {
         # Music playlist file -- intentionally outside the document ontology.
         "SOUNDTRACK.md",
+        # PROJ-012 plan file -- ephemeral project plan, not a classified document type.
+        "projects/PROJ-012-agent-optimization/plans/skill-composition-pipeline.md",
     }
 )
 

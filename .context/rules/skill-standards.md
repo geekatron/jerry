@@ -48,7 +48,9 @@ Override requires documented justification.
 
 ```
 skills/your-skill-name/
-├── SKILL.md              # Required — main skill file
+├── SKILL.md              # Required — main skill file (composed output)
+├── composition/          # Required — canonical source files
+│   └── skill.jerry.yaml # Jerry governance data (schema-validated)
 ├── agents/               # Required if multi-agent
 │   └── agent-name.md    # Agent definition
 ├── references/           # Optional — loaded on demand (Level 3)
@@ -57,7 +59,9 @@ skills/your-skill-name/
 └── assets/               # Optional — templates, fonts, icons
 ```
 
-### YAML Frontmatter
+### YAML Frontmatter (SKILL.md)
+
+SKILL.md frontmatter contains **only Anthropic official fields**. Jerry governance fields live in canonical source files (`skill.jerry.yaml`) and are injected into the body by the composition pipeline. Schema: `docs/schemas/anthropic-skill-frontmatter-v1.schema.json`.
 
 Required fields:
 
@@ -66,21 +70,43 @@ Required fields:
 | `name` | kebab-case, matches folder name |
 | `description` | WHAT + WHEN + trigger phrases, under 1024 chars |
 
-Jerry-required fields:
-
-| Field | Requirement |
-|-------|-------------|
-| `version` | Semantic versioning (`"X.Y.Z"`) |
-| `allowed-tools` | Comma-separated tool list (Jerry format: `Read, Write, Edit, Glob, Grep`) |
-| `activation-keywords` | YAML array of trigger phrases for skill routing |
-
-Optional fields:
+Optional Anthropic fields:
 
 | Field | Purpose |
 |-------|---------|
-| `license` | Open source license (MIT, Apache-2.0) |
-| `compatibility` | Environment requirements (1-500 chars) |
-| `metadata` | Custom key-value pairs (author, mcp-server, category, tags) |
+| `allowed-tools` | Comma-separated tool list or YAML array |
+| `model` | Model identifier |
+| `user-invocable` | Whether user can invoke directly (default: true) |
+| `argument-hint` | Hint text for arguments |
+
+**Jerry extension fields (`version`, `activation-keywords`, `agents`, `context_injection`, `license`, `compatibility`, `metadata`) MUST NOT appear in SKILL.md frontmatter.** These are stored in canonical source files and injected as `## Heading` sections in the body by `jerry skills compose`. See [Canonical Source Files](#canonical-source-files-jerry) below.
+
+### Canonical Source Files (Jerry)
+
+Jerry governance data is stored in `skills/{name}/composition/skill.jerry.yaml`, validated against `docs/schemas/skill-canonical-v1.schema.json`. The composition pipeline (`jerry skills compose`) reads these sources and injects governance sections into the SKILL.md body.
+
+| Field | Type | Required | Purpose |
+|-------|------|----------|---------|
+| `name` | string | Yes | kebab-case skill name |
+| `version` | string | Yes | Semantic versioning (`"X.Y.Z"`) |
+| `activation-keywords` | array | Yes | Trigger phrases for skill routing |
+| `agents` | array | No | Agent names in this skill |
+| `context_injection` | object | No | Dynamic context loading config |
+| `license` | string | No | Open source license |
+| `compatibility` | string | No | Environment requirements |
+| `metadata` | object | No | Custom key-value pairs |
+
+**Governance sections injected into SKILL.md body:**
+
+| Section Heading | Source Field | Content |
+|-----------------|-------------|---------|
+| `## Skill Version` | `version` | Semver string |
+| `## Activation Keywords` | `activation-keywords` | Bullet list |
+| `## Agent Registry` | `agents` | Bullet list |
+| `## Context Injection` | `context_injection` | YAML code block |
+
+**Compose workflow:** `uv run jerry skills compose [--skill NAME] [--dry-run]`
+**Validation:** `uv run jerry skills validate --composed`
 
 ### SKILL.md Body Structure (Jerry)
 
@@ -182,9 +208,9 @@ Rules H-25 and H-26 apply to all new skills immediately. Existing production ski
 
 ---
 
-<!-- VERSION: 1.2.0 | DATE: 2026-02-21 | SOURCE: Anthropic Skill Guide (Jan 2026), Jerry Framework v0.2.3, EN-002 consolidation -->
+<!-- VERSION: 1.3.0 | DATE: 2026-03-02 | SOURCE: Anthropic Skill Guide (Jan 2026), Jerry Framework v0.2.3, EN-002 consolidation, PROJ-012 skill composition pipeline -->
 
-*Standards Version: 1.2.0*
+*Standards Version: 1.3.0*
 *SSOT: `.context/rules/quality-enforcement.md` (H-25, H-26 registered — consolidated from H-25..H-30 per EN-002)*
-*Source: Anthropic Skill Guide (Jan 2026) + Jerry Framework v0.2.3*
+*Source: Anthropic Skill Guide (Jan 2026) + Jerry Framework v0.2.3 + PROJ-012 Skill Composition Pipeline*
 *Created: 2026-02-19*

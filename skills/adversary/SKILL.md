@@ -1,30 +1,7 @@
 ---
 name: adversary
 description: On-demand adversarial quality reviews using strategy templates. Selects strategies by criticality level, executes adversarial templates against deliverables, and scores quality using LLM-as-Judge rubric. Integrates with quality-enforcement.md SSOT.
-version: "1.0.0"
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
-activation-keywords:
-  - "adversarial review"
-  - "adversary"
-  - "adversarial quality review"
-  - "strategy review"
-  - "adversarial critique"
-  - "rigorous critique"
-  - "formal critique"
-  - "run adversarial"
-  - "quality scoring"
-  - "LLM-as-Judge"
-  - "strategy selection"
-  - "tournament review"
-  - "red team"
-  - "devil's advocate"
-  - "steelman"
-  - "pre-mortem"
-  - "C2 review"
-  - "C3 review"
-  - "C4 review"
-  - "tournament mode"
-  - "quality gate"
 ---
 
 # Adversary Skill

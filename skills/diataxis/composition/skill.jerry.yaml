@@ -1,0 +1,34 @@
+# Canonical skill source for diataxis
+# Validated against: docs/schemas/skill-canonical-v1.schema.json
+# Source: PROJ-012 skill composition pipeline
+name: diataxis
+version: "0.1.0"
+agents:
+  - diataxis-auditor
+  - diataxis-classifier
+  - diataxis-explanation
+  - diataxis-howto
+  - diataxis-reference
+  - diataxis-tutorial
+activation-keywords:
+  - "documentation"
+  - "tutorial"
+  - "how-to"
+  - "howto"
+  - "how-to guide"
+  - "reference docs"
+  - "explanation"
+  - "diataxis"
+  - "write docs"
+  - "write documentation"
+  - "write tutorial"
+  - "create documentation"
+  - "classify documentation"
+  - "audit documentation"
+  - "user guide"
+  - "getting started"
+  - "quickstart"
+  - "API docs"
+  - "developer guide"
+  - "quadrant"
+  - "doc type"

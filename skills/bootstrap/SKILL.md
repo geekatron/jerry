@@ -1,19 +1,10 @@
 ---
-name: Bootstrap
+name: bootstrap
 description: This skill should be used when the user says "bootstrap", "set up Jerry", "configure guardrails", "initialize Jerry", or asks how to get started with Jerry. Sets up Jerry's context distribution by syncing behavioral rules and patterns.
-version: 1.0.0
 allowed-tools:
   - Read
   - Write
   - Bash
-activation-keywords:
-  - "bootstrap"
-  - "set up Jerry"
-  - "configure guardrails"
-  - "initialize Jerry"
-  - "context distribution"
-  - "sync rules"
-  - "get started"
 ---
 
 # Bootstrap Skill

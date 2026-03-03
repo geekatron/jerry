@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jerry-framework.dev/schemas/skill-canonical/v1.0.0",
+  "title": "Jerry Skill Canonical Source Schema",
+  "description": "Validates .jerry.skill.yaml canonical source files for Jerry Framework skills. Contains Jerry extension fields ONLY (governance metadata). Anthropic official fields live in SKILL.md frontmatter validated by anthropic-skill-frontmatter-v1.schema.json. Pattern follows agent-canonical-v1.schema.json.",
+  "type": "object",
+  "required": [
+    "name",
+    "version",
+    "activation-keywords"
+  ],
+
+  "$comment": "SYNC NOTE: The skill_name $def is duplicated in anthropic-skill-frontmatter-v1.schema.json. Changes to the name pattern, maxLength, or reserved-word exclusions MUST be applied to BOTH schemas in the same commit.",
+  "$defs": {
+    "skill_name": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "maxLength": 64,
+      "not": {
+        "anyOf": [
+          { "pattern": "claude" },
+          { "pattern": "anthropic" }
+        ]
+      },
+      "description": "Kebab-case skill name matching parent directory. Max 64 characters."
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version in MAJOR.MINOR.PATCH format."
+    }
+  },
+
+  "properties": {
+    "name": {
+      "$ref": "#/$defs/skill_name",
+      "description": "Kebab-case skill name. Must match parent directory name."
+    },
+    "version": {
+      "$ref": "#/$defs/semver",
+      "description": "Semantic version in MAJOR.MINOR.PATCH format."
+    },
+    "activation-keywords": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1,
+      "description": "Trigger phrases for skill routing. Used by mandatory-skill-usage.md trigger map for proactive skill invocation (H-22)."
+    },
+    "agents": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "Agent names available in this skill. Used for agent discovery and routing."
+    },
+    "context_injection": {
+      "type": "object",
+      "description": "Dynamic context injection configuration. Defines files and rules to inject into skill context at load time.",
+      "properties": {
+        "default_domain": {
+          "type": "string",
+          "description": "Default domain for context injection."
+        },
+        "domains": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": ["name"]
+          },
+          "description": "Available domains for context injection."
+        },
+        "context_path": {
+          "type": "string",
+          "description": "Path to context files directory."
+        },
+        "template_variables": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Template variables available in context files."
+        },
+        "always_load": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Files always loaded when skill activates."
+        },
+        "conditional_load": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "condition": { "type": "string" },
+              "files": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            }
+          },
+          "description": "Files loaded conditionally based on rules."
+        }
+      },
+      "additionalProperties": true
+    },
+    "license": {
+      "type": "string",
+      "description": "Open source license identifier (e.g., MIT, Apache-2.0)."
+    },
+    "compatibility": {
+      "type": "string",
+      "maxLength": 500,
+      "description": "Environment requirements (1-500 chars)."
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Custom key-value pairs (author, mcp-server, category, tags).",
+      "additionalProperties": true
+    }
+  },
+
+  "additionalProperties": false
+}

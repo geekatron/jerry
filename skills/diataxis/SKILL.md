@@ -9,36 +9,13 @@ description: >
   explanation, diataxis, write docs, write documentation, write tutorial, create documentation,
   classify documentation, audit documentation, user guide, getting started, quickstart, API docs,
   developer guide, quadrant, doc type, how-to guide.
-version: "0.1.0"
-tools:
+allowed-tools:
   - Read
   - Write
   - Edit
   - Glob
   - Grep
   - Bash
-activation-keywords:
-  - "documentation"
-  - "tutorial"
-  - "how-to"
-  - "howto"
-  - "how-to guide"
-  - "reference docs"
-  - "explanation"
-  - "diataxis"
-  - "write docs"
-  - "write documentation"
-  - "write tutorial"
-  - "create documentation"
-  - "classify documentation"
-  - "audit documentation"
-  - "user guide"
-  - "getting started"
-  - "quickstart"
-  - "API docs"
-  - "developer guide"
-  - "quadrant"
-  - "doc type"
 ---
 
 # Diataxis Skill

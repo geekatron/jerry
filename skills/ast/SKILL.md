@@ -1,19 +1,7 @@
 ---
 name: ast
 description: Markdown AST operations for Jerry documents. Provides structured parse, query, modify, validate, and render operations on Jerry markdown files via the jerry ast CLI.
-version: "1.1.0"
 allowed-tools: Read, Write, Edit, Bash
-activation-keywords:
-  - "/ast"
-  - "/jerry:ast"
-  - "parse markdown"
-  - "query frontmatter"
-  - "modify frontmatter"
-  - "validate markdown"
-  - "render markdown"
-  - "extract reinject"
-  - "validate nav table"
-
 ---
 
 # AST Skill

@@ -7,18 +7,7 @@ description: >-
   messages, error messages, CLI output, hook text, and framework-generated text.
   Not user-invocable; loaded automatically when framework output needs voice
   enforcement.
-version: "1.1.0"
 allowed-tools: Read, Write, Edit, Glob, Grep
-activation-keywords:
-  - "voice check"
-  - "voice review"
-  - "persona compliance"
-  - "persona check"
-  - "voice rewrite"
-  - "voice fidelity"
-  - "voice score"
-  - "framework voice"
-  - "persona review"
 ---
 
 # Framework Voice Skill (Internal)

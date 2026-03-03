@@ -254,6 +254,60 @@ def create_agents_compose_handler() -> Any:
     )
 
 
+def _create_skill_compose_validator() -> Any:
+    """Create a SkillComposeValidator with the Anthropic skill schema.
+
+    Returns:
+        SkillComposeValidator configured for SCV-001 through SCV-006.
+    """
+    from src.agents.domain.services.skill_compose_validator import (
+        SkillComposeValidator,
+    )
+
+    schema_path = _get_schemas_dir() / "anthropic-skill-frontmatter-v1.schema.json"
+    return SkillComposeValidator(anthropic_schema_path=schema_path)
+
+
+def create_skills_compose_handler() -> Any:
+    """Create a fully configured ComposeSkillsCommandHandler.
+
+    Reads skill.jerry.yaml canonical sources, builds governance
+    sections, and injects them into SKILL.md body.
+
+    Returns:
+        ComposeSkillsCommandHandler ready for use.
+    """
+    from src.agents.application.handlers.commands.compose_skills_command_handler import (
+        ComposeSkillsCommandHandler,
+    )
+    from src.agents.domain.services.skill_governance_builder import (
+        SkillGovernanceSectionBuilder,
+    )
+    from src.agents.infrastructure.persistence.filesystem_skill_repository import (
+        FilesystemSkillRepository,
+    )
+
+    skills_dir = _get_skills_dir()
+    repository = FilesystemSkillRepository(skills_dir)
+    governance_builder = SkillGovernanceSectionBuilder()
+    validator = _create_skill_compose_validator()
+
+    return ComposeSkillsCommandHandler(
+        repository=repository,
+        governance_builder=governance_builder,
+        validator=validator,
+    )
+
+
+def create_skills_validate_handler() -> Any:
+    """Create a handler for validating composed SKILL.md files.
+
+    Returns:
+        ComposeSkillsCommandHandler configured for validation-only (dry_run).
+    """
+    return create_skills_compose_handler()
+
+
 def create_agents_compose_validate_handler() -> Any:
     """Create a fully configured ValidateComposedAgentsQueryHandler.
 

@@ -184,6 +184,34 @@ repos:
         stages: [pre-commit]
 
   # =============================================================================
+  # Skill Compose Validation (PROJ-012, L5 Post-Hoc)
+  # Validates composed SKILL.md files against SCV-001 through SCV-006 checks.
+  # =============================================================================
+  - repo: local
+    hooks:
+      - id: skill-compose-validation
+        name: skill compose validation
+        entry: uv run --frozen jerry skills validate --composed
+        language: system
+        files: (skills/.*/SKILL\.md|skills/.*/composition/skill\.jerry\.yaml)$
+        pass_filenames: false
+        stages: [pre-commit]
+
+  # =============================================================================
+  # Skill Schema Validation (PROJ-012, L5 Post-Hoc)
+  # Validates SKILL.md frontmatter and skill.jerry.yaml against JSON schemas.
+  # =============================================================================
+  - repo: local
+    hooks:
+      - id: skill-schema-validation
+        name: skill schema validation
+        entry: uv run --frozen python scripts/check_skill_schemas.py
+        language: system
+        files: (skills/.*/SKILL\.md|skills/.*/composition/skill\.jerry\.yaml|docs/schemas/.*skill.*\.json)$
+        pass_filenames: false
+        stages: [pre-commit]
+
+  # =============================================================================
   # Conventional Commit Message Linting (EN-108)
   # =============================================================================
   - repo: https://github.com/commitizen-tools/commitizen

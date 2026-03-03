@@ -1,0 +1,37 @@
+# Canonical skill source for eng-team
+# Validated against: docs/schemas/skill-canonical-v1.schema.json
+# Source: PROJ-012 skill composition pipeline
+name: eng-team
+version: "1.0.0"
+agents:
+  - eng-architect
+  - eng-lead
+  - eng-backend
+  - eng-frontend
+  - eng-infra
+  - eng-devsecops
+  - eng-qa
+  - eng-security
+  - eng-reviewer
+  - eng-incident
+activation-keywords:
+  - "secure design"
+  - "threat model"
+  - "secure architecture"
+  - "STRIDE"
+  - "DREAD"
+  - "secure implementation"
+  - "code review for security"
+  - "SAST"
+  - "DAST"
+  - "supply chain security"
+  - "incident response"
+  - "DevSecOps"
+  - "OWASP"
+  - "ASVS"
+  - "CWE"
+  - "CIS benchmark"
+  - "SSDF"
+  - "SLSA"
+  - "build a secure"
+  - "security requirements"
