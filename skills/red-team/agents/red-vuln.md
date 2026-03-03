@@ -1,7 +1,6 @@
 ---
 name: red-vuln
 description: Vulnerability Analyst for /red-team. Performs vulnerability identification, CVE research, exploit availability assessment, attack path analysis, and risk scoring. Consumes reconnaissance findings
-  from red-recon and produces prioritized vulnerability reports for red-exploit. Operates within analysis scope with read-only target interaction.
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:

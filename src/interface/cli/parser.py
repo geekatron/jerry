@@ -833,6 +833,12 @@ def _add_agents_namespace(
         default=None,
         help="Specific agent to validate (default: all)",
     )
+    validate_parser.add_argument(
+        "--composed",
+        action="store_true",
+        default=False,
+        help="Validate composed agent .md files (CV-001 through CV-007 checks)",
+    )
 
     # agents list
     list_parser = agents_subparsers.add_parser(

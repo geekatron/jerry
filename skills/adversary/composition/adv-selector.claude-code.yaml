@@ -1,0 +1,20 @@
+# Claude Code vendor configuration for adv-selector
+# Layer 4 of 4: per-agent vendor-specific overrides.
+# Reference: https://docs.anthropic.com/en/docs/claude-code/agent-tool
+
+name: adv-selector
+description: >-
+  Strategy Selector agent — maps criticality levels (C1-C4) to the correct
+  adversarial strategy sets per SSOT quality-enforcement.md, producing an
+  ordered execution plan with template file paths
+model: haiku
+tools: Read, Write, Glob
+# disallowedTools:
+# mcpServers:
+permissionMode: default
+background: false
+# maxTurns:
+# skills:
+# hooks:
+# memory:
+# isolation:

@@ -1,0 +1,17 @@
+# Claude Code vendor configuration for nse-reporter
+# Layer 4 of 4: per-agent vendor-specific overrides.
+# Reference: https://docs.anthropic.com/en/docs/claude-code/agent-tool
+
+name: nse-reporter
+description: "NASA Systems Engineering Status Reporter"
+model: haiku
+tools: Read, Write, Glob, Grep, WebFetch
+# disallowedTools:
+# mcpServers:
+permissionMode: default
+background: false
+# maxTurns:
+# skills:
+# hooks:
+# memory:
+# isolation:

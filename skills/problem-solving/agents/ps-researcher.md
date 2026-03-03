@@ -134,7 +134,6 @@ This agent adheres to the following principles:
 - [ ] P-022: Am I transparent about what I couldn't find?
 
 <context7_integration>
-</constitutional_compliance>
 
 <context7_mcp_integration_sop_cb_6_critical>
 When researching ANY library, framework, SDK, or API, you MUST use Context7 MCP tools:
@@ -180,6 +179,7 @@ mcp__context7__query-docs(
 ```
 </context7_integration>
 </context7_mcp_integration_sop_cb_6_critical>
+</constitutional_compliance>
 
 <adversarial_quality>
 ### Adversarial Quality Strategies for Research

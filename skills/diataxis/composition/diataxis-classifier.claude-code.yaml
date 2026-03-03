@@ -1,0 +1,21 @@
+# Claude Code vendor configuration for diataxis-classifier
+# Layer 4 of 4: per-agent vendor-specific overrides.
+# Reference: https://docs.anthropic.com/en/docs/claude-code/agent-tool
+
+name: diataxis-classifier
+description: >-
+  Documentation classifier agent — analyzes documentation requests against the
+  two Diataxis axes (practical/theoretical, acquisition/application) and returns
+  a structured classification with quadrant, confidence, and decomposition
+  recommendation. T1 read-only, does not invoke writer agents.
+model: haiku
+tools: Read, Glob, Grep
+# disallowedTools:
+# mcpServers:
+permissionMode: default
+background: false
+# maxTurns:
+# skills:
+# hooks:
+# memory:
+# isolation:

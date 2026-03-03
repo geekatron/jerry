@@ -1,7 +1,6 @@
 ---
 name: sb-rewriter
 description: Voice Transformation agent — rewrites framework output text from current Jerry voice to Saucer Boy voice while preserving all technical information, then self-applies the 5 Authenticity Tests
-  before presenting the result
 model: sonnet
 tools: Read, Write, Edit
 permissionMode: default

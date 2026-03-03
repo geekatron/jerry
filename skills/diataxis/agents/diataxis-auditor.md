@@ -1,11 +1,11 @@
 ---
 name: diataxis-auditor
-description: >
-  Documentation auditor agent — analyzes existing documentation against Diataxis quality criteria,
-  detects quadrant mixing, identifies classification errors, and produces structured audit reports
+description: Documentation auditor agent — analyzes existing documentation against Diataxis quality criteria, detects quadrant mixing, identifies classification errors, and produces structured audit reports
   with per-criterion pass/fail and remediation recommendations. Invoke for documentation quality review.
 model: sonnet
 tools: Read, Glob, Grep
+permissionMode: default
+background: false
 ---
 <!-- Navigation: Identity | Purpose | Input | Capabilities | Methodology | Output | Guardrails -->
 <agent>
@@ -171,4 +171,28 @@ Write the structured audit report:
 - If quadrant is not declared: classify first using two-axis test, then audit
 </guardrails>
 
-</agent>
+## Agent Version
+
+0.1.0
+
+## Tool Tier
+
+T1 (Read-Only)
+
+## Portability
+
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: markdown
+
+## Session Context
+
+on_receive:
+  document_path: Path to the document(s) to audit
+  declared_quadrant: 'Optional: expected quadrant classification (maps from classifier.quadrant)'
+  output_path: File path for the audit report
+on_send:
+  findings: Array of {type, severity, location, description} findings
+  verdict: PASS|NEEDS REVISION|MAJOR REWORK
+  quadrant_assessment: Confirmed or reclassified quadrant

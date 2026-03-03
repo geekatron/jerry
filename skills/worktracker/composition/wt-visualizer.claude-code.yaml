@@ -1,0 +1,19 @@
+# Claude Code vendor configuration for wt-visualizer
+# Layer 4 of 4: per-agent vendor-specific overrides.
+# Reference: https://docs.anthropic.com/en/docs/claude-code/agent-tool
+
+name: wt-visualizer
+description: >-
+  Generate Mermaid diagrams for worktracker hierarchies, timelines, status
+  overviews, and dependency chains
+model: haiku
+tools: Read, Write, Glob, Grep, Bash
+# disallowedTools:
+# mcpServers:
+permissionMode: default
+background: false
+# maxTurns:
+# skills:
+# hooks:
+# memory:
+# isolation:

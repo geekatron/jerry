@@ -1,0 +1,21 @@
+# Claude Code vendor configuration for pe-scorer
+# Layer 4 of 4: per-agent vendor-specific overrides.
+# Reference: https://docs.anthropic.com/en/docs/claude-code/agent-tool
+
+name: pe-scorer
+description: >-
+  Prompt Quality Scorer agent — evaluates prompts against the 7-criterion rubric
+  (C1 Task Specificity through C7 Positive Framing), returning dimension-level
+  scores, weighted composite, tier classification, and targeted improvement
+  suggestions. Invoke when scoring or evaluating prompt quality.
+model: haiku
+tools: Read, Glob, Grep
+# disallowedTools:
+# mcpServers:
+permissionMode: default
+background: false
+# maxTurns:
+# skills:
+# hooks:
+# memory:
+# isolation:

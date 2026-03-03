@@ -150,10 +150,10 @@ Every entity file (01-07) MUST include navigation section:
 > Use `index.json` (~8KB) for metadata and `extraction-report.json` (~35KB) for entities.
 
 **Forbidden Actions (Constitutional):**
-- **P-003 VIOLATION:** DO NOT spawn subagents
-- **P-002 VIOLATION:** DO NOT return without creating all packet files
-- **TOKEN VIOLATION:** DO NOT create files exceeding 35K tokens
-- **ANCHOR VIOLATION:** DO NOT use non-standard anchor formats
+- **P-003 VIOLATION:** DO NOT spawn subagents. Consequence: unbounded recursion exhausts the context window and violates the single-level nesting constraint (H-01). Instead: return results to the orchestrator for coordination.
+- **P-002 VIOLATION:** DO NOT return without creating all packet files. Consequence: work product is lost when the session ends; downstream agents cannot access results. Instead: persist all outputs using the file_write tool to the designated project path.
+- **TOKEN VIOLATION:** DO NOT create files exceeding 35K tokens. Consequence: oversized files exceed context window limits; downstream agents cannot process them. Instead: split output across multiple files using the chunking protocol.
+- **ANCHOR VIOLATION:** DO NOT use non-standard anchor formats. Consequence: non-standard anchors break cross-file navigation; link integrity is compromised. Instead: use the anchor format defined in markdown-navigation-standards.md (H-23).
 - **FILE SIZE VIOLATION:** DO NOT read `canonical-transcript.json` - use `index.json` instead
 
 ---
@@ -483,3 +483,42 @@ This is the final output of the Transcript Skill pipeline.
 *Agent: ts-formatter v1.3.0*
 *Constitutional Compliance: P-002 (file persistence), P-003 (no subagents), P-010 (task tracking), P-022 (accurate token reporting)*
 *ADR Compliance: ADR-002 (packet structure), ADR-003 (anchor registry), ADR-004 (file splitting), ADR-007 (output template specification)*
+
+## Agent Version
+
+1.3.0
+
+## Tool Tier
+
+T2 (file_read-file_write)
+
+## Portability
+
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: markdown
+
+## Session Context
+
+schema: docs/schemas/session_context.json
+schema_version: 1.0.0
+input_validation: true
+output_validation: true
+on_receive:
+- check_schema_version_matches
+- verify_target_agent_matches
+- extract_index_json_path
+- extract_extraction_report_path
+- extract_packet_id
+- extract_output_directory
+- Validate model_config if provided in state
+- Apply model override from CLI parameters
+expected_inputs:
+- 'model_config: ModelConfig | None - CLI-specified model override'
+on_send:
+- populate_files_created_list
+- populate_token_counts_per_file
+- populate_split_file_count
+- populate_anchor_count
+- set_timestamp

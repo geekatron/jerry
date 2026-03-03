@@ -24,6 +24,7 @@ from typing import Any
 
 import yaml
 
+from src.agents.domain.services.compose_validator import ComposeValidator
 from src.agents.domain.services.defaults_composer import DefaultsComposer
 from src.agents.domain.services.prompt_transformer import PromptTransformer
 from src.agents.domain.services.tool_mapper import ToolMapper
@@ -202,6 +203,16 @@ def create_agents_list_handler() -> Any:
     return ListAgentsQueryHandler(repository=repository)
 
 
+def _create_compose_validator() -> ComposeValidator:
+    """Create a ComposeValidator with the Anthropic schema.
+
+    Returns:
+        ComposeValidator configured for CV-001 through CV-007.
+    """
+    schema_path = _get_schemas_dir() / "jerry-claude-agent-definition-v1.schema.json"
+    return ComposeValidator(anthropic_schema_path=schema_path)
+
+
 def create_agents_compose_handler() -> Any:
     """Create a fully configured ComposeAgentsCommandHandler.
 
@@ -239,4 +250,24 @@ def create_agents_compose_handler() -> Any:
         vendor_override_provider=vendor_override_provider,
         vendor_override_spec=CLAUDE_CODE_OVERRIDE_SPEC,
         config_var_resolver=defaults_provider.get_config_var,
+        validator=_create_compose_validator(),
+    )
+
+
+def create_agents_compose_validate_handler() -> Any:
+    """Create a fully configured ValidateComposedAgentsQueryHandler.
+
+    Returns:
+        ValidateComposedAgentsQueryHandler ready for use.
+    """
+    from src.agents.application.handlers.queries.validate_composed_agents_query_handler import (
+        ValidateComposedAgentsQueryHandler,
+    )
+
+    skills_dir = _get_skills_dir()
+    validator = _create_compose_validator()
+
+    return ValidateComposedAgentsQueryHandler(
+        skills_dir=skills_dir,
+        validator=validator,
     )

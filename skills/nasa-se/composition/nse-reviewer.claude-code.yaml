@@ -1,0 +1,19 @@
+# Claude Code vendor configuration for nse-reviewer
+# Layer 4 of 4: per-agent vendor-specific overrides.
+# Reference: https://docs.anthropic.com/en/docs/claude-code/agent-tool
+
+name: nse-reviewer
+description: >-
+  NASA Technical Review Gate agent implementing NPR 7123.1D Appendix G for SRR,
+  PDR, CDR, FRR and other technical reviews with entrance/exit criteria
+model: sonnet
+tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
+# disallowedTools:
+# mcpServers:
+permissionMode: default
+background: false
+# maxTurns:
+# skills:
+# hooks:
+# memory:
+# isolation:

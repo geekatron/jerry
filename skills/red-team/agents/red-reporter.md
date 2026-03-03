@@ -1,8 +1,6 @@
 ---
 name: red-reporter
 description: Engagement Reporter & Documentation Specialist for /red-team. Generates comprehensive engagement reports with finding documentation, risk scoring, remediation recommendations, executive summaries,
-  Impact risk communication (TA0040 documentation), and scope compliance attestation. Can be invoked without active scope for report generation from existing findings. Read-only access to all engagement
-  data.
 model: opus
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:

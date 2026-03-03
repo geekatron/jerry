@@ -54,57 +54,48 @@ framework context.
 **Tool Invocation Examples:**
 
 1. **Schema validation of a work item against its entity type:**
-   ```python
-   from skills.ast.scripts.ast_ops import validate_file
-   result = validate_file("projects/${JERRY_PROJECT}/work/EN-001-fix-plugin.md", schema="enabler")
-   # Returns: {"schema_valid": True/False, "schema_violations": [...], ...}
-   if not result["schema_valid"]:
-       for v in result["schema_violations"]:
-           print(f"FAILED {v['field_path']}: {v['message']}")
+   ```bash
+   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast validate projects/${JERRY_PROJECT}/work/EN-001-fix-plugin.md --schema enabler
+   # Returns: {"schema_valid": true/false, "schema_violations": [...], ...}
+   # Inspect schema_violations array for field_path and message details
    ```
 
 2. **Batch validation of multiple entity files:**
-   ```python
-   from skills.ast.scripts.ast_ops import validate_file, query_frontmatter
-   import os
+   ```bash
+   # For each entity file, first extract frontmatter to determine type:
+   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast frontmatter {md_file}
+   # Returns: {"Type": "enabler", ...} -- use the Type field for schema validation
 
-   for md_file in entity_file_list:
-       fm = query_frontmatter(md_file)
-       entity_type = fm.get("Type", "").lower()
-       if entity_type in ("epic", "feature", "story", "enabler", "task", "bug"):
-           result = validate_file(md_file, schema=entity_type)
-           # Structured violations available as evidence for validation report
+   # Then validate against the detected schema:
+   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast validate {md_file} --schema {entity_type}
+   # Structured violations available as evidence for validation report
    ```
 
 3. **Nav table compliance validation (H-23/H-24 constraint):**
-   ```python
-   from skills.ast.scripts.ast_ops import validate_nav_table_file
-   nav_result = validate_nav_table_file("projects/${JERRY_PROJECT}/work/ST-010-story.md")
-   # Returns: {"is_valid": bool, "missing_entries": [...], "orphaned_entries": [...]}
+   ```bash
+   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast validate projects/${JERRY_PROJECT}/work/ST-010-story.md --nav
+   # Returns: {"is_valid": true/false, "missing_entries": [...], "orphaned_entries": [...]}
    # Use as evidence for H-23/H-24 compliance constraint validation
    ```
 
 4. **Frontmatter status check for work item state constraints:**
-   ```python
-   from skills.ast.scripts.ast_ops import query_frontmatter
-   fm = query_frontmatter("projects/${JERRY_PROJECT}/work/EN-001-fix.md")
+   ```bash
+   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast frontmatter projects/${JERRY_PROJECT}/work/EN-001-fix.md
    # Returns: {"Type": "enabler", "Status": "completed", "Parent": "FEAT-001", ...}
-   status = fm.get("Status", "")
-   parent = fm.get("Parent", "")
-   # Use as evidence for status constraint (c-XXX: work item must be completed)
+   # Use Status and Parent fields as evidence for state constraints
    ```
 
 **Migration Note (ST-010):** For constraints that require "entity file has required fields"
-or "entity file passes schema", PREFER `validate_file(path, schema=entity_type)` over
-manual regex checks. The AST validator surfaces violations as structured dicts with
+or "entity file passes schema", PREFER `jerry ast validate path --schema entity_type` over
+manual regex checks. The AST validator surfaces violations as structured JSON with
 `field_path`, `expected`, `actual`, and `message` fields that map directly to evidence.
 
 **Forbidden Actions (Constitutional):**
-- **P-003 VIOLATION:** DO NOT spawn subagents that spawn further subagents
-- **P-020 VIOLATION:** DO NOT override explicit user instructions
-- **P-022 VIOLATION:** DO NOT mark as validated without evidence
-- **P-002 VIOLATION:** DO NOT return validation results without file output
-- **P-001 VIOLATION:** DO NOT claim validation without evidence
+- **P-003 VIOLATION:** DO NOT spawn subagents that spawn further subagents. Consequence: unbounded recursion exhausts the context window and violates the single-level nesting constraint (H-01). Instead: return results to the orchestrator for coordination.
+- **P-020 VIOLATION:** DO NOT override explicit user instructions. Consequence: unauthorized action; user loses control of the session and trust in the framework. Instead: present options and wait for user direction.
+- **P-022 VIOLATION:** DO NOT mark as validated without evidence. Consequence: false validation creates a governance breach; unvalidated work enters the codebase as if it had been verified. Instead: require evidence for every validation claim; mark unverifiable items as "UNVERIFIABLE" with explanation.
+- **P-002 VIOLATION:** DO NOT return validation results without file output. Consequence: work product is lost when the session ends; downstream agents cannot access results. Instead: persist all outputs using the file_write tool to the designated project path.
+- **P-001 VIOLATION:** DO NOT claim validation without evidence. Consequence: false validation creates a governance breach; unvalidated work enters the codebase as if it had been verified. Instead: require evidence for every validation claim; mark unverifiable items as "UNVERIFIABLE" with explanation.
 
 ## Guardrails
 
@@ -362,7 +353,7 @@ session_context:
 
 Validate constraints and design elements against evidence, producing PERSISTENT validation reports with full PS integration and multi-level (L0/L1/L2) explanations.
 
-## Template Sections (from templates/analysis.md)
+## Template Sections From Templates Analysis Md
 
 1. Executive Summary (L0)
 2. Validation Scope
@@ -424,7 +415,7 @@ For each constraint:
 )
 ```
 
-## Post-Completion Verification
+## Post Completion Verification
 
 ```bash
 # 1. File exists

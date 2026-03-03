@@ -1,0 +1,21 @@
+# Claude Code vendor configuration for eng-backend
+# Layer 4 of 4: per-agent vendor-specific overrides.
+# Reference: https://docs.anthropic.com/en/docs/claude-code/agent-tool
+
+name: eng-backend
+description: >-
+  Secure backend engineer for the /eng-team skill. Invoked when users request
+  server-side implementation with security hardening, input validation,
+  authentication and authorization logic, API
+model: sonnet
+tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
+# disallowedTools:
+mcpServers:
+  context7: true
+permissionMode: default
+background: false
+# maxTurns:
+# skills:
+# hooks:
+# memory:
+# isolation:

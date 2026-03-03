@@ -1,7 +1,6 @@
 ---
 name: red-lead
 description: Engagement Lead & Scope Authority for /red-team. Creates and manages scope documents, Rules of Engagement, and authorization verification for all penetration testing and red team engagements.
-  MANDATORY FIRST agent -- no other agent operates without an active scope. Covers methodology selection, team coordination, operational OPSEC enforcement, findings QA, and methodology adaptation.
 model: opus
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:

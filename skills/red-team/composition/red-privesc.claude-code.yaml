@@ -1,0 +1,21 @@
+# Claude Code vendor configuration for red-privesc
+# Layer 4 of 4: per-agent vendor-specific overrides.
+# Reference: https://docs.anthropic.com/en/docs/claude-code/agent-tool
+
+name: red-privesc
+description: >-
+  Privilege Escalation Specialist for /red-team. Provides methodology for local
+  and domain privilege escalation, credential harvesting, token manipulation,
+  and misconfiguration exploitation.
+model: sonnet
+tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
+# disallowedTools:
+mcpServers:
+  context7: true
+permissionMode: default
+background: false
+# maxTurns:
+# skills:
+# hooks:
+# memory:
+# isolation:

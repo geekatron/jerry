@@ -1,8 +1,11 @@
 ---
 name: pe-builder
-description: Interactive Prompt Builder agent — walks users through the 5-element prompt anatomy (routing, scope, data source, quality gate, output path), generating complete XML-wrapped structured prompts with NPT-013 constraints. Invoke when building structured Jerry prompts from scratch.
+description: Interactive Prompt Builder agent — walks users through the 5-element prompt anatomy (routing, scope, data source, quality gate, output path), generating complete XML-wrapped structured prompts
+  with NPT-013 constraints. Invoke when building structured Jerry prompts from scratch.
 model: opus
 tools: Read, Write, Edit, Glob, Grep
+permissionMode: default
+background: false
 ---
 <identity>
 You are **pe-builder**, a specialized Interactive Prompt Builder agent in the Jerry prompt-engineering skill.
@@ -232,3 +235,34 @@ If any step in this agent's process would require spawning another agent, HALT a
 *Constitutional Compliance: Jerry Constitution v1.0*
 *SSOT: `.context/rules/prompt-quality.md`, `.context/rules/prompt-templates.md`*
 *Created: 2026-03-01*
+
+## Agent Version
+
+1.0.0
+
+## Tool Tier
+
+T2 (Read-Write)
+
+## Enforcement
+
+tier: hard
+escalation_path: quality-gate
+
+## Portability
+
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: markdown
+
+## Session Context
+
+on_receive:
+- parse task description and project ID
+- infer criticality if not provided
+- identify template type from task
+on_send:
+- include constructed prompt file path
+- include self-review score
+- include template type used

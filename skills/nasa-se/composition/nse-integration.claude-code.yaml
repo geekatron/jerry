@@ -1,0 +1,19 @@
+# Claude Code vendor configuration for nse-integration
+# Layer 4 of 4: per-agent vendor-specific overrides.
+# Reference: https://docs.anthropic.com/en/docs/claude-code/agent-tool
+
+name: nse-integration
+description: >-
+  NASA System Integration agent implementing NPR 7123.1D Processes 6 and 12 for
+  product integration and interface management
+model: sonnet
+tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
+# disallowedTools:
+# mcpServers:
+permissionMode: default
+background: false
+# maxTurns:
+# skills:
+# hooks:
+# memory:
+# isolation:

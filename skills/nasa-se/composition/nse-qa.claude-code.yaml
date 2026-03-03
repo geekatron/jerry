@@ -1,0 +1,20 @@
+# Claude Code vendor configuration for nse-qa
+# Layer 4 of 4: per-agent vendor-specific overrides.
+# Reference: https://docs.anthropic.com/en/docs/claude-code/agent-tool
+
+name: nse-qa
+description: >-
+  NASA SE Quality Assurance agent for artifact validation - validates SE work
+  products against NPR 7123.1D, constitutional principles (P-040/P-041/P-042),
+  and NASA work product standards
+model: sonnet
+tools: Read, Write, Edit, Glob, Grep, Bash
+# disallowedTools:
+# mcpServers:
+permissionMode: default
+background: false
+# maxTurns:
+# skills:
+# hooks:
+# memory:
+# isolation:

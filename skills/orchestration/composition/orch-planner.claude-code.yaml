@@ -1,0 +1,20 @@
+# Claude Code vendor configuration for orch-planner
+# Layer 4 of 4: per-agent vendor-specific overrides.
+# Reference: https://docs.anthropic.com/en/docs/claude-code/agent-tool
+
+name: orch-planner
+description: >-
+  Orchestration Planner agent for multi-agent workflow design, pipeline
+  architecture, and state schema definition
+model: sonnet
+tools: Read, Write, Edit, Glob, Grep, Bash
+# disallowedTools:
+mcpServers:
+  memory-keeper: true
+permissionMode: default
+background: false
+# maxTurns:
+# skills:
+# hooks:
+# memory:
+# isolation:

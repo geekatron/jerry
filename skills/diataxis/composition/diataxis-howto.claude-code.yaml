@@ -1,0 +1,22 @@
+# Claude Code vendor configuration for diataxis-howto
+# Layer 4 of 4: per-agent vendor-specific overrides.
+# Reference: https://docs.anthropic.com/en/docs/claude-code/agent-tool
+
+name: diataxis-howto
+description: >-
+  How-to guide writer agent — produces goal-oriented documentation following
+  Diataxis methodology. Creates action-only guides for competent users solving
+  specific problems. Invoke when users need directions toward a concrete goal,
+  not learning experiences. NOT for beginners building skills for the first time
+  (use diataxis-tutorial instead).
+model: sonnet
+tools: Read, Write, Edit, Glob, Grep, Bash
+# disallowedTools:
+# mcpServers:
+permissionMode: default
+background: false
+# maxTurns:
+# skills:
+# hooks:
+# memory:
+# isolation:

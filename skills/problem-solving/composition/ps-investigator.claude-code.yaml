@@ -1,0 +1,20 @@
+# Claude Code vendor configuration for ps-investigator
+# Layer 4 of 4: per-agent vendor-specific overrides.
+# Reference: https://docs.anthropic.com/en/docs/claude-code/agent-tool
+
+name: ps-investigator
+description: >-
+  Failure analysis and debugging agent using 5 Whys, Ishikawa, and FMEA with
+  L0/L1/L2 output levels
+model: sonnet
+tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
+# disallowedTools:
+mcpServers:
+  context7: true
+permissionMode: default
+background: false
+# maxTurns:
+# skills:
+# hooks:
+# memory:
+# isolation:

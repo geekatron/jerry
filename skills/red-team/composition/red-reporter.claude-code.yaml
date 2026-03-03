@@ -1,0 +1,21 @@
+# Claude Code vendor configuration for red-reporter
+# Layer 4 of 4: per-agent vendor-specific overrides.
+# Reference: https://docs.anthropic.com/en/docs/claude-code/agent-tool
+
+name: red-reporter
+description: >-
+  Engagement Reporter & Documentation Specialist for /red-team. Generates
+  comprehensive engagement reports with finding documentation, risk scoring,
+  remediation recommendations, executive summaries,
+model: opus
+tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
+# disallowedTools:
+mcpServers:
+  context7: true
+permissionMode: default
+background: false
+# maxTurns:
+# skills:
+# hooks:
+# memory:
+# isolation:

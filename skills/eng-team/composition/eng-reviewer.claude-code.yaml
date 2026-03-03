@@ -1,0 +1,21 @@
+# Claude Code vendor configuration for eng-reviewer
+# Layer 4 of 4: per-agent vendor-specific overrides.
+# Reference: https://docs.anthropic.com/en/docs/claude-code/agent-tool
+
+name: eng-reviewer
+description: >-
+  Final review gate and quality enforcer for the /eng-team skill. Invoked as the
+  mandatory final gate before release, verifying architecture compliance,
+  security standards compliance, and test
+model: opus
+tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
+# disallowedTools:
+mcpServers:
+  context7: true
+permissionMode: default
+background: false
+# maxTurns:
+# skills:
+# hooks:
+# memory:
+# isolation:

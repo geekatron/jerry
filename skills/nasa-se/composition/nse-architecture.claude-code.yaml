@@ -1,0 +1,20 @@
+# Claude Code vendor configuration for nse-architecture
+# Layer 4 of 4: per-agent vendor-specific overrides.
+# Reference: https://docs.anthropic.com/en/docs/claude-code/agent-tool
+
+name: nse-architecture
+description: >-
+  NASA Technical Architect agent implementing NPR 7123.1D Processes 3, 4, and 17
+  for logical decomposition, design solution definition, and decision analysis
+model: opus
+tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
+# disallowedTools:
+mcpServers:
+  context7: true
+permissionMode: default
+background: false
+# maxTurns:
+# skills:
+# hooks:
+# memory:
+# isolation:

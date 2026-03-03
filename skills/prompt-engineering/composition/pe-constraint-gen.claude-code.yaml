@@ -1,0 +1,21 @@
+# Claude Code vendor configuration for pe-constraint-gen
+# Layer 4 of 4: per-agent vendor-specific overrides.
+# Reference: https://docs.anthropic.com/en/docs/claude-code/agent-tool
+
+name: pe-constraint-gen
+description: >-
+  NPT Constraint Generator agent — takes user intent descriptions and produces
+  properly formatted NPT-009/NPT-013 constraints with XML wrapping for agent
+  definitions, rule files, and skill documentation. Invoke when generating
+  forbidden actions or behavioral constraints.
+model: sonnet
+tools: Read, Write, Edit, Glob, Grep
+# disallowedTools:
+# mcpServers:
+permissionMode: default
+background: false
+# maxTurns:
+# skills:
+# hooks:
+# memory:
+# isolation:

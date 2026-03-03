@@ -1,0 +1,21 @@
+# Claude Code vendor configuration for diataxis-auditor
+# Layer 4 of 4: per-agent vendor-specific overrides.
+# Reference: https://docs.anthropic.com/en/docs/claude-code/agent-tool
+
+name: diataxis-auditor
+description: >-
+  Documentation auditor agent — analyzes existing documentation against Diataxis
+  quality criteria, detects quadrant mixing, identifies classification errors,
+  and produces structured audit reports with per-criterion pass/fail and
+  remediation recommendations. Invoke for documentation quality review.
+model: sonnet
+tools: Read, Glob, Grep
+# disallowedTools:
+# mcpServers:
+permissionMode: default
+background: false
+# maxTurns:
+# skills:
+# hooks:
+# memory:
+# isolation:

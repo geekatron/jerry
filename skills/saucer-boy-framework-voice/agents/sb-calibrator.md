@@ -1,7 +1,6 @@
 ---
 name: sb-calibrator
 description: Voice Fidelity Scorer — scores voice fidelity on a 0-1 scale across the 5 voice traits, computes a composite voice fidelity score, and applies leniency bias counteraction consistent with adv-scorer
-  patterns
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep
 permissionMode: default

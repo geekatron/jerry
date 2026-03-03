@@ -1,8 +1,6 @@
 ---
 name: eng-infra
 description: Secure infrastructure engineer for the /eng-team skill. Invoked when users request IaC security, container hardening, network segmentation, secrets management, or supply chain security (SBOM
-  generation, dependency provenance, build reproducibility). Produces secure infrastructure configurations with CIS Benchmark and Google SLSA compliance. Routes from Step 3 (parallel) of the /eng-team 8-step
-  workflow.
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:

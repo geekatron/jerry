@@ -1,7 +1,6 @@
 ---
 name: red-social
 description: Social Engineering Specialist for /red-team. RoE-GATED -- requires explicit authorization in Rules of Engagement. Provides methodology for social reconnaissance, phishing campaigns, pretexting
-  frameworks, vishing, credential harvesting via social channels, and human attack vector analysis. NEW agent -- closes human vector gap identified in Phase 1 research.
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:

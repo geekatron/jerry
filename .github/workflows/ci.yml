@@ -528,6 +528,32 @@ jobs:
         run: uv run python scripts/check_hard_rule_ceiling.py
 
   # ===========================================================================
+  # Compose Validation (PROJ-012, L5 Post-Hoc)
+  # ===========================================================================
+  # Validates composed agent .md files against CV-001 through CV-007 checks.
+  # Mirrors the ComposeValidator that runs at compose-time but catches
+  # regressions even if someone bypasses pre-commit hooks.
+  compose-validation:
+    name: Compose Validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        run: uv python install 3.14
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Validate composed agents
+        run: uv run jerry agents validate --composed
+
+  # ===========================================================================
   # Final Status Check
   # ===========================================================================
   # Both pip and uv test jobs must pass for CI to succeed
@@ -535,7 +561,7 @@ jobs:
   ci-success:
     name: CI Success
     runs-on: ubuntu-latest
-    needs: [lint, type-check, security, plugin-validation, template-validation, license-headers, cli-integration, test-pip, test-uv, version-sync, hard-rule-ceiling]
+    needs: [lint, type-check, security, plugin-validation, template-validation, license-headers, cli-integration, test-pip, test-uv, version-sync, hard-rule-ceiling, compose-validation]
     if: always()
     steps:
       - name: Check all jobs passed
@@ -550,7 +576,8 @@ jobs:
              [[ "${{ needs.test-pip.result }}" != "success" ]] || \
              [[ "${{ needs.test-uv.result }}" != "success" ]] || \
              [[ "${{ needs.version-sync.result }}" != "success" ]] || \
-             [[ "${{ needs.hard-rule-ceiling.result }}" != "success" ]]; then
+             [[ "${{ needs.hard-rule-ceiling.result }}" != "success" ]] || \
+             [[ "${{ needs.compose-validation.result }}" != "success" ]]; then
             echo "One or more jobs failed"
             echo "  lint: ${{ needs.lint.result }}"
             echo "  type-check: ${{ needs.type-check.result }}"
@@ -563,6 +590,7 @@ jobs:
             echo "  test-uv: ${{ needs.test-uv.result }}"
             echo "  version-sync: ${{ needs.version-sync.result }}"
             echo "  hard-rule-ceiling: ${{ needs.hard-rule-ceiling.result }}"
+            echo "  compose-validation: ${{ needs.compose-validation.result }}"
             exit 1
           fi
           echo "All CI checks passed!"

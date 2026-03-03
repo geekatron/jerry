@@ -1,0 +1,21 @@
+# Claude Code vendor configuration for eng-infra
+# Layer 4 of 4: per-agent vendor-specific overrides.
+# Reference: https://docs.anthropic.com/en/docs/claude-code/agent-tool
+
+name: eng-infra
+description: >-
+  Secure infrastructure engineer for the /eng-team skill. Invoked when users
+  request IaC security, container hardening, network segmentation, secrets
+  management, or supply chain security (SBOM
+model: sonnet
+tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
+# disallowedTools:
+mcpServers:
+  context7: true
+permissionMode: default
+background: false
+# maxTurns:
+# skills:
+# hooks:
+# memory:
+# isolation:

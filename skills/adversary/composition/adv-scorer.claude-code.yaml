@@ -1,0 +1,20 @@
+# Claude Code vendor configuration for adv-scorer
+# Layer 4 of 4: per-agent vendor-specific overrides.
+# Reference: https://docs.anthropic.com/en/docs/claude-code/agent-tool
+
+name: adv-scorer
+description: >-
+  Quality Scorer agent — implements S-014 LLM-as-Judge rubric scoring with the
+  SSOT 6-dimension weighted composite, producing per-dimension scores, weighted
+  composite, and PASS/REVISE/ESCALATE
+model: sonnet
+tools: Read, Write, Edit, Glob, Grep
+# disallowedTools:
+# mcpServers:
+permissionMode: default
+background: false
+# maxTurns:
+# skills:
+# hooks:
+# memory:
+# isolation:

@@ -1,0 +1,21 @@
+# Claude Code vendor configuration for eng-frontend
+# Layer 4 of 4: per-agent vendor-specific overrides.
+# Reference: https://docs.anthropic.com/en/docs/claude-code/agent-tool
+
+name: eng-frontend
+description: >-
+  Secure frontend engineer for the /eng-team skill. Invoked when users request
+  client-side implementation with XSS prevention, Content Security Policy
+  configuration, CORS hardening, or output
+model: sonnet
+tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
+# disallowedTools:
+mcpServers:
+  context7: true
+permissionMode: default
+background: false
+# maxTurns:
+# skills:
+# hooks:
+# memory:
+# isolation:

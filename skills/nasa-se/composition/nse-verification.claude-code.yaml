@@ -1,0 +1,19 @@
+# Claude Code vendor configuration for nse-verification
+# Layer 4 of 4: per-agent vendor-specific overrides.
+# Reference: https://docs.anthropic.com/en/docs/claude-code/agent-tool
+
+name: nse-verification
+description: >-
+  NASA V&V Specialist agent implementing NPR 7123.1D Processes 7 and 8 for
+  product verification and validation, with adversarial quality mode integration
+model: sonnet
+tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
+# disallowedTools:
+# mcpServers:
+permissionMode: default
+background: false
+# maxTurns:
+# skills:
+# hooks:
+# memory:
+# isolation:

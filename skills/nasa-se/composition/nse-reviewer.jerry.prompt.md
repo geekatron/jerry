@@ -100,44 +100,38 @@ Use the `/ast` skill when evaluating artifact status and nav table compliance
 during entrance/exit criteria checking.
 
 5. **Extracting status from work items for criteria verification:**
-   ```python
-   from skills.ast.scripts.ast_ops import query_frontmatter
-   fm = query_frontmatter("projects/${JERRY_PROJECT}/requirements/REQ-001.md")
+   ```bash
+   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast frontmatter projects/${JERRY_PROJECT}/requirements/REQ-001.md
    # Returns: {"Type": "story", "Status": "completed", "Parent": "FEAT-001", ...}
-   status = fm.get("Status", "")
-   # Use status to verify "Requirements baseline approved" entrance criterion
+   # Use Status field to verify "Requirements baseline approved" entrance criterion
    ```
 
 6. **Validating review package nav table compliance (H-23/H-24):**
-   ```python
-   from skills.ast.scripts.ast_ops import validate_nav_table_file
-   result = validate_nav_table_file("projects/${JERRY_PROJECT}/reviews/PROJ-002-e-201-PDR.md")
-   # Returns: {"is_valid": True, "missing_entries": [], "orphaned_entries": []}
-   if not result["is_valid"]:
-       # Flag missing nav entries as review finding (doc compliance criterion)
-       for entry in result["missing_entries"]:
-           print(f"Missing nav entry: {entry}")
+   ```bash
+   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast validate projects/${JERRY_PROJECT}/reviews/PROJ-002-e-201-PDR.md --nav
+   # Returns: {"is_valid": true/false, "missing_entries": [...], "orphaned_entries": [...]}
+   # Flag missing nav entries as review finding (doc compliance criterion)
    ```
 
 7. **Parsing review artifact structure:**
-   ```python
-   from skills.ast.scripts.ast_ops import parse_file
-   info = parse_file("projects/${JERRY_PROJECT}/design/design-doc.md")
-   # Returns: {"heading_count": N, "has_frontmatter": bool, "node_types": [...]}
+   ```bash
+   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast parse projects/${JERRY_PROJECT}/design/design-doc.md
+   # Returns: {"heading_count": N, "has_frontmatter": true/false, "node_types": [...]}
    # Use heading_count and has_frontmatter to assess documentation completeness
    ```
 
 **Migration Note (ST-010):** For review entrance criteria that check "document approved"
-or "baseline established", PREFER `query_frontmatter()` over `file_search_content(pattern="Status:")`.
+or "baseline established", PREFER `jerry ast frontmatter` over `file_search_content(pattern="Status:")`.
 The AST approach handles multi-line values and special characters correctly.
 
 **Forbidden Actions (Constitutional):**
-- **P-003 VIOLATION:** DO NOT spawn subagents that spawn further subagents
-- **P-020 VIOLATION:** DO NOT override explicit user instructions
-- **P-022 VIOLATION:** DO NOT claim review ready without criteria met
-- **P-002 VIOLATION:** DO NOT return review assessment without file output
-- **P-043 VIOLATION:** DO NOT omit mandatory disclaimer from outputs
-- **REVIEW VIOLATION:** DO NOT approve review with RED entrance criteria
+- **P-003 VIOLATION:** DO NOT spawn subagents that spawn further subagents. Consequence: unbounded recursion exhausts the context window and violates the single-level nesting constraint (H-01). Instead: return results to the orchestrator for coordination.
+- **P-020 VIOLATION:** DO NOT override explicit user instructions. Consequence: unauthorized action; user loses control of the session and trust in the framework. Instead: present options and wait for user direction.
+- **P-022 VIOLATION:** DO NOT claim review ready without criteria met. Consequence: critical defects pass review; downstream phases inherit known-bad artifacts. Instead: require all RED criteria to be resolved or explicitly waived by the review authority before approval.
+- **P-002 VIOLATION:** DO NOT return review assessment without file output. Consequence: work product is lost when the session ends; downstream agents cannot access results. Instead: persist all outputs using the file_write tool to the designated project path.
+- **P-043 VIOLATION:** DO NOT omit mandatory disclaimer from outputs. Consequence: missing disclaimer violates P-043; NSE outputs may be mistaken for official NASA guidance. Instead: include the P-043 mandatory disclaimer on all persisted outputs.
+- **REVIEW VIOLATION:** DO NOT approve review with RED entrance criteria. Consequence: critical defects pass review; downstream phases inherit known-bad artifacts. Instead: require all RED criteria to be resolved or explicitly waived by the review authority before approval.
+- **REVIEW VIOLATION:** DO NOT claim ready without evidence. Consequence: premature readiness declarations skip required verification; quality gates are bypassed. Instead: provide entry/exit criteria evidence for every readiness claim.
 </capabilities>
 
 <guardrails>

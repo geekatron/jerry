@@ -1,0 +1,21 @@
+# Claude Code vendor configuration for pe-builder
+# Layer 4 of 4: per-agent vendor-specific overrides.
+# Reference: https://docs.anthropic.com/en/docs/claude-code/agent-tool
+
+name: pe-builder
+description: >-
+  Interactive Prompt Builder agent — walks users through the 5-element prompt
+  anatomy (routing, scope, data source, quality gate, output path), generating
+  complete XML-wrapped structured prompts with NPT-013 constraints. Invoke when
+  building structured Jerry prompts from scratch.
+model: opus
+tools: Read, Write, Edit, Glob, Grep
+# disallowedTools:
+# mcpServers:
+permissionMode: default
+background: false
+# maxTurns:
+# skills:
+# hooks:
+# memory:
+# isolation:

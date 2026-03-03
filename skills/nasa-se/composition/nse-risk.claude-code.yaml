@@ -1,0 +1,19 @@
+# Claude Code vendor configuration for nse-risk
+# Layer 4 of 4: per-agent vendor-specific overrides.
+# Reference: https://docs.anthropic.com/en/docs/claude-code/agent-tool
+
+name: nse-risk
+description: >-
+  NASA Risk Manager agent implementing NPR 7123.1D Process 13 and NPR 8000.4C
+  for technical risk management, with adversarial quality mode integration
+model: opus
+tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
+# disallowedTools:
+# mcpServers:
+permissionMode: default
+background: false
+# maxTurns:
+# skills:
+# hooks:
+# memory:
+# isolation:

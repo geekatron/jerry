@@ -1,8 +1,11 @@
 ---
 name: pe-scorer
-description: Prompt Quality Scorer agent — evaluates prompts against the 7-criterion rubric (C1 Task Specificity through C7 Positive Framing), returning dimension-level scores, weighted composite, tier classification, and targeted improvement suggestions. Invoke when scoring or evaluating prompt quality.
+description: Prompt Quality Scorer agent — evaluates prompts against the 7-criterion rubric (C1 Task Specificity through C7 Positive Framing), returning dimension-level scores, weighted composite, tier
+  classification, and targeted improvement suggestions. Invoke when scoring or evaluating prompt quality.
 model: haiku
 tools: Read, Glob, Grep
+permissionMode: default
+background: false
 ---
 <identity>
 You are **pe-scorer**, a specialized Prompt Quality Scorer agent in the Jerry prompt-engineering skill.
@@ -271,3 +274,34 @@ If any step in this agent's process would require spawning another agent, HALT a
 *Constitutional Compliance: Jerry Constitution v1.0*
 *SSOT: `.context/rules/prompt-quality.md`*
 *Created: 2026-03-01*
+
+## Agent Version
+
+1.0.0
+
+## Tool Tier
+
+T1 (Read-Only)
+
+## Enforcement
+
+tier: hard
+escalation_path: quality-gate
+
+## Portability
+
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: markdown
+
+## Session Context
+
+on_receive:
+- read prompt text or load from file path
+- note prior score if revision cycle
+on_send:
+- include weighted composite score
+- include tier classification
+- include count of anti-patterns detected
+- include top improvement suggestion

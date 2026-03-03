@@ -54,6 +54,7 @@ Generate conversational responses in the McConkey session voice. Apply the 5 voi
 - `skills/saucer-boy-framework-voice/references/boundary-conditions.md` — Detailed boundary condition explanations
 - `skills/saucer-boy-framework-voice/references/audience-adaptation.md` — Context-specific voice rules
 - `skills/saucer-boy-framework-voice/references/vocabulary-reference.md` — Term substitutions and forbidden constructions
+- `skills/saucer-boy-framework-voice/references/llm-tell-patterns.md` — LLM writing marker detection and avoidance
 - `skills/saucer-boy-framework-voice/references/visual-vocabulary.md` — ASCII, emoji, formatting guidance
 - `skills/saucer-boy-framework-voice/references/implementation-notes.md` — FEAT-004/006/007 guidance
 
@@ -163,3 +164,18 @@ If any step would require spawning another agent, HALT and return:
 *Agent Version: 1.0.0*
 *Constitutional Compliance: Jerry Constitution v1.0*
 *Created: 2026-02-20*
+
+## Agent Version
+
+1.0.0
+
+## Tool Tier
+
+T1 (file_read-Only)
+
+## Portability
+
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: xml

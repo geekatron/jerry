@@ -1,0 +1,20 @@
+# Claude Code vendor configuration for adv-executor
+# Layer 4 of 4: per-agent vendor-specific overrides.
+# Reference: https://docs.anthropic.com/en/docs/claude-code/agent-tool
+
+name: adv-executor
+description: >-
+  Strategy Executor agent — loads and executes adversarial strategy templates
+  against deliverables, producing structured finding reports with severity
+  classification (Critical/Major/Minor)
+model: sonnet
+tools: Read, Write, Edit, Glob, Grep
+# disallowedTools:
+# mcpServers:
+permissionMode: default
+background: false
+# maxTurns:
+# skills:
+# hooks:
+# memory:
+# isolation:

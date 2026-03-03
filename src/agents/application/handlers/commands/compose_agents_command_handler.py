@@ -31,6 +31,7 @@ from src.agents.application.commands.compose_agents_command import (
     ComposeAgentsCommand,
 )
 from src.agents.application.handlers.commands.compose_result import ComposeResult
+from src.agents.domain.services.compose_validator import ComposeValidator
 from src.agents.domain.services.defaults_composer import DefaultsComposer
 
 if TYPE_CHECKING:
@@ -56,6 +57,7 @@ class ComposeAgentsCommandHandler:
         _vendor_override_provider: Provider for layer 4 per-agent vendor overrides.
         _vendor_override_spec: Allowlist spec for validating vendor overrides.
         _config_var_resolver: Callable for ${jerry.*} variable resolution.
+        _validator: Post-composition validator for regression prevention.
     """
 
     def __init__(
@@ -68,6 +70,7 @@ class ComposeAgentsCommandHandler:
         vendor_override_provider: IVendorOverrideProvider | None = None,
         vendor_override_spec: VendorOverrideSpec | None = None,
         config_var_resolver: Callable[[str], str | None] | None = None,
+        validator: ComposeValidator | None = None,
     ) -> None:
         """Initialize with dependencies.
 
@@ -80,6 +83,7 @@ class ComposeAgentsCommandHandler:
             vendor_override_provider: Provider for layer 4 overrides (None = no overrides).
             vendor_override_spec: Spec for validating vendor overrides (None = skip validation).
             config_var_resolver: Optional resolver for ${jerry.*} variables.
+            validator: Post-composition validator (None = skip validation).
         """
         self._repository = repository
         self._adapters = adapters
@@ -89,6 +93,7 @@ class ComposeAgentsCommandHandler:
         self._vendor_override_provider = vendor_override_provider
         self._vendor_override_spec = vendor_override_spec
         self._config_var_resolver = config_var_resolver
+        self._validator = validator
 
     def handle(self, command: ComposeAgentsCommand) -> ComposeResult:
         """Handle the ComposeAgentsCommand.
@@ -133,6 +138,25 @@ class ComposeAgentsCommandHandler:
         for agent in agents:
             try:
                 composed_content, output_path = self._compose_agent(agent, adapter, command.vendor)
+
+                # Post-composition validation (CV-001 through CV-007)
+                if self._validator is not None:
+                    validation = self._validator.validate(
+                        composed_content,
+                        agent_name=agent.name,
+                        governance_source=agent.extra_yaml,
+                    )
+                    if validation.errors:
+                        for finding in validation.errors:
+                            result.errors.append(
+                                f"{agent.name}: [{finding.check_id}] {finding.message}"
+                            )
+                        result.failed += 1
+                        continue  # Skip writing this agent
+                    for finding in validation.warnings:
+                        result.warnings.append(
+                            f"{agent.name}: [{finding.check_id}] {finding.message}"
+                        )
 
                 if not command.dry_run:
                     output_path.parent.mkdir(parents=True, exist_ok=True)

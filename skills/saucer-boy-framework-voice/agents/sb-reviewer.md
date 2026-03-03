@@ -1,7 +1,6 @@
 ---
 name: sb-reviewer
 description: Voice Compliance Reviewer — evaluates framework output text against the 5 Authenticity Tests and boundary conditions, producing a pass/fail compliance report with specific evidence and suggested
-  fixes
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep
 permissionMode: default

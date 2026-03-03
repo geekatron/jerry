@@ -54,6 +54,14 @@ CLAUDE_CODE_OVERRIDE_SPEC = VendorOverrideSpec(
     vendor="claude_code",
     allowed_keys=frozenset(
         {
+            # Claude Code official frontmatter fields (13 total).
+            # Reference: docs.anthropic.com/en/docs/claude-code/agent-tool
+            "name",
+            "description",
+            "model",
+            "tools",
+            "disallowedTools",
+            "mcpServers",
             "permissionMode",
             "background",
             "maxTurns",

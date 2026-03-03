@@ -1,0 +1,19 @@
+# Claude Code vendor configuration for wt-auditor
+# Layer 4 of 4: per-agent vendor-specific overrides.
+# Reference: https://docs.anthropic.com/en/docs/claude-code/agent-tool
+
+name: wt-auditor
+description: >-
+  Audit worktracker integrity across multiple files with template compliance,
+  relationship validation, and orphan detection
+model: sonnet
+tools: Read, Write, Glob, Grep, Bash
+# disallowedTools:
+# mcpServers:
+permissionMode: default
+background: false
+# maxTurns:
+# skills:
+# hooks:
+# memory:
+# isolation:

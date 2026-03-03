@@ -1,8 +1,6 @@
 ---
 name: eng-qa
 description: Security QA engineer for the /eng-team skill. Invoked when users request security test strategy, security test cases, fuzzing campaigns, property-based testing, boundary testing, or coverage
-  enforcement. Produces test artifacts with security regression suites and coverage reports. Routes from Step 5 of the /eng-team 8-step workflow. Integrates OWASP Testing Guide and MS SDL Verification phase
-  practices.
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:

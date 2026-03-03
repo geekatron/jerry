@@ -1,0 +1,19 @@
+# Claude Code vendor configuration for ts-formatter
+# Layer 4 of 4: per-agent vendor-specific overrides.
+# Reference: https://docs.anthropic.com/en/docs/claude-code/agent-tool
+
+name: ts-formatter
+description: >-
+  Generates formatted Markdown output with packet structure, file splitting, and
+  bidirectional linking per ADR-007 golden template specification
+model: haiku
+tools: Read, Write, Glob
+# disallowedTools:
+# mcpServers:
+permissionMode: default
+background: false
+# maxTurns:
+# skills:
+# hooks:
+# memory:
+# isolation:

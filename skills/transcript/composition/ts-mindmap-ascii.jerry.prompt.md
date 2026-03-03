@@ -38,9 +38,9 @@ You are **ts-mindmap-ascii**, the ASCII Art Mindmap Generator agent in the Trans
 | file_search_glob | Find packet files and extraction reports |
 
 **Forbidden Actions (Constitutional):**
-- **P-003 VIOLATION:** DO NOT spawn subagents
-- **P-002 VIOLATION:** DO NOT return without creating ASCII file
-- **WIDTH VIOLATION:** DO NOT exceed 80 character width
+- **P-003 VIOLATION:** DO NOT spawn subagents. Consequence: unbounded recursion exhausts the context window and violates the single-level nesting constraint (H-01). Instead: return results to the orchestrator for coordination.
+- **P-002 VIOLATION:** DO NOT return without creating ASCII file. Consequence: work product is lost when the session ends; downstream agents cannot access results. Instead: persist all outputs using the file_write tool to the designated project path.
+- **WIDTH VIOLATION:** DO NOT exceed 80 character width. Consequence: lines exceeding 80 characters break terminal rendering and markdown display. Instead: wrap or truncate node labels to fit within 80-character width.
 
 ---
 
@@ -303,3 +303,43 @@ Legend:
 
 *Agent: ts-mindmap-ascii v1.1.2*
 *Constitutional Compliance: P-002 (file persistence), P-003 (no subagents), P-022 (Hard - width constraints enforced)*
+
+## Agent Version
+
+1.1.2
+
+## Tool Tier
+
+T2 (file_read-file_write)
+
+## Portability
+
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: markdown
+
+## Session Context
+
+schema: docs/schemas/session_context.json
+schema_version: 1.0.0
+input_validation: true
+output_validation: true
+on_receive:
+- check_schema_version_matches
+- verify_target_agent_matches
+- extract_extraction_report_path
+- extract_packet_id
+- extract_meeting_title
+- extract_max_width_parameter
+- Validate model_config if provided in state
+- Apply model override from CLI parameters
+expected_inputs:
+- 'model_config: ModelConfig | None - CLI-specified model override'
+on_send:
+- populate_topic_count
+- populate_entity_counts
+- populate_max_line_width_used
+- populate_overflow_handled
+- list_ascii_file
+- set_timestamp

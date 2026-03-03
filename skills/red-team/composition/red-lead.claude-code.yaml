@@ -1,0 +1,21 @@
+# Claude Code vendor configuration for red-lead
+# Layer 4 of 4: per-agent vendor-specific overrides.
+# Reference: https://docs.anthropic.com/en/docs/claude-code/agent-tool
+
+name: red-lead
+description: >-
+  Engagement Lead & Scope Authority for /red-team. Creates and manages scope
+  documents, Rules of Engagement, and authorization verification for all
+  penetration testing and red team engagements.
+model: opus
+tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
+# disallowedTools:
+mcpServers:
+  context7: true
+permissionMode: default
+background: false
+# maxTurns:
+# skills:
+# hooks:
+# memory:
+# isolation:

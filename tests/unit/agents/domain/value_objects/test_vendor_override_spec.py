@@ -85,6 +85,30 @@ class TestClaudeCodeOverrideSpec:
     def test_vendor_is_claude_code(self) -> None:
         assert CLAUDE_CODE_OVERRIDE_SPEC.vendor == "claude_code"
 
+    def test_allows_name(self) -> None:
+        errors = CLAUDE_CODE_OVERRIDE_SPEC.validate({"name": "my-agent"})
+        assert errors == []
+
+    def test_allows_description(self) -> None:
+        errors = CLAUDE_CODE_OVERRIDE_SPEC.validate({"description": "Agent description"})
+        assert errors == []
+
+    def test_allows_model(self) -> None:
+        errors = CLAUDE_CODE_OVERRIDE_SPEC.validate({"model": "opus"})
+        assert errors == []
+
+    def test_allows_tools(self) -> None:
+        errors = CLAUDE_CODE_OVERRIDE_SPEC.validate({"tools": ["Read", "Write"]})
+        assert errors == []
+
+    def test_allows_disallowed_tools(self) -> None:
+        errors = CLAUDE_CODE_OVERRIDE_SPEC.validate({"disallowedTools": ["Task"]})
+        assert errors == []
+
+    def test_allows_mcp_servers(self) -> None:
+        errors = CLAUDE_CODE_OVERRIDE_SPEC.validate({"mcpServers": {"context7": True}})
+        assert errors == []
+
     def test_allows_permission_mode(self) -> None:
         errors = CLAUDE_CODE_OVERRIDE_SPEC.validate({"permissionMode": "bypassPermissions"})
         assert errors == []
@@ -139,6 +163,12 @@ class TestClaudeCodeOverrideSpec:
 
     def test_all_allowed_keys_at_once(self) -> None:
         overrides = {
+            "name": "my-agent",
+            "description": "Agent description",
+            "model": "sonnet",
+            "tools": ["Read", "Write"],
+            "disallowedTools": ["Task"],
+            "mcpServers": {"context7": True},
             "permissionMode": "default",
             "background": True,
             "maxTurns": 10,

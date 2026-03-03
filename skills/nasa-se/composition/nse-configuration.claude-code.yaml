@@ -1,0 +1,19 @@
+# Claude Code vendor configuration for nse-configuration
+# Layer 4 of 4: per-agent vendor-specific overrides.
+# Reference: https://docs.anthropic.com/en/docs/claude-code/agent-tool
+
+name: nse-configuration
+description: >-
+  NASA Configuration Management agent implementing NPR 7123.1D Processes 14 and
+  15 for configuration management and technical data management
+model: haiku
+tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
+# disallowedTools:
+# mcpServers:
+permissionMode: default
+background: false
+# maxTurns:
+# skills:
+# hooks:
+# memory:
+# isolation:

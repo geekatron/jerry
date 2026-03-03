@@ -544,6 +544,9 @@ def _handle_agents(args: Any, json_output: bool) -> int:
         return 1 if result.failed > 0 else 0
 
     elif args.command == "validate":
+        if getattr(args, "composed", False):
+            return _handle_agents_validate_composed(args, json_output)
+
         handler = create_agents_validate_handler()
         from src.agents.application.queries.validate_agents_query import (
             ValidateAgentsQuery,
@@ -710,6 +713,50 @@ def _handle_agents(args: Any, json_output: bool) -> int:
 
     print(f"Unknown agents command: {args.command}")
     return 1
+
+
+def _handle_agents_validate_composed(args: Any, json_output: bool) -> int:
+    """Handle 'jerry agents validate --composed'.
+
+    Args:
+        args: Parsed arguments with .agent.
+        json_output: Whether JSON output was requested.
+
+    Returns:
+        Exit code: 0 (all passed), 1 (errors found).
+    """
+    from src.agents.application.queries.validate_composed_agents_query import (
+        ValidateComposedAgentsQuery,
+    )
+    from src.agents.bootstrap import create_agents_compose_validate_handler
+
+    handler = create_agents_compose_validate_handler()
+    query = ValidateComposedAgentsQuery(
+        agent_name=getattr(args, "agent", None),
+    )
+    result = handler.handle(query)
+
+    if json_output:
+        import json
+
+        output = {
+            "total": result.total,
+            "passed": result.passed,
+            "failed": result.failed,
+            "is_valid": result.is_valid,
+            "errors": result.errors,
+            "warnings": result.warnings,
+        }
+        print(json.dumps(output, indent=2))
+    else:
+        status = "PASS" if result.is_valid else "FAIL"
+        print(f"Composed validation {status}: {result.passed}/{result.total} passed.")
+        for error in result.errors:
+            print(f"  ERROR: {error}")
+        for warning in result.warnings:
+            print(f"  WARNING: {warning}")
+
+    return 0 if result.is_valid else 1
 
 
 def _handle_why() -> int:

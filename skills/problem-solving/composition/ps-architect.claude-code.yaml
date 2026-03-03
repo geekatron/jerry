@@ -1,0 +1,21 @@
+# Claude Code vendor configuration for ps-architect
+# Layer 4 of 4: per-agent vendor-specific overrides.
+# Reference: https://docs.anthropic.com/en/docs/claude-code/agent-tool
+
+name: ps-architect
+description: >-
+  Architectural decision agent producing ADRs with Nygard format and L0/L1/L2
+  output levels
+model: opus
+tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
+# disallowedTools:
+mcpServers:
+  context7: true
+  memory-keeper: true
+permissionMode: default
+background: false
+# maxTurns:
+# skills:
+# hooks:
+# memory:
+# isolation:

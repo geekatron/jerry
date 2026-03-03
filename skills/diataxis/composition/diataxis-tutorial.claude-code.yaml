@@ -1,0 +1,22 @@
+# Claude Code vendor configuration for diataxis-tutorial
+# Layer 4 of 4: per-agent vendor-specific overrides.
+# Reference: https://docs.anthropic.com/en/docs/claude-code/agent-tool
+
+name: diataxis-tutorial
+description: >-
+  Tutorial writer agent — produces learning-oriented documentation following
+  Diataxis methodology. Creates step-by-step tutorials with prerequisites,
+  visible results per step, and no alternatives. Invoke when users need to learn
+  something new through guided hands-on experience. NOT for users who need to
+  quickly accomplish a task (use diataxis-howto instead).
+model: sonnet
+tools: Read, Write, Edit, Glob, Grep, Bash
+# disallowedTools:
+# mcpServers:
+permissionMode: default
+background: false
+# maxTurns:
+# skills:
+# hooks:
+# memory:
+# isolation:

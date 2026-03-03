@@ -1,0 +1,19 @@
+# Claude Code vendor configuration for ps-reporter
+# Layer 4 of 4: per-agent vendor-specific overrides.
+# Reference: https://docs.anthropic.com/en/docs/claude-code/agent-tool
+
+name: ps-reporter
+description: >-
+  Status reporting agent for phase progress, constraint status, and knowledge
+  summaries with L0/L1/L2 output levels
+model: haiku
+tools: Read, Write, Edit, Glob, Grep, Bash
+# disallowedTools:
+# mcpServers:
+permissionMode: default
+background: false
+# maxTurns:
+# skills:
+# hooks:
+# memory:
+# isolation:

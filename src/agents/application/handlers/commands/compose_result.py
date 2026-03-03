@@ -22,6 +22,7 @@ class ComposeResult:
         failed: Number of agents that failed.
         output_paths: List of output file paths written.
         errors: List of error messages for failures.
+        warnings: List of non-fatal warning messages.
         dry_run: Whether this was a dry-run.
     """
 
@@ -29,4 +30,5 @@ class ComposeResult:
     failed: int = 0
     output_paths: list[str] = field(default_factory=list)
     errors: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
     dry_run: bool = False

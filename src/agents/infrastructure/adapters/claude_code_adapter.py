@@ -15,6 +15,7 @@ References:
 
 from __future__ import annotations
 
+import logging
 import re
 from pathlib import Path
 from typing import Any
@@ -31,6 +32,8 @@ from src.agents.domain.value_objects.body_format import BodyFormat
 from src.agents.domain.value_objects.model_tier import ModelTier
 from src.agents.domain.value_objects.tool_tier import ToolTier
 from src.agents.domain.value_objects.vendor_target import VendorTarget
+
+logger = logging.getLogger(__name__)
 
 
 class ClaudeCodeAdapter(IVendorAdapter):
@@ -335,7 +338,8 @@ class ClaudeCodeAdapter(IVendorAdapter):
 
         try:
             fm_data = yaml.safe_load(fm_text) or {}
-        except yaml.YAMLError:
+        except yaml.YAMLError as e:
+            logger.warning("YAML parse error in frontmatter: %s", e)
             fm_data = {}
 
         return fm_data, body
@@ -479,8 +483,13 @@ class ClaudeCodeAdapter(IVendorAdapter):
                     parsed = yaml.safe_load(content)
                     if isinstance(parsed, dict):
                         gov_data[tag] = parsed
-                except yaml.YAMLError:
-                    pass
+                except yaml.YAMLError as e:
+                    logger.warning(
+                        "YAML parse error in XML governance tag <%s>: %s (content: %.80s...)",
+                        tag,
+                        e,
+                        content,
+                    )
 
         # Bullet-list field: prior_art
         match = re.search(r"<prior_art>\s*(.*?)\s*</prior_art>", body, re.DOTALL)
@@ -552,8 +561,13 @@ class ClaudeCodeAdapter(IVendorAdapter):
                     parsed = yaml.safe_load(sections[heading])
                     if isinstance(parsed, dict):
                         gov_data[key] = parsed
-                except yaml.YAMLError:
-                    pass
+                except yaml.YAMLError as e:
+                    logger.warning(
+                        "YAML parse error in markdown governance section '## %s': %s (content: %.80s...)",
+                        heading.title(),
+                        e,
+                        sections[heading],
+                    )
 
         # Bullet-list field: prior_art
         if "prior art" in sections and sections["prior art"]:
