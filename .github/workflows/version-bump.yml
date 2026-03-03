@@ -73,6 +73,12 @@ jobs:
         run: uv tool install bump-my-version
 
       # ------------------------------------------------------------------
+      # Install project dependencies for bump detection
+      # ------------------------------------------------------------------
+      - name: Install project dependencies
+        run: uv sync
+
+      # ------------------------------------------------------------------
       # Determine bump type from commits
       # ------------------------------------------------------------------
       - name: Determine bump type
@@ -86,44 +92,9 @@ jobs:
             exit 0
           fi
 
-          # Find the last version tag
-          LAST_TAG=$(git describe --tags --abbrev=0 --match "v*" 2>/dev/null || echo "")
-
-          if [[ -z "$LAST_TAG" ]]; then
-            echo "No previous version tag found. Using all commits."
-            RANGE="HEAD"
-          else
-            echo "Last tag: $LAST_TAG"
-            RANGE="${LAST_TAG}..HEAD"
-          fi
-
-          # Read commit subjects since last tag
-          COMMITS=$(git log "$RANGE" --pretty=format:"%s" 2>/dev/null || echo "")
-
-          if [[ -z "$COMMITS" ]]; then
-            echo "No commits since last tag."
-            echo "type=none" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          echo "Commits since $LAST_TAG:"
-          echo "$COMMITS"
-          echo "---"
-
-          # Determine bump type (highest severity wins)
-          BUMP_TYPE="none"
-
-          # Check for BREAKING CHANGE (MAJOR)
-          if echo "$COMMITS" | grep -qE "^[a-z]+(\([a-z0-9_-]+\))?!:" || \
-             git log "$RANGE" --pretty=format:"%B" 2>/dev/null | grep -q "^BREAKING CHANGE:"; then
-            BUMP_TYPE="major"
-          # Check for feat (MINOR)
-          elif echo "$COMMITS" | grep -qE "^feat(\([a-z0-9_-]+\))?:"; then
-            BUMP_TYPE="minor"
-          # Check for fix or perf (PATCH)
-          elif echo "$COMMITS" | grep -qE "^(fix|perf)(\([a-z0-9_-]+\))?:"; then
-            BUMP_TYPE="patch"
-          fi
+          # Use jerry CLI for case-insensitive conventional commit detection
+          # BUG-002: Replaces inline bash regex that rejected uppercase scopes
+          BUMP_TYPE=$(uv run jerry ci detect-bump-type --since-tag)
 
           echo "Determined bump type: $BUMP_TYPE"
           echo "type=$BUMP_TYPE" >> "$GITHUB_OUTPUT"

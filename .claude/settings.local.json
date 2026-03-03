@@ -55,7 +55,8 @@
       "Bash(uv run pyright:*)",
       "Bash(uv run:*)",
       "Bash(wc:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Skill(prompt-engineering)"
     ]
   },
   "hooks": {

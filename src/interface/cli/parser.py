@@ -108,6 +108,9 @@ Examples:
     # Agents namespace (ADR-PROJ010-003: Canonical agent build pipeline)
     _add_agents_namespace(subparsers)
 
+    # CI namespace (BUG-002: Version bump detection)
+    _add_ci_namespace(subparsers)
+
     # EE-008: Undocumented philosophy command
     subparsers.add_parser(
         "why",
@@ -931,6 +934,57 @@ def _add_agents_namespace(
         "--vendor",
         default="claude_code",
         help="Vendor to compare against (default: claude_code)",
+    )
+
+
+def _add_ci_namespace(
+    subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
+) -> None:
+    """Add ci namespace commands.
+
+    Commands:
+        - detect-bump-type: Detect version bump type from commits
+
+    References:
+        - BUG-002: Version bump regex rejects uppercase scopes
+    """
+    ci_parser = subparsers.add_parser(
+        "ci",
+        help="CI/CD pipeline commands",
+        description="Commands for CI/CD pipeline automation.",
+    )
+
+    ci_subparsers = ci_parser.add_subparsers(
+        title="commands",
+        dest="command",
+        metavar="<command>",
+    )
+
+    detect_parser = ci_subparsers.add_parser(
+        "detect-bump-type",
+        help="Detect version bump type from conventional commits",
+        description="Analyze commit messages to determine the version bump type (major/minor/patch/none).",
+    )
+
+    source_group = detect_parser.add_mutually_exclusive_group()
+    source_group.add_argument(
+        "--since-tag",
+        nargs="?",
+        const="__latest__",
+        default=None,
+        help="Read commits since tag (default: latest version tag)",
+    )
+    source_group.add_argument(
+        "--range",
+        dest="range_spec",
+        default=None,
+        help="Git revision range (e.g., 'v0.22.1..HEAD')",
+    )
+    source_group.add_argument(
+        "--commits-from-stdin",
+        action="store_true",
+        default=False,
+        help="Read commit subjects from stdin (one per line)",
     )
 
 

@@ -727,6 +727,47 @@ def create_context_estimate_handler() -> Any:
     return ContextEstimateHandler(service, sub_agent_reader=sub_agent_reader)
 
 
+def create_ci_detect_bump_type_handler(
+    commits_from_stdin: bool = False,
+) -> Any:
+    """Create a handler for CI bump type detection.
+
+    Args:
+        commits_from_stdin: If True, read commits from stdin instead of git log.
+
+    Returns:
+        DetectBumpTypeQueryHandler wired with appropriate reader and detector.
+
+    References:
+        - BUG-002: Version bump regex rejects uppercase scopes
+    """
+    from src.version.domain.services.bump_type_detector import BumpTypeDetector
+
+    detector = BumpTypeDetector()
+
+    if commits_from_stdin:
+        from src.version.infrastructure.adapters.stdin_commit_reader import (
+            StdinCommitReader,
+        )
+
+        reader = StdinCommitReader()
+    else:
+        from src.version.infrastructure.adapters.git_commit_log_reader import (
+            GitCommitLogReader,
+        )
+
+        reader = GitCommitLogReader()
+
+    from src.version.application.handlers.queries.detect_bump_type_query_handler import (
+        DetectBumpTypeQueryHandler,
+    )
+
+    return DetectBumpTypeQueryHandler(
+        commit_reader=reader,
+        detector=detector,
+    )
+
+
 def reset_singletons() -> None:
     """Reset all module-level singletons (for testing).
 

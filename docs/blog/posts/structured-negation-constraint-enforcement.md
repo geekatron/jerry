@@ -282,20 +282,20 @@ The CONDITIONAL GO verdict means the research was honest about what the data sho
 
 | Document | Location |
 |----------|----------|
-| Final synthesis (Phase 6) | [:octicons-link-external-16: final-synthesis.md](https://github.com/geekatron/jerry/blob/feat/proj-014-negative-prompting-research/projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/phase-6/final-synthesis.md) |
-| A/B testing go-no-go determination | [:octicons-link-external-16: go-no-go-determination.md](https://github.com/geekatron/jerry/blob/feat/proj-014-negative-prompting-research/projects/PROJ-014-negative-prompting-research/orchestration/ab-testing-20260301-001/phase-3-analysis/go-no-go-determination.md) |
-| NPT pattern reference | [:octicons-link-external-16: npt-pattern-reference.md](https://github.com/geekatron/jerry/blob/feat/proj-014-negative-prompting-research/skills/prompt-engineering/rules/npt-pattern-reference.md) |
-| NPT taxonomy catalog | [:octicons-link-external-16: taxonomy-pattern-catalog.md](https://github.com/geekatron/jerry/blob/feat/proj-014-negative-prompting-research/projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/phase-3/taxonomy-pattern-catalog.md) |
-| Prompt Engineering SKILL.md | [:octicons-link-external-16: SKILL.md](https://github.com/geekatron/jerry/blob/feat/proj-014-negative-prompting-research/skills/prompt-engineering/SKILL.md) |
+| Final synthesis (Phase 6) | [:octicons-link-external-16: final-synthesis.md](https://github.com/geekatron/jerry/blob/main/projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/phase-6/final-synthesis.md) |
+| A/B testing go-no-go determination | [:octicons-link-external-16: go-no-go-determination.md](https://github.com/geekatron/jerry/blob/main/projects/PROJ-014-negative-prompting-research/orchestration/ab-testing-20260301-001/phase-3-analysis/go-no-go-determination.md) |
+| NPT pattern reference | [:octicons-link-external-16: npt-pattern-reference.md](https://github.com/geekatron/jerry/blob/main/skills/prompt-engineering/rules/npt-pattern-reference.md) |
+| NPT taxonomy catalog | [:octicons-link-external-16: taxonomy-pattern-catalog.md](https://github.com/geekatron/jerry/blob/main/projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/phase-3/taxonomy-pattern-catalog.md) |
+| Prompt Engineering SKILL.md | [:octicons-link-external-16: SKILL.md](https://github.com/geekatron/jerry/blob/main/skills/prompt-engineering/SKILL.md) |
 
 ### Architecture Decision Records
 
 | ADR | Location |
 |-----|----------|
-| ADR-001: NPT-014 Elimination | [:octicons-link-external-16: ADR-001](https://github.com/geekatron/jerry/blob/feat/proj-014-negative-prompting-research/projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/phase-5/ADR-001-npt014-elimination.md) |
-| ADR-002: Constitutional Upgrades | [:octicons-link-external-16: ADR-002](https://github.com/geekatron/jerry/blob/feat/proj-014-negative-prompting-research/projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/phase-5/ADR-002-constitutional-upgrades.md) |
-| ADR-003: Routing Disambiguation | [:octicons-link-external-16: ADR-003](https://github.com/geekatron/jerry/blob/feat/proj-014-negative-prompting-research/projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/phase-5/ADR-003-routing-disambiguation.md) |
-| ADR-004: Compaction Resilience | [:octicons-link-external-16: ADR-004](https://github.com/geekatron/jerry/blob/feat/proj-014-negative-prompting-research/projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/phase-5/ADR-004-compaction-resilience.md) |
+| ADR-001: NPT-014 Elimination | [:octicons-link-external-16: ADR-001](https://github.com/geekatron/jerry/blob/main/projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/phase-5/ADR-001-npt014-elimination.md) |
+| ADR-002: Constitutional Upgrades | [:octicons-link-external-16: ADR-002](https://github.com/geekatron/jerry/blob/main/projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/phase-5/ADR-002-constitutional-upgrades.md) |
+| ADR-003: Routing Disambiguation | [:octicons-link-external-16: ADR-003](https://github.com/geekatron/jerry/blob/main/projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/phase-5/ADR-003-routing-disambiguation.md) |
+| ADR-004: Compaction Resilience | [:octicons-link-external-16: ADR-004](https://github.com/geekatron/jerry/blob/main/projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/phase-5/ADR-004-compaction-resilience.md) |
 
 ### Key Academic Citations
 
