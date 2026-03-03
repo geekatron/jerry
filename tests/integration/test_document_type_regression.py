@@ -70,7 +70,7 @@ def _discover_md_files() -> list[str]:
     """
     files: list[str] = []
     for md_file in REPO_ROOT.rglob("*.md"):
-        rel = str(md_file.relative_to(REPO_ROOT))
+        rel = str(md_file.relative_to(REPO_ROOT)).replace("\\", "/")
         # Skip excluded directories
         parts = md_file.relative_to(REPO_ROOT).parts
         if any(part in _EXCLUDED_DIRS for part in parts):
