@@ -3,7 +3,6 @@ name: ast
 description: Markdown AST operations for Jerry documents. Provides structured parse, query, modify, validate, and render operations on Jerry markdown files via the jerry ast CLI.
 allowed-tools: Read, Write, Edit, Bash
 ---
-
 # AST Skill
 
 > **Version:** 1.1.0
@@ -278,3 +277,19 @@ interface layer (H-07 enforced by architecture boundary tests).
 | Integration tests | `tests/integration/cli/test_ast_subprocess.py` |
 | H-23/H-24 rules | `.context/rules/markdown-navigation-standards.md` |
 | Quality enforcement | `.context/rules/quality-enforcement.md` |
+
+## Skill Version
+
+1.1.0
+
+## Activation Keywords
+
+- /ast
+- /jerry:ast
+- parse markdown
+- query frontmatter
+- modify frontmatter
+- validate markdown
+- render markdown
+- extract reinject
+- validate nav table

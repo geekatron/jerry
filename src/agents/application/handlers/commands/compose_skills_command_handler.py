@@ -216,12 +216,12 @@ class ComposeSkillsCommandHandler:
         if not content.startswith("---"):
             return {}, content
 
-        end = content.find("---", 3)
+        end = content.find("\n---", 3)
         if end == -1:
             return {}, content
 
-        fm_text = content[3:end].strip()
-        body = content[end + 3 :].lstrip("\n")
+        fm_text = content[4:end]
+        body = content[end + 4 :].lstrip("\n")
 
         try:
             fm_data = yaml.safe_load(fm_text) or {}

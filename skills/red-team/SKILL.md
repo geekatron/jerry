@@ -1,10 +1,10 @@
 ---
 name: red-team
-description: Offensive security team skill providing methodology guidance for penetration testing and red team engagements. Invoked when users request penetration testing, reconnaissance, vulnerability analysis, exploitation methodology, social engineering, C2 infrastructure, or engagement reporting. Routes to 11 specialized agents covering the full MITRE ATT&CK kill chain. All engagements require red-lead scope authorization before any other agent. Follows PTES, OSSTMM, and ATT&CK methodology frameworks.
-
+description: Offensive security team skill providing methodology guidance for penetration testing and red team engagements. Invoked when users request penetration testing, reconnaissance, vulnerability
+  analysis, exploitation methodology, social engineering, C2 infrastructure, or engagement reporting. Routes to 11 specialized agents covering the full MITRE ATT&CK kill chain. All engagements require red-lead
+  scope authorization before any other agent. Follows PTES, OSSTMM, and ATT&CK methodology frameworks.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, mcp__context7__resolve-library-id, mcp__context7__query-docs
 ---
-
 # Red Team Skill
 
 > **Version:** 1.0.0
@@ -634,6 +634,48 @@ All agents adhere to the **Jerry Constitution v1.0**:
 | `.context/rules/quality-enforcement.md` | Quality gate thresholds |
 
 ---
+
+## Skill Version
+
+1.0.0
+
+## Activation Keywords
+
+- penetration test
+- pentest
+- red team
+- offensive security
+- reconnaissance
+- exploit
+- privilege escalation
+- lateral movement
+- persistence
+- exfiltration
+- C2
+- command and control
+- social engineering
+- phishing
+- attack surface
+- kill chain
+- PTES
+- OSSTMM
+- ATT&CK
+- rules of engagement
+- engagement report
+
+## Agent Registry
+
+- red-exfil
+- red-exploit
+- red-infra
+- red-lateral
+- red-lead
+- red-persist
+- red-privesc
+- red-recon
+- red-reporter
+- red-social
+- red-vuln
 
 *Skill Version: 1.0.0*
 *Constitutional Compliance: Jerry Constitution v1.0*

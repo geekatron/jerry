@@ -1,9 +1,9 @@
 ---
 name: nasa-se
-description: NASA Systems Engineering skill implementing NPR 7123.1D processes through 10 specialized agents. Use for requirements engineering, verification/validation, risk management, technical reviews, system integration, configuration management, architecture decisions, trade studies/exploration, quality assurance, and SE status reporting following mission-grade practices.
+description: NASA Systems Engineering skill implementing NPR 7123.1D processes through 10 specialized agents. Use for requirements engineering, verification/validation, risk management, technical reviews,
+  system integration, configuration management, architecture decisions, trade studies/exploration, quality assurance, and SE status reporting following mission-grade practices.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, WebSearch, WebFetch, mcp__context7__resolve-library-id, mcp__context7__query-docs, mcp__memory-keeper__store, mcp__memory-keeper__retrieve, mcp__memory-keeper__search
 ---
-
 # NASA Systems Engineering Skill
 
 > **Version:** 1.2.0
@@ -516,6 +516,61 @@ For detailed agent specifications, see:
 - [INCOSE SE Handbook v5.0](https://www.incose.org/) - Industry Best Practices
 
 ---
+
+## Skill Version
+
+1.2.0
+
+## Activation Keywords
+
+- systems engineering
+- NASA SE
+- NPR 7123
+- requirements engineering
+- verification and validation
+- V&V
+- risk management
+- technical review
+- SRR
+- PDR
+- CDR
+- FRR
+- system integration
+- configuration management
+- traceability matrix
+- VCRM
+- interface control
+- ICD
+- risk register
+- 5x5 matrix
+- trade study
+- trade-off
+- alternative analysis
+- decision analysis
+- concept exploration
+- explore options
+- what are our options
+- divergent thinking
+- brainstorm
+- quality assurance
+- QA audit
+- artifact validation
+- compliance check
+- NPR compliance
+- work product quality
+
+## Agent Registry
+
+- nse-architecture
+- nse-configuration
+- nse-explorer
+- nse-integration
+- nse-qa
+- nse-reporter
+- nse-requirements
+- nse-reviewer
+- nse-risk
+- nse-verification
 
 *Skill Version: 1.2.0*
 *Constitutional Compliance: Jerry Constitution v1.0 + P-040, P-041, P-042, P-043*

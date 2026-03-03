@@ -1,15 +1,9 @@
 ---
 name: saucer-boy-framework-voice
-description: >-
-  INTERNAL SKILL — auto-loaded for framework output voice quality. Reviews,
-  rewrites, and scores framework output text for persona compliance using the
-  Shane McConkey ethos: joy and excellence as multipliers. Governs quality gate
-  messages, error messages, CLI output, hook text, and framework-generated text.
-  Not user-invocable; loaded automatically when framework output needs voice
-  enforcement.
+description: 'INTERNAL SKILL — auto-loaded for framework output voice quality. Reviews, rewrites, and scores framework output text for persona compliance using the Shane McConkey ethos: joy and excellence
+  as multipliers. Governs quality gate messages, error messages, CLI output, hook text, and framework-generated text. Not user-invocable; loaded automatically when framework output needs voice enforcement.'
 allowed-tools: Read, Write, Edit, Glob, Grep
 ---
-
 # Framework Voice Skill (Internal)
 
 > **INTERNAL SKILL** — Auto-loaded for framework output. Not user-invocable.
@@ -472,6 +466,28 @@ All agents adhere to the **Jerry Constitution v1.0**:
 | Reference: visual-vocabulary.md | Visual Vocabulary | 546-613 | Examples (ASCII, emoji, formatting) |
 
 ---
+
+## Skill Version
+
+1.1.0
+
+## Activation Keywords
+
+- voice check
+- voice review
+- persona compliance
+- persona check
+- voice rewrite
+- voice fidelity
+- voice score
+- framework voice
+- persona review
+
+## Agent Registry
+
+- sb-calibrator
+- sb-reviewer
+- sb-rewriter
 
 *Skill Version: 1.1.0*
 *Constitutional Compliance: Jerry Constitution v1.0*

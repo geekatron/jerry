@@ -1,10 +1,10 @@
 ---
 name: transcript
-description: Parse, extract, and format transcripts (VTT, SRT, plain text) into structured Markdown packets with action items, decisions, questions, and topics. v2.0 uses hybrid Python+LLM architecture for VTT files. Integrates with ps-critic for quality review.
+description: Parse, extract, and format transcripts (VTT, SRT, plain text) into structured Markdown packets with action items, decisions, questions, and topics. v2.0 uses hybrid Python+LLM architecture
+  for VTT files. Integrates with ps-critic for quality review.
 allowed-tools: Read, Write, Glob, Task, Bash(*), mcp__memory-keeper__store, mcp__memory-keeper__retrieve
 argument-hint: <file-path> [--output-dir <dir>] [--no-mindmap] [--mindmap-format <mermaid|ascii|both>]
 ---
-
 # MANDATORY: CLI Invocation for Parsing (Phase 1)
 
 > **CRITICAL:** For VTT files, you MUST invoke the Python parser via the `jerry` CLI.
@@ -3350,6 +3350,69 @@ For detailed agent specifications, see:
 | 2.5.0 | 2026-01-31 | **ADR-007 Model-Agnostic Output:** Added "Model-Agnostic Output Requirements (ADR-007)" section with MUST-CREATE (8 files), MUST-NOT-CREATE lists, anchor format rules, citation format, and navigation requirements. Ensures output consistency across Sonnet/Opus/Haiku models. FEAT-006 Phase 4 implementation. | ADR-007, FEAT-006 |
 
 ---
+
+## Skill Version
+
+2.5.0
+
+## Activation Keywords
+
+- transcript
+- meeting notes
+- parse vtt
+- parse srt
+- extract action items
+- extract decisions
+- analyze meeting
+- /transcript
+
+## Agent Registry
+
+- ts-extractor
+- ts-formatter
+- ts-mindmap-ascii
+- ts-mindmap-mermaid
+- ts-parser
+
+## Context Injection
+
+```yaml
+default_domain: general
+domains:
+- name: general
+  description: Baseline extraction - speakers, topics, questions
+  file: contexts/general.yaml
+- name: transcript
+  description: Base transcript entities - extends general
+  file: contexts/transcript.yaml
+- name: meeting
+  description: Generic meetings - action items, decisions, follow-ups
+  file: contexts/meeting.yaml
+- name: software-engineering
+  description: Standups, sprint planning, code reviews - commitments, blockers, risks
+  file: contexts/software-engineering.yaml
+- name: software-architecture
+  description: ADR discussions, design sessions - decisions, alternatives, quality attributes
+  file: contexts/software-architecture.yaml
+- name: product-management
+  description: Roadmap planning, feature prioritization - requests, user needs, stakeholder feedback
+  file: contexts/product-management.yaml
+- name: user-experience
+  description: Research interviews, usability tests - insights, pain points, verbatim quotes
+  file: contexts/user-experience.yaml
+- name: cloud-engineering
+  description: Post-mortems, capacity planning - incidents, root causes, action items
+  file: contexts/cloud-engineering.yaml
+- name: security-engineering
+  description: Security audits, threat modeling - vulnerabilities, threats (STRIDE), compliance gaps
+  file: contexts/security-engineering.yaml
+context_path: ./contexts/
+template_variables:
+- domain
+- entity_definitions
+- extraction_rules
+- prompt_guidance
+```
 
 *Skill Version: 2.5.0*
 *Architecture: Hybrid Python+LLM (Strategy Pattern) + Mindmap Generation + Token-Based Chunking*

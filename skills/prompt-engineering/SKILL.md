@@ -1,9 +1,9 @@
 ---
 name: prompt-engineering
-description: Structured prompt construction and quality validation for Jerry Framework. Invoke when building structured prompts, generating NPT-009/NPT-013 constraints, or scoring prompt quality. Guides users through the 5-element prompt anatomy, generates formatted constraints with XML wrapping, and scores prompts against the 7-criterion rubric.
+description: Structured prompt construction and quality validation for Jerry Framework. Invoke when building structured prompts, generating NPT-009/NPT-013 constraints, or scoring prompt quality. Guides
+  users through the 5-element prompt anatomy, generates formatted constraints with XML wrapping, and scores prompts against the 7-criterion rubric.
 allowed-tools: Read, Write, Edit, Glob, Grep
 ---
-
 # Prompt Engineering Skill
 
 > **Version:** 1.0.0
@@ -301,6 +301,27 @@ This skill operationalizes three knowledge sources into reusable tooling:
 | `projects/PROJ-006-jerry-prompt/` | PROJ-006 research: 5-element anatomy derivation, quality rubric development, template validation |
 
 ---
+
+## Skill Version
+
+1.0.0
+
+## Activation Keywords
+
+- /prompt-engineering
+- build prompt
+- create prompt
+- prompt template
+- NPT pattern
+- constraint generation
+- prompt quality
+- score prompt
+
+## Agent Registry
+
+- pe-builder
+- pe-constraint-gen
+- pe-scorer
 
 *Skill Version: 1.0.0*
 *Constitutional Compliance: Jerry Constitution v1.0*

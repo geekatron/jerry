@@ -1,9 +1,9 @@
 ---
 name: saucer-boy
-description: Session conversational voice with McConkey personality. Invoke for Saucer Boy energy during work sessions — ambient personality that makes working with Jerry fun, or explicit McConkey invocation for on-demand persona responses. Use when you want McConkey-style commentary, encouragement, or perspective. Personality disengages automatically for hard stops, security, and governance.
+description: Session conversational voice with McConkey personality. Invoke for Saucer Boy energy during work sessions — ambient personality that makes working with Jerry fun, or explicit McConkey invocation
+  for on-demand persona responses. Use when you want McConkey-style commentary, encouragement, or perspective. Personality disengages automatically for hard stops, security, and governance.
 allowed-tools: Read, Glob, Grep
 ---
-
 # Saucer Boy — Session Conversational Voice
 
 > **Version:** 1.0.0
@@ -367,6 +367,25 @@ These define what the session voice is NEVER:
 **Cross-skill reference dependency:** This skill loads calibration references from `skills/saucer-boy-framework-voice/references/`. This is an intentional shared-reference architecture — both skills derive from the same persona source doc. The framework voice skill's references directory is a stability contract: files may not be renamed or reorganized without updating both consumer skills. Changes to framework voice reference files may affect session voice behavior. **Coordination rule:** Any rename, move, or structural change to files in `skills/saucer-boy-framework-voice/references/` MUST include a search for consumers (`grep -r "saucer-boy-framework-voice/references"`) and update all references in the same commit.
 
 ---
+
+## Skill Version
+
+1.0.0
+
+## Activation Keywords
+
+- saucer boy
+- saucer-boy
+- mcconkey
+- talk like mcconkey
+- saucer boy mode
+- what would saucer boy say
+- give me a pep talk
+- roast this code
+
+## Agent Registry
+
+- sb-voice
 
 *Skill Version: 1.0.0*
 *Constitutional Compliance: Jerry Constitution v1.0*

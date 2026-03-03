@@ -1,9 +1,9 @@
 ---
 name: problem-solving
-description: Structured problem-solving framework with specialized agents for research, analysis, architecture decisions, validation, synthesis, reviews, investigations, and reporting. Use when tackling complex problems that need systematic exploration, evidence-based decisions, and persistent artifacts.
+description: Structured problem-solving framework with specialized agents for research, analysis, architecture decisions, validation, synthesis, reviews, investigations, and reporting. Use when tackling
+  complex problems that need systematic exploration, evidence-based decisions, and persistent artifacts.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, WebSearch, WebFetch, mcp__context7__resolve-library-id, mcp__context7__query-docs, mcp__memory-keeper__store, mcp__memory-keeper__retrieve, mcp__memory-keeper__search
 ---
-
 # Problem-Solving Skill
 
 > **Version:** 2.2.0
@@ -432,6 +432,42 @@ For detailed agent specifications, see:
 - `skills/problem-solving/agents/ps-reporter.md`
 
 ---
+
+## Skill Version
+
+2.2.0
+
+## Activation Keywords
+
+- research
+- analyze
+- investigate
+- review
+- synthesize
+- validate
+- architecture decision
+- ADR
+- root cause
+- trade-off analysis
+- 5 whys
+- problem solving
+- critique
+- quality score
+- iterative refinement
+- evaluate quality
+- improvement feedback
+
+## Agent Registry
+
+- ps-analyst
+- ps-architect
+- ps-critic
+- ps-investigator
+- ps-reporter
+- ps-researcher
+- ps-reviewer
+- ps-synthesizer
+- ps-validator
 
 *Skill Version: 2.2.0*
 *Constitutional Compliance: Jerry Constitution v1.0*

@@ -195,10 +195,10 @@ class TestSCV003GovernanceSections:
         assert len(scv003_warnings) == 0
 
     @pytest.mark.negative
-    def test_validate_when_version_declared_but_section_missing_then_scv003_warning(
+    def test_validate_when_version_declared_but_section_missing_then_scv003_error(
         self, validator: SkillComposeValidator
     ) -> None:
-        # Arrange
+        # Arrange — version is a required governance field, so missing section is an error
         content = _make_skill_md(body="## Purpose\n\nNo governance sections.\n")
         governance_source = {"version": "1.0.0"}
 
@@ -207,10 +207,10 @@ class TestSCV003GovernanceSections:
             content, skill_name="test-skill", governance_source=governance_source
         )
 
-        # Assert
-        scv003_warnings = [f for f in result.warnings if f.check_id == "SCV-003"]
-        assert len(scv003_warnings) == 1
-        assert "version" in scv003_warnings[0].message
+        # Assert — required field escalates to error
+        scv003_errors = [f for f in result.errors if f.check_id == "SCV-003"]
+        assert len(scv003_errors) == 1
+        assert "version" in scv003_errors[0].message
 
     @pytest.mark.edge_case
     def test_validate_when_no_governance_source_then_scv003_skipped(
@@ -490,12 +490,12 @@ class TestSCV003StructuralHeadingMatch:
             content, skill_name="test-skill", governance_source=governance_source
         )
 
-        # Assert — should warn because no ## Skill Version heading exists
-        scv003_warnings = [f for f in result.warnings if f.check_id == "SCV-003"]
-        assert len(scv003_warnings) == 1
+        # Assert — should error because no ## Skill Version heading exists (version is required)
+        scv003_errors = [f for f in result.errors if f.check_id == "SCV-003"]
+        assert len(scv003_errors) == 1
 
     @pytest.mark.happy_path
-    def test_validate_when_proper_heading_then_no_warning(
+    def test_validate_when_proper_heading_then_no_error(
         self, validator: SkillComposeValidator
     ) -> None:
         # Arrange
@@ -509,6 +509,8 @@ class TestSCV003StructuralHeadingMatch:
         )
 
         # Assert
+        scv003_errors = [f for f in result.errors if f.check_id == "SCV-003"]
+        assert len(scv003_errors) == 0
         scv003_warnings = [f for f in result.warnings if f.check_id == "SCV-003"]
         assert len(scv003_warnings) == 0
 

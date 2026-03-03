@@ -1,10 +1,10 @@
 ---
 name: eng-team
-description: Secure engineering team skill providing methodology guidance for building security-hardened software. Invoked when users request system design, implementation, code review, testing, CI/CD security, or incident response with security considerations. Routes to 10 specialized agents covering architecture through post-deployment. Integrates NIST SSDF governance, Microsoft SDL phases, OWASP ASVS verification, SLSA supply chain integrity, and DevSecOps automation patterns.
-
+description: Secure engineering team skill providing methodology guidance for building security-hardened software. Invoked when users request system design, implementation, code review, testing, CI/CD security,
+  or incident response with security considerations. Routes to 10 specialized agents covering architecture through post-deployment. Integrates NIST SSDF governance, Microsoft SDL phases, OWASP ASVS verification,
+  SLSA supply chain integrity, and DevSecOps automation patterns.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, mcp__context7__resolve-library-id, mcp__context7__query-docs
 ---
-
 # Eng-Team Skill
 
 > **Version:** 1.0.0
@@ -438,6 +438,46 @@ For detailed agent specifications, see:
 | FEAT-025 | /adversary Integration | Pending |
 
 ---
+
+## Skill Version
+
+1.0.0
+
+## Activation Keywords
+
+- secure design
+- threat model
+- secure architecture
+- STRIDE
+- DREAD
+- secure implementation
+- code review for security
+- SAST
+- DAST
+- supply chain security
+- incident response
+- DevSecOps
+- OWASP
+- ASVS
+- CWE
+- CIS benchmark
+- SSDF
+- SLSA
+- build a secure
+- security requirements
+
+## Agent Registry
+
+- eng-architect
+- eng-lead
+- eng-backend
+- eng-frontend
+- eng-infra
+- eng-devsecops
+- eng-qa
+- eng-security
+- eng-reviewer
+- eng-incident
 
 *Skill Version: 1.0.0*
 *Constitutional Compliance: Jerry Constitution v1.0*

@@ -1,9 +1,9 @@
 ---
 name: adversary
-description: On-demand adversarial quality reviews using strategy templates. Selects strategies by criticality level, executes adversarial templates against deliverables, and scores quality using LLM-as-Judge rubric. Integrates with quality-enforcement.md SSOT.
+description: On-demand adversarial quality reviews using strategy templates. Selects strategies by criticality level, executes adversarial templates against deliverables, and scores quality using LLM-as-Judge
+  rubric. Integrates with quality-enforcement.md SSOT.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
-
 # Adversary Skill
 
 > **Version:** 1.0.0
@@ -414,6 +414,40 @@ All agents adhere to the **Jerry Constitution v1.0**:
 | ADR-EPIC002-002 | 5-layer enforcement architecture |
 
 ---
+
+## Skill Version
+
+1.0.0
+
+## Activation Keywords
+
+- adversarial review
+- adversary
+- adversarial quality review
+- strategy review
+- adversarial critique
+- rigorous critique
+- formal critique
+- run adversarial
+- quality scoring
+- LLM-as-Judge
+- strategy selection
+- tournament review
+- red team
+- devil's advocate
+- steelman
+- pre-mortem
+- C2 review
+- C3 review
+- C4 review
+- tournament mode
+- quality gate
+
+## Agent Registry
+
+- adv-executor
+- adv-scorer
+- adv-selector
 
 *Skill Version: 1.0.0*
 *Constitutional Compliance: Jerry Constitution v1.0*

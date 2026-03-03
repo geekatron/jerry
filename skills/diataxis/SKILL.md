@@ -1,23 +1,19 @@
 ---
 name: diataxis
-description: >
-  Four-quadrant documentation framework. Produces tutorials (learning by doing),
-  how-to guides (goal-oriented tasks), reference documentation (authoritative description),
-  and explanation (conceptual understanding) using the Diataxis methodology. Invoke when
-  creating new documentation, auditing existing docs for quadrant mixing, or classifying
-  documentation requests. Triggers: documentation, tutorial, how-to, howto, reference docs,
-  explanation, diataxis, write docs, write documentation, write tutorial, create documentation,
-  classify documentation, audit documentation, user guide, getting started, quickstart, API docs,
-  developer guide, quadrant, doc type, how-to guide.
-allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Glob
-  - Grep
-  - Bash
----
+description: 'Four-quadrant documentation framework. Produces tutorials (learning by doing), how-to guides (goal-oriented tasks), reference documentation (authoritative description), and explanation (conceptual
+  understanding) using the Diataxis methodology. Invoke when creating new documentation, auditing existing docs for quadrant mixing, or classifying documentation requests. Triggers: documentation, tutorial,
+  how-to, howto, reference docs, explanation, diataxis, write docs, write documentation, write tutorial, create documentation, classify documentation, audit documentation, user guide, getting started, quickstart,
+  API docs, developer guide, quadrant, doc type, how-to guide.
 
+  '
+allowed-tools:
+- Read
+- Write
+- Edit
+- Glob
+- Grep
+- Bash
+---
 # Diataxis Skill
 
 > **Version:** 0.1.0
@@ -233,6 +229,43 @@ All agents comply with:
 | `skills/diataxis/templates/explanation-template.md` | Explanation structural template |
 
 ---
+
+## Skill Version
+
+0.1.0
+
+## Activation Keywords
+
+- documentation
+- tutorial
+- how-to
+- howto
+- how-to guide
+- reference docs
+- explanation
+- diataxis
+- write docs
+- write documentation
+- write tutorial
+- create documentation
+- classify documentation
+- audit documentation
+- user guide
+- getting started
+- quickstart
+- API docs
+- developer guide
+- quadrant
+- doc type
+
+## Agent Registry
+
+- diataxis-auditor
+- diataxis-classifier
+- diataxis-explanation
+- diataxis-howto
+- diataxis-reference
+- diataxis-tutorial
 
 *Skill Version: 0.1.0*
 *Constitutional Compliance: Jerry Constitution v1.0*

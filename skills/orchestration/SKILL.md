@@ -1,9 +1,9 @@
 ---
 name: orchestration
-description: Multi-agent workflow orchestration with state tracking, checkpointing, and cross-pollinated pipelines. Use when coordinating parallel agent pipelines, managing sync barriers, or tracking complex workflow execution state across sessions.
+description: Multi-agent workflow orchestration with state tracking, checkpointing, and cross-pollinated pipelines. Use when coordinating parallel agent pipelines, managing sync barriers, or tracking complex
+  workflow execution state across sessions.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, WebSearch, WebFetch, mcp__memory-keeper__store, mcp__memory-keeper__retrieve, mcp__memory-keeper__search
 ---
-
 # Orchestration Skill
 
 > **Version:** 2.2.0
@@ -688,6 +688,29 @@ For workflow examples and step-by-step guides, see:
 4. CrewAI. (2025). *Flows Documentation*. https://docs.crewai.com/concepts/flows
 
 ---
+
+## Skill Version
+
+2.2.0
+
+## Activation Keywords
+
+- orchestration
+- multi-agent workflow
+- pipeline
+- cross-pollinated
+- sync barrier
+- checkpoint
+- workflow state
+- parallel agents
+- agent coordination
+- execution tracking
+
+## Agent Registry
+
+- orch-planner
+- orch-synthesizer
+- orch-tracker
 
 *Skill Version: 2.2.0*
 *Constitutional Compliance: Jerry Constitution v1.0*

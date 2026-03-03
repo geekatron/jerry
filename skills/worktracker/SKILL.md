@@ -1,9 +1,9 @@
 ---
 name: worktracker
-description: Work item tracking and task management using the Jerry Framework hierarchy (Initiative, Epic, Feature, Story, Task, Enabler, Bug, Impediment). Manages WORKTRACKER.md manifests, tracks progress, and enforces template usage for consistent work decomposition.
+description: Work item tracking and task management using the Jerry Framework hierarchy (Initiative, Epic, Feature, Story, Task, Enabler, Bug, Impediment). Manages WORKTRACKER.md manifests, tracks progress,
+  and enforces template usage for consistent work decomposition.
 allowed-tools: Read, Write, Glob, Task, Edit
 ---
-
 # Worktracker Skill
 
 > **Version:** 1.1.0
@@ -218,3 +218,24 @@ For detailed reference, the following rule files are available:
 - **TODO Integration**: [todo-integration-rules.md](./rules/todo-integration-rules.md) - META TODO items, TODO↔Worktracker sync rules
 
 > **Rule Loading Tiers:** Auto-loaded rules (behavior-rules, templates) are loaded via `@` import because they contain enforcement rules needed for every worktracker operation. Reference rules (entity-hierarchy, system-mappings, directory-structure, todo-integration) are loaded on-demand to conserve context budget.
+
+## Skill Version
+
+1.1.0
+
+## Activation Keywords
+
+- work tracker
+- worktracker
+- work-tracker
+- update the work tracker
+- update the work-tracker
+- update the worktracker
+- /worktracker
+- /jerry:worktracker
+
+## Agent Registry
+
+- wt-auditor
+- wt-verifier
+- wt-visualizer

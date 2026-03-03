@@ -70,12 +70,12 @@ def _parse_frontmatter(content: str) -> tuple[dict[str, Any], str]:
     if not content.startswith("---"):
         return {}, content
 
-    end = content.find("---", 3)
+    end = content.find("\n---", 3)
     if end == -1:
         return {}, content
 
-    fm_text = content[3:end].strip()
-    body = content[end + 3 :].lstrip("\n")
+    fm_text = content[4:end]
+    body = content[end + 4 :].lstrip("\n")
 
     try:
         fm_data = yaml.safe_load(fm_text) or {}
@@ -206,6 +206,8 @@ class SkillComposeValidator:
         if not governance_source:
             return
 
+        # Required governance fields escalate to error; optional remain warning
+        required_fields = {"version", "activation-keywords"}
         checks = [
             ("version", "Skill Version"),
             ("activation-keywords", "Activation Keywords"),
@@ -222,17 +224,21 @@ class SkillComposeValidator:
                     re.MULTILINE | re.IGNORECASE,
                 )
                 if not pattern.search(body):
-                    result.warnings.append(
-                        ValidationFinding(
-                            check_id="SCV-003",
-                            severity="warning",
-                            message=(
-                                f"Governance field '{field_key}' declared in canonical source "
-                                f"but '## {heading_text}' heading not found in body"
-                            ),
-                            agent_name=skill_name,
-                        )
+                    is_required = field_key in required_fields
+                    severity = "error" if is_required else "warning"
+                    finding = ValidationFinding(
+                        check_id="SCV-003",
+                        severity=severity,
+                        message=(
+                            f"Governance field '{field_key}' declared in canonical source "
+                            f"but '## {heading_text}' heading not found in body"
+                        ),
+                        agent_name=skill_name,
                     )
+                    if is_required:
+                        result.errors.append(finding)
+                    else:
+                        result.warnings.append(finding)
 
     def _check_scv004(
         self,
