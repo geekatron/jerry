@@ -1,6 +1,6 @@
 # Python Environment Standards
 
-> UV-only Python environment. NEVER use system Python.
+> UV-only Python environment. NEVER use system Python -- doing so causes environment corruption and CI build failures. Use `uv run` for all execution.
 
 <!-- L2-REINJECT: rank=3, content="UV ONLY. Use uv run for all Python. NEVER use python/pip/pip3 directly. Use uv add for deps." -->
 

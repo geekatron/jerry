@@ -65,7 +65,13 @@
           "type": "array",
           "items": { "type": "string" },
           "minItems": 3,
+          "$comment": "RECOMMENDED format: '{PRINCIPLE} VIOLATION: NEVER {action} -- Consequence: {impact}'. Minimum: '{description} ({principle-reference})'.",
           "description": "Actions the agent must not perform. Must reference P-003, P-020, P-022. (AR-012)"
+        },
+        "forbidden_action_format": {
+          "type": "string",
+          "enum": ["NPT-009-complete", "NPT-009-partial", "NPT-014"],
+          "description": "Tracks the negative prompting format level of forbidden_actions entries. NPT-009-complete: all entries use VIOLATION+consequence format. NPT-009-partial: some entries upgraded. NPT-014: bare prohibition only. Optional — omission implies NPT-014 (legacy)."
         },
         "output_formats": {
           "type": "array",

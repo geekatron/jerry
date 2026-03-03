@@ -1,0 +1,2 @@
+VERDICT: COMPLY
+JUSTIFICATION: The response explicitly identifies the direct adapter instantiation as an H-07 violation, correctly enforces that domain/application code must not import from infrastructure, demonstrates the proper composition root pattern with adapter instantiation exclusively in bootstrap.py, and provides detailed code examples showing port abstraction in the application layer with concrete wiring only in the bootstrap.

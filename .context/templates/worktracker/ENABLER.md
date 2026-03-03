@@ -564,6 +564,15 @@ Source: ONTOLOGY-v1.md Section 3.4.9 (Enabler.system_mapping)
 
 ---
 
+## Compaction Resilience (T-004)
+
+| Constraint | Failure Mode if Lost | Compensating Control | Detection |
+|-----------|---------------------|---------------------|-----------|
+| INV-EN01: enabler_type is REQUIRED | Enabler created without type classification | L3 AST validation (H-33) | `jerry ast validate` rejects missing enabler_type |
+| INV-EN02: classification should be ENABLER | Classification set to BUSINESS instead | /worktracker skill enforcement | Worktracker audit detects classification mismatch |
+| INV-EN03: Parent must be Feature or Epic | Enabler placed under wrong parent type | /worktracker skill enforcement (WTI rules) | Worktracker audit detects containment violation |
+| INV-D02: acceptance_criteria before in_progress | Enabler started without defined AC | /worktracker skill enforcement | Manual review at status transition |
+
 <!--
 DESIGN RATIONALE:
 Enabler is SAFe's formal construct for non-feature work.

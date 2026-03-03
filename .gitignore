@@ -63,3 +63,6 @@ htmlcov/
 .jerry/
 projects/*/.jerry/
 logs/hook-errors.log
+
+# Claude Code worktrees (local-only, should not be committed)
+.claude/worktrees/

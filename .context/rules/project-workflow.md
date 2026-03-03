@@ -3,6 +3,10 @@
 > Operational guidance for Jerry project-based work sessions.
 > **SSOT:** `/worktracker` skill rules are the authoritative source for project structure, entity hierarchy, and worktracker integrity. This file provides session-start orientation and H-04 enforcement.
 
+<!-- L2-REINJECT: rank=8, content="Active project REQUIRED (H-04). MUST NOT proceed without JERRY_PROJECT set. Session work is untracked without active project." -->
+
+<!-- L2-REINJECT: rank=9, content="GitHub Issue parity REQUIRED (H-32) for jerry repo. Every bug/story/enabler/task MUST have corresponding GitHub Issue. Both MUST be kept in sync." -->
+
 ## Document Sections
 
 | Section | Purpose |
@@ -18,7 +22,7 @@
 
 ## HARD Rule Reference
 
-> H-04: Active project REQUIRED. MUST NOT proceed without `JERRY_PROJECT` set. See CLAUDE.md.
+> H-04: Active project REQUIRED. MUST NOT proceed without `JERRY_PROJECT` set -- doing so causes session work to be untracked, artifacts to land in incorrect paths, and worktracker integrity violations. Instead: set `JERRY_PROJECT` via the SessionStart hook or select a project using `jerry projects list`. See CLAUDE.md.
 
 ---
 

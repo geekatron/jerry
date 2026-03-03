@@ -221,7 +221,7 @@ This SKILL.md serves multiple audiences:
 
 | Level | Audience | Sections to Focus On | Why This Matters |
 |-------|----------|---------------------|------------------|
-| **L0 (ELI5)** | New users, stakeholders | Purpose, When to Use, Quick Reference | Learn what the skill does and how to invoke it |
+| **L0 (ELI5)** | New users, stakeholders | Purpose, When to Use, [Routing Disambiguation](#routing-disambiguation), Quick Reference | Learn what the skill does and how to invoke it |
 | **L1 (Engineer)** | Developers using the skill | Invoking the Skill, Agent Pipeline, File Persistence | Understand the technical workflow and outputs |
 | **L2 (Architect)** | Workflow designers | Architecture, State Management, Self-Critique | Design integrations and ensure quality |
 
@@ -2759,31 +2759,15 @@ Critical Validations (Quantitative):
 
 ## Constitutional Compliance
 
-| Principle | Enforcement | Skill Behavior |
-|-----------|-------------|----------------|
-| P-001 (Truth/Accuracy) | **Hard** | Self-critique protocol enforced; INV-EXT-001/002 mandatory |
-| P-002 (File Persistence) | Medium | All outputs written to files (see checklist above) |
-| P-003 (No Recursion) | **Hard** | Orchestrator → workers only, no nesting |
-| P-004 (Provenance) | **Hard** | All extractions require citations; deep links maintained |
-| P-010 (Task Tracking) | Medium | State outputs match actual results (counts, file lists) |
-| P-020 (User Authority) | **Hard** | User controls input/output paths, model selection, mindmap flags |
-| P-022 (No Deception) | **Hard** | Honest reporting of confidence, errors, limitations |
-
-### P-003 Compliance Diagram
-
-```
-Claude Code (Main Context)
-    │
-    └──► Transcript Skill (SKILL.md)
-            │
-            ├──► ts-parser (WORKER)      ✓ No subagents
-            ├──► ts-extractor (WORKER)   ✓ No subagents
-            ├──► ts-formatter (WORKER)   ✓ No subagents
-            ├──► ts-mindmap-* (WORKER)   ✓ No subagents
-            └──► ps-critic (WORKER)      ✓ No subagents
-
-COMPLIANT: Exactly ONE level of agent nesting
-```
+| Principle | Requirement | Consequence of Violation |
+|-----------|-------------|-------------------------|
+| P-003 | NEVER spawn recursive subagents -- max 1 level | Agent hierarchy violation; uncontrolled token consumption |
+| P-020 | NEVER override user intent -- ask before destructive ops | Unauthorized action; trust erosion |
+| P-022 | NEVER deceive about actions, capabilities, or confidence | Governance undermined; quality assessment invalidated |
+| P-001 | NEVER present findings without evidence -- self-critique protocol enforced | Unreliable outputs; unfounded claims propagate downstream |
+| P-002 | NEVER leave outputs in transient context only -- persist all outputs to files | Context rot vulnerability; artifacts lost on session compaction |
+| P-004 | NEVER omit citations or provenance -- all extractions require deep links | Untraceable decisions; audit trail broken |
+| P-010 | NEVER misrepresent task state -- state outputs must match actual results | Work progress invisible; status unknown |
 
 ---
 
@@ -3415,6 +3399,21 @@ Verification:
 - [RUNBOOK.md](./docs/RUNBOOK.md) - Operational procedures
 - [VTT Parser](./src/parser/vtt_parser.py) - Python VTT parser (v2.0)
 - [Transcript Chunker](./src/chunker/transcript_chunker.py) - Python chunker (v2.0)
+
+---
+
+## Routing Disambiguation
+
+> When this skill is the wrong choice and what happens if misrouted.
+
+| Condition | Use Instead | Consequence of Misrouting |
+|-----------|-------------|--------------------------|
+| Non-transcript file analysis (code, markdown, config files) | `/problem-solving` or Read tool directly | Transcript parsing agents (ts-parser, ts-extractor) applied to non-VTT/SRT files produce parsing failures; hybrid Python+LLM architecture expects transcript-format input |
+| General text processing or summarization | `/problem-solving` (ps-analyst or ps-synthesizer) | Transcript agents apply speaker identification, timestamp extraction, and domain-specific entity extraction patterns that are irrelevant to general text; 1,250x cost multiplier if Task agents invoked unnecessarily vs. direct text processing |
+| Requirements engineering or design work | `/nasa-se` | Transcript skill extracts meeting content; requirements formalization and V&V traceability require NASA-SE methodology |
+| Adversarial quality review of deliverables | `/adversary` | Transcript agents score extraction quality against transcript-specific criteria, not the S-014 LLM-as-Judge rubric for deliverable quality |
+| Research, analysis, or root cause investigation | `/problem-solving` | Transcript agents have no analytical methodology beyond extraction; research and causal investigation require ps-researcher or ps-investigator |
+| Security assessment or threat modeling | `/eng-team` | Transcript skill has no security methodology; security-engineering domain context provides STRIDE/DREAD extraction but does not replace eng-team threat modeling |
 
 ---
 

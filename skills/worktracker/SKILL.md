@@ -32,6 +32,8 @@ activation-keywords:
 | [Core Rules (Always Loaded)](#core-rules-always-loaded) | Behavior rules loaded via `@` import |
 | [Worktracker Agents](#worktracker-agents) | Specialized agents for verification, visualization, auditing |
 | [Quick Reference](#quick-reference) | Entity hierarchy, templates, key locations |
+| [Routing Disambiguation](#routing-disambiguation) | When this skill is the wrong choice |
+| [Constitutional Compliance](#constitutional-compliance) | Principle mapping with consequences |
 | [Additional Resources](#additional-resources) | Links to detailed rule files |
 
 ---
@@ -183,6 +185,34 @@ Agent outputs use standardized templates:
 | `projects/{ProjectId}/WORKTRACKER.md` | Global manifest for project |
 | `projects/{ProjectId}/work/` | Work decomposition folder |
 | `.context/templates/worktracker/` | All worktracker templates |
+
+---
+
+## Routing Disambiguation
+
+> When this skill is the wrong choice and what happens if misrouted.
+
+| Condition | Use Instead | Consequence of Misrouting |
+|-----------|-------------|--------------------------|
+| Query answerable by `jerry items list` or `jerry projects list` CLI | Jerry CLI directly | Worktracker agents invoked for simple queries waste agent invocation overhead; CLI provides instant results without context consumption |
+| Non-entity file operations (general markdown, code files) | Read/Write/Edit tools directly | AST parsing applied to non-entity files produces validation errors; entity schema enforcement fails on non-worktracker content |
+| Research, analysis, or root cause investigation | `/problem-solving` | Worktracker agents have no research methodology; wt-verifier and wt-auditor are scoped to entity integrity, not analytical tasks |
+| Requirements engineering or V&V activities | `/nasa-se` | Worktracker tracks work items, not requirements; no traceability matrix or verification capability |
+| Multi-agent workflow coordination | `/orchestration` | Worktracker manages individual work items, not multi-pipeline workflow state; no checkpointing or sync barriers |
+| Adversarial quality review | `/adversary` | Worktracker has no quality scoring or adversarial strategy capability |
+
+---
+
+## Constitutional Compliance
+
+All agents adhere to the **Jerry Constitution v1.0**:
+
+| Principle | Requirement | Consequence of Violation |
+|-----------|-------------|-------------------------|
+| P-003 | NEVER spawn recursive subagents -- max 1 level | Agent hierarchy violation; uncontrolled token consumption |
+| P-020 | NEVER override user intent -- ask before destructive ops | Unauthorized action; trust erosion |
+| P-022 | NEVER deceive about actions, capabilities, or confidence | Governance undermined; quality assessment invalidated |
+| P-002 | NEVER leave outputs in transient context only -- persist to files | Context rot vulnerability; artifacts lost on session compaction |
 
 ---
 

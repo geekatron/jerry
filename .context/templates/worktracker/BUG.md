@@ -480,6 +480,15 @@ Source: ONTOLOGY-v1.md Section 3.4.10 (Bug.system_mapping)
 
 ---
 
+## Compaction Resilience (T-004)
+
+| Constraint | Failure Mode if Lost | Compensating Control | Detection |
+|-----------|---------------------|---------------------|-----------|
+| INV-BG02: reproduction_steps for non-TRIVIAL severity | Bug filed without repro steps | Quick Creation Guide in template body | Code review catches missing repro steps |
+| INV-BG03: root_cause documented when completed | Bug closed without root cause analysis | /worktracker skill enforcement | Manual review at completion |
+| Severity values: critical, major, minor, trivial | Invalid severity assigned | L3 AST validation (H-33) | `jerry ast validate` rejects invalid severity |
+| INV-Q01: CRITICAL severity must have assignee | Critical bug left unassigned | /worktracker skill enforcement | Worktracker audit detects unassigned critical |
+
 <!--
 DESIGN RATIONALE:
 "Bug" preferred over "Defect" because it is used by 2/3 systems

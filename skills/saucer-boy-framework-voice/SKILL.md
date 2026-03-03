@@ -48,6 +48,8 @@ activation-keywords:
 | [Integration Points](#integration-points) | Cross-skill connections |
 | [Reference File Index](#reference-file-index) | On-demand reference files |
 | [Versioning and Update Propagation](#versioning-and-update-propagation) | Persona doc synchronization |
+| [Routing Disambiguation](#routing-disambiguation) | When this skill is the wrong choice |
+| [Constitutional Compliance](#constitutional-compliance) | Principle mapping with consequences |
 | [References](#references) | Source documents |
 | [Requirements Traceability Matrix](#requirements-traceability-matrix) | Persona doc section mapping |
 
@@ -93,12 +95,13 @@ Activate when:
 
 > **Keyword routing note:** The activation keywords in the frontmatter are a routing superset -- they include all terms that should route to this skill, including persona identity terms ("saucer boy," "mcconkey") and operational terms ("voice check," "voice score"). Not every keyword maps 1:1 to a When-to-Use scenario; identity terms like "mcconkey" activate the skill broadly, and the orchestrator selects the appropriate agent based on the request context.
 
-**Do NOT use when:**
+NEVER invoke this skill when:
+- Task involves modifying how Claude agents reason or converse -- Consequence: Persona voice calibration applied to constitutional reasoning scope produces behavioral interference; voice is a framework output layer, not an agent reasoning modifier
+- Messages should be neutral (hard stops, governance escalations) -- Consequence: Voice fidelity scoring during hard stops delays critical information delivery; personality is OFF in these contexts per boundary conditions
+- Working on non-framework-output text (internal design docs, ADRs, research artifacts) -- Consequence: Framework voice calibration applied to governance artifacts introduces personality where precision is required; output requires rewrite
+- Text is a governance escalation or security-relevant failure -- Consequence: Humor deployment in security contexts violates boundary condition #3 (NOT Unprofessional in High Stakes); stakes demand diagnostic precision
 
-- Modifying how Claude agents reason or converse (constitutional scope, not persona scope)
-- Adding personality to messages that should be neutral (hard stops, governance escalations)
-- Working on non-framework-output text (internal design docs, ADRs, research artifacts)
-- The text is a governance escalation or security-relevant failure (humor is OFF in these contexts)
+See [Routing Disambiguation](#routing-disambiguation) for full exclusion conditions with consequences.
 
 ---
 
@@ -281,6 +284,8 @@ P-003 AGENT HIERARCHY:
 
   Agents CANNOT invoke other agents.
   Agents CANNOT spawn subagents.
+  Consequence: cross-agent invocation violates P-003 (single-level nesting); the session incurs unbounded recursion and context exhaustion.
+  Instead: return results to the orchestrator for coordination with other agents.
   Only MAIN CONTEXT orchestrates the sequence.
 ```
 
@@ -411,6 +416,32 @@ The persona document (ps-creator-001-draft.md) is the canonical source (DEC-001 
 5. Bump the skill spec version: MINOR for content changes, MAJOR for structural changes.
 
 **Staleness detection:** If the persona doc's word count or line count diverges by more than 10% from the baseline (~879 lines, ~8,765 words as of SKILL.md v1.0.0), treat the skill spec as potentially stale and trigger a full RTM reconciliation.
+
+---
+
+## Routing Disambiguation
+
+> When this skill is the wrong choice and what happens if misrouted.
+
+| Condition | Use Instead | Consequence of Misrouting |
+|-----------|-------------|--------------------------|
+| Session conversational voice (developer interaction, pep talks, roasts) | `/saucer-boy` | Framework voice constraints applied to conversational content produce rigid, impersonal output that fails the authenticity test; session warmth replaced with scoring rubric mechanics |
+| Non-framework-output text (internal design docs, ADRs, research artifacts) | Neutral technical voice (no skill invocation) | Framework voice calibration applied to governance artifacts introduces personality where precision is required; output requires rewrite |
+| Governance escalation or security-relevant failure | No personality skill | Voice fidelity scoring during hard stops delays critical information delivery; personality is OFF in these contexts |
+| Adversarial quality review or deliverable scoring | `/adversary` | Framework voice skill scores persona compliance, not deliverable quality; S-014 rubric dimensions (completeness, consistency, rigor) not loaded |
+| Research, analysis, or investigation tasks | `/problem-solving` | Voice skill has no analytical methodology; sb-reviewer evaluates voice fidelity, not research quality |
+
+---
+
+## Constitutional Compliance
+
+All agents adhere to the **Jerry Constitution v1.0**:
+
+| Principle | Requirement | Consequence of Violation |
+|-----------|-------------|-------------------------|
+| P-003 | NEVER spawn recursive subagents -- max 1 level | Agent hierarchy violation; uncontrolled token consumption |
+| P-020 | NEVER override user intent -- ask before destructive ops | Unauthorized action; trust erosion |
+| P-022 | NEVER deceive about actions, capabilities, or confidence | Governance undermined; quality assessment invalidated |
 
 ---
 

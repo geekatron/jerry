@@ -69,6 +69,7 @@ activation-keywords:
 | [Constitutional Compliance](#constitutional-compliance) | Governing principles |
 | [Quick Reference](#quick-reference) | Common workflows and agent selection hints |
 | [Agent Details](#agent-details) | Agent file paths |
+| [Routing Disambiguation](#routing-disambiguation) | When this skill is the wrong choice |
 | [References and Traceability](#references-and-traceability) | ADR baseline, architecture decisions, research provenance |
 
 ## Document Audience (Triple-Lens)
@@ -341,15 +342,15 @@ Per H-16 (HARD rule), agents MUST apply S-003 (Steelman Technique) before critiq
 
 All agents adhere to the **Jerry Constitution v1.0**:
 
-| Principle | Requirement |
-|-----------|-------------|
-| P-001: Truth and Accuracy | Findings based on evidence, sources cited |
-| P-002: File Persistence | All outputs persisted to files |
-| P-003: No Recursive Subagents | Agents cannot spawn nested agents |
-| P-004: Explicit Provenance | Reasoning and sources documented |
-| P-011: Evidence-Based | Recommendations tied to evidence |
-| P-020: User Authority | Never override user decisions |
-| P-022: No Deception | Limitations and gaps disclosed |
+| Principle | Requirement | Consequence of Violation |
+|-----------|-------------|-------------------------|
+| P-003 | NEVER spawn recursive subagents -- max 1 level | Agent hierarchy violation; uncontrolled token consumption |
+| P-020 | NEVER override user intent -- ask before destructive ops | Unauthorized action; trust erosion |
+| P-022 | NEVER deceive about actions, capabilities, or confidence | Governance undermined; quality assessment invalidated |
+| P-001 | NEVER present findings without evidence or source citations | Unreliable outputs; unfounded claims propagate downstream |
+| P-002 | NEVER leave outputs in transient context only -- persist to files | Context rot vulnerability; artifacts lost on session compaction |
+| P-004 | NEVER omit reasoning provenance or source documentation | Untraceable decisions; audit trail broken |
+| P-011 | NEVER make recommendations without supporting evidence | Unsupported recommendations; confidence inflated without basis |
 
 ---
 
@@ -401,6 +402,22 @@ For detailed agent specifications, see:
 - `skills/eng-team/agents/eng-security.md`
 - `skills/eng-team/agents/eng-reviewer.md`
 - `skills/eng-team/agents/eng-incident.md`
+
+---
+
+## Routing Disambiguation
+
+> When this skill is the wrong choice and what happens if misrouted.
+
+| Condition | Use Instead | Consequence of Misrouting |
+|-----------|-------------|--------------------------|
+| Offensive security testing or penetration testing | `/red-team` | Defensive security methodology (STRIDE/DREAD threat modeling, OWASP ASVS compliance) applied to offensive tasks produces security architecture artifacts instead of attack narratives; 10 security-focused agents loaded when task requires offensive methodology |
+| Adversarial quality review or tournament scoring | `/adversary` | Eng-team agents evaluate security compliance, not deliverable quality; S-014 scoring rubric and adversarial strategy templates not loaded |
+| General code review without security focus | `/problem-solving` (ps-reviewer) | 10 security-specific agents loaded into context when task requires routine defect detection; OWASP/NIST/CIS governance overhead applied to non-security review |
+| Root cause analysis or debugging | `/problem-solving` (ps-investigator) | Security methodology (STRIDE, CWE analysis) applied to general investigation produces threat models instead of causal chains; root cause not isolated |
+| Requirements engineering or V&V | `/nasa-se` | Eng-team produces security requirements and threat models, not general requirements; NASA SE traceability and V&V methodology absent |
+| Architecture design without security requirements | `/architecture` | Eng-team loads security governance layers (NIST SSDF, MS SDL, SLSA) that add overhead when task is pure structural design; hexagonal architecture methodology is in `/architecture` |
+| General research or landscape survey | `/problem-solving` (ps-researcher) | Eng-team agents are implementation-focused; no divergent research methodology for technology surveys |
 
 ---
 

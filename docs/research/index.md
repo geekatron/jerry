@@ -19,8 +19,9 @@ This section curates the key research produced during Jerry's development. Each 
 | [Software Architecture](#software-architecture) | 1 | Hexagonal, DDD, and CQRS patterns in Python |
 | [Claude Code Ecosystem](#claude-code-ecosystem) | 1 | Plugin, skill, and CLI patterns |
 | [LLM Reliability](#llm-reliability) | 4 | Empirical A/B study of LLM deception patterns and domain reliability tiers |
+| [Negative Prompting](#negative-prompting) | 1 | Structured negation vs. positive framing in LLM constraint enforcement |
 
-**Total:** 51 research artifacts across 9 domains, ~28,000 lines of documented research. ([:octicons-link-external-16: Full catalog](https://github.com/geekatron/jerry/blob/main/projects/PROJ-001-oss-release/research/research-catalog.md))
+**Total:** 52 research artifacts across 10 domains, ~29,000 lines of documented research. ([:octicons-link-external-16: Full catalog](https://github.com/geekatron/jerry/blob/main/projects/PROJ-001-oss-release/research/research-catalog.md))
 
 ---
 
@@ -183,6 +184,24 @@ The first empirical research study in Jerry: a controlled A/B test of LLM decept
     Controlled A/B test across 15 questions and 5 domains reveals systematic confidence-accuracy gaps in LLM outputs. Introduces domain reliability tiers (T1-T5) and the Composite Integrity Ratio metric. Quality-gated at 0.93 average across 5 C4 tournaments.
 
     [:octicons-arrow-right-24: Study Overview](llm-deception/index.md)
+
+</div>
+
+---
+
+## Negative Prompting
+
+The second empirical study in Jerry: a controlled A/B test of constraint framing across 270 matched trials on three Claude models. NPT-013 structured negation (NEVER + consequence + alternative) achieved 100% compliance versus 92.2% for positive-only framing (McNemar exact p=0.016). The research produced a 14-pattern taxonomy and the `/prompt-engineering` skill.
+
+<div class="grid cards" markdown>
+
+-   **Negative Prompting & Constraint Enforcement**
+
+    ---
+
+    Controlled A/B test across 270 blind trials and 3 Claude models. 14-pattern NPT taxonomy. 4 ADRs. New `/prompt-engineering` skill. CONDITIONAL GO via PG-003 with 23 C4 quality gates averaging 0.952.
+
+    [:octicons-arrow-right-24: Research Findings](negative-prompting.md)
 
 </div>
 

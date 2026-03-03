@@ -31,7 +31,7 @@ This SKILL.md serves multiple audiences:
 
 | Level | Audience | Sections to Focus On |
 |-------|----------|---------------------|
-| **L0 (ELI5)** | Project stakeholders, new users | Purpose, When to Use, Core Artifacts |
+| **L0 (ELI5)** | Project stakeholders, new users | Purpose, When to Use, [Routing Disambiguation](#routing-disambiguation), Core Artifacts |
 | **L1 (Engineer)** | Developers executing workflows | Quick Start, State Schema |
 | **L2 (Architect)** | Workflow designers | Workflow Patterns, Adversarial Quality Mode, Constitutional Compliance |
 
@@ -67,10 +67,12 @@ Activate when:
 - Need **checkpointing** for long-running processes
 - Require **visibility** into complex workflow progress
 
-**Do NOT use when:**
-- Single agent task (use problem-solving skill instead)
-- Simple sequential flow (use direct agent invocation)
-- No cross-session state needed
+NEVER invoke this skill when:
+- Task requires a single agent only -- Consequence: Orchestration overhead (barrier sync, quality gates, ORCHESTRATION.yaml state tracking) applied to single-step task wastes significant context budget on unnecessary coordination infrastructure; use `/problem-solving` instead
+- Flow is simple and sequential without parallel pipelines -- Consequence: Three artifacts created (ORCHESTRATION_PLAN.md, ORCHESTRATION_WORKTRACKER.md, ORCHESTRATION.yaml) for a workflow that needs none; artifact overhead exceeds task complexity; use direct agent invocation
+- No cross-session state persistence is needed -- Consequence: YAML state management and checkpointing infrastructure adds complexity without value for ephemeral single-session work
+
+See [Routing Disambiguation](#routing-disambiguation) for full exclusion conditions with consequences.
 
 ---
 
@@ -633,16 +635,17 @@ quality:
 
 ## Constitutional Compliance
 
-| Principle | Requirement | Implementation |
-|-----------|-------------|----------------|
-| P-002 | File Persistence | All state persisted to ORCHESTRATION.yaml |
-| P-003 | No Recursive Subagents | Main context invokes workers only |
-| P-010 | Task Tracking | ORCHESTRATION_WORKTRACKER.md updated |
-| P-022 | No Deception | Honest status and progress reporting |
-| H-13 | Quality threshold >= 0.92 | Phase gates enforce weighted composite scoring |
-| H-14 | Creator-critic-revision (3 min) | Adversarial cycle at every sync barrier |
-| H-15 | Self-review before presenting | S-010 applied before gate submission |
-| WTI-007 | Mandatory Template Usage | Entity files created during orchestration MUST use canonical templates from `.context/templates/worktracker/` |
+| Principle | Requirement | Consequence of Violation |
+|-----------|-------------|-------------------------|
+| P-003 | NEVER spawn recursive subagents -- max 1 level | Agent hierarchy violation; uncontrolled token consumption |
+| P-020 | NEVER override user intent -- ask before destructive ops | Unauthorized action; trust erosion |
+| P-022 | NEVER deceive about actions, capabilities, or confidence | Governance undermined; quality assessment invalidated |
+| P-002 | NEVER leave state in transient context only -- persist to ORCHESTRATION.yaml | Context rot vulnerability; artifacts lost on session compaction |
+| P-010 | NEVER omit task tracking updates from ORCHESTRATION_WORKTRACKER.md | Work progress invisible; status unknown |
+| H-13 | NEVER accept C2+ deliverables below 0.92 weighted composite score | Sub-threshold deliverables accepted without quality enforcement |
+| H-14 | NEVER skip creator-critic-revision cycle -- minimum 3 iterations | Single-pass review misses blind spots |
+| H-15 | NEVER present deliverables without self-review (S-010) first | Obvious defects consume critic cycles unnecessarily |
+| WTI-007 | NEVER create entity files without canonical templates from `.context/templates/worktracker/` | Inconsistent entity format; worktracker integrity degraded |
 
 ---
 
@@ -653,6 +656,21 @@ quality:
 | `templates/ORCHESTRATION_PLAN.template.md` | Strategic context with ASCII diagram |
 | `templates/ORCHESTRATION_WORKTRACKER.template.md` | Tactical execution tracking |
 | `templates/ORCHESTRATION.template.yaml` | Machine-readable state skeleton |
+
+---
+
+## Routing Disambiguation
+
+> When this skill is the wrong choice and what happens if misrouted.
+
+| Condition | Use Instead | Consequence of Misrouting |
+|-----------|-------------|--------------------------|
+| Single-agent task with no cross-session state | `/problem-solving` | Multi-phase coordination overhead (barrier sync, quality gates, ORCHESTRATION.yaml state tracking) applied to single-step task wastes significant context budget on unnecessary coordination infrastructure |
+| Simple sequential flow without parallel pipelines | Direct agent invocation | Orchestration creates three artifacts (ORCHESTRATION_PLAN.md, ORCHESTRATION_WORKTRACKER.md, ORCHESTRATION.yaml) for a workflow that needs none; artifact overhead exceeds task complexity |
+| Research, analysis, or root cause investigation | `/problem-solving` | Orchestration agents (orch-planner, orch-tracker, orch-synthesizer) coordinate workflows but have no research or analytical methodology |
+| Requirements engineering or V&V activities | `/nasa-se` | Orchestration manages workflow state, not requirements traceability; NPR-compliant artifacts not generated |
+| Adversarial quality review or scoring | `/adversary` | Orchestration has no quality scoring rubric or adversarial strategy templates; orch-synthesizer produces workflow synthesis, not quality assessment |
+| Transcript parsing or meeting note extraction | `/transcript` | Orchestration has no VTT/SRT parser; transcript-specific agents not available |
 
 ---
 

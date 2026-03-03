@@ -47,7 +47,7 @@ This SKILL.md serves multiple audiences:
 
 | Level | Audience | Sections to Focus On |
 |-------|----------|---------------------|
-| **L0 (Stakeholder)** | Engagement managers, leadership | [Purpose](#purpose), [When to Use This Skill](#when-to-use-this-skill), [Mandatory Authorization](#mandatory-authorization), [Quick Reference](#quick-reference) |
+| **L0 (Stakeholder)** | Engagement managers, leadership | [Purpose](#purpose), [When to Use This Skill](#when-to-use-this-skill), [Routing Disambiguation](#routing-disambiguation), [Mandatory Authorization](#mandatory-authorization), [Quick Reference](#quick-reference) |
 | **L1 (Practitioner)** | Security testers invoking agents | [Available Agents](#available-agents), [Invoking an Agent](#invoking-an-agent), [Orchestration Flow](#orchestration-flow), [Cross-Skill Integration Points](#cross-skill-integration-points) |
 | **L2 (Architect)** | Framework designers, governance reviewers | [Authorization Architecture](#authorization-architecture), [Circuit Breaker Integration](#circuit-breaker-integration), [Safety Alignment Compatibility](#safety-alignment-compatibility), [Constitutional Compliance](#constitutional-compliance) |
 
@@ -95,13 +95,14 @@ Activate when:
 - Generating engagement reports with findings, risk scores, and remediation guidance
 - Validating /eng-team defenses through adversarial testing (purple team)
 
-**Do NOT use when:**
+NEVER invoke this skill when:
+- Task is building secure software (defensive security) -- Consequence: Offensive methodology applied to defensive engineering produces attack narratives instead of hardened code; STRIDE/DREAD threat modeling and OWASP compliance not loaded; use `/eng-team` instead
+- Task is adversarial quality review of deliverables -- Consequence: Penetration testing methodology applied to quality assessment produces engagement reports instead of quality scores; S-014 rubric not available; use `/adversary` instead
+- Conducting general security research without an engagement context -- Consequence: Red team agents require authorized scope documents; unscoped security research lacks engagement boundaries and authorization controls; use `/problem-solving` instead
+- No active scope document exists and no engagement is being planned -- Consequence: Red team operations without scope authorization violate engagement methodology; agents will halt at scope validation
+- Target is outside any authorized engagement boundary -- Consequence: Out-of-scope testing violates rules of engagement; red-lead agent enforces scope authority as a hard gate
 
-- Building secure software (use `/eng-team` instead)
-- Performing adversarial quality reviews of deliverables (use `/adversary` instead)
-- Conducting general security research without an engagement context (use `/problem-solving` instead)
-- No active scope document exists and no engagement is being planned
-- The target is outside any authorized engagement boundary
+See [Routing Disambiguation](#routing-disambiguation) for full exclusion conditions with consequences.
 
 ---
 
@@ -562,14 +563,14 @@ The scope document itself is always C4 criticality (irreversible authorization d
 
 All agents adhere to the **Jerry Constitution v1.0**:
 
-| Principle | Requirement |
-|-----------|-------------|
-| P-001: Truth and Accuracy | All findings evidence-based with ATT&CK citations |
-| P-002: File Persistence | All outputs persisted to files |
-| P-003: No Recursive Subagents | Agents are workers, not orchestrators |
-| P-020: User Authority | User can override any agent decision; user authorizes all scopes |
-| P-022: No Deception | Limitations disclosed; confidence levels honest |
-| R-020: Authorization Verification | Scope verification before every agent execution |
+| Principle | Requirement | Consequence of Violation |
+|-----------|-------------|-------------------------|
+| P-003 | NEVER spawn recursive subagents -- max 1 level | Agent hierarchy violation; uncontrolled token consumption |
+| P-020 | NEVER override user intent -- ask before destructive ops | Unauthorized action; trust erosion |
+| P-022 | NEVER deceive about actions, capabilities, or confidence | Governance undermined; quality assessment invalidated |
+| P-001 | NEVER present findings without evidence or ATT&CK citations | Unreliable outputs; unfounded claims propagate downstream |
+| P-002 | NEVER leave outputs in transient context only -- persist to files | Context rot vulnerability; artifacts lost on session compaction |
+| R-020 | NEVER execute agent operations without scope verification and authorization | Unauthorized testing; legal and ethical boundary violation |
 
 ### PROJ-010 Specific Requirements
 
@@ -626,6 +627,21 @@ All agents adhere to the **Jerry Constitution v1.0**:
 | red-lateral | Network-level | Traffic signaling, protocol tunneling |
 | red-persist | Persistence-phase | Indicator removal, rootkits, timestomping |
 | red-exfil | Exfiltration-phase | Data encoding, encrypted channels |
+
+---
+
+## Routing Disambiguation
+
+> When this skill is the wrong choice and what happens if misrouted.
+
+| Condition | Use Instead | Consequence of Misrouting |
+|-----------|-------------|--------------------------|
+| Building secure software or defensive security design | `/eng-team` | Offensive methodology (reconnaissance, exploitation, kill chain progression) applied to defensive design produces attack narratives instead of security architecture; STRIDE/DREAD threat modeling and OWASP ASVS compliance not available |
+| Adversarial quality review of deliverables | `/adversary` | Red team "red team" refers to offensive security testing (MITRE ATT&CK); /adversary "red team" refers to S-001 quality review strategy; loading 11 offensive agents for quality assessment wastes context budget on irrelevant methodology |
+| General security research without engagement context | `/problem-solving` (ps-researcher) | Red team requires active scope document and authorization; 11 engagement-scoped agents loaded when task needs general-purpose research methodology |
+| No active scope document and no engagement being planned | No skill invocation | Red team agents require red-lead authorization before any operation; invoking without scope document triggers mandatory authorization block |
+| Root cause analysis or debugging | `/problem-solving` (ps-investigator) | Red team methodology follows kill chain progression, not causal investigation; exploit analysis methodology does not isolate root cause |
+| Requirements engineering or V&V | `/nasa-se` | Red team produces engagement reports, not requirements artifacts; NPR-compliant traceability and V&V methodology absent |
 
 ---
 

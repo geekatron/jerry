@@ -116,6 +116,60 @@ log_verbose() {
     fi
 }
 
+# Portable realpath implementation for macOS/BSD
+# Priority: greadlink (GNU coreutils) > uv run python > basic readlink
+realpath_portable() {
+    local path="$1"
+    local resolved
+
+    # Priority 1: GNU readlink (fastest, most reliable)
+    # Available via: brew install coreutils
+    if command -v greadlink &>/dev/null; then
+        resolved=$(greadlink -f "$path" 2>/dev/null) && {
+            echo "$resolved"
+            return 0
+        }
+    fi
+
+    # Priority 2: uv-managed Python (project-consistent)
+    # Uses the project's managed Python via uv
+    if command -v uv &>/dev/null; then
+        resolved=$(uv run python -c "import os,sys; print(os.path.realpath(sys.argv[1]))" "$path" 2>/dev/null) && {
+            echo "$resolved"
+            return 0
+        }
+    fi
+
+    # Priority 3: Basic readlink (may not fully resolve nested symlinks)
+    # This is a degraded fallback - works for simple cases
+    if command -v readlink &>/dev/null; then
+        resolved=$(readlink "$path" 2>/dev/null)
+        if [[ -n "$resolved" ]]; then
+            # If relative, make absolute
+            if [[ "$resolved" != /* ]]; then
+                resolved="$(cd "$(dirname "$path")" && pwd)/$resolved"
+            fi
+            echo "$resolved"
+            return 0
+        fi
+    fi
+
+    # Fallback: return original path if it exists, otherwise fail
+    if [[ -e "$path" ]]; then
+        # Use pwd to get canonical path if possible
+        if [[ -d "$path" ]]; then
+            (cd "$path" && pwd)
+        else
+            echo "$path"
+        fi
+        return 0
+    fi
+
+    log_error "Cannot resolve path: $path"
+    log_error "Install GNU coreutils (brew install coreutils) or ensure uv is available"
+    return 1
+}
+
 log_result() {
     local status="$1"
     local symlink="$2"
@@ -165,14 +219,13 @@ resolve_symlink() {
     local symlink="$1"
     local target
 
-    # Try to resolve the symlink
+    # Try to resolve the symlink using portable method
     if command -v readlink &>/dev/null; then
-        # macOS/BSD readlink doesn't have -f, use different approach
         if [[ "$(uname)" == "Darwin" ]]; then
-            # Use Python for reliable resolution on macOS
-            target=$(python3 -c "import os,sys; print(os.path.realpath(sys.argv[1]))" "$symlink" 2>/dev/null) || true
+            # Use portable realpath for macOS (greadlink > uv > basic readlink)
+            target=$(realpath_portable "$symlink" 2>/dev/null) || true
         else
-            # GNU readlink
+            # GNU readlink available on Linux
             target=$(readlink -f "$symlink" 2>/dev/null) || true
         fi
     fi
@@ -191,9 +244,9 @@ is_within_tree() {
     local target="$2"
     local source_real
 
-    # Get real path of source directory
+    # Get real path of source directory using portable method
     if [[ "$(uname)" == "Darwin" ]]; then
-        source_real=$(python3 -c "import os,sys; print(os.path.realpath(sys.argv[1]))" "$SOURCE_DIR" 2>/dev/null) || source_real="$SOURCE_DIR"
+        source_real=$(realpath_portable "$SOURCE_DIR" 2>/dev/null) || source_real="$SOURCE_DIR"
     else
         source_real=$(readlink -f "$SOURCE_DIR" 2>/dev/null) || source_real="$SOURCE_DIR"
     fi
@@ -450,9 +503,9 @@ parse_args() {
         exit 3
     fi
 
-    # Get absolute path
+    # Get absolute path using portable method
     if [[ "$(uname)" == "Darwin" ]]; then
-        SOURCE_DIR=$(python3 -c "import os,sys; print(os.path.realpath(sys.argv[1]))" "$SOURCE_DIR" 2>/dev/null) || true
+        SOURCE_DIR=$(realpath_portable "$SOURCE_DIR" 2>/dev/null) || true
     else
         SOURCE_DIR=$(readlink -f "$SOURCE_DIR" 2>/dev/null) || true
     fi

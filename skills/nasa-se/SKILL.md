@@ -56,7 +56,7 @@ This SKILL.md serves multiple audiences:
 
 | Level | Audience | Sections to Focus On |
 |-------|----------|---------------------|
-| **L0 (ELI5)** | Project stakeholders, new users | [Purpose](#purpose), [When to Use](#when-to-use-this-skill), [Quick Reference](#quick-reference) |
+| **L0 (ELI5)** | Project stakeholders, new users | [Purpose](#purpose), [When to Use](#when-to-use-this-skill), [Routing Disambiguation](#routing-disambiguation), [Quick Reference](#quick-reference) |
 | **L1 (Engineer)** | Engineers invoking agents | [Invoking an Agent](#invoking-an-agent), [Adversarial Quality Mode](#adversarial-quality-mode), [Agent Details](#agent-details) |
 | **L2 (Architect)** | SE workflow designers | [Orchestration Flow](#orchestration-flow), [State Passing](#state-passing-between-agents), [NPR Processes](#nasa-common-technical-processes-npr-71231d) |
 
@@ -462,17 +462,18 @@ NPR 7123.1D review gates map to adversarial review levels:
 
 All agents adhere to the **Jerry Constitution v1.0** plus NASA SE extensions:
 
-| Principle | Requirement |
-|-----------|-------------|
-| P-001: Truth and Accuracy | Findings based on NASA standards, sources cited |
-| P-002: File Persistence | All outputs persisted to project directories |
-| P-003: No Recursive Subagents | Agents cannot spawn nested agents |
-| P-004: Explicit Provenance | Reasoning and sources documented |
-| P-011: Evidence-Based | Recommendations tied to NASA standards |
-| P-022: No Deception | Limitations and gaps disclosed |
-| P-040: Traceability | Requirements traced bidirectionally |
-| P-041: V&V Coverage | All requirements have verification methods |
-| P-042: Risk Transparency | All identified risks documented |
+| Principle | Requirement | Consequence of Violation |
+|-----------|-------------|-------------------------|
+| P-003 | NEVER spawn recursive subagents -- max 1 level | Agent hierarchy violation; uncontrolled token consumption |
+| P-020 | NEVER override user intent -- ask before destructive ops | Unauthorized action; trust erosion |
+| P-022 | NEVER deceive about actions, capabilities, or confidence | Governance undermined; quality assessment invalidated |
+| P-001 | NEVER present findings without evidence or NASA standards citations | Unreliable outputs; unfounded claims propagate downstream |
+| P-002 | NEVER leave outputs in transient context only -- persist to project directories | Context rot vulnerability; artifacts lost on session compaction |
+| P-004 | NEVER omit reasoning provenance or source documentation | Untraceable decisions; audit trail broken |
+| P-011 | NEVER make recommendations without supporting evidence tied to NASA standards | Unsupported recommendations; confidence inflated without basis |
+| P-040 | NEVER leave requirements without bidirectional traceability | Requirements orphaned; verification gaps undetected |
+| P-041 | NEVER omit verification methods for requirements | Untested requirements; latent defects in delivered system |
+| P-042 | NEVER hide or omit identified risks from documentation | Hidden risks; unmitigated failure modes |
 
 ---
 
@@ -507,6 +508,22 @@ All agents adhere to the **Jerry Constitution v1.0** plus NASA SE extensions:
 | **explore, alternatives, trade study, options, brainstorm, divergent** | **nse-explorer** |
 | **QA, audit, compliance, artifact validation, work product quality** | **nse-qa** |
 | status, metrics, report, progress, health | nse-reporter |
+
+---
+
+## Routing Disambiguation
+
+> When this skill is the wrong choice and what happens if misrouted.
+
+| Condition | Use Instead | Consequence of Misrouting |
+|-----------|-------------|--------------------------|
+| Root cause analysis or debugging | `/problem-solving` (ps-investigator) | NASA-SE methodology applied to investigation tasks produces requirements artifacts instead of causal chains; compliance vocabulary (shall statements, VCRMs) obscures root cause isolation |
+| General research or technology survey | `/problem-solving` (ps-researcher) | NASA-SE produces formal requirements and review packages; divergent research methodology for landscape exploration is in ps-researcher, not nse-explorer (which explores design options within a requirements context) |
+| Adversarial quality review or tournament scoring | `/adversary` | NASA-SE nse-reviewer conducts formal technical reviews (SRR/PDR/CDR), not adversarial strategy-template-based quality assessment; S-014 rubric not loaded |
+| Transcript parsing or meeting note extraction | `/transcript` | NASA-SE has no VTT/SRT parser; meeting content extraction requires transcript-specific agents |
+| Offensive security testing | `/red-team` | NASA-SE produces V&V artifacts, not attack narratives; MITRE ATT&CK methodology absent |
+| Security-hardened software design | `/eng-team` | NASA-SE addresses systems engineering risk (NPR 8000.4C), not software security (STRIDE/DREAD, OWASP); security-specific governance layers not available |
+| Simple single-agent task without formal SE rigor | `/problem-solving` | NASA-SE loads 10 agents with NPR-compliant methodology; excessive overhead for tasks not requiring formal systems engineering process |
 
 ---
 

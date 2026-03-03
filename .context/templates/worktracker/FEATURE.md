@@ -422,6 +422,15 @@ Source: ONTOLOGY-v1.md Section 3.4.4 - system_mapping
 
 ---
 
+## Compaction Resilience (T-004)
+
+| Constraint | Failure Mode if Lost | Compensating Control | Detection |
+|-----------|---------------------|---------------------|-----------|
+| Status values: pending, in_progress, completed | Invalid status written to entity file | L3 AST validation (H-33) | `jerry ast validate` rejects invalid status |
+| Parent must be Epic or Capability | Feature placed under invalid parent | /worktracker skill enforcement (WTI rules) | Worktracker audit detects containment violation |
+| INV-FE02: acceptance_criteria before completed | Feature marked completed without AC | /worktracker skill enforcement | Manual review at completion |
+| Containment: children must be Story or Enabler | Wrong child type created under Feature | /worktracker skill enforcement (WTI rules) | Worktracker audit detects hierarchy violation |
+
 <!--
 DESIGN RATIONALE:
 Feature retained as distinct level despite JIRA lacking it natively.

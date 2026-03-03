@@ -45,6 +45,7 @@ activation-keywords:
 | [Constitutional Compliance](#constitutional-compliance) | Principle mapping |
 | [Integration with Other Skills](#integration-with-other-skills) | Cross-skill workflows |
 | [Quick Reference](#quick-reference) | Common tasks and decision workflows |
+| [Routing Disambiguation](#routing-disambiguation) | When this skill is the wrong choice |
 | [References](#references) | Canonical sources |
 
 ---
@@ -396,15 +397,16 @@ Architecture artifacts should use standardized templates to ensure consistency.
 
 All architecture work adheres to the **Jerry Constitution v1.0**:
 
-| Principle | Requirement | Implementation |
-|-----------|-------------|----------------|
-| P-002: File Persistence | All outputs persisted to files | ADRs written to `docs/design/`, diagrams to specified paths |
-| P-004: Explicit Provenance | Reasoning and sources documented | ADRs include context, alternatives considered, consequences |
-| P-011: Evidence-Based | Recommendations tied to evidence | Architecture reviews cite specific violations or compliance |
-| H-07: Domain Layer Isolation | Domain MUST NOT import external layers | `analyze` command verifies import boundaries |
-| H-07: Application Layer Isolation | Application MUST NOT import infrastructure/interface | `analyze` command verifies layer dependencies |
-| H-07: Composition Root Exclusivity | Only bootstrap.py instantiates infrastructure | Architecture test enforces this rule |
-| H-10: One Class Per File | Each file contains exactly ONE public class | AST check enforces this rule |
+| Principle | Requirement | Consequence of Violation |
+|-----------|-------------|-------------------------|
+| P-003 | NEVER spawn recursive subagents -- max 1 level | Agent hierarchy violation; uncontrolled token consumption |
+| P-020 | NEVER override user intent -- ask before destructive ops | Unauthorized action; trust erosion |
+| P-022 | NEVER deceive about actions, capabilities, or confidence | Governance undermined; quality assessment invalidated |
+| P-002 | NEVER leave outputs in transient context only -- persist to files | Context rot vulnerability; artifacts lost on session compaction |
+| P-004 | NEVER omit reasoning provenance or source documentation in ADRs | Untraceable decisions; audit trail broken |
+| P-011 | NEVER make architecture recommendations without supporting evidence | Unsupported recommendations; confidence inflated without basis |
+| H-07 | NEVER violate architecture layer isolation -- domain, application, composition root boundaries enforced | Architecture layer corruption; dependency violations propagate |
+| H-10 | NEVER place multiple public classes in a single file | File bloat; class discovery degraded |
 
 ---
 
@@ -445,6 +447,21 @@ The architecture skill integrates with other Jerry skills:
 | 3. Evaluate trade-offs | Use `/nasa-se` for formal trade study | Trade study matrix |
 | 4. Document decision | `@architecture decision "<title>"` | ADR in `docs/design/` |
 | 5. Validate compliance | `@architecture analyze <path>` | Compliance report |
+
+---
+
+## Routing Disambiguation
+
+> When this skill is the wrong choice and what happens if misrouted.
+
+| Condition | Use Instead | Consequence of Misrouting |
+|-----------|-------------|--------------------------|
+| Root cause analysis or debugging needed | `/problem-solving` (ps-investigator) | Architecture methodology (layer dependency rules, CQRS patterns, hexagonal structure) applied to investigation tasks produces structural design artifacts instead of causal chains; root cause not isolated |
+| Requirements engineering or V&V needed | `/nasa-se` | Requirements expressed as architectural decisions; V&V traceability lost; compliance gaps not detected |
+| Offensive security testing or penetration testing | `/red-team` | Architecture compliance checks applied to offensive engagement produce structural diagrams instead of attack narratives; engagement methodology entirely absent |
+| Adversarial quality review or tournament scoring | `/adversary` | Architecture review checklists applied instead of adversarial strategy templates; S-014 scoring rubric not loaded |
+| Security hardening or threat modeling | `/eng-team` | Architecture skill lacks STRIDE/DREAD methodology; security-specific governance layers (OWASP, NIST SSDF) not available |
+| Multi-agent workflow coordination | `/orchestration` | Architecture commands are single-step operations; no state tracking, checkpointing, or sync barrier capability |
 
 ---
 

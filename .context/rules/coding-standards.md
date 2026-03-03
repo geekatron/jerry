@@ -78,7 +78,7 @@ Override requires documented justification.
 - DomainError hierarchy SHOULD be used for all domain exceptions.
 - Error messages SHOULD include entity type, ID, and suggested action.
 - Use `from e` when re-raising to preserve exception context.
-- NEVER catch `Exception` broadly and silently swallow errors.
+- NEVER catch `Exception` broadly and silently swallow errors. Consequence: masked failures propagate silently through the call chain; root cause diagnosis becomes impossible when errors are swallowed. Instead: catch specific exception types from the DomainError hierarchy (ValidationError, NotFoundError, ConflictError) defined in `src/shared_kernel/exceptions.py`.
 
 **Exception Hierarchy:**
 

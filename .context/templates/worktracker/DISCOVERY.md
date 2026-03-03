@@ -501,6 +501,15 @@ validated: {{VALIDATED}}
 
 ---
 
+## Compaction Resilience (T-004)
+
+| Constraint | Failure Mode if Lost | Compensating Control | Detection |
+|-----------|---------------------|---------------------|-----------|
+| Co-location (REQ-D-025): MUST be in parent's folder | Discovery placed in wrong directory | /worktracker skill enforcement (WTI rules) | Worktracker audit detects misplaced discovery |
+| Status values: PENDING, IN_PROGRESS, DOCUMENTED, VALIDATED | Invalid status transition | L3 AST validation (H-33) | `jerry ast validate` rejects invalid status |
+| Impact field REQUIRED (REQ-D-004) | Discovery created without impact assessment | L3 AST validation (H-33) | `jerry ast validate` rejects missing impact |
+| ID format: PARENT:DISC-NNN | Incorrect ID format breaks traceability | /worktracker skill enforcement | Worktracker audit detects format violation |
+
 <!--
 DESIGN RATIONALE:
 
