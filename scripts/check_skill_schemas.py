@@ -248,8 +248,8 @@ def main() -> int:
     canonical_schema = load_schema(_CANONICAL_SCHEMA_PATH)
 
     if anthropic_schema is None and canonical_schema is None:
-        print("WARNING: No schemas found. Skipping skill schema validation.")
-        return 0
+        print("ERROR: No schemas found. Cannot validate skill files.")
+        return 1
 
     all_errors: list[str] = []
     files_checked = 0
@@ -260,21 +260,23 @@ def main() -> int:
 
         if anthropic_schema:
             for skill_md in skill_mds:
+                rel_path = str(skill_md.relative_to(_REPO_ROOT))
                 frontmatter = parse_skill_md_frontmatter(skill_md)
                 if frontmatter is None:
+                    all_errors.append(f"{rel_path}: No valid YAML frontmatter found")
                     continue
                 files_checked += 1
-                rel_path = str(skill_md.relative_to(_REPO_ROOT))
                 errors = validate_against_schema(frontmatter, anthropic_schema, rel_path)
                 all_errors.extend(errors)
 
         if canonical_schema:
             for canonical_yaml in canonical_yamls:
+                rel_path = str(canonical_yaml.relative_to(_REPO_ROOT))
                 data = load_canonical_yaml(canonical_yaml)
                 if data is None:
+                    all_errors.append(f"{rel_path}: Failed to parse canonical YAML")
                     continue
                 files_checked += 1
-                rel_path = str(canonical_yaml.relative_to(_REPO_ROOT))
                 errors = validate_against_schema(data, canonical_schema, rel_path)
                 all_errors.extend(errors)
 
@@ -290,6 +292,7 @@ def main() -> int:
             if _SKILL_MD_PATTERN.match(file_path) and anthropic_schema:
                 frontmatter = parse_skill_md_frontmatter(abs_path)
                 if frontmatter is None:
+                    all_errors.append(f"{file_path}: No valid YAML frontmatter found")
                     continue
                 files_checked += 1
                 errors = validate_against_schema(frontmatter, anthropic_schema, file_path)
@@ -298,12 +301,13 @@ def main() -> int:
             elif _CANONICAL_YAML_PATTERN.match(file_path) and canonical_schema:
                 data = load_canonical_yaml(abs_path)
                 if data is None:
+                    all_errors.append(f"{file_path}: Failed to parse canonical YAML")
                     continue
                 files_checked += 1
                 errors = validate_against_schema(data, canonical_schema, file_path)
                 all_errors.extend(errors)
 
-    if files_checked == 0:
+    if files_checked == 0 and not all_errors:
         return 0
 
     # Print errors
