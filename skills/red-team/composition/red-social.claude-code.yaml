@@ -1,21 +1,81 @@
-# Claude Code vendor configuration for red-social
-# Layer 4 of 4: per-agent vendor-specific overrides.
-# Reference: https://docs.anthropic.com/en/docs/claude-code/agent-tool
+# Claude Code vendor overrides for: red-social
+#
+# Layer 4 of 4 in the compose pipeline merge hierarchy:
+#   1. jerry-agent-defaults.yaml     (governance defaults)
+#   2. jerry-claude-code-defaults.yaml (vendor defaults)
+#   3. {agent}.jerry.yaml             (canonical agent config)
+#   4. THIS FILE                      (per-agent vendor overrides)
+#
+# Only set values here that DIFFER from the defaults in layers 1-3.
+# Commented-out fields show available options; uncomment to override.
+#
+# Spec: https://docs.anthropic.com/en/docs/claude-code/agent-tool
 
+# Agent identifier. Must match the .jerry.yaml `name` field.
 name: red-social
+
+# When Claude should delegate to this agent.
+# Used for routing — be specific about WHAT, WHEN, and trigger keywords.
 description: >-
   Social Engineering Specialist for /red-team. RoE-GATED -- requires explicit
   authorization in Rules of Engagement. Provides methodology for social
   reconnaissance, phishing campaigns, pretexting
+
+# LLM model for this agent.
+#   opus   — complex reasoning, research, architecture, synthesis
+#   sonnet — balanced analysis, standard production tasks (default)
+#   haiku  — fast repetitive tasks, formatting, validation
 model: sonnet
+
+# Allowed tools. Comma-separated string or YAML array.
+# IMPORTANT: If omitted, agent INHERITS ALL tools (unsafe for workers).
+# Available tools: Read, Write, Edit, Glob, Grep, Bash,
+#   WebSearch, WebFetch, Task (T5 orchestrators only)
+# Jerry tool tiers: T1=Read-only, T2=Read-Write, T3=External,
+#   T4=Persistent (MCP), T5=Full (Task). Use lowest tier needed.
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
+
+# Tools to explicitly deny. Comma-separated string or YAML array.
+# Use when inheriting a broad set but need to block specific tools.
 # disallowedTools:
+
+# MCP servers available to this agent. Object format: {name: true}
+# Available servers: context7 (library docs), memory-keeper (persistence)
+# Only enable servers the agent actually needs per mcp-tool-standards.md.
 mcpServers:
   context7: true
+
+# How the agent handles tool permissions.
+#   default          — prompt user for each tool call (safest)
+#   acceptEdits      — auto-approve file edits, prompt for others
+#   dontAsk          — auto-approve most tools
+#   bypassPermissions — skip all permission checks (use with caution)
+#   plan             — planning mode only, no tool execution
 permissionMode: default
+
+# Run as a background task (true) or foreground (false).
+# Background agents return immediately; check output later.
 background: false
+
+# Maximum agentic turns (API round-trips) before stopping.
+# Omit to use the system default. Set to limit runaway agents.
 # maxTurns:
+
+# Skills to preload into this agent's context.
+# Array of skill names. Only use for agents that need skill knowledge.
 # skills:
+
+# Lifecycle hooks — shell commands triggered by agent events.
+# Format: {event: [{command: '...', timeout: N}]}
+# Events: PreToolUse, PostToolUse, Notification, Stop
 # hooks:
+
+# Memory scope for this agent's CLAUDE.md loading.
+#   user    — load user-level CLAUDE.md
+#   project — load project-level CLAUDE.md
+#   local   — load local directory CLAUDE.md
 # memory:
+
+# Isolation mode for the agent's execution environment.
+#   worktree — run in a temporary git worktree (isolated file changes)
 # isolation:
