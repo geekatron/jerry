@@ -91,5 +91,6 @@
     }
   },
 
-  "additionalProperties": false
+  "$comment_additionalProperties": "Set to true so Anthropic can add new official fields without breaking CI. Jerry extension field enforcement is handled by SCV-001 in SkillComposeValidator, not by this schema.",
+  "additionalProperties": true
 }

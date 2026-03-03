@@ -558,16 +558,18 @@ class TestSCV004SchemaValidation:
         scv004_errors = [f for f in result.errors if f.check_id == "SCV-004"]
         assert len(scv004_errors) == 0
 
-    @pytest.mark.negative
-    def test_validate_when_extra_field_in_frontmatter_then_scv004_error(
+    @pytest.mark.edge_case
+    def test_validate_when_extra_field_in_frontmatter_then_no_scv004_error(
         self, validator_with_schema: SkillComposeValidator
     ) -> None:
-        # Arrange — unknown field should fail additionalProperties: false
+        # Arrange — unknown fields are allowed (additionalProperties: true)
+        # so Anthropic can add new official fields without breaking CI.
+        # Jerry extension field enforcement is handled by SCV-001, not schema.
         content = _make_skill_md(extra_frontmatter="unknown-field: true\n")
 
         # Act
         result = validator_with_schema.validate(content, skill_name="test-skill")
 
-        # Assert
+        # Assert — SCV-004 should not fire for unknown fields
         scv004_errors = [f for f in result.errors if f.check_id == "SCV-004"]
-        assert len(scv004_errors) >= 1
+        assert len(scv004_errors) == 0
