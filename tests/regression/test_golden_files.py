@@ -95,10 +95,8 @@ class TestWorktrackerEntityRegression:
 
             # Compare frontmatter fields
             if universal_result.blockquote_frontmatter is not None:
-                legacy_fields = {f.key: f.value for f in legacy_fm.fields}
-                universal_fields = {
-                    f.key: f.value for f in universal_result.blockquote_frontmatter.fields
-                }
+                legacy_fields = dict(legacy_fm.items())
+                universal_fields = dict(universal_result.blockquote_frontmatter.items())
                 assert legacy_fields == universal_fields, (
                     f"Frontmatter mismatch in {rel_path}: "
                     f"legacy={legacy_fields}, universal={universal_fields}"
