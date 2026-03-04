@@ -74,10 +74,10 @@ class TestHandleUnknownAdapter:
     def test_raises_value_error_for_unknown_adapter(self) -> None:
         # Arrange
         handler, _, _ = _make_handler([])
-        command = BuildAgentsCommand(adapter="openai")
+        command = BuildAgentsCommand(vendor="openai")
 
         # Act / Assert
-        with pytest.raises(ValueError, match="Unknown adapter: 'openai'"):
+        with pytest.raises(ValueError, match="Unknown vendor: 'openai'"):
             handler.handle(command)
 
     def test_error_message_lists_available_adapters(self) -> None:
@@ -88,7 +88,7 @@ class TestHandleUnknownAdapter:
             repository=mock_repo,
             adapters={"claude_code": mock_adapter, "ollama": mock_adapter},
         )
-        command = BuildAgentsCommand(adapter="unknown")
+        command = BuildAgentsCommand(vendor="unknown")
 
         # Act / Assert
         with pytest.raises(ValueError, match="claude_code"):
@@ -112,7 +112,7 @@ class TestHandleAgentNotFound:
             repository=mock_repo,
             adapters={"claude_code": mock_adapter},
         )
-        command = BuildAgentsCommand(adapter="claude_code", agent_name="ghost-agent")
+        command = BuildAgentsCommand(vendor="claude_code", agent_name="ghost-agent")
 
         # Act
         result = handler.handle(command)
@@ -131,7 +131,7 @@ class TestHandleAgentNotFound:
             repository=mock_repo,
             adapters={"claude_code": mock_adapter},
         )
-        command = BuildAgentsCommand(adapter="claude_code", agent_name="missing")
+        command = BuildAgentsCommand(vendor="claude_code", agent_name="missing")
 
         # Act
         result = handler.handle(command)
@@ -157,7 +157,7 @@ class TestHandleSuccessfulBuildSingleAgent:
             _make_artifact("ps-analyst", tmp_path, "governance"),
         ]
         handler, mock_repo, _ = _make_handler([agent], adapter_generate_return=artifacts)
-        command = BuildAgentsCommand(adapter="claude_code", agent_name="ps-analyst")
+        command = BuildAgentsCommand(vendor="claude_code", agent_name="ps-analyst")
 
         # Act
         result = handler.handle(command)
@@ -191,7 +191,7 @@ class TestHandleSuccessfulBuildSingleAgent:
             repository=mock_repo,
             adapters={"claude_code": mock_adapter},
         )
-        command = BuildAgentsCommand(adapter="claude_code", agent_name="my-agent", dry_run=False)
+        command = BuildAgentsCommand(vendor="claude_code", agent_name="my-agent", dry_run=False)
 
         # Act
         handler.handle(command)
@@ -224,7 +224,7 @@ class TestHandleSuccessfulBuildAllAgents:
             repository=mock_repo,
             adapters={"claude_code": mock_adapter},
         )
-        command = BuildAgentsCommand(adapter="claude_code")
+        command = BuildAgentsCommand(vendor="claude_code")
 
         # Act
         result = handler.handle(command)
@@ -264,7 +264,7 @@ class TestHandleDryRun:
             repository=mock_repo,
             adapters={"claude_code": mock_adapter},
         )
-        command = BuildAgentsCommand(adapter="claude_code", agent_name="dry-agent", dry_run=True)
+        command = BuildAgentsCommand(vendor="claude_code", agent_name="dry-agent", dry_run=True)
 
         # Act
         result = handler.handle(command)
@@ -283,7 +283,7 @@ class TestHandleDryRun:
             repository=mock_repo,
             adapters={"claude_code": mock_adapter},
         )
-        command = BuildAgentsCommand(adapter="claude_code", dry_run=True)
+        command = BuildAgentsCommand(vendor="claude_code", dry_run=True)
 
         # Act
         result = handler.handle(command)
@@ -311,7 +311,7 @@ class TestHandleBuildFailure:
             repository=mock_repo,
             adapters={"claude_code": mock_adapter},
         )
-        command = BuildAgentsCommand(adapter="claude_code", agent_name="fail-agent")
+        command = BuildAgentsCommand(vendor="claude_code", agent_name="fail-agent")
 
         # Act — must not propagate
         result = handler.handle(command)
@@ -340,7 +340,7 @@ class TestHandleBuildFailure:
             repository=mock_repo,
             adapters={"claude_code": mock_adapter},
         )
-        command = BuildAgentsCommand(adapter="claude_code")
+        command = BuildAgentsCommand(vendor="claude_code")
 
         # Act
         result = handler.handle(command)

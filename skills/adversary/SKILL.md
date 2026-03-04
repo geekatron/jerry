@@ -1,38 +1,9 @@
 ---
 name: adversary
 description: On-demand adversarial quality reviews using strategy templates. Selects strategies by criticality level, executes adversarial templates against deliverables, and scores quality using LLM-as-Judge rubric. Integrates with quality-enforcement.md SSOT.
-version: "1.0.0"
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
-activation-keywords:
-  - "adversarial review"
-  - "adversary"
-  - "adversarial quality review"
-  - "strategy review"
-  - "adversarial critique"
-  - "rigorous critique"
-  - "formal critique"
-  - "run adversarial"
-  - "quality scoring"
-  - "LLM-as-Judge"
-  - "strategy selection"
-  - "tournament review"
-  - "red team"
-  - "devil's advocate"
-  - "steelman"
-  - "pre-mortem"
-  - "C2 review"
-  - "C3 review"
-  - "C4 review"
-  - "tournament mode"
-  - "quality gate"
 ---
-
 # Adversary Skill
-
-> **Version:** 1.0.0
-> **Framework:** Jerry Adversarial Quality (ADV)
-> **Constitutional Compliance:** Jerry Constitution v1.0
-> **SSOT Reference:** `.context/rules/quality-enforcement.md`
 
 ## Document Audience (Triple-Lens)
 
@@ -224,8 +195,6 @@ The skill skeleton (EN-802) defines the structure; the template enablers populat
 ---
 
 ## Adversarial Quality Mode
-
-> **SSOT Reference:** `.context/rules/quality-enforcement.md` -- all thresholds, strategy IDs, criticality levels, and quality dimensions are defined there. NEVER hardcode values; always reference the SSOT.
 
 ### Strategy Catalog
 
@@ -436,9 +405,36 @@ All agents adhere to the **Jerry Constitution v1.0**:
 | ADR-EPIC002-001 | Strategy selection and composite scores |
 | ADR-EPIC002-002 | 5-layer enforcement architecture |
 
----
+<skill_version>
+1.0.0
+</skill_version>
 
-*Skill Version: 1.0.0*
-*Constitutional Compliance: Jerry Constitution v1.0*
-*SSOT: `.context/rules/quality-enforcement.md`*
-*Created: 2026-02-15*
+<activation_keywords>
+- adversarial review
+- adversary
+- adversarial quality review
+- strategy review
+- adversarial critique
+- rigorous critique
+- formal critique
+- run adversarial
+- quality scoring
+- LLM-as-Judge
+- strategy selection
+- tournament review
+- red team
+- devil's advocate
+- steelman
+- pre-mortem
+- C2 review
+- C3 review
+- C4 review
+- tournament mode
+- quality gate
+</activation_keywords>
+
+<agent_registry>
+- adv-executor
+- adv-scorer
+- adv-selector
+</agent_registry>

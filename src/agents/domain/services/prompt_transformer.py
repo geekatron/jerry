@@ -30,6 +30,18 @@ _HEADING_TO_TAG: dict[str, str] = {
     "Output Specification": "output",
     "Output Requirements": "output",
     "Constitutional Compliance": "constitutional_compliance",
+    # Governance sections (injected by GovernanceSectionBuilder)
+    "Agent Version": "agent_version",
+    "Tool Tier": "tool_tier",
+    "Enforcement": "enforcement",
+    "Portability": "portability",
+    "Prior Art": "prior_art",
+    "Session Context": "session_context",
+    # Skill governance sections (injected by SkillGovernanceSectionBuilder)
+    "Skill Version": "skill_version",
+    "Activation Keywords": "activation_keywords",
+    "Agent Registry": "agent_registry",
+    "Context Injection": "context_injection",
 }
 
 

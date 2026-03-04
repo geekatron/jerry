@@ -1,12 +1,12 @@
 ---
 name: red-reporter
 description: Engagement Reporter & Documentation Specialist for /red-team. Generates comprehensive engagement reports with finding documentation, risk scoring, remediation recommendations, executive summaries,
-  Impact risk communication (TA0040 documentation), and scope compliance attestation. Can be invoked without active scope for report generation from existing findings. Read-only access to all engagement
-  data.
 model: opus
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:
   context7: true
+permissionMode: default
+background: false
 ---
 Red Reporter
 
@@ -105,3 +105,22 @@ All guidance is framed within established professional methodology. This agent p
 *Constitutional Compliance: Jerry Constitution v1.0*
 *SSOT: ADR-PROJ010-001, ADR-PROJ010-006*
 *Created: 2026-02-22*
+
+## Agent Version
+
+1.0.0
+
+## Tool Tier
+
+T3 (External)
+
+## Portability
+
+enabled: true
+minimum_context_window: 128000
+model_preferences:
+- anthropic/claude-opus-4
+- openai/gpt-4o
+- google/gemini-2.5-pro
+reasoning_strategy: adaptive
+body_format: markdown

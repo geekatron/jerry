@@ -18,11 +18,11 @@ class BuildAgentsCommand:
     """Command to build vendor-specific agent files from canonical source.
 
     Attributes:
-        adapter: Target vendor adapter name (e.g., 'claude_code').
+        vendor: Target vendor name (e.g., 'claude_code').
         agent_name: Optional specific agent to build. None = build all.
         dry_run: If True, show what would be generated without writing.
     """
 
-    adapter: str
+    vendor: str
     agent_name: str | None = None
     dry_run: bool = False

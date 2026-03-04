@@ -1,0 +1,7 @@
+# Claude Code vendor overrides for: architecture
+allowed-tools:
+- Read
+- Write
+- Grep
+- Glob
+- Edit

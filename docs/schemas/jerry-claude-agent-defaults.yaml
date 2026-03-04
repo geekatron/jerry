@@ -1,0 +1,66 @@
+# DEPRECATED: This file is superseded by the split defaults architecture.
+# Use instead:
+#   - jerry-agent-defaults.yaml          (Layer 1: Jerry governance defaults)
+#   - jerry-claude-code-defaults.yaml    (Layer 2: Claude Code vendor defaults)
+# See PROJ-012 for migration details. This file is retained for reference only.
+#
+# Jerry Claude Agent Definition Base Defaults v1.0.0
+# Schema: jerry-claude-agent-definition-v1.schema.json v1.1.0
+# Schema Evolution: See docs/schemas/SCHEMA_VERSIONING.md
+#
+# Merge semantics:
+#   - Scalars: agent overrides base
+#   - Objects: deep merge (agent keys override base keys; unspecified base keys inherited)
+#   - Arrays: agent replaces base entirely (no append)
+#
+# Config resolution chain:
+#   1. This file (base defaults)
+#   2. Agent frontmatter from skills/{skill}/agents/{agent}.md (per-agent overrides)
+#   3. Jerry CLI config variable substitution (env → project → root → code defaults)
+#   4. Schema validation against jerry-claude-agent-definition-v1.schema.json
+
+# --- Claude Code Native Defaults ---
+# Read by Claude Code's agent runtime.
+# model: inherit       # Not set here; each agent MUST declare model explicitly
+permissionMode: "default"
+background: false
+
+# --- Jerry Governance Defaults ---
+# Read by Jerry's governance framework.
+version: "1.0.0"
+
+persona:
+  tone: "professional"
+  communication_style: "consultative"
+  audience_level: "adaptive"
+
+capabilities:
+  forbidden_actions:
+    - "Spawn recursive subagents (P-003)"
+    - "Override user decisions (P-020)"
+    - "Misrepresent capabilities or confidence (P-022)"
+
+guardrails:
+  output_filtering:
+    - no_secrets_in_output
+    - no_executable_code_without_confirmation
+    - all_claims_must_have_citations
+  fallback_behavior: "warn_and_retry"
+
+output:
+  required: false
+  levels: ["L0", "L1", "L2"]
+
+validation:
+  file_must_exist: true
+
+constitution:
+  reference: "docs/governance/JERRY_CONSTITUTION.md"
+  principles_applied:
+    - "P-002: File Persistence (Medium)"
+    - "P-003: No Recursive Subagents (Hard)"
+    - "P-020: User Authority (Hard)"
+    - "P-022: No Deception (Hard)"
+
+enforcement:
+  tier: "medium"

@@ -1,0 +1,20 @@
+# Canonical skill source for saucer-boy-framework-voice
+# Validated against: docs/schemas/skill-canonical-v1.schema.json
+# Source: PROJ-012 skill composition pipeline
+name: saucer-boy-framework-voice
+version: "1.1.0"
+description: "INTERNAL SKILL — auto-loaded for framework output voice quality. Reviews, rewrites, and scores framework output text for persona compliance using the Shane McConkey ethos: joy and excellence as multipliers. Governs quality gate messages, error messages, CLI output, hook text, and framework-generated text. Not user-invocable; loaded automatically when framework output needs voice enforcement."
+agents:
+  - sb-calibrator
+  - sb-reviewer
+  - sb-rewriter
+activation-keywords:
+  - "voice check"
+  - "voice review"
+  - "persona compliance"
+  - "persona check"
+  - "voice rewrite"
+  - "voice fidelity"
+  - "voice score"
+  - "framework voice"
+  - "persona review"

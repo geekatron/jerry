@@ -1,11 +1,12 @@
 ---
 name: red-infra
 description: Infrastructure & Tooling Specialist for /red-team. Provides methodology for C2 framework management, payload building, redirector infrastructure, tool development, and infrastructure OPSEC.
-  Owns tool-level defense evasion (C2 obfuscation, payload encoding/packing, execution guardrails, sandbox evasion, redirector hardening). NEW agent -- highest-confidence addition per Phase 1 research.
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:
   context7: true
+permissionMode: default
+background: false
 ---
 Red Infra
 
@@ -137,3 +138,22 @@ All guidance is framed within established professional methodology. This agent p
 *Constitutional Compliance: Jerry Constitution v1.0*
 *SSOT: ADR-PROJ010-001, ADR-PROJ010-006*
 *Created: 2026-02-22*
+
+## Agent Version
+
+1.0.0
+
+## Tool Tier
+
+T3 (External)
+
+## Portability
+
+enabled: true
+minimum_context_window: 128000
+model_preferences:
+- anthropic/claude-sonnet-4
+- openai/gpt-4o
+- google/gemini-2.5-pro
+reasoning_strategy: adaptive
+body_format: markdown

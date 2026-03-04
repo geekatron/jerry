@@ -1,0 +1,5 @@
+# Claude Code vendor overrides for: bootstrap
+allowed-tools:
+- Read
+- Write
+- Bash

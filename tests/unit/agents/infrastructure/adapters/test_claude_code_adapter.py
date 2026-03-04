@@ -38,7 +38,7 @@ def make_adapter(tool_mapper: Any, prompt_transformer: Any, skills_dir: Path) ->
 class TestGenerate:
     """Tests for ClaudeCodeAdapter.generate()."""
 
-    def test_generate_returns_two_artifacts(
+    def test_generate_returns_single_artifact(
         self,
         make_canonical_agent: Any,
         tool_mapper: Any,
@@ -52,10 +52,10 @@ class TestGenerate:
         # Act
         artifacts = adapter.generate(agent)
 
-        # Assert
-        assert len(artifacts) == 2
+        # Assert — single .md artifact, no governance.yaml
+        assert len(artifacts) == 1
 
-    def test_generate_first_artifact_is_md(
+    def test_generate_artifact_is_md(
         self,
         make_canonical_agent: Any,
         tool_mapper: Any,
@@ -69,14 +69,14 @@ class TestGenerate:
         # Act
         artifacts = adapter.generate(agent)
 
-        # Assert — first artifact is the .md file
+        # Assert
         md_artifact = artifacts[0]
         assert md_artifact.filename == "my-agent.md"
         assert md_artifact.artifact_type == "agent_definition"
         assert md_artifact.vendor == VendorTarget.CLAUDE_CODE
         assert md_artifact.source_agent == "my-agent"
 
-    def test_generate_second_artifact_is_governance_yaml(
+    def test_generate_no_governance_yaml_artifact(
         self,
         make_canonical_agent: Any,
         tool_mapper: Any,
@@ -90,13 +90,11 @@ class TestGenerate:
         # Act
         artifacts = adapter.generate(agent)
 
-        # Assert — second artifact is the .governance.yaml file
-        gov_artifact = artifacts[1]
-        assert gov_artifact.filename == "my-agent.governance.yaml"
-        assert gov_artifact.artifact_type == "governance"
-        assert gov_artifact.vendor == VendorTarget.CLAUDE_CODE
+        # Assert — no governance artifact exists
+        gov_artifacts = [a for a in artifacts if a.artifact_type == "governance"]
+        assert len(gov_artifacts) == 0
 
-    def test_generate_paths_are_under_skill_agents_dir(
+    def test_generate_path_is_under_skill_agents_dir(
         self,
         make_canonical_agent: Any,
         tool_mapper: Any,
@@ -110,10 +108,9 @@ class TestGenerate:
         # Act
         artifacts = adapter.generate(agent)
 
-        # Assert — paths are relative to skills/{skill}/agents/
+        # Assert
         expected_dir = tmp_path / "eng-team" / "agents"
         assert artifacts[0].path == expected_dir / "eng-qa.md"
-        assert artifacts[1].path == expected_dir / "eng-qa.governance.yaml"
 
     def test_generate_md_content_starts_with_yaml_delimiters(
         self,
@@ -129,11 +126,11 @@ class TestGenerate:
         # Act
         artifacts = adapter.generate(agent)
 
-        # Assert — .md content starts with YAML frontmatter
+        # Assert
         assert artifacts[0].content.startswith("---\n")
         assert "---\n" in artifacts[0].content[3:]
 
-    def test_generate_governance_content_is_valid_yaml(
+    def test_generate_body_contains_governance_xml_tags(
         self,
         make_canonical_agent: Any,
         tool_mapper: Any,
@@ -142,17 +139,22 @@ class TestGenerate:
     ) -> None:
         # Arrange
         adapter = make_adapter(tool_mapper, prompt_transformer, tmp_path)
-        agent = make_canonical_agent()
+        agent = make_canonical_agent(
+            version="2.0.0",
+            tool_tier=ToolTier.T3,
+            enforcement={"quality_gate_tier": "C2"},
+        )
 
         # Act
         artifacts = adapter.generate(agent)
+        content = artifacts[0].content
 
-        # Assert — governance content is valid YAML
-        gov_content = artifacts[1].content
-        # Strip header comment lines
-        yaml_lines = [line for line in gov_content.splitlines() if not line.startswith("#")]
-        parsed = yaml.safe_load("\n".join(yaml_lines))
-        assert isinstance(parsed, dict)
+        # Assert — governance XML tags present in body
+        assert "<agent_version>" in content
+        assert "2.0.0" in content
+        assert "<tool_tier>" in content
+        assert "T3" in content
+        assert "<enforcement>" in content
 
 
 # ---------------------------------------------------------------------------
@@ -528,125 +530,6 @@ class TestBuildBody:
         # Assert — abstract names replaced with Claude Code names
         assert "Read" in body
         assert "Write" in body
-
-
-# ---------------------------------------------------------------------------
-# _build_governance_yaml()
-# ---------------------------------------------------------------------------
-
-
-class TestBuildGovernanceYaml:
-    """Tests for ClaudeCodeAdapter._build_governance_yaml()."""
-
-    def _parse_gov(self, content: str) -> dict[str, Any]:
-        """Parse governance YAML, skipping comment lines."""
-        yaml_lines = [line for line in content.splitlines() if not line.startswith("#")]
-        result: dict[str, Any] = yaml.safe_load("\n".join(yaml_lines)) or {}
-        return result
-
-    def test_governance_includes_version(
-        self,
-        make_canonical_agent: Any,
-        tool_mapper: Any,
-        prompt_transformer: Any,
-        tmp_path: Path,
-    ) -> None:
-        # Arrange
-        adapter = make_adapter(tool_mapper, prompt_transformer, tmp_path)
-        agent = make_canonical_agent(version="2.3.1")
-
-        # Act
-        content = adapter._build_governance_yaml(agent)
-        parsed = self._parse_gov(content)
-
-        # Assert
-        assert parsed["version"] == "2.3.1"
-
-    def test_governance_includes_tool_tier(
-        self,
-        make_canonical_agent: Any,
-        tool_mapper: Any,
-        prompt_transformer: Any,
-        tmp_path: Path,
-    ) -> None:
-        # Arrange
-        adapter = make_adapter(tool_mapper, prompt_transformer, tmp_path)
-        agent = make_canonical_agent(tool_tier=ToolTier.T3)
-
-        # Act
-        content = adapter._build_governance_yaml(agent)
-        parsed = self._parse_gov(content)
-
-        # Assert
-        assert parsed["tool_tier"] == "T3"
-
-    def test_governance_moves_forbidden_actions_to_capabilities(
-        self,
-        make_canonical_agent: Any,
-        tool_mapper: Any,
-        prompt_transformer: Any,
-        tmp_path: Path,
-        sample_constitution: dict[str, Any],
-    ) -> None:
-        # Arrange
-        adapter = make_adapter(tool_mapper, prompt_transformer, tmp_path)
-        agent = make_canonical_agent(constitution=sample_constitution)
-
-        # Act
-        content = adapter._build_governance_yaml(agent)
-        parsed = self._parse_gov(content)
-
-        # Assert — forbidden_actions appears in capabilities, not constitution
-        assert "forbidden_actions" in parsed.get("capabilities", {})
-        # Constitution itself should not contain forbidden_actions
-        constitution_block = parsed.get("constitution", {})
-        assert "forbidden_actions" not in constitution_block
-
-    def test_governance_header_contains_agent_name(
-        self,
-        make_canonical_agent: Any,
-        tool_mapper: Any,
-        prompt_transformer: Any,
-        tmp_path: Path,
-    ) -> None:
-        # Arrange
-        adapter = make_adapter(tool_mapper, prompt_transformer, tmp_path)
-        agent = make_canonical_agent(name="special-agent")
-
-        # Act
-        content = adapter._build_governance_yaml(agent)
-
-        # Assert — header comment references the agent name
-        assert "special-agent" in content.splitlines()[0]
-
-    def test_governance_omits_empty_optional_sections(
-        self,
-        make_canonical_agent: Any,
-        tool_mapper: Any,
-        prompt_transformer: Any,
-        tmp_path: Path,
-    ) -> None:
-        # Arrange — agent with no persona, output, validation, etc.
-        adapter = make_adapter(tool_mapper, prompt_transformer, tmp_path)
-        agent = make_canonical_agent(
-            persona={},
-            output={},
-            validation={},
-            prior_art=[],
-            enforcement={},
-            session_context={},
-        )
-
-        # Act
-        content = adapter._build_governance_yaml(agent)
-        parsed = self._parse_gov(content)
-
-        # Assert — optional empty sections not emitted
-        assert "persona" not in parsed
-        assert "validation" not in parsed
-        assert "prior_art" not in parsed
-        assert "enforcement" not in parsed
-        assert "session_context" not in parsed
 
 
 # ---------------------------------------------------------------------------
@@ -1044,3 +927,295 @@ class TestDetectBodyFormat:
 
         # Act / Assert
         assert adapter.vendor == VendorTarget.CLAUDE_CODE
+
+
+# ---------------------------------------------------------------------------
+# _extract_governance_from_xml() boundary conditions (via extract())
+# ---------------------------------------------------------------------------
+
+
+class TestExtractGovernanceFromXmlBoundary:
+    """Boundary-condition tests for XML governance extraction.
+
+    Tests exercise the private _extract_governance_from_xml() method
+    indirectly via the public extract() method by writing .md files
+    with various edge-case XML governance content.
+    """
+
+    def _write_md(self, path: Path, frontmatter: dict[str, Any], body: str) -> None:
+        """Write a .md file with YAML frontmatter."""
+        fm_str = yaml.dump(frontmatter, default_flow_style=False, sort_keys=False)
+        path.write_text(f"---\n{fm_str}---\n{body}", encoding="utf-8")
+
+    def test_extract_governance_from_xml_empty_tags(
+        self,
+        tool_mapper: Any,
+        prompt_transformer: Any,
+        tmp_path: Path,
+    ) -> None:
+        """Empty XML tags produce no governance values — defaults used."""
+        # Arrange
+        agents_dir = tmp_path / "skill" / "agents"
+        agents_dir.mkdir(parents=True)
+        md_path = agents_dir / "agent.md"
+        # Body has XML tags but they are empty
+        xml_body = (
+            "<identity>\nRole text.\n</identity>\n\n"
+            "<purpose>\nPurpose text.\n</purpose>\n\n"
+            "<agent_version></agent_version>\n\n"
+            "<tool_tier></tool_tier>\n\n"
+        )
+        self._write_md(
+            md_path,
+            {"name": "agent", "description": "desc", "model": "sonnet"},
+            xml_body,
+        )
+        adapter = make_adapter(tool_mapper, prompt_transformer, tmp_path)
+
+        # Act
+        agent = adapter.extract(str(md_path))
+
+        # Assert — empty tags produce default values
+        assert agent.version == "1.0.0"  # default
+        assert agent.tool_tier == ToolTier.T1  # default
+
+    def test_extract_governance_from_xml_malformed_yaml(
+        self,
+        tool_mapper: Any,
+        prompt_transformer: Any,
+        tmp_path: Path,
+    ) -> None:
+        """Malformed YAML in a governance XML tag does not crash."""
+        # Arrange
+        agents_dir = tmp_path / "skill" / "agents"
+        agents_dir.mkdir(parents=True)
+        md_path = agents_dir / "agent.md"
+        xml_body = (
+            "<identity>\nRole text.\n</identity>\n\n"
+            "<purpose>\nPurpose text.\n</purpose>\n\n"
+            "<agent_version>2.0.0</agent_version>\n\n"
+            "<enforcement>not: valid: yaml: {</enforcement>\n\n"
+        )
+        self._write_md(
+            md_path,
+            {"name": "agent", "description": "desc", "model": "sonnet"},
+            xml_body,
+        )
+        adapter = make_adapter(tool_mapper, prompt_transformer, tmp_path)
+
+        # Act — must not raise
+        agent = adapter.extract(str(md_path))
+
+        # Assert — version parsed, enforcement skipped (malformed)
+        assert agent.version == "2.0.0"
+        assert agent.enforcement == {}  # malformed YAML silently skipped
+
+    def test_extract_governance_from_xml_tool_tier_without_label(
+        self,
+        tool_mapper: Any,
+        prompt_transformer: Any,
+        tmp_path: Path,
+    ) -> None:
+        """Tool tier with no label (e.g., 'T3' instead of 'T3 (External)') extracts correctly."""
+        # Arrange
+        agents_dir = tmp_path / "skill" / "agents"
+        agents_dir.mkdir(parents=True)
+        md_path = agents_dir / "agent.md"
+        xml_body = (
+            "<identity>\nRole text.\n</identity>\n\n"
+            "<purpose>\nPurpose text.\n</purpose>\n\n"
+            "<tool_tier>T3</tool_tier>\n\n"
+        )
+        self._write_md(
+            md_path,
+            {"name": "agent", "description": "desc", "model": "sonnet"},
+            xml_body,
+        )
+        adapter = make_adapter(tool_mapper, prompt_transformer, tmp_path)
+
+        # Act
+        agent = adapter.extract(str(md_path))
+
+        # Assert
+        assert agent.tool_tier == ToolTier.T3
+
+    def test_extract_governance_from_xml_partial_tags(
+        self,
+        tool_mapper: Any,
+        prompt_transformer: Any,
+        tmp_path: Path,
+    ) -> None:
+        """Only some governance tags present — extracts what exists, defaults the rest."""
+        # Arrange
+        agents_dir = tmp_path / "skill" / "agents"
+        agents_dir.mkdir(parents=True)
+        md_path = agents_dir / "agent.md"
+        # Only agent_version and prior_art, no tool_tier or enforcement
+        xml_body = (
+            "<identity>\nRole text.\n</identity>\n\n"
+            "<purpose>\nPurpose text.\n</purpose>\n\n"
+            "<agent_version>3.1.0</agent_version>\n\n"
+            "<prior_art>\n- Reference A\n- Reference B\n</prior_art>\n\n"
+        )
+        self._write_md(
+            md_path,
+            {"name": "agent", "description": "desc", "model": "sonnet"},
+            xml_body,
+        )
+        adapter = make_adapter(tool_mapper, prompt_transformer, tmp_path)
+
+        # Act
+        agent = adapter.extract(str(md_path))
+
+        # Assert — version and prior_art extracted, others default
+        assert agent.version == "3.1.0"
+        assert agent.prior_art == ["Reference A", "Reference B"]
+        assert agent.tool_tier == ToolTier.T1  # default
+        assert agent.enforcement == {}  # default
+
+
+# ---------------------------------------------------------------------------
+# _extract_governance_from_markdown() boundary conditions (via extract())
+# ---------------------------------------------------------------------------
+
+
+class TestExtractGovernanceFromMarkdownBoundary:
+    """Boundary-condition tests for markdown governance extraction.
+
+    Tests exercise _extract_governance_from_markdown() indirectly via
+    extract() by writing .md files with markdown heading governance.
+    """
+
+    def _write_md(self, path: Path, frontmatter: dict[str, Any], body: str) -> None:
+        """Write a .md file with YAML frontmatter."""
+        fm_str = yaml.dump(frontmatter, default_flow_style=False, sort_keys=False)
+        path.write_text(f"---\n{fm_str}---\n{body}", encoding="utf-8")
+
+    def test_extract_governance_from_markdown_empty_sections(
+        self,
+        tool_mapper: Any,
+        prompt_transformer: Any,
+        tmp_path: Path,
+    ) -> None:
+        """Heading with no content produces no governance for that field."""
+        # Arrange
+        agents_dir = tmp_path / "skill" / "agents"
+        agents_dir.mkdir(parents=True)
+        md_path = agents_dir / "agent.md"
+        # Markdown body: headings are present but Agent Version section is empty
+        md_body = (
+            "## Identity\n\nRole text.\n\n"
+            "## Purpose\n\nPurpose text.\n\n"
+            "## Capabilities\n\nCapabilities here.\n\n"
+            "## Methodology\n\nMethod here.\n\n"
+            "## Agent Version\n\n"
+            "## Tool Tier\n\nT2 (Read-Write)\n\n"
+        )
+        self._write_md(
+            md_path,
+            {"name": "agent", "description": "desc", "model": "sonnet"},
+            md_body,
+        )
+        adapter = make_adapter(tool_mapper, prompt_transformer, tmp_path)
+
+        # Act
+        agent = adapter.extract(str(md_path))
+
+        # Assert — empty Agent Version heading yields default
+        assert agent.version == "1.0.0"  # default, empty heading ignored
+        assert agent.tool_tier == ToolTier.T2  # non-empty heading extracted
+
+    def test_extract_governance_from_markdown_malformed_yaml(
+        self,
+        tool_mapper: Any,
+        prompt_transformer: Any,
+        tmp_path: Path,
+    ) -> None:
+        """YAML parse error in a markdown governance section does not crash."""
+        # Arrange
+        agents_dir = tmp_path / "skill" / "agents"
+        agents_dir.mkdir(parents=True)
+        md_path = agents_dir / "agent.md"
+        md_body = (
+            "## Identity\n\nRole text.\n\n"
+            "## Purpose\n\nPurpose text.\n\n"
+            "## Capabilities\n\nCapabilities here.\n\n"
+            "## Methodology\n\nMethod here.\n\n"
+            "## Agent Version\n\n4.0.0\n\n"
+            "## Enforcement\n\nnot: valid: yaml: {\n\n"
+        )
+        self._write_md(
+            md_path,
+            {"name": "agent", "description": "desc", "model": "sonnet"},
+            md_body,
+        )
+        adapter = make_adapter(tool_mapper, prompt_transformer, tmp_path)
+
+        # Act — must not raise
+        agent = adapter.extract(str(md_path))
+
+        # Assert — version parsed, enforcement skipped
+        assert agent.version == "4.0.0"
+        assert agent.enforcement == {}  # malformed YAML silently skipped
+
+
+# ---------------------------------------------------------------------------
+# Governance tail-placement ordering assertion (FIX 3)
+# ---------------------------------------------------------------------------
+
+
+class TestGovernanceTailPlacement:
+    """Tests that governance sections appear after domain sections in composed body.
+
+    Regression-protects the documented tail-placement decision from PROJ-012
+    adversary review FM-013 (RPN 405): governance metadata is reference data
+    placed after behavioral prompt content.
+    """
+
+    def test_governance_sections_appear_after_domain_sections(
+        self,
+        make_canonical_agent: Any,
+        tool_mapper: Any,
+        prompt_transformer: Any,
+        tmp_path: Path,
+    ) -> None:
+        """Governance XML tags appear AFTER domain sections like <identity> in the composed body."""
+        # Arrange
+        adapter = make_adapter(tool_mapper, prompt_transformer, tmp_path)
+        agent = make_canonical_agent(
+            body_format=BodyFormat.XML,
+            prompt_body="## Identity\n\nTest role.\n\n## Purpose\n\nTest purpose.\n\n## Methodology\n\nTest method.\n",
+            version="2.0.0",
+            tool_tier=ToolTier.T3,
+            enforcement={"quality_gate_tier": "C2"},
+        )
+
+        # Act
+        body = adapter._build_body(agent)
+
+        # Assert — domain sections before governance sections
+        identity_pos = body.find("<identity>")
+        purpose_pos = body.find("<purpose>")
+        methodology_pos = body.find("<methodology>")
+        agent_version_pos = body.find("<agent_version>")
+        tool_tier_pos = body.find("<tool_tier>")
+        enforcement_pos = body.find("<enforcement>")
+
+        # All domain sections must exist
+        assert identity_pos >= 0, "<identity> not found in body"
+        assert purpose_pos >= 0, "<purpose> not found in body"
+        assert methodology_pos >= 0, "<methodology> not found in body"
+
+        # All governance sections must exist
+        assert agent_version_pos >= 0, "<agent_version> not found in body"
+        assert tool_tier_pos >= 0, "<tool_tier> not found in body"
+        assert enforcement_pos >= 0, "<enforcement> not found in body"
+
+        # Governance sections must appear AFTER domain sections
+        last_domain_pos = max(identity_pos, purpose_pos, methodology_pos)
+        first_governance_pos = min(agent_version_pos, tool_tier_pos, enforcement_pos)
+        assert first_governance_pos > last_domain_pos, (
+            f"Governance tag (pos {first_governance_pos}) appears before "
+            f"last domain tag (pos {last_domain_pos}). "
+            f"Governance should be tail-placed after domain sections."
+        )

@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jerry-framework.dev/schemas/anthropic-skill-frontmatter/v1.0.0",
+  "title": "Anthropic Skill Frontmatter Schema (Official Fields Only)",
+  "description": "Validates YAML frontmatter of SKILL.md files against Anthropic's 10 official Claude Code skill fields ONLY. No Jerry extension fields permitted. Source: code.claude.com/docs/en/skills (March 2026). See skill-canonical-v1.schema.json for Jerry extension fields.",
+  "type": "object",
+  "required": [
+    "name",
+    "description"
+  ],
+
+  "$comment": "SYNC NOTE: The skill_name $def is duplicated in skill-canonical-v1.schema.json. Changes to the name pattern, maxLength, or reserved-word exclusions MUST be applied to BOTH schemas in the same commit.",
+  "$defs": {
+    "skill_name": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "maxLength": 64,
+      "not": {
+        "anyOf": [
+          { "pattern": "claude" },
+          { "pattern": "anthropic" }
+        ]
+      },
+      "description": "Skill name. Lowercase letters, numbers, and hyphens only. Max 64 characters. Must not contain 'claude' or 'anthropic' (reserved by Anthropic)."
+    },
+    "tool_name": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+      "description": "Tool identifier (e.g., Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, Task)."
+    }
+  },
+
+  "properties": {
+    "name": {
+      "$ref": "#/$defs/skill_name",
+      "description": "Display name for the skill. Becomes the /slash-command. Lowercase letters, numbers, and hyphens only (max 64 chars). Must not contain 'claude' or 'anthropic'. If omitted, Claude Code uses the directory name."
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1024,
+      "minLength": 1,
+      "not": {
+        "pattern": "<[^>]+>"
+      },
+      "description": "What the skill does and when to use it. Claude uses this to decide when to apply the skill automatically. Max 1024 chars. No XML angle brackets."
+    },
+    "argument-hint": {
+      "type": "string",
+      "description": "Hint shown during autocomplete to indicate expected arguments."
+    },
+    "disable-model-invocation": {
+      "type": "boolean",
+      "default": false,
+      "description": "Set to true to prevent Claude from automatically loading this skill."
+    },
+    "user-invocable": {
+      "type": "boolean",
+      "default": true,
+      "description": "Set to false to hide from the / menu."
+    },
+    "allowed-tools": {
+      "description": "Tools Claude can use without asking permission when this skill is active.",
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Comma-separated tool list (e.g., 'Read, Write, Edit, Glob, Grep')."
+        },
+        {
+          "type": "array",
+          "items": { "$ref": "#/$defs/tool_name" },
+          "description": "Array of tool names."
+        }
+      ]
+    },
+    "model": {
+      "type": "string",
+      "description": "Model to use when this skill is active."
+    },
+    "context": {
+      "type": "string",
+      "enum": ["fork"],
+      "description": "Set to 'fork' to run in a forked subagent context."
+    },
+    "agent": {
+      "type": "string",
+      "description": "Which subagent type to use when context: fork is set."
+    },
+    "hooks": {
+      "type": "object",
+      "description": "Hooks scoped to this skill's lifecycle."
+    }
+  },
+
+  "$comment_additionalProperties": "Set to true so Anthropic can add new official fields without breaking CI. Jerry extension field enforcement is handled by SCV-001 in SkillComposeValidator, not by this schema.",
+  "additionalProperties": true
+}

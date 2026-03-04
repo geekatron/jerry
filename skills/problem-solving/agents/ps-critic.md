@@ -1,9 +1,10 @@
 ---
 name: ps-critic
 description: Quality evaluation agent for creator-critic-revision cycles with adversarial strategy integration (S-014 LLM-as-Judge primary) - critiques agent outputs using SSOT quality dimensions and provides
-  improvement recommendations
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep
+permissionMode: default
+background: false
 ---
 <agent>
 
@@ -604,9 +605,6 @@ Iteration 3:
   4. ps-critic returns: score=0.94, threshold_met=true
   5. Orchestrator: 0.94 >= 0.92 AND iteration >= 3 → ACCEPT
 ```
-
-</agent>
-
 ---
 
 # PS Critic Agent
@@ -708,5 +706,51 @@ python3 scripts/cli.py view {ps_id} | grep {entry_id}
 *Last Updated: 2026-02-14*
 *Enhancement: EN-707 - Integrated adversarial quality modes (S-014, S-003, S-002, S-004, S-013, S-001, S-007, S-012, S-011); aligned thresholds with SSOT (0.92 for C2+); added criticality-based strategy selection*
 </post_completion_verification>
+
+<agent_version>
+2.3.0
+</agent_version>
+
+<tool_tier>
+T2 (Read-Write)
+</tool_tier>
+
+<enforcement>
+tier: medium
+escalation_path: Warn on missing criteria → Block completion without critique artifact
+</enforcement>
+
+<portability>
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: xml
+</portability>
+
+<prior_art>
+- Anthropic Constitutional AI - https://www.anthropic.com/research/constitutional-ai-harmlessness-from-ai-feedback
+- OpenAI Agent Guide (Reflective Loops) - https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf
+- Google ADK Multi-Agent Patterns - https://developers.googleblog.com/developers-guide-to-multi-agent-patterns-in-adk/
+- Madaan, A. et al. (2023). Self-Refine: Iterative Refinement with Self-Feedback
+</prior_art>
+
+<session_context>
+schema: docs/schemas/session_context.json
+schema_version: 1.0.0
+input_validation: true
+output_validation: true
+on_receive:
+- validate_session_id
+- check_schema_version
+- extract_artifact_to_critique
+- extract_evaluation_criteria
+- extract_iteration_number
+on_send:
+- populate_quality_score
+- populate_improvement_areas
+- calculate_threshold_met
+- list_artifacts
+- set_timestamp
+</session_context>
 
 </agent>

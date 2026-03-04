@@ -4,8 +4,8 @@
 """
 CanonicalAgent - Parsed canonical agent definition entity.
 
-Represents the merged content of a .agent.yaml structured data file
-and its companion .prompt.md system prompt file.
+Represents the merged content of a .jerry.yaml structured data file
+and its companion .jerry.prompt.md system prompt file.
 
 References:
     - ADR-PROJ010-003: LLM Portability Architecture
@@ -26,8 +26,8 @@ from src.agents.domain.value_objects.tool_tier import ToolTier
 class CanonicalAgent:
     """Parsed canonical agent definition.
 
-    Combines structured data from .agent.yaml with the system prompt
-    body from .prompt.md into a single domain entity.
+    Combines structured data from .jerry.yaml with the system prompt
+    body from .jerry.prompt.md into a single domain entity.
 
     Attributes:
         name: Agent identifier in kebab-case.
@@ -50,7 +50,7 @@ class CanonicalAgent:
         enforcement: Enforcement tier and escalation.
         session_context: Handoff protocol configuration.
         prior_art: Referenced prior art citations.
-        prompt_body: Raw system prompt content from .prompt.md.
+        prompt_body: Raw system prompt content from .jerry.prompt.md.
         body_format: Target body format for vendor transformation.
         extra_yaml: Additional YAML fields not covered by named attributes.
     """

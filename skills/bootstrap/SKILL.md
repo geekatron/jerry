@@ -1,26 +1,12 @@
 ---
-name: Bootstrap
+name: bootstrap
 description: This skill should be used when the user says "bootstrap", "set up Jerry", "configure guardrails", "initialize Jerry", or asks how to get started with Jerry. Sets up Jerry's context distribution by syncing behavioral rules and patterns.
-version: 1.0.0
 allowed-tools:
-  - Read
-  - Write
-  - Bash
-activation-keywords:
-  - "bootstrap"
-  - "set up Jerry"
-  - "configure guardrails"
-  - "initialize Jerry"
-  - "context distribution"
-  - "sync rules"
-  - "get started"
+- Read
+- Write
+- Bash
 ---
-
 # Bootstrap Skill
-
-> **Version:** 1.0.0
-> **Framework:** Jerry Bootstrap
-> **Constitutional Compliance:** Jerry Constitution v1.0
 
 Let's get your bindings adjusted so you don't have any Jerry moments.
 
@@ -239,7 +225,18 @@ The bootstrap skill does not use templates. It operates directly on the `.contex
 
 ---
 
-*Skill Version: 1.0.0*
-*Constitutional Compliance: Jerry Constitution v1.0*
-*Created: 2026-02-12*
 *Last Updated: 2026-02-16*
+
+<skill_version>
+1.0.0
+</skill_version>
+
+<activation_keywords>
+- bootstrap
+- set up Jerry
+- configure guardrails
+- initialize Jerry
+- context distribution
+- sync rules
+- get started
+</activation_keywords>

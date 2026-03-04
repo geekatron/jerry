@@ -71,7 +71,7 @@
 | H-31 | Clarify before acting when ambiguous (ask, don't assume) | quality-enforcement |
 | H-32 | GitHub Issue parity for jerry repo work items | project-workflow |
 | H-33 | AST-based parsing REQUIRED for worktracker entity ops | ast-enforcement |
-| H-34 | Agent definition standards (YAML schema validation, constitutional compliance triplet) | agent-development-standards |
+| H-34 | Agent definition standards (single-file architecture, governance in prompt body, canonical .jerry.yaml schema validation) | agent-development-standards |
 | H-36 | Agent routing standards (circuit breaker max 3 hops, keyword-first routing) | agent-routing-standards |
 
 ---

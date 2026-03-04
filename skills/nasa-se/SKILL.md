@@ -1,52 +1,11 @@
 ---
 name: nasa-se
 description: NASA Systems Engineering skill implementing NPR 7123.1D processes through 10 specialized agents. Use for requirements engineering, verification/validation, risk management, technical reviews, system integration, configuration management, architecture decisions, trade studies/exploration, quality assurance, and SE status reporting following mission-grade practices.
-version: "1.2.0"
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, WebSearch, WebFetch, mcp__context7__resolve-library-id, mcp__context7__query-docs, mcp__memory-keeper__store, mcp__memory-keeper__retrieve, mcp__memory-keeper__search
-activation-keywords:
-  - "systems engineering"
-  - "NASA SE"
-  - "NPR 7123"
-  - "requirements engineering"
-  - "verification and validation"
-  - "V&V"
-  - "risk management"
-  - "technical review"
-  - "SRR"
-  - "PDR"
-  - "CDR"
-  - "FRR"
-  - "system integration"
-  - "configuration management"
-  - "traceability matrix"
-  - "VCRM"
-  - "interface control"
-  - "ICD"
-  - "risk register"
-  - "5x5 matrix"
-  - "trade study"
-  - "trade-off"
-  - "alternative analysis"
-  - "decision analysis"
-  - "concept exploration"
-  - "explore options"
-  - "what are our options"
-  - "divergent thinking"
-  - "brainstorm"
-  - "quality assurance"
-  - "QA audit"
-  - "artifact validation"
-  - "compliance check"
-  - "NPR compliance"
-  - "work product quality"
 ---
-
 # NASA Systems Engineering Skill
 
-> **Version:** 1.2.0
-> **Framework:** Jerry NASA SE (NSE)
 > **Standards:** NASA/SP-2016-6105 Rev2, NPR 7123.1D, NPR 8000.4C
-> **Constitutional Compliance:** Jerry Constitution v1.0
 
 ---
 
@@ -387,7 +346,6 @@ projects/PROJ-002-nasa-systems-engineering/
 ## Adversarial Quality Mode
 
 > **Source:** EPIC-002 EN-305 (NASA-SE Skill Enhancement), EN-303 (Situational Applicability Mapping)
-> **SSOT:** `.context/rules/quality-enforcement.md` (canonical constants)
 
 The NASA SE skill integrates adversarial quality controls into systems engineering processes. All SE review gates, V&V activities, and risk assessments incorporate structured adversarial challenge through creator-critic-revision cycles.
 
@@ -554,7 +512,60 @@ For detailed agent specifications, see:
 
 ---
 
-*Skill Version: 1.2.0*
-*Constitutional Compliance: Jerry Constitution v1.0 + P-040, P-041, P-042, P-043*
 *Enhancement: EN-708 adversarial quality mode integration (EPIC-002 design)*
 *Last Updated: 2026-02-14*
+
+<skill_version>
+1.2.0
+</skill_version>
+
+<activation_keywords>
+- systems engineering
+- NASA SE
+- NPR 7123
+- requirements engineering
+- verification and validation
+- V&V
+- risk management
+- technical review
+- SRR
+- PDR
+- CDR
+- FRR
+- system integration
+- configuration management
+- traceability matrix
+- VCRM
+- interface control
+- ICD
+- risk register
+- 5x5 matrix
+- trade study
+- trade-off
+- alternative analysis
+- decision analysis
+- concept exploration
+- explore options
+- what are our options
+- divergent thinking
+- brainstorm
+- quality assurance
+- QA audit
+- artifact validation
+- compliance check
+- NPR compliance
+- work product quality
+</activation_keywords>
+
+<agent_registry>
+- nse-architecture
+- nse-configuration
+- nse-explorer
+- nse-integration
+- nse-qa
+- nse-reporter
+- nse-requirements
+- nse-reviewer
+- nse-risk
+- nse-verification
+</agent_registry>

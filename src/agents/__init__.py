@@ -5,7 +5,7 @@
 Agents Bounded Context - Canonical Agent Build Pipeline.
 
 Provides vendor-agnostic agent definition management:
-- Canonical source format (.agent.yaml + .prompt.md)
+- Canonical source format (.jerry.yaml + .jerry.prompt.md)
 - Build pipeline to generate vendor-specific agent files
 - Extract pipeline to reverse-engineer canonical from existing files
 - Validation and drift detection

@@ -308,6 +308,18 @@ class TestHeadingToTag:
             ("Output Specification", "output"),
             ("Output Requirements", "output"),
             ("Constitutional Compliance", "constitutional_compliance"),
+            # Agent governance section mappings
+            ("Agent Version", "agent_version"),
+            ("Tool Tier", "tool_tier"),
+            ("Enforcement", "enforcement"),
+            ("Portability", "portability"),
+            ("Prior Art", "prior_art"),
+            ("Session Context", "session_context"),
+            # Skill governance section mappings (BUG-002)
+            ("Skill Version", "skill_version"),
+            ("Activation Keywords", "activation_keywords"),
+            ("Agent Registry", "agent_registry"),
+            ("Context Injection", "context_injection"),
         ],
     )
     def test_known_heading_returns_canonical_tag(
@@ -591,6 +603,86 @@ class TestMarkdownToXml:
         assert "<" not in result
         assert "Just plain text." in result
 
+    def test_markdown_to_xml_converts_agent_version_heading(
+        self, prompt_transformer: PromptTransformer
+    ) -> None:
+        # Arrange
+        body = "## Agent Version\n\n1.2.0\n"
+
+        # Act
+        result = prompt_transformer.to_format(body, BodyFormat.XML)
+
+        # Assert
+        assert "<agent_version>" in result
+        assert "1.2.0" in result
+        assert "</agent_version>" in result
+
+    def test_markdown_to_xml_converts_tool_tier_heading(
+        self, prompt_transformer: PromptTransformer
+    ) -> None:
+        # Arrange
+        body = "## Tool Tier\n\nT3 (External)\n"
+
+        # Act
+        result = prompt_transformer.to_format(body, BodyFormat.XML)
+
+        # Assert
+        assert "<tool_tier>" in result
+        assert "T3 (External)" in result
+        assert "</tool_tier>" in result
+
+    def test_markdown_to_xml_converts_enforcement_heading(
+        self, prompt_transformer: PromptTransformer
+    ) -> None:
+        # Arrange
+        body = "## Enforcement\n\nquality_gate_tier: C2\n"
+
+        # Act
+        result = prompt_transformer.to_format(body, BodyFormat.XML)
+
+        # Assert
+        assert "<enforcement>" in result
+        assert "</enforcement>" in result
+
+    def test_markdown_to_xml_converts_portability_heading(
+        self, prompt_transformer: PromptTransformer
+    ) -> None:
+        # Arrange
+        body = "## Portability\n\nenabled: true\n"
+
+        # Act
+        result = prompt_transformer.to_format(body, BodyFormat.XML)
+
+        # Assert
+        assert "<portability>" in result
+        assert "</portability>" in result
+
+    def test_markdown_to_xml_converts_prior_art_heading(
+        self, prompt_transformer: PromptTransformer
+    ) -> None:
+        # Arrange
+        body = "## Prior Art\n\n- ADR-001\n- Phase 3 Synthesis\n"
+
+        # Act
+        result = prompt_transformer.to_format(body, BodyFormat.XML)
+
+        # Assert
+        assert "<prior_art>" in result
+        assert "</prior_art>" in result
+
+    def test_markdown_to_xml_converts_session_context_heading(
+        self, prompt_transformer: PromptTransformer
+    ) -> None:
+        # Arrange
+        body = "## Session Context\n\non_receive: validate\n"
+
+        # Act
+        result = prompt_transformer.to_format(body, BodyFormat.XML)
+
+        # Assert
+        assert "<session_context>" in result
+        assert "</session_context>" in result
+
 
 # ---------------------------------------------------------------------------
 # _markdown_to_rccf()
@@ -761,3 +853,118 @@ class TestMarkdownToRccf:
         # Assert
         assert "# CONSTRAINTS" in result
         assert "P-003" in result
+
+
+# ---------------------------------------------------------------------------
+# Skill governance XML conversion (BUG-002)
+# ---------------------------------------------------------------------------
+
+
+class TestSkillGovernanceXmlConversion:
+    """Tests for skill governance heading-to-XML conversion (BUG-002)."""
+
+    def test_skill_version_heading_converts_to_xml_tag(
+        self, prompt_transformer: PromptTransformer
+    ) -> None:
+        # Arrange
+        body = "## Skill Version\n\n2.0.0\n"
+
+        # Act
+        result = prompt_transformer.to_format(body, BodyFormat.XML)
+
+        # Assert
+        assert "<skill_version>" in result
+        assert "2.0.0" in result
+        assert "</skill_version>" in result
+
+    def test_activation_keywords_heading_converts_to_xml_tag(
+        self, prompt_transformer: PromptTransformer
+    ) -> None:
+        # Arrange
+        body = "## Activation Keywords\n\n- research\n- analyze\n"
+
+        # Act
+        result = prompt_transformer.to_format(body, BodyFormat.XML)
+
+        # Assert
+        assert "<activation_keywords>" in result
+        assert "</activation_keywords>" in result
+        assert "- research" in result
+
+    def test_agent_registry_heading_converts_to_xml_tag(
+        self, prompt_transformer: PromptTransformer
+    ) -> None:
+        # Arrange
+        body = "## Agent Registry\n\n- ps-researcher\n- ps-analyst\n"
+
+        # Act
+        result = prompt_transformer.to_format(body, BodyFormat.XML)
+
+        # Assert
+        assert "<agent_registry>" in result
+        assert "</agent_registry>" in result
+
+    def test_context_injection_heading_converts_to_xml_tag(
+        self, prompt_transformer: PromptTransformer
+    ) -> None:
+        # Arrange
+        body = "## Context Injection\n\n```yaml\nrules:\n  - quality.md\n```\n"
+
+        # Act
+        result = prompt_transformer.to_format(body, BodyFormat.XML)
+
+        # Assert
+        assert "<context_injection>" in result
+        assert "</context_injection>" in result
+
+
+# ---------------------------------------------------------------------------
+# Roundtrip tests (BUG-001 + BUG-002)
+# ---------------------------------------------------------------------------
+
+
+class TestRoundtrip:
+    """Roundtrip tests: from_xml -> to_format(XML) should produce valid nesting."""
+
+    def test_from_xml_then_to_xml_roundtrip_produces_valid_nesting(
+        self, prompt_transformer: PromptTransformer
+    ) -> None:
+        # Arrange — XML input with known agent sections
+        xml_body = (
+            "<identity>\nI am an agent.\n</identity>\n\n"
+            "<methodology>\nStep 1. Research.\nStep 2. Analyze.\n</methodology>\n\n"
+            "<guardrails>\nDo no harm.\n</guardrails>\n"
+        )
+
+        # Act — convert to markdown then back to XML
+        markdown = prompt_transformer.from_xml(xml_body)
+        xml_output = prompt_transformer.to_format(markdown, BodyFormat.XML)
+
+        # Assert — each tag appears exactly once (no duplicates)
+        for tag in ("identity", "methodology", "guardrails"):
+            assert xml_output.count(f"<{tag}>") == 1
+            assert xml_output.count(f"</{tag}>") == 1
+        # Content preserved
+        assert "I am an agent." in xml_output
+        assert "Step 1. Research." in xml_output
+
+    def test_markdown_to_xml_when_canonicalized_input_then_clean_output(
+        self, prompt_transformer: PromptTransformer
+    ) -> None:
+        # Arrange — canonical markdown (already converted from XML)
+        body = (
+            "## Identity\n\nI am a test agent.\n\n"
+            "## Purpose\n\nFor testing roundtrips.\n\n"
+            "## Guardrails\n\nDo no harm.\n"
+        )
+
+        # Act
+        result = prompt_transformer.to_format(body, BodyFormat.XML)
+
+        # Assert — clean XML nesting, no duplicate tags
+        assert result.count("<identity>") == 1
+        assert result.count("</identity>") == 1
+        assert result.count("<purpose>") == 1
+        assert result.count("</purpose>") == 1
+        assert result.count("<guardrails>") == 1
+        assert result.count("</guardrails>") == 1

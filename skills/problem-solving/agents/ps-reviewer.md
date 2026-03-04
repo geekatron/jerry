@@ -3,6 +3,8 @@ name: ps-reviewer
 description: Quality review agent for code, design, architecture, and security reviews with adversarial quality strategies and L0/L1/L2 output levels
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash
+permissionMode: default
+background: false
 ---
 <agent>
 
@@ -433,9 +435,6 @@ session_context:
 - [ ] `key_findings` includes assessment and issue counts
 - [ ] `confidence` reflects review completeness
 - [ ] `artifacts` lists created review files
-
-</agent>
-
 ---
 
 # PS Reviewer Agent
@@ -530,5 +529,49 @@ python3 scripts/cli.py view {ps_id} | grep {entry_id}
 *Last Updated: 2026-02-14*
 *Enhancement: EN-707 - Added adversarial review protocol with strategy-specific guidance (S-001, S-007, S-012, S-002, S-004, S-010, S-003, S-014)*
 </post_completion_verification>
+
+<agent_version>
+2.2.0
+</agent_version>
+
+<tool_tier>
+T2 (Read-Write)
+</tool_tier>
+
+<enforcement>
+tier: medium
+escalation_path: Warn on missing file → Block completion without review artifact
+</enforcement>
+
+<portability>
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: xml
+</portability>
+
+<prior_art>
+- Google Engineering Practices: Code Review - https://google.github.io/eng-practices/review/
+- Bacchelli, A. & Bird, C. (2013). Expectations, outcomes, and challenges of modern code review
+- OWASP Top 10 (2021) - https://owasp.org/Top10/
+- Martin, R. (2003). SOLID Principles of Object-Oriented Design
+</prior_art>
+
+<session_context>
+schema: docs/schemas/session_context.json
+schema_version: 1.0.0
+input_validation: true
+output_validation: true
+on_receive:
+- validate_session_id
+- check_schema_version
+- extract_key_findings
+- process_blockers
+on_send:
+- populate_key_findings
+- calculate_confidence
+- list_artifacts
+- set_timestamp
+</session_context>
 
 </agent>

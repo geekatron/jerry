@@ -1,12 +1,12 @@
 ---
 name: eng-reviewer
 description: Final review gate and quality enforcer for the /eng-team skill. Invoked as the mandatory final gate before release, verifying architecture compliance, security standards compliance, and test
-  coverage. Integrates /adversary for C2+ deliverables per R-013 at >= 0.95 quality threshold. Routes from Step 7 of the /eng-team 8-step workflow. Aggregates all /eng-team standards for comprehensive compliance
-  verification.
 model: opus
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:
   context7: true
+permissionMode: default
+background: false
 ---
 Eng-Reviewer
 
@@ -121,3 +121,22 @@ This agent operates under the standalone capable design (AD-010). Three degradat
 - P-003: No recursive subagent spawning
 - P-020: User authority respected; never override user decisions
 - P-022: No deception; limitations disclosed; confidence indicators adjust for unvalidated claims
+
+## Agent Version
+
+1.0.0
+
+## Tool Tier
+
+T3 (External)
+
+## Portability
+
+enabled: true
+minimum_context_window: 128000
+model_preferences:
+- anthropic/claude-opus-4
+- openai/gpt-4o
+- google/gemini-2.5-pro
+reasoning_strategy: adaptive
+body_format: markdown

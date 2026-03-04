@@ -1,12 +1,12 @@
 ---
 name: eng-infra
 description: Secure infrastructure engineer for the /eng-team skill. Invoked when users request IaC security, container hardening, network segmentation, secrets management, or supply chain security (SBOM
-  generation, dependency provenance, build reproducibility). Produces secure infrastructure configurations with CIS Benchmark and Google SLSA compliance. Routes from Step 3 (parallel) of the /eng-team 8-step
-  workflow.
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:
   context7: true
+permissionMode: default
+background: false
 ---
 Eng-Infra
 
@@ -120,3 +120,22 @@ This agent operates under the standalone capable design (AD-010). Three degradat
 - P-003: No recursive subagent spawning
 - P-020: User authority respected; never override user decisions
 - P-022: No deception; limitations disclosed; confidence indicators adjust for unvalidated claims
+
+## Agent Version
+
+1.0.0
+
+## Tool Tier
+
+T3 (External)
+
+## Portability
+
+enabled: true
+minimum_context_window: 128000
+model_preferences:
+- anthropic/claude-sonnet-4
+- openai/gpt-4o
+- google/gemini-2.5-pro
+reasoning_strategy: adaptive
+body_format: markdown

@@ -1,0 +1,174 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jerry-framework.dev/schemas/jerry-skill-frontmatter/v1.0.0",
+  "title": "Jerry Skill Frontmatter Schema [DEPRECATED]",
+  "description": "DEPRECATED: This combined schema is replaced by two separate schemas: (1) anthropic-skill-frontmatter-v1.schema.json (Anthropic official fields only, strict additionalProperties: false) and (2) skill-canonical-v1.schema.json (Jerry extension fields for .jerry.skill.yaml canonical sources). This file is retained for reference only. Do not use for new validation. See PROJ-012 skill composition pipeline.",
+  "type": "object",
+  "required": [
+    "name",
+    "description"
+  ],
+
+  "$defs": {
+    "skill_name": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "maxLength": 64,
+      "not": {
+        "anyOf": [
+          { "pattern": "claude" },
+          { "pattern": "anthropic" }
+        ]
+      },
+      "description": "Skill name. Lowercase letters, numbers, and hyphens only. Max 64 characters. Must not contain 'claude' or 'anthropic' (reserved by Anthropic). If omitted at runtime, Claude Code uses the directory name. Source: code.claude.com/docs/en/skills frontmatter reference + skill-standards.md security restrictions."
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version in MAJOR.MINOR.PATCH format."
+    },
+    "tool_name": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+      "description": "Tool identifier (e.g., Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, Task)."
+    }
+  },
+
+  "properties": {
+    "name": {
+      "$ref": "#/$defs/skill_name",
+      "description": "Display name for the skill. Becomes the /slash-command. Lowercase letters, numbers, and hyphens only (max 64 chars). Must not contain 'claude' or 'anthropic'. If omitted, Claude Code uses the directory name. Source: Anthropic official docs."
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1024,
+      "minLength": 1,
+      "not": {
+        "pattern": "<[^>]+>"
+      },
+      "description": "What the skill does and when to use it. Claude uses this to decide when to apply the skill automatically. If omitted, Claude uses the first paragraph of markdown content. Max 1024 chars. No XML angle brackets (security: frontmatter is injected into system prompt; XML tags could inject directives). Jerry H-26 requires: WHAT + WHEN + trigger phrases. Source: Anthropic official docs + skill-standards.md H-26."
+    },
+    "argument-hint": {
+      "type": "string",
+      "description": "Hint shown during autocomplete to indicate expected arguments. Example: '[issue-number]' or '[filename] [format]'. Source: Anthropic official docs."
+    },
+    "disable-model-invocation": {
+      "type": "boolean",
+      "default": false,
+      "description": "Set to true to prevent Claude from automatically loading this skill. Use for workflows you want to trigger manually with /name (e.g., /deploy, /commit). Default: false. Source: Anthropic official docs."
+    },
+    "user-invocable": {
+      "type": "boolean",
+      "default": true,
+      "description": "Set to false to hide from the / menu. Use for background knowledge users should not invoke directly. Default: true. Note: this only controls menu visibility, not Skill tool access — use disable-model-invocation to block programmatic invocation. Source: Anthropic official docs."
+    },
+    "allowed-tools": {
+      "description": "Tools Claude can use without asking permission when this skill is active. Accepts either a comma-separated string (Jerry convention: 'Read, Write, Edit, Glob, Grep') or a YAML array of tool names. Source: Anthropic official docs.",
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Comma-separated tool list (e.g., 'Read, Write, Edit, Glob, Grep')."
+        },
+        {
+          "type": "array",
+          "items": { "$ref": "#/$defs/tool_name" },
+          "description": "Array of tool names."
+        }
+      ]
+    },
+    "model": {
+      "type": "string",
+      "description": "Model to use when this skill is active. Source: Anthropic official docs."
+    },
+    "context": {
+      "type": "string",
+      "enum": ["fork"],
+      "description": "Set to 'fork' to run in a forked subagent context. The skill content becomes the prompt that drives the subagent — it will not have access to conversation history. Source: Anthropic official docs."
+    },
+    "agent": {
+      "type": "string",
+      "description": "Which subagent type to use when context: fork is set. Options include built-in agents (Explore, Plan, general-purpose) or custom subagents from .claude/agents/. If omitted, uses general-purpose. Source: Anthropic official docs."
+    },
+    "hooks": {
+      "type": "object",
+      "description": "Hooks scoped to this skill's lifecycle. See Anthropic docs on hooks in skills and agents for configuration format. Source: Anthropic official docs."
+    },
+
+    "version": {
+      "$ref": "#/$defs/semver",
+      "description": "Jerry extension: Semantic version in MAJOR.MINOR.PATCH format. Jerry-required per skill-standards.md. Source: skill-standards.md."
+    },
+    "activation-keywords": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1,
+      "description": "Jerry extension: YAML array of trigger phrases for skill routing. Used by mandatory-skill-usage.md trigger map for proactive skill invocation (H-22). Jerry-required per skill-standards.md. Source: skill-standards.md."
+    },
+    "agents": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "Jerry extension: YAML array of agent names available in this skill. Used for agent discovery and routing. Source: Jerry convention (eng-team, red-team skills)."
+    },
+    "context_injection": {
+      "type": "object",
+      "description": "Jerry extension: Dynamic context injection configuration. Defines files and rules to inject into skill context at load time. Source: Jerry convention (transcript skill).",
+      "properties": {
+        "always_load": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Files always loaded when skill activates."
+        },
+        "conditional_load": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "condition": { "type": "string" },
+              "files": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            }
+          },
+          "description": "Files loaded conditionally based on rules."
+        }
+      },
+      "additionalProperties": true
+    },
+    "license": {
+      "type": "string",
+      "description": "Jerry extension: Open source license identifier (e.g., MIT, Apache-2.0). Optional per skill-standards.md. Source: skill-standards.md."
+    },
+    "compatibility": {
+      "type": "string",
+      "maxLength": 500,
+      "description": "Jerry extension: Environment requirements (1-500 chars). Optional per skill-standards.md. Source: skill-standards.md."
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Jerry extension: Custom key-value pairs (author, mcp-server, category, tags). Optional per skill-standards.md. Source: skill-standards.md.",
+      "additionalProperties": true
+    },
+
+    "tools": {
+      "description": "DEPRECATED: Use 'allowed-tools' instead. Some skills use 'tools' as an alias — this field is accepted for backward compatibility but 'allowed-tools' is the canonical Anthropic field name.",
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": { "$ref": "#/$defs/tool_name" }
+        }
+      ]
+    }
+  },
+
+  "additionalProperties": false
+}

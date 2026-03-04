@@ -1,26 +1,9 @@
 ---
 name: prompt-engineering
 description: Structured prompt construction and quality validation for Jerry Framework. Invoke when building structured prompts, generating NPT-009/NPT-013 constraints, or scoring prompt quality. Guides users through the 5-element prompt anatomy, generates formatted constraints with XML wrapping, and scores prompts against the 7-criterion rubric.
-version: "1.0.0"
 allowed-tools: Read, Write, Edit, Glob, Grep
-activation-keywords:
-  - "/prompt-engineering"
-  - "build prompt"
-  - "create prompt"
-  - "prompt template"
-  - "NPT pattern"
-  - "constraint generation"
-  - "prompt quality"
-  - "score prompt"
-
 ---
-
 # Prompt Engineering Skill
-
-> **Version:** 1.0.0
-> **Framework:** Jerry Framework v0.9.0
-> **Constitutional Compliance:** Jerry Constitution v1.0
-> **SSOT Reference:** `.context/rules/prompt-quality.md`, `.context/rules/prompt-templates.md`
 
 ---
 
@@ -311,10 +294,23 @@ This skill operationalizes three knowledge sources into reusable tooling:
 | `.context/rules/quality-enforcement.md` | Quality gate SSOT, criticality levels, enforcement architecture |
 | `projects/PROJ-006-jerry-prompt/` | PROJ-006 research: 5-element anatomy derivation, quality rubric development, template validation |
 
----
+<skill_version>
+1.0.0
+</skill_version>
 
-*Skill Version: 1.0.0*
-*Constitutional Compliance: Jerry Constitution v1.0*
-*SSOT: `.context/rules/prompt-quality.md`, `.context/rules/prompt-templates.md`*
-*Source: PROJ-014 Negative Prompting Research*
-*Created: 2026-03-01*
+<activation_keywords>
+- /prompt-engineering
+- build prompt
+- create prompt
+- prompt template
+- NPT pattern
+- constraint generation
+- prompt quality
+- score prompt
+</activation_keywords>
+
+<agent_registry>
+- pe-builder
+- pe-constraint-gen
+- pe-scorer
+</agent_registry>

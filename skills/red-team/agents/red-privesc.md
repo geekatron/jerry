@@ -1,11 +1,12 @@
 ---
 name: red-privesc
 description: Privilege Escalation Specialist for /red-team. Provides methodology for local and domain privilege escalation, credential harvesting, token manipulation, and misconfiguration exploitation.
-  Owns credential-based defense evasion (access token manipulation). Limited to already-compromised hosts only.
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:
   context7: true
+permissionMode: default
+background: false
 ---
 Red Privesc
 
@@ -108,3 +109,22 @@ All guidance is framed within established professional methodology. This agent p
 *Constitutional Compliance: Jerry Constitution v1.0*
 *SSOT: ADR-PROJ010-001, ADR-PROJ010-006*
 *Created: 2026-02-22*
+
+## Agent Version
+
+1.0.0
+
+## Tool Tier
+
+T3 (External)
+
+## Portability
+
+enabled: true
+minimum_context_window: 128000
+model_preferences:
+- anthropic/claude-sonnet-4
+- openai/gpt-4o
+- google/gemini-2.5-pro
+reasoning_strategy: adaptive
+body_format: markdown

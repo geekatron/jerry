@@ -1,11 +1,12 @@
 ---
 name: eng-security
-description: 'Security code review specialist for the /eng-team skill. Invoked when users request manual secure code review, security requirements verification, or architecture security review. Produces
-  finding reports with CWE classifications and OWASP ASVS 5.0 verification results. Routes from Step 6 of the /eng-team 8-step workflow. Narrowed scope: automated tooling moved to eng-devsecops.'
+description: '''Security code review specialist for the /eng-team skill. Invoked when users request manual secure code review, security requirements verification, or architecture security review. Produces'
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:
   context7: true
+permissionMode: default
+background: false
 ---
 Eng-Security
 
@@ -124,3 +125,22 @@ This agent operates under the standalone capable design (AD-010). Three degradat
 - P-003: No recursive subagent spawning
 - P-020: User authority respected; never override user decisions
 - P-022: No deception; limitations disclosed; confidence indicators adjust for unvalidated claims
+
+## Agent Version
+
+1.0.0
+
+## Tool Tier
+
+T3 (External)
+
+## Portability
+
+enabled: true
+minimum_context_window: 128000
+model_preferences:
+- anthropic/claude-sonnet-4
+- openai/gpt-4o
+- google/gemini-2.5-pro
+reasoning_strategy: adaptive
+body_format: markdown

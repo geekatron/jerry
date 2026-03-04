@@ -1,0 +1,12 @@
+# Jerry Claude Code Vendor Defaults v1.0.0
+# Vendor: claude_code
+#
+# Layer 2 of 4: Claude Code vendor-specific defaults.
+# Merge order: governance defaults → vendor defaults → agent config → per-agent vendor overrides
+#
+# These fields are read by Claude Code's agent runtime.
+# Only Claude Code's recognized frontmatter fields belong here.
+
+# model: inherit       # Not set here; each agent MUST declare model explicitly
+permissionMode: "default"
+background: false

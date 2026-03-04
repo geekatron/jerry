@@ -3,6 +3,8 @@ name: ts-mindmap-mermaid
 description: Generates Mermaid mindmap visualizations from extracted transcript entities
 model: sonnet
 tools: Read, Write, Glob
+permissionMode: default
+background: false
 ---
 ts-mindmap-mermaid Agent
 
@@ -334,3 +336,41 @@ mindmap
 
 *Agent: ts-mindmap-mermaid v1.2.2*
 *Constitutional Compliance: P-002 (file persistence), P-003 (no subagents), P-022 (Hard - syntax limitations documented)*
+
+## Agent Version
+
+1.2.2
+
+## Tool Tier
+
+T2 (Read-Write)
+
+## Portability
+
+enabled: true
+minimum_context_window: 128000
+reasoning_strategy: adaptive
+body_format: markdown
+
+## Session Context
+
+schema: docs/schemas/session_context.json
+schema_version: 1.0.0
+input_validation: true
+output_validation: true
+on_receive:
+- check_schema_version_matches
+- verify_target_agent_matches
+- extract_extraction_report_path
+- extract_packet_id
+- extract_meeting_title
+- Validate model_config if provided in state
+- Apply model override from CLI parameters
+expected_inputs:
+- 'model_config: ModelConfig | None - CLI-specified model override'
+on_send:
+- populate_topic_count
+- populate_entity_counts
+- populate_overflow_handled
+- list_mindmap_file
+- set_timestamp
