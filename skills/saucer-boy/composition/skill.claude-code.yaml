@@ -1,0 +1,2 @@
+# Claude Code vendor overrides for: saucer-boy
+allowed-tools: Read, Glob, Grep

@@ -1,14 +1,10 @@
 ---
 name: orchestration
-description: Multi-agent workflow orchestration with state tracking, checkpointing, and cross-pollinated pipelines. Use when coordinating parallel agent pipelines, managing sync barriers, or tracking complex
-  workflow execution state across sessions.
+description: Multi-agent workflow orchestration with state tracking, checkpointing, and cross-pollinated pipelines. Use when coordinating parallel agent pipelines, managing sync barriers, or tracking complex workflow execution state across sessions.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, WebSearch, WebFetch, mcp__memory-keeper__store, mcp__memory-keeper__retrieve, mcp__memory-keeper__search
 ---
 # Orchestration Skill
 
-> **Version:** 2.2.0
-> **Framework:** Jerry Orchestration (ORCH)
-> **Constitutional Compliance:** Jerry Constitution v1.0
 > **Industry References:** [Anthropic Agent Skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills), [Microsoft AI Agent Patterns](https://learn.microsoft.com/en-us/azure/architecture/ai-ml/guide/ai-agent-design-patterns), [LangGraph](https://langchain-ai.github.io/langgraph/), [CrewAI Flows](https://docs.crewai.com/concepts/flows)
 
 ---
@@ -689,12 +685,14 @@ For workflow examples and step-by-step guides, see:
 
 ---
 
-## Skill Version
+*Enhancement: EN-709 Adversarial Quality Mode integration (phase gates, creator-critic-revision, quality scoring)*
+*Last Updated: 2026-02-14*
 
+<skill_version>
 2.2.0
+</skill_version>
 
-## Activation Keywords
-
+<activation_keywords>
 - orchestration
 - multi-agent workflow
 - pipeline
@@ -705,15 +703,10 @@ For workflow examples and step-by-step guides, see:
 - parallel agents
 - agent coordination
 - execution tracking
+</activation_keywords>
 
-## Agent Registry
-
+<agent_registry>
 - orch-planner
 - orch-synthesizer
 - orch-tracker
-
-*Skill Version: 2.2.0*
-*Constitutional Compliance: Jerry Constitution v1.0*
-*Enhancement: EN-709 Adversarial Quality Mode integration (phase gates, creator-critic-revision, quality scoring)*
-*Created: 2026-01-10*
-*Last Updated: 2026-02-14*
+</agent_registry>

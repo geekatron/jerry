@@ -5,8 +5,6 @@ allowed-tools: Read, Write, Edit, Bash
 ---
 # AST Skill
 
-> **Version:** 1.1.0
-> **Framework:** Jerry Framework v0.9.0
 > **Layer:** CLI adapter (single entry point to domain layer)
 
 ---
@@ -278,12 +276,11 @@ interface layer (H-07 enforced by architecture boundary tests).
 | H-23/H-24 rules | `.context/rules/markdown-navigation-standards.md` |
 | Quality enforcement | `.context/rules/quality-enforcement.md` |
 
-## Skill Version
-
+<skill_version>
 1.1.0
+</skill_version>
 
-## Activation Keywords
-
+<activation_keywords>
 - /ast
 - /jerry:ast
 - parse markdown
@@ -293,3 +290,4 @@ interface layer (H-07 enforced by architecture boundary tests).
 - render markdown
 - extract reinject
 - validate nav table
+</activation_keywords>

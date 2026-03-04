@@ -10,6 +10,9 @@ Coverage targets:
 - SCV-004: Frontmatter validates against Anthropic schema
 - SCV-005: Name matches folder, lowercase kebab-case
 - SCV-006: Description under 1024 chars, no XML brackets
+- SCV-007: Canonical name matches frontmatter name (FM-03)
+- SCV-008: All agents within a skill declare the same body_format
+- FM-08: Warning when jsonschema missing for SCV-004
 """
 
 from __future__ import annotations
@@ -242,6 +245,146 @@ class TestSCV003GovernanceSections:
         # Assert
         scv003_warnings = [f for f in result.warnings if f.check_id == "SCV-003"]
         assert any("agents" in w.message for w in scv003_warnings)
+
+
+class TestSCV003XmlTagDetection:
+    """SCV-003: XML governance tags satisfy governance section checks.
+
+    After BUG-002, composed SKILL.md files use <xml_tag> format for
+    governance sections. SCV-003 must detect both ## Heading and <xml_tag>
+    patterns to avoid false positives during validation.
+    """
+
+    @pytest.mark.happy_path
+    def test_validate_when_xml_skill_version_tag_then_no_scv003_error(
+        self, validator: SkillComposeValidator
+    ) -> None:
+        # Arrange — XML tag format instead of ## heading
+        body = "## Purpose\n\nContent.\n\n<skill_version>\n1.0.0\n</skill_version>\n"
+        content = _make_skill_md(body=body)
+        governance_source = {"version": "1.0.0"}
+
+        # Act
+        result = validator.validate(
+            content, skill_name="test-skill", governance_source=governance_source
+        )
+
+        # Assert
+        scv003_errors = [f for f in result.errors if f.check_id == "SCV-003"]
+        assert len(scv003_errors) == 0
+
+    @pytest.mark.happy_path
+    def test_validate_when_xml_activation_keywords_tag_then_no_scv003_error(
+        self, validator: SkillComposeValidator
+    ) -> None:
+        # Arrange
+        body = (
+            "## Purpose\n\nContent.\n\n"
+            "<activation_keywords>\n- research\n- analyze\n</activation_keywords>\n"
+        )
+        content = _make_skill_md(body=body)
+        governance_source = {"activation-keywords": ["research", "analyze"]}
+
+        # Act
+        result = validator.validate(
+            content, skill_name="test-skill", governance_source=governance_source
+        )
+
+        # Assert
+        scv003_errors = [f for f in result.errors if f.check_id == "SCV-003"]
+        assert len(scv003_errors) == 0
+
+    @pytest.mark.happy_path
+    def test_validate_when_xml_agent_registry_tag_then_no_scv003_warning(
+        self, validator: SkillComposeValidator
+    ) -> None:
+        # Arrange
+        body = "## Purpose\n\nContent.\n\n<agent_registry>\n- ps-researcher\n</agent_registry>\n"
+        content = _make_skill_md(body=body)
+        governance_source = {"agents": ["ps-researcher"]}
+
+        # Act
+        result = validator.validate(
+            content, skill_name="test-skill", governance_source=governance_source
+        )
+
+        # Assert
+        scv003_warnings = [f for f in result.warnings if f.check_id == "SCV-003"]
+        assert len(scv003_warnings) == 0
+
+    @pytest.mark.happy_path
+    def test_validate_when_xml_context_injection_tag_then_no_scv003_warning(
+        self, validator: SkillComposeValidator
+    ) -> None:
+        # Arrange
+        body = "## Purpose\n\nContent.\n\n<context_injection>\nrules:\n- test.md\n</context_injection>\n"
+        content = _make_skill_md(body=body)
+        governance_source = {"context_injection": {"rules": ["test.md"]}}
+
+        # Act
+        result = validator.validate(
+            content, skill_name="test-skill", governance_source=governance_source
+        )
+
+        # Assert
+        scv003_warnings = [f for f in result.warnings if f.check_id == "SCV-003"]
+        assert len(scv003_warnings) == 0
+
+    @pytest.mark.edge_case
+    def test_validate_when_all_four_xml_tags_present_then_no_scv003_findings(
+        self, validator: SkillComposeValidator
+    ) -> None:
+        # Arrange — all governance sections in XML format
+        body = (
+            "## Purpose\n\nContent.\n\n"
+            "<skill_version>\n1.0.0\n</skill_version>\n\n"
+            "<activation_keywords>\n- test\n</activation_keywords>\n\n"
+            "<agent_registry>\n- ps-researcher\n</agent_registry>\n\n"
+            "<context_injection>\nrules:\n- test.md\n</context_injection>\n"
+        )
+        content = _make_skill_md(body=body)
+        governance_source = {
+            "version": "1.0.0",
+            "activation-keywords": ["test"],
+            "agents": ["ps-researcher"],
+            "context_injection": {"rules": ["test.md"]},
+        }
+
+        # Act
+        result = validator.validate(
+            content, skill_name="test-skill", governance_source=governance_source
+        )
+
+        # Assert
+        scv003_errors = [f for f in result.errors if f.check_id == "SCV-003"]
+        scv003_warnings = [f for f in result.warnings if f.check_id == "SCV-003"]
+        assert len(scv003_errors) == 0
+        assert len(scv003_warnings) == 0
+
+    @pytest.mark.edge_case
+    def test_validate_when_mixed_xml_and_heading_format_then_no_scv003_findings(
+        self, validator: SkillComposeValidator
+    ) -> None:
+        # Arrange — mix of XML tags and ## headings
+        body = (
+            "## Purpose\n\nContent.\n\n"
+            "<skill_version>\n1.0.0\n</skill_version>\n\n"
+            "## Activation Keywords\n\n- test\n"
+        )
+        content = _make_skill_md(body=body)
+        governance_source = {
+            "version": "1.0.0",
+            "activation-keywords": ["test"],
+        }
+
+        # Act
+        result = validator.validate(
+            content, skill_name="test-skill", governance_source=governance_source
+        )
+
+        # Assert
+        scv003_errors = [f for f in result.errors if f.check_id == "SCV-003"]
+        assert len(scv003_errors) == 0
 
 
 class TestSCV005NameMatching:
@@ -575,3 +718,268 @@ class TestSCV004SchemaValidation:
         # Assert — SCV-004 should not fire for unknown fields
         scv004_errors = [f for f in result.errors if f.check_id == "SCV-004"]
         assert len(scv004_errors) == 0
+
+    @pytest.mark.negative
+    def test_validate_when_jsonschema_unavailable_then_scv004_warning(
+        self, validator_with_schema: SkillComposeValidator
+    ) -> None:
+        """FM-08: SCV-004 emits warning when jsonschema is None (not silent skip)."""
+        # Arrange — temporarily set _anthropic_schema to trigger the check
+        # but patch jsonschema to None
+        import src.agents.domain.services.skill_compose_validator as mod
+
+        original = mod.jsonschema
+        mod.jsonschema = None  # type: ignore[assignment]
+        try:
+            content = _make_skill_md()
+
+            # Act
+            result = validator_with_schema.validate(content, skill_name="test-skill")
+
+            # Assert — should produce a warning, not silently skip
+            scv004_warnings = [f for f in result.warnings if f.check_id == "SCV-004"]
+            assert len(scv004_warnings) == 1
+            assert "jsonschema" in scv004_warnings[0].message
+        finally:
+            mod.jsonschema = original
+
+
+class TestSCV007CanonicalNameConsistency:
+    """SCV-007: Canonical source name matches frontmatter name (FM-03)."""
+
+    @pytest.mark.happy_path
+    def test_validate_when_names_match_then_no_scv007_errors(
+        self, validator: SkillComposeValidator
+    ) -> None:
+        # Arrange
+        content = _make_skill_md(name="problem-solving")
+
+        # Act
+        result = validator.validate(
+            content,
+            skill_name="problem-solving",
+            canonical_name="problem-solving",
+        )
+
+        # Assert
+        scv007_errors = [f for f in result.errors if f.check_id == "SCV-007"]
+        assert len(scv007_errors) == 0
+
+    @pytest.mark.negative
+    def test_validate_when_names_differ_then_scv007_error(
+        self, validator: SkillComposeValidator
+    ) -> None:
+        # Arrange — canonical source says "problem-solving" but frontmatter says "wrong-name"
+        content = _make_skill_md(name="wrong-name")
+
+        # Act
+        result = validator.validate(
+            content,
+            skill_name="wrong-name",
+            canonical_name="problem-solving",
+        )
+
+        # Assert
+        scv007_errors = [f for f in result.errors if f.check_id == "SCV-007"]
+        assert len(scv007_errors) == 1
+        assert "problem-solving" in scv007_errors[0].message
+        assert "wrong-name" in scv007_errors[0].message
+
+    @pytest.mark.edge_case
+    def test_validate_when_no_canonical_name_then_scv007_skipped(
+        self, validator: SkillComposeValidator
+    ) -> None:
+        # Arrange
+        content = _make_skill_md(name="test-skill")
+
+        # Act
+        result = validator.validate(content, skill_name="test-skill", canonical_name="")
+
+        # Assert
+        scv007_errors = [f for f in result.errors if f.check_id == "SCV-007"]
+        assert len(scv007_errors) == 0
+
+    @pytest.mark.edge_case
+    def test_validate_when_frontmatter_name_missing_then_scv007_skipped(
+        self, validator: SkillComposeValidator
+    ) -> None:
+        # Arrange — no name in frontmatter (SCV-002 catches this)
+        content = "---\ndescription: Test\n---\n## Body\n"
+
+        # Act
+        result = validator.validate(content, skill_name="test-skill", canonical_name="test-skill")
+
+        # Assert — SCV-007 should not fire when name is missing (SCV-002 handles that)
+        scv007_errors = [f for f in result.errors if f.check_id == "SCV-007"]
+        assert len(scv007_errors) == 0
+
+
+class TestSCV008BodyFormatConsistency:
+    """SCV-008: All agents within a skill must declare the same body_format."""
+
+    @pytest.mark.happy_path
+    def test_validate_when_all_agents_same_format_then_no_scv008_errors(
+        self, validator: SkillComposeValidator
+    ) -> None:
+        # Arrange
+        content = _make_skill_md()
+        formats = {"agent-a": "xml", "agent-b": "xml", "agent-c": "xml"}
+
+        # Act
+        result = validator.validate(content, skill_name="test-skill", agent_body_formats=formats)
+
+        # Assert
+        scv008_errors = [f for f in result.errors if f.check_id == "SCV-008"]
+        assert len(scv008_errors) == 0
+
+    @pytest.mark.negative
+    def test_validate_when_mixed_formats_then_scv008_error(
+        self, validator: SkillComposeValidator
+    ) -> None:
+        # Arrange
+        content = _make_skill_md()
+        formats = {"agent-a": "xml", "agent-b": "markdown", "agent-c": "xml"}
+
+        # Act
+        result = validator.validate(content, skill_name="test-skill", agent_body_formats=formats)
+
+        # Assert
+        scv008_errors = [f for f in result.errors if f.check_id == "SCV-008"]
+        assert len(scv008_errors) == 1
+        assert "Inconsistent body_format" in scv008_errors[0].message
+        assert "markdown" in scv008_errors[0].message
+        assert "xml" in scv008_errors[0].message
+
+    @pytest.mark.edge_case
+    def test_validate_when_single_agent_then_scv008_skipped(
+        self, validator: SkillComposeValidator
+    ) -> None:
+        # Arrange — only one agent, nothing to compare
+        content = _make_skill_md()
+        formats = {"agent-a": "xml"}
+
+        # Act
+        result = validator.validate(content, skill_name="test-skill", agent_body_formats=formats)
+
+        # Assert
+        scv008_errors = [f for f in result.errors if f.check_id == "SCV-008"]
+        assert len(scv008_errors) == 0
+
+    @pytest.mark.edge_case
+    def test_validate_when_no_agent_formats_then_scv008_skipped(
+        self, validator: SkillComposeValidator
+    ) -> None:
+        # Arrange — None passed (no agent data available)
+        content = _make_skill_md()
+
+        # Act
+        result = validator.validate(content, skill_name="test-skill", agent_body_formats=None)
+
+        # Assert
+        scv008_errors = [f for f in result.errors if f.check_id == "SCV-008"]
+        assert len(scv008_errors) == 0
+
+    @pytest.mark.edge_case
+    def test_validate_when_empty_formats_dict_then_scv008_skipped(
+        self, validator: SkillComposeValidator
+    ) -> None:
+        # Arrange
+        content = _make_skill_md()
+
+        # Act
+        result = validator.validate(content, skill_name="test-skill", agent_body_formats={})
+
+        # Assert
+        scv008_errors = [f for f in result.errors if f.check_id == "SCV-008"]
+        assert len(scv008_errors) == 0
+
+    @pytest.mark.negative
+    def test_validate_when_two_agents_different_formats_then_error_shows_both(
+        self, validator: SkillComposeValidator
+    ) -> None:
+        # Arrange
+        content = _make_skill_md()
+        formats = {"agent-x": "markdown", "agent-y": "xml"}
+
+        # Act
+        result = validator.validate(content, skill_name="test-skill", agent_body_formats=formats)
+
+        # Assert
+        scv008_errors = [f for f in result.errors if f.check_id == "SCV-008"]
+        assert len(scv008_errors) == 1
+        msg = scv008_errors[0].message
+        assert "agent-x" in msg
+        assert "agent-y" in msg
+
+
+class TestSCV009DescriptionConsistency:
+    """SCV-009: Canonical description matches frontmatter description."""
+
+    @pytest.mark.happy_path
+    def test_validate_when_descriptions_match_then_no_scv009_warnings(
+        self, validator: SkillComposeValidator
+    ) -> None:
+        # Arrange
+        content = _make_skill_md(description="A test skill for validation")
+
+        # Act
+        result = validator.validate(
+            content,
+            skill_name="test-skill",
+            canonical_description="A test skill for validation",
+        )
+
+        # Assert
+        scv009_warnings = [f for f in result.warnings if f.check_id == "SCV-009"]
+        assert len(scv009_warnings) == 0
+
+    @pytest.mark.negative
+    def test_validate_when_descriptions_differ_then_scv009_warning(
+        self, validator: SkillComposeValidator
+    ) -> None:
+        # Arrange — canonical says one thing, frontmatter says another (drift)
+        content = _make_skill_md(description="Edited description in SKILL.md")
+
+        # Act
+        result = validator.validate(
+            content,
+            skill_name="test-skill",
+            canonical_description="Original description from skill.jerry.yaml",
+        )
+
+        # Assert
+        scv009_warnings = [f for f in result.warnings if f.check_id == "SCV-009"]
+        assert len(scv009_warnings) == 1
+        assert "skill.jerry.yaml" in scv009_warnings[0].message
+
+    @pytest.mark.edge_case
+    def test_validate_when_no_canonical_description_then_scv009_skipped(
+        self, validator: SkillComposeValidator
+    ) -> None:
+        # Arrange
+        content = _make_skill_md(description="Some description")
+
+        # Act
+        result = validator.validate(content, skill_name="test-skill", canonical_description="")
+
+        # Assert
+        scv009_warnings = [f for f in result.warnings if f.check_id == "SCV-009"]
+        assert len(scv009_warnings) == 0
+
+    @pytest.mark.edge_case
+    def test_validate_when_frontmatter_description_missing_then_scv009_skipped(
+        self, validator: SkillComposeValidator
+    ) -> None:
+        # Arrange — no description in frontmatter (SCV-002 catches this)
+        content = "---\nname: test-skill\n---\n## Body\n"
+
+        # Act
+        result = validator.validate(
+            content,
+            skill_name="test-skill",
+            canonical_description="Some canonical description",
+        )
+
+        # Assert — SCV-009 should not fire when description is missing
+        scv009_warnings = [f for f in result.warnings if f.check_id == "SCV-009"]
+        assert len(scv009_warnings) == 0

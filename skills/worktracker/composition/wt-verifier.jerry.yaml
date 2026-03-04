@@ -70,7 +70,7 @@ portability:
   enabled: true
   minimum_context_window: 128000
   reasoning_strategy: adaptive
-  body_format: xml
+  body_format: markdown
 enforcement:
   tier: medium
   escalation_path: Warn on missing evidence → Block completion without 80% AC verified

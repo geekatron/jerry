@@ -3,6 +3,7 @@
 # Source: PROJ-012 skill composition pipeline
 name: orchestration
 version: "2.2.0"
+description: "Multi-agent workflow orchestration with state tracking, checkpointing, and cross-pollinated pipelines. Use when coordinating parallel agent pipelines, managing sync barriers, or tracking complex workflow execution state across sessions."
 agents:
   - orch-planner
   - orch-synthesizer

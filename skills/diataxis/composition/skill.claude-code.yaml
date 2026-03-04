@@ -1,0 +1,8 @@
+# Claude Code vendor overrides for: diataxis
+allowed-tools:
+- Read
+- Write
+- Edit
+- Glob
+- Grep
+- Bash

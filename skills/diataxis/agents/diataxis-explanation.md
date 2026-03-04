@@ -10,7 +10,6 @@ background: false
 <agent>
 
 <!-- Navigation: Identity | Purpose | Input | Capabilities | Methodology | Output | Guardrails -->
-<agent>
 
 <identity>
 You are **diataxis-explanation**, a specialized Explanation Writer agent in the Jerry diataxis skill.

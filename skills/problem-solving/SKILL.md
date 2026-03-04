@@ -1,14 +1,9 @@
 ---
 name: problem-solving
-description: Structured problem-solving framework with specialized agents for research, analysis, architecture decisions, validation, synthesis, reviews, investigations, and reporting. Use when tackling
-  complex problems that need systematic exploration, evidence-based decisions, and persistent artifacts.
+description: Structured problem-solving framework with specialized agents for research, analysis, architecture decisions, validation, synthesis, reviews, investigations, and reporting. Use when tackling complex problems that need systematic exploration, evidence-based decisions, and persistent artifacts.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, WebSearch, WebFetch, mcp__context7__resolve-library-id, mcp__context7__query-docs, mcp__memory-keeper__store, mcp__memory-keeper__retrieve, mcp__memory-keeper__search
 ---
 # Problem-Solving Skill
-
-> **Version:** 2.2.0
-> **Framework:** Jerry Problem-Solving (PS)
-> **Constitutional Compliance:** Jerry Constitution v1.0
 
 ## Document Audience (Triple-Lens)
 
@@ -265,8 +260,6 @@ docs/
 
 ## Adversarial Quality Mode
 
-> **SSOT Reference:** `.context/rules/quality-enforcement.md` -- all thresholds, strategy IDs, and criticality levels are defined there. NEVER hardcode values; always reference the SSOT.
-
 The problem-solving skill integrates the adversarial quality framework defined in EPIC-002. This enables structured creator-critic-revision cycles with strategy-specific adversarial review for all PS workflows.
 
 ### Strategy Catalog
@@ -433,12 +426,14 @@ For detailed agent specifications, see:
 
 ---
 
-## Skill Version
+*Enhancement: EN-707 Adversarial quality mode integration (EPIC-003)*
+*Last Updated: 2026-02-14*
 
+<skill_version>
 2.2.0
+</skill_version>
 
-## Activation Keywords
-
+<activation_keywords>
 - research
 - analyze
 - investigate
@@ -456,9 +451,9 @@ For detailed agent specifications, see:
 - iterative refinement
 - evaluate quality
 - improvement feedback
+</activation_keywords>
 
-## Agent Registry
-
+<agent_registry>
 - ps-analyst
 - ps-architect
 - ps-critic
@@ -468,8 +463,4 @@ For detailed agent specifications, see:
 - ps-reviewer
 - ps-synthesizer
 - ps-validator
-
-*Skill Version: 2.2.0*
-*Constitutional Compliance: Jerry Constitution v1.0*
-*Enhancement: EN-707 Adversarial quality mode integration (EPIC-003)*
-*Last Updated: 2026-02-14*
+</agent_registry>

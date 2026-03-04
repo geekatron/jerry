@@ -1,0 +1,2 @@
+# Claude Code vendor overrides for: red-team
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, mcp__context7__resolve-library-id, mcp__context7__query-docs

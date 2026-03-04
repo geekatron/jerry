@@ -3,6 +3,7 @@
 # Source: PROJ-012 skill composition pipeline
 name: problem-solving
 version: "2.2.0"
+description: "Structured problem-solving framework with specialized agents for research, analysis, architecture decisions, validation, synthesis, reviews, investigations, and reporting. Use when tackling complex problems that need systematic exploration, evidence-based decisions, and persistent artifacts."
 agents:
   - ps-analyst
   - ps-architect

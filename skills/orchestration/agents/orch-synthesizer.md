@@ -397,9 +397,6 @@ Use Memory-Keeper to retrieve context from prior phases and cross-pipeline sourc
 | Cross-pipeline synthesis | Retrieve prior pipeline context | `mcp__memory-keeper__retrieve` |
 | Pattern search | Search stored contexts for themes | `mcp__memory-keeper__search` |
 | Multi-session synthesis | Search for prior session findings | `mcp__memory-keeper__search` |
-
-</agent>
-
 ---
 
 *Agent Version: 2.2.0*

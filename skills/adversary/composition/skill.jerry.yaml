@@ -3,6 +3,7 @@
 # Source: PROJ-012 skill composition pipeline
 name: adversary
 version: "1.0.0"
+description: "On-demand adversarial quality reviews using strategy templates. Selects strategies by criticality level, executes adversarial templates against deliverables, and scores quality using LLM-as-Judge rubric. Integrates with quality-enforcement.md SSOT."
 agents:
   - adv-executor
   - adv-scorer

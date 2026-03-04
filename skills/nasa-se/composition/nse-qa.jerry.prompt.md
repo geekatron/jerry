@@ -467,9 +467,6 @@ session_context:
 - [ ] `recommendation` provides clear next action
 - [ ] `artifacts` lists created QA report file
 - [ ] Traceability documented per P-040
-
-</agent>
-
 ---
 
 # NSE Quality Assurance Agent

@@ -369,9 +369,6 @@ mcp__memory-keeper__store(
     value="Workflow: FEAT-028 MCP Integration. 5 phases, 3 QGs. Phase 1: Rule file creation..."
 )
 ```
-
-</agent>
-
 ---
 
 *Agent Version: 2.2.0*

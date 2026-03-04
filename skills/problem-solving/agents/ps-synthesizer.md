@@ -415,9 +415,6 @@ session_context:
 - [ ] `key_findings` includes synthesized patterns
 - [ ] `confidence` reflects source agreement level
 - [ ] `artifacts` lists created synthesis files
-
-</agent>
-
 ---
 
 # PS Synthesizer Agent

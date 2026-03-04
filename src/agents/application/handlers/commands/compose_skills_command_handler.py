@@ -4,18 +4,21 @@
 """
 ComposeSkillsCommandHandler - Composes SKILL.md files with governance sections.
 
-Reads skill.jerry.yaml canonical source, builds governance sections from
-SkillGovernanceSectionBuilder, injects them into the SKILL.md body,
-validates with SkillComposeValidator, and writes the result.
+Reads canonical source triplet (skill.jerry.yaml + skill.jerry.prompt.md +
+skill.claude-code.yaml), builds governance sections from
+SkillGovernanceSectionBuilder, injects them into the body, validates with
+SkillComposeValidator, and writes the composed SKILL.md.
 
-Pipeline (simpler than agents — no 4-layer merge):
-  1. Read skill.jerry.yaml → CanonicalSkill entity
-  2. Read existing SKILL.md → parse frontmatter + body
-  3. Build governance sections from CanonicalSkill
-  4. Inject governance sections into body (before footer)
-  5. Validate composed output (SCV-001 through SCV-006)
-  6. Reassemble: --- + clean frontmatter + --- + body
-  7. Write composed SKILL.md
+Pipeline (no circular dependency — canonical sources are inputs, SKILL.md is output):
+  1. Read skill.jerry.yaml → CanonicalSkill entity (with description)
+  2. Read skill.jerry.prompt.md → prompt_body (or SKILL.md fallback)
+  3. Read skill.claude-code.yaml → vendor_overrides (allowed-tools, etc.)
+  4. Build frontmatter from canonical sources (name, description + vendor overrides)
+  5. Build governance sections from CanonicalSkill
+  6. Inject governance sections into body (before footer)
+  7. Validate composed output (SCV-001 through SCV-009)
+  8. Reassemble: --- + clean frontmatter + --- + body
+  9. Write composed SKILL.md
 
 References:
     - PROJ-012: Skill Composition Pipeline
@@ -34,12 +37,14 @@ from src.agents.application.commands.compose_skills_command import (
 from src.agents.application.handlers.commands.compose_skill_result import (
     ComposeSkillResult,
 )
+from src.agents.domain.services.prompt_transformer import PromptTransformer
 from src.agents.domain.services.skill_compose_validator import (
     SkillComposeValidator,
 )
 from src.agents.domain.services.skill_governance_builder import (
     SkillGovernanceSectionBuilder,
 )
+from src.agents.domain.value_objects.body_format import BodyFormat
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -47,19 +52,21 @@ if TYPE_CHECKING:
     from src.agents.application.ports.skill_repository import ISkillRepository
     from src.agents.domain.entities.canonical_skill import CanonicalSkill
 
-# Footer pattern to find injection point
-_FOOTER_RE = re.compile(r"^\*Skill Version:.*$", re.MULTILINE)
+# FM-07: Footer pattern broadened to handle bold/alternative formats
+# Handles: *Skill Version:*, **Skill Version:**, Skill Version:
+_FOOTER_RE = re.compile(r"^\*{0,2}Skill Version:.*$", re.MULTILINE)
 
 
 class ComposeSkillsCommandHandler:
     """Handler for ComposeSkillsCommand.
 
     Reads canonical skills, builds governance sections, injects them
-    into SKILL.md body, validates, and writes composed files.
+    into the prompt body, validates, and writes composed SKILL.md files.
 
     Attributes:
         _repository: Repository for reading canonical skill source.
         _governance_builder: Builds governance ## heading sections.
+        _prompt_transformer: Transforms governance from canonical headings to XML.
         _validator: Post-composition validator for SCV checks.
     """
 
@@ -67,6 +74,7 @@ class ComposeSkillsCommandHandler:
         self,
         repository: ISkillRepository,
         governance_builder: SkillGovernanceSectionBuilder,
+        prompt_transformer: PromptTransformer | None = None,
         validator: SkillComposeValidator | None = None,
     ) -> None:
         """Initialize with dependencies.
@@ -74,10 +82,13 @@ class ComposeSkillsCommandHandler:
         Args:
             repository: Repository for reading canonical skills.
             governance_builder: Builds governance sections from CanonicalSkill.
+            prompt_transformer: Transforms governance headings to XML format.
+                If None, governance sections are injected as-is (markdown headings).
             validator: Post-composition validator (None = skip validation).
         """
         self._repository = repository
         self._governance_builder = governance_builder
+        self._prompt_transformer = prompt_transformer
         self._validator = validator
 
     def handle(self, command: ComposeSkillsCommand) -> ComposeSkillResult:
@@ -89,6 +100,7 @@ class ComposeSkillsCommandHandler:
         Returns:
             ComposeSkillResult with counts and output paths.
         """
+        parse_errors: list[str] = []
         if command.skill_name:
             skill = self._repository.get(command.skill_name)
             if skill is None:
@@ -99,23 +111,31 @@ class ComposeSkillsCommandHandler:
                 )
             skills = [skill]
         else:
-            skills = self._repository.list_all()
+            skills, parse_errors = self._repository.list_all_with_diagnostics()
 
         result = ComposeSkillResult(dry_run=command.dry_run)
+
+        # Surface parse errors from list_all (FM-02)
+        for parse_error in parse_errors:
+            result.warnings.append(f"Parse error: {parse_error}")
 
         for skill in skills:
             try:
                 composed_content, output_path = self._compose_skill(skill)
 
-                # Post-composition validation (SCV-001 through SCV-006)
+                # Post-composition validation (SCV-001 through SCV-009)
                 if self._validator is not None:
                     folder_name = output_path.parent.name
                     governance_source = self._build_governance_dict(skill)
+                    agent_body_formats = self._repository.get_agent_body_formats(skill.name)
                     validation = self._validator.validate(
                         composed_content,
                         skill_name=skill.name,
                         folder_name=folder_name,
                         governance_source=governance_source,
+                        canonical_name=skill.name,
+                        agent_body_formats=agent_body_formats,
+                        canonical_description=skill.description,
                     )
                     if validation.errors:
                         for finding in validation.errors:
@@ -142,7 +162,7 @@ class ComposeSkillsCommandHandler:
         return result
 
     def _compose_skill(self, skill: CanonicalSkill) -> tuple[str, Path]:
-        """Compose a single skill: build governance, inject into body.
+        """Compose a single skill: build frontmatter and governance from canonical sources.
 
         Args:
             skill: Canonical skill entity.
@@ -152,15 +172,25 @@ class ComposeSkillsCommandHandler:
         """
         output_path = self._repository.get_skill_md_path(skill.name)
 
-        # Parse existing SKILL.md
-        existing_content = ""
-        if output_path.exists():
-            existing_content = output_path.read_text(encoding="utf-8")
+        # Build frontmatter from canonical sources (no circular read)
+        frontmatter = self._build_frontmatter(skill)
 
-        frontmatter, body = self._parse_md(existing_content)
+        # Use body from canonical prompt source
+        body = skill.prompt_body
 
-        # Build governance sections
+        # Strip existing governance sections so they get regenerated fresh.
+        # Without this, the builder's dedup logic sees old ## Heading sections
+        # and skips generation, preventing XML transformation on re-compose.
+        body = self._strip_governance_sections(body)
+
+        # Build governance sections (canonical ## Heading format)
         governance_sections = self._governance_builder.build(skill, body)
+
+        # Transform governance sections to XML if transformer is available
+        if governance_sections and self._prompt_transformer is not None:
+            governance_sections = self._prompt_transformer.to_format(
+                governance_sections, BodyFormat.XML
+            )
 
         # Inject governance sections before footer
         if governance_sections:
@@ -172,11 +202,42 @@ class ComposeSkillsCommandHandler:
             default_flow_style=False,
             sort_keys=False,
             allow_unicode=True,
-            width=200,
+            width=float("inf"),
         )
         composed = f"---\n{yaml_str}---\n{body}"
 
         return composed, output_path
+
+    @staticmethod
+    def _build_frontmatter(skill: CanonicalSkill) -> dict[str, Any]:
+        """Build SKILL.md frontmatter from canonical sources.
+
+        Merge order:
+          1. skill.jerry.yaml identity fields (name, description)
+          2. skill.claude-code.yaml vendor overrides (allowed-tools, etc.)
+
+        The ``name`` field always comes from skill.jerry.yaml and cannot
+        be overridden by vendor overrides.
+
+        Args:
+            skill: Canonical skill entity.
+
+        Returns:
+            Dict suitable for YAML frontmatter serialization.
+        """
+        fm: dict[str, Any] = {}
+
+        # Layer 1: Identity from skill.jerry.yaml
+        fm["name"] = skill.name
+        if skill.description:
+            fm["description"] = skill.description
+
+        # Layer 2: Vendor overrides from skill.claude-code.yaml
+        for key, value in skill.vendor_overrides.items():
+            if key != "name":  # name always from jerry.yaml
+                fm[key] = value
+
+        return fm
 
     @staticmethod
     def _inject_before_footer(body: str, governance_sections: str) -> str:
@@ -203,32 +264,101 @@ class ComposeSkillsCommandHandler:
         # No footer found — append at end
         return f"{body.rstrip()}\n\n{governance_sections}\n"
 
-    @staticmethod
-    def _parse_md(content: str) -> tuple[dict[str, Any], str]:
-        """Parse an .md file into frontmatter dict and body string.
+    # Governance section headings and XML tags to strip on re-compose
+    _GOVERNANCE_HEADINGS = {
+        "Skill Version",
+        "Activation Keywords",
+        "Agent Registry",
+        "Context Injection",
+    }
+    _GOVERNANCE_XML_TAGS = {
+        "skill_version",
+        "activation_keywords",
+        "agent_registry",
+        "context_injection",
+    }
+
+    @classmethod
+    def _strip_governance_sections(cls, body: str) -> str:
+        """Strip existing governance sections from body for fresh regeneration.
+
+        Removes both ## Heading format and <xml_tag> format governance sections
+        so the builder can regenerate them in the correct format.
 
         Args:
-            content: Full .md file content.
+            body: SKILL.md body text.
 
         Returns:
-            Tuple of (frontmatter_dict, body_string).
+            Body with governance sections removed.
         """
-        if not content.startswith("---"):
-            return {}, content
+        lines = body.split("\n")
+        result_lines: list[str] = []
+        in_governance_heading = False
+        in_governance_xml = False
+        in_code_block = False
 
-        end = content.find("\n---", 3)
-        if end == -1:
-            return {}, content
+        for line in lines:
+            stripped = line.strip()
 
-        fm_text = content[4:end]
-        body = content[end + 4 :].lstrip("\n")
+            # Track code blocks to avoid stripping inside them
+            if stripped.startswith("```"):
+                in_code_block = not in_code_block
+                if not in_governance_heading and not in_governance_xml:
+                    result_lines.append(line)
+                continue
 
-        try:
-            fm_data = yaml.safe_load(fm_text) or {}
-        except yaml.YAMLError:
-            fm_data = {}
+            if in_code_block:
+                if not in_governance_heading and not in_governance_xml:
+                    result_lines.append(line)
+                continue
 
-        return fm_data, body
+            # Check for ## heading (any heading ends a governance heading section)
+            heading_match = re.match(r"^##\s+(.+?)(?:\s*<!--.*-->)?\s*$", line)
+            if heading_match:
+                heading_text = heading_match.group(1).strip()
+                if heading_text in cls._GOVERNANCE_HEADINGS:
+                    in_governance_heading = True
+                    continue
+                else:
+                    in_governance_heading = False
+                    result_lines.append(line)
+                    continue
+
+            # Check for XML governance opening tags
+            is_xml_open = False
+            for tag in cls._GOVERNANCE_XML_TAGS:
+                if stripped == f"<{tag}>" or re.match(rf"<{tag}\s", stripped):
+                    is_xml_open = True
+                    break
+            if is_xml_open:
+                in_governance_xml = True
+                continue
+
+            # Check for XML governance closing tags
+            is_xml_close = False
+            for tag in cls._GOVERNANCE_XML_TAGS:
+                if stripped == f"</{tag}>":
+                    is_xml_close = True
+                    break
+            if is_xml_close:
+                in_governance_xml = False
+                continue
+
+            # Footer pattern terminates governance heading section
+            if in_governance_heading and _FOOTER_RE.match(stripped):
+                in_governance_heading = False
+
+            # Skip content inside governance heading sections
+            if in_governance_heading:
+                continue
+
+            # Skip content inside governance XML tags
+            if in_governance_xml:
+                continue
+
+            result_lines.append(line)
+
+        return "\n".join(result_lines)
 
     @staticmethod
     def _build_governance_dict(skill: CanonicalSkill) -> dict[str, Any]:

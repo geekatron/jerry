@@ -1,16 +1,11 @@
 ---
 name: saucer-boy-framework-voice
-description: 'INTERNAL SKILL — auto-loaded for framework output voice quality. Reviews, rewrites, and scores framework output text for persona compliance using the Shane McConkey ethos: joy and excellence
-  as multipliers. Governs quality gate messages, error messages, CLI output, hook text, and framework-generated text. Not user-invocable; loaded automatically when framework output needs voice enforcement.'
+description: 'INTERNAL SKILL — auto-loaded for framework output voice quality. Reviews, rewrites, and scores framework output text for persona compliance using the Shane McConkey ethos: joy and excellence as multipliers. Governs quality gate messages, error messages, CLI output, hook text, and framework-generated text. Not user-invocable; loaded automatically when framework output needs voice enforcement.'
 allowed-tools: Read, Write, Edit, Glob, Grep
 ---
 # Framework Voice Skill (Internal)
 
 > **INTERNAL SKILL** — Auto-loaded for framework output. Not user-invocable.
-> **Version:** 1.1.0
-> **Framework:** Jerry Voice Quality (SB)
-> **Constitutional Compliance:** Jerry Constitution v1.0
-> **Canonical Source:** The persona document (`projects/PROJ-003-je-ne-sais-quoi/orchestration/jnsq-20260219-001/jnsq/phase-1-persona-distillation/ps-creator-001/ps-creator-001-draft.md`) is the authoritative reference (DEC-001 D-002). This skill operationalizes it.
 
 ## Document Sections
 
@@ -465,14 +460,11 @@ All agents adhere to the **Jerry Constitution v1.0**:
 | Reference: vocabulary-reference.md | Vocabulary Reference | 735-787 | Examples (substitutions, forbidden) |
 | Reference: visual-vocabulary.md | Visual Vocabulary | 546-613 | Examples (ASCII, emoji, formatting) |
 
----
-
-## Skill Version
-
+<skill_version>
 1.1.0
+</skill_version>
 
-## Activation Keywords
-
+<activation_keywords>
 - voice check
 - voice review
 - persona compliance
@@ -482,14 +474,10 @@ All agents adhere to the **Jerry Constitution v1.0**:
 - voice score
 - framework voice
 - persona review
+</activation_keywords>
 
-## Agent Registry
-
+<agent_registry>
 - sb-calibrator
 - sb-reviewer
 - sb-rewriter
-
-*Skill Version: 1.1.0*
-*Constitutional Compliance: Jerry Constitution v1.0*
-*Canonical Source: ps-creator-001-draft.md*
-*Created: 2026-02-19*
+</agent_registry>

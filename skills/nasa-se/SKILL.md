@@ -1,15 +1,11 @@
 ---
 name: nasa-se
-description: NASA Systems Engineering skill implementing NPR 7123.1D processes through 10 specialized agents. Use for requirements engineering, verification/validation, risk management, technical reviews,
-  system integration, configuration management, architecture decisions, trade studies/exploration, quality assurance, and SE status reporting following mission-grade practices.
+description: NASA Systems Engineering skill implementing NPR 7123.1D processes through 10 specialized agents. Use for requirements engineering, verification/validation, risk management, technical reviews, system integration, configuration management, architecture decisions, trade studies/exploration, quality assurance, and SE status reporting following mission-grade practices.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, WebSearch, WebFetch, mcp__context7__resolve-library-id, mcp__context7__query-docs, mcp__memory-keeper__store, mcp__memory-keeper__retrieve, mcp__memory-keeper__search
 ---
 # NASA Systems Engineering Skill
 
-> **Version:** 1.2.0
-> **Framework:** Jerry NASA SE (NSE)
 > **Standards:** NASA/SP-2016-6105 Rev2, NPR 7123.1D, NPR 8000.4C
-> **Constitutional Compliance:** Jerry Constitution v1.0
 
 ---
 
@@ -350,7 +346,6 @@ projects/PROJ-002-nasa-systems-engineering/
 ## Adversarial Quality Mode
 
 > **Source:** EPIC-002 EN-305 (NASA-SE Skill Enhancement), EN-303 (Situational Applicability Mapping)
-> **SSOT:** `.context/rules/quality-enforcement.md` (canonical constants)
 
 The NASA SE skill integrates adversarial quality controls into systems engineering processes. All SE review gates, V&V activities, and risk assessments incorporate structured adversarial challenge through creator-critic-revision cycles.
 
@@ -517,12 +512,14 @@ For detailed agent specifications, see:
 
 ---
 
-## Skill Version
+*Enhancement: EN-708 adversarial quality mode integration (EPIC-002 design)*
+*Last Updated: 2026-02-14*
 
+<skill_version>
 1.2.0
+</skill_version>
 
-## Activation Keywords
-
+<activation_keywords>
 - systems engineering
 - NASA SE
 - NPR 7123
@@ -558,9 +555,9 @@ For detailed agent specifications, see:
 - compliance check
 - NPR compliance
 - work product quality
+</activation_keywords>
 
-## Agent Registry
-
+<agent_registry>
 - nse-architecture
 - nse-configuration
 - nse-explorer
@@ -571,8 +568,4 @@ For detailed agent specifications, see:
 - nse-reviewer
 - nse-risk
 - nse-verification
-
-*Skill Version: 1.2.0*
-*Constitutional Compliance: Jerry Constitution v1.0 + P-040, P-041, P-042, P-043*
-*Enhancement: EN-708 adversarial quality mode integration (EPIC-002 design)*
-*Last Updated: 2026-02-14*
+</agent_registry>

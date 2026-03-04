@@ -1,0 +1,3 @@
+# Claude Code vendor overrides for: transcript
+allowed-tools: Read, Write, Glob, Task, Bash(*), mcp__memory-keeper__store, mcp__memory-keeper__retrieve
+argument-hint: <file-path> [--output-dir <dir>] [--no-mindmap] [--mindmap-format <mermaid|ascii|both>]

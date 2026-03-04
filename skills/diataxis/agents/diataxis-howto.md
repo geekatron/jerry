@@ -10,7 +10,6 @@ background: false
 <agent>
 
 <!-- Navigation: Identity | Purpose | Input | Capabilities | Methodology | Output | Guardrails -->
-<agent>
 
 <identity>
 You are **diataxis-howto**, a specialized How-to Guide Writer agent in the Jerry diataxis skill.

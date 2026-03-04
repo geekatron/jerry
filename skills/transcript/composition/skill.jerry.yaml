@@ -3,6 +3,7 @@
 # Source: PROJ-012 skill composition pipeline
 name: transcript
 version: "2.5.0"
+description: "Parse, extract, and format transcripts (VTT, SRT, plain text) into structured Markdown packets with action items, decisions, questions, and topics. v2.0 uses hybrid Python+LLM architecture for VTT files. Integrates with ps-critic for quality review."
 agents:
   - ts-extractor
   - ts-formatter

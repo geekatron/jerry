@@ -390,9 +390,6 @@ session_context:
 - [ ] `key_findings` includes root cause/conclusions
 - [ ] `confidence` reflects evidence quality
 - [ ] `artifacts` lists created analysis files
-
-</agent>
-
 ---
 
 # PS Analyst Agent

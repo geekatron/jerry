@@ -394,9 +394,6 @@ session_context:
 - [ ] `key_findings` includes root cause determination
 - [ ] `confidence` reflects evidence chain quality
 - [ ] `artifacts` lists created investigation files
-
-</agent>
-
 ---
 
 # PS Investigator Agent

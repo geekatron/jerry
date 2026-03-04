@@ -3,6 +3,7 @@
 # Source: PROJ-012 skill composition pipeline
 name: red-team
 version: "1.0.0"
+description: "Offensive security team skill providing methodology guidance for penetration testing and red team engagements. Invoked when users request penetration testing, reconnaissance, vulnerability analysis, exploitation methodology, social engineering, C2 infrastructure, or engagement reporting. Routes to 11 specialized agents covering the full MITRE ATT&CK kill chain. All engagements require red-lead scope authorization before any other agent. Follows PTES, OSSTMM, and ATT&CK methodology frameworks."
 agents:
   - red-exfil
   - red-exploit

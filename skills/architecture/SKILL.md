@@ -1,10 +1,6 @@
 ---
 name: architecture
-description: 'This skill should be used when the user asks to "design system",
-
-  "create ADR", "review architecture", or mentions architectural decisions.
-
-  '
+description: This skill should be used when the user asks to "design system", "create ADR", "review architecture", or mentions architectural decisions.
 allowed-tools:
 - Read
 - Write
@@ -13,10 +9,6 @@ allowed-tools:
 - Edit
 ---
 # Architecture Skill
-
-> **Version:** 1.0.0
-> **Framework:** Jerry Architecture (ARCH)
-> **Constitutional Compliance:** Jerry Constitution v1.0
 
 ---
 
@@ -465,12 +457,13 @@ The architecture skill integrates with other Jerry skills:
 
 ---
 
-## Skill Version
+*Last Updated: 2026-02-16*
 
+<skill_version>
 1.0.0
+</skill_version>
 
-## Activation Keywords
-
+<activation_keywords>
 - architecture
 - design system
 - ADR
@@ -481,7 +474,4 @@ The architecture skill integrates with other Jerry skills:
 - architectural compliance
 - layer dependencies
 - domain model
-
-*Skill Version: 1.0.0*
-*Constitutional Compliance: Jerry Constitution v1.0*
-*Last Updated: 2026-02-16*
+</activation_keywords>

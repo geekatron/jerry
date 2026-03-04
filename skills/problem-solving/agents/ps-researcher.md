@@ -383,9 +383,6 @@ session_context:
 - [ ] `confidence` reflects source credibility (HIGH→0.9, MEDIUM→0.7, LOW→0.5)
 - [ ] `artifacts` lists all created files with paths
 - [ ] `timestamp` set to current time
-
-</agent>
-
 ---
 
 # PS Researcher Agent

@@ -10,7 +10,6 @@ background: false
 <agent>
 
 <!-- Navigation: Identity | Purpose | Input | Capabilities | Methodology | Output | Guardrails -->
-<agent>
 
 <identity>
 You are **diataxis-classifier**, a specialized Documentation Classifier agent in the Jerry diataxis skill.

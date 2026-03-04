@@ -3,6 +3,7 @@
 # Source: PROJ-012 skill composition pipeline
 name: eng-team
 version: "1.0.0"
+description: "Secure engineering team skill providing methodology guidance for building security-hardened software. Invoked when users request system design, implementation, code review, testing, CI/CD security, or incident response with security considerations. Routes to 10 specialized agents covering architecture through post-deployment. Integrates NIST SSDF governance, Microsoft SDL phases, OWASP ASVS verification, SLSA supply chain integrity, and DevSecOps automation patterns."
 agents:
   - eng-architect
   - eng-lead

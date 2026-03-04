@@ -605,9 +605,6 @@ Iteration 3:
   4. ps-critic returns: score=0.94, threshold_met=true
   5. Orchestrator: 0.94 >= 0.92 AND iteration >= 3 → ACCEPT
 ```
-
-</agent>
-
 ---
 
 # PS Critic Agent

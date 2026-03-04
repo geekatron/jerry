@@ -1,7 +1,6 @@
 ---
 name: transcript
-description: Parse, extract, and format transcripts (VTT, SRT, plain text) into structured Markdown packets with action items, decisions, questions, and topics. v2.0 uses hybrid Python+LLM architecture
-  for VTT files. Integrates with ps-critic for quality review.
+description: Parse, extract, and format transcripts (VTT, SRT, plain text) into structured Markdown packets with action items, decisions, questions, and topics. v2.0 uses hybrid Python+LLM architecture for VTT files. Integrates with ps-critic for quality review.
 allowed-tools: Read, Write, Glob, Task, Bash(*), mcp__memory-keeper__store, mcp__memory-keeper__retrieve
 argument-hint: <file-path> [--output-dir <dir>] [--no-mindmap] [--mindmap-format <mermaid|ascii|both>]
 ---
@@ -113,9 +112,6 @@ After Phase 1 CLI parsing completes, continue with LLM agents:
 
 # Transcript Skill
 
-> **Version:** 2.4.1
-> **Framework:** Jerry Transcript Processing
-> **Constitutional Compliance:** Jerry Constitution v1.0 (P-001, P-002, P-003, P-004, P-010, P-020, P-022)
 > **Architecture:** Hybrid Python+LLM (Strategy Pattern) + Mindmap Generation + Token-Based Chunking
 
 ---
@@ -3351,12 +3347,15 @@ For detailed agent specifications, see:
 
 ---
 
-## Skill Version
+*Architecture: Hybrid Python+LLM (Strategy Pattern) + Mindmap Generation + Token-Based Chunking*
+*ADR Compliance: ADR-002 (packet structure), ADR-003 (anchor registry), ADR-004 (file splitting), ADR-006 (mindmap), ADR-007 (output template)*
+*Last Updated: 2026-01-31 (ADR-007 Model-Agnostic Output)*
 
+<skill_version>
 2.5.0
+</skill_version>
 
-## Activation Keywords
-
+<activation_keywords>
 - transcript
 - meeting notes
 - parse vtt
@@ -3365,58 +3364,52 @@ For detailed agent specifications, see:
 - extract decisions
 - analyze meeting
 - /transcript
+</activation_keywords>
 
-## Agent Registry
-
+<agent_registry>
 - ts-extractor
 - ts-formatter
 - ts-mindmap-ascii
 - ts-mindmap-mermaid
 - ts-parser
+</agent_registry>
 
-## Context Injection
-
+<context_injection>
 ```yaml
+context_path: ./contexts/
 default_domain: general
 domains:
-- name: general
-  description: Baseline extraction - speakers, topics, questions
+- description: Baseline extraction - speakers, topics, questions
   file: contexts/general.yaml
-- name: transcript
-  description: Base transcript entities - extends general
+  name: general
+- description: Base transcript entities - extends general
   file: contexts/transcript.yaml
-- name: meeting
-  description: Generic meetings - action items, decisions, follow-ups
+  name: transcript
+- description: Generic meetings - action items, decisions, follow-ups
   file: contexts/meeting.yaml
-- name: software-engineering
-  description: Standups, sprint planning, code reviews - commitments, blockers, risks
+  name: meeting
+- description: Standups, sprint planning, code reviews - commitments, blockers, risks
   file: contexts/software-engineering.yaml
-- name: software-architecture
-  description: ADR discussions, design sessions - decisions, alternatives, quality attributes
+  name: software-engineering
+- description: ADR discussions, design sessions - decisions, alternatives, quality attributes
   file: contexts/software-architecture.yaml
-- name: product-management
-  description: Roadmap planning, feature prioritization - requests, user needs, stakeholder feedback
+  name: software-architecture
+- description: Roadmap planning, feature prioritization - requests, user needs, stakeholder feedback
   file: contexts/product-management.yaml
-- name: user-experience
-  description: Research interviews, usability tests - insights, pain points, verbatim quotes
+  name: product-management
+- description: Research interviews, usability tests - insights, pain points, verbatim quotes
   file: contexts/user-experience.yaml
-- name: cloud-engineering
-  description: Post-mortems, capacity planning - incidents, root causes, action items
+  name: user-experience
+- description: Post-mortems, capacity planning - incidents, root causes, action items
   file: contexts/cloud-engineering.yaml
-- name: security-engineering
-  description: Security audits, threat modeling - vulnerabilities, threats (STRIDE), compliance gaps
+  name: cloud-engineering
+- description: Security audits, threat modeling - vulnerabilities, threats (STRIDE), compliance gaps
   file: contexts/security-engineering.yaml
-context_path: ./contexts/
+  name: security-engineering
 template_variables:
 - domain
 - entity_definitions
 - extraction_rules
 - prompt_guidance
 ```
-
-*Skill Version: 2.5.0*
-*Architecture: Hybrid Python+LLM (Strategy Pattern) + Mindmap Generation + Token-Based Chunking*
-*Constitutional Compliance: Jerry Constitution v1.0 (P-001, P-002, P-003, P-004, P-010, P-020, P-022)*
-*ADR Compliance: ADR-002 (packet structure), ADR-003 (anchor registry), ADR-004 (file splitting), ADR-006 (mindmap), ADR-007 (output template)*
-*Created: 2026-01-26*
-*Last Updated: 2026-01-31 (ADR-007 Model-Agnostic Output)*
+</context_injection>

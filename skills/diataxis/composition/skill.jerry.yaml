@@ -3,6 +3,7 @@
 # Source: PROJ-012 skill composition pipeline
 name: diataxis
 version: "0.1.0"
+description: "Four-quadrant documentation framework. Produces tutorials (learning by doing), how-to guides (goal-oriented tasks), reference documentation (authoritative description), and explanation (conceptual understanding) using the Diataxis methodology. Invoke when creating new documentation, auditing existing docs for quadrant mixing, or classifying documentation requests."
 agents:
   - diataxis-auditor
   - diataxis-classifier

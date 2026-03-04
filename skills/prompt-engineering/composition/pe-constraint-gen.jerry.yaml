@@ -78,7 +78,7 @@ portability:
   enabled: true
   minimum_context_window: 128000
   reasoning_strategy: adaptive
-  body_format: xml
+  body_format: markdown
 enforcement:
   tier: hard
   escalation_path: quality-gate

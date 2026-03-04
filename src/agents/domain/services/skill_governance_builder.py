@@ -62,10 +62,11 @@ class SkillGovernanceSectionBuilder:
 
         # Context Injection
         if skill.context_injection and "context injection" not in existing_headings:
+            # FM-13: sort_keys=True ensures deterministic output regardless of dict insertion order
             formatted = yaml.dump(
                 skill.context_injection,
                 default_flow_style=False,
-                sort_keys=False,
+                sort_keys=True,
                 allow_unicode=True,
                 width=100,
             ).rstrip("\n")
@@ -73,16 +74,34 @@ class SkillGovernanceSectionBuilder:
 
         return "\n".join(sections)
 
+    # XML tag -> heading name mapping for dedup during re-composition
+    _XML_TAG_TO_HEADING: dict[str, str] = {
+        "skill_version": "skill version",
+        "activation_keywords": "activation keywords",
+        "agent_registry": "agent registry",
+        "context_injection": "context injection",
+    }
+
     def _extract_headings(self, body: str) -> set[str]:
-        """Extract all ## level headings from markdown body (case-insensitive).
+        """Extract section identifiers from markdown body for dedup.
+
+        Detects both ## Heading format and <xml_tag> format to handle
+        re-composition when body already has XML governance tags.
 
         Args:
-            body: Markdown body text.
+            body: Markdown body text (may contain ## headings or XML tags).
 
         Returns:
-            Set of heading names in lowercase (without ## prefix).
+            Set of heading names in lowercase (without ## prefix or XML delimiters).
         """
         headings: set[str] = set()
+        # FM-06: Regex handles HTML comment spacing variants after heading text
         for match in re.finditer(r"^##\s+(.+?)(?:\s*<!--.*-->)?\s*$", body, re.MULTILINE):
             headings.add(match.group(1).strip().lower())
+
+        # Detect XML governance tags for re-composition dedup
+        for tag, heading_name in self._XML_TAG_TO_HEADING.items():
+            if re.search(rf"<{tag}[\s/>]", body):
+                headings.add(heading_name)
+
         return headings

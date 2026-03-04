@@ -1,11 +1,6 @@
 ---
 name: diataxis
-description: 'Four-quadrant documentation framework. Produces tutorials (learning by doing), how-to guides (goal-oriented tasks), reference documentation (authoritative description), and explanation (conceptual
-  understanding) using the Diataxis methodology. Invoke when creating new documentation, auditing existing docs for quadrant mixing, or classifying documentation requests. Triggers: documentation, tutorial,
-  how-to, howto, reference docs, explanation, diataxis, write docs, write documentation, write tutorial, create documentation, classify documentation, audit documentation, user guide, getting started, quickstart,
-  API docs, developer guide, quadrant, doc type, how-to guide.
-
-  '
+description: Four-quadrant documentation framework. Produces tutorials (learning by doing), how-to guides (goal-oriented tasks), reference documentation (authoritative description), and explanation (conceptual understanding) using the Diataxis methodology. Invoke when creating new documentation, auditing existing docs for quadrant mixing, or classifying documentation requests.
 allowed-tools:
 - Read
 - Write
@@ -16,9 +11,6 @@ allowed-tools:
 ---
 # Diataxis Skill
 
-> **Version:** 0.1.0
-> **Framework:** Diataxis Four-Quadrant Documentation (diataxis.fr)
-> **Constitutional Compliance:** Jerry Constitution v1.0
 > **Knowledge Reference:** `docs/knowledge/diataxis-framework.md`
 
 ## Document Sections
@@ -228,14 +220,11 @@ All agents comply with:
 | `skills/diataxis/templates/reference-template.md` | Reference structural template |
 | `skills/diataxis/templates/explanation-template.md` | Explanation structural template |
 
----
-
-## Skill Version
-
+<skill_version>
 0.1.0
+</skill_version>
 
-## Activation Keywords
-
+<activation_keywords>
 - documentation
 - tutorial
 - how-to
@@ -257,17 +246,13 @@ All agents comply with:
 - developer guide
 - quadrant
 - doc type
+</activation_keywords>
 
-## Agent Registry
-
+<agent_registry>
 - diataxis-auditor
 - diataxis-classifier
 - diataxis-explanation
 - diataxis-howto
 - diataxis-reference
 - diataxis-tutorial
-
-*Skill Version: 0.1.0*
-*Constitutional Compliance: Jerry Constitution v1.0*
-*SSOT: `.context/rules/skill-standards.md`*
-*Created: 2026-02-26*
+</agent_registry>

@@ -226,6 +226,61 @@ def get_all_skill_files() -> tuple[list[Path], list[Path]]:
 # ---------------------------------------------------------------------------
 
 
+def check_skill_name_def_sync(
+    anthropic_schema: dict | None,
+    canonical_schema: dict | None,
+) -> list[str]:
+    """Check that $defs/skill_name is identical in both schemas (FM-05).
+
+    The skill_name definition is duplicated across anthropic-skill-frontmatter-v1
+    and skill-canonical-v1 schemas. This check ensures they stay in sync.
+
+    Args:
+        anthropic_schema: Loaded Anthropic skill frontmatter schema.
+        canonical_schema: Loaded skill canonical source schema.
+
+    Returns:
+        List of error strings (empty if in sync or schemas missing).
+    """
+    if anthropic_schema is None or canonical_schema is None:
+        return []
+
+    anthropic_def = anthropic_schema.get("$defs", {}).get("skill_name")
+    canonical_def = canonical_schema.get("$defs", {}).get("skill_name")
+
+    if anthropic_def is None and canonical_def is None:
+        return []
+
+    if anthropic_def is None:
+        return [
+            "Schema sync: $defs/skill_name missing from "
+            "anthropic-skill-frontmatter-v1.schema.json but present in "
+            "skill-canonical-v1.schema.json"
+        ]
+
+    if canonical_def is None:
+        return [
+            "Schema sync: $defs/skill_name missing from "
+            "skill-canonical-v1.schema.json but present in "
+            "anthropic-skill-frontmatter-v1.schema.json"
+        ]
+
+    # Compare structural equality (ignore description differences)
+    anthropic_comparable = {k: v for k, v in anthropic_def.items() if k != "description"}
+    canonical_comparable = {k: v for k, v in canonical_def.items() if k != "description"}
+
+    if anthropic_comparable != canonical_comparable:
+        return [
+            "Schema sync: $defs/skill_name differs between "
+            "anthropic-skill-frontmatter-v1.schema.json and "
+            "skill-canonical-v1.schema.json (excluding description). "
+            "Both schemas MUST use identical pattern, maxLength, and "
+            "reserved-word exclusions."
+        ]
+
+    return []
+
+
 def main() -> int:
     """Run skill schema validation.
 
@@ -253,6 +308,9 @@ def main() -> int:
 
     all_errors: list[str] = []
     files_checked = 0
+
+    # FM-05: Check $defs/skill_name sync between schemas
+    all_errors.extend(check_skill_name_def_sync(anthropic_schema, canonical_schema))
 
     if args.all:
         # CI mode: validate all files

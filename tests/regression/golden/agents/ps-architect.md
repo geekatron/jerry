@@ -420,9 +420,6 @@ Use Memory-Keeper to persist architecture decisions across sessions and retrieve
 | ADR created | Store decision summary + key rationale | `mcp__memory-keeper__store` |
 | New architecture task | Search for prior related decisions | `mcp__memory-keeper__search` |
 | Cross-session continuity | Retrieve prior architecture context | `mcp__memory-keeper__retrieve` |
-
-</agent>
-
 ---
 
 # PS Architect Agent

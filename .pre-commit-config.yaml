@@ -185,7 +185,22 @@ repos:
 
   # =============================================================================
   # Skill Compose Validation (PROJ-012, L5 Post-Hoc)
-  # Validates composed SKILL.md files against SCV-001 through SCV-006 checks.
+  # Validates composed SKILL.md files against SCV-001 through SCV-007 checks.
+  #
+  # WORKFLOW (FM-12): When modifying canonical source files (skill.jerry.yaml),
+  # run `uv run jerry skills compose` BEFORE committing to regenerate SKILL.md.
+  # This hook validates the composed output — it does NOT re-compose. If you
+  # edit only skill.jerry.yaml without re-composing, validation runs against
+  # the stale SKILL.md and may pass incorrectly.
+  #
+  # Recommended workflow:
+  #   1. Edit skills/*/composition/skill.jerry.yaml
+  #   2. Run: uv run jerry skills compose
+  #   3. Commit both skill.jerry.yaml and SKILL.md together
+  #
+  # BYPASS PROTECTION (FM-01): The --no-verify flag bypasses these pre-commit
+  # hooks. See docs/knowledge/ci-gate-configuration.md for branch protection
+  # setup. CI provides the authoritative gate; pre-commit is defense-in-depth.
   # =============================================================================
   - repo: local
     hooks:
@@ -208,6 +223,22 @@ repos:
         entry: uv run --frozen python scripts/check_skill_schemas.py
         language: system
         files: (skills/.*/SKILL\.md|skills/.*/composition/skill\.jerry\.yaml|docs/schemas/.*skill.*\.json)$
+        pass_filenames: false
+        stages: [pre-commit]
+
+  # =============================================================================
+  # XML Nesting Validation (PROJ-012, L5 Post-Hoc)
+  # Validates XML tag nesting in composed agent .md and SKILL.md files.
+  # Catches broken XML structure: missing wrappers, duplicate tags, orphaned
+  # closing tags, and missing governance sections.
+  # =============================================================================
+  - repo: local
+    hooks:
+      - id: xml-nesting-validation
+        name: XML nesting validation (composed files)
+        entry: uv run --frozen python scripts/validate_xml_nesting.py
+        language: system
+        files: (skills/.*/agents/.*\.md|skills/.*/SKILL\.md)$
         pass_filenames: false
         stages: [pre-commit]
 

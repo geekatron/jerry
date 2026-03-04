@@ -290,11 +290,13 @@ def create_skills_compose_handler() -> Any:
     skills_dir = _get_skills_dir()
     repository = FilesystemSkillRepository(skills_dir)
     governance_builder = SkillGovernanceSectionBuilder()
+    prompt_transformer = PromptTransformer()
     validator = _create_skill_compose_validator()
 
     return ComposeSkillsCommandHandler(
         repository=repository,
         governance_builder=governance_builder,
+        prompt_transformer=prompt_transformer,
         validator=validator,
     )
 

@@ -340,9 +340,6 @@ session_context:
 - [ ] `key_findings` includes health status and metrics
 - [ ] `confidence` reflects data completeness
 - [ ] `artifacts` lists created report files
-
-</agent>
-
 ---
 
 # PS Reporter Agent

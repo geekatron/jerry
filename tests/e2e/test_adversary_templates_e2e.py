@@ -154,8 +154,8 @@ def extract_frontmatter(content: str) -> dict[str, str]:
 
 def extract_table_from_section(content: str, section_heading: str) -> str | None:
     """Extract a markdown table from a specific section."""
-    # Find the section
-    section_pattern = rf"^##\s+{re.escape(section_heading)}.*?(?=^##\s+|\Z)"
+    # Find the section (match any heading level ##, ###, etc.)
+    section_pattern = rf"^#{{2,}}\s+{re.escape(section_heading)}.*?(?=^#{{2,}}\s+|\Z)"
     section_match = re.search(section_pattern, content, re.MULTILINE | re.DOTALL)
     if not section_match:
         return None

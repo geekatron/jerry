@@ -1,15 +1,9 @@
 ---
 name: prompt-engineering
-description: Structured prompt construction and quality validation for Jerry Framework. Invoke when building structured prompts, generating NPT-009/NPT-013 constraints, or scoring prompt quality. Guides
-  users through the 5-element prompt anatomy, generates formatted constraints with XML wrapping, and scores prompts against the 7-criterion rubric.
+description: Structured prompt construction and quality validation for Jerry Framework. Invoke when building structured prompts, generating NPT-009/NPT-013 constraints, or scoring prompt quality. Guides users through the 5-element prompt anatomy, generates formatted constraints with XML wrapping, and scores prompts against the 7-criterion rubric.
 allowed-tools: Read, Write, Edit, Glob, Grep
 ---
 # Prompt Engineering Skill
-
-> **Version:** 1.0.0
-> **Framework:** Jerry Framework v0.9.0
-> **Constitutional Compliance:** Jerry Constitution v1.0
-> **SSOT Reference:** `.context/rules/prompt-quality.md`, `.context/rules/prompt-templates.md`
 
 ---
 
@@ -300,14 +294,11 @@ This skill operationalizes three knowledge sources into reusable tooling:
 | `.context/rules/quality-enforcement.md` | Quality gate SSOT, criticality levels, enforcement architecture |
 | `projects/PROJ-006-jerry-prompt/` | PROJ-006 research: 5-element anatomy derivation, quality rubric development, template validation |
 
----
-
-## Skill Version
-
+<skill_version>
 1.0.0
+</skill_version>
 
-## Activation Keywords
-
+<activation_keywords>
 - /prompt-engineering
 - build prompt
 - create prompt
@@ -316,15 +307,10 @@ This skill operationalizes three knowledge sources into reusable tooling:
 - constraint generation
 - prompt quality
 - score prompt
+</activation_keywords>
 
-## Agent Registry
-
+<agent_registry>
 - pe-builder
 - pe-constraint-gen
 - pe-scorer
-
-*Skill Version: 1.0.0*
-*Constitutional Compliance: Jerry Constitution v1.0*
-*SSOT: `.context/rules/prompt-quality.md`, `.context/rules/prompt-templates.md`*
-*Source: PROJ-014 Negative Prompting Research*
-*Created: 2026-03-01*
+</agent_registry>

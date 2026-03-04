@@ -428,9 +428,6 @@ session_context:
 - [ ] `key_findings` includes assessment and issue counts
 - [ ] `confidence` reflects review completeness
 - [ ] `artifacts` lists created review files
-
-</agent>
-
 ---
 
 # PS Reviewer Agent

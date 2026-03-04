@@ -312,6 +312,7 @@ class TestHeadingDedup:
     def test_build_when_heading_has_html_comment_then_still_detected(
         self, builder: SkillGovernanceSectionBuilder, make_skill: callable
     ) -> None:
+        """FM-06: Regression test for heading dedup with HTML comment spacing."""
         # Arrange
         skill = make_skill(version="1.0.0")
         existing_body = "## Skill Version <!-- injected -->\n\n1.0.0\n"
@@ -321,3 +322,149 @@ class TestHeadingDedup:
 
         # Assert
         assert "## Skill Version" not in result
+
+
+class TestXmlTagDedup:
+    """Tests for XML governance tag dedup during re-composition.
+
+    When a SKILL.md body already has XML governance tags from a previous
+    compose, the builder must skip those sections (dedup) to prevent
+    duplication.
+    """
+
+    @pytest.mark.happy_path
+    def test_build_when_xml_skill_version_tag_exists_then_section_skipped(
+        self, builder: SkillGovernanceSectionBuilder, make_skill: callable
+    ) -> None:
+        # Arrange
+        skill = make_skill(version="2.0.0")
+        existing_body = "<skill_version>\n2.0.0\n</skill_version>\n"
+
+        # Act
+        result = builder.build(skill, existing_body=existing_body)
+
+        # Assert
+        assert "## Skill Version" not in result
+
+    @pytest.mark.happy_path
+    def test_build_when_xml_activation_keywords_tag_exists_then_section_skipped(
+        self, builder: SkillGovernanceSectionBuilder, make_skill: callable
+    ) -> None:
+        # Arrange
+        skill = make_skill(activation_keywords=("research", "analyze"))
+        existing_body = "<activation_keywords>\n- research\n- analyze\n</activation_keywords>\n"
+
+        # Act
+        result = builder.build(skill, existing_body=existing_body)
+
+        # Assert
+        assert "## Activation Keywords" not in result
+
+    @pytest.mark.happy_path
+    def test_build_when_xml_agent_registry_tag_exists_then_section_skipped(
+        self, builder: SkillGovernanceSectionBuilder, make_skill: callable
+    ) -> None:
+        # Arrange
+        skill = make_skill(agents=("ps-researcher",))
+        existing_body = "<agent_registry>\n- ps-researcher\n</agent_registry>\n"
+
+        # Act
+        result = builder.build(skill, existing_body=existing_body)
+
+        # Assert
+        assert "## Agent Registry" not in result
+
+    @pytest.mark.happy_path
+    def test_build_when_xml_context_injection_tag_exists_then_section_skipped(
+        self, builder: SkillGovernanceSectionBuilder, make_skill: callable
+    ) -> None:
+        # Arrange
+        skill = make_skill(context_injection={"rules": ["test.md"]})
+        existing_body = "<context_injection>\nrules:\n- test.md\n</context_injection>\n"
+
+        # Act
+        result = builder.build(skill, existing_body=existing_body)
+
+        # Assert
+        assert "## Context Injection" not in result
+
+    @pytest.mark.edge_case
+    def test_build_when_mixed_xml_and_heading_then_all_skipped(
+        self, builder: SkillGovernanceSectionBuilder, make_skill: callable
+    ) -> None:
+        """Re-composition with mix of XML tags and ## headings."""
+        # Arrange
+        skill = make_skill(
+            version="1.0.0",
+            activation_keywords=("test",),
+        )
+        existing_body = (
+            "<skill_version>\n1.0.0\n</skill_version>\n\n## Activation Keywords\n\n- test\n"
+        )
+
+        # Act
+        result = builder.build(skill, existing_body=existing_body)
+
+        # Assert
+        assert "## Skill Version" not in result
+        assert "## Activation Keywords" not in result
+
+    @pytest.mark.edge_case
+    def test_build_when_self_closing_xml_tag_then_section_skipped(
+        self, builder: SkillGovernanceSectionBuilder, make_skill: callable
+    ) -> None:
+        # Arrange — self-closing tag variant
+        skill = make_skill(version="1.0.0")
+        existing_body = "<skill_version/>\n"
+
+        # Act
+        result = builder.build(skill, existing_body=existing_body)
+
+        # Assert
+        assert "## Skill Version" not in result
+
+
+class TestContextInjectionDeterminism:
+    """FM-13: Context injection output must be deterministic regardless of dict insertion order.
+
+    Verifies the FM-13 fix (sort_keys=True) in SkillGovernanceSectionBuilder.build().
+    """
+
+    @pytest.mark.happy_path
+    def test_build_when_dict_insertion_order_differs_then_identical_output(
+        self, builder: SkillGovernanceSectionBuilder, make_skill: callable
+    ) -> None:
+        """FM-13: Verify sort_keys=True produces identical YAML for dicts with different insertion order."""
+        # Arrange — two dicts with identical content but different insertion order
+        dict_a = {"zebra": "last", "alpha": "first", "middle": "center"}
+        dict_b = {"alpha": "first", "middle": "center", "zebra": "last"}
+
+        skill_a = make_skill(context_injection=dict_a)
+        skill_b = make_skill(context_injection=dict_b)
+
+        # Act
+        result_a = builder.build(skill_a)
+        result_b = builder.build(skill_b)
+
+        # Assert — both must produce byte-identical output
+        assert result_a == result_b
+        assert "## Context Injection" in result_a
+
+    @pytest.mark.edge_case
+    def test_build_when_nested_dict_order_differs_then_identical_output(
+        self, builder: SkillGovernanceSectionBuilder, make_skill: callable
+    ) -> None:
+        """FM-13: Verify determinism extends to nested dict structures."""
+        # Arrange — nested dicts with different insertion order
+        nested_a = {"rules": {"z_rule": "val", "a_rule": "val"}, "templates": ["t1"]}
+        nested_b = {"templates": ["t1"], "rules": {"a_rule": "val", "z_rule": "val"}}
+
+        skill_a = make_skill(context_injection=nested_a)
+        skill_b = make_skill(context_injection=nested_b)
+
+        # Act
+        result_a = builder.build(skill_a)
+        result_b = builder.build(skill_b)
+
+        # Assert
+        assert result_a == result_b

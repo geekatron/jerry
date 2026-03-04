@@ -607,9 +607,6 @@ grep -E "^\*\*Score:\*\*" {verification-report}.md
 # 5. Report documents all checks
 grep -E "Acceptance Criteria|Evidence|Child Rollup" {verification-report}.md
 ```
-
-</agent>
-
 ---
 
 # WT Verifier Agent

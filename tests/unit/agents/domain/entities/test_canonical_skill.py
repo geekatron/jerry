@@ -33,7 +33,9 @@ class TestCanonicalSkillConstruction:
             license="Apache-2.0",
             compatibility="Claude Code >= 1.0",
             metadata={"author": "test"},
-            skill_body="# Problem Solving\n\nBody content.",
+            prompt_body="# Problem Solving\n\nBody content.",
+            description="Structured problem-solving framework.",
+            vendor_overrides={"allowed-tools": "Read, Write"},
         )
 
         # Assert
@@ -45,7 +47,9 @@ class TestCanonicalSkillConstruction:
         assert skill.license == "Apache-2.0"
         assert skill.compatibility == "Claude Code >= 1.0"
         assert skill.metadata == {"author": "test"}
-        assert skill.skill_body == "# Problem Solving\n\nBody content."
+        assert skill.prompt_body == "# Problem Solving\n\nBody content."
+        assert skill.description == "Structured problem-solving framework."
+        assert skill.vendor_overrides == {"allowed-tools": "Read, Write"}
 
     @pytest.mark.happy_path
     def test_construction_when_only_required_fields_then_defaults_applied(self) -> None:
@@ -61,7 +65,9 @@ class TestCanonicalSkillConstruction:
         assert skill.license == ""
         assert skill.compatibility == ""
         assert skill.metadata == {}
-        assert skill.skill_body == ""
+        assert skill.prompt_body == ""
+        assert skill.description == ""
+        assert skill.vendor_overrides == {}
 
 
 class TestCanonicalSkillBoundary:
@@ -149,11 +155,11 @@ class TestCanonicalSkillEdgeCase:
         body = "# Title\n\nParagraph 1.\n\n## Section\n\nParagraph 2.\n"
 
         # Act
-        skill = CanonicalSkill(name="body-test", version="1.0.0", skill_body=body)
+        skill = CanonicalSkill(name="body-test", version="1.0.0", prompt_body=body)
 
         # Assert
-        assert skill.skill_body == body
-        assert "\n\n" in skill.skill_body
+        assert skill.prompt_body == body
+        assert "\n\n" in skill.prompt_body
 
 
 class TestCanonicalSkillSecurity:

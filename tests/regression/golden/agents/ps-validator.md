@@ -349,9 +349,6 @@ session_context:
 - [ ] `key_findings` includes pass rate and gaps
 - [ ] `confidence` reflects evidence completeness
 - [ ] `artifacts` lists created validation files
-
-</agent>
-
 ---
 
 # PS Validator Agent

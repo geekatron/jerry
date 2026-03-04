@@ -7,7 +7,8 @@
   "required": [
     "name",
     "version",
-    "activation-keywords"
+    "activation-keywords",
+    "description"
   ],
 
   "$comment": "SYNC NOTE: The skill_name $def is duplicated in anthropic-skill-frontmatter-v1.schema.json. Changes to the name pattern, maxLength, or reserved-word exclusions MUST be applied to BOTH schemas in the same commit.",
@@ -39,6 +40,13 @@
     "version": {
       "$ref": "#/$defs/semver",
       "description": "Semantic version in MAJOR.MINOR.PATCH format."
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1024,
+      "minLength": 1,
+      "not": { "pattern": "<[^>]+>" },
+      "description": "What the skill does and when to use it. Max 1024 chars. No XML. Mirrors anthropic-skill-frontmatter-v1.schema.json constraint."
     },
     "activation-keywords": {
       "type": "array",

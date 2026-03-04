@@ -1,15 +1,10 @@
 ---
 name: eng-team
-description: Secure engineering team skill providing methodology guidance for building security-hardened software. Invoked when users request system design, implementation, code review, testing, CI/CD security,
-  or incident response with security considerations. Routes to 10 specialized agents covering architecture through post-deployment. Integrates NIST SSDF governance, Microsoft SDL phases, OWASP ASVS verification,
-  SLSA supply chain integrity, and DevSecOps automation patterns.
+description: Secure engineering team skill providing methodology guidance for building security-hardened software. Invoked when users request system design, implementation, code review, testing, CI/CD security, or incident response with security considerations. Routes to 10 specialized agents covering architecture through post-deployment. Integrates NIST SSDF governance, Microsoft SDL phases, OWASP ASVS verification, SLSA supply chain integrity, and DevSecOps automation patterns.
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, mcp__context7__resolve-library-id, mcp__context7__query-docs
 ---
 # Eng-Team Skill
 
-> **Version:** 1.0.0
-> **Framework:** Jerry Eng-Team
-> **Constitutional Compliance:** Jerry Constitution v1.0
 > **SSOT References:** ADR-PROJ010-001 (Agent Team Architecture), ADR-PROJ010-002 (Skill Routing & Invocation), ADR-PROJ010-003 (LLM Portability)
 > **Project:** PROJ-010 Cyber Ops | EPIC-003 (/eng-team Skill Build) | FEAT-020 through FEAT-025
 
@@ -260,8 +255,6 @@ Every security activity includes SSDF practice references (e.g., PW.7 for code r
 
 ## Adversarial Quality Mode
 
-> **SSOT Reference:** `.context/rules/quality-enforcement.md` -- all thresholds, strategy IDs, and criticality levels are defined there. NEVER hardcode values; always reference the SSOT.
-
 The /eng-team skill integrates the adversarial quality framework defined in EPIC-002. Security-critical deliverables receive elevated scrutiny.
 
 ### Criticality-Based Activation
@@ -439,12 +432,14 @@ For detailed agent specifications, see:
 
 ---
 
-## Skill Version
+*PROJ-010: Cyber Ops -- Secure Engineering Team*
+*Last Updated: 2026-02-22*
 
+<skill_version>
 1.0.0
+</skill_version>
 
-## Activation Keywords
-
+<activation_keywords>
 - secure design
 - threat model
 - secure architecture
@@ -465,9 +460,9 @@ For detailed agent specifications, see:
 - SLSA
 - build a secure
 - security requirements
+</activation_keywords>
 
-## Agent Registry
-
+<agent_registry>
 - eng-architect
 - eng-lead
 - eng-backend
@@ -478,8 +473,4 @@ For detailed agent specifications, see:
 - eng-security
 - eng-reviewer
 - eng-incident
-
-*Skill Version: 1.0.0*
-*Constitutional Compliance: Jerry Constitution v1.0*
-*PROJ-010: Cyber Ops -- Secure Engineering Team*
-*Last Updated: 2026-02-22*
+</agent_registry>
