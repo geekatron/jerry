@@ -183,207 +183,23 @@ transcript-{id}/
 
 ### File Templates (PAT-005: Versioned Schema)
 
-All generated files MUST include schema version metadata in YAML frontmatter:
+All generated files MUST include schema version metadata in YAML frontmatter.
 
-**00-index.md Template:**
-```markdown
----
-schema_version: "1.0"
-generator: "ts-formatter"
-generated_at: "{ISO_TIMESTAMP}"
----
+> **Full templates (index, entity file, split file):** See `skills/transcript/reference/ts-formatter-file-templates.md`
 
-# {title}
+### Token Counting, File Splitting, Anchors, and Backlinks
 
-> **Transcript ID:** {packet_id}
-> **Date:** {date}
-> **Duration:** {duration}
-> **Speakers:** {speaker_count}
+> **Full specifications (token counting algorithm, split decisions, anchor registry structure, backlinks generation):** See `skills/transcript/reference/ts-formatter-anchor-registry.md`
 
-## Quick Stats
-
-| Metric | Count |
-|--------|-------|
-| Action Items | {action_count} |
-| Decisions | {decision_count} |
-| Open Questions | {question_count} |
-| Topics | {topic_count} |
-
-## Navigation
-
-- [Summary](./01-summary.md)
-- [Full Transcript](./02-transcript.md)
-- [Speakers](./03-speakers.md)
-- [Action Items](./04-action-items.md)
-- [Decisions](./05-decisions.md)
-- [Questions](./06-questions.md)
-- [Topics](./07-topics.md)
-
-<backlinks>
-<!-- Auto-generated backlinks -->
-</backlinks>
-```
-
-**Entity File Template (04-action-items.md example):**
-```markdown
----
-schema_version: "1.0"
-generator: "ts-formatter"
-generated_at: "{ISO_TIMESTAMP}"
----
-
-# Action Items
-
-> **Extracted from:** [{packet_id}](./00-index.md)
-> **Total:** {count}
-> **High Confidence (>0.85):** {high_conf_count}
-
-## Action Items
-
-### {#act-001} {action_text}
-
-- **Assignee:** [{assignee}](./03-speakers.md#{speaker_anchor})
-- **Due Date:** {due_date}
-- **Confidence:** {confidence}
-- **Source:** [{source_text}](./02-transcript.md#{segment_anchor})
-
-<backlinks>
-- Referenced from: [02-transcript.md#seg-042](./02-transcript.md#seg-042)
-</backlinks>
-
----
-```
-
-**Split File Template:**
-```markdown
----
-schema_version: "1.0"
-generator: "ts-formatter"
-generated_at: "{ISO_TIMESTAMP}"
----
-
-# {title} (Part {n} of {total})
-
-> **Continued from:** [{prev_file}](./{prev_file})
-> **Next part:** [{next_file}](./{next_file})
-> **Anchor Registry:** [_anchors.json](./_anchors.json)
-
----
-
-{content}
-
----
-
-## Navigation
-
-- ← Previous: [{prev_file}](./{prev_file})
-- → Next: [{next_file}](./{next_file})
-- ↑ Index: [00-index.md](./00-index.md)
-```
-
-### Token Counting and File Splitting (ADR-004)
-
-```
-TOKEN COUNTING ALGORITHM:
-1. Count words: split on whitespace
-2. Estimate tokens: words × 1.3 × 1.1 (10% buffer)
-3. Track cumulative tokens during generation
-
-SPLIT DECISION:
-tokens < 31,500 (soft limit)  → NO SPLIT
-31,500 ≤ tokens < 35,000      → SPLIT at ## heading
-tokens ≥ 35,000 (hard limit)  → FORCE SPLIT
-
-SPLIT IMPLEMENTATION:
-1. Find nearest ## heading BEFORE soft limit
-2. Create continuation file: 02-transcript-01.md, 02-transcript-02.md
-3. Add navigation header to each split file:
-   - "Continued from: [previous-file]"
-   - "Next: [next-file]"
-   - "Index: [00-index.md]"
-```
-
-### Anchor Registry Management (ADR-003)
-
-```
-ANCHOR ID FORMATS:
-- Segments:  seg-{NNN}    (seg-001, seg-042)
-- Speakers:  spk-{name}   (spk-alice, spk-bob-smith)
-- Actions:   act-{NNN}    (act-001, act-002)
-- Decisions: dec-{NNN}    (dec-001, dec-002)
-- Questions: que-{NNN}    (que-001, que-002)
-- Topics:    top-{NNN}    (top-001, top-002)
-
-REGISTRY STRUCTURE (_anchors.json):
-{
-  "packet_id": "{id}",
-  "version": "1.0",
-  "anchors": [
-    {
-      "id": "seg-042",
-      "type": "segment",
-      "file": "02-transcript.md",
-      "line": 156
-    }
-  ],
-  "backlinks": {
-    "spk-alice": [
-      {"file": "02-transcript.md", "line": 42, "context": "Alice: Good morning"},
-      {"file": "04-action-items.md", "line": 12, "context": "Assigned to Alice"}
-    ]
-  }
-}
-```
-
-### Backlinks Generation
-
-```
-BACKLINKS SECTION FORMAT:
-
-<backlinks>
-Referenced in:
-- [02-transcript.md#seg-042](./02-transcript.md#seg-042) - "Alice mentioned..."
-- [04-action-items.md#act-001](./04-action-items.md#act-001) - "Action assigned to..."
-</backlinks>
-
-GENERATION ALGORITHM:
-1. During transcript formatting, scan for entity references
-2. For each reference found, add to backlinks registry
-3. After all files generated, inject backlinks sections
-```
+**Key thresholds:** Soft limit 31,500 tokens (split at `##` heading), hard limit 35,000 tokens (force split). Token estimate: `words x 1.3 x 1.1` (10% buffer).
 
 ---
 
 ## Output Validation
 
-### Post-Generation Checklist
+> **Full post-generation checklist (file, token, link, navigation validation):** See `skills/transcript/reference/ts-formatter-anchor-registry.md` (Post-Generation Validation Checklist section)
 
-```
-FILE VALIDATION:
-[ ] 00-index.md exists
-[ ] 01-summary.md exists
-[ ] 02-transcript.md (or split files) exist
-[ ] 03-speakers.md exists
-[ ] 04-action-items.md exists
-[ ] 05-decisions.md exists
-[ ] 06-questions.md exists
-[ ] 07-topics.md exists
-[ ] _anchors.json exists
-
-TOKEN VALIDATION:
-[ ] All files < 35,000 tokens
-[ ] Split files at semantic boundaries
-
-LINK VALIDATION:
-[ ] All internal links resolve
-[ ] All anchor IDs unique
-[ ] All backlinks point to existing anchors
-
-NAVIGATION VALIDATION:
-[ ] Index links to all files
-[ ] Split files have prev/next navigation
-[ ] Each entity file links to source
-```
+**Summary:** Validate all 9 files exist (8 numbered + `_anchors.json`), all files under 35K tokens, all internal links resolve, all anchor IDs unique, navigation links correct.
 
 ---
 

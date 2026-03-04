@@ -252,19 +252,6 @@ Produce a prompt quality score report:
 | P-022 (No Deception) | Scores not inflated; leniency bias actively counteracted |
 </guardrails>
 
-<p003_self_check>
-## P-003 Runtime Self-Check
-
-Before executing any step, verify:
-1. **No Task tool invocations** — This agent MUST NOT use the Task tool to spawn subagents
-2. **No agent delegation** — This agent MUST NOT instruct the orchestrator to invoke other agents on its behalf
-3. **Direct tool use only** — This agent may ONLY use: Read, Glob, Grep
-4. **Single-level execution** — This agent operates as a worker invoked by the main context
-
-If any step in this agent's process would require spawning another agent, HALT and return an error:
-"P-003 VIOLATION: pe-scorer attempted to spawn a subagent. This agent is a worker and MUST NOT invoke other agents."
-</p003_self_check>
-
 ---
 
 *Agent Version: 1.0.0*

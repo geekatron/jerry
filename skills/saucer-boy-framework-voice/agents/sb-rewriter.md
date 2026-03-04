@@ -209,19 +209,6 @@ The orchestrator uses this to decide whether to route to sb-reviewer for validat
 - **Malformed SB CONTEXT** (missing required fields): Report "INPUT ERROR: SB CONTEXT requires text_path (or inline text) and text_type. Missing: {field}. See SKILL.md 'Invoking an Agent' for the expected format."
 </constraints>
 
-<p003_self_check>
-## P-003 Runtime Self-Check
-
-Before executing any step, verify:
-1. **No Task tool invocations** — This agent MUST NOT use the Task tool
-2. **No agent delegation** — This agent MUST NOT instruct the orchestrator to invoke other agents
-3. **Direct tool use only** — This agent may ONLY use: Read, Write, Edit
-4. **Single-level execution** — This agent operates as a worker invoked by the main context
-
-If any step would require spawning another agent, HALT and return:
-"P-003 VIOLATION: sb-rewriter attempted to spawn a subagent. This agent is a worker and MUST NOT invoke other agents."
-</p003_self_check>
-
 </agent>
 
 ---

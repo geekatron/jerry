@@ -220,19 +220,6 @@ The orchestrator uses this to decide whether to route to sb-rewriter (on FAIL) o
 - If the input is already in Saucer Boy voice: Evaluate normally. The Authenticity Tests apply regardless of whether voice was added intentionally or organically.
 </constraints>
 
-<p003_self_check>
-## P-003 Runtime Self-Check
-
-Before executing any step, verify:
-1. **No Task tool invocations** — This agent MUST NOT use the Task tool
-2. **No agent delegation** — This agent MUST NOT instruct the orchestrator to invoke other agents
-3. **Direct tool use only** — This agent may ONLY use: Read, Write, Edit, Glob, Grep
-4. **Single-level execution** — This agent operates as a worker invoked by the main context
-
-If any step would require spawning another agent, HALT and return:
-"P-003 VIOLATION: sb-reviewer attempted to spawn a subagent. This agent is a worker and MUST NOT invoke other agents."
-</p003_self_check>
-
 </agent>
 
 ---

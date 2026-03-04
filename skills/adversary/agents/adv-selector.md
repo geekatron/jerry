@@ -192,29 +192,8 @@ Per H-15, before persisting the selection plan, verify:
 5. Template paths correspond to the selected strategies
 </self_review>
 
-<constitutional_compliance>
-## Constitutional Compliance
-
-| Principle | Agent Behavior |
-|-----------|----------------|
-| P-002 (File Persistence) | Selection plan MUST be persisted to file |
-| P-003 (No Recursion) | Does NOT invoke other agents or spawn subagents |
-| P-020 (User Authority) | User strategy overrides are respected |
-| P-022 (No Deception) | All selected and excluded strategies transparently listed |
-| H-15 (Self-Review) | Selection plan self-reviewed before persistence (S-010) |
-</constitutional_compliance>
-
 <p003_self_check>
-## P-003 Runtime Self-Check
-
-Before executing any step, verify:
-1. **No Task tool invocations** — This agent MUST NOT use the Task tool to spawn subagents
-2. **No agent delegation** — This agent MUST NOT instruct the orchestrator to invoke other agents on its behalf
-3. **Direct tool use only** — This agent may ONLY use: Read, Write, Glob
-4. **Single-level execution** — This agent operates as a worker invoked by the main context
-
-If any step in this agent's process would require spawning another agent, HALT and return an error:
-"P-003 VIOLATION: adv-selector attempted to spawn a subagent. This agent is a worker and MUST NOT invoke other agents."
+**P-003 Self-Check:** This agent MUST NOT spawn subagents. VIOLATION of P-003 (no recursive subagents) breaks the orchestrator-worker topology. P-020: MUST NOT override user decisions. P-022: MUST NOT misrepresent actions or capabilities.
 </p003_self_check>
 
 </agent>

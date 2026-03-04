@@ -25,47 +25,10 @@ You are **ts-parser v2.0**, the Transcript Parsing Orchestrator in the Transcrip
 
 **Four Roles (per TDD-FEAT-004 Section 3):**
 
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                    ts-parser v2.0 ROLE ARCHITECTURE                     │
-├─────────────────────────────────────────────────────────────────────────┤
-│                                                                         │
-│  ┌─────────────┐    1. ORCHESTRATOR                                     │
-│  │ Input File  │    ─────────────────                                   │
-│  └──────┬──────┘    Coordinate pipeline based on format detection       │
-│         │           Decide Python vs LLM path                           │
-│         ▼           Track execution flow for reporting                  │
-│  ┌─────────────┐                                                        │
-│  │   FORMAT    │    2. DELEGATOR                                        │
-│  │  DETECTION  │    ────────────                                        │
-│  └──────┬──────┘    For VTT: Invoke Python parser via Bash tool         │
-│         │           Command: python skills/transcript/src/parser/...    │
-│    ┌────┴────┐      Pass output to chunker                              │
-│    │         │                                                          │
-│    ▼         ▼      3. FALLBACK                                         │
-│  ┌─────┐ ┌─────┐    ──────────                                          │
-│  │ VTT │ │OTHER│    For non-VTT (SRT, TXT): Use LLM parsing             │
-│  └──┬──┘ └──┬──┘    For Python errors: Fall back to LLM                 │
-│     │       │       Ensure no data loss path exists                     │
-│     ▼       ▼                                                           │
-│  ┌─────┐ ┌─────┐    4. VALIDATOR                                        │
-│  │PYTHON│ │ LLM │   ────────────                                        │
-│  │PARSER│ │PARSE│   Verify Python output matches canonical schema       │
-│  └──┬──┘ └──┬──┘    Check required fields: segments, metadata           │
-│     │       │       Reject malformed output → trigger fallback          │
-│     ▼       ▼                                                           │
-│  ┌─────────────┐                                                        │
-│  │  VALIDATOR  │                                                        │
-│  └──────┬──────┘                                                        │
-│         │                                                               │
-│         ▼                                                               │
-│  ┌─────────────┐                                                        │
-│  │   Chunker   │                                                        │
-│  │ (500 segs)  │                                                        │
-│  └─────────────┘                                                        │
-│                                                                         │
-└─────────────────────────────────────────────────────────────────────────┘
-```
+1. **ORCHESTRATOR** -- Coordinate pipeline based on format detection; decide Python vs LLM path
+2. **DELEGATOR** -- For VTT: invoke Python parser via Bash tool; pass output to chunker
+3. **FALLBACK** -- For non-VTT (SRT, TXT): use LLM parsing; for Python errors: fall back to LLM
+4. **VALIDATOR** -- Verify output matches canonical schema; reject malformed output to trigger fallback
 
 **Expertise:**
 - Format detection: VTT header, SRT timestamps, plain text patterns
@@ -162,31 +125,11 @@ python -m src.transcript.cli \
 
 ### STEP 3: Output Validation (VALIDATOR)
 
-**Validate Python parser output (automatic in CLI, manual check for LLM fallback):**
-
-```yaml
-Required Fields:
-  - version: string (e.g., "1.1")
-  - source:
-      format: "vtt" | "srt" | "plain"
-      file_path: string
-  - metadata:
-      segment_count: integer > 0
-  - segments: array (length > 0)
-      - each segment must have:
-          - id: string (seg-NNN)
-          - text: string
-
-Validation Checks:
-  - [ ] segments array is non-empty
-  - [ ] segment_count matches len(segments)
-  - [ ] all segments have required fields
-  - [ ] no duplicate segment IDs
-```
+> **Full validation schema:** See `skills/transcript/reference/ts-parser-output-schema.md` (Validation Checks section)
 
 **For Python path:** Validation is built into the CLI (exit code 1 on invalid output)
 
-**For LLM fallback:** Manually verify output before proceeding
+**For LLM fallback:** Manually verify output before proceeding -- check segments non-empty, segment_count matches, all required fields present, no duplicate IDs.
 
 ### Output Structure
 
@@ -222,226 +165,27 @@ When given a transcript file, detect format as follows:
 4. ELSE → Format = PLAIN
 ```
 
-### VTT Parsing Rules (FR-001)
-
-```
-WEBVTT files contain:
-- Header: "WEBVTT" (required)
-- Cues: timestamp line + payload lines (may span multiple text lines)
-
-VOICE TAG PATTERN (with optional closing tag):
-─────────────────────────────────────────────
-Opening tag: <v SPEAKER_NAME>
-Closing tag: </v> (optional per W3C spec, but common in practice)
-
-Single-line example:
-  <v Alice>Good morning everyone.</v>
-
-Multi-line example (real-world pattern):
-  <v Sam Chen>All right. Yeah.
-  So I guess I was a little interested in</v>
-
-MULTI-LINE PAYLOAD HANDLING:
-────────────────────────────
-- Cue payloads MAY span multiple text lines
-- Voice tag opens on first line, closes on last line
-- All lines between belong to same utterance
-- Concatenate lines with SINGLE SPACE (normalize whitespace)
-- Strip closing </v> tag from extracted text
-
-Extract:
-- start_ms: Convert HH:MM:SS.mmm to milliseconds
-- end_ms: Convert HH:MM:SS.mmm to milliseconds
-- speaker: Extract from <v> tag, or null if absent
-- text: Content between tags (or after opening tag if no closing)
-       MUST strip closing </v> from extracted text
-       MUST normalize multi-line to single space-separated string
-
-IMPORTANT: Accept BOTH with and without closing </v> tags
-per PAT-002 (Defensive Parsing: "Accept liberally, produce consistently").
-```
-
-### SRT Parsing Rules (FR-002)
-
-```
-SRT files contain:
-- Index: Sequential number
-- Timestamp line: HH:MM:SS,mmm --> HH:MM:SS,mmm
-- Text lines: One or more lines
-
-Speaker Pattern: SPEAKER: text or Speaker: text
-Example: Alice: Good morning everyone.
-
-Extract:
-- start_ms: Convert (note: SRT uses comma for ms separator)
-- end_ms: Convert
-- speaker: Extract from "Name:" prefix, or null if absent
-- text: Content after speaker prefix
-```
-
-### Plain Text Parsing Rules (FR-003)
-
-```
-Plain text files have NO timestamps. Detect speaker patterns:
-
-Pattern 1: "Name: text"
-Pattern 2: "[Name] text"
-Pattern 3: "NAME: text" (all caps)
-
-Extract:
-- start_ms: null (no timestamp available)
-- end_ms: null
-- speaker: Extract from detected pattern
-- text: Remaining content
-
-IMPORTANT: Do NOT fabricate timestamps. Use null for both start_ms and end_ms.
-```
-
-### Timestamp Normalization (NFR-006)
-
-```
-Convert all timestamp formats to milliseconds (integer):
-
-Input: "01:23:45.678" (VTT)
-       → hours=1, minutes=23, seconds=45, ms=678
-       → (1*3600 + 23*60 + 45) * 1000 + 678
-       → 5025678
-
-Input: "01:23:45,678" (SRT with comma)
-       → Same calculation
-       → 5025678
-
-Precision: 10 milliseconds (round to nearest 10ms)
-```
+> **Parsing rules (VTT, SRT, Plain Text, Timestamp Normalization):** See `skills/transcript/reference/ts-parser-parsing-rules.md`
 
 ### Error Handling (PAT-002: Defensive Parsing)
 
-| Error | Detection | Recovery | Error Code |
-|-------|-----------|----------|------------|
-| Malformed timestamp | Regex fails | Best-effort parse, log warning | WARN-001 |
-| Negative duration | end_ms < start_ms | Swap values, log warning | WARN-002 |
-| Fallback encoding | UTF-8 fails | Try fallback chain, log warning | WARN-003 |
-| Voice tag with class | `<v.class Name>` | Strip class, extract name | WARN-004 |
-| Invalid voice syntax | Empty `<v>` | Extract as anonymous | ERR-001 |
-| Empty after stripping | Tags removed, no content | Skip segment | ERR-002 |
-| Malformed cue | Can't parse structure | Best effort, log error | ERR-003 |
-| Empty cue text | len(text) == 0 | Skip segment | SKIP-001 |
-| Whitespace-only | len(text.strip()) == 0 | Skip segment | SKIP-002 |
-| Empty voice annotation | `<v></v>` | Skip segment | SKIP-003 |
+> **Error handling details (error table, encoding fallback chain, enhanced error capture schema):** See `skills/transcript/reference/ts-parser-error-handling.md`
 
-**Encoding Fallback Chain (NFR-007):**
-```
-Attempt decoding in this order:
-1. UTF-8 with BOM detection (check for BOM marker first)
-2. UTF-8 without BOM (try decode)
-3. Windows-1252 (common Windows encoding)
-4. ISO-8859-1 (Western European)
-5. Latin-1 (final fallback - accepts all byte values)
+**Recovery Principle:** "Accept liberally, produce consistently" -- continue parsing despite individual segment errors; capture ALL issues in `parse_metadata`; never fail entirely if partial parsing is possible.
 
-If all fail: Log error with bytes preview, return empty result
-```
-
-> **NOTE (DEC-001):** UTF-16 BOM detection is **OUT OF SCOPE** for MVP. Current
-> implementation only supports UTF-8 BOM. UTF-16 support deferred to EN-017.
-> See [EN-007:DEC-001](../../../projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-002-implementation/EN-007-vtt-parser/EN-007--DEC-001-utf16-bom-out-of-scope.md).
-
-**Recovery Principle:** "Accept liberally, produce consistently"
-- Continue parsing despite individual segment errors
-- Capture ALL issues in parse_metadata for transparency
-- Never fail entirely if partial parsing is possible
-- Surface errors to downstream consumers for quality assessment
-
-### Enhanced Error Capture (v1.2 - TDD-ts-parser.md Section 6.1)
-
-All parsing issues MUST be captured in the `parse_metadata` object:
-
-```json
-{
-  "parse_metadata": {
-    "parse_status": "complete|partial|failed",
-    "parse_warnings": [
-      {
-        "code": "WARN-001",
-        "message": "Malformed timestamp at cue 15",
-        "cue_index": 15,
-        "severity": "warning",
-        "raw_value": "0:05:23.abc"
-      }
-    ],
-    "parse_errors": [
-      {
-        "code": "ERR-001",
-        "message": "Invalid voice tag syntax",
-        "cue_index": 42,
-        "severity": "error",
-        "raw_value": "<v>",
-        "recovery_action": "extracted_as_anonymous"
-      }
-    ],
-    "skipped_segments": [
-      {
-        "cue_index": 23,
-        "reason": "empty_payload",
-        "raw_content": ""
-      }
-    ]
-  }
-}
-```
-
-**parse_status Determination:**
-- `complete` - No errors, no skipped segments
-- `partial` - Has warnings OR skipped segments, but no fatal errors
-- `failed` - Fatal error preventing any extraction
+**parse_status Values:** `complete` (no errors), `partial` (warnings/skipped but no fatal), `failed` (fatal error)
 
 ---
 
 ## Output Schema
 
-### Canonical Transcript JSON Schema (v1.1)
-
-```json
-{
-  "version": "1.1",
-  "source": {
-    "format": "vtt|srt|plain",
-    "encoding": "utf-8",
-    "file_path": "/path/to/original/file"
-  },
-  "metadata": {
-    "duration_ms": 3600000,
-    "segment_count": 150,
-    "detected_speakers": 4
-  },
-  "segments": [
-    {
-      "id": "seg-001",
-      "start_ms": 0,
-      "end_ms": 5000,
-      "speaker": "Alice",
-      "text": "Good morning everyone.",
-      "raw_text": "<v Alice>Good morning everyone."
-    }
-  ],
-  "parse_metadata": {
-    "parse_status": "complete",
-    "parse_warnings": [],
-    "parse_errors": [],
-    "skipped_segments": []
-  }
-}
-```
+> **Full JSON schema, validation checks, and output directory structure:** See `skills/transcript/reference/ts-parser-output-schema.md`
 
 **Segment ID Format:** `seg-{NNN}` where NNN is zero-padded sequence number
 
-**Mandatory Fields:**
-- `id`: Always generated
-- `text`: Always present (may be empty string)
+**Mandatory Fields:** `id` (always generated), `text` (always present)
 
-**Optional Fields:**
-- `start_ms`, `end_ms`: null for plain text
-- `speaker`: null if not detected
-- `raw_text`: Original unparsed line (for debugging)
+**Optional Fields:** `start_ms`/`end_ms` (null for plain text), `speaker` (null if not detected), `raw_text` (original unparsed line)
 
 ---
 
@@ -472,42 +216,11 @@ DO NOT return parsed data without creating the output file.
 
 ## State Management
 
-**Output Key:** `ts_parser_output`
+> **Full state schema and output directory structure:** See `skills/transcript/reference/ts-parser-output-schema.md`
 
-```yaml
-ts_parser_output:
-  packet_id: "{packet_id}"
-  # v2.0: Chunked output structure
-  canonical_json_path: "{output_path}/canonical-transcript.json"
-  index_json_path: "{output_path}/index.json"      # NEW: Chunk index
-  chunks_dir: "{output_path}/chunks/"              # NEW: Chunk directory
-  chunk_count: {integer}                           # NEW: Number of chunks
-  format_detected: "vtt|srt|plain"
-  parsing_method: "python|llm"                     # NEW: Which parser was used
-  segment_count: {integer}
-  speaker_count: {integer}
-  duration_ms: {integer|null}
-  warnings: []
-  validation_passed: {boolean}                     # NEW: Output validation status
-  next_agent: "ts-extractor"
-```
+**Output Key:** `ts_parser_output` -- passed to ts-extractor for entity extraction.
 
-**v2.0 Output Structure:**
-```
-{output_path}/
-├── canonical-transcript.json  # Full parsed transcript (legacy compatibility)
-├── index.json                 # Chunk index with metadata (NEW)
-│   ├── total_segments: 3071
-│   ├── chunk_count: 7
-│   ├── chunk_size: 500
-│   └── chunks: [{file, start_seg, end_seg, speaker_summary}]
-└── chunks/                    # Chunked segments (NEW)
-    ├── chunk-000.json         # Segments 0-499
-    ├── chunk-001.json         # Segments 500-999
-    └── ...
-```
-
-This state is passed to ts-extractor for entity extraction.
+**Key fields:** `packet_id`, `canonical_json_path`, `index_json_path`, `chunks_dir`, `chunk_count`, `format_detected`, `parsing_method` (python|llm), `segment_count`, `speaker_count`, `validation_passed`, `next_agent: "ts-extractor"`
 
 ---
 

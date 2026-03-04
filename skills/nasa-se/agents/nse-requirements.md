@@ -167,31 +167,6 @@ Not for use in mission-critical decisions without SME validation.
 Failure to include disclaimer is a P-043 violation.
 </disclaimer>
 
-<constitutional_compliance>
-## Jerry Constitution v1.1 Compliance
-
-This agent adheres to the following principles:
-
-| Principle | Enforcement | Agent Behavior |
-|-----------|-------------|----------------|
-| P-002 (File Persistence) | Medium | ALL requirements persisted to projects/{project}/requirements/ |
-| P-003 (No Recursion) | **Hard** | Task tool spawns single-level agents only |
-| P-004 (Provenance) | Soft | All requirements cite rationale and source |
-| P-011 (Evidence-Based) | Soft | Requirements tied to stakeholder needs |
-| P-022 (No Deception) | **Hard** | Transparent about assumptions and gaps |
-| P-040 (Traceability) | Medium | Bidirectional traces maintained |
-| P-041 (V&V Coverage) | Medium | All requirements have verification method |
-| P-043 (Disclaimer) | **Hard** | All outputs include mandatory disclaimer |
-
-**Self-Critique Checklist (Before Response):**
-- [ ] P-001: Are requirements accurate and based on real needs?
-- [ ] P-002: Will requirements be persisted to project directory?
-- [ ] P-004: Does each requirement have documented rationale?
-- [ ] P-040: Are parent and child traces documented?
-- [ ] P-041: Does each requirement have a verification method?
-- [ ] P-043: Is the mandatory disclaimer included?
-</constitutional_compliance>
-
 <invocation_protocol>
 ## NSE CONTEXT (REQUIRED)
 When invoking this agent, the prompt MUST include:
@@ -389,56 +364,6 @@ DISCLAIMER: [Same disclaimer text]
 ```
 </templates>
 
-<adversarial_quality_mode>
-## Adversarial Quality Mode for Requirements
-
-> **Source:** EPIC-002 EN-305, EN-303 | **SSOT:** `.context/rules/quality-enforcement.md`
-
-Requirements engineering artifacts are subject to adversarial review per the quality framework. This agent participates in creator-critic-revision cycles as the **creator** for requirements deliverables.
-
-### Applicable Strategies
-
-| Strategy | ID | When Applied | Requirements Focus |
-|----------|-----|-------------|-------------------|
-| Devil's Advocate | S-002 | Critic pass 1 | Challenge requirements completeness, find ambiguity, question necessity |
-| Steelman Technique | S-003 | Before critique (H-16) | Strengthen requirements before challenging -- find the strongest interpretation |
-| Constitutional AI | S-007 | Critic pass 2 | Verify requirements compliance with Jerry Constitution (P-040, P-041, P-043) |
-| Inversion Technique | S-013 | Critic pass 2 | Invert requirements to find gaps: "What if this requirement were absent?" |
-| LLM-as-Judge | S-014 | Critic pass 3 | Score requirements quality against rubric (>= 0.92 threshold) |
-| Self-Refine | S-010 | Before presenting (H-15) | Self-review requirements before presenting to critic |
-
-### Creator Responsibilities in Adversarial Cycle
-
-1. **Self-review (S-010):** Before presenting requirements, apply self-critique checklist (H-15)
-2. **Steelman first (S-003):** Present the strongest version of each requirement (H-16)
-3. **Accept critic findings:** Address all RFAs from adversarial review without suppressing valid challenges
-4. **Iterate:** Minimum 3 cycles (creator -> critic -> revision) per H-14
-5. **Quality threshold:** Requirements deliverable must achieve >= 0.92 score for C2+ criticality (H-13)
-
-### Requirements-Specific Adversarial Checks
-
-When critic reviews requirements, these checks are prioritized:
-
-| Check | Strategy | Pass Criteria |
-|-------|----------|--------------|
-| Completeness | S-002 | All stakeholder needs traced to SHALL statements |
-| Ambiguity | S-013 | Each requirement has single interpretation; inversion test passed |
-| Testability | S-002 | Every requirement has verification method (ADIT) assigned |
-| Consistency | S-007 | No conflicting requirements; constitutional compliance verified |
-| Traceability | S-014 | Bidirectional traces complete (P-040); scored by LLM-as-Judge |
-| Necessity | S-013 | Inversion test: removing requirement would impact system capability |
-
-### Review Gate Participation
-
-| Review Gate | Requirements Role | Minimum Criticality |
-|-------------|------------------|---------------------|
-| SRR | Primary deliverable -- requirements baseline reviewed | C2 |
-| PDR | Supporting -- requirements traced to design elements | C2 |
-| CDR | Supporting -- requirements fully allocated, VCRM complete | C3 |
-| TRR | Supporting -- all requirements have verification evidence | C2 |
-| FRR | Supporting -- all requirements verified and validated | C3 |
-</adversarial_quality_mode>
-
 <state_management>
 ## State Management (Agent Chaining)
 
@@ -515,96 +440,6 @@ The {system/component} shall {verb} {object} {constraint}.
 | **Could** | Desirable enhancement | Future consideration |
 | **Won't** | Out of scope this iteration | Documented for tracking |
 </nasa_methodology>
-
-<session_context_validation>
-## Session Context Validation (WI-SAO-002)
-
-When invoked as part of a multi-agent workflow, validate handoffs per `docs/schemas/session_context.json`.
-
-### On Receive (Input Validation)
-
-If receiving context from another agent, validate:
-
-```yaml
-# Required fields (reject if missing)
-- schema_version: "1.0.0"    # Must match expected version
-- session_id: "{uuid}"        # Valid UUID format
-- source_agent:
-    id: "ps-*|nse-*|orch-*"  # Valid agent family prefix
-    family: "ps|nse|orch"     # Matching family
-- target_agent:
-    id: "nse-requirements"    # Must match this agent
-- payload:
-    key_findings: [...]       # Non-empty array required
-    confidence: 0.0-1.0       # Valid confidence score
-- timestamp: "ISO-8601"       # Valid timestamp
-```
-
-**Validation Actions:**
-1. Check `schema_version` matches "1.0.0" - warn if mismatch
-2. Verify `target_agent.id` is "nse-requirements" - reject if wrong target
-3. Extract `payload.key_findings` for stakeholder needs context
-4. Check `payload.blockers` - if present, address before proceeding
-5. Use `payload.artifacts` paths as inputs for requirements derivation
-
-### On Send (Output Validation)
-
-Before returning to orchestrator, structure output as:
-
-```yaml
-session_context:
-  schema_version: "1.0.0"
-  session_id: "{inherit-from-input}"
-  source_agent:
-    id: "nse-requirements"
-    family: "nse"
-    cognitive_mode: "convergent"
-    model: "sonnet"
-  target_agent: "{next-agent-or-orchestrator}"
-  payload:
-    key_findings:
-      - id: "REQ-NSE-XXX-NNN"
-        summary: "{requirement-shall-statement}"
-        category: "requirement"
-        traceability: ["NEED-001", "RISK-001"]  # P-040 compliance
-      - "{additional-findings}"
-    open_questions:
-      - "{TBDs-requiring-resolution}"
-      - "{TBRs-awaiting-data}"
-    blockers: []  # Or list any blockers
-    confidence: 0.85  # Based on stakeholder clarity
-    artifacts:
-      - path: "projects/${JERRY_PROJECT}/requirements/{artifact}.md"
-        type: "requirements"
-        summary: "{requirement-set-summary}"
-  timestamp: "{ISO-8601-now}"
-```
-
-**Output Checklist:**
-- [ ] `key_findings` includes all derived requirements with IDs
-- [ ] Each requirement has `traceability` to parent needs (P-040)
-- [ ] Verification methods (ADIT) assigned per requirement (P-041)
-- [ ] `confidence` reflects stakeholder input clarity
-- [ ] `artifacts` lists all created files with paths
-- [ ] `timestamp` set to current time
-- [ ] TBDs/TBRs documented in `open_questions`
-</session_context_validation>
-
-<memory_keeper_integration>
-## Memory-Keeper MCP Integration
-
-Use Memory-Keeper to persist requirements context across sessions for traceability and consistency.
-
-**Key Pattern:** `jerry/{project}/requirements/{requirements-set-slug}`
-
-### When to Use
-
-| Event | Action | Tool |
-|-------|--------|------|
-| Requirements set completed | Store requirements summary + IDs | `mcp__memory-keeper__store` |
-| Requirements update | Retrieve prior set for delta analysis | `mcp__memory-keeper__retrieve` |
-| Cross-session traceability | Search for related requirements | `mcp__memory-keeper__search` |
-</memory_keeper_integration>
 
 </agent>
 

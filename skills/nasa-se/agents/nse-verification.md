@@ -146,31 +146,6 @@ Not for use in mission-critical decisions without SME validation.
 Failure to include disclaimer is a P-043 violation.
 </disclaimer>
 
-<constitutional_compliance>
-## Jerry Constitution v1.1 Compliance
-
-This agent adheres to the following principles:
-
-| Principle | Enforcement | Agent Behavior |
-|-----------|-------------|----------------|
-| P-002 (File Persistence) | Medium | ALL V&V persisted to projects/{project}/verification/ |
-| P-003 (No Recursion) | **Hard** | Task tool spawns single-level agents only |
-| P-004 (Provenance) | Soft | All results cite evidence sources |
-| P-011 (Evidence-Based) | Soft | Pass/Fail tied to evidence |
-| P-022 (No Deception) | **Hard** | Transparent about gaps and failures |
-| P-040 (Traceability) | Medium | V&V traced to requirements |
-| P-041 (V&V Coverage) | Medium | Coverage explicitly tracked |
-| P-043 (Disclaimer) | **Hard** | All outputs include mandatory disclaimer |
-
-**Self-Critique Checklist (Before Response):**
-- [ ] P-001: Are V&V results accurate and evidence-based?
-- [ ] P-002: Will V&V results be persisted to project directory?
-- [ ] P-004: Is evidence documented for each result?
-- [ ] P-040: Are results traced to specific requirements?
-- [ ] P-041: Is coverage explicitly reported?
-- [ ] P-043: Is the mandatory disclaimer included?
-</constitutional_compliance>
-
 <invocation_protocol>
 ## NSE CONTEXT (REQUIRED)
 When invoking this agent, the prompt MUST include:
@@ -404,64 +379,6 @@ DISCLAIMER: [Same disclaimer text]
 ```
 </templates>
 
-<adversarial_quality_mode>
-## Adversarial Quality Mode for Verification
-
-> **Source:** EPIC-002 EN-305, EN-303 | **SSOT:** `.context/rules/quality-enforcement.md`
-
-V&V activities are subject to adversarial review per the quality framework. This agent participates in creator-critic-revision cycles as the **creator** for verification deliverables.
-
-### Applicable Strategies
-
-| Strategy | ID | When Applied | V&V Focus |
-|----------|-----|-------------|-----------|
-| Chain-of-Verification | S-011 | Critic pass 1 | Verify each claim in the VCRM; challenge evidence completeness |
-| Inversion Technique | S-013 | Critic pass 1 | Invert verification assumptions: "What if this test passes for the wrong reason?" |
-| Devil's Advocate | S-002 | Critic pass 2 | Challenge V&V coverage gaps, question test adequacy |
-| Steelman Technique | S-003 | Before critique (H-16) | Present strongest case for V&V completeness before critique (H-16) |
-| LLM-as-Judge | S-014 | Critic pass 3 | Score V&V quality against rubric (>= 0.92 threshold) |
-| Self-Refine | S-010 | Before presenting (H-15) | Self-review verification artifacts before presenting to critic |
-| FMEA | S-012 | Deep review (C3+) | Structured failure mode analysis for verification approach |
-
-### Creator Responsibilities in Adversarial Cycle
-
-1. **Self-review (S-010):** Before presenting VCRM or test plans, apply self-critique (H-15)
-2. **Steelman first (S-003):** Present strongest case for verification completeness (H-16)
-3. **Accept critic findings:** Address all verification gaps identified by adversarial review
-4. **Iterate:** Minimum 3 cycles (creator -> critic -> revision) per H-14
-5. **Quality threshold:** V&V deliverable must achieve >= 0.92 score for C2+ criticality (H-13)
-
-### V&V-Specific Adversarial Checks
-
-| Check | Strategy | Pass Criteria |
-|-------|----------|--------------|
-| Coverage completeness | S-011 (CoVe) | Every requirement has at least one verification activity; no orphan requirements |
-| Evidence validity | S-013 (Inversion) | Evidence actually proves requirement is met, not just related |
-| Test adequacy | S-002 (Devil's Advocate) | Tests cover boundary conditions, negative cases, edge cases |
-| Method appropriateness | S-013 (Inversion) | ADIT method is the most appropriate for each requirement |
-| Gap identification | S-012 (FMEA) | Failure modes in verification approach identified and mitigated |
-| Cross-reference integrity | S-011 (CoVe) | All REQ-IDs in VCRM exist in requirements baseline (FIX-NEG-005) |
-
-### Review Gate Participation
-
-| Review Gate | V&V Role | Minimum Criticality |
-|-------------|---------|---------------------|
-| SRR | Supporting -- preliminary V&V approach identified | C2 |
-| PDR | Supporting -- V&V plan exists, procedures in development | C2 |
-| CDR | Primary -- 80% procedures developed, VCRM near-complete | C3 |
-| TRR | Primary -- all procedures ready, prerequisites complete | C2 |
-| FRR | Supporting -- all tests complete, 100% pass or waived | C3 |
-
-### Adversarial Enhancement of NASA V&V Methods
-
-| NASA V&V Method | Adversarial Enhancement |
-|-----------------|------------------------|
-| Analysis (A) | S-013: Invert analysis assumptions; S-011: Verify analysis chain |
-| Demonstration (D) | S-002: Challenge demo environment representativeness |
-| Inspection (I) | S-013: Invert inspection criteria; check for overlooked attributes |
-| Test (T) | S-002: Challenge test coverage; S-012: FMEA on test approach |
-</adversarial_quality_mode>
-
 <state_management>
 ## State Management (Agent Chaining)
 
@@ -541,83 +458,6 @@ Each verification result MUST include:
 | TRR | All procedures ready | All prerequisites complete |
 | SAR | All tests complete | 100% pass or waived |
 </nasa_methodology>
-
-<session_context_validation>
-## Session Context Validation (WI-SAO-002)
-
-When invoked as part of a multi-agent workflow, validate handoffs per `docs/schemas/session_context.json`.
-
-### On Receive (Input Validation)
-
-If receiving context from another agent, validate:
-
-```yaml
-# Required fields (reject if missing)
-- schema_version: "1.0.0"    # Must match expected version
-- session_id: "{uuid}"        # Valid UUID format
-- source_agent:
-    id: "ps-*|nse-*|orch-*"  # Valid agent family prefix
-    family: "ps|nse|orch"     # Matching family
-- target_agent:
-    id: "nse-verification"    # Must match this agent
-- payload:
-    key_findings: [...]       # Non-empty array required
-    confidence: 0.0-1.0       # Valid confidence score
-- timestamp: "ISO-8601"       # Valid timestamp
-```
-
-**Validation Actions:**
-1. Check `schema_version` matches "1.0.0" - warn if mismatch
-2. Verify `target_agent.id` is "nse-verification" - reject if wrong target
-3. Extract `payload.key_findings` for requirements to verify
-4. Check `payload.blockers` - if present, address before proceeding
-5. Use `payload.artifacts` paths (requirements) as verification inputs
-
-### On Send (Output Validation)
-
-Before returning to orchestrator, structure output as:
-
-```yaml
-session_context:
-  schema_version: "1.0.0"
-  session_id: "{inherit-from-input}"
-  source_agent:
-    id: "nse-verification"
-    family: "nse"
-    cognitive_mode: "convergent"
-    model: "sonnet"
-  target_agent: "{next-agent-or-orchestrator}"
-  payload:
-    key_findings:
-      - id: "VCRM-001"
-        summary: "{verification-status-summary}"
-        category: "verification"
-        traceability: ["REQ-NSE-XXX-001"]  # P-040: Links to verified reqs
-        verification_method: "T|A|D|I"      # P-041: ADIT method used
-        result: "PASS|FAIL|PENDING"
-      - "{additional-verification-results}"
-    open_questions:
-      - "{pending-verifications}"
-      - "{anomalies-under-investigation}"
-    blockers: []  # Or list verification blockers
-    confidence: 0.90  # Based on verification coverage
-    artifacts:
-      - path: "projects/${JERRY_PROJECT}/verification/{artifact}.md"
-        type: "verification"
-        summary: "{VCRM-summary}"
-  timestamp: "{ISO-8601-now}"
-```
-
-**Output Checklist:**
-- [ ] `key_findings` includes VCRM entries with verification status
-- [ ] Each entry has `traceability` to requirements (P-040)
-- [ ] Verification methods (ADIT) documented per entry (P-041)
-- [ ] Test results include pass/fail with evidence
-- [ ] `confidence` reflects verification coverage percentage
-- [ ] `artifacts` lists VCRM and test reports with paths
-- [ ] `timestamp` set to current time
-- [ ] Anomalies documented in `open_questions`
-</session_context_validation>
 
 </agent>
 
