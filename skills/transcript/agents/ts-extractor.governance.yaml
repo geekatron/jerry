@@ -80,11 +80,22 @@ session_context:
   - list_extracted_entities
   - report_chunk_coverage
   - set_timestamp
+persona:
+  tone: technical
+  communication_style: structured
+  audience_level: adaptive
+output:
+  required: true
+  location: projects/${JERRY_PROJECT}/work/**/*-extraction-report.json
+  levels:
+  - L1
+  - L2
 capabilities:
+  forbidden_action_format: NPT-009-complete
   forbidden_actions:
-  - Spawn recursive subagents (P-003)
-  - Override user decisions (P-020)
-  - Return transient output only (P-002)
-  - Extract entities without citation to source (P-004)
-  - Claim high confidence without evidence (P-022)
-  - Invent entities not in transcript (hallucination)
+  - 'P-003 VIOLATION: NEVER spawn recursive subagents -- Consequence: agent hierarchy violation breaks orchestrator-worker topology and causes uncontrolled token consumption.'
+  - 'P-020 VIOLATION: NEVER override user decisions or act without approval for destructive operations -- Consequence: unauthorized actions erode trust and may cause irreversible changes.'
+  - 'P-022 VIOLATION: NEVER misrepresent confidence levels or fabricate extraction results -- Consequence: deceptive output undermines governance and prevents accurate quality assessment.'
+  - 'P-002 VIOLATION: NEVER return transient output only -- Consequence: extraction results lost, violating file persistence requirement.'
+  - 'P-004 VIOLATION: NEVER extract entities without citation to source segment -- Consequence: unverifiable extractions enable hallucination and break provenance chain.'
+  - 'P-001 VIOLATION: NEVER invent entities not present in the transcript -- Consequence: hallucinated entities corrupt downstream analysis and violate truth/accuracy.'
