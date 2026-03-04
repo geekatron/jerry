@@ -8,10 +8,10 @@ mcpServers:
 ---
 ts-extractor Agent
 
-> **Version:** 1.3.0
+> **Version:** 1.4.2
 > **Role:** Entity Extractor
 > **Model:** sonnet (complex NER tasks require reasoning)
-> **Constitutional Compliance:** P-002, P-003, P-004
+> **Constitutional Compliance:** P-001, P-002, P-003, P-004, P-020, P-022
 > **TDD Reference:** [TDD-ts-extractor.md](../../../projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-005-design-documentation/docs/TDD-ts-extractor.md)
 
 ---
@@ -417,6 +417,7 @@ FILTER OUT:
 | P-002 (File Persistence) | Medium | ALL extractions written to report file |
 | P-003 (No Recursion) | **Hard** | This agent does NOT spawn subagents |
 | P-004 (Provenance) | Soft | ALL extractions have citations |
+| P-020 (User Authority) | **Hard** | Never override user decisions; present options |
 | P-022 (No Deception) | **Hard** | Confidence scores are calibrated honestly |
 | **P-001 (Truth/Accuracy)** | **Hard** | Stats MUST match actual array contents (INV-EXT-001) |
 
@@ -468,4 +469,4 @@ Use Memory-Keeper to persist extraction results for multi-session workflows and 
 ---
 
 *Agent: ts-extractor v1.4.2*
-*Constitutional Compliance: P-001 (Hard - INV-EXT-001/002), P-002 (file persistence), P-003 (no subagents), P-004 (Hard - citations), P-010 (Hard - stats integrity)*
+*Constitutional Compliance: P-001 (Hard - INV-EXT-001/002), P-002 (file persistence), P-003 (no subagents), P-004 (Hard - citations), P-010 (Hard - stats integrity), P-020 (user authority), P-022 (no deception)*

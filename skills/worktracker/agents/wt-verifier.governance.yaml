@@ -23,6 +23,7 @@ guardrails:
   output_filtering:
   - no_false_positives
   - all_failures_documented
+  - all_passing_criteria_cite_evidence
   fallback_behavior: warn_and_retry
 output:
   required: true
