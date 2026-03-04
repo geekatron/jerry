@@ -1,0 +1,169 @@
+workflow:
+  id: "leash-kernel-security-20260303-001"
+  name: "Leash Kernel-Level Security Research"
+  project_id: "PROJ-0036-LEASH-COMP"
+  status: "ACTIVE"
+  created: "2026-03-03"
+  criticality: "C2"
+
+paths:
+  base: "docs/pm-pmm/leash-analysis/"
+  phase_1: "docs/pm-pmm/leash-analysis/01-leash-product-analysis.md"
+  phase_2: "docs/pm-pmm/leash-analysis/02-kernel-security-landscape.md"
+  phase_3: "docs/pm-pmm/leash-analysis/03-competitive-analysis-top5.md"
+  phase_4: "docs/pm-pmm/leash-analysis/04-strategic-synthesis.md"
+  phase_5: "docs/pm-pmm/leash-analysis/05-tam-market-sizing.md"
+
+pipelines:
+  - id: "phase-1"
+    name: "strongDM Leash Product Analysis"
+    agent: "ps-researcher"
+    parallel_with: "phase-2"
+    status: "COMPLETE"
+    completed: "2026-03-03"
+    output: "docs/pm-pmm/leash-analysis/01-leash-product-analysis.md"
+    data_sources:
+      - "WebSearch"
+      - "WebFetch (GitHub)"
+      - "Context7 (Cedar)"
+
+  - id: "phase-2"
+    name: "Kernel-Level Security Technology Landscape"
+    agent: "ps-researcher"
+    parallel_with: "phase-1"
+    status: "COMPLETE"
+    completed: "2026-03-03"
+    output: "docs/pm-pmm/leash-analysis/02-kernel-security-landscape.md"
+    data_sources:
+      - "WebSearch"
+      - "Context7 (eBPF, seccomp, gVisor, Kata, Wasmtime)"
+
+  - id: "phase-3"
+    name: "Top 5 Innovative Solutions (Competitive Analysis)"
+    agent: "ps-researcher"
+    depends_on:
+      - "barrier-1"
+    status: "COMPLETE"
+    completed: "2026-03-03"
+    output: "docs/pm-pmm/leash-analysis/03-competitive-analysis-top5.md"
+    data_sources:
+      - "WebSearch"
+      - "WebFetch"
+    input_artifacts:
+      - "docs/pm-pmm/leash-analysis/01-leash-product-analysis.md"
+      - "docs/pm-pmm/leash-analysis/02-kernel-security-landscape.md"
+
+  - id: "phase-4"
+    name: "Synthesis and Strategic Recommendations"
+    agent: "ps-synthesizer"
+    depends_on:
+      - "barrier-2"
+    status: "BLOCKED"
+    blocked_by: "barrier-2"
+    output: "docs/pm-pmm/leash-analysis/04-strategic-synthesis.md"
+    input_artifacts:
+      - "docs/pm-pmm/leash-analysis/01-leash-product-analysis.md"
+      - "docs/pm-pmm/leash-analysis/02-kernel-security-landscape.md"
+      - "docs/pm-pmm/leash-analysis/03-competitive-analysis-top5.md"
+
+  - id: "phase-5"
+    name: "TAM Research and Market Sizing"
+    agent: "ps-researcher"
+    depends_on:
+      - "barrier-3"
+    status: "BLOCKED"
+    blocked_by: "barrier-3"
+    output: "docs/pm-pmm/leash-analysis/05-tam-market-sizing.md"
+    data_sources:
+      - "WebSearch"
+      - "WebFetch"
+    input_artifacts:
+      - "docs/pm-pmm/leash-analysis/01-leash-product-analysis.md"
+      - "docs/pm-pmm/leash-analysis/02-kernel-security-landscape.md"
+      - "docs/pm-pmm/leash-analysis/03-competitive-analysis-top5.md"
+      - "docs/pm-pmm/leash-analysis/04-strategic-synthesis.md"
+
+barriers:
+  - id: "barrier-1"
+    name: "Phase 1 + Phase 2 Complete"
+    trigger: "phase-1.status == COMPLETE AND phase-2.status == COMPLETE"
+    quality_threshold: 0.92
+    unlocks: "phase-3"
+    human_review_required: true
+    status: "QUALITY_PASSED"
+    human_review: "APPROVED"
+    scores:
+      phase_1: 0.9215
+      phase_2: 0.926
+      iterations: 2
+
+  - id: "barrier-2"
+    name: "Phase 3 Complete"
+    trigger: "phase-3.status == COMPLETE"
+    quality_threshold: 0.92
+    unlocks: "phase-4"
+    human_review_required: true
+    status: "QUALITY_PASSED"
+    human_review: "PENDING"
+    scores:
+      phase_3: 0.926
+      iterations: 2
+
+  - id: "barrier-3"
+    name: "Phase 4 Complete"
+    trigger: "phase-4.status == COMPLETE"
+    quality_threshold: 0.92
+    unlocks: "phase-5"
+    human_review_required: true
+    status: "PENDING"
+    scores:
+      phase_4: null
+
+  - id: "barrier-4"
+    name: "Workflow Complete"
+    trigger: "phase-5.status == COMPLETE"
+    quality_threshold: 0.92
+    unlocks: null
+    human_review_required: true
+    status: "PENDING"
+    scores:
+      phase_5: null
+
+quality:
+  threshold: 0.92
+  criticality: "C2"
+  scoring_mechanism: "S-014"
+  scoring_agent: "adv-scorer"
+  required_strategies:
+    - "S-007"
+    - "S-002"
+    - "S-014"
+  max_iterations: 5
+  phase_scores:
+    phase_1:
+      score: 0.9215
+      iterations: 2
+      verdict: "PASS"
+    phase_2:
+      score: 0.926
+      iterations: 2
+      verdict: "PASS"
+    phase_3:
+      score: 0.926
+      iterations: 2
+      verdict: "PASS"
+  barrier_scores: {}
+
+constraints:
+  no_training_data: true
+  source_requirement: "WebSearch and WebFetch for all external claims"
+  context7_requirement: "For named library/framework documentation"
+  citation_requirement: "All claims MUST cite sources with URLs"
+  unsourced_marking: "[HYPOTHESIS -- confidence: low]"
+
+metrics:
+  phases_total: 5
+  phases_complete: 3
+  barriers_total: 4
+  barriers_complete: 1
+  quality_gates_passed: 3

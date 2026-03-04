@@ -1,0 +1,194 @@
+workflow:
+  id: "kernel-security-analysis"
+  name: "Kernel-Level AI Agent Security Competitive Analysis"
+  status: "PLANNED"
+  created: "2026-03-02"
+  augments: "docs/pm-pmm/leash-analysis/"
+  human_review_required: true
+  human_review_scope: "ORCHESTRATION_PLAN.md only"
+  execution_mode: "autonomous-after-approval"
+
+paths:
+  base: "orchestration/kernel-security-analysis/"
+  pipeline_a: "orchestration/kernel-security-analysis/tech/phase-1/"
+  pipeline_b: "orchestration/kernel-security-analysis/comp/phase-2/"
+  pipeline_c: "orchestration/kernel-security-analysis/strat/phase-3/"
+  pipeline_d: "orchestration/kernel-security-analysis/biz/phase-4/"
+  barrier_1: "orchestration/kernel-security-analysis/cross-pollination/barrier-1/"
+  barrier_2: "orchestration/kernel-security-analysis/cross-pollination/barrier-2/"
+  barrier_3: "orchestration/kernel-security-analysis/cross-pollination/barrier-3/"
+
+prior_portfolio:
+  competitive_analysis:
+    id: "PM-CA-001"
+    path: "docs/pm-pmm/leash-analysis/02-competitive-analysis.md"
+    exists: true
+  product_strategy:
+    id: "PM-PS-004"
+    path: "docs/pm-pmm/leash-analysis/01-product-strategy-use-cases.md"
+    exists: false
+    note: "Planned deliverable -- not yet created"
+  market_positioning:
+    id: "PM-MS-001"
+    path: "docs/pm-pmm/leash-analysis/03-market-strategy-positioning.md"
+    exists: false
+    note: "Planned deliverable -- not yet created"
+  business_analysis:
+    id: "PM-BA-001"
+    path: "docs/pm-pmm/leash-analysis/04-business-analysis.md"
+    exists: false
+    note: "Planned deliverable -- not yet created"
+
+pipelines:
+  - id: "pipeline-a"
+    alias: "tech"
+    phase: 1
+    name: "Technology Landscape Research"
+    agent: "pm-competitive-analyst"
+    skill: "/pm-pmm"
+    parallel_with: "pipeline-b"
+    data_sources:
+      - "WebSearch"
+      - "WebFetch"
+    prior_refs:
+      - id: "PM-CA-001"
+        sections: ["SWOT Analysis", "Blue Ocean Value Curve"]
+    status: "PLANNED"
+    output: "docs/pm-pmm/leash-analysis/kernel-security/01-technology-landscape.md"
+    success_criteria:
+      - "All 7 kernel technologies documented: eBPF, seccomp, LSMs, gVisor, Kata Containers, Firecracker, ptrace"
+      - "Each technology covers mechanism, AI/ML adoption, performance benchmarks, security guarantees, container compatibility"
+      - "Cross-references to PM-CA-001 SWOT and value curve included"
+      - "Leash syscall telemetry positioned within landscape"
+
+  - id: "pipeline-b"
+    alias: "comp"
+    phase: 2
+    name: "Competitor Deep-Dive"
+    agent: "pm-competitive-analyst"
+    skill: "/pm-pmm"
+    parallel_with: "pipeline-a"
+    data_sources:
+      - "WebSearch"
+      - "WebFetch"
+    prior_refs:
+      - id: "PM-CA-001"
+        sections: ["Competitive Comparison Matrix", "Battle Cards", "Competitive Threat Assessment"]
+      - id: "PM-PS-004"
+        sections: ["Competitive Positioning"]
+        conditional: "if exists"
+    status: "PLANNED"
+    output: "docs/pm-pmm/leash-analysis/kernel-security/02-competitor-deep-dive.md"
+    success_criteria:
+      - "Top 5 competitors identified across 5 categories"
+      - "Each competitor: Porter's Five Forces, Blue Ocean value curve, battle card, threat rating"
+      - "Net-new vs. overlapping mapping against PM-CA-001 documented"
+
+  - id: "pipeline-c"
+    alias: "strat"
+    phase: 3
+    name: "Product Strategy"
+    agent: "pm-product-strategist"
+    skill: "/pm-pmm"
+    depends_on:
+      - "barrier-1-technology-competitor"
+    data_sources:
+      - "WebSearch"
+      - "WebFetch"
+      - "docs/pm-pmm/leash-analysis/kernel-security/01-technology-landscape.md"
+      - "docs/pm-pmm/leash-analysis/kernel-security/02-competitor-deep-dive.md"
+    prior_refs:
+      - id: "PM-PS-004"
+        sections: ["10 Use Cases", "RICE Scores"]
+        conditional: "if exists"
+    status: "BLOCKED"
+    blocked_by: "barrier-1-technology-competitor"
+    output: "docs/pm-pmm/leash-analysis/kernel-security/03-product-strategy.md"
+    success_criteria:
+      - "Opportunity Solution Tree with kernel-security branch"
+      - "JTBD statements (functional, emotional, social) for platform engineering teams"
+      - "Playing to Win cascade: Where to Play, How to Win"
+      - "RICE-scored kernel feature backlog (minimum 5 opportunities)"
+      - "Mapping to existing use cases from PM-PS-004"
+
+  - id: "pipeline-d"
+    alias: "biz"
+    phase: 4
+    name: "Business Viability and GTM"
+    primary_agent: "pm-business-analyst"
+    contributing_agent: "pm-market-strategist"
+    skill: "/pm-pmm"
+    depends_on:
+      - "barrier-2-product-strategy"
+    data_sources:
+      - "WebSearch"
+      - "WebFetch"
+      - "docs/pm-pmm/leash-analysis/kernel-security/03-product-strategy.md"
+      - "docs/pm-pmm/leash-analysis/kernel-security/01-technology-landscape.md"
+      - "docs/pm-pmm/leash-analysis/kernel-security/02-competitor-deep-dive.md"
+    prior_refs:
+      - id: "PM-BA-001"
+        sections: ["TAM/SAM/SOM", "Lean Canvas", "SaaS Metrics"]
+        conditional: "if exists"
+      - id: "PM-MS-001"
+        sections: ["Dunford Positioning", "Crossing the Chasm", "Buyer Personas"]
+        conditional: "if exists"
+    status: "BLOCKED"
+    blocked_by: "barrier-2-product-strategy"
+    output: "docs/pm-pmm/leash-analysis/kernel-security/04-business-viability-gtm.md"
+    success_criteria:
+      - "TAM/SAM/SOM delta quantified vs. PM-BA-001 baseline"
+      - "Build/partner/acquire recommendation per kernel technology"
+      - "T-shirt sizing for top 3 RICE features from Phase 3"
+      - "Updated Dunford positioning statement"
+      - "Updated competitive alternative framing"
+
+barriers:
+  - id: "barrier-1-technology-competitor"
+    name: "Technology + Competitor Complete"
+    trigger: "pipeline-a.status == COMPLETE AND pipeline-b.status == COMPLETE"
+    quality_threshold: 0.92
+    unlocks: "pipeline-c"
+    status: "PENDING"
+    score_pipeline_a: null
+    score_pipeline_b: null
+
+  - id: "barrier-2-product-strategy"
+    name: "Product Strategy Complete"
+    trigger: "pipeline-c.status == COMPLETE"
+    quality_threshold: 0.92
+    unlocks: "pipeline-d"
+    status: "PENDING"
+    score_pipeline_c: null
+
+  - id: "barrier-3-workflow-complete"
+    name: "Workflow Terminal"
+    trigger: "pipeline-d.status == COMPLETE"
+    quality_threshold: 0.92
+    unlocks: null
+    status: "PENDING"
+    score_pipeline_d: null
+
+quality:
+  threshold: 0.92
+  criticality: "C2"
+  scoring_mechanism: "S-014"
+  scoring_agent: "adv-scorer"
+  required_strategies:
+    - "S-007"
+    - "S-002"
+    - "S-014"
+  optional_strategies:
+    - "S-003"
+    - "S-010"
+  phase_scores: {}
+  barrier_scores: {}
+  workflow_quality: {}
+
+metrics:
+  phases_total: 4
+  agents_total: 4
+  barriers_total: 3
+  pipelines_parallel: 2
+  pipelines_sequential: 2
+  output_artifacts: 4
