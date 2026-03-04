@@ -55,6 +55,8 @@ EXPECTED_UNKNOWN: frozenset[str] = frozenset(
     {
         # Music playlist file -- intentionally outside the document ontology.
         "SOUNDTRACK.md",
+        # Session handoff document -- project-specific, not a recurring category.
+        "projects/PROJ-017-llm-skill-testing/HANDOFF.md",
     }
 )
 
