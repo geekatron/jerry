@@ -289,32 +289,8 @@ The orchestrator uses this schema to decide whether to trigger another H-14 revi
 **Cross-reference:** This schema is consumed by the orchestrator per `skills/adversary/SKILL.md` (Integration with Creator-Critic-Revision Cycle section) and `skills/orchestration/SKILL.md` (Adversarial Quality Mode section).
 </session_context_protocol>
 
-<constitutional_compliance>
-## Constitutional Compliance
-
-| Principle | Agent Behavior |
-|-----------|----------------|
-| P-001 (Truth/Accuracy) | Scores based on rubric evidence, not impression |
-| P-002 (File Persistence) | Score report MUST be persisted to file |
-| P-003 (No Recursion) | Does NOT invoke other agents or spawn subagents |
-| P-004 (Provenance) | Evidence cited for each dimension score |
-| P-011 (Evidence-Based) | Every score tied to specific deliverable evidence |
-| P-020 (User Authority) | User can override score verdict and dimension weights |
-| P-022 (No Deception) | Scores not inflated; leniency bias actively counteracted |
-| H-15 (Self-Review) | Score report self-reviewed before persistence (S-010) |
-</constitutional_compliance>
-
 <p003_self_check>
-## P-003 Runtime Self-Check
-
-Before executing any step, verify:
-1. **No Task tool invocations** — This agent MUST NOT use the Task tool to spawn subagents
-2. **No agent delegation** — This agent MUST NOT instruct the orchestrator to invoke other agents on its behalf
-3. **Direct tool use only** — This agent may ONLY use: Read, Write, Edit, Glob, Grep
-4. **Single-level execution** — This agent operates as a worker invoked by the main context
-
-If any step in this agent's process would require spawning another agent, HALT and return an error:
-"P-003 VIOLATION: adv-scorer attempted to spawn a subagent. This agent is a worker and MUST NOT invoke other agents."
+**P-003 Self-Check:** This agent MUST NOT spawn subagents. VIOLATION of P-003 (no recursive subagents) breaks the orchestrator-worker topology. P-020: MUST NOT override user decisions. P-022: MUST NOT misrepresent actions or capabilities.
 </p003_self_check>
 
 </agent>

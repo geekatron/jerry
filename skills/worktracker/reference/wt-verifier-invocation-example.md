@@ -1,0 +1,147 @@
+# WT Verifier: Invocation Example and Expected Output
+
+> Complete Task() invocation example and expected output template for wt-verifier. Reference for orchestrators.
+
+## Task Invocation
+
+```python
+Task(
+    description="wt-verifier: Verify EN-001 acceptance criteria",
+    subagent_type="general-purpose",
+    prompt="""
+You are the wt-verifier agent (v1.0.0).
+
+<agent_context>
+<role>Status Verification Specialist</role>
+<task>Verify acceptance criteria for EN-001 before closure</task>
+<constraints>
+<must>Create verification report with Write tool</must>
+<must>Include L0/L1/L2 output levels</must>
+<must>Enforce WTI-002 (80%+ AC verified)</must>
+<must>Enforce WTI-006 (evidence links present)</must>
+<must_not>Return transient output only (P-002)</must_not>
+<must_not>Pass incomplete work to satisfy user (P-022)</must_not>
+</constraints>
+</agent_context>
+
+## VERIFICATION TASK
+- **Work Item Path:** projects/PROJ-009/.../EN-001-example.md
+- **Verification Scope:** full
+- **Parent Context:** projects/PROJ-009/.../FEAT-002-claude-md-optimization.md
+- **Strict Mode:** false
+
+## MANDATORY PERSISTENCE (P-002)
+After completing verification, you MUST:
+
+1. Create file at: `projects/PROJ-009/.../EN-001-verification-report.md`
+2. Include L0 (executive), L1 (technical), L2 (architectural) sections
+3. Document all checks performed and results
+4. Provide blocking issues (if any) and recommendations
+
+## VERIFICATION REQUIREMENTS (WTI Rules)
+- WTI-002: At least 80% of acceptance criteria must be checked
+- WTI-006: Evidence section must contain at least one verifiable link
+- Child rollup: All child tasks must be status=completed (if applicable)
+"""
+)
+```
+
+## Expected Output Structure
+
+```markdown
+# Verification Report: EN-001
+
+**Status:** PASSED | FAILED
+**Score:** 0.85 (85%)
+**Timestamp:** 2026-02-02T10:30:00Z
+
+## L0: Executive Summary (ELI5)
+
+EN-001 is ready to be marked as done. We checked all the acceptance criteria and found that 85% are complete (17 out of 20 checkboxes are checked, which exceeds the 80% requirement). The work also has proof of completion with links to the pull request and test results.
+
+**Recommendation:** EN-001 can be transitioned to DONE status.
+
+## L1: Technical Verification Results (Software Engineer)
+
+### Acceptance Criteria Verification
+
+| Metric | Value | Pass Criteria | Result |
+|--------|-------|---------------|--------|
+| Total Criteria | 20 | - | - |
+| Checked Criteria | 17 | >= 16 (80%) | PASS |
+| Verification Percentage | 85% | >= 80% | PASS |
+
+**Unchecked Criteria:**
+- [ ] AC-003: Documentation updated (optional enhancement)
+- [ ] AC-012: Performance benchmarks run (nice-to-have)
+- [ ] AC-019: User acceptance testing (deferred to next iteration)
+
+### Evidence Validation
+
+| Evidence Item | Type | Link | Status |
+|---------------|------|------|--------|
+| Implementation PR | GitHub PR | https://github.com/.../pull/42 | Valid |
+| Unit Tests | GitHub PR | https://github.com/.../pull/42#tests | Valid |
+| Integration Tests | CI Run | https://ci.example.com/run/123 | Valid |
+
+**Result:** PASS (3 evidence links found, all valid)
+
+### Child Rollup Validation
+
+| Child Item | Status | Blocker |
+|------------|--------|---------|
+| TASK-001 | completed | - |
+| TASK-002 | completed | - |
+| TASK-003 | completed | - |
+
+**Result:** PASS (All child items completed)
+
+### Overall Verification Result
+
+**Status:** PASSED
+**Score:** 0.85
+**Blocking Issues:** None
+**Warnings:** 3 optional criteria unchecked (documented above)
+
+## L2: Architectural Implications (Principal Architect)
+
+### Quality Gate Analysis
+
+This verification demonstrates strong completion discipline:
+- Substantial completion (85%) while acknowledging optional enhancements
+- Comprehensive evidence with PR, tests, and CI integration
+- Proper work breakdown with all child tasks completed
+
+### Systemic Patterns
+
+**Strengths:**
+- Clear separation of required vs optional acceptance criteria
+- Evidence includes both implementation and verification artifacts
+- Work breakdown structure enabled incremental progress tracking
+
+**Observations:**
+- Unchecked criteria are explicitly marked as optional or deferred
+- Evidence links are permanent (GitHub, CI) rather than ephemeral
+- Child task completion indicates proper planning and execution
+
+### Quality Gate Implications
+
+This work item exemplifies the intended quality gate behavior:
+1. Work is substantially complete (85% > 80% threshold)
+2. Evidence is comprehensive and permanent
+3. Work breakdown structure was properly executed
+
+**Recommendation:** This quality standard should be the baseline for future work items.
+
+## Recommendations
+
+1. **Transition EN-001 to DONE status** - All quality gates passed
+2. **Document optional criteria decisions** - Add note to EN-001 explaining why AC-003, AC-012, AC-019 were deferred
+3. **Create follow-up work items** - If deferred criteria should be addressed later, create new enablers/tasks
+
+---
+
+*Verification Report Generated by wt-verifier v1.0.0*
+*WTI Rules Enforced: WTI-002, WTI-003, WTI-006*
+*Constitutional Compliance: P-001, P-002, P-003, P-004, P-022*
+```

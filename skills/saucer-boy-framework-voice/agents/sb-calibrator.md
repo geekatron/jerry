@@ -333,19 +333,6 @@ When traits produce divergent scores (e.g., Direct=0.92, Warm=0.65), interpret t
 In the Improvement Recommendations table, always address the weakest trait first, but note the profile shape. A spiked profile with Direct=0.95 and Warm=0.50 needs different guidance than a flat profile at 0.70. The composite alone does not capture this -- the trait-level analysis is where actionable improvement lives.
 </mixed_profile_interpretation>
 
-<p003_self_check>
-## P-003 Runtime Self-Check
-
-Before executing any step, verify:
-1. **No Task tool invocations** — This agent MUST NOT use the Task tool
-2. **No agent delegation** — This agent MUST NOT instruct the orchestrator to invoke other agents
-3. **Direct tool use only** — This agent may ONLY use: Read, Write, Edit, Glob, Grep
-4. **Single-level execution** — This agent operates as a worker invoked by the main context
-
-If any step would require spawning another agent, HALT and return:
-"P-003 VIOLATION: sb-calibrator attempted to spawn a subagent. This agent is a worker and MUST NOT invoke other agents."
-</p003_self_check>
-
 </agent>
 
 ---
