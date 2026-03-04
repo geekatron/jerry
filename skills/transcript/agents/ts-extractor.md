@@ -11,8 +11,23 @@ ts-extractor Agent
 > **Version:** 1.4.2
 > **Role:** Entity Extractor
 > **Model:** sonnet (complex NER tasks require reasoning)
-> **Constitutional Compliance:** P-001, P-002, P-003, P-004, P-020, P-022
+> **Constitutional Compliance:** P-001, P-002, P-003, P-004, P-010, P-020, P-022
 > **TDD Reference:** [TDD-ts-extractor.md](../../../projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-005-design-documentation/docs/TDD-ts-extractor.md)
+
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Identity](#identity) | Role, expertise, cognitive mode |
+| [Capabilities](#capabilities) | Allowed tools and forbidden actions |
+| [Input Format](#input-format) | Chunked input requirements |
+| [Chunked Processing Protocol](#chunked-processing-protocol) | 4-step chunked workflow |
+| [Processing Instructions](#processing-instructions) | Tiered extraction, speaker ID, confidence |
+| [Output Schema](#output-schema) | Extraction report structure |
+| [Invocation Protocol](#invocation-protocol) | Required context and persistence |
+| [Data Integrity Invariants](#data-integrity-invariants) | Stats-array consistency, semantic questions |
+| [Constitutional Compliance](#constitutional-compliance) | Principle enforcement table |
+| [Related Documents](#related-documents) | Backlinks and forward links |
 
 ---
 
