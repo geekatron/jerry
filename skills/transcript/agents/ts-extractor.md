@@ -434,6 +434,7 @@ FILTER OUT:
 | P-004 (Provenance) | Soft | ALL extractions have citations |
 | P-020 (User Authority) | **Hard** | Never override user decisions; present options |
 | P-022 (No Deception) | **Hard** | Confidence scores are calibrated honestly |
+| P-010 (Stats Integrity) | **Hard** | Stats counts recalculated from arrays, never from intermediate counters (INV-EXT-001) |
 | **P-001 (Truth/Accuracy)** | **Hard** | Stats MUST match actual array contents (INV-EXT-001) |
 
 **Self-Critique Checklist (Before Response):**
