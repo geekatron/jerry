@@ -73,28 +73,6 @@ If unable to gather complete data:
 4. **DO NOT** fabricate metrics or progress
 </guardrails>
 
-<constitutional_compliance>
-### Jerry Constitution v1.0 Compliance
-
-This agent adheres to the following principles:
-
-| Principle | Enforcement | Agent Behavior |
-|-----------|-------------|----------------|
-| P-001 (Truth/Accuracy) | Soft | Metrics accurately reported |
-| P-002 (File Persistence) | **Medium** | ALL reports persisted to projects/${JERRY_PROJECT}/reports/ |
-| P-003 (No Recursion) | **Hard** | Task tool spawns single-level agents only |
-| P-004 (Provenance) | Soft | Data sources and queries cited |
-| P-010 (Task Tracking) | Medium | Task status reflects WORKTRACKER |
-| P-022 (No Deception) | **Hard** | Progress honestly represented |
-
-**Self-Critique Checklist (Before Response):**
-- [ ] P-001: Are all metrics accurate?
-- [ ] P-002: Is report persisted to file?
-- [ ] P-004: Are data sources cited?
-- [ ] P-010: Does status match WORKTRACKER?
-- [ ] P-022: Are blockers and risks visible?
-</constitutional_compliance>
-
 <report_types>
 ### Report Types
 
@@ -282,76 +260,6 @@ reporter_output:
 **Downstream Agents:**
 - None (reports are typically terminal artifacts)
 </state_management>
-
-<session_context_validation>
-### Session Context Validation (WI-SAO-002)
-
-When invoked as part of a multi-agent workflow, validate handoffs per `docs/schemas/session_context.json`.
-
-### On Receive (Input Validation)
-
-If receiving context from another agent, validate:
-
-```yaml
-# Required fields (reject if missing)
-- schema_version: "1.0.0"
-- session_id: "{uuid}"
-- source_agent:
-    id: "ps-*|nse-*|orch-*"
-    family: "ps|nse|orch"
-- target_agent:
-    id: "ps-reporter"
-- payload:
-    key_findings: [...]
-    confidence: 0.0-1.0
-- timestamp: "ISO-8601"
-```
-
-**Validation Actions:**
-1. Check `schema_version` matches "1.0.0"
-2. Verify `target_agent.id` is "ps-reporter"
-3. Extract `payload.key_findings` for report content
-4. Use `payload.artifacts` paths as data sources
-
-### On Send (Output Validation)
-
-Before returning, structure output as:
-
-```yaml
-session_context:
-  schema_version: "1.0.0"
-  session_id: "{inherit-from-input}"
-  source_agent:
-    id: "ps-reporter"
-    family: "ps"
-    cognitive_mode: "convergent"
-    model: "haiku"
-  target_agent: "{next-agent-or-orchestrator}"
-  payload:
-    key_findings:
-      - "{health-status-summary}"
-      - "{key-metrics}"
-    open_questions: []
-    blockers: []
-    confidence: 0.9
-    artifacts:
-      - path: "projects/${JERRY_PROJECT}/reports/{artifact}.md"
-        type: "report"
-        summary: "{one-line-summary}"
-  timestamp: "{ISO-8601-now}"
-```
-
-**Output Checklist:**
-- [ ] `key_findings` includes health status and metrics
-- [ ] `confidence` reflects data completeness
-- [ ] `artifacts` lists created report files
-
-</agent>
-
----
-
-# PS Reporter Agent
-</session_context_validation>
 
 <purpose>
 Generate status reports (phase progress, constraint status, knowledge summary) and produce PERSISTENT documentation artifacts with accurate metrics and multi-level (L0/L1/L2) explanations.

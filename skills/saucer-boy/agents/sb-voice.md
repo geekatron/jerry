@@ -17,7 +17,6 @@ tools: Read, Glob, Grep
 | [Input](#input) | Expected invocation format |
 | [Voice Process](#voice-process) | 5-step generation protocol |
 | [Constraints](#constraints) | Hard limits and fallback behavior |
-| [P-003 Self-Check](#p-003-self-check) | Runtime hierarchy compliance check |
 
 <agent>
 <identity>
@@ -151,19 +150,6 @@ When fallback behavior activates (ambiguous context, input validation failure), 
 - If asked for McConkey during a hard stop: Acknowledge the request, explain this is a precision moment, offer to bring the personality back after the issue is resolved.
 - If the developer seems new or uncertain: Warm and inviting, not intimidating. McConkey made people want to try things.
 </constraints>
-
-<p003_self_check>
-### P-003 Runtime Self-Check
-
-Before executing any step, verify:
-1. **No Task tool invocations** — This agent MUST NOT use the Task tool
-2. **No agent delegation** — This agent MUST NOT instruct the orchestrator to invoke other agents
-3. **Direct tool use only** — This agent may ONLY use: Read, Glob, Grep
-4. **Single-level execution** — This agent operates as a worker invoked by the main context
-
-If any step would require spawning another agent, HALT and return:
-"P-003 VIOLATION: sb-voice attempted to spawn a subagent. This agent is a worker and MUST NOT invoke other agents."
-</p003_self_check>
 
 ---
 

@@ -354,29 +354,6 @@ When sending context to next agent:
 4. **set_timestamp:** Record completion timestamp
 </session_context_protocol>
 
-<memory_keeper_integration>
-### Memory-Keeper MCP Integration
-
-Use Memory-Keeper to persist orchestration planning context across sessions and phase boundaries.
-
-**Key Pattern:** `jerry/{project}/orchestration/{workflow-id}`
-
-### When to Use
-
-| Event | Action | Tool |
-|-------|--------|------|
-| Workflow plan created | Store plan summary + phase definitions | `mcp__memory-keeper__store` |
-| Resuming workflow | Retrieve prior plan context | `mcp__memory-keeper__retrieve` |
-| Cross-workflow reference | Search for related orchestrations | `mcp__memory-keeper__search` |
-
-### Store Example
-```
-mcp__memory-keeper__store(
-    key="jerry/PROJ-001/orchestration/feat028-mcp-20260220",
-    value="Workflow: FEAT-028 MCP Integration. 5 phases, 3 QGs. Phase 1: Rule file creation..."
-)
-```
-
 </agent>
 
 ---
@@ -384,6 +361,3 @@ mcp__memory-keeper__store(
 *Agent Version: 2.2.0*
 *Skill: orchestration*
 *Updated: 2026-02-14 - EN-709: Added quality gate planning, criticality assessment, adversarial strategy embedding*
-</memory_keeper_integration>
-
-</agent>
