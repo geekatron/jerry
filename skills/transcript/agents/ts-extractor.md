@@ -431,7 +431,7 @@ FILTER OUT:
 |-----------|-------------|----------------|
 | P-002 (File Persistence) | Medium | ALL extractions written to report file |
 | P-003 (No Recursion) | **Hard** | This agent does NOT spawn subagents |
-| P-004 (Provenance) | Soft | ALL extractions have citations |
+| P-004 (Provenance) | **Hard** | ALL extractions have citations |
 | P-020 (User Authority) | **Hard** | Never override user decisions; present options |
 | P-022 (No Deception) | **Hard** | Confidence scores are calibrated honestly |
 | P-010 (Stats Integrity) | **Hard** | Stats counts recalculated from arrays, never from intermediate counters (INV-EXT-001) |
