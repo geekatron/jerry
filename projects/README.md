@@ -22,6 +22,8 @@
 | PROJ-016 | documentation-writing | ACTIVE | Write user-facing Jerry documentation based on PROJ-015 audit findings |
 | PROJ-020 | feature-enhancements | ACTIVE | Feature enhancement filing and tracking for the Jerry Framework |
 | PROJ-030 | bugs | ACTIVE | Bug fixes and defect resolution for the Jerry Framework |
+| PROJ-035 | skill-optimization | ACTIVE | LLM prompt evaluation and safe refactoring research — test harness architecture |
+| PROJ-036 | prompt-regression-harness | ACTIVE | Implementation of the Four-Layer Composite Test Harness (ADR-001 from PROJ-035) |
 
 ## Project Lookup
 
@@ -41,3 +43,5 @@
 - **PROJ-016**: `projects/PROJ-016-documentation-writing/`
 - **PROJ-020**: `projects/PROJ-020-feature-enhancements/`
 - **PROJ-030**: `projects/PROJ-030-bugs/`
+- **PROJ-035**: `projects/PROJ-035-skill-optimization/`
+- **PROJ-036**: `projects/PROJ-036-prompt-regression-harness/`
