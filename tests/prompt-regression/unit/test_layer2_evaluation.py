@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 Adam Nowak
+# Copyright (c) 2026 Victor Lau
 
 """Unit tests for Layer 2 evaluation backend (Stream 3B).
 

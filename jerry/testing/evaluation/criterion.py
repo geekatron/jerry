@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Victor Lau
+
 """Layer 2 domain value object: QualityCriterion.
 
 A single named quality dimension for G-Eval evaluation. This module is a

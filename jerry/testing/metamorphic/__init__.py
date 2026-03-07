@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Victor Lau
+
 """Metamorphic relation framework for the Four-Layer Composite Test Harness.
 
 Layer 3 of the Four-Layer Composite Test Harness.  This package provides the

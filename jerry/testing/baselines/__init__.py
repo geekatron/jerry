@@ -1,4 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Victor Lau
+
 """Baseline persistence package for the Four-Layer Composite Test Harness.
 
 Provides the BaselineStore adapter for storing and retrieving baseline score

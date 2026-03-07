@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Victor Lau
+
 """MR-001: Paraphrase Consistency metamorphic relation.
 
 Definition (behavioral-contracts.md Section C.1):

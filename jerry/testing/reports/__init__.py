@@ -1,4 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Victor Lau
+
 """Report generation package for the Four-Layer Composite Test Harness.
 
 Produces structured regression reports in both Markdown (for PR comments) and

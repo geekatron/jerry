@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Victor Lau
+
 """Layer 2 domain class: JerryGEvalMetric.
 
 Debiased G-Eval metric encapsulating criterion weighting, score aggregation,

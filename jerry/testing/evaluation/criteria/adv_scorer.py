@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Victor Lau
+
 """G-Eval criteria definitions for the adv-scorer agent.
 
 adv-scorer is a systematic-mode LLM-as-Judge quality scoring agent in the

@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Victor Lau
+
 """Layer 2 adapter: DeepEvalAdapter — public evaluation API.
 
 This is the ONLY module in jerry.testing.evaluation that imports from the

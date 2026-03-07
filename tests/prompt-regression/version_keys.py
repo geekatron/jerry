@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 Adam Nowak
+# Copyright (c) 2026 Victor Lau
 
 """Prompt version key management for the PROJ-036 regression harness.
 

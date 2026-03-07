@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Victor Lau
+
 """Per-agent G-Eval criteria definitions for the Five Target Agents.
 
 Each submodule defines a ``list[QualityCriterion]`` constant (``*_CRITERIA``)

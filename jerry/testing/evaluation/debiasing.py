@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Victor Lau
+
 """Debiasing strategy for LLM-as-Judge evaluation (Layer 2 domain).
 
 Implements position randomization and rubric criterion shuffling to mitigate

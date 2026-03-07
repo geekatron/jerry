@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Victor Lau
+
 """Layer 2 port interface: EvaluationPort protocol.
 
 Defines the inbound hexagonal port for metric evaluation backends. Any

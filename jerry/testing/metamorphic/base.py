@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Victor Lau
+
 """Abstract base class for metamorphic relations in the Four-Layer Composite Test Harness.
 
 This module defines the MetamorphicRelation ABC and the supporting types

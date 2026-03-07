@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 Adam Nowak
+# Copyright (c) 2026 Victor Lau
 
 """Shared pytest configuration for tests/prompt-regression/.
 

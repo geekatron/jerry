@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Victor Lau
+
 """Layer 2 domain value object: ScoringResult.
 
 Represents the result of evaluating a single QualityCriterion against one

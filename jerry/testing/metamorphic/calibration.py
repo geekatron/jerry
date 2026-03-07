@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Victor Lau
+
 """FR-011: MR Tolerance Calibration utility.
 
 FR-011 (MR Tolerance Calibration from Real Output Pairs, "Must" priority)

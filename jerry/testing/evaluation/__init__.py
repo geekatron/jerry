@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Victor Lau
+
 """Layer 2: DeepEval evaluation backend for the Four-Layer Composite Test Harness.
 
 This package implements debiased LLM-as-Judge evaluation using DeepEval's G-Eval

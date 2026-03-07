@@ -1,4 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Victor Lau
+
 """Layer 4 pipeline orchestrator for the Four-Layer Composite Test Harness.
 
 This module orchestrates the Layer 4 statistical comparison pipeline.  It

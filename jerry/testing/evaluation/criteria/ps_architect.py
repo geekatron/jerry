@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Victor Lau
+
 """G-Eval criteria definitions for the ps-architect agent.
 
 ps-architect is a convergent-mode architecture decision agent in the

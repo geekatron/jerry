@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Victor Lau
+
 """G-Eval criteria definitions for the ps-critic agent.
 
 ps-critic is a convergent-mode adversarial quality review agent in the

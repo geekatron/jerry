@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Victor Lau
+
 """TranslationLanguage enumeration for MR-005 Language Round-Trip.
 
 Extracted to a separate file per H-10 (one class per file).

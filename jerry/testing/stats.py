@@ -1,4 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Victor Lau
+
 """Core statistical functions for the Four-Layer Composite Test Harness.
 
 This module is the SSOT for all statistical computation in the harness.  It is

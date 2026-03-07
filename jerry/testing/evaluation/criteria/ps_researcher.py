@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Victor Lau
+
 """G-Eval criteria definitions for the ps-researcher agent.
 
 ps-researcher is a divergent-mode research agent in the problem-solving skill.

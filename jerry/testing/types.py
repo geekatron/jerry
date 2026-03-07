@@ -1,4 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Victor Lau
+
 """Shared type definitions for the Four-Layer Composite Test Harness.
 
 This module defines the domain types shared across all layers of the harness:
@@ -17,7 +19,7 @@ Design compliance:
 from __future__ import annotations
 
 import dataclasses
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum
 
 # ---------------------------------------------------------------------------
@@ -241,7 +243,7 @@ class RegressionResult:
     version_key_b: str
     n_a: int
     n_b: int
-    timestamp: str = dataclasses.field(default_factory=lambda: datetime.utcnow().isoformat() + "Z")
+    timestamp: str = dataclasses.field(default_factory=lambda: datetime.now(UTC).isoformat())
     dimension_driver: str | None = None
 
 
