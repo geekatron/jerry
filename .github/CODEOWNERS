@@ -1,0 +1,47 @@
+# CODEOWNERS — Mandatory Review Assignments
+#
+# GitHub CODEOWNERS file. Owners listed here are automatically added as
+# required reviewers when pull requests modify matching paths.
+#
+# Security rationale (MC-29, T-29, system-design.md §3.5):
+#   Workflow files have access to repository secrets. A malicious or
+#   accidental modification to a workflow file can exfiltrate secrets
+#   (e.g., ANTHROPIC_API_KEY). Requiring CODEOWNERS approval prevents
+#   unauthorized workflow modifications from merging without human review.
+#
+# OWASP CI/CD Top-10 C-09: Improperly secured artifact registries
+# CIS GitHub Benchmark: Require code owners review for critical paths
+
+# =============================================================================
+# GitHub Actions Workflows — Require repository maintainer review
+# =============================================================================
+# ALL workflow files require approval due to secrets access (MC-29)
+.github/workflows/               @geekatron
+
+# All composite actions (have access to secrets via caller context)
+.github/actions/                 @geekatron
+
+# =============================================================================
+# Prompt Regression Pipeline — Require additional review
+# =============================================================================
+# Statistical engine and test harness: changes affect all regression verdicts
+jerry/testing/                   @geekatron
+tests/prompt-regression/         @geekatron
+
+# Baseline data: changes affect all future regression comparisons (MC-22, MC-23)
+baselines/                       @geekatron
+
+# Behavioral contracts: changes affect MR coverage computation (FR-013)
+contracts/                       @geekatron
+
+# =============================================================================
+# Agent definitions — Any modification triggers prompt regression pipeline
+# =============================================================================
+skills/*/agents/*.md             @geekatron
+
+# =============================================================================
+# Jerry framework governance — Highest criticality (AE-001 through AE-004)
+# =============================================================================
+docs/governance/                 @geekatron
+.context/rules/                  @geekatron
+CLAUDE.md                        @geekatron

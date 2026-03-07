@@ -1,0 +1,470 @@
+# Artifact Publisher Composite Action
+#
+# Purpose: Publish prompt regression evaluation results as GitHub Actions artifacts
+#   with appropriate retention policies per tier. Posts regression report as a PR
+#   comment when a PR number is provided. Implements MC-30 (evaluation result
+#   persistence) and MC-37 (statistical comparison audit trail).
+#
+# Usage:
+#   - uses: ./.github/actions/artifact-publish
+#     with:
+#       agent_name: ps-researcher
+#       evaluation_tier: standard
+#       pr_number: "42"
+#       report_json: tests/prompt-regression/results/report-ps-researcher.json
+#       report_markdown: tests/prompt-regression/results/report-ps-researcher.md
+#       raw_results: tests/prompt-regression/results/standard-ps-researcher.json
+#       retention_days: "30"
+#
+# Retention policy per evaluation tier:
+#   Smoke:    7 days  (structural checks, low value post-PR)
+#   Standard: 30 days (PR regression reports, 1 sprint lifecycle)
+#   Full:     90 days (baseline refresh, release artifacts, audit trail)
+#
+# Security controls implemented:
+#   MC-30: Evaluation reports stored as PR comments (permanent) and artifacts (retention policy)
+#   MC-37: Statistical comparison audit trail — complete RegressionResult stored per artifact
+#
+# FR traceability:
+#   FR-018: Regression classification report with PR integration
+#
+# Stream: 3E (CI/CD Pipeline Setup)
+
+name: Artifact Publisher
+description: |
+  Publish prompt regression evaluation results as GitHub Actions artifacts with
+  tier-appropriate retention policies. Posts regression report to PR when in PR context.
+  Implements MC-30 (result persistence) and MC-37 (audit trail).
+
+inputs:
+  # Primary inputs (spec-aligned)
+  agent_id:
+    description: |
+      Agent identifier (e.g., ps-researcher). Primary input per spec.
+      Also accepted via agent_name for backward compatibility with callers.
+    required: false
+    default: ""
+  agent_name:
+    description: |
+      Agent identifier alias for agent_id (backward compatibility).
+      If both agent_id and agent_name are provided, agent_id takes precedence.
+    required: false
+    default: ""
+  evaluation_tier:
+    description: "Evaluation tier: smoke | standard | full"
+    required: true
+  run_id:
+    description: |
+      GitHub Actions run ID for artifact naming. Defaults to the current run ID
+      (${{ github.run_id }}) when not explicitly provided.
+    required: false
+    default: ""
+  results_path:
+    description: |
+      Directory path containing evaluation result files. When provided, the action
+      automatically discovers score arrays, reports, and cost records under this path.
+      Individual file path inputs (report_json, report_markdown, raw_results) take
+      precedence over results_path auto-discovery when provided.
+    required: false
+    default: ""
+
+  # Explicit file path inputs (alternative to results_path auto-discovery)
+  pr_number:
+    description: |
+      Pull request number for PR comment integration (FR-018).
+      Pass '0' for non-PR contexts (scheduled runs, manual dispatch).
+    required: false
+    default: "0"
+  report_json:
+    description: "Path to the JSON regression report file"
+    required: false
+    default: ""
+  report_markdown:
+    description: "Path to the Markdown regression report file"
+    required: false
+    default: ""
+  raw_results:
+    description: "Path to the raw promptfoo evaluation output JSON"
+    required: false
+    default: ""
+  retention_days:
+    description: |
+      Artifact retention in days. Defaults by tier: Smoke=7, Standard=30, Full=90.
+      Caller is responsible for setting correct retention per tier.
+    required: false
+    default: "30"
+
+runs:
+  using: composite
+  steps:
+
+    # ==========================================================================
+    # Step 1: Resolve agent identity and file paths
+    # ==========================================================================
+    - name: Resolve agent identity and file paths
+      id: resolve
+      shell: bash
+      run: |
+        # Resolve agent_id (primary) vs agent_name (compatibility alias)
+        AGENT="${{ inputs.agent_id }}"
+        if [ -z "$AGENT" ]; then
+          AGENT="${{ inputs.agent_name }}"
+        fi
+        if [ -z "$AGENT" ]; then
+          echo "::error::Either agent_id or agent_name must be provided"
+          exit 1
+        fi
+        echo "RESOLVED_AGENT=${AGENT}" >> "$GITHUB_ENV"
+        echo "agent=${AGENT}" >> "$GITHUB_OUTPUT"
+
+        # Resolve run_id (explicit or current run)
+        RUN_ID="${{ inputs.run_id }}"
+        if [ -z "$RUN_ID" ]; then
+          RUN_ID="${{ github.run_id }}"
+        fi
+        echo "RESOLVED_RUN_ID=${RUN_ID}" >> "$GITHUB_ENV"
+        echo "run_id=${RUN_ID}" >> "$GITHUB_OUTPUT"
+
+        # Resolve retention from tier if not explicitly set
+        RETENTION="${{ inputs.retention_days }}"
+        TIER="${{ inputs.evaluation_tier }}"
+        if [ "$RETENTION" = "30" ]; then
+          # Apply tier-based defaults when caller uses the default value
+          case "$TIER" in
+            smoke)    RETENTION=7 ;;
+            standard) RETENTION=30 ;;
+            full)     RETENTION=90 ;;
+            *)        RETENTION=30 ;;
+          esac
+        fi
+        echo "RESOLVED_RETENTION=${RETENTION}" >> "$GITHUB_ENV"
+        echo "retention=${RETENTION}" >> "$GITHUB_OUTPUT"
+
+        echo "Artifact publisher: agent=${AGENT}, tier=${TIER}, retention=${RETENTION}d, run=${RUN_ID}"
+
+    # ==========================================================================
+    # Step 1b: Auto-discover files from results_path when explicit paths not given
+    # ==========================================================================
+    - name: Auto-discover result files from results_path
+      id: autodiscover
+      shell: bash
+      run: |
+        AGENT="${RESOLVED_AGENT}"
+        TIER="${{ inputs.evaluation_tier }}"
+        RESULTS_PATH="${{ inputs.results_path }}"
+
+        # Initialize with explicit inputs
+        REPORT_JSON="${{ inputs.report_json }}"
+        REPORT_MD="${{ inputs.report_markdown }}"
+        RAW_RESULTS="${{ inputs.raw_results }}"
+
+        if [ -n "$RESULTS_PATH" ] && [ -d "$RESULTS_PATH" ]; then
+          echo "Auto-discovering from results_path: ${RESULTS_PATH}"
+
+          # Discover report JSON if not explicitly provided
+          if [ -z "$REPORT_JSON" ]; then
+            for CANDIDATE in \
+              "${RESULTS_PATH}/report-full-${AGENT}.json" \
+              "${RESULTS_PATH}/report-${AGENT}.json" \
+              "${RESULTS_PATH}/${TIER}-regression-report.json" \
+              "${RESULTS_PATH}/regression-report.json"; do
+              if [ -f "$CANDIDATE" ]; then
+                REPORT_JSON="$CANDIDATE"
+                echo "Discovered report JSON: ${CANDIDATE}"
+                break
+              fi
+            done
+          fi
+
+          # Discover Markdown report
+          if [ -z "$REPORT_MD" ]; then
+            for CANDIDATE in \
+              "${RESULTS_PATH}/report-full-${AGENT}.md" \
+              "${RESULTS_PATH}/report-${AGENT}.md" \
+              "${RESULTS_PATH}/${TIER}-regression-report.md" \
+              "${RESULTS_PATH}/regression-report.md"; do
+              if [ -f "$CANDIDATE" ]; then
+                REPORT_MD="$CANDIDATE"
+                echo "Discovered report Markdown: ${CANDIDATE}"
+                break
+              fi
+            done
+          fi
+
+          # Discover raw results
+          if [ -z "$RAW_RESULTS" ]; then
+            for CANDIDATE in \
+              "${RESULTS_PATH}/full-${AGENT}.json" \
+              "${RESULTS_PATH}/standard-${AGENT}.json" \
+              "${RESULTS_PATH}/smoke-${AGENT}.json" \
+              "${RESULTS_PATH}/${TIER}-${AGENT}.json"; do
+              if [ -f "$CANDIDATE" ]; then
+                RAW_RESULTS="$CANDIDATE"
+                echo "Discovered raw results: ${CANDIDATE}"
+                break
+              fi
+            done
+          fi
+        fi
+
+        echo "EFFECTIVE_REPORT_JSON=${REPORT_JSON}" >> "$GITHUB_ENV"
+        echo "EFFECTIVE_REPORT_MD=${REPORT_MD}" >> "$GITHUB_ENV"
+        echo "EFFECTIVE_RAW_RESULTS=${RAW_RESULTS}" >> "$GITHUB_ENV"
+
+    # ==========================================================================
+    # Step 1c: Validate artifact files exist
+    # ==========================================================================
+    - name: Validate artifact files exist
+      shell: bash
+      run: |
+        AGENT="${RESOLVED_AGENT}"
+        TIER="${{ inputs.evaluation_tier }}"
+
+        echo "Artifact publisher: agent=${AGENT}, tier=${TIER}"
+        echo "Validating input files..."
+
+        MISSING=()
+
+        if [ -n "${EFFECTIVE_REPORT_JSON}" ] && [ ! -f "${EFFECTIVE_REPORT_JSON}" ]; then
+          MISSING+=("${EFFECTIVE_REPORT_JSON}")
+          echo "::warning::Missing JSON report: ${EFFECTIVE_REPORT_JSON}"
+        fi
+
+        if [ -n "${EFFECTIVE_REPORT_MD}" ] && [ ! -f "${EFFECTIVE_REPORT_MD}" ]; then
+          MISSING+=("${EFFECTIVE_REPORT_MD}")
+          echo "::warning::Missing Markdown report: ${EFFECTIVE_REPORT_MD}"
+        fi
+
+        if [ -n "${EFFECTIVE_RAW_RESULTS}" ] && [ ! -f "${EFFECTIVE_RAW_RESULTS}" ]; then
+          MISSING+=("${EFFECTIVE_RAW_RESULTS}")
+          echo "::warning::Missing raw results: ${EFFECTIVE_RAW_RESULTS}"
+        fi
+
+        if [ ${#MISSING[@]} -gt 0 ]; then
+          echo "::warning::${#MISSING[@]} artifact file(s) missing — uploading available files only"
+          echo "::warning::Missing: ${MISSING[*]}"
+        else
+          echo "All specified artifact files present."
+        fi
+
+    # ==========================================================================
+    # Step 2: Generate artifact metadata record (MC-37 audit trail)
+    # ==========================================================================
+    - name: Generate artifact metadata (MC-37)
+      shell: bash
+      run: |
+        # MC-37: Every evaluation result artifact includes complete metadata for
+        # audit trail: agent, tier, commit SHA, timestamp, verdict.
+        AGENT="${RESOLVED_AGENT}"
+        TIER="${{ inputs.evaluation_tier }}"
+        PR="${{ inputs.pr_number }}"
+        TIMESTAMP=$(date -u --iso-8601=seconds)
+        RUN_ID="${RESOLVED_RUN_ID}"
+        SHA="${{ github.sha }}"
+        WORKFLOW="${{ github.workflow }}"
+
+        uv run python -c "
+        import json, os, sys
+
+        metadata = {
+            'agent_name': '${AGENT}',
+            'evaluation_tier': '${TIER}',
+            'pr_number': int('${PR}') if '${PR}' != '0' else None,
+            'run_id': '${RUN_ID}',
+            'commit_sha': '${SHA}',
+            'workflow': '${WORKFLOW}',
+            'timestamp_utc': '${TIMESTAMP}',
+            'retention_days': int('${RESOLVED_RETENTION}'),
+            'artifact_files': {
+                'report_json': '${EFFECTIVE_REPORT_JSON}',
+                'report_markdown': '${EFFECTIVE_REPORT_MD}',
+                'raw_results': '${EFFECTIVE_RAW_RESULTS}',
+            },
+        }
+
+        # Attempt to embed the verdict from the JSON report if available
+        report_json_path = '${EFFECTIVE_REPORT_JSON}'
+        if report_json_path:
+            try:
+                with open(report_json_path) as f:
+                    report = json.load(f)
+                metadata['overall_verdict'] = report.get('overall_verdict', 'UNKNOWN')
+                metadata['p_value'] = report.get('p_value')
+                metadata['mean_score_a'] = report.get('mean_a')
+                metadata['mean_score_b'] = report.get('mean_b')
+            except Exception:
+                metadata['overall_verdict'] = 'UNKNOWN'
+        else:
+            metadata['overall_verdict'] = 'UNKNOWN'
+
+        os.makedirs('tests/prompt-regression/results', exist_ok=True)
+        output_path = f'tests/prompt-regression/results/metadata-${AGENT}.json'
+        with open(output_path, 'w') as f:
+            json.dump(metadata, f, indent=2)
+        print(f'Metadata record written: {output_path}')
+        print(f'Verdict: {metadata.get(\"overall_verdict\", \"UNKNOWN\")}')
+        " 2>/dev/null || echo "::warning::Could not generate metadata record"
+
+    # ==========================================================================
+    # Step 3: Upload all artifacts with tier-appropriate retention
+    # ==========================================================================
+    - name: Upload JSON regression report
+      if: env.EFFECTIVE_REPORT_JSON != ''
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449bea1e5c8c7e45e428  # v4.6.2
+      with:
+        name: regression-report-json-${{ env.RESOLVED_AGENT }}-${{ inputs.evaluation_tier }}-run${{ env.RESOLVED_RUN_ID }}
+        path: ${{ env.EFFECTIVE_REPORT_JSON }}
+        if-no-files-found: warn
+        retention-days: ${{ env.RESOLVED_RETENTION }}
+
+    - name: Upload Markdown regression report
+      if: env.EFFECTIVE_REPORT_MD != ''
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449bea1e5c8c7e45e428  # v4.6.2
+      with:
+        name: regression-report-md-${{ env.RESOLVED_AGENT }}-${{ inputs.evaluation_tier }}-run${{ env.RESOLVED_RUN_ID }}
+        path: ${{ env.EFFECTIVE_REPORT_MD }}
+        if-no-files-found: warn
+        retention-days: ${{ env.RESOLVED_RETENTION }}
+
+    - name: Upload raw evaluation results
+      if: env.EFFECTIVE_RAW_RESULTS != ''
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449bea1e5c8c7e45e428  # v4.6.2
+      with:
+        name: raw-results-${{ env.RESOLVED_AGENT }}-${{ inputs.evaluation_tier }}-run${{ env.RESOLVED_RUN_ID }}
+        path: ${{ env.EFFECTIVE_RAW_RESULTS }}
+        if-no-files-found: warn
+        retention-days: ${{ env.RESOLVED_RETENTION }}
+
+    - name: Upload artifact metadata (MC-37 audit trail)
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449bea1e5c8c7e45e428  # v4.6.2
+      with:
+        name: evaluation-metadata-${{ env.RESOLVED_AGENT }}-${{ inputs.evaluation_tier }}-run${{ env.RESOLVED_RUN_ID }}
+        path: tests/prompt-regression/results/metadata-${{ env.RESOLVED_AGENT }}.json
+        if-no-files-found: warn
+        retention-days: ${{ env.RESOLVED_RETENTION }}
+
+    # ==========================================================================
+    # Step 4: Post regression report as PR comment (FR-018, MC-30)
+    # ==========================================================================
+    - name: Post regression report to PR (FR-018, MC-30)
+      if: inputs.pr_number != '0'
+      uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea  # v7.0.1
+      with:
+        script: |
+          const agent = process.env.RESOLVED_AGENT;
+          const tier = '${{ inputs.evaluation_tier }}';
+          const prNumber = parseInt('${{ inputs.pr_number }}');
+          const runId = process.env.RESOLVED_RUN_ID || '${{ github.run_id }}';
+          const retentionDays = process.env.RESOLVED_RETENTION || '${{ inputs.retention_days }}';
+          const fs = require('fs');
+
+          // Read the Markdown report if available (use effective path)
+          const reportMdPath = process.env.EFFECTIVE_REPORT_MD;
+          let reportBody = '';
+          if (reportMdPath) {
+            try {
+              reportBody = fs.readFileSync(reportMdPath, 'utf8');
+            } catch (e) {
+              reportBody = `_Report file not available at ${reportMdPath}: ${e.message}_`;
+            }
+          }
+
+          // Read verdict from JSON if available for the comment header
+          const reportJsonPath = process.env.EFFECTIVE_REPORT_JSON;
+          let verdict = 'UNKNOWN';
+          let pValue = null;
+          if (reportJsonPath) {
+            try {
+              const reportJson = JSON.parse(fs.readFileSync(reportJsonPath, 'utf8'));
+              verdict = reportJson.overall_verdict || 'UNKNOWN';
+              pValue = reportJson.p_value;
+            } catch (e) {
+              // JSON not available; use Markdown only
+            }
+          }
+
+          const verdictIcon = verdict === 'NO_REGRESSION'
+            ? ':white_check_mark:'
+            : verdict === 'REGRESSION'
+              ? ':x:'
+              : verdict === 'MARGINAL'
+                ? ':warning:'
+                : ':grey_question:';
+
+          const pValueStr = pValue !== null
+            ? ` (p=${typeof pValue === 'number' ? pValue.toFixed(4) : pValue})`
+            : '';
+
+          const comment = [
+            `## Prompt Regression Report — \`${agent}\` (${tier} tier)`,
+            '',
+            `**Verdict:** ${verdictIcon} ${verdict}${pValueStr}`,
+            `**Tier:** ${tier} (${tier === 'standard' ? 'N=10' : tier === 'full' ? 'N=30' : 'N=1 structural'})`,
+            `**Run ID:** [${runId}](https://github.com/${{ github.repository }}/actions/runs/${runId})`,
+            '',
+            '---',
+            '',
+            reportBody.length > 0 ? reportBody : '_Detailed report not available — see workflow artifacts._',
+            '',
+            `---`,
+            `*Evaluation artifacts retained for ${retentionDays} days.*`,
+            `*Statistical analysis: Wilcoxon signed-rank + Wilson CIs + Bonferroni correction (FR-015, FR-016, FR-017)*`,
+          ].join('\n');
+
+          // MC-30: Post as PR comment (persistent beyond artifact retention period)
+          await github.rest.issues.createComment({
+            issue_number: prNumber,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment,
+          });
+
+          console.log(`Posted regression report for ${agent} (${tier}) to PR #${prNumber}`);
+
+    # ==========================================================================
+    # Step 5: Write step summary for non-PR contexts (scheduled/manual Full runs)
+    # ==========================================================================
+    - name: Write evaluation result to step summary (non-PR context)
+      if: inputs.pr_number == '0'
+      shell: bash
+      run: |
+        AGENT="${RESOLVED_AGENT}"
+        TIER="${{ inputs.evaluation_tier }}"
+        RETENTION="${RESOLVED_RETENTION}"
+        RUN_ID="${RESOLVED_RUN_ID}"
+
+        # Read verdict from JSON report if available (use effective path)
+        REPORT_JSON="${EFFECTIVE_REPORT_JSON}"
+        VERDICT=$(uv run python -c "
+        import json, sys
+        path = '${REPORT_JSON}'
+        if not path:
+            print('UNKNOWN')
+            sys.exit(0)
+        try:
+            with open(path) as f:
+                data = json.load(f)
+            print(data.get('overall_verdict', 'UNKNOWN'))
+        except Exception:
+            print('UNKNOWN')
+        " 2>/dev/null || echo "UNKNOWN")
+
+        case "${VERDICT}" in
+          NO_REGRESSION) ICON=":white_check_mark:" ;;
+          REGRESSION)    ICON=":x:" ;;
+          MARGINAL)      ICON=":warning:" ;;
+          *)             ICON=":grey_question:" ;;
+        esac
+
+        cat >> "$GITHUB_STEP_SUMMARY" << EOF
+
+        ## Regression Report: ${AGENT} (${TIER})
+
+        **Verdict:** ${ICON} ${VERDICT}
+        **Tier:** ${TIER}
+        **Run ID:** ${RUN_ID}
+        **Retention:** ${RETENTION} days
+
+        See workflow artifacts for full report with p-values, Wilson confidence intervals,
+        and Bonferroni correction disclosure (FR-015, FR-016, FR-017).
+        EOF
