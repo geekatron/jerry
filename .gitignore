@@ -66,3 +66,10 @@ logs/hook-errors.log
 
 # Claude Code worktrees (local-only, should not be committed)
 .claude/worktrees/
+.worktrees/
+
+# Hypothesis (property-based testing state)
+.hypothesis/
+
+# Temp coverage config files
+.coveragerc-*
