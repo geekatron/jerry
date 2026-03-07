@@ -1,0 +1,568 @@
+# Test Cases: adv-scorer
+# PROJ-036 Prompt Regression Harness — Layer 1 (promptfoo CI/CD Gate)
+#
+# Agent: adv-scorer (adversary skill, systematic cognitive mode)
+# Agent definition: skills/adversary/agents/adv-scorer.md
+# Baseline prompts: baselines/prompts/adv-scorer-prompts.yaml
+#
+# Purpose: Regression test cases for adv-scorer covering:
+#   - Numeric score in [0.0, 1.0] for all 6 dimensions (SI-SCOR-001, SI-SCOR-010)
+#   - All 6 S-014 dimension names present (SI-SCOR-002)
+#   - Weighted composite matches dimension scores within tolerance (SI-SCOR-003)
+#   - PASS/REVISE/REJECTED classification present (SI-SCOR-004)
+#   - Score band classification rules enforced (SI-SCOR-005 through SI-SCOR-007)
+#   - Rationale for each dimension score (SI-SCOR-008)
+#   - Minimum output length >= 300 characters (SI-SCOR-009)
+#   - Anti-leniency protocol application
+#   - Calibration anchor usage (0.50, 0.70, 0.85, 0.92, 1.00)
+#   - Quality floor: overall >= 0.90 (behavioral-contracts.md Section B.3 — highest floor)
+#
+# Design note: adv-scorer is a standalone scorer (not iterative like ps-critic).
+# Fixture artifacts span the score spectrum to detect regression across all bands:
+#   - Clearly weak artifact (should score < 0.85 = REJECTED)
+#   - Near-threshold artifact (should score 0.85-0.91 = REVISE)
+#   - Missing-dimension artifact (tests completeness check)
+#   - High-quality artifact (leniency temptation test)
+#   - Custom dimension weighting task (tests flexibility)
+#
+# Structural invariants tested per behavioral-contracts.md Section A.6:
+#   SI-SCOR-001: Numeric score in [0.0, 1.0]
+#   SI-SCOR-002: All 6 dimension names present
+#   SI-SCOR-003: Composite matches dimension scores within 0.01 tolerance
+#   SI-SCOR-004: PASS, REVISE, or REJECTED present
+#   SI-SCOR-005: PASS only when composite >= 0.92
+#   SI-SCOR-006: REVISE only when 0.85 <= composite < 0.92
+#   SI-SCOR-007: REJECTED only when composite < 0.85
+#   SI-SCOR-008: Rationale for each dimension
+#   SI-SCOR-009: Output length >= 300 characters
+#   SI-SCOR-010: All dimension scores in [0.0, 1.0]
+#
+# FR traceability:
+#   FR-001: Declarative YAML test case definitions with assertion config
+#   FR-008: Deterministic property assertions
+
+providers:
+  - id: anthropic:messages:claude-sonnet-4-20250514
+    config:
+      apiKey: env:ANTHROPIC_API_KEY
+      temperature: 0.0
+      max_tokens: 4096
+
+prompts:
+  - label: "adv-scorer system prompt"
+    raw: "file://skills/adversary/agents/adv-scorer.md"
+
+tests:
+  # ----------------------------------------------------------------------------
+  # P-ADVS-001: Score a clearly weak artifact (should classify as REJECTED)
+  # Fixture: Stub research artifact with no L1/L2, no citations, generic content
+  # Expected: REJECTED (composite < 0.85)
+  # Tests: REJECTED band detection, anti-leniency on weak content
+  # Quality floor: internal_consistency >= 0.88 (arithmetic must be correct)
+  # ----------------------------------------------------------------------------
+  - description: "P-ADVS-001: Score clearly weak artifact — expect REJECTED classification"
+    vars:
+      system_prompt: "file://skills/adversary/agents/adv-scorer.md"
+      agent_id: "adv-scorer"
+      prompt_id: "P-ADVS-001"
+    input: |
+      Score the following artifact using the S-014 LLM-as-Judge rubric.
+
+      Apply the SSOT 6-dimension weights from quality-enforcement.md:
+      - Completeness (0.20)
+      - Internal Consistency (0.20)
+      - Methodological Rigor (0.20)
+      - Evidence Quality (0.15)
+      - Actionability (0.15)
+      - Traceability (0.10)
+
+      Apply calibration anchors: 0.50 (poor), 0.70 (below threshold), 0.85 (threshold), 0.92 (passing), 1.00 (exemplary)
+      Apply anti-leniency: when uncertain between two scores, choose the lower. Document the choice.
+
+      For each dimension: (1) state numeric score, (2) cite textual evidence, (3) note any leniency temptation.
+      Compute weighted composite. Classify: PASS (>= 0.92), REVISE (0.85-0.91), REJECTED (< 0.85).
+
+      ---
+      ARTIFACT:
+
+      ## Summary
+
+      I researched LLM evaluation frameworks. There are several options available.
+      DeepEval and promptfoo are popular choices. Both have pros and cons.
+      Engineers should consider their needs when choosing.
+
+      ---
+      END ARTIFACT
+    assert:
+      # Structural: minimum output length (SI-SCOR-009)
+      - type: javascript
+        value: "output.length >= 300"
+        metric: structural/min_length_300
+
+      # Structural: all 6 dimension names present (SI-SCOR-002)
+      - type: icontains
+        value: "Completeness"
+        metric: structural/completeness_present
+
+      - type: icontains
+        value: "Internal Consistency"
+        metric: structural/internal_consistency_present
+
+      - type: icontains
+        value: "Methodological Rigor"
+        metric: structural/methodological_rigor_present
+
+      - type: icontains
+        value: "Evidence Quality"
+        metric: structural/evidence_quality_present
+
+      - type: icontains
+        value: "Actionability"
+        metric: structural/actionability_present
+
+      - type: icontains
+        value: "Traceability"
+        metric: structural/traceability_present
+
+      # Structural: classification present (SI-SCOR-004)
+      - type: icontains-any
+        value:
+          - "PASS"
+          - "REVISE"
+          - "REJECTED"
+        metric: structural/classification_present
+
+      # Expected band: REJECTED (artifact is clearly below 0.85)
+      - type: icontains
+        value: "REJECTED"
+        metric: structural/rejected_classification
+
+      # Numeric scores present (SI-SCOR-001) — at least one decimal score
+      - type: regex
+        value: "0\\.[0-9]{1,2}"
+        metric: structural/numeric_scores_present
+
+      # G-Eval: calibration anchor usage + anti-leniency application
+      - type: llm-rubric
+        value: |
+          The output scores all 6 SSOT dimensions with numeric scores.
+          Dimension scores are low (most below 0.70) reflecting the clearly weak artifact.
+          Evidence Quality should be very low (< 0.40) because the artifact cites no sources.
+          Completeness should be low (< 0.60) because only a stub summary is present without L1/L2.
+          The weighted composite is below 0.85 and REJECTED is correctly classified.
+          Calibration anchors (0.50, 0.70, 0.85, 0.92, 1.00) are referenced for at least 2 dimensions.
+          Anti-leniency protocol is applied: lower scores chosen when uncertain.
+          Score >= 0.88 required for methodological_rigor (systematic rubric application).
+        threshold: 0.88
+        metric: quality/methodological_rigor
+
+  # ----------------------------------------------------------------------------
+  # P-ADVS-002: Score a near-threshold artifact (should classify as REVISE)
+  # Fixture: Good analysis with one weak dimension (missing actionable recommendations)
+  # Expected: REVISE (composite 0.85-0.91)
+  # Tests: score band discrimination near the threshold
+  # Quality floor: internal_consistency >= 0.88 (arithmetic correctness critical)
+  # ----------------------------------------------------------------------------
+  - description: "P-ADVS-002: Score near-threshold artifact — expect REVISE classification"
+    vars:
+      system_prompt: "file://skills/adversary/agents/adv-scorer.md"
+      agent_id: "adv-scorer"
+      prompt_id: "P-ADVS-002"
+    input: |
+      Score the following artifact using the S-014 LLM-as-Judge rubric.
+
+      SSOT dimension weights: Completeness (0.20), Internal Consistency (0.20),
+      Methodological Rigor (0.20), Evidence Quality (0.15), Actionability (0.15), Traceability (0.10)
+
+      Calibration anchors: 0.50 (poor), 0.70 (below threshold), 0.85 (threshold), 0.92 (passing), 1.00 (exemplary)
+      Anti-leniency: choose lower score when uncertain; document the choice.
+
+      Per dimension: state score, cite textual evidence, note leniency temptation if present.
+      Compute weighted composite. Classify: PASS (>= 0.92), REVISE (0.85-0.91), REJECTED (< 0.85).
+
+      ---
+      ARTIFACT:
+
+      ## L0: Summary
+
+      This analysis compares three statistical methods for LLM regression testing.
+      The Wilcoxon signed-rank test is recommended for paired comparisons of quality score distributions.
+
+      ## L1: Technical Analysis
+
+      Three statistical approaches were evaluated:
+
+      **Option A: Wilcoxon signed-rank test**
+      Assumptions: paired samples, ordinal or continuous measurement, independence between pairs.
+      For LLM quality scores: pairs are formed by running both prompt versions on the same input.
+      The test is non-parametric and robust to non-normal distributions.
+      Minimum N: approximately 25-30 per group for 80% power at effect size 0.05.
+
+      **Option B: Student's t-test (paired)**
+      Assumes normality of difference scores. May be invalid for bounded quality scores [0,1].
+      Less robust than Wilcoxon for small N or extreme proportions.
+
+      **Option C: Mann-Whitney U test**
+      Appropriate for independent samples. Less powerful than Wilcoxon for paired data.
+      Should be used only when pairing is not possible.
+
+      The Wilcoxon test is recommended because it is non-parametric, handles the bounded
+      score range [0,1] without assumptions, and is more powerful than Mann-Whitney U for paired data.
+
+      ## L2: Strategic Implications
+
+      For a multi-metric framework (6 dimensions), Bonferroni correction reduces alpha to 0.0083.
+      This increases the risk of Type II error (missed regressions) when effect sizes are small.
+      Future consideration: False Discovery Rate (FDR) control as an alternative to Bonferroni.
+
+      ---
+      END ARTIFACT
+    assert:
+      - type: javascript
+        value: "output.length >= 300"
+        metric: structural/min_length_300
+
+      - type: icontains
+        value: "Completeness"
+        metric: structural/completeness_present
+
+      - type: icontains
+        value: "Actionability"
+        metric: structural/actionability_present
+
+      # Classification must be REVISE or PASS (should be REVISE — artifact is good but not great)
+      - type: icontains-any
+        value:
+          - "REVISE"
+          - "PASS"
+        metric: structural/revise_or_pass_classification
+
+      # Numeric scores present
+      - type: regex
+        value: "0\\.[0-9]{1,2}"
+        metric: structural/numeric_scores_present
+
+      - type: llm-rubric
+        value: |
+          The output scores all 6 SSOT dimensions with numeric scores and textual evidence.
+          The artifact has strong Completeness, Internal Consistency, Methodological Rigor, and Traceability.
+          Actionability should be scored conservatively (0.70-0.85): the artifact identifies the recommended
+          method but does not provide specific implementation guidance (no code, no exact function calls).
+          The weighted composite should fall in the REVISE band (0.85-0.91).
+          If REVISE is classified, it is correctly because Actionability limits the composite below 0.92.
+          Arithmetic is verified and correct.
+          Score >= 0.88 required for internal_consistency (arithmetic is the core test).
+        threshold: 0.88
+        metric: quality/internal_consistency
+
+  # ----------------------------------------------------------------------------
+  # P-ADVS-003: Score an artifact missing required dimensions
+  # Fixture: Partial analysis missing Evidence Quality and Traceability content
+  # Tests: completeness detection, dimension-specific score differentiation
+  # Expected: REJECTED (missing content pulls Completeness and Evidence Quality low)
+  # Quality floor: completeness >= 0.88 (all 6 dimensions scored = structural requirement)
+  # ----------------------------------------------------------------------------
+  - description: "P-ADVS-003: Score artifact missing Evidence Quality and Traceability content"
+    vars:
+      system_prompt: "file://skills/adversary/agents/adv-scorer.md"
+      agent_id: "adv-scorer"
+      prompt_id: "P-ADVS-003"
+    input: |
+      Score the following artifact using the S-014 LLM-as-Judge rubric.
+
+      SSOT dimension weights: Completeness (0.20), Internal Consistency (0.20),
+      Methodological Rigor (0.20), Evidence Quality (0.15), Actionability (0.15), Traceability (0.10)
+
+      Calibration anchors: 0.50, 0.70, 0.85, 0.92, 1.00
+      Anti-leniency protocol applies. Compute composite. Classify band.
+
+      ---
+      ARTIFACT:
+
+      ## L0: Summary
+
+      My recommendation is to use the Wilcoxon signed-rank test for regression detection
+      in prompt evaluation systems.
+
+      ## L1: Analysis
+
+      I analyzed several statistical methods. Based on my analysis, Wilcoxon is best because:
+      - It does not assume normality
+      - It works with paired data
+      - It is commonly used in practice
+
+      The minimum sample size should be at least 20 per group.
+      For multiple metrics, apply Bonferroni correction.
+
+      ## L2: Implications
+
+      This approach is scalable to many quality dimensions.
+      It provides a principled way to detect regressions.
+
+      ---
+      END ARTIFACT
+    assert:
+      - type: javascript
+        value: "output.length >= 300"
+        metric: structural/min_length_300
+
+      - type: icontains
+        value: "Evidence Quality"
+        metric: structural/evidence_quality_present
+
+      - type: icontains
+        value: "Traceability"
+        metric: structural/traceability_present
+
+      - type: icontains-any
+        value:
+          - "PASS"
+          - "REVISE"
+          - "REJECTED"
+        metric: structural/classification_present
+
+      # Expected REJECTED: no citations, claims unsupported, vague methodology
+      - type: icontains
+        value: "REJECTED"
+        metric: structural/rejected_classification
+
+      - type: llm-rubric
+        value: |
+          Evidence Quality should be scored very low (< 0.50): no sources are cited,
+          claims like "commonly used in practice" and "my analysis" have no attribution.
+          Traceability should be scored low (< 0.60): no claim traces to a specific source.
+          Methodological Rigor is moderate (0.65-0.75): correct methodology mentioned but N derivation has no basis.
+          The composite should fall below 0.85 (REJECTED band).
+          All 6 dimensions are scored with specific evidence from the artifact.
+          Score >= 0.88 required for completeness (systematic rubric coverage).
+        threshold: 0.88
+        metric: quality/completeness
+
+  # ----------------------------------------------------------------------------
+  # P-ADVS-004: Score a high-quality artifact (leniency temptation test)
+  # Fixture: Comprehensive, well-cited research with strong evidence and L0/L1/L2
+  # Tests: resistance to leniency bias when artifact is genuinely good
+  # Expected: PASS (composite >= 0.92) but with at least one non-perfect dimension
+  # Quality floor: internal_consistency >= 0.88 (arithmetic), methodological_rigor >= 0.88
+  # ----------------------------------------------------------------------------
+  - description: "P-ADVS-004: Score high-quality artifact — test resistance to leniency inflation"
+    vars:
+      system_prompt: "file://skills/adversary/agents/adv-scorer.md"
+      agent_id: "adv-scorer"
+      prompt_id: "P-ADVS-004"
+    input: |
+      Score the following artifact using the S-014 LLM-as-Judge rubric.
+
+      SSOT dimension weights: Completeness (0.20), Internal Consistency (0.20),
+      Methodological Rigor (0.20), Evidence Quality (0.15), Actionability (0.15), Traceability (0.10)
+
+      Calibration anchors: 0.50, 0.70, 0.85, 0.92, 1.00
+      Anti-leniency: resist the temptation to assign uniformly high scores even for good artifacts.
+      Find and score at least one genuine weakness per artifact, even if minor.
+
+      ---
+      ARTIFACT:
+
+      ## L0: Executive Summary
+
+      This analysis establishes N=30 as the minimum sample size for statistically valid
+      regression detection in LLM prompt evaluation. N=30 satisfies three independent statistical
+      requirements: central limit theorem convergence, Wilcoxon signed-rank test power requirements
+      (Cohen's d=0.5, alpha=0.05, 80% power), and minimum paired sample requirements.
+
+      ## L1: Technical Derivation
+
+      **Requirement 1 — CLT Convergence:** The Central Limit Theorem guarantees approximately
+      normal sampling distribution of the mean for N >= 30 (Berry-Esseen theorem; Berry, 1941).
+      For quality scores bounded in [0,1], convergence is faster than for unbounded distributions.
+
+      **Requirement 2 — Wilcoxon Power Analysis:** For Cohen's d=0.5 (medium effect size) and
+      alpha=0.05 with 80% power, the t-test requires N=26 per group. The relative Pitman efficiency
+      of the Wilcoxon test vs. t-test is 0.955 for normal alternatives (Hollander & Wolfe, 1999),
+      giving N_Wilcoxon = ceil(26 / 0.955) = 28. We round to 30 for robustness.
+
+      **Requirement 3 — Paired Sample Minimum:** Paired Wilcoxon requires at minimum N=20 for
+      reliable p-value estimation (Conover, 1999). N=30 exceeds this minimum with a 50% buffer.
+
+      **Implementation:**
+      ```python
+      from scipy import stats
+      # N per version must be >= 30 for Full tier
+      assert len(scores_a) >= 30, "Insufficient samples for Full tier statistical analysis"
+      result = stats.wilcoxon(scores_a, scores_b, alternative='less')
+      # Bonferroni correction for K=6 quality dimensions
+      alpha_corrected = 0.05 / 6  # = 0.0083
+      regression_detected = result.pvalue < alpha_corrected
+      ```
+
+      ## L2: Strategic Implications
+
+      N=30 per version represents a practical minimum, not an optimum. For effect sizes smaller
+      than Cohen's d=0.5, higher N is required. A sensitivity analysis shows:
+      - d=0.2 (small effect): requires N=197 per group (80% power)
+      - d=0.5 (medium effect): requires N=34 per group (90% power)
+
+      The choice of N=30 accepts a tradeoff: it detects medium-or-larger regressions with high confidence
+      but may miss subtle regressions (d < 0.3). This tradeoff is appropriate for routine PR-level checking.
+
+      **References:**
+      - Berry, A.C. (1941). The accuracy of the Gaussian approximation. Transactions of the American Mathematical Society.
+      - Hollander, M. & Wolfe, D.A. (1999). Nonparametric Statistical Methods. Wiley.
+      - Conover, W.J. (1999). Practical Nonparametric Statistics. Wiley.
+
+      ---
+      END ARTIFACT
+    assert:
+      - type: javascript
+        value: "output.length >= 300"
+        metric: structural/min_length_300
+
+      - type: icontains
+        value: "Evidence Quality"
+        metric: structural/evidence_quality_present
+
+      - type: icontains
+        value: "Actionability"
+        metric: structural/actionability_present
+
+      # Expected: PASS or REVISE (artifact is high quality)
+      - type: icontains-any
+        value:
+          - "PASS"
+          - "REVISE"
+        metric: structural/pass_or_revise_classification
+
+      # Numeric scores present
+      - type: regex
+        value: "0\\.[0-9]{1,2}"
+        metric: structural/numeric_scores_present
+
+      # SI-SCOR-011: Uniformly high scores must be justified by evidence
+      - type: llm-rubric
+        value: |
+          The output scores all 6 dimensions. The artifact is genuinely high quality, so high
+          scores (>= 0.90) are expected and appropriate when evidence supports them.
+          However, the adv-scorer must resist leniency inflation: at least one dimension
+          should be scored below 0.95 with specific justification.
+          Actionability is a candidate for conservative scoring: the sensitivity analysis says
+          d=0.5 requires N=34 (90% power) while the recommendation uses N=30 — a discrepancy
+          worth noting as an actionability gap.
+          If all scores are >= 0.95 without specific artifact-based evidence for each, that
+          constitutes leniency inflation (SI-SCOR-011 warning).
+          Score >= 0.88 required for methodological_rigor.
+        threshold: 0.88
+        metric: quality/methodological_rigor
+
+  # ----------------------------------------------------------------------------
+  # P-ADVS-005: Score with custom dimension weighting (ADV CONTEXT block)
+  # Tests: custom weight parsing, flexible rubric application, weight sum validation
+  # Expected: Any band determined by the scoring (tests rubric flexibility)
+  # Quality floor: completeness >= 0.88, internal_consistency >= 0.88
+  # ----------------------------------------------------------------------------
+  - description: "P-ADVS-005: Score with custom ADV CONTEXT block and non-standard dimension weights"
+    vars:
+      system_prompt: "file://skills/adversary/agents/adv-scorer.md"
+      agent_id: "adv-scorer"
+      prompt_id: "P-ADVS-005"
+    input: |
+      Score the following artifact. Use the custom dimensions and weights provided in the ADV CONTEXT block.
+      Override the SSOT default dimensions for this evaluation only.
+
+      ADV CONTEXT:
+      evaluation_type: "security_analysis"
+      custom_dimensions:
+        - name: "Threat Coverage"
+          weight: 0.30
+          description: "Fraction of STRIDE categories addressed with specific controls"
+        - name: "Control Specificity"
+          weight: 0.25
+          description: "Specificity of proposed security controls (generic vs. implementation-ready)"
+        - name: "Risk Quantification"
+          weight: 0.20
+          description: "Presence of quantified risk estimates (likelihood, impact, RPN)"
+        - name: "Evidence Basis"
+          weight: 0.15
+          description: "Claims supported by reference to known threat patterns or CVE data"
+        - name: "Mitigation Actionability"
+          weight: 0.10
+          description: "Mitigations specific enough to implement without further research"
+      calibration_anchors: [0.50, 0.70, 0.85, 0.92, 1.00]
+      pass_threshold: 0.92
+      END ADV CONTEXT
+
+      Score each custom dimension. Verify custom weights sum to 1.0.
+      Compute weighted composite. Classify: PASS (>= 0.92), REVISE (0.85-0.91), REJECTED (< 0.85).
+
+      ---
+      ARTIFACT:
+
+      ## Security Analysis: CI/CD Pipeline for Prompt Testing
+
+      The CI/CD pipeline faces the following threats:
+      - T-01 (Spoofing): Forked PRs could inject malicious workflow files → Control: pull_request event (not pull_request_target), branch protection rules
+      - T-02 (Tampering): YAML test inputs could contain prompt injection → Control: input validation against JSON schema before promptfoo execution
+      - T-03 (Information Disclosure): API key exposure in logs → Control: GitHub Secrets + log masking; never print key values
+      - T-04 (Denial of Service): LLM API cost overrun → Control: per-test cost threshold; rate limiting; tiered evaluation modes
+
+      Risk estimates:
+      - T-01 Likelihood: Medium (3/5), Impact: High (4/5), RPN = 12
+      - T-02 Likelihood: Low (2/5), Impact: High (4/5), RPN = 8
+      - T-03 Likelihood: Low (2/5), Impact: Critical (5/5), RPN = 10
+      - T-04 Likelihood: Medium (3/5), Impact: Low (2/5), RPN = 6
+
+      STRIDE categories not addressed in this analysis: Repudiation, Elevation of Privilege.
+
+      ---
+      END ARTIFACT
+    assert:
+      - type: javascript
+        value: "output.length >= 300"
+        metric: structural/min_length_300
+
+      # Custom dimension names must appear in output
+      - type: icontains
+        value: "Threat Coverage"
+        metric: structural/threat_coverage_dimension
+
+      - type: icontains
+        value: "Control Specificity"
+        metric: structural/control_specificity_dimension
+
+      - type: icontains
+        value: "Risk Quantification"
+        metric: structural/risk_quantification_dimension
+
+      # Classification present
+      - type: icontains-any
+        value:
+          - "PASS"
+          - "REVISE"
+          - "REJECTED"
+        metric: structural/classification_present
+
+      # Weight sum validation: 0.30+0.25+0.20+0.15+0.10 = 1.00
+      - type: icontains-any
+        value:
+          - "1.00"
+          - "1.0"
+          - "sum to 1"
+          - "weights sum"
+        metric: structural/weight_sum_validated
+
+      # Numeric scores present
+      - type: regex
+        value: "0\\.[0-9]{1,2}"
+        metric: structural/numeric_scores_present
+
+      - type: llm-rubric
+        value: |
+          The output applies the custom ADV CONTEXT dimensions correctly, replacing the SSOT defaults.
+          All 5 custom dimensions are scored with numeric values and textual evidence.
+          Custom dimension weights are verified to sum to 1.0 (0.30+0.25+0.20+0.15+0.10=1.00).
+          The artifact's gaps are identified: Repudiation and Elevation of Privilege not addressed
+          (STRIDE coverage is incomplete — should reduce Threat Coverage score).
+          Weighted composite is correctly calculated using custom weights.
+          Score band classification is consistent with the computed composite.
+          Score >= 0.88 required for completeness (all custom dimensions scored systematically).
+        threshold: 0.88
+        metric: quality/completeness

@@ -1,0 +1,289 @@
+# ps-architect Canonical Test Prompts
+# PROJ-036 Baseline Capture -- Stream 1C
+#
+# These prompts exercise ps-architect's core competencies:
+#   - Nygard ADR format (Status, Context, Decision, Consequences)
+#   - Multi-option comparison with steelman analysis (S-003, H-16)
+#   - Weighted evaluation matrices with dimension justification
+#   - Long-term architectural implications (L2 section)
+#   - Evidence-based rationale with explicit trade-off documentation
+#   - Negative consequences disclosed (P-022 compliance)
+#
+# A degraded ps-architect produces an ADR missing required Nygard sections,
+# fails to steelman rejected options, or omits negative consequences.
+# A strong ps-architect produces a complete ADR with weighted options matrix,
+# steelmanned alternatives, and L2 architectural implications with evolution path.
+#
+# Note: ps-architect uses Claude Opus model. 4 prompts (not 5) to manage cost.
+#
+# BEHAVIOR ID CONVENTION:
+#   Behavior IDs (B-001 through B-005 per prompt) are prompt-scoped identifiers.
+#   They cross-reference behavioral contracts in:
+#   projects/PROJ-036-prompt-regression-harness/contracts/behavioral-contracts.md
+#   Mapping: Nygard format compliance -> Section A.2 (ps-architect invariants);
+#            steelman behaviors -> Section B (quality bounds: methodological_rigor);
+#            negative consequence disclosure -> Section A (Structural Invariants, P-022).
+#
+# G-EVAL CRITERIA:
+#   DeepEval G-Eval evaluates each run against the following criteria strings.
+#   These strings are the exact text passed to DeepEval's GEval metric constructor
+#   as the `criteria` parameter.
+
+agent: "ps-architect"
+system_prompt_path: "skills/problem-solving/agents/ps-architect.md"
+
+# G-Eval evaluation criteria (passed to DeepEval GEval metric as `criteria` parameter)
+# Applied to ALL prompts for this agent unless overridden at the prompt level.
+g_eval_criteria:
+  completeness: >
+    The output is a complete Nygard ADR containing all required sections: Status, Context,
+    Decision, and Consequences (with both Positive and Negative subsections for the chosen
+    option). A weighted evaluation matrix is present with scores and computed totals for
+    all specified dimensions and options. An L2 architectural implications section is present
+    and substantive (at least 2 paragraphs). Score 0.0 if any major section is absent.
+  internal_consistency: >
+    The decision stated in the Decision section is consistent with the highest weighted
+    total in the evaluation matrix. Weighted totals are arithmetically correct using
+    the stated dimension weights. The recommendation in L0 (if present) is consistent
+    with the Decision section. No option is recommended that scores lower than alternatives
+    without explicit explanation. Score 0.0 if the recommendation contradicts the matrix totals.
+  methodological_rigor: >
+    Both (or all) options are steelmanned before evaluation -- the strongest case for
+    each option is presented before critique. The evaluation matrix dimensions are applied
+    consistently across all options. Sensitivity analysis is included when requested.
+    The constraint most strongly influencing the recommendation is identified. Score
+    proportionally for methodology application quality.
+  evidence_quality: >
+    Evaluation scores in the weighted matrix are accompanied by specific reasoning
+    referencing the option's properties (not generic "option A is better"). Architectural
+    constraints (H-05, H-07, etc.) are cited where applicable. Claims about performance
+    or cost are sourced or derived. Score proportionally for reasoning specificity.
+  actionability: >
+    The decision is specific enough to implement: the chosen option is named, the rationale
+    is clear, and the key trade-off is identified. Evolution path or review triggers are
+    specified for decisions with known future evolution. Negative consequences are documented
+    with enough specificity to plan mitigations. Score 0.0 if the decision is vague.
+  traceability: >
+    Architectural constraints (H-05, H-07, etc.) are explicitly referenced by ID where
+    relevant. The decision traces back to the stated forces and context. L2 implications
+    trace to specific L1 analysis findings. Evolution triggers reference specific conditions
+    (not generic "when things change"). Score proportionally for traceability coverage.
+
+prompts:
+  - id: "P-PAC-001"
+    description: "Standard ADR production with 2 options and steelman -- tests complete Nygard format compliance"
+    # Behavior IDs cross-reference:
+    #   B-001 -> behavioral-contracts.md Section A.2 (ps-architect invariant: complete Nygard sections)
+    #   B-002 -> behavioral-contracts.md Section B (quality bounds: methodological_rigor, steelman both)
+    #   B-003 -> behavioral-contracts.md Section A (Structural Invariant: weighted matrix with computed totals)
+    #   B-004 -> behavioral-contracts.md Section A (Structural Invariant: negative consequences P-022)
+    #   B-005 -> behavioral-contracts.md Section A.1 (structural invariant: L2 architectural evolution)
+    user_prompt: |
+      Produce an Architectural Decision Record (ADR) for the following decision:
+
+      DECISION CONTEXT:
+      The PROJ-036 prompt regression harness needs to store N=30 baseline run records
+      for 5 agents x 5 prompts = up to 25 prompt/agent pairs. Each run record is approximately
+      5-15 KB of JSON. Total storage: ~4 MB per baseline capture. Baselines need to be:
+      - Version-controlled alongside the agent definition files they reference
+      - Queryable by agent name and prompt ID for statistical comparison
+      - Portable across developer machines without a database server
+
+      Two options to evaluate:
+
+      Option A: JSON files on disk
+      - One JSON file per run record in a structured directory hierarchy
+      - Directory format: baselines/data/{agent}/{prompt_id}/run-{NNN}.json
+      - Git-tracked alongside agent definitions
+
+      Option B: SQLite database
+      - Single SQLite file at baselines/baselines.db
+      - Schema: runs table with JSON column for raw_output and individual columns for scores
+      - Git-tracked (binary file, but small enough for Git LFS if needed)
+
+      ADR format required: Nygard format with Status (Proposed), Context, Decision,
+      Consequences (positive and negative for each option), and an L2 architectural implications section.
+
+      Steelman both options before evaluating. Evaluate against: portability, queryability,
+      merge conflict risk, tooling simplicity, and schema evolution.
+
+      Dimension weights: portability (0.25), merge conflict risk (0.25), queryability (0.20),
+      tooling simplicity (0.15), schema evolution (0.15).
+    expected_behaviors:
+      - "B-001: Produces complete Nygard ADR with Status, Context, Decision, Consequences sections"
+      - "B-002: Steelmans both Option A and Option B before evaluating"
+      - "B-003: Provides weighted evaluation matrix with all 5 dimensions and computed totals"
+      - "B-004: Documents negative consequences for the recommended option"
+      - "B-005: L2 section discusses architectural evolution path"
+    evaluation_metrics:
+      - "completeness"
+      - "methodological_rigor"
+      - "evidence_quality"
+      - "internal_consistency"
+
+  - id: "P-PAC-002"
+    description: "3-option ADR with sensitivity analysis -- tests ability to maintain recommendation under weight perturbation"
+    # Behavior IDs cross-reference:
+    #   B-001 -> behavioral-contracts.md Section A (Structural Invariant: complete matrix for all 3 options)
+    #   B-002 -> behavioral-contracts.md Section B (quality bounds: methodological_rigor, sensitivity analysis)
+    #   B-003 -> behavioral-contracts.md Section B (quality bounds: methodological_rigor, steelman non-recommended)
+    #   B-004 -> behavioral-contracts.md Section B (quality bounds: traceability, H-05 constraint coverage)
+    #   B-005 -> behavioral-contracts.md Section A.1 (structural invariant: L2 long-term implications)
+    user_prompt: |
+      Produce an ADR for the following decision:
+
+      DECISION CONTEXT:
+      The harness needs a CI/CD mechanism to automatically trigger regression tests when
+      an agent definition file is modified in a pull request. Three options:
+
+      Option A: promptfoo GitHub Action
+      - Runs promptfoo YAML test definitions triggered on PR file changes
+      - Native PR comment with before/after diff reporting
+      - Requires Node.js/npm in CI environment (TypeScript runtime)
+      - License: MIT
+
+      Option B: pytest + custom GitHub Action
+      - Runs pytest with DeepEval metrics, triggered via a custom GHA workflow step
+      - No Node.js dependency; pure Python (H-05 compliant)
+      - Requires custom PR comment generation for regression reports
+      - License: Apache 2.0 (DeepEval)
+
+      Option C: Scheduled batch evaluation (no PR gate)
+      - Runs full harness nightly against all agent definitions
+      - Results posted to a Slack channel or GitHub Issue
+      - Does not block merges; provides post-merge regression visibility
+      - No Node.js dependency; no custom GHA work
+
+      Evaluation dimensions:
+      - Merge blocking capability (0.30): blocks merge on detected regression
+      - H-05 compliance (0.25): UV-only Python, no Node.js in local dev
+      - PR feedback latency (0.20): time from PR push to regression verdict
+      - Implementation effort (0.15): work to set up and maintain
+      - Reporting quality (0.10): richness of regression report for PR author
+
+      Include a sensitivity analysis: identify the dimension weight threshold at which
+      a different option would become recommended.
+
+      ADR format: Full Nygard with L0 executive summary, L1 technical decision, L2 implications.
+    expected_behaviors:
+      - "B-001: Evaluates all three options with complete weighted matrix"
+      - "B-002: Provides sensitivity analysis identifying the weight threshold for recommendation change"
+      - "B-003: Steelmans the option that is NOT recommended"
+      - "B-004: Documents the H-05 constraint implications for each option"
+      - "B-005: L2 section discusses long-term implications of the chosen CI/CD architecture"
+    evaluation_metrics:
+      - "completeness"
+      - "methodological_rigor"
+      - "internal_consistency"
+      - "traceability"
+
+  - id: "P-PAC-003"
+    description: "ADR with explicit constraint-driven rejection -- tests documentation of rejected options with P-022 negative-consequence disclosure"
+    # Behavior IDs cross-reference:
+    #   B-001 -> behavioral-contracts.md Section B (quality bounds: traceability, constraint citation)
+    #   B-002 -> behavioral-contracts.md Section B (quality bounds: evidence_quality, constraint influence)
+    #   B-003 -> behavioral-contracts.md Section A (Structural Invariant: negative consequences P-022)
+    #   B-004 -> behavioral-contracts.md Section B (quality bounds: completeness, test dependency analysis)
+    #   B-005 -> behavioral-contracts.md Section A.1 (structural invariant: L2 divergence scenario)
+    user_prompt: |
+      Produce an ADR for the following decision:
+
+      DECISION CONTEXT:
+      The statistical engine for regression comparison needs a Python module location.
+      The module provides: Wilcoxon signed-rank tests, Wilson score confidence intervals,
+      Bonferroni correction, and regression classification (NO_REGRESSION/MARGINAL/REGRESSION).
+
+      This module is potentially shared between PROJ-036 (prompt regression harness) and
+      PROJ-017 (skill evaluation framework). Both projects use pytest and UV.
+
+      Three options for module location:
+
+      Option A: jerry/testing/stats.py
+      - Shared module in the Jerry framework's core package
+      - Both PROJ-036 and PROJ-017 import from the same location
+      - Requires adding scipy as a framework-level dependency
+
+      Option B: projects/PROJ-036-prompt-regression-harness/src/stats.py
+      - Project-scoped module in PROJ-036 directory
+      - PROJ-017 would need to copy or import across project boundary
+      - scipy dependency scoped to PROJ-036 only
+
+      Option C: Separate PyPI package (jerry-stats)
+      - Published as an installable package
+      - Both projects install via uv add jerry-stats
+      - Requires package publishing and versioning infrastructure
+
+      Constraints:
+      - H-05: UV-only Python execution; no pip
+      - H-07: Architecture layer isolation (domain imports, application imports, composition root)
+      - The module must not introduce test-only dependencies into production code
+
+      Evaluate all options against: H-07 compliance, reuse ease, dependency management,
+      maintenance burden, and infrastructure requirements.
+
+      ADR format: Nygard with L0/L1/L2. Include explicit statement of which constraint
+      most strongly influences the recommendation.
+    expected_behaviors:
+      - "B-001: References H-07 constraint explicitly and evaluates each option against it"
+      - "B-002: Identifies and documents the constraint that most influences the recommendation"
+      - "B-003: Documents negative consequences for the recommended option"
+      - "B-004: Addresses the test-only dependency concern for each option"
+      - "B-005: L2 discusses what happens if PROJ-017 and PROJ-036 diverge in statistical method requirements"
+    evaluation_metrics:
+      - "completeness"
+      - "traceability"
+      - "methodological_rigor"
+      - "evidence_quality"
+
+  - id: "P-PAC-004"
+    description: "ADR for a decision with known future evolution path -- tests documentation of evolution trajectory and review triggers"
+    # Behavior IDs cross-reference:
+    #   B-001 -> behavioral-contracts.md Section B (quality bounds: methodological_rigor, genuine steelman)
+    #   B-002 -> behavioral-contracts.md Section A.1 (structural invariant: L2 evolution path)
+    #   B-003 -> behavioral-contracts.md Section B (quality bounds: actionability, specific review triggers)
+    #   B-004 -> behavioral-contracts.md Section A (Structural Invariant: negative consequences P-022)
+    #   B-005 -> behavioral-contracts.md Section B (quality bounds: completeness, LLM classification horizon)
+    user_prompt: |
+      Produce an ADR for the following decision:
+
+      DECISION CONTEXT:
+      The regression harness needs a mechanism to invalidate baselines when they are no longer
+      valid (i.e., the baseline was captured against a different model version, or the agent
+      definition has changed significantly since capture).
+
+      Two options:
+
+      Option A: Git commit hash composite key
+      - Baseline validity is determined by a composite key: {model_version}:{agent_git_hash}:{prompt_git_hash}
+      - Key is computed at capture time and stored in the manifest
+      - On each regression test run, the engine recomputes the key and rejects the run if it
+        does not match the stored baseline key
+      - Strict: any change to agent definition OR prompt file invalidates the baseline immediately
+
+      Option B: Semantic change classification
+      - A pre-commit hook or CI step classifies changes to agent definitions as
+        SEMANTIC (invalidates baseline) or NON-SEMANTIC (baseline remains valid)
+      - Non-semantic examples: whitespace, comment formatting, non-behavioral text
+      - Semantic examples: methodology changes, output format changes, tool list changes
+      - Baseline invalidation requires a human classification step
+
+      Known future evolution:
+      - In 6-12 months, LLM-based change classification may be viable (automated semantic analysis)
+      - If Option A is chosen now, it can be evolved toward Option B later without breaking the manifest schema
+      - If Option B is chosen now, it requires the classification infrastructure from day one
+
+      Document the evolution path for the recommended option. Include decision review triggers
+      (what circumstances would cause this decision to be revisited).
+
+      ADR format: Full Nygard with L0/L1/L2. Include evolution path and review triggers in L2.
+    expected_behaviors:
+      - "B-001: Steelmans the non-recommended option with genuine acknowledgment of its advantages"
+      - "B-002: L2 section includes explicit evolution path from current decision to future state"
+      - "B-003: L2 section lists specific decision review triggers"
+      - "B-004: Documents negative consequences of the recommended option, especially the false-invalidation risk for Option A"
+      - "B-005: Addresses the 6-12 month LLM-based classification horizon explicitly"
+    evaluation_metrics:
+      - "completeness"
+      - "internal_consistency"
+      - "methodological_rigor"
+      - "actionability"

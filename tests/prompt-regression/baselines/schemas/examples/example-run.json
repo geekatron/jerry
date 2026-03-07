@@ -1,0 +1,48 @@
+{
+  "_comment": "Example baseline run record that validates against baseline-run.schema.json. Represents a successful run of ps-researcher on prompt P-PSR-001 with all evaluation fields populated. This is an illustrative example, not real captured data.",
+  "run_id": "RUN-psr-p-psr-001-001-a3f2",
+  "agent_name": "ps-researcher",
+  "prompt_id": "P-PSR-001",
+  "run_index": 1,
+  "model_version": "claude-sonnet-4-20250514",
+  "judge_model_version": "claude-sonnet-4-20250514",
+  "capture_timestamp_utc": "2026-03-07T14:23:11.482Z",
+  "capture_session_id": "SESSION-20260307-1423-a2b3c4",
+  "agent_definition_git_hash": "f92a9d7e",
+  "agent_definition_path": "skills/problem-solving/agents/ps-researcher.md",
+  "prompt_git_hash": "841dd961",
+  "prompt_file_path": "projects/PROJ-036-prompt-regression-harness/baselines/prompts/ps-researcher-prompts.yaml",
+  "temperature": 1.0,
+  "raw_output": "## L0: Executive Summary\n\nLLM evaluation frameworks with statistical significance testing are emerging as critical infrastructure for responsible AI development. DeepEval (Python, Apache 2.0) and promptfoo (Node.js, MIT) lead adoption as of 2025, with RAGAS specializing in RAG system evaluation. None of the major frameworks provide built-in Wilcoxon signed-rank testing out of the box, indicating a gap that PROJ-036 must address with a custom statistical engine.\n\n## L1: Technical Findings\n\n### DeepEval (v2.1.0, Python, Apache 2.0)\n- **Who:** Used by Confident AI customers and open-source adopters\n- **What:** 14+ evaluation metrics including G-Eval (custom criteria via LLM-as-Judge), Hallucination, Faithfulness, Answer Relevancy. No native Wilcoxon support.\n- **Where:** Native pytest plugin (`deepeval test run`); GitHub Actions integration documented\n- **When:** v2.0 released December 2024; v2.1 March 2025\n- **Why:** Provides statistical averaging via multiple evaluation runs; does not perform hypothesis testing\n- **How:** `uv add deepeval` then `from deepeval.metrics import GEval`\n\n### promptfoo (v0.56.0, Node.js, MIT)\n- **Who:** Used by enterprise teams for LLM evaluation pipelines\n- **What:** YAML-based test definitions; built-in comparison between model versions\n- **Where:** GitHub Actions, Jenkins, GitLab CI natively supported\n- **When:** Active development; major 0.50 release January 2025\n- **Why:** Provides diff-based comparison but uses percentage improvement, not statistical significance\n- **How:** Requires Node.js; incompatible with UV-only (H-05) constraint\n\n### RAGAS (v0.2.0, Python, Apache 2.0)\n- **Who:** Used by teams building RAG applications\n- **What:** Faithfulness, Answer Relevancy, Context Precision, Context Recall\n- **Where:** Python notebooks, pytest integration\n- **When:** v0.2 released February 2025\n- **Why:** Domain-specific for RAG; not general-purpose for agent evaluation\n- **How:** `uv add ragas`\n\n### Eleuther LM Evaluation Harness (Python, MIT)\n- **Who:** Academic AI researchers; EleutherAI and Hugging Face\n- **What:** Standardized benchmark tasks; bootstrap-based confidence intervals. Closest to statistical significance testing in the surveyed landscape.\n- **Where:** Standalone; not CI/CD-native\n- **When:** Active; v0.4 December 2024\n- **How:** `uv add lm-eval`\n\n## L2: Strategic Implications\n\nThe absence of native Wilcoxon signed-rank testing in all four surveyed frameworks represents a deliberate gap that PROJ-036 must bridge with a custom statistical engine (jerry/testing/stats.py). DeepEval is the strongest foundation due to its Python-native design and G-Eval flexibility, but the statistical comparison layer must be custom-built.\n\nThe promptfoo incompatibility with H-05 (UV-only Python) is an architectural constraint that rules it out for local development use, though it remains viable as a CI-only tool if Node.js is accepted in CI environments.",
+  "output_token_count": 1847,
+  "input_token_count": 3241,
+  "latency_ms": 8342,
+  "api_error": null,
+  "scores": {
+    "completeness": 0.82,
+    "internal_consistency": 0.78,
+    "methodological_rigor": 0.75,
+    "evidence_quality": 0.71,
+    "actionability": 0.68,
+    "traceability": 0.65,
+    "weighted_composite": 0.744
+  },
+  "evaluation_method": "deepeval_g_eval",
+  "evaluation_error": null,
+  "expected_behaviors_met": {
+    "B-001": true,
+    "B-002": true,
+    "B-003": true,
+    "B-004": false,
+    "B-005": true
+  },
+  "behaviors_met_count": 4,
+  "behaviors_total_count": 5,
+  "behaviors_pass_rate": 0.80,
+  "mr_results": null,
+  "metadata": {
+    "capture_tool_version": "1.0.0",
+    "note": "B-004 failed: output cited 4 sources with URLs (DeepEval, promptfoo, RAGAS, Eleuther); required minimum is 5. One additional source needed.",
+    "composite_verification": "0.82*0.20 + 0.78*0.20 + 0.75*0.20 + 0.71*0.15 + 0.68*0.15 + 0.65*0.10 = 0.164 + 0.156 + 0.150 + 0.107 + 0.102 + 0.065 = 0.744 (per-step rounding: each product rounded to 3dp before summation)"
+  }
+}

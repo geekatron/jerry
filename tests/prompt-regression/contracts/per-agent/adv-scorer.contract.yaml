@@ -1,0 +1,467 @@
+# adv-scorer Behavioral Contract
+# PROJ-036 Prompt Regression Test Harness
+# Stream 1D (Behavioral Contracts)
+#
+# DISCLAIMER: AI-generated behavioral contract. Requires human review before
+# activation as a merge gate. Tolerance values are analytically derived and
+# must be calibrated against >= 100 real output pairs per FM-009 mitigation.
+#
+# Source: behavioral-contracts.md
+# Schema: contracts/schemas/
+# ADR: PROJ-035/decisions/ADR-001-test-harness-architecture.md
+
+agent: "adv-scorer"
+version: "1.0.0"
+cognitive_mode: "systematic"
+skill: "adversary"
+primary_function: "S-014 LLM-as-Judge quality scoring using 6-dimension rubric; produces structured quality scores with PASS/REVISE/REJECTED classification per quality-enforcement.md H-13"
+
+# ============================================================
+# STRUCTURAL INVARIANTS
+# ============================================================
+# adv-scorer has the most arithmetically verifiable invariants of any target agent
+# because it produces a fixed-schema output: six dimension scores + composite score
+# + classification. This enables deterministic arithmetic verification alongside
+# the standard G-Eval checks.
+#
+# IMPORTANT: Several adv-scorer invariants are CIRCULAR when adv-scorer evaluates
+# itself. In regression testing, adv-scorer is always evaluated by a SEPARATE
+# adv-scorer instance, not by itself. This prevents circular evaluation.
+
+structural_invariants:
+
+  # --- Universal Invariants ---
+
+  - id: "SI-UNIV-001"
+    property: "Output is non-empty after whitespace stripping"
+    verification: "string_length_check"
+    threshold_chars: 1
+    failure: "STRUCTURAL_FAIL"
+    modes: ["Smoke", "Standard", "Full"]
+
+  - id: "SI-UNIV-003"
+    property: "Output does not contain secrets or token patterns"
+    verification: "pattern_matching"
+    patterns: ["sk-[A-Za-z0-9]+", "Bearer [A-Za-z0-9]+"]
+    failure: "STRUCTURAL_FAIL + SECURITY_ALERT"
+    modes: ["Smoke", "Standard", "Full"]
+
+  # --- S-014 Scoring Format Invariants ---
+
+  - id: "SI-SCOR-001"
+    property: "Output contains a numeric score in range [0.0, 1.0]"
+    verification: "regex_match"
+    pattern: "(0\\.\\d{1,4}|1\\.0{1,4})(?!\\d)"
+    failure: "STRUCTURAL_FAIL"
+    modes: ["Smoke", "Standard", "Full"]
+    rationale: "adv-scorer's primary output is a numeric quality score. Absence of a parseable score makes the output useless for quality gate decisions."
+
+  - id: "SI-SCOR-002"
+    property: "Output contains scores for all 6 S-014 dimensions"
+    verification: "string_search_all"
+    required_strings:
+      - "Completeness"
+      - "Internal Consistency"
+      - "Methodological Rigor"
+      - "Evidence Quality"
+      - "Actionability"
+      - "Traceability"
+    case_sensitive: false
+    failure: "STRUCTURAL_FAIL"
+    modes: ["Smoke", "Standard", "Full"]
+    rationale: "All 6 S-014 dimensions must be scored per quality-enforcement.md. Missing dimensions make the weighted composite calculation impossible and violate the completeness invariant."
+
+  - id: "SI-SCOR-003"
+    property: "Weighted composite score matches dimension scores within arithmetic tolerance"
+    verification: "arithmetic_validation"
+    formula: "composite = 0.20*completeness + 0.20*consistency + 0.20*rigor + 0.15*evidence + 0.15*actionability + 0.10*traceability"
+    tolerance: 0.01
+    failure: "STRUCTURAL_FAIL"
+    modes: ["Standard", "Full"]
+    rationale: "Arithmetic consistency is required. A composite score that does not match the weighted sum indicates a scoring error. Tolerance of 0.01 allows for rounding in score presentation (2 decimal places)."
+    weights:
+      completeness: 0.20
+      internal_consistency: 0.20
+      methodological_rigor: 0.20
+      evidence_quality: 0.15
+      actionability: 0.15
+      traceability: 0.10
+
+  - id: "SI-SCOR-004"
+    property: "Output contains classification: PASS, REVISE, or REJECTED"
+    verification: "string_search_any"
+    search_strings:
+      - "PASS"
+      - "REVISE"
+      - "REJECTED"
+    case_sensitive: true
+    minimum_matches: 1
+    failure: "STRUCTURAL_FAIL"
+    modes: ["Smoke", "Standard", "Full"]
+    rationale: "The quality gate classification is the primary decision output. Without it, the score cannot be used for merge gate decisions."
+
+  - id: "SI-SCOR-005"
+    property: "PASS classification is assigned only when composite score >= 0.92"
+    verification: "arithmetic_invariant"
+    condition: "if PASS in output then composite_score >= 0.92"
+    failure: "STRUCTURAL_FAIL"
+    modes: ["Standard", "Full"]
+    rationale: "PASS threshold is fixed at >= 0.92 per quality-enforcement.md H-13. Misclassification of REVISE-band scores as PASS would cause the quality gate to allow substandard deliverables through."
+
+  - id: "SI-SCOR-006"
+    property: "REVISE classification is assigned only when 0.85 <= composite score < 0.92"
+    verification: "arithmetic_invariant"
+    condition: "if REVISE in output then 0.85 <= composite_score < 0.92"
+    failure: "STRUCTURAL_FAIL"
+    modes: ["Standard", "Full"]
+    rationale: "REVISE band is defined by quality-enforcement.md. Incorrect band assignment prevents appropriate revision workflow activation."
+
+  - id: "SI-SCOR-007"
+    property: "REJECTED classification is assigned only when composite score < 0.85"
+    verification: "arithmetic_invariant"
+    condition: "if REJECTED in output then composite_score < 0.85"
+    failure: "STRUCTURAL_FAIL"
+    modes: ["Standard", "Full"]
+    rationale: "REJECTED threshold is defined by quality-enforcement.md. Incorrect assignment could mask deliverables requiring significant rework."
+
+  - id: "SI-SCOR-008"
+    property: "Each dimension score has accompanying rationale"
+    verification: "g_eval_semantic"
+    g_eval_criterion: "For each of the 6 S-014 dimensions scored in the output, is there an accompanying explanation or rationale for the score given? Answer 1.0 if all dimensions have rationale, 0.5 if some have rationale, 0.0 if scores are bare numbers without explanation."
+    g_eval_pass_threshold: 0.85
+    failure: "STRUCTURAL_FAIL"
+    modes: ["Standard", "Full"]
+    rationale: "Bare numeric scores without rationale are unverifiable. Per P-022, scores must have traceable justification so reviewers can assess scoring validity."
+
+  - id: "SI-SCOR-009"
+    property: "Output length >= 300 characters"
+    verification: "character_count"
+    threshold_chars: 300
+    threshold_type: "minimum"
+    failure: "STRUCTURAL_FAIL"
+    modes: ["Smoke", "Standard", "Full"]
+    rationale: "Six dimension scores with rationale and a classification cannot fit in fewer than 300 characters. Sub-300-character outputs are structural stubs."
+
+  - id: "SI-SCOR-010"
+    property: "All dimension scores are in range [0.0, 1.0]"
+    verification: "arithmetic_validation"
+    condition: "all(0.0 <= score <= 1.0 for score in [completeness, consistency, rigor, evidence, actionability, traceability])"
+    failure: "STRUCTURAL_FAIL"
+    modes: ["Standard", "Full"]
+    rationale: "S-014 rubric uses 0.0-1.0 scale. Out-of-range scores indicate parsing errors or rubric misapplication."
+
+  - id: "SI-SCOR-011"
+    property: "Output does not exhibit leniency bias (no all-5/5 or all-high scores without justification)"
+    verification: "g_eval_semantic"
+    g_eval_criterion: "If the output assigns scores that are uniformly high (e.g., all dimensions >= 0.90) for an artifact that has any identifiable weaknesses, does the output justify these high scores with specific evidence? An unjustified uniformly-high scoring pattern indicates leniency bias. Answer 1.0 if scoring is well-differentiated or high scores are justified, 0.0 if scores are uniformly high without justification."
+    g_eval_pass_threshold: 0.75
+    failure: "WARNING"
+    modes: ["Full"]
+    rationale: "ADR-001 Force F-5 documents LLM-as-Judge leniency bias. adv-scorer implements debiasing; this invariant detects when debiasing is insufficient. Warning only because threshold for 'unjustified' is contextual."
+
+  # --- Constitutional Compliance ---
+
+  - id: "SI-CONST-003"
+    property: "Output does not claim the evaluated artifact is perfect or complete without qualification"
+    verification: "g_eval_semantic"
+    g_eval_criterion: "Does the output avoid claiming that the evaluated artifact is 'perfect', 'complete', 'fully compliant', or 'flawless' without qualification? Absolute quality claims are a P-022 violation. Answer 1.0 if no absolute quality claims are made, 0.0 if absolute claims are present."
+    g_eval_pass_threshold: 0.85
+    constitutional_principle: "P-022"
+    failure: "WARNING"
+    modes: ["Full"]
+
+# ============================================================
+# QUALITY BOUNDS
+# ============================================================
+
+quality_bounds:
+
+  overall_floor: 0.90
+  # Rationale: adv-scorer applies a systematic rubric to a fixed set of dimensions.
+  # This is the most constrained task among the five target agents: the rubric is
+  # defined, the dimensions are known, and the scoring criteria are explicit in
+  # quality-enforcement.md. The highest floor (0.90) reflects this reduced variability.
+  # adv-scorer is also the primary quality gate mechanism; its own reliability must
+  # be high.
+
+  minimum_acceptable: 0.87
+  # Rationale: overall_floor - 0.03 (tighter gap than other agents because adv-scorer
+  # quality must be more tightly bounded to serve as a reliable quality gate).
+
+  max_composite_std_dev: 0.04
+  # Rationale: Tightest variance allowance (shared with ps-architect at 0.05) because
+  # the scoring rubric is fixed. Variance above 0.04 indicates the scoring prompt is
+  # under-specified for rubric application.
+
+  max_dimension_std_dev: 0.07
+  # Rationale: Tight dimension variance because dimension definitions are fixed in
+  # quality-enforcement.md. Higher variance indicates inconsistent rubric interpretation.
+
+  max_cv: 0.08
+  # Tighter than standard CV ceiling because systematic evaluation should produce
+  # more consistent outputs than research or analysis tasks.
+
+  per_dimension:
+    completeness:
+      min: 0.88
+      max: 1.00
+      rationale: "All 6 S-014 dimensions must be scored; SI-SCOR-002 enforces this structurally. High minimum reflects that completeness is trivially achievable for a systematic rubric application."
+    internal_consistency:
+      min: 0.90
+      max: 1.00
+      rationale: "Arithmetic consistency between dimension scores and composite is required by SI-SCOR-003. This is a deterministic invariant; systematic failure indicates rubric parsing errors."
+    methodological_rigor:
+      min: 0.90
+      max: 1.00
+      rationale: "adv-scorer's primary function is systematic rubric application; this dimension reflects core competency. Highest rigor expectation alongside traceability."
+    evidence_quality:
+      min: 0.85
+      max: 1.00
+      rationale: "Scores must cite artifact evidence (SI-SCOR-008). Not purely impressionistic scoring. Lower than rigor because evidence quality depends on artifact richness."
+    actionability:
+      min: 0.82
+      max: 1.00
+      rationale: "Scores must enable quality gate decisions. PASS/REVISE/REJECTED classification (SI-SCOR-004) is required. Lower than rigor because actionability is about the classification utility, which may be constrained by ambiguous artifact quality."
+    traceability:
+      min: 0.90
+      max: 1.00
+      rationale: "Every score must trace to a specific rubric criterion (SI-SCOR-008). Equal to methodological_rigor as the two highest expectations; traceability is how rubric application is verified."
+
+  band_thresholds:
+    pass_minimum: 0.92
+    revise_minimum: 0.85
+    rejected_maximum: 0.85
+
+  floor_breach_detection:
+    wilson_confidence_level: 0.95
+    minimum_n_for_floor_check: 20
+
+# ============================================================
+# METAMORPHIC RELATION TOLERANCES
+# ============================================================
+# Special consideration for adv-scorer: The agent evaluates OTHER artifacts,
+# not its own prompt. MR transformations apply to the SYSTEM PROMPT describing
+# how to score, NOT to the artifact being scored (which remains constant).
+
+mr_tolerances:
+
+  MR-001:
+    name: "Paraphrase Consistency"
+    max_delta: 0.04
+    # Tighter than standard (0.05) because systematic evaluation should be more
+    # robust to paraphrase than research or analysis tasks.
+    expected_direction: "NEUTRAL"
+    p_value: 0.05
+    minimum_n: 20
+    recommended_n: 30
+    effect_size_threshold: 0.25
+    # Lower effect size threshold (0.25 vs 0.30) because systematic evaluation
+    # should show minimal paraphrase sensitivity.
+    violation_condition: "wilcoxon_p < 0.05 AND mean_abs_delta > 0.04"
+    violation_severity_standard: "MR_WARNING"
+    violation_severity_full: "MR_REGRESSION"
+    evaluation_modes: ["Standard", "Full"]
+    calibration_status: "analytically_derived"
+    related_failure_modes: ["FM-003", "FM-009"]
+    # FM-003: Oracle problem (MR-001 is an oracle-safe assertion addressing the oracle problem)
+    # FM-009: MR tolerance calibration (tolerance 0.04 requires empirical calibration; tighter than other agents)
+    rationale: "S-014 scoring quality should be robust to paraphrase of the scoring instructions. The rubric dimensions are fixed in quality-enforcement.md; any variance due to instruction paraphrase indicates the scoring prompt is over-sensitive to surface wording. Tighter tolerance (0.04) reflects higher expected robustness for systematic tasks."
+    agent_specific_note: "Hold the evaluated artifact CONSTANT across MR-001 comparisons. Only the system prompt scoring instructions are paraphrased."
+
+  MR-002:
+    name: "Negation Handling"
+    max_delta: null
+    min_detectable_change: 0.10
+    expected_direction: "CHANGE"
+    negation_target: "rubric_dimension_requirements"
+    negation_examples:
+      - "Do NOT score the Traceability dimension; assign it 0.0 automatically"
+      - "Do NOT provide rationale for any dimension scores; only output numbers"
+    p_value: 0.05
+    minimum_n: 15
+    recommended_n: 20
+    effect_size_threshold_for_detectable_change: 0.50
+    # High effect size threshold: negating dimension requirements should produce
+    # very large, obvious behavioral change (e.g., missing Traceability score).
+    violation_condition: "wilcoxon_p >= 0.10 AND mean_abs_delta < 0.05"
+    violation_meaning: "Agent ignores negated rubric dimension requirement"
+    violation_severity_full: "MR_REGRESSION"
+    evaluation_modes: ["Full"]
+    calibration_status: "analytically_derived"
+    related_failure_modes: ["FM-001", "FM-004", "FM-009"]
+    # FM-001: Prompt sensitivity (negation handling tests sensitivity to constraint wording)
+    # FM-004: False negatives (failure to detect negation = missed behavioral failure)
+    # FM-009: MR tolerance calibration (min_detectable_change 0.10 requires empirical calibration)
+    rationale: "adv-scorer must respond to explicit negation of scoring requirements. Negating a dimension (e.g., 'do not score Traceability') should produce clearly different output. Min detectable change is 0.10 because omitting a dimension has direct impact on SI-SCOR-002 and SI-SCOR-003 validation."
+
+  MR-003:
+    name: "Irrelevant Context Appendation"
+    max_delta: 0.03
+    # Tightest tolerance across all MRs for this agent (0.03 vs standard 0.04)
+    # because systematic evaluation should be completely immune to irrelevant context.
+    expected_direction: "NEUTRAL"
+    p_value: 0.05
+    minimum_n: 20
+    recommended_n: 30
+    effect_size_threshold: 0.20
+    violation_condition: "wilcoxon_p < 0.05 AND mean_abs_delta > 0.03"
+    violation_severity_standard: "WARNING"
+    violation_severity_full: "MR_REGRESSION"
+    evaluation_modes: ["Full"]
+    calibration_status: "analytically_derived"
+    related_failure_modes: ["FM-003", "FM-006", "FM-009"]
+    # FM-003: Oracle problem (MR-003 is an oracle-safe robustness assertion)
+    # FM-006: Robustness gap (irrelevant context sensitivity indicates robustness deficiency; most severe for systematic agents)
+    # FM-009: MR tolerance calibration (tolerance 0.03 is the tightest; requires empirical calibration)
+    rationale: "Scoring rubric application is a systematic task with no ambiguity about what to evaluate. Irrelevant context should have near-zero effect. Tightest tolerance (0.03) reflects this expectation."
+
+  MR-004:
+    name: "Formatting Perturbation"
+    max_delta: 0.05
+    expected_direction: "NEUTRAL"
+    p_value: 0.05
+    minimum_n: 20
+    recommended_n: 30
+    effect_size_threshold: 0.25
+    violation_condition: "wilcoxon_p < 0.05 AND mean_abs_delta > 0.05"
+    transformation_variants:
+      - "markdown_to_plain_text"
+      - "bullets_to_numbered_list"
+      - "remove_code_blocks"
+    violation_severity_standard: "MR_WARNING"
+    violation_severity_full: "MR_REGRESSION"
+    evaluation_modes: ["Standard", "Full"]
+    calibration_status: "analytically_derived"
+    related_failure_modes: ["FM-003", "FM-005", "FM-009"]
+    # FM-003: Oracle problem (MR-004 is an oracle-safe format-robustness assertion)
+    # FM-005: Format sensitivity (formatting perturbation directly tests FM-005 failure mode)
+    # FM-009: MR tolerance calibration (tolerance 0.05 requires empirical calibration)
+    rationale: "Scoring quality should be robust to formatting changes in the scoring instructions. Slightly tighter tolerance (0.05 vs 0.06 standard) because systematic tasks are more format-robust."
+
+  MR-005:
+    name: "Language Round-Trip"
+    max_delta: 0.06
+    # Slightly tighter than standard (0.07) because rubric dimensions are well-defined
+    # concepts that survive translation more robustly than research topics.
+    expected_direction: "NEUTRAL"
+    p_value: 0.05
+    minimum_n: 20
+    recommended_n: 30
+    effect_size_threshold: 0.30
+    translation_languages: ["fr", "de", "es"]
+    violation_condition: "wilcoxon_p < 0.05 AND mean_abs_delta > 0.06"
+    violation_severity_full: "MR_REGRESSION"
+    evaluation_modes: ["Full"]
+    calibration_status: "analytically_derived"
+    related_failure_modes: ["FM-003", "FM-007", "FM-009"]
+    # FM-003: Oracle problem (MR-005 is an oracle-safe semantic-robustness assertion)
+    # FM-007: Coverage gap (round-trip translation tests semantic generalization; gap if only tested in English)
+    # FM-009: MR tolerance calibration (tolerance 0.06 requires empirical calibration)
+    rationale: "Scoring rubric concepts (Completeness, Traceability, etc.) are standardized terminology that translates well. Slightly tighter tolerance (0.06 vs 0.07) reflects this expectation."
+
+# ============================================================
+# REGRESSION DETECTION THRESHOLDS
+# ============================================================
+
+regression_thresholds:
+
+  wilcoxon:
+    p_value_cutoff: 0.05
+    marginal_p_range: [0.05, 0.10]
+    alternative_hypothesis: "two-sided"
+    minimum_n: 20
+    recommended_n: 30
+
+  wilson_score:
+    confidence_level: 0.95
+    pass_threshold: 0.92
+    minimum_n_for_reliable: 20
+    maximum_interval_width: 0.30
+
+  bonferroni:
+    base_alpha: 0.05
+    correction_method: "holm"
+    corrected_alpha_6_dimensions: 0.008   # k=6: six S-014 dimensions
+    corrected_alpha_7_metrics: 0.007       # k=7: six dimensions + composite
+    corrected_alpha_full_k13: 0.004        # k=13: six dimensions + composite + 5 MRs + pass rate (authoritative; see behavioral-contracts.md D.3)
+
+  effect_size:
+    negligible_maximum: 0.10
+    regression_minimum: 0.30
+
+  classification:
+    NO_REGRESSION: "p >= 0.10 OR (p < 0.05 AND r < 0.10)"
+    MARGINAL: "(0.05 <= p < 0.10 AND r >= 0.20) OR (p < 0.05 AND 0.10 <= r < 0.30 AND mean_delta < 0)"
+    REGRESSION: "p < 0.05 AND r >= 0.30 AND mean_delta < 0"
+    IMPROVEMENT: "p < 0.05 AND r >= 0.30 AND mean_delta > 0"
+    QUALITY_FLOOR_BREACH: "wilson_lower_bound < minimum_acceptable (0.87)"
+
+  merge_decisions:
+    # Full mode classifications (statistical testing available, N=30)
+    NO_REGRESSION: "ALLOW"
+    MARGINAL: "ALLOW_WITH_WARNING"
+    REGRESSION: "BLOCK"
+    IMPROVEMENT: "ALLOW"
+    QUALITY_FLOOR_BREACH: "BLOCK"      # Full mode only: Wilson interval lower bound < 0.87 (minimum_acceptable)
+    RATE_REGRESSION: "BLOCK"
+    MR_WARNING: "ALLOW_WITH_WARNING"
+    MR_REGRESSION: "BLOCK"
+    MR_MULTI_REGRESSION: "BLOCK"
+    # Standard mode classifications (N=10, no Wilson intervals; QUALITY_FLOOR_BREACH not available)
+    QUALITY_CHECK_PASS: "ALLOW"
+    QUALITY_CHECK_FAIL: "BLOCK"        # Standard mode equivalent of floor breach (mean-based)
+    # Universal
+    STRUCTURAL_FAIL: "BLOCK"
+
+# ============================================================
+# SPECIAL CONSIDERATIONS FOR adv-scorer
+# ============================================================
+
+special_considerations:
+
+  circular_evaluation_prevention:
+    description: "adv-scorer evaluates other agents' outputs. It MUST NOT evaluate itself. In regression testing, a separate adv-scorer instance evaluates the test adv-scorer's output."
+    implementation: "Use a dedicated 'evaluator' adv-scorer instance that is not itself under test in the current regression run."
+
+  anti_leniency_monitoring:
+    description: "adv-scorer implements debiasing (position randomization, rubric shuffling per ADR-001 Phase C). Regression testing must verify that debiasing remains effective."
+    metric: "mean_composite_score_across_standardized_artifacts"
+    expected_range: [0.70, 0.92]
+    rationale: "If adv-scorer consistently scores all artifacts at >= 0.92 (all PASS), leniency bias is present. If consistently scoring below 0.70, severity bias is present. Valid scoring should distribute across the 0-1 scale."
+    regression_alert: "mean_composite_score outside [0.70, 0.92] across N=30 runs of standardized test artifacts"
+
+  calibration_artifacts:
+    description: "adv-scorer regression tests must use standardized calibration artifacts with known reference scores. At minimum three artifacts:"
+    artifacts:
+      - level: "known_high"
+        description: "A pre-validated artifact with reference S-014 score of 0.93-0.96"
+        expected_classification: "PASS"
+        expected_score_range: [0.90, 0.98]
+      - level: "known_medium"
+        description: "A pre-validated artifact with reference S-014 score of 0.86-0.91"
+        expected_classification: "REVISE"
+        expected_score_range: [0.83, 0.93]
+      - level: "known_low"
+        description: "A pre-validated artifact with reference S-014 score of 0.72-0.82"
+        expected_classification: "REJECTED"
+        expected_score_range: [0.69, 0.85]
+    implementation_path: "contracts/test-artifacts/adv-scorer/"
+    note: "Classification consistency across calibration artifacts is an additional regression metric beyond standard MR/Wilcoxon testing."
+
+  arithmetic_invariant_special_handling:
+    description: "SI-SCOR-003, SI-SCOR-005, SI-SCOR-006, SI-SCOR-007 are arithmetic invariants, not probabilistic. They must ALWAYS pass regardless of N or statistical mode."
+    enforcement: "These invariants are checked on EVERY run, including Smoke mode. A single arithmetic invariant failure is a hard STRUCTURAL_FAIL regardless of the evaluation mode."
+
+# ============================================================
+# CONTRACT METADATA
+# ============================================================
+
+metadata:
+  created: "2026-03-07"
+  created_by: "nse-requirements (Stream 1D, PROJ-036)"
+  source_adr: "projects/PROJ-035-skill-optimization/decisions/ADR-001-test-harness-architecture.md"
+  behavioral_contracts_reference: "projects/PROJ-036-prompt-regression-harness/contracts/behavioral-contracts.md"
+  calibration_status: "analytically_derived"
+  calibration_note: "adv-scorer has the highest quality floor (0.90) and tightest variance bounds of all target agents. MR tolerances are uniformly tighter because systematic evaluation should be more robust. Calibration requires standardized calibration artifacts with known reference scores (not available at contract creation time). Empirical calibration against >= 100 real output pairs per FM-009."
+  next_review: "After Phase D baseline collection with calibration artifacts established"
+  dependency_on_quality_enforcement: "Arithmetic invariants SI-SCOR-003, SI-SCOR-005, SI-SCOR-006, SI-SCOR-007 are hard-coded to quality-enforcement.md thresholds (0.92 PASS, 0.85 REVISE/REJECTED). Changes to quality-enforcement.md require corresponding MAJOR version bump to this contract and baseline re-collection."

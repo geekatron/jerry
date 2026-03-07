@@ -1,0 +1,315 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jerry.internal/schemas/mr-tolerance/v1.0.0",
+  "title": "Metamorphic Relation Tolerance",
+  "description": "Schema for metamorphic relation (MR) tolerance definitions in the PROJ-036 Prompt Regression Test Harness. MR tolerances specify the maximum permissible score delta between transformed and original inputs, along with statistical parameters for significance testing. These are the oracle-safe assertions that solve the LLM test oracle problem without requiring exact expected outputs.",
+  "type": "object",
+  "required": [
+    "mr_id",
+    "name",
+    "version",
+    "agent",
+    "definition",
+    "transformation",
+    "expected_direction",
+    "max_delta",
+    "max_delta_rationale",
+    "p_value_threshold",
+    "minimum_sample_size",
+    "recommended_sample_size",
+    "effect_size_threshold",
+    "violation_condition",
+    "violation_severity",
+    "calibration_status"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "mr_id": {
+      "type": "string",
+      "description": "Identifier for this metamorphic relation.",
+      "pattern": "^MR-\\d{3}$",
+      "enum": ["MR-001", "MR-002", "MR-003", "MR-004", "MR-005"]
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable name for this metamorphic relation.",
+      "enum": [
+        "Paraphrase Consistency",
+        "Negation Handling",
+        "Irrelevant Context Appendation",
+        "Formatting Perturbation",
+        "Language Round-Trip"
+      ]
+    },
+    "version": {
+      "type": "string",
+      "description": "Contract version for this MR tolerance specification.",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "agent": {
+      "description": "The agent(s) this MR tolerance applies to.",
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": ["all", "ps-researcher", "ps-analyst", "ps-architect", "ps-critic", "adv-scorer"]
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["ps-researcher", "ps-analyst", "ps-architect", "ps-critic", "adv-scorer"]
+          },
+          "minItems": 2,
+          "uniqueItems": true
+        }
+      ]
+    },
+    "definition": {
+      "type": "string",
+      "description": "Precise definition of this metamorphic relation: what transformation is applied, what consistency property is expected.",
+      "minLength": 50,
+      "maxLength": 1000
+    },
+    "transformation": {
+      "type": "object",
+      "description": "Specification of the input transformation applied for this MR.",
+      "required": ["description", "applies_to", "preservation_requirement"],
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "Description of the transformation procedure.",
+          "minLength": 20
+        },
+        "applies_to": {
+          "type": "string",
+          "description": "Which part of the input is transformed.",
+          "enum": [
+            "user_message",
+            "system_prompt_task_description",
+            "system_prompt_structural_constraints",
+            "full_system_prompt",
+            "specific_constraint"
+          ]
+        },
+        "preservation_requirement": {
+          "type": "string",
+          "description": "What semantic property is preserved by the transformation (semantic meaning, intent, factual content, etc.).",
+          "minLength": 10
+        },
+        "transformation_generator": {
+          "type": "string",
+          "description": "Optional: how the transformation is generated (e.g., 'secondary LLM call', 'deterministic rule', 'template substitution').",
+          "enum": [
+            "secondary_llm_call",
+            "deterministic_rule",
+            "template_substitution",
+            "manual_authorship",
+            "translation_model"
+          ]
+        },
+        "transformation_variants": {
+          "type": "array",
+          "description": "For MRs with multiple transformation variants (e.g., MR-004 has multiple formatting styles): list of variant names.",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "expected_direction": {
+      "type": "string",
+      "description": "Expected direction of the score difference between transformed and original. NEUTRAL means the transformation should not change quality. DECREASE means quality should decrease (MR-002 when negating quality constraints). CHANGE means quality should change in some direction (used when direction depends on what is negated).",
+      "enum": ["NEUTRAL", "DECREASE", "INCREASE", "CHANGE"]
+    },
+    "max_delta": {
+      "type": "number",
+      "description": "Maximum permissible absolute score difference between transformed and original input quality scores (|score_original - score_transformed|). Only relevant when expected_direction is NEUTRAL.",
+      "minimum": 0.0,
+      "maximum": 0.5
+    },
+    "min_detectable_change": {
+      "type": "number",
+      "description": "Minimum expected score difference for MRs where the transformation is expected to produce a change (expected_direction is DECREASE, INCREASE, or CHANGE). Only relevant for MR-002.",
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "max_delta_rationale": {
+      "type": "string",
+      "description": "Statistical and empirical rationale for the chosen max_delta value. Must reference the LLM non-determinism baseline (0.02-0.04) and the LLMORPH false positive rate (8.6% at similar tolerances).",
+      "minLength": 50
+    },
+    "p_value_threshold": {
+      "type": "number",
+      "description": "Significance threshold for the Wilcoxon signed-rank test applied to MR comparison. Standard: 0.05. Higher values (0.10) are used for exploratory warnings.",
+      "minimum": 0.001,
+      "maximum": 0.20
+    },
+    "minimum_sample_size": {
+      "type": "integer",
+      "description": "Minimum number of input-output pairs required for valid MR comparison. Below this threshold, MR results are labeled INSUFFICIENT_SAMPLE and not used for regression classification.",
+      "minimum": 5,
+      "maximum": 50
+    },
+    "recommended_sample_size": {
+      "type": "integer",
+      "description": "Recommended sample size for reliable MR comparison. Provides sufficient statistical power for the specified effect size threshold.",
+      "minimum": 10,
+      "maximum": 100
+    },
+    "effect_size_threshold": {
+      "type": "number",
+      "description": "Cohen's r effect size threshold (derived from Wilcoxon Z / sqrt(N)) above which a violation is classified as REGRESSION rather than MARGINAL. Typical values: 0.25 (small-to-medium), 0.30 (medium), 0.40 (large).",
+      "minimum": 0.10,
+      "maximum": 0.80
+    },
+    "violation_condition": {
+      "type": "object",
+      "description": "Precise conditions that must ALL be met to declare an MR violation.",
+      "required": ["conditions", "combination_logic"],
+      "additionalProperties": false,
+      "properties": {
+        "conditions": {
+          "type": "array",
+          "description": "List of individual conditions that combine to define a violation.",
+          "items": {
+            "type": "object",
+            "required": ["condition_id", "description", "expression"],
+            "properties": {
+              "condition_id": {
+                "type": "string",
+                "description": "Short identifier for this condition.",
+                "pattern": "^C\\d+$"
+              },
+              "description": {
+                "type": "string",
+                "description": "Human-readable description of this condition.",
+                "minLength": 10
+              },
+              "expression": {
+                "type": "string",
+                "description": "Formal expression of the condition in pseudocode.",
+                "minLength": 5
+              }
+            }
+          },
+          "minItems": 1
+        },
+        "combination_logic": {
+          "type": "string",
+          "description": "How conditions are combined: 'ALL' (all must be true), 'ANY' (any single condition triggers violation), or custom expression referencing condition_ids.",
+          "examples": ["ALL", "ANY", "C1 AND C2", "C1 AND (C2 OR C3)"]
+        }
+      }
+    },
+    "violation_severity": {
+      "type": "object",
+      "description": "Severity classification for violations under different evaluation modes.",
+      "required": ["standard_mode", "full_mode"],
+      "additionalProperties": false,
+      "properties": {
+        "standard_mode": {
+          "type": "string",
+          "enum": ["WARNING", "MR_WARNING", "MR_REGRESSION", "INFORMATIONAL"],
+          "description": "Violation severity in Standard mode (N=10)."
+        },
+        "full_mode": {
+          "type": "string",
+          "enum": ["WARNING", "MR_WARNING", "MR_REGRESSION", "MR_MULTI_REGRESSION", "INFORMATIONAL"],
+          "description": "Violation severity in Full mode (N=30) when effect_size >= effect_size_threshold."
+        },
+        "full_mode_below_effect_size_threshold": {
+          "type": "string",
+          "enum": ["WARNING", "MR_WARNING", "INFORMATIONAL"],
+          "description": "Violation severity in Full mode when p < p_value_threshold but effect_size < effect_size_threshold (statistically significant but practically negligible)."
+        }
+      }
+    },
+    "evaluation_mode_applicability": {
+      "type": "array",
+      "description": "Which evaluation modes this MR is checked in.",
+      "items": {
+        "type": "string",
+        "enum": ["Smoke", "Standard", "Full"]
+      },
+      "default": ["Full"],
+      "uniqueItems": true
+    },
+    "calibration_status": {
+      "type": "string",
+      "description": "Whether this MR tolerance has been empirically calibrated against real output pairs or is analytically derived. Analytically derived tolerances should be updated after collecting 100+ real output pairs per FM-009 mitigation.",
+      "enum": [
+        "analytically_derived",
+        "partially_calibrated",
+        "calibrated"
+      ]
+    },
+    "calibration_notes": {
+      "type": "string",
+      "description": "Notes on calibration history, including date of last calibration and number of pairs evaluated.",
+      "maxLength": 500
+    },
+    "source": {
+      "type": "string",
+      "description": "Reference to the behavioral-contracts.md section that defines this MR tolerance.",
+      "pattern": "^behavioral-contracts\\.md#.+$"
+    },
+    "related_failure_modes": {
+      "type": "array",
+      "description": "ADR-001 failure mode IDs that this MR tolerance addresses.",
+      "items": {
+        "type": "string",
+        "pattern": "^FM-\\d{3}$"
+      },
+      "examples": [["FM-003", "FM-009"]]
+    }
+  },
+  "examples": [
+    {
+      "mr_id": "MR-001",
+      "name": "Paraphrase Consistency",
+      "version": "1.0.0",
+      "agent": "all",
+      "definition": "Paraphrasing the user-facing portion of a system prompt (not structural constraints or tools list) should not change output quality by more than 0.05. A well-functioning agent produces equivalent-quality output regardless of surface-level wording variation in the task description.",
+      "transformation": {
+        "description": "Replace the task description portion of the user message with a semantically equivalent paraphrase generated by a secondary LLM call with explicit instruction to preserve meaning and intent.",
+        "applies_to": "user_message",
+        "preservation_requirement": "Semantic intent and factual content are preserved; only surface wording varies",
+        "transformation_generator": "secondary_llm_call"
+      },
+      "expected_direction": "NEUTRAL",
+      "max_delta": 0.05,
+      "min_detectable_change": null,
+      "max_delta_rationale": "LLM non-determinism baseline is 0.02-0.04 standard deviation at temperature=0. Allowing 0.05 gives approximately one standard deviation of buffer above the non-determinism floor. Derived from LLMORPH's 8.6% false positive rate at similar tolerances across 560K tests (ASE 2025). Paraphrase transformations that preserve intent should not change quality beyond measurement noise.",
+      "p_value_threshold": 0.05,
+      "minimum_sample_size": 20,
+      "recommended_sample_size": 30,
+      "effect_size_threshold": 0.30,
+      "violation_condition": {
+        "conditions": [
+          {
+            "condition_id": "C1",
+            "description": "Wilcoxon signed-rank test is statistically significant",
+            "expression": "wilcoxon_p_value < 0.05"
+          },
+          {
+            "condition_id": "C2",
+            "description": "Mean absolute delta exceeds practical significance threshold",
+            "expression": "mean(|score_original_i - score_paraphrased_i|) > 0.05"
+          }
+        ],
+        "combination_logic": "C1 AND C2"
+      },
+      "violation_severity": {
+        "standard_mode": "MR_WARNING",
+        "full_mode": "MR_REGRESSION",
+        "full_mode_below_effect_size_threshold": "MR_WARNING"
+      },
+      "evaluation_mode_applicability": ["Standard", "Full"],
+      "calibration_status": "analytically_derived",
+      "calibration_notes": "Initial tolerance analytically derived from LLMORPH baseline. Requires empirical calibration against 100+ real Jerry agent output pairs per FM-009 mitigation plan.",
+      "source": "behavioral-contracts.md#c1-mr-001-paraphrase-consistency",
+      "related_failure_modes": ["FM-003", "FM-009"]
+    }
+  ]
+}

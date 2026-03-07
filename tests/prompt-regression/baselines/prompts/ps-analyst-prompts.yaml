@@ -1,0 +1,293 @@
+# ps-analyst Canonical Test Prompts
+# PROJ-036 Baseline Capture -- Stream 1C
+#
+# These prompts exercise ps-analyst's core competencies:
+#   - FMEA (Failure Mode and Effects Analysis) with RPN calculation
+#   - Gap analysis comparing current vs. desired state
+#   - Trade-off evaluation with weighted decision matrices
+#   - Root cause analysis (5 Whys, Ishikawa)
+#   - Convergent reasoning: evidence to focused recommendation
+#   - L0/L1/L2 output structure
+#
+# A degraded ps-analyst should fail to: complete FMEA with all fields (S, O, D, RPN),
+# distinguish root cause from symptom, or produce a weighted matrix with actual numbers.
+# A strong ps-analyst provides evidence-backed conclusions with specific actionable steps.
+#
+# BEHAVIOR ID CONVENTION:
+#   Behavior IDs (B-001 through B-005 per prompt) are prompt-scoped identifiers.
+#   They cross-reference behavioral contracts in:
+#   projects/PROJ-036-prompt-regression-harness/contracts/behavioral-contracts.md
+#   Mapping: FMEA completeness behaviors -> Section A.2 (agent-specific invariants);
+#            numeric correctness behaviors -> Section A (Structural Invariants, arithmetic);
+#            methodology behaviors -> Section B (Quality Bounds, methodological_rigor).
+#
+# G-EVAL CRITERIA:
+#   DeepEval G-Eval evaluates each run against the following criteria strings.
+#   These strings are the exact text passed to DeepEval's GEval metric constructor
+#   as the `criteria` parameter.
+
+agent: "ps-analyst"
+system_prompt_path: "skills/problem-solving/agents/ps-analyst.md"
+
+# G-Eval evaluation criteria (passed to DeepEval GEval metric as `criteria` parameter)
+# Applied to ALL prompts for this agent unless overridden at the prompt level.
+g_eval_criteria:
+  completeness: >
+    The output addresses all explicitly requested items in the prompt (all FMEA failure modes,
+    all gap analysis gaps, all 5 Why iterations, all options in a decision matrix, etc.).
+    Required sections L0, L1, L2 are present and substantive. No requested deliverable
+    (e.g., FMEA table, weighted matrix, root cause statement) is omitted.
+    Score 0.0 if a major deliverable is absent; score proportionally for partial completion.
+  internal_consistency: >
+    Numeric calculations are internally consistent: RPN = S x O x D (verify arithmetic),
+    weighted totals match stated weights, priority ratios match Impact/Effort values.
+    Conclusions in L0 are consistent with the detailed analysis in L1. No claim in one
+    section contradicts another. Score 0.0 if any arithmetic check fails.
+  methodological_rigor: >
+    The analysis applies the specified methodology correctly (FMEA with S/O/D/RPN fields,
+    5 Whys with root cause vs. intermediate cause distinction, weighted decision matrix
+    with dimension justification). Items are ordered as specified (RPN descending, priority
+    descending, etc.). Methodology steps are not skipped. Score proportionally for
+    methodology completeness and correctness.
+  evidence_quality: >
+    Scores, ratings, and assessments are accompanied by specific reasoning that references
+    the system description or analysis context. Generic rationale (e.g., "high severity
+    because it is bad") is insufficient. Quantitative claims (e.g., sigma estimates,
+    cost estimates) are sourced or derived. Score proportionally for reasoning specificity.
+  actionability: >
+    Recommended mitigations, closing actions, and fixes are specific and implementable.
+    A software engineer could act on the recommendation without further clarification.
+    Vague guidance (e.g., "improve the design") is insufficient. Short-term workarounds
+    are distinguished from long-term fixes where applicable. Score 0.0 if all
+    recommendations are generic.
+  traceability: >
+    The analysis traces back to the specific system description provided in the prompt.
+    Failure modes, gaps, or causes reference specific components or behaviors named in
+    the prompt. L2 strategic conclusions trace to specific L1 findings.
+    Score proportionally for traceability coverage.
+
+prompts:
+  - id: "P-PSA-001"
+    description: "FMEA analysis on a test harness component -- tests complete RPN calculation and risk-priority ordering"
+    # Behavior IDs cross-reference:
+    #   B-001 -> behavioral-contracts.md Section A.2 (ps-analyst invariant: FMEA field completeness)
+    #   B-002 -> behavioral-contracts.md Section A (Structural Invariant: RPN arithmetic correctness)
+    #   B-003 -> behavioral-contracts.md Section B (quality bounds: methodological_rigor, ordering)
+    #   B-004 -> behavioral-contracts.md Section B (quality bounds: evidence_quality, irreducibility reasoning)
+    #   B-005 -> behavioral-contracts.md Section A.1 (structural invariant: L2 presence with pattern analysis)
+    user_prompt: |
+      Perform a Failure Mode and Effects Analysis (FMEA) on the statistical comparison engine
+      of a prompt regression test harness.
+
+      The statistical engine:
+      - Collects N=30 quality scores per prompt per model version
+      - Runs Wilcoxon signed-rank tests to detect regressions between versions
+      - Computes Wilson score confidence intervals for pass rates
+      - Applies Bonferroni correction when testing 6 quality dimensions simultaneously
+
+      Identify at minimum 8 failure modes. For each failure mode, provide:
+      - Failure Mode ID (FM-001, FM-002, etc.)
+      - Description of the failure mode
+      - Effect on the system (what happens when this fails)
+      - Severity (S): 1-10 scale
+      - Occurrence (O): 1-10 scale
+      - Detection (D): 1-10 scale (1=easy to detect, 10=hard to detect)
+      - RPN: S x O x D
+      - Mitigation strategy
+
+      Order by RPN descending. Identify the highest-priority failure mode and explain why it is
+      structurally irreducible (i.e., cannot be eliminated, only mitigated).
+
+      Output: L0 (top 3 risks in plain language), L1 (full FMEA table), L2 (systemic risk patterns).
+    expected_behaviors:
+      - "B-001: Provides at least 8 failure modes with all required fields (FM-ID, description, effect, S, O, D, RPN, mitigation)"
+      - "B-002: All RPN values are correctly computed as S x O x D"
+      - "B-003: Failure modes are ordered by RPN descending"
+      - "B-004: Identifies one failure mode as structurally irreducible with explanation"
+      - "B-005: L2 section identifies a systemic pattern across multiple failure modes"
+    evaluation_metrics:
+      - "completeness"
+      - "methodological_rigor"
+      - "internal_consistency"
+      - "actionability"
+
+  - id: "P-PSA-002"
+    description: "Gap analysis with weighted evaluation matrix -- tests trade-off analysis against defined criteria"
+    # Behavior IDs cross-reference:
+    #   B-001 -> behavioral-contracts.md Section B (quality bounds: completeness, gap count)
+    #   B-002 -> behavioral-contracts.md Section A (Structural Invariant: numeric scoring presence)
+    #   B-003 -> behavioral-contracts.md Section B (quality bounds: methodological_rigor, priority ordering)
+    #   B-004 -> behavioral-contracts.md Section B (quality bounds: actionability, specific closing actions)
+    #   B-005 -> behavioral-contracts.md Section A.1 (structural invariant: L2 strategic content)
+    user_prompt: |
+      Perform a gap analysis comparing the current state of Jerry's quality measurement framework
+      against the desired state for a statistically rigorous prompt regression harness.
+
+      Current state:
+      - ps-critic produces a 0.92 quality gate based on a 6-dimension weighted composite
+      - Scoring is a point estimate (single pass of LLM-as-Judge)
+      - No confidence intervals on scores
+      - No statistical comparison between prompt versions
+      - No automated CI/CD gate blocking merge on regression
+
+      Desired state:
+      - Multiple runs per evaluation (N>=20) to characterize variance
+      - Wilcoxon signed-rank test for version comparison
+      - Wilson score confidence intervals on pass rates
+      - Automated PR-blocking CI/CD gate
+      - Regression classified as NO_REGRESSION / MARGINAL / REGRESSION
+
+      For each gap, provide:
+      - Gap ID and description
+      - Current capability (what we have)
+      - Desired capability (what we need)
+      - Impact score (1-5: how much does this gap reduce regression safety?)
+      - Effort score (1-5: how hard is this to close?)
+      - Priority: Impact / Effort ratio
+      - Closing action
+
+      Order by priority descending. Identify the highest-ROI gap to close first.
+
+      Output: L0 (which gap hurts us most right now), L1 (full gap analysis matrix), L2 (strategic sequencing rationale).
+    expected_behaviors:
+      - "B-001: Identifies at least 5 gaps from the current-vs-desired description"
+      - "B-002: Provides numeric Impact and Effort scores with priority ratio for each gap"
+      - "B-003: Orders gaps by priority and identifies the highest-ROI gap"
+      - "B-004: Closing actions are specific and implementable (not generic)"
+      - "B-005: L2 section addresses sequencing trade-offs (quick wins vs. foundational gaps)"
+    evaluation_metrics:
+      - "methodological_rigor"
+      - "completeness"
+      - "actionability"
+      - "traceability"
+
+  - id: "P-PSA-003"
+    description: "Root cause analysis using 5 Whys -- tests forensic convergent reasoning from symptom to root cause"
+    # Behavior IDs cross-reference:
+    #   B-001 -> behavioral-contracts.md Section A.2 (ps-analyst invariant: 5 Whys iteration count)
+    #   B-002 -> behavioral-contracts.md Section B (quality bounds: internal_consistency, root/intermediate distinction)
+    #   B-003 -> behavioral-contracts.md Section B (quality bounds: actionability, workaround + fix both present)
+    #   B-004 -> behavioral-contracts.md Section B (quality bounds: evidence_quality, confidence rationale)
+    #   B-005 -> behavioral-contracts.md Section A.1 (structural invariant: L2 systemic implications)
+    user_prompt: |
+      Apply the 5 Whys root cause analysis methodology to the following observed failure:
+
+      SYMPTOM: A prompt regression test harness produces a REGRESSION verdict for a PR that
+      contains only a minor formatting change to an agent's system prompt (whitespace cleanup).
+      The PR author is confident the change is semantically neutral. The harness blocks the merge.
+
+      Perform the 5 Whys analysis. For each "Why", provide:
+      - The question asked
+      - The answer and evidence basis
+      - Whether this is a root cause or an intermediate cause (and why)
+
+      Identify the true root cause (the deepest "Why" that, if fixed, would prevent recurrence).
+      Distinguish it from contributing factors.
+
+      Then provide:
+      1. Recommended fix for the root cause
+      2. Short-term workaround (unblock the PR without fixing the root cause)
+      3. Detection improvement: how would we detect this failure mode earlier in future?
+      4. Confidence assessment: high/medium/low confidence in root cause identification, with rationale
+
+      Output: L0 (what went wrong and how to fix it), L1 (full 5 Whys trace with fix options), L2 (systemic implications).
+    expected_behaviors:
+      - "B-001: Traces through exactly 5 Why iterations (not stopping early)"
+      - "B-002: Distinguishes root cause from intermediate causes explicitly"
+      - "B-003: Provides both short-term workaround AND long-term fix"
+      - "B-004: Confidence assessment with specific rationale (not generic)"
+      - "B-005: L2 discusses the systemic implication (e.g., what does this say about the harness design?)"
+    evaluation_metrics:
+      - "methodological_rigor"
+      - "completeness"
+      - "internal_consistency"
+      - "actionability"
+
+  - id: "P-PSA-004"
+    description: "Multi-criteria trade-off analysis with weighted decision matrix -- tests convergent option comparison"
+    # Behavior IDs cross-reference:
+    #   B-001 -> behavioral-contracts.md Section A (Structural Invariant: matrix completeness, 3x5)
+    #   B-002 -> behavioral-contracts.md Section A (Structural Invariant: weighted total arithmetic)
+    #   B-003 -> behavioral-contracts.md Section B (quality bounds: completeness, weakest dimension identified)
+    #   B-004 -> behavioral-contracts.md Section B (quality bounds: actionability, explicit recommendation)
+    #   B-005 -> behavioral-contracts.md Section B (quality bounds: methodological_rigor, sensitivity analysis)
+    user_prompt: |
+      Analyze the trade-offs between three approaches to LLM-as-Judge evaluation for a quality regression harness:
+
+      Option A: Single-pass LLM-as-Judge (one evaluation per output)
+      Option B: Multi-pass LLM-as-Judge with debiasing (position randomization + rubric shuffling, 3 evaluations averaged)
+      Option C: Ensemble judge (3 different model variants vote, majority rules)
+
+      Evaluation dimensions (with weights):
+      - Score reliability (0.30): consistency of scores across repeated evaluation of the same output
+      - Bias resistance (0.25): resistance to leniency, position, and verbosity biases
+      - API cost per evaluation (0.20): relative cost (1=cheapest, 5=most expensive)
+      - Implementation complexity (0.15): effort to implement correctly
+      - Interpretability (0.10): ability to explain why a score was given
+
+      For each option:
+      - Score each dimension 1-5
+      - Justify each score with specific reasoning
+      - Compute weighted total
+      - Identify the dimension where this option is weakest
+
+      State your recommendation and the key trade-off that most influenced the decision.
+
+      Output: L0 (recommendation in one sentence), L1 (full weighted matrix with justifications), L2 (when the recommendation changes under different weight assumptions).
+    expected_behaviors:
+      - "B-001: Provides complete 3x5 matrix with all 15 scores filled in and justified"
+      - "B-002: Weighted totals are correctly computed using the provided weights"
+      - "B-003: Identifies the weakest dimension for each option"
+      - "B-004: States explicit recommendation with key trade-off rationale"
+      - "B-005: L2 discusses sensitivity to weight changes (at minimum one alternative scenario)"
+    evaluation_metrics:
+      - "completeness"
+      - "methodological_rigor"
+      - "internal_consistency"
+      - "actionability"
+
+  - id: "P-PSA-005"
+    description: "Impact and dependency mapping -- tests ability to analyze second-order effects from a change"
+    # Behavior IDs cross-reference:
+    #   B-001 -> behavioral-contracts.md Section B (quality bounds: methodological_rigor, order separation)
+    #   B-002 -> behavioral-contracts.md Section B (quality bounds: actionability, sequencing specificity)
+    #   B-003 -> behavioral-contracts.md Section B (quality bounds: internal_consistency, circular dep handling)
+    #   B-004 -> behavioral-contracts.md Section B (quality bounds: evidence_quality, risk specificity)
+    #   B-005 -> behavioral-contracts.md Section A.1 (structural invariant: L2 long-term implications)
+    user_prompt: |
+      Analyze the impact of the following change on the Jerry Framework:
+
+      PROPOSED CHANGE: Pin all 5 target agents (ps-researcher, ps-analyst, ps-architect,
+      ps-critic, adv-scorer) to claude-sonnet-4-20250514 in the test harness configuration,
+      while keeping the main Jerry framework using whatever the current default model is.
+
+      Map the direct impacts and second-order dependencies:
+
+      First-order impacts (direct effects of the change):
+      - List each system component directly affected
+      - Describe how it is affected
+
+      Second-order impacts (effects of the first-order effects):
+      - What breaks or changes because of the first-order effects?
+
+      Dependency graph:
+      - Which components must be updated BEFORE this change is viable?
+      - Which components can be updated AFTER?
+      - Are there any circular dependencies?
+
+      Risk assessment:
+      - What is the highest-risk dependency in this chain?
+      - What could go wrong that the impact map does not capture?
+
+      Output: L0 (is this change safe to make now?), L1 (full impact map with dependency graph), L2 (long-term implications of model version divergence).
+    expected_behaviors:
+      - "B-001: Separates first-order from second-order impacts explicitly"
+      - "B-002: Provides a sequencing recommendation (what must happen before vs. after)"
+      - "B-003: Identifies circular dependencies if any exist, or explicitly states none found"
+      - "B-004: Risk assessment names the highest-risk dependency with specific reasoning"
+      - "B-005: L2 addresses the long-term model version divergence risk"
+    evaluation_metrics:
+      - "completeness"
+      - "methodological_rigor"
+      - "actionability"
+      - "internal_consistency"

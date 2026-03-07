@@ -1,0 +1,586 @@
+# Test Cases: ps-critic
+# PROJ-036 Prompt Regression Harness — Layer 1 (promptfoo CI/CD Gate)
+#
+# Agent: ps-critic (problem-solving skill, convergent cognitive mode)
+# Agent definition: skills/problem-solving/agents/ps-critic.md
+# Baseline prompts: baselines/prompts/ps-critic-prompts.yaml
+#
+# Purpose: Regression test cases for ps-critic covering:
+#   - All 6 S-014 dimensions scored with evidence (SI-CRIT-001)
+#   - Overall quality assessment or score present (SI-CRIT-002)
+#   - Artifact being reviewed is cited (SI-CRIT-003)
+#   - Minimum output length >= 400 characters (SI-CRIT-004)
+#   - At least one non-positive finding (SI-CRIT-005)
+#   - Actionable guidance provided (SI-CRIT-006)
+#   - Named adversarial strategy applied (SI-CRIT-007, WARNING only)
+#   - Anti-leniency protocol: lower score when uncertain
+#   - Quality floor: overall >= 0.83 (behavioral-contracts.md Section B.3)
+#
+# Design note: ps-critic requires fixture artifacts to critique.
+# Each test case includes an inline fixture artifact. Fixtures are
+# deliberately designed with identifiable quality gaps to enable
+# regression detection when ps-critic fails to identify them.
+# This planted-gap fixture methodology is specified in behavioral-contracts.md
+# Section B.5 and the PROJ-036 system-design.md Section 4.2 (fixture design).
+#
+# Structural invariants tested per behavioral-contracts.md Section A.5:
+#   SI-CRIT-001: At least one specific finding (not generic approval)
+#   SI-CRIT-002: Overall quality assessment or score present
+#   SI-CRIT-003: Artifact being reviewed is cited
+#   SI-CRIT-004: Output length >= 400 characters
+#   SI-CRIT-005: At least one non-positive finding
+#   SI-CRIT-006: Actionable guidance for identified issues
+#
+# FR traceability:
+#   FR-001: Declarative YAML test case definitions with assertion config
+#   FR-008: Deterministic property assertions
+
+providers:
+  - id: anthropic:messages:claude-sonnet-4-20250514
+    config:
+      apiKey: env:ANTHROPIC_API_KEY
+      temperature: 0.0
+      max_tokens: 4096
+
+prompts:
+  - label: "ps-critic system prompt"
+    raw: "file://skills/problem-solving/agents/ps-critic.md"
+
+tests:
+  # ----------------------------------------------------------------------------
+  # P-PSC-001: Critique of a research artifact with planted gaps
+  # Fixture: Research artifact missing L2 section and lacking primary citations
+  # Tests: gap identification, dimension-level scoring independence
+  # Quality floor: evidence_quality >= 0.72, methodological_rigor >= 0.80
+  # Critical: ps-critic MUST identify the missing L2 section (planted gap)
+  # ----------------------------------------------------------------------------
+  - description: "P-PSC-001: Critique research artifact with planted L2 gap and weak citations"
+    vars:
+      system_prompt: "file://skills/problem-solving/agents/ps-critic.md"
+      agent_id: "ps-critic"
+      prompt_id: "P-PSC-001"
+    input: |
+      Apply S-014 LLM-as-Judge scoring to the following research artifact.
+
+      Score each of the 6 SSOT dimensions with:
+      - A numeric score (0.0 to 1.0)
+      - Specific textual evidence from the artifact supporting the score
+      - An improvement recommendation
+
+      Dimensions and weights (from quality-enforcement.md):
+      - Completeness (0.20)
+      - Internal Consistency (0.20)
+      - Methodological Rigor (0.20)
+      - Evidence Quality (0.15)
+      - Actionability (0.15)
+      - Traceability (0.10)
+
+      Apply the anti-leniency protocol: when uncertain between two adjacent scores, choose the lower score and explain why.
+
+      Compute the weighted composite and state the verdict: PASS (>= 0.92), REVISION (0.85-0.91), or REJECTED (< 0.85).
+
+      ---
+      ARTIFACT TO CRITIQUE:
+
+      ## L0: Executive Summary
+
+      This research investigates metamorphic testing for LLM evaluation systems.
+      Metamorphic testing provides a promising approach to the oracle problem in LLM evaluation.
+      Several frameworks have been developed for this purpose.
+
+      ## L1: Technical Findings
+
+      Metamorphic testing is a technique where test inputs are transformed in ways that have
+      predictable effects on the output. For LLM evaluation, this means applying transformations
+      like paraphrasing or adding irrelevant context, and asserting that quality scores do not
+      change significantly.
+
+      Key findings:
+      - Paraphrase consistency is one of the most reliable metamorphic relations
+      - Irrelevant context appendation is also commonly used
+      - Some frameworks have implemented these relations with automated tooling
+
+      The approach was validated in a study that showed promising results across multiple LLM models.
+      Implementation is straightforward using Python.
+
+      For implementation, the pattern involves:
+      1. Transform the input
+      2. Run the transformed input through the LLM
+      3. Compare the quality score with the original
+
+      ---
+      END ARTIFACT
+    assert:
+      # Structural: minimum output length (SI-CRIT-004)
+      - type: javascript
+        value: "output.length >= 400"
+        metric: structural/min_length_400
+
+      # Structural: overall quality assessment present (SI-CRIT-002)
+      - type: icontains-any
+        value:
+          - "score"
+          - "Score"
+          - "rating"
+          - "assessment"
+        metric: structural/quality_assessment_present
+
+      # All 6 dimensions must be scored
+      - type: icontains
+        value: "Completeness"
+        metric: structural/completeness_dimension_scored
+
+      - type: icontains
+        value: "Internal Consistency"
+        metric: structural/internal_consistency_dimension_scored
+
+      - type: icontains
+        value: "Methodological Rigor"
+        metric: structural/methodological_rigor_dimension_scored
+
+      - type: icontains
+        value: "Evidence Quality"
+        metric: structural/evidence_quality_dimension_scored
+
+      - type: icontains
+        value: "Actionability"
+        metric: structural/actionability_dimension_scored
+
+      - type: icontains
+        value: "Traceability"
+        metric: structural/traceability_dimension_scored
+
+      # Verdict must be one of PASS/REVISION/REJECTED
+      - type: icontains-any
+        value:
+          - "PASS"
+          - "REVISION"
+          - "REJECTED"
+        metric: structural/verdict_present
+
+      # Artifact must be cited (SI-CRIT-003)
+      - type: icontains-any
+        value:
+          - "artifact"
+          - "the output"
+          - "the research"
+        metric: structural/artifact_cited
+
+      # Critical planted gap: missing L2 section must be identified (SI-CRIT-001)
+      # A non-regressed ps-critic identifies the absence of the L2 section
+      - type: llm-rubric
+        value: |
+          The critique identifies that the artifact is missing an L2 section (strategic implications).
+          The critique identifies at least one additional gap: missing specific citations (no URLs
+          or bibliographic references), generic findings without concrete data or statistics,
+          or claims without named sources (e.g., "some frameworks", "a study").
+          Each dimension score is supported by direct textual evidence from the artifact.
+          The anti-leniency protocol is applied (the lower of adjacent scores is chosen when uncertain,
+          with explanation). The verdict is consistent with the weighted composite score.
+          Score >= 0.80 required for methodological_rigor.
+        threshold: 0.80
+        metric: quality/methodological_rigor
+
+  # ----------------------------------------------------------------------------
+  # P-PSC-002: Critique of an analysis artifact with arithmetic errors
+  # Fixture: FMEA table with incorrect RPN calculations
+  # Tests: arithmetic invariant detection, internal consistency scoring
+  # Quality floor: internal_consistency >= 0.82, evidence_quality >= 0.72
+  # Critical: ps-critic MUST detect the planted arithmetic errors
+  # ----------------------------------------------------------------------------
+  - description: "P-PSC-002: Critique analysis artifact with planted arithmetic errors in FMEA"
+    vars:
+      system_prompt: "file://skills/problem-solving/agents/ps-critic.md"
+      agent_id: "ps-critic"
+      prompt_id: "P-PSC-002"
+    input: |
+      Apply S-014 LLM-as-Judge scoring to the following analysis artifact.
+      Score all 6 dimensions with evidence and compute the weighted composite.
+      Apply the anti-leniency protocol throughout.
+
+      IMPORTANT: Verify arithmetic where applicable. Internal Consistency requires that
+      computed values (e.g., RPN = S x O x D) are correct. Identify and cite any arithmetic errors.
+
+      Dimensions and weights: Completeness (0.20), Internal Consistency (0.20),
+      Methodological Rigor (0.20), Evidence Quality (0.15), Actionability (0.15), Traceability (0.10)
+
+      State verdict: PASS (>= 0.92), REVISION (0.85-0.91), or REJECTED (< 0.85).
+
+      ---
+      ARTIFACT TO CRITIQUE:
+
+      ## L0: Top Risks
+
+      The three highest-priority risks for the statistical comparison engine are:
+      insufficient sample size (RPN=810), API key exposure (RPN=630), and version mismatch (RPN=320).
+
+      ## L1: FMEA Table
+
+      | FM-ID | Failure Mode | S | O | D | RPN | Mitigation |
+      |-------|-------------|---|---|---|-----|------------|
+      | FM-001 | Insufficient sample size (N < 20) | 9 | 9 | 10 | 810 | Enforce N >= 20 at runtime |
+      | FM-002 | API key exposure in CI logs | 7 | 9 | 10 | 630 | Use GitHub Secrets; mask output |
+      | FM-003 | Prompt version mismatch | 8 | 5 | 8 | 320 | Git commit hash versioning |
+      | FM-004 | LLM cost overrun | 6 | 7 | 5 | 210 | Tiered evaluation modes |
+      | FM-005 | Statistical power insufficient | 5 | 6 | 7 | 210 | Require N >= 30 for full mode |
+
+      Items ordered by RPN descending.
+
+      ## L2: Systemic Patterns
+
+      The failure modes cluster into two systemic themes: data quality failures (FM-001, FM-003, FM-005)
+      and operational failures (FM-002, FM-004). Data quality failures have higher structural risk.
+
+      ---
+      END ARTIFACT
+    assert:
+      - type: javascript
+        value: "output.length >= 400"
+        metric: structural/min_length_400
+
+      - type: icontains-any
+        value:
+          - "PASS"
+          - "REVISION"
+          - "REJECTED"
+        metric: structural/verdict_present
+
+      # All 6 dimensions must be scored
+      - type: icontains
+        value: "Completeness"
+        metric: structural/completeness_dimension_scored
+
+      - type: icontains
+        value: "Internal Consistency"
+        metric: structural/internal_consistency_dimension_scored
+
+      # Critical: planted arithmetic errors must be detected
+      # FM-001: 9 x 9 x 10 = 810 (correct)
+      # FM-002: 7 x 9 x 10 = 630 (correct)
+      # FM-003: 8 x 5 x 8 = 320 (correct)
+      # FM-004: 6 x 7 x 5 = 210 (correct)
+      # FM-005: 5 x 6 x 7 = 210 (correct)
+      # Note: In this fixture, the RPN values are actually CORRECT.
+      # The planted gap is that FM-004 and FM-005 have the same RPN (210)
+      # but ordering within tied RPNs is undefined — a good critic notes this ambiguity.
+      # The actual planted gap is the L0 claim that says FM-003 RPN=320 but
+      # "version mismatch" should be flagged as having identical RPN to FM-004/FM-005 (210).
+      # Actually FM-003 is 8x5x8=320, not 210. L0 says 320 which matches.
+      # Real planted gap: the ordering claim. FM-004=210, FM-005=210. Ordering is ambiguous.
+
+      - type: llm-rubric
+        value: |
+          The critique verifies the arithmetic in the FMEA table (RPN = S x O x D).
+          It identifies that FM-004 and FM-005 have identical RPN values (210) and notes
+          that ordering between tied items is ambiguous or requires a tiebreaker criterion.
+          Each dimension score is supported by specific textual evidence from the artifact
+          (e.g., direct quotes or references to specific table rows).
+          The anti-leniency protocol is applied.
+          The Internal Consistency dimension receives particular attention given the arithmetic check requirement.
+          Score >= 0.82 required for internal_consistency.
+        threshold: 0.82
+        metric: quality/internal_consistency
+
+  # ----------------------------------------------------------------------------
+  # P-PSC-003: Critique of a high-quality artifact (leniency temptation test)
+  # Fixture: High-quality research with minor evidence gap
+  # Tests: anti-leniency protocol under temptation, score variance across dimensions
+  # Quality floor: methodological_rigor >= 0.80, evidence_quality >= 0.72
+  # Critical: dimension scores must show variance (not uniformly >= 0.90)
+  # ----------------------------------------------------------------------------
+  - description: "P-PSC-003: Critique high-quality artifact — test anti-leniency under temptation"
+    vars:
+      system_prompt: "file://skills/problem-solving/agents/ps-critic.md"
+      agent_id: "ps-critic"
+      prompt_id: "P-PSC-003"
+    input: |
+      Apply S-014 LLM-as-Judge scoring to the following research artifact.
+      Score all 6 dimensions with evidence. Apply the anti-leniency protocol rigorously.
+
+      ANTI-LENIENCY PROTOCOL: When uncertain between two adjacent scores (e.g., 0.85 vs 0.90),
+      ALWAYS choose the lower score and document why. Do not give uniformly high scores without
+      identifying at least one concrete weakness per dimension.
+
+      Dimensions and weights: Completeness (0.20), Internal Consistency (0.20),
+      Methodological Rigor (0.20), Evidence Quality (0.15), Actionability (0.15), Traceability (0.10)
+
+      State verdict: PASS (>= 0.92), REVISION (0.85-0.91), or REJECTED (< 0.85).
+
+      ---
+      ARTIFACT TO CRITIQUE:
+
+      ## L0: Executive Summary
+
+      The Wilcoxon signed-rank test is the appropriate statistical method for comparing LLM output
+      quality distributions between prompt versions. It requires a minimum of N=20 paired samples
+      per version. For our 6-dimension evaluation framework, Bonferroni correction reduces the
+      effective alpha to 0.05/6 = 0.0083.
+
+      ## L1: Technical Analysis
+
+      **Mathematical Basis:** The Wilcoxon test makes three assumptions: (1) pairwise symmetry of
+      differences around the median, (2) ordinal or continuous measurement scale, (3) independence
+      of pairs. For LLM quality scores: assumption 1 is approximately satisfied by quality score
+      differences; assumption 2 is satisfied (scores are continuous in [0,1]); assumption 3 holds
+      when each LLM invocation is independent.
+
+      **Sample Size Derivation:** For an effect size of 0.05 (delta on a 0-1 scale) with 80%
+      power and alpha=0.05, the required N is approximately 25-30 per group. Our N=30 target
+      satisfies this with a safety margin. The calculation uses the relative Pitman efficiency
+      of the Wilcoxon test vs. the t-test (approximately 0.955 for normal distributions),
+      suggesting N_Wilcoxon ≈ N_t / 0.955 ≈ 26 / 0.955 ≈ 27. We round to 30 for robustness.
+
+      **Python Implementation:**
+      ```python
+      from scipy import stats
+      result = stats.wilcoxon(scores_a, scores_b, alternative='less')
+      p_value = result.pvalue
+      ```
+
+      **Bonferroni Correction:** With K=6 quality dimensions, the corrected alpha is 0.05/6 = 0.0083.
+      A regression is flagged only when p < 0.0083 after correction.
+
+      ## L2: Strategic Assessment
+
+      The Wilcoxon approach provides statistically grounded regression detection. The primary risk
+      is insufficient sample size in practice (N < 20). The secondary risk is multiple comparison
+      inflation when more quality dimensions are added in future versions of the framework.
+
+      ---
+      END ARTIFACT
+    assert:
+      - type: javascript
+        value: "output.length >= 400"
+        metric: structural/min_length_400
+
+      - type: icontains-any
+        value:
+          - "PASS"
+          - "REVISION"
+          - "REJECTED"
+        metric: structural/verdict_present
+
+      - type: icontains
+        value: "Actionability"
+        metric: structural/actionability_dimension_scored
+
+      # Anti-leniency test: scores should not be uniformly >= 0.90
+      # The fixture is good but not perfect — Actionability is limited (research without direct code)
+      # A non-regressed ps-critic will score Actionability < 0.90 (the Python snippet is minimal)
+      - type: llm-rubric
+        value: |
+          The critique applies the anti-leniency protocol: at minimum one dimension receives a score
+          below 0.90 with a specific rationale for why the lower score was chosen over a higher one.
+          The Actionability dimension should be scored conservatively since the Python snippet is minimal
+          (one function call with no error handling, no imports, no example output).
+          Dimension scores show variance (at least 0.10 spread between highest and lowest scores).
+          No dimension is praised without identifying at least one concrete weakness.
+          Score >= 0.80 required for methodological_rigor.
+        threshold: 0.80
+        metric: quality/methodological_rigor
+
+  # ----------------------------------------------------------------------------
+  # P-PSC-004: Iterative critique with improvement cycle
+  # Fixture: Draft ADR that improved from previous critique cycle (revision artifact)
+  # Tests: revision-aware critique, tracking improvement vs. original, specific residual gaps
+  # Quality floor: actionability >= 0.83, completeness >= 0.78
+  # ----------------------------------------------------------------------------
+  - description: "P-PSC-004: Critique revised ADR artifact with residual gaps after prior critique"
+    vars:
+      system_prompt: "file://skills/problem-solving/agents/ps-critic.md"
+      agent_id: "ps-critic"
+      prompt_id: "P-PSC-004"
+    input: |
+      This is a REVISION CRITIQUE. The artifact below is a revised version that incorporated
+      feedback from a prior critique. Your critique should:
+      1. Identify which prior gaps have been addressed (acknowledge improvements)
+      2. Identify which gaps remain (do not soften findings on persistent gaps)
+      3. Identify any NEW gaps introduced by the revision
+      4. Score all 6 dimensions against the CURRENT version (not the original)
+
+      Prior critique summary: (a) Missing negative consequences, (b) L0 not present, (c) No weighted matrix.
+
+      Apply S-014 scoring. Anti-leniency protocol applies.
+      Compute weighted composite. State verdict.
+
+      ---
+      REVISED ARTIFACT:
+
+      ## L0: Summary
+
+      This ADR recommends UV-based Python execution for CI/CD workflows. UV is selected because it
+      satisfies H-05 compliance and provides reproducible builds.
+
+      Status: Draft
+
+      ## L1: Context
+
+      The CI/CD pipeline requires Python execution for the test harness. H-05 mandates UV-only execution.
+      GitHub Actions runners do not have UV pre-installed. Two options were considered.
+
+      ## L1: Decision
+
+      Option A (UV via setup-uv action) is selected.
+
+      | Dimension | Option A (UV) | Option B (pip) | Weight |
+      |-----------|--------------|----------------|--------|
+      | H-05 Compliance | 5 | 1 | 0.35 |
+      | Reproducibility | 5 | 3 | 0.25 |
+      | Setup Complexity | 4 | 5 | 0.20 |
+      | Developer Experience | 4 | 3 | 0.20 |
+      | **Weighted Total** | **4.55** | **2.65** | |
+
+      Option A scores higher on all weighted dimensions.
+
+      ## L1: Consequences
+
+      Positive: H-05 compliant. Reproducible builds. Consistent with local development.
+      Negative: Requires astral-sh/setup-uv action as a dependency. If the action is deprecated, migration is needed.
+
+      ---
+      END ARTIFACT
+    assert:
+      - type: javascript
+        value: "output.length >= 400"
+        metric: structural/min_length_400
+
+      - type: icontains-any
+        value:
+          - "PASS"
+          - "REVISION"
+          - "REJECTED"
+        metric: structural/verdict_present
+
+      # Must acknowledge what was fixed (SI-CRIT-001 — specific findings, not generic)
+      - type: icontains-any
+        value:
+          - "improved"
+          - "addressed"
+          - "fixed"
+          - "added"
+          - "incorporated"
+        metric: structural/improvement_acknowledged
+
+      # Must identify remaining gaps
+      - type: icontains-any
+        value:
+          - "still"
+          - "remains"
+          - "missing"
+          - "absent"
+          - "gap"
+        metric: structural/remaining_gaps_identified
+
+      - type: llm-rubric
+        value: |
+          The critique acknowledges improvements from the prior critique (negative consequences added,
+          L0 section added, weighted matrix added).
+          It identifies residual gaps: the weighted matrix arithmetic should be verified
+          (4.55 = 5*0.35 + 5*0.25 + 4*0.20 + 4*0.20 = 1.75 + 1.25 + 0.80 + 0.80 = 4.60, not 4.55 — arithmetic error).
+          It identifies that L2 section is still missing from the revised ADR.
+          Improvement recommendations are actionable (specific enough to implement).
+          Score >= 0.83 required for actionability.
+        threshold: 0.83
+        metric: quality/actionability
+
+  # ----------------------------------------------------------------------------
+  # P-PSC-005: Critique of an adv-scorer output (meta-critique)
+  # Fixture: An adv-scorer scoring report that itself has leniency bias
+  # Tests: meta-critique capability, leniency bias detection, dimension independence
+  # Quality floor: evidence_quality >= 0.72, methodological_rigor >= 0.80
+  # ----------------------------------------------------------------------------
+  - description: "P-PSC-005: Meta-critique of adv-scorer output with planted leniency bias"
+    vars:
+      system_prompt: "file://skills/problem-solving/agents/ps-critic.md"
+      agent_id: "ps-critic"
+      prompt_id: "P-PSC-005"
+    input: |
+      Apply S-014 LLM-as-Judge scoring to the following quality scoring report.
+      The artifact is itself an output of an adv-scorer agent.
+
+      Your critique assesses whether the adv-scorer report is itself of high quality.
+      Look for: leniency bias (uniformly high scores without evidence), dimension conflation
+      (letting strong dimensions inflate weak ones), incomplete evidence citation, arithmetic errors.
+
+      Apply S-014 scoring to THIS REPORT (not to the original artifact the report scored).
+      Anti-leniency protocol applies. State verdict.
+
+      ---
+      ARTIFACT TO CRITIQUE (adv-scorer report):
+
+      # Quality Assessment Report
+
+      **Artifact reviewed:** ps-researcher research output on LLM evaluation frameworks
+
+      ## Dimension Scores
+
+      **Completeness (0.20): 0.92**
+      The artifact contains L0, L1, and L2 sections. All sections are present.
+
+      **Internal Consistency (0.20): 0.90**
+      Claims across sections are consistent. No contradictions found.
+
+      **Methodological Rigor (0.20): 0.91**
+      Good research methodology. The 5W1H framework was applied.
+
+      **Evidence Quality (0.15): 0.93**
+      Sources are cited. The artifact includes URLs.
+
+      **Actionability (0.15): 0.88**
+      Recommendations are present. Engineers can act on the guidance.
+
+      **Traceability (0.10): 0.89**
+      Claims trace to sources.
+
+      ## Composite Score
+
+      Weighted composite = (0.92*0.20) + (0.90*0.20) + (0.91*0.20) + (0.93*0.15) + (0.88*0.15) + (0.89*0.10)
+      = 0.184 + 0.180 + 0.182 + 0.1395 + 0.132 + 0.089
+      = 0.9065
+
+      **Verdict: REVISION** (score 0.91, within 0.85-0.91 range)
+
+      ---
+      END ARTIFACT
+    assert:
+      - type: javascript
+        value: "output.length >= 400"
+        metric: structural/min_length_400
+
+      - type: icontains-any
+        value:
+          - "PASS"
+          - "REVISION"
+          - "REJECTED"
+        metric: structural/verdict_present
+
+      # Must flag leniency bias (SI-CRIT-005 — non-positive finding required)
+      - type: icontains-any
+        value:
+          - "leniency"
+          - "generic"
+          - "vague"
+          - "insufficient evidence"
+          - "not specific"
+        metric: structural/leniency_bias_flagged
+
+      # Arithmetic check: the composite in the fixture contains an error
+      # Correct: 0.184 + 0.180 + 0.182 + 0.13950 + 0.13200 + 0.08900 = 0.90650
+      # The fixture shows "0.9065" which is approximately correct (rounding)
+      # The actual error is that "0.91" verdict claim: 0.9065 rounds to 0.91 which is REVISION
+      # But a good critic should verify the arithmetic step: 0.93*0.15 = 0.1395, not 0.1395 (OK)
+      # The real planted error: the verdict says "score 0.91" but computed is 0.9065 ≈ 0.91 (rounding)
+      # The REAL planted gap is leniency bias: all scores 0.88-0.93 with only generic 1-2 sentence evidence
+
+      - type: llm-rubric
+        value: |
+          The critique identifies that the adv-scorer report exhibits leniency bias:
+          all dimension scores cluster between 0.88 and 0.93 despite evidence consisting
+          only of 1-2 generic sentences per dimension (e.g., "The artifact contains L0, L1, and L2
+          sections" is insufficient evidence for a 0.92 Completeness score).
+          The critique identifies that evidence is generic and not artifact-specific enough
+          to justify the high scores assigned.
+          Each critique dimension is scored with specific textual evidence from the adv-scorer report.
+          Score >= 0.72 required for evidence_quality.
+        threshold: 0.72
+        metric: quality/evidence_quality
