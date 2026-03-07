@@ -51,7 +51,7 @@ def _simple_yaml_parse(content: str) -> dict:
 
     result: dict = {}
     stack: list[tuple[int, dict | list, str | None]] = [(0, result, None)]
-    lines = content.split("\n")
+    lines = content.splitlines()
 
     for line in lines:
         # Skip empty lines and comments

@@ -87,7 +87,7 @@ class TestProjectIsolation:
             if "orchestration" in rel_parts:
                 continue
 
-            content = md_file.read_text()
+            content = md_file.read_text(encoding="utf-8")
             matches = cross_ref_pattern.findall(content)
 
             assert len(matches) == 0, (
@@ -150,7 +150,7 @@ class TestNoDeprecatedPatterns:
             if "tests" in str(md_file) or "BUG-" in md_file.name:
                 continue
 
-            content = md_file.read_text()
+            content = md_file.read_text(encoding="utf-8")
             matches = regex.findall(content)
 
             assert len(matches) == 0, (
@@ -168,7 +168,7 @@ class TestNoDeprecatedPatterns:
         absolute_path_pattern = re.compile(r"/Users/|/home/|C:\\|D:\\")
 
         for md_file in proj_root.rglob("*.md"):
-            content = md_file.read_text()
+            content = md_file.read_text(encoding="utf-8")
 
             # Skip files with code blocks (which might contain examples)
             if "```" in content:
@@ -279,7 +279,7 @@ class TestRegressionPrevention:
                 continue
 
             for file_path in category_dir.glob("*.md"):
-                content = file_path.read_text()
+                content = file_path.read_text(encoding="utf-8")
                 matches = bug001_pattern.findall(content)
 
                 assert len(matches) == 0, (
@@ -302,7 +302,7 @@ class TestRegressionPrevention:
             if "tests" in str(md_file) or "BUG-" in md_file.name:
                 continue
 
-            content = md_file.read_text()
+            content = md_file.read_text(encoding="utf-8")
             matches = old_pattern.findall(content)
 
             assert len(matches) == 0, (

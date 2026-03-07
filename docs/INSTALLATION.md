@@ -458,7 +458,90 @@ These files survive context compaction and session boundaries. That's Jerry's co
 
 See [CONTRIBUTING.md](https://github.com/geekatron/jerry/blob/main/CONTRIBUTING.md) for full development setup, coding standards, and platform-specific notes.
 
-**Quick start:**
+**Solution:** Update Claude Code to the latest version:
+- **macOS (Homebrew):** `brew upgrade claude-code`
+- **npm:** `npm update -g @anthropic-ai/claude-code`
+
+Plugin support requires Claude Code version 1.0.33 or later.
+
+### Plugin Not Found After Adding Marketplace
+
+**Symptom:** `/plugin install jerry-framework@jerry` returns "plugin not found"
+
+**Solutions:**
+1. Verify the marketplace was added: `/plugin marketplace list`
+2. Check the path is correct and Jerry was cloned successfully
+3. Refresh the marketplace: `/plugin marketplace update jerry`
+4. Verify the manifest exists: `cat ~/plugins/jerry/.claude-plugin/plugin.json`
+
+### uv: command not found
+
+**Symptom:** Hooks fail with "uv: command not found"
+
+**Solution (macOS):**
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+# Restart your terminal
+```
+
+**Solution (Windows):**
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+# Close and reopen PowerShell
+```
+
+If still not found, add to PATH manually:
+- macOS: `export PATH="$HOME/.local/bin:$PATH"` (add to `~/.zshrc`)
+- Windows: Add `%USERPROFILE%\.local\bin` to System PATH
+
+### Skills Not Appearing
+
+**Symptom:** Installed plugin but `/problem-solving` doesn't work
+
+**Solutions:**
+1. Check the **Errors** tab in `/plugin`
+2. Clear the plugin cache:
+   - macOS: `rm -rf ~/.claude/plugins/cache`
+   - Windows: `Remove-Item -Recurse -Force "$env:USERPROFILE\.claude\plugins\cache"`
+3. Restart Claude Code
+4. Reinstall the plugin: `/plugin uninstall jerry-framework@jerry` then `/plugin install jerry-framework@jerry`
+
+### Pre-commit Hooks Failing or Not Running
+
+**Symptom:** Commits succeed without running tests, or hooks fail with "python not found" / "No such file or directory"
+
+**Cause:** The `pre-commit install` command stamps an absolute path to the Python interpreter into `.git/hooks/pre-commit`. This path goes stale when you:
+- Create a **git worktree** (the new worktree doesn't have the venv at the stamped path)
+- **Rebuild** the virtual environment (`rm -rf .venv && uv sync`)
+- **Move** the repository to a different directory
+
+**Solution:**
+```bash
+# macOS / Linux
+make setup
+
+# Windows
+uv sync && uv run pre-commit install
+```
+
+This regenerates the hook file with the correct Python path. The Jerry session start hook will also warn you automatically if it detects a stale path.
+
+### Path Issues on Windows
+
+**Symptom:** "path not found" when adding marketplace
+
+**Solutions:**
+- Use forward slashes in Claude Code: `C:/Users/name/plugins/jerry`
+- Or use short path: `~/plugins/jerry` (if using Git Bash paths)
+- Avoid using backslashes or environment variables in the Claude Code command
+
+---
+
+## For Developers
+
+If you want to contribute to Jerry development, you'll need Python 3.11+ and [uv](https://docs.astral.sh/uv/).
+
+### Development Setup
 
 **macOS / Linux:**
 ```bash

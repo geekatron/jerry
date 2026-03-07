@@ -44,6 +44,21 @@
 set -euo pipefail
 
 # ============================================================================
+# PLATFORM GUARD: Skip on Windows (Git Bash / MSYS2 / Cygwin)
+# ============================================================================
+# This script relies on `find -type l`, `readlink`, and symlink semantics
+# that differ significantly on Windows. On Windows, symlinks require elevated
+# privileges and behave differently from Unix symlinks.
+case "$(uname -s)" in
+    MINGW*|MSYS*|CYGWIN*)
+        echo "[SKIP] verify-symlinks.sh: Windows detected ($(uname -s))"
+        echo "       Symlink verification is not supported on Windows."
+        echo "       Run this script in WSL or on a Linux/macOS system."
+        exit 0
+        ;;
+esac
+
+# ============================================================================
 # CONFIGURATION
 # ============================================================================
 

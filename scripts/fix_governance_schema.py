@@ -109,7 +109,7 @@ def fix_file(path: Path, dry_run: bool) -> tuple[bool, str]:
 
     # Preserve header comments
     header_lines = []
-    for line in content.split("\n"):
+    for line in content.splitlines():
         if line.startswith("#") or line.strip() == "":
             header_lines.append(line)
         else:

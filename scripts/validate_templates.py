@@ -157,7 +157,7 @@ def parse_markdown_table(table_text: str) -> list[dict[str, str]]:
     Returns:
         List of dictionaries mapping header names to cell values
     """
-    lines = [line.strip() for line in table_text.strip().split("\n")]
+    lines = [line.strip() for line in table_text.strip().splitlines()]
     if len(lines) < 3:
         return []
 
