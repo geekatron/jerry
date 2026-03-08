@@ -35,7 +35,7 @@
 #
 # Security controls per system-design.md Part 3 threat model:
 #   MC-07: Docker hardened execution (read-only, cap-drop, no-new-privileges)
-#   MC-08: Docker image pinned to SHA digest
+#   MC-08: Docker image pinned to version tag 0.86.0 (not :latest); SHA digest pending Docker daemon availability — see CG-007 inline
 #   MC-09: Output volume validation before statistical consumption
 #   MC-10: Read-only config mounts (:ro)
 #   MC-13: Docker memory (4g) and CPU (4) limits — Full tier needs more resources
@@ -126,6 +126,8 @@ env:
   TOKEN_CEILING_THOUSANDS: "5000"
   # Bonferroni K for full evaluation suite (system-design.md §1.5 Pattern 3)
   BONFERRONI_K_FULL: "13"
+  # DeepEval telemetry opt-out (CG-016)
+  DEEPEVAL_TELEMETRY_OPT_OUT: "YES"
 
 jobs:
   # ==========================================================================
@@ -271,12 +273,11 @@ jobs:
           # FR-010: Metamorphic relations MR-001 through MR-005 executed.
           #
           # MC-07/MC-14: Docker hardening parameters
-          # MC-08: Digest-pinned promptfoo image (update hash when upgrading)
           # MC-13: Larger resource limits for Full tier (4g memory, 4 CPU)
+          # CG-007: Version-pinned Docker image (supply chain security).
+          # To upgrade to SHA pinning: docker pull <tag> && docker inspect --format='{{index .RepoDigests 0}}' <tag>
+          # Then replace the tag with the @sha256: digest.
           PROMPTFOO_IMAGE="ghcr.io/promptfoo/promptfoo:0.86.0"
-          # MC-08 TODO: Pin to SHA digest before production. Run:
-          #   docker pull ghcr.io/promptfoo/promptfoo:0.86.0
-          #   docker inspect --format='{{index .RepoDigests 0}}' ghcr.io/promptfoo/promptfoo:0.86.0
 
           mkdir -p tests/prompt-regression/results
 
@@ -301,6 +302,7 @@ jobs:
             -e TRIGGER_REASON \
             -e ENABLE_METAMORPHIC_RELATIONS=true \
             -e PROMPTFOO_CACHE_ENABLED=false \
+            -e DEEPEVAL_TELEMETRY_OPT_OUT \
             "${PROMPTFOO_IMAGE}" \
             eval \
               --config "/workspace/tests/test-cases/${{ matrix.agent }}.yaml" \
@@ -368,7 +370,7 @@ jobs:
           import json
           with open('tests/prompt-regression/results/report-full-${{ matrix.agent }}.json') as f:
               data = json.load(f)
-          print(data.get('overall_verdict', 'UNKNOWN'))
+          print(data.get('classification', 'UNKNOWN'))
           " 2>/dev/null || echo "UNKNOWN")
           echo "REGRESSION_VERDICT=${VERDICT}" >> "$GITHUB_ENV"
           echo "Full tier verdict for ${{ matrix.agent }}: ${VERDICT}"

@@ -20,7 +20,7 @@
 #
 # Security controls per system-design.md Part 3 threat model:
 #   MC-07: Docker read-only filesystem + dropped capabilities + whitelisted paths
-#   MC-08: Docker image pinned to digest (not :latest tag)
+#   MC-08: Docker image pinned to version tag 0.86.0 (not :latest); SHA digest pending Docker daemon availability — see CG-007 inline
 #   MC-10: All config mounts read-only (:ro)
 #   MC-13: Docker memory + CPU resource limits
 #   MC-14: --security-opt=no-new-privileges:true, --cap-drop=ALL
@@ -51,6 +51,10 @@ permissions:
   contents: read
   pull-requests: write
   checks: write
+
+env:
+  # DeepEval telemetry opt-out (CG-016)
+  DEEPEVAL_TELEMETRY_OPT_OUT: "YES"
 
 jobs:
   # ==========================================================================
@@ -167,6 +171,14 @@ jobs:
       - name: Install project dependencies (structural checks only — no LLM packages)
         run: uv sync --no-dev
 
+      - name: Audit dependencies for known CVEs (CG-030)
+        # CG-030: pip-audit catches known CVEs in the resolved dependency set before
+        # they reach full/standard CI. --strict fails the job on any vulnerability.
+        # --desc shows human-readable descriptions for triaging findings.
+        run: |
+          uv pip install pip-audit
+          uv run pip-audit --strict --desc
+
       - name: Validate test case YAML exists for agent (FR-027)
         id: validate-yaml
         shell: bash
@@ -209,13 +221,11 @@ jobs:
           #   --memory=512m: Memory limit (MC-13)
           #   --cpus=1: CPU limit (MC-13)
           #   :ro mounts: All config/source mounts are read-only (MC-10)
-          # MC-08: Image should be pinned to SHA digest in production (not :latest).
-          # TODO: Pin to SHA digest in production (MC-08). Run:
-          #   docker pull ghcr.io/promptfoo/promptfoo:latest
-          #   docker inspect --format='{{index .RepoDigests 0}}' ghcr.io/promptfoo/promptfoo:latest
-          # Replace the image reference below with the fully-qualified digest form, e.g.:
-          #   ghcr.io/promptfoo/promptfoo@sha256:<real-64-char-digest>
-          PROMPTFOO_IMAGE="ghcr.io/promptfoo/promptfoo:latest"
+          # CG-007: Version-pinned Docker image (supply chain security).
+          # Previously :latest — pinned to 0.86.0 for reproducibility.
+          # To upgrade to SHA pinning: docker pull <tag> && docker inspect --format='{{index .RepoDigests 0}}' <tag>
+          # Then replace the tag with the @sha256: digest.
+          PROMPTFOO_IMAGE="ghcr.io/promptfoo/promptfoo:0.86.0"
 
           docker run --rm \
             --read-only \
@@ -231,6 +241,7 @@ jobs:
             -e EVALUATION_MODE=smoke \
             -e AGENT_ID="${{ matrix.agent }}" \
             -e PROMPTFOO_CACHE_ENABLED=false \
+            -e DEEPEVAL_TELEMETRY_OPT_OUT \
             "${PROMPTFOO_IMAGE}" \
             eval \
               --config "/workspace/tests/test-cases/${{ matrix.agent }}.yaml" \

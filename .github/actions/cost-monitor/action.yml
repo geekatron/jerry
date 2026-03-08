@@ -1,4 +1,5 @@
 # Cost Monitor Composite Action
+# CG-012
 #
 # Purpose: Track token counts and LLM API costs during prompt regression evaluations.
 #   Enforces per-workflow budget ceilings to prevent cost overruns from misconfigured
@@ -24,7 +25,7 @@
 #       phase: stop
 #
 # Security controls implemented:
-#   MC-20: Per-workflow budget ceiling ($5 Standard, $50 Full) — alerts and halts on breach
+#   MC-20: Per-workflow budget ceiling ($5 Standard, $50 Full) — alerts on breach (does not halt; see CG-012)
 #   MC-37: Token count logging for evaluation audit trail (DE.CM continuous monitoring)
 #
 # FR traceability:
@@ -54,6 +55,17 @@ inputs:
   phase:
     description: "Phase: 'start' (record baseline) or 'stop' (compute delta and enforce ceiling)"
     required: true
+
+outputs:
+  budget_status:
+    description: "Budget status: WITHIN_BUDGET | TOKEN_CEILING_EXCEEDED | COST_CEILING_EXCEEDED"
+    value: ${{ steps.enforce-ceiling.outputs.budget_status }}
+  estimated_cost_usd:
+    description: "Estimated cost in USD"
+    value: ${{ steps.enforce-ceiling.outputs.estimated_cost_usd }}
+  total_tokens_k:
+    description: "Total tokens consumed (thousands)"
+    value: ${{ steps.enforce-ceiling.outputs.total_tokens_k }}
 
 runs:
   using: composite
@@ -92,7 +104,7 @@ runs:
         | Tier | ${TIER} |
         | Cost ceiling | \$${{ inputs.cost_ceiling_usd }} |
         | Token ceiling | ${{ inputs.token_ceiling_thousands }}K tokens |
-        | Start time | $(date -u --iso-8601=seconds) |
+        | Start time | $(date -u +%Y-%m-%dT%H:%M:%SZ) |
         EOF
 
     # ==========================================================================
@@ -120,11 +132,19 @@ runs:
         )
 
         TOTAL_INPUT_TOKENS=0
-        TOTAL_OUTPUT_TOKENS=0
+        # TOTAL_TOKENS accumulates prompt+completion tokens as reported by promptfoo.
+        # promptfoo folds both prompt and completion counts into tokenUsage.prompt and
+        # tokenUsage.completion respectively (see parsing loop below). A separate
+        # TOTAL_OUTPUT_TOKENS counter is not maintained because promptfoo does not
+        # expose a distinct output-only field in this schema version; both sides are
+        # summed directly into TOTAL_INPUT_TOKENS and then assigned to TOTAL_TOKENS.
 
         for RESULT_FILE in "${RESULT_FILES[@]}"; do
           if [ -f "$RESULT_FILE" ]; then
-            # Extract token counts if the promptfoo output includes usage data
+            # Extract token counts if the promptfoo output includes usage data.
+            # Assumes promptfoo >=0.86.x output schema:
+            #   data.results[].promptResult.tokenUsage.{prompt, completion}
+            # (prompt = input tokens, completion = output tokens in this schema)
             FILE_INPUT_TOKENS=$(uv run python -c "
         import json, sys
         try:
@@ -152,10 +172,12 @@ runs:
           fi
         done
 
-        TOTAL_TOKENS=$((TOTAL_INPUT_TOKENS + TOTAL_OUTPUT_TOKENS))
-        TOTAL_TOKENS_K=$(echo "scale=1; $TOTAL_TOKENS / 1000" | bc 2>/dev/null || echo "0.0")
+        TOTAL_TOKENS=$((TOTAL_INPUT_TOKENS))
+        TOTAL_TOKENS_K=$(uv run python -c "print(f'{$TOTAL_TOKENS / 1000:.1f}')" 2>/dev/null || echo "0.0")
 
         # Estimate cost (approximate: claude-sonnet $3/MTok input, $15/MTok output)
+        # Rates as of 2026-03: Anthropic Claude Sonnet 4 pricing ($3/MTok input, $15/MTok output).
+        # Verify current rates at https://www.anthropic.com/pricing before relying on this estimate.
         # This is a conservative estimate — actual cost depends on model and token split
         ESTIMATED_COST=$(uv run python -c "
         tokens = $TOTAL_TOKENS
@@ -177,6 +199,7 @@ runs:
         echo "COST_MONITOR_ELAPSED=${ELAPSED}" >> "$GITHUB_ENV"
 
     - name: Enforce budget ceilings and write audit record (phase=stop)
+      id: enforce-ceiling
       if: inputs.phase == 'stop'
       shell: bash
       run: |
@@ -197,19 +220,25 @@ runs:
         BUDGET_STATUS="WITHIN_BUDGET"
         BUDGET_ICON=":white_check_mark:"
 
-        # Check token ceiling
+        # Check token ceiling (exit-code-based: sys.exit(1) on breach, sys.exit(0) on OK).
+        # A Python subprocess error also returns non-zero, so any failure is fail-safe
+        # (breach path triggers) rather than silently masking the ceiling check.
         CEILING_BREACH=false
-        TOKEN_CHECK_OUTPUT=$(uv run python -c "
+        set +e
+        uv run python -c "
+        import sys
         actual_k = float('${TOTAL_TOKENS_K}' or '0')
         ceiling_k = float('${CEILING_TOKENS_K}')
         if actual_k > ceiling_k:
-            print('BREACH')
+            print('BREACH: token ceiling exceeded')
+            sys.exit(1)
         else:
-            print('OK')
-        " 2>&1) || {
-          echo "::warning::Cost monitor: Token ceiling check failed (Python error): ${TOKEN_CHECK_OUTPUT}"
-        }
-        if echo "${TOKEN_CHECK_OUTPUT}" | grep -q "BREACH"; then
+            print('OK: within token ceiling')
+            sys.exit(0)
+        "
+        TOKEN_CHECK_EXIT=$?
+        set -e
+        if [ $TOKEN_CHECK_EXIT -ne 0 ]; then
           CEILING_BREACH=true
           BUDGET_STATUS="TOKEN_CEILING_EXCEEDED"
           BUDGET_ICON=":warning:"
@@ -218,18 +247,23 @@ runs:
           echo "::warning::Review evaluation tier configuration and N_RUNS setting"
         fi
 
-        # Check cost ceiling
-        COST_CHECK_OUTPUT=$(uv run python -c "
+        # Check cost ceiling (exit-code-based: sys.exit(1) on breach, sys.exit(0) on OK).
+        # A Python subprocess error also returns non-zero, so any failure is fail-safe.
+        set +e
+        uv run python -c "
+        import sys
         actual = float('${ESTIMATED_COST}' or '0')
         ceiling = float('${CEILING_USD}')
         if actual > ceiling:
-            print('BREACH')
+            print('BREACH: USD ceiling exceeded')
+            sys.exit(1)
         else:
-            print('OK')
-        " 2>&1) || {
-          echo "::warning::Cost monitor: USD ceiling check failed (Python error): ${COST_CHECK_OUTPUT}"
-        }
-        if echo "${COST_CHECK_OUTPUT}" | grep -q "BREACH"; then
+            print('OK: within USD ceiling')
+            sys.exit(0)
+        "
+        COST_CHECK_EXIT=$?
+        set -e
+        if [ $COST_CHECK_EXIT -ne 0 ]; then
           CEILING_BREACH=true
           BUDGET_STATUS="COST_CEILING_EXCEEDED"
           BUDGET_ICON=":x:"
@@ -272,6 +306,11 @@ runs:
             json.dump(record, f, indent=2)
         print(f'Cost record written: {output_path}')
         " 2>/dev/null || echo "Warning: Could not write structured cost record"
+
+        # Propagate values as step outputs for composite action consumers
+        echo "budget_status=${BUDGET_STATUS}" >> "$GITHUB_OUTPUT"
+        echo "estimated_cost_usd=${ESTIMATED_COST}" >> "$GITHUB_OUTPUT"
+        echo "total_tokens_k=${TOTAL_TOKENS_K}" >> "$GITHUB_OUTPUT"
 
         # Exit non-zero if cost ceiling was exceeded (allows matrix job to flag the breach)
         # Using warning-only for token ceiling; error for USD ceiling

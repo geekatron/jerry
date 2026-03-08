@@ -1,4 +1,5 @@
 # Artifact Publisher Composite Action
+# CG-012
 #
 # Purpose: Publish prompt regression evaluation results as GitHub Actions artifacts
 #   with appropriate retention policies per tier. Posts regression report as a PR
@@ -27,6 +28,7 @@
 #
 # FR traceability:
 #   FR-018: Regression classification report with PR integration
+#   FR-020: Per-workflow budget ceiling enforcement (cost gate integration)
 #
 # Stream: 3E (CI/CD Pipeline Setup)
 
@@ -92,7 +94,18 @@ inputs:
       Artifact retention in days. Defaults by tier: Smoke=7, Standard=30, Full=90.
       Caller is responsible for setting correct retention per tier.
     required: false
-    default: "30"
+    default: ""
+
+outputs:
+  verdict:
+    description: "Artifact publishing verdict: published | skipped | error"
+    value: ${{ steps.upload.outputs.verdict }}
+  artifact_name:
+    description: "Name of the uploaded artifact"
+    value: ${{ steps.upload.outputs.artifact_name }}
+  comment_posted:
+    description: "Whether a PR comment was posted (true/false)"
+    value: ${{ steps.comment-status.outputs.comment_posted }}
 
 runs:
   using: composite
@@ -128,8 +141,8 @@ runs:
         # Resolve retention from tier if not explicitly set
         RETENTION="${{ inputs.retention_days }}"
         TIER="${{ inputs.evaluation_tier }}"
-        if [ "$RETENTION" = "30" ]; then
-          # Apply tier-based defaults when caller uses the default value
+        if [ -z "$RETENTION" ]; then
+          # Apply tier-based defaults when caller omits retention_days
           case "$TIER" in
             smoke)    RETENTION=7 ;;
             standard) RETENTION=30 ;;
@@ -258,7 +271,7 @@ runs:
         AGENT="${RESOLVED_AGENT}"
         TIER="${{ inputs.evaluation_tier }}"
         PR="${{ inputs.pr_number }}"
-        TIMESTAMP=$(date -u --iso-8601=seconds)
+        TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
         RUN_ID="${RESOLVED_RUN_ID}"
         SHA="${{ github.sha }}"
         WORKFLOW="${{ github.workflow }}"
@@ -343,10 +356,18 @@ runs:
         if-no-files-found: warn
         retention-days: ${{ env.RESOLVED_RETENTION }}
 
+    - name: Set upload outputs
+      id: upload
+      shell: bash
+      run: |
+        echo "verdict=published" >> "$GITHUB_OUTPUT"
+        echo "artifact_name=regression-report-json-${{ env.RESOLVED_AGENT }}-${{ inputs.evaluation_tier }}-run${{ env.RESOLVED_RUN_ID }}" >> "$GITHUB_OUTPUT"
+
     # ==========================================================================
     # Step 4: Post regression report as PR comment (FR-018, MC-30)
     # ==========================================================================
     - name: Post regression report to PR (FR-018, MC-30)
+      id: pr-comment
       if: inputs.pr_number != '0'
       uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea  # v7.0.1
       with:
@@ -420,6 +441,7 @@ runs:
           });
 
           console.log(`Posted regression report for ${agent} (${tier}) to PR #${prNumber}`);
+          core.setOutput('comment_posted', 'true');
 
     # ==========================================================================
     # Step 5: Write step summary for non-PR contexts (scheduled/manual Full runs)
@@ -468,3 +490,20 @@ runs:
         See workflow artifacts for full report with p-values, Wilson confidence intervals,
         and Bonferroni correction disclosure (FR-015, FR-016, FR-017).
         EOF
+
+    # ==========================================================================
+    # Step 6: Normalize comment_posted output (always runs; ensures the output
+    #   is populated for both PR and non-PR contexts)
+    # ==========================================================================
+    - name: Normalize comment_posted output
+      id: comment-status
+      shell: bash
+      run: |
+        # Emit true when the pr-comment step ran and set its output; false otherwise.
+        # steps.pr-comment.outputs.comment_posted is empty when that step was skipped.
+        PR_COMMENT_VALUE="${{ steps.pr-comment.outputs.comment_posted }}"
+        if [ "${PR_COMMENT_VALUE}" = "true" ]; then
+          echo "comment_posted=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "comment_posted=false" >> "$GITHUB_OUTPUT"
+        fi
