@@ -119,6 +119,8 @@ class Layer4Pipeline:
         output_markdown_path: Path | None = None,
         apply_bonferroni: bool = True,
         bonferroni_k: int | None = None,
+        baseline_model_version: str | None = None,
+        candidate_model_version: str | None = None,
     ) -> int:
         """Execute the full Layer 4 pipeline for one agent evaluation.
 
@@ -144,15 +146,33 @@ class Layer4Pipeline:
             bonferroni_k:           Override for Bonferroni k.  Defaults to
                                     BONFERRONI_K_FULL_SUITE (13) for FULL mode,
                                     len(metric_scores) for STANDARD mode.
+            baseline_model_version: Composite model version string for the
+                                    baseline (e.g., "claude-opus-4-20250514:claude-sonnet-4-20250514").
+                                    When both baseline_model_version and
+                                    candidate_model_version are provided, the
+                                    pipeline validates that they match to enforce
+                                    apples-to-apples comparison (EN-036-001).
+            candidate_model_version: Composite model version string for the
+                                    candidate.  See baseline_model_version.
 
         Returns:
             Exit code for CI/CD:
                 0 — NO_REGRESSION, IMPROVEMENT, STRUCTURAL_PASS
                 1 — REGRESSION, QUALITY_FLOOR_BREACH, STRUCTURAL_FAIL
                 2 — MARGINAL (warning; does not block merge)
+
+        Raises:
+            ValueError: If baseline_model_version and candidate_model_version
+                        are both provided but differ (EN-036-001 apples-to-apples
+                        enforcement).
         """
         if evaluation_mode == EvaluationMode.SMOKE:
             return self._run_smoke(agent_id, version_key_a, structural_violations or [])
+
+        # EN-036-001: Validate model version consistency (apples-to-apples).
+        self._validate_model_versions(
+            metric_scores, baseline_model_version, candidate_model_version
+        )
 
         report = self._run_statistical(
             agent_id=agent_id,
@@ -229,6 +249,39 @@ class Layer4Pipeline:
     # ------------------------------------------------------------------
     # Private pipeline stages
     # ------------------------------------------------------------------
+
+    @staticmethod
+    def _validate_model_versions(
+        metric_scores: dict[str, tuple[ScoreArray, ScoreArray]],
+        baseline_model_version: str | None = None,
+        candidate_model_version: str | None = None,
+    ) -> None:
+        """Validate that baseline and candidate use the same model combination (EN-036-001).
+
+        Enforces apples-to-apples comparison by rejecting score pairs collected
+        with different model combinations.  When both arguments are None, or only
+        one is provided, the check is skipped (opt-in enforcement).
+
+        Args:
+            metric_scores:           Per-metric score array pairs (used only for
+                                     context in the error message).
+            baseline_model_version:  Composite model version for the baseline,
+                                     e.g., "claude-opus-4-20250514:claude-sonnet-4-20250514".
+                                     None skips validation.
+            candidate_model_version: Composite model version for the candidate.
+                                     None skips validation.
+
+        Raises:
+            ValueError: If both versions are provided and they differ.
+        """
+        if baseline_model_version and candidate_model_version:
+            if baseline_model_version != candidate_model_version:
+                raise ValueError(
+                    f"Model version mismatch: baseline uses '{baseline_model_version}' "
+                    f"but candidate uses '{candidate_model_version}'. "
+                    f"Layer 4 comparison requires apples-to-apples model combinations "
+                    f"(EN-036-001). Re-collect scores with matching model configurations."
+                )
 
     def _run_smoke(
         self,
@@ -613,6 +666,16 @@ def main() -> int:
         default=None,
         help="Path for Markdown report output (optional).",
     )
+    parser.add_argument(
+        "--judge-model",
+        default=None,
+        help="LLM model for G-Eval judge scoring (overrides JERRY_JUDGE_MODEL env var).",
+    )
+    parser.add_argument(
+        "--agent-model",
+        default=None,
+        help="LLM model for agent execution (overrides JERRY_AGENT_MODEL env var).",
+    )
 
     args = parser.parse_args()
 
@@ -674,6 +737,8 @@ def main() -> int:
     logger.info("  bonferroni-k:     %s", args.bonferroni_k)
     logger.info("  output-report:    %s", args.output_report)
     logger.info("  output-markdown:  %s", args.output_markdown)
+    logger.info("  judge-model:      %s", args.judge_model)
+    logger.info("  agent-model:      %s", args.agent_model)
 
     # --- Extract score arrays from results file (CG-008) ---
     # extract_score_arrays returns {metric: (head_scores, base_scores)}.
@@ -700,6 +765,21 @@ def main() -> int:
     output_json_path = Path(args.output_report) if args.output_report else None
     output_markdown_path = Path(args.output_markdown) if args.output_markdown else None
 
+    # --- EN-036-001: Compute composite model version for apples-to-apples guard ---
+    # CLI flags take precedence over env vars; env vars take precedence over None.
+    import os as _os  # noqa: PLC0415
+
+    effective_judge_model = args.judge_model or _os.environ.get("JERRY_JUDGE_MODEL")
+    effective_agent_model = args.agent_model or _os.environ.get("JERRY_AGENT_MODEL")
+
+    candidate_model_version: str | None = None
+    if effective_agent_model and effective_judge_model:
+        from jerry.testing.types import format_composite_model_version  # noqa: PLC0415
+
+        candidate_model_version = format_composite_model_version(
+            effective_agent_model, effective_judge_model
+        )
+
     # --- Execute pipeline (FR-015, FR-016, FR-017, FR-018) ---
     # For SMOKE tier: metric_scores is not consumed by _run_smoke(); version_key_a
     # is used as the structural check key.  For STANDARD/FULL: metric_scores drives
@@ -713,6 +793,7 @@ def main() -> int:
         bonferroni_k=args.bonferroni_k,
         output_json_path=output_json_path,
         output_markdown_path=output_markdown_path,
+        candidate_model_version=candidate_model_version,
     )
 
     return exit_code

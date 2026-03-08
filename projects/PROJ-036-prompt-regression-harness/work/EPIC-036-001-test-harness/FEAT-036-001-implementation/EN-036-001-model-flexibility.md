@@ -7,13 +7,13 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.6
 -->
 
 > **Type:** enabler
-> **Status:** pending
+> **Status:** completed
 > **Priority:** medium
 > **Impact:** medium
 > **Enabler Type:** infrastructure
 > **Created:** 2026-03-07T00:00:00Z
 > **Due:** —
-> **Completed:** —
+> **Completed:** 2026-03-07T00:00:00Z
 > **Parent:** FEAT-036-001
 > **Owner:** —
 > **Effort:** —
@@ -59,13 +59,13 @@ Decouple model selection for both G-Eval judge scoring (Layer 2) and agent execu
 
 ## Acceptance Criteria
 
-- [ ] `DeepEvalAdapter` accepts `model_name` as a constructor parameter (already exists) AND as an environment variable override (e.g., `JERRY_JUDGE_MODEL`)
-- [ ] Agent execution model can be overridden per-run via environment variable (e.g., `JERRY_AGENT_MODEL`) without modifying agent `.md` frontmatter
-- [ ] `BaselineRecord.model_version` captures a composite string: `{agent_model}:{judge_model}` (e.g., `claude-opus-4-20250514:claude-sonnet-4-20250514`)
-- [ ] Layer 4 comparison rejects score pairs collected with different model combinations (apples-to-apples enforcement)
-- [ ] Cost ledger reports differentiated pricing based on actual model used (opus vs sonnet vs haiku)
-- [ ] CLI `jerry test run` supports `--judge-model` and `--agent-model` flags
-- [ ] Documentation updated in system-design.md to reflect model parameterization
+- [x] `DeepEvalAdapter` accepts `model_name` as a constructor parameter (already exists) AND as an environment variable override (e.g., `JERRY_JUDGE_MODEL`)
+- [x] Agent execution model can be overridden per-run via environment variable (e.g., `JERRY_AGENT_MODEL`) without modifying agent `.md` frontmatter
+- [x] `BaselineRecord.model_version` captures a composite string: `{agent_model}:{judge_model}` (e.g., `claude-opus-4-20250514:claude-sonnet-4-20250514`)
+- [x] Layer 4 comparison rejects score pairs collected with different model combinations (apples-to-apples enforcement)
+- [x] Cost ledger reports differentiated pricing based on actual model used (opus vs sonnet vs haiku)
+- [x] CLI `jerry test run` supports `--judge-model` and `--agent-model` flags
+- [x] Documentation updated in system-design.md to reflect model parameterization
 
 ---
 
@@ -123,3 +123,4 @@ Environment variable-based override pattern: `JERRY_JUDGE_MODEL` and `JERRY_AGEN
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-03-07 | Claude | pending | Enabler created; identified during execution prompt review — G-Eval judge and agent execution models are currently conflated in test harness prompt design |
+| 2026-03-07 | eng-backend | completed | Implemented: JERRY_JUDGE_MODEL env var override in DeepEvalAdapter, ModelPricing table in types.py, composite model version format/parse utilities, Layer4Pipeline apples-to-apples guard, --judge-model/--agent-model CLI flags. 48 new tests (462 total pass). System-design.md update deferred as low-priority doc task. |

@@ -155,6 +155,12 @@ class DeepEvalAdapter:
                 "DeepEvalAdapter requires a DebiasingStrategy (C-007 mandatory). "
                 "Pass an explicit DebiasingStrategy() instance."
             )
+        # EN-036-001: Environment variable override for judge model.
+        # JERRY_JUDGE_MODEL takes precedence over the constructor default,
+        # allowing CI matrix jobs to select the judge model without code changes.
+        env_judge_model = os.environ.get("JERRY_JUDGE_MODEL")
+        if env_judge_model:
+            self.model_name = env_judge_model
         if "claude" in self.model_name.lower():
             api_key = os.environ.get("ANTHROPIC_API_KEY", "")
             if not api_key:

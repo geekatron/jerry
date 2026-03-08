@@ -379,3 +379,83 @@ class ComparisonReport:
 #: A validated list of N quality scores, each in [0.0, 1.0].
 #: N >= MIN_STATISTICAL_SAMPLE_SIZE is enforced at call sites in stats.py.
 ScoreArray = list[float]
+
+
+# ---------------------------------------------------------------------------
+# Model configuration types (EN-036-001)
+# ---------------------------------------------------------------------------
+
+
+@dataclasses.dataclass(frozen=True)
+class ModelPricing:
+    """Per-model pricing for cost ledger differentiation (EN-036-001).
+
+    Attributes:
+        input_cost_per_million: Cost in USD per million input tokens.
+        output_cost_per_million: Cost in USD per million output tokens.
+    """
+
+    input_cost_per_million: float
+    output_cost_per_million: float
+
+
+#: Model pricing lookup table for cost ledger accuracy.
+#: Key is the model name prefix (matched case-insensitively).
+#: Longer prefixes MUST appear before shorter ones for correct precedence.
+#: Source: https://docs.anthropic.com/en/docs/about-claude/models (2026-03-07)
+MODEL_PRICING: dict[str, ModelPricing] = {
+    # Opus 4.5+ generation: $5/$25
+    "claude-opus-4-6": ModelPricing(input_cost_per_million=5.0, output_cost_per_million=25.0),
+    "claude-opus-4-5": ModelPricing(input_cost_per_million=5.0, output_cost_per_million=25.0),
+    # Opus 4.0/4.1 legacy: $15/$75
+    "claude-opus-4-1": ModelPricing(input_cost_per_million=15.0, output_cost_per_million=75.0),
+    "claude-opus-4": ModelPricing(input_cost_per_million=15.0, output_cost_per_million=75.0),
+    # Sonnet: $3/$15 (all 4.x versions)
+    "claude-sonnet-4": ModelPricing(input_cost_per_million=3.0, output_cost_per_million=15.0),
+    # Haiku 4.5: $1/$5
+    "claude-haiku-4": ModelPricing(input_cost_per_million=1.0, output_cost_per_million=5.0),
+}
+
+
+def lookup_model_pricing(model_name: str) -> ModelPricing | None:
+    """Look up pricing for a model by prefix match.
+
+    Args:
+        model_name: Full model identifier (e.g., "claude-sonnet-4-20250514").
+
+    Returns:
+        ModelPricing if a prefix match is found, None otherwise.
+    """
+    lower = model_name.lower()
+    for prefix, pricing in MODEL_PRICING.items():
+        if lower.startswith(prefix):
+            return pricing
+    return None
+
+
+def format_composite_model_version(agent_model: str, judge_model: str) -> str:
+    """Format a composite model version string for BaselineRecord.
+
+    Args:
+        agent_model: Model used for agent execution (e.g., "claude-opus-4-20250514").
+        judge_model: Model used for G-Eval judge scoring (e.g., "claude-sonnet-4-20250514").
+
+    Returns:
+        Composite string in format "{agent_model}:{judge_model}".
+    """
+    return f"{agent_model}:{judge_model}"
+
+
+def parse_composite_model_version(composite: str) -> tuple[str, str] | None:
+    """Parse a composite model version string into (agent_model, judge_model).
+
+    Args:
+        composite: Composite string in format "{agent_model}:{judge_model}".
+
+    Returns:
+        Tuple of (agent_model, judge_model) if the format is valid, None otherwise.
+    """
+    parts = composite.split(":", 1)
+    if len(parts) == 2 and parts[0] and parts[1]:
+        return (parts[0], parts[1])
+    return None

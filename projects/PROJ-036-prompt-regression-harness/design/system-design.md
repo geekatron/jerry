@@ -210,6 +210,10 @@ jerry/
   testing/                          # Package root (domain core + adapters)
     __init__.py                     # Package exports
     types.py                        # [DOMAIN] Shared type definitions
+                                    #   (ScoreArray, RegressionResult,
+                                    #   VersionKey, ModelPricing,
+                                    #   MODEL_PRICING lookup table,
+                                    #   composite model version utilities)
     config.py                       # [DOMAIN] EvaluationConfig, tier modes
 
     evaluation/                     # Layer 2: DeepEval integration
@@ -292,7 +296,7 @@ docker/
 
 | File | Single Responsibility |
 |------|----------------------|
-| `types.py` | Data classes only (ScoreArray, RegressionResult, VersionKey, etc.) |
+| `types.py` | Data classes only (ScoreArray, RegressionResult, VersionKey, ModelPricing, MODEL_PRICING, composite model version format/parse utilities) |
 | `config.py` | EvaluationConfig data class |
 | `evaluation/metrics.py` | QualityCriterion, ScoringResult value objects |
 | `evaluation/debiasing.py` | DebiasingStrategy class |
@@ -1108,12 +1112,21 @@ def evaluator() -> DeepEvalAdapter:
 
     Creates a DeepEvalAdapter with position randomization and rubric
     criterion shuffling enabled for LLM-as-Judge debiasing. The model
-    is configured from the DEEPEVAL_MODEL env var (default: Claude Sonnet).
+    is configured from the JERRY_JUDGE_MODEL env var (preferred),
+    falling back to DEEPEVAL_MODEL (legacy), then the default Claude Sonnet.
+
+    Environment variable precedence:
+        1. JERRY_JUDGE_MODEL (EN-036-001 model flexibility)
+        2. DEEPEVAL_MODEL (legacy compatibility)
+        3. Default: claude-sonnet-4-20250514
 
     Returns:
         Configured DeepEvalAdapter ready for evaluation calls.
     """
-    model_name = os.environ.get("DEEPEVAL_MODEL", "claude-sonnet-4-20250514")
+    model_name = os.environ.get(
+        "JERRY_JUDGE_MODEL",
+        os.environ.get("DEEPEVAL_MODEL", "claude-sonnet-4-20250514"),
+    )
     debiasing = DebiasingStrategy(
         position_randomization=True,
         rubric_shuffling=True,
@@ -1156,6 +1169,50 @@ def report_generator() -> ReportGenerator:
         enable_pr_comments=False,
         output_format="markdown",
     )
+```
+
+#### Model Parameterization (EN-036-001)
+
+The test harness supports configurable model selection for both G-Eval judge scoring (Layer 2) and agent execution, enabling cross-model regression testing and cost-optimized evaluation tiers.
+
+```
+MODEL OVERRIDE HIERARCHY:
+=========================
+
+Judge Model (Layer 2 G-Eval scoring):
+  1. --judge-model CLI flag (highest precedence)
+  2. JERRY_JUDGE_MODEL environment variable
+  3. DeepEvalAdapter constructor default: claude-sonnet-4-20250514
+
+Agent Execution Model (Phase 1 output generation):
+  1. --agent-model CLI flag (highest precedence)
+  2. JERRY_AGENT_MODEL environment variable
+  3. Agent definition frontmatter `model:` field (default)
+
+Composite Model Version Tracking:
+  Format: "{agent_model}:{judge_model}"
+  Example: "claude-opus-4-20250514:claude-sonnet-4-20250514"
+  Stored in: BaselineRecord.model_version
+  Utilities: format_composite_model_version(), parse_composite_model_version()
+
+Apples-to-Apples Guard (Layer 4):
+  Layer4Pipeline._validate_model_versions() rejects comparison when
+  baseline and candidate model versions differ. Skips validation
+  when either is None (backwards compatible with pre-EN-036-001 baselines).
+
+Model Pricing Table (types.py):
+  MODEL_PRICING maps model prefixes to per-million-token costs.
+  Longer prefixes listed first for correct matching precedence.
+  Source: https://docs.anthropic.com/en/docs/about-claude/models
+
+    claude-opus-4-6:   $5.00 input,  $25.00 output  (current)
+    claude-opus-4-5:   $5.00 input,  $25.00 output
+    claude-opus-4-1:  $15.00 input,  $75.00 output  (legacy)
+    claude-opus-4:    $15.00 input,  $75.00 output  (legacy 4.0 catch-all)
+    claude-sonnet-4:   $3.00 input,  $15.00 output  (all 4.x versions)
+    claude-haiku-4:    $1.00 input,   $5.00 output
+
+  lookup_model_pricing() uses case-insensitive prefix matching.
 ```
 
 #### API Key Management
