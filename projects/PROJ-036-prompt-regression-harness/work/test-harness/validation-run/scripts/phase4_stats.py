@@ -9,7 +9,7 @@ This is a SMOKE/VALIDATION test — synthetic baselines, not real historical
 baselines. Purpose: verify the Layer4Pipeline wiring works end-to-end.
 
 Usage:
-    uv run python projects/PROJ-036-prompt-regression-harness/work/test-harness/validation-run/phase4_stats.py
+    uv run python projects/PROJ-036-prompt-regression-harness/work/test-harness/validation-run/scripts/phase4_stats.py
 """
 
 from __future__ import annotations
@@ -20,14 +20,14 @@ import sys
 import tempfile
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parents[5]
+PROJECT_ROOT = Path(__file__).resolve().parents[6]
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from jerry.testing.baselines.store import BaselineStore  # noqa: E402
 from jerry.testing.layer4_stats import Layer4Pipeline  # noqa: E402
 from jerry.testing.types import EvaluationMode  # noqa: E402
 
-VALIDATION_DIR = Path(__file__).parent
+VALIDATION_DIR = Path(__file__).resolve().parent.parent
 N_SAMPLES = 20  # Minimum for Wilcoxon signed-rank test
 SEED = 42
 
@@ -54,7 +54,7 @@ def generate_candidate_from_composite(composite: float, n: int, rng: random.Rand
 def main() -> None:
     """Run Phase 4 Layer 4 statistical comparison."""
     # Load Phase 2 composites
-    composites_path = VALIDATION_DIR / "phase2-composites.json"
+    composites_path = VALIDATION_DIR / "layer2-geval" / "composites.json"
     if not composites_path.exists():
         print("ERROR: phase2-composites.json not found. Run Phase 2 first.")
         sys.exit(1)
@@ -118,8 +118,8 @@ def main() -> None:
                     metric_scores=metric_scores,
                     evaluation_mode=EvaluationMode.FULL,
                     apply_bonferroni=False,  # Single metric, no Bonferroni needed
-                    output_json_path=VALIDATION_DIR / f"layer4-{agent_id}.json",
-                    output_markdown_path=VALIDATION_DIR / f"layer4-{agent_id}.md",
+                    output_json_path=VALIDATION_DIR / "layer4-statistical" / f"{agent_id}.json",
+                    output_markdown_path=VALIDATION_DIR / "layer4-statistical" / f"{agent_id}.md",
                 )
 
                 exit_label = {0: "PASS", 1: "BLOCK", 2: "WARNING"}.get(
@@ -194,12 +194,12 @@ def write_report(results: list[dict]) -> None:
         ]
     )
 
-    report_path = VALIDATION_DIR / "layer4-results.md"
+    report_path = VALIDATION_DIR / "layer4-statistical" / "results.md"
     report_path.write_text("\n".join(lines), encoding="utf-8")
     print(f"\nReport written: {report_path.name}")
 
     # Write JSON for Phase 5
-    json_path = VALIDATION_DIR / "phase4-results.json"
+    json_path = VALIDATION_DIR / "layer4-statistical" / "results.json"
     json_path.write_text(json.dumps(results, indent=2), encoding="utf-8")
     print(f"JSON written: {json_path.name}")
 

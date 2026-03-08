@@ -97,6 +97,7 @@ Execute real API-backed validation runs against the 5 target agents (ps-research
 | STORY-036-003 | Story | Baseline Population N=30 per Agent | pending | critical | 8 |
 | STORY-036-004 | Story | Phase 4 Real Baseline Comparison | pending | high | 3 |
 | STORY-036-005 | Story | CI/CD Wiring for Automated Regression | pending | high | 5 |
+| STORY-036-006 | Story | Reorganize Validation Run Directory by Layer | completed | medium | 3 |
 
 ### Work Item Links
 
@@ -105,6 +106,7 @@ Execute real API-backed validation runs against the 5 target agents (ps-research
 - [STORY-036-003: Baseline Population N=30 per Agent](./STORY-036-003-baseline-population.md)
 - [STORY-036-004: Phase 4 Real Baseline Comparison](./STORY-036-004-phase4-real-baselines.md)
 - [STORY-036-005: CI/CD Wiring for Automated Regression](./STORY-036-005-ci-cd-wiring.md)
+- [STORY-036-006: Reorganize Validation Run Directory by Layer](./STORY-036-006-validation-run-reorg.md)
 
 ---
 
@@ -112,11 +114,11 @@ Execute real API-backed validation runs against the 5 target agents (ps-research
 
 | Metric | Value |
 |--------|-------|
-| **Total Stories** | 5 |
-| **Completed Stories** | 0 |
-| **Total Effort (points)** | 24 |
-| **Completed Effort** | 0 |
-| **Completion %** | 0% |
+| **Total Stories** | 6 |
+| **Completed Stories** | 1 |
+| **Total Effort (points)** | 27 |
+| **Completed Effort** | 3 |
+| **Completion %** | 11% |
 
 ---
 

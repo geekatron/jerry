@@ -56,7 +56,7 @@ PHASE 1 — Agent Output Generation (per agent):
 
   Persist each output to:
     projects/PROJ-036-prompt-regression-harness/work/test-harness/validation-run/
-      {agent-id}-output.md
+      agent-outputs/{agent-id}.md
 
   Record token usage per agent call in the cost ledger.
 
@@ -80,7 +80,7 @@ PHASE 2 — Layer 2: DeepEval G-Eval Scoring (per agent):
 
   Persist per-agent Layer 2 scores to:
     projects/PROJ-036-prompt-regression-harness/work/test-harness/validation-run/
-      layer2-scores-{agent-id}.md
+      layer2-geval/{agent-id}.md
 
   Format per agent:
     | Dimension | Weight | Raw Score | Weighted | Floor |
@@ -120,7 +120,7 @@ PHASE 3 — Layer 3: Metamorphic Relation Validation (select 2 agents):
 
   Persist MR results to:
     projects/PROJ-036-prompt-regression-harness/work/test-harness/validation-run/
-      layer3-mr-results.md
+      layer3-metamorphic/mr-results.md
 
   Record token usage for all MR variant calls in the cost ledger.
 
@@ -142,7 +142,7 @@ PHASE 4 — Layer 4: Statistical Comparison Report:
 
   Persist Layer 4 report to:
     projects/PROJ-036-prompt-regression-harness/work/test-harness/validation-run/
-      layer4-statistical-report.md
+      layer4-statistical/report.md
 
 ---
 
@@ -175,13 +175,13 @@ PHASE 5 — /adversary Quality Gate (>= 0.92):
 ---
 
 OUTPUT ARTIFACTS (all under projects/PROJ-036-prompt-regression-harness/work/test-harness/validation-run/):
-  1. {agent-id}-output.md          — 5 files, one per agent
-  2. layer2-scores-{agent-id}.md   — 5 files, Layer 2 G-Eval results
-  3. layer3-mr-results.md          — MR smoke test results
-  4. layer4-statistical-report.md  — Statistical comparison report
-  5. validation-summary.md         — Compiled summary with cost evidence
-  6. adversary-quality-gate.md     — /adversary S-014 scored report
-  7. cost-ledger.md                — Running cost ledger with per-call evidence
+  1. agent-outputs/{agent-id}.md             — 5 files, one per agent
+  2. layer2-geval/{agent-id}.md              — 5 files, Layer 2 G-Eval results
+  3. layer3-metamorphic/mr-results.md        — MR smoke test results
+  4. layer4-statistical/report.md            — Statistical comparison report
+  5. validation-summary.md                   — Compiled summary with cost evidence
+  6. adversary-quality-gate.md               — /adversary S-014 scored report
+  7. cost-ledger.md                          — Running cost ledger with per-call evidence
 
 Quality threshold: >= 0.92 weighted composite on the validation summary.
 ```

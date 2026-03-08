@@ -7,7 +7,7 @@ DeepEvalAdapter with mandatory C-007 debiasing (position randomization,
 rubric shuffling).
 
 Usage:
-    uv run python projects/PROJ-036-prompt-regression-harness/work/test-harness/validation-run/phase2_score.py
+    uv run python projects/PROJ-036-prompt-regression-harness/work/test-harness/validation-run/scripts/phase2_score.py
 """
 
 from __future__ import annotations
@@ -20,7 +20,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 # Project root for imports
-PROJECT_ROOT = Path(__file__).resolve().parents[5]
+PROJECT_ROOT = Path(__file__).resolve().parents[6]
 sys.path.insert(0, str(PROJECT_ROOT))
 load_dotenv(PROJECT_ROOT / ".env")
 
@@ -43,7 +43,7 @@ from jerry.testing.evaluation.debiasing import DebiasingStrategy  # noqa: E402
 from jerry.testing.evaluation.deepeval_adapter import DeepEvalAdapter  # noqa: E402
 
 MODEL = "claude-sonnet-4-20250514"
-VALIDATION_DIR = Path(__file__).parent
+VALIDATION_DIR = Path(__file__).resolve().parent.parent
 PRICING_INPUT_PER_M = 3.0
 PRICING_OUTPUT_PER_M = 15.0
 
@@ -167,7 +167,7 @@ def write_layer2_report(
         lines.append(r.evidence if hasattr(r, "evidence") else "No evidence captured.")
         lines.append("")
 
-    report_path = VALIDATION_DIR / f"layer2-scores-{agent_id}.md"
+    report_path = VALIDATION_DIR / "layer2-geval" / f"{agent_id}.md"
     report_path.write_text("\n".join(lines), encoding="utf-8")
     print(f"  Report written: {report_path.name}")
 
@@ -190,7 +190,7 @@ def main() -> None:
     print("=" * 60)
 
     for agent_id, config in AGENT_CONFIG.items():
-        output_path = VALIDATION_DIR / f"{agent_id}-output.md"
+        output_path = VALIDATION_DIR / "agent-outputs" / f"{agent_id}.md"
         if not output_path.exists():
             print(f"\n  SKIP {agent_id}: {output_path.name} not found")
             all_composites[agent_id] = 0.0
@@ -249,7 +249,7 @@ def main() -> None:
         print(f"  {agent_id}: composite={comp:.4f} floor={floor} {verdict} dims={n_results}")
 
     # Write composites as JSON for Phase 4
-    composites_path = VALIDATION_DIR / "phase2-composites.json"
+    composites_path = VALIDATION_DIR / "layer2-geval" / "composites.json"
     composites_path.write_text(
         json.dumps(
             {

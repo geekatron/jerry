@@ -53,7 +53,7 @@ The evaluation reveals significant fabrication issues. The Actual Output claims 
 
 ### internal_consistency (0.900)
 
-The critique demonstrates strong internal consistency with no contradictions between findings and the overall score of 0.785. The dimension-level scores (ranging from 0.72-0.85) appropriately support the NEEDS_WORK assessment, with multiple critical and major findings justifying the below-threshold score. Severity classifications are applied consistently across similar issues (e.g., missing architectural elements and evidence conflation both rated as major/critical). The assessment logically flows from detailed findings to the composite score without introducing new contradictions, maintaining coherence between the technical evaluation, improvement areas, and final recommendation.
+The critique demonstrates strong internal consistency with no contradictions between findings and the overall score of 0.785. The dimension-level scores (ranging from 0.72-0.85) appropriately support the composite score below the 0.92 threshold, with severity classifications consistently applied (Critical for missing failure paths, Major for evidence conflation and specification gaps, Minor for methodology traceability). The assessment logically flows from detailed findings to the REVISE recommendation without introducing new inconsistencies. Minor deduction for some complexity in tracing specific quantitative claims across sections, but the overall evaluation maintains coherent logic throughout.
 
 ### methodological_rigor (0.300)
 

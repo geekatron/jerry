@@ -8,7 +8,7 @@ from jerry.testing.metamorphic, with DeepEvalAdapter for scoring.
 N=5 pairs per MR (SMOKE TEST -- not statistically powered per ADR-001 N>=20).
 
 Usage:
-    uv run python projects/PROJ-036-prompt-regression-harness/work/test-harness/validation-run/phase3_mr_smoke.py
+    uv run python projects/PROJ-036-prompt-regression-harness/work/test-harness/validation-run/scripts/phase3_mr_smoke.py
 """
 
 from __future__ import annotations
@@ -20,7 +20,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-PROJECT_ROOT = Path(__file__).resolve().parents[5]
+PROJECT_ROOT = Path(__file__).resolve().parents[6]
 sys.path.insert(0, str(PROJECT_ROOT))
 load_dotenv(PROJECT_ROOT / ".env")
 
@@ -40,7 +40,7 @@ from jerry.testing.metamorphic.mr_001_paraphrase import ParaphraseConsistency  #
 from jerry.testing.metamorphic.mr_003_context import IrrelevantContextAppendation  # noqa: E402
 
 MODEL = "claude-sonnet-4-20250514"
-VALIDATION_DIR = Path(__file__).parent
+VALIDATION_DIR = Path(__file__).resolve().parent.parent
 N_VARIANTS = 5
 
 AGENT_CONFIGS = {
@@ -120,7 +120,7 @@ def run_mr_for_agent(
     transformer,
 ) -> dict:
     """Run a single MR test for an agent."""
-    original_path = VALIDATION_DIR / f"{agent_id}-output.md"
+    original_path = VALIDATION_DIR / "agent-outputs" / f"{agent_id}.md"
     if not original_path.exists():
         return {"status": "SKIP", "agent_id": agent_id, "mr_id": mr_id}
 
@@ -239,7 +239,7 @@ def write_report(results: list[dict]) -> None:
             ]
         )
 
-    report_path = VALIDATION_DIR / "layer3-mr-results.md"
+    report_path = VALIDATION_DIR / "layer3-metamorphic" / "mr-results.md"
     report_path.write_text("\n".join(lines), encoding="utf-8")
     print(f"\nReport written: {report_path.name}")
 
@@ -277,7 +277,7 @@ def main() -> None:
     write_report(results)
 
     # Write cost summary
-    cost_path = VALIDATION_DIR / "phase3-costs.json"
+    cost_path = VALIDATION_DIR / "layer3-metamorphic" / "costs.json"
     cost_path.write_text(
         json.dumps(
             {
