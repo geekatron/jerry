@@ -37,6 +37,11 @@ dependencies = [
     "mdformat>=1.0.0,<2.0.0",
     "mdit-py-plugins>=0.4.0",
     "pyyaml>=6.0",  # EN-005: StalenessDetector ORCHESTRATION.yaml parsing
+    "anthropic>=0.84.0",
+    "python-dotenv>=1.2.2",
+    "deepeval>=3.8.0,<4.0.0",  # CG-028: Pin to 3.x — codebase uses AnthropicModel and GEval 3.x APIs; <4.0.0 prevents breaking changes
+    "scipy>=1.11.0",  # CG-029: Explicit dep — layer4_stats.py imports scipy.stats (wilcoxon, mannwhitneyu); was transitive via deepeval only
+    "statsmodels>=0.14.6",
 ]
 
 [project.optional-dependencies]
