@@ -1,0 +1,479 @@
+{
+  "agents": {
+    "ps-researcher": {
+      "n_prompts": 5,
+      "n_minimum_required": 20,
+      "sufficient_n": false,
+      "dimensions": {
+        "completeness": {
+          "n": 5,
+          "mean": 0.4,
+          "min": 0.0,
+          "max": 1.0,
+          "std": 0.3742,
+          "pass_count": 1,
+          "pass_rate": 0.2,
+          "quality_threshold": 0.92,
+          "scores": [
+            0.2,
+            0.4,
+            0.4,
+            0.0,
+            1.0
+          ],
+          "wilson_ci": {
+            "pass_rate": 0.2,
+            "ci_lower": 0.0362,
+            "ci_upper": 0.6245,
+            "ci_width": 0.5882,
+            "n": 5,
+            "pass_count": 1,
+            "alpha": 0.05,
+            "method": "wilson"
+          },
+          "wilcoxon": {
+            "status": "INSUFFICIENT_N",
+            "note": "N=5 < 20. Wilcoxon requires Phase 3 data (N>=20)."
+          },
+          "classification": "INSUFFICIENT_DATA",
+          "merge_decision": "DEFERRED"
+        },
+        "internal_consistency": {
+          "n": 5,
+          "mean": 0.52,
+          "min": 0.3,
+          "max": 0.9,
+          "std": 0.2387,
+          "pass_count": 0,
+          "pass_rate": 0.0,
+          "quality_threshold": 0.92,
+          "scores": [
+            0.3,
+            0.4,
+            0.6,
+            0.4,
+            0.9
+          ],
+          "wilson_ci": {
+            "pass_rate": 0.0,
+            "ci_lower": 0.0,
+            "ci_upper": 0.4345,
+            "ci_width": 0.4345,
+            "n": 5,
+            "pass_count": 0,
+            "alpha": 0.05,
+            "method": "wilson"
+          },
+          "wilcoxon": {
+            "status": "INSUFFICIENT_N",
+            "note": "N=5 < 20. Wilcoxon requires Phase 3 data (N>=20)."
+          },
+          "classification": "INSUFFICIENT_DATA",
+          "merge_decision": "DEFERRED"
+        },
+        "methodological_rigor": {
+          "n": 5,
+          "mean": 0.4,
+          "min": 0.2,
+          "max": 0.7,
+          "std": 0.2345,
+          "pass_count": 0,
+          "pass_rate": 0.0,
+          "quality_threshold": 0.92,
+          "scores": [
+            0.6,
+            0.3,
+            0.2,
+            0.7,
+            0.2
+          ],
+          "wilson_ci": {
+            "pass_rate": 0.0,
+            "ci_lower": 0.0,
+            "ci_upper": 0.4345,
+            "ci_width": 0.4345,
+            "n": 5,
+            "pass_count": 0,
+            "alpha": 0.05,
+            "method": "wilson"
+          },
+          "wilcoxon": {
+            "status": "INSUFFICIENT_N",
+            "note": "N=5 < 20. Wilcoxon requires Phase 3 data (N>=20)."
+          },
+          "classification": "INSUFFICIENT_DATA",
+          "merge_decision": "DEFERRED"
+        },
+        "evidence_quality": {
+          "n": 5,
+          "mean": 0.22,
+          "min": 0.0,
+          "max": 0.7,
+          "std": 0.2864,
+          "pass_count": 0,
+          "pass_rate": 0.0,
+          "quality_threshold": 0.92,
+          "scores": [
+            0.2,
+            0.2,
+            0.0,
+            0.0,
+            0.7
+          ],
+          "wilson_ci": {
+            "pass_rate": 0.0,
+            "ci_lower": 0.0,
+            "ci_upper": 0.4345,
+            "ci_width": 0.4345,
+            "n": 5,
+            "pass_count": 0,
+            "alpha": 0.05,
+            "method": "wilson"
+          },
+          "wilcoxon": {
+            "status": "INSUFFICIENT_N",
+            "note": "N=5 < 20. Wilcoxon requires Phase 3 data (N>=20)."
+          },
+          "classification": "INSUFFICIENT_DATA",
+          "merge_decision": "DEFERRED"
+        },
+        "actionability": {
+          "n": 5,
+          "mean": 0.64,
+          "min": 0.2,
+          "max": 1.0,
+          "std": 0.4037,
+          "pass_count": 1,
+          "pass_rate": 0.2,
+          "quality_threshold": 0.92,
+          "scores": [
+            0.2,
+            0.9,
+            0.9,
+            0.2,
+            1.0
+          ],
+          "wilson_ci": {
+            "pass_rate": 0.2,
+            "ci_lower": 0.0362,
+            "ci_upper": 0.6245,
+            "ci_width": 0.5882,
+            "n": 5,
+            "pass_count": 1,
+            "alpha": 0.05,
+            "method": "wilson"
+          },
+          "wilcoxon": {
+            "status": "INSUFFICIENT_N",
+            "note": "N=5 < 20. Wilcoxon requires Phase 3 data (N>=20)."
+          },
+          "classification": "INSUFFICIENT_DATA",
+          "merge_decision": "DEFERRED"
+        },
+        "traceability": {
+          "n": 5,
+          "mean": 0.28,
+          "min": 0.1,
+          "max": 0.8,
+          "std": 0.295,
+          "pass_count": 0,
+          "pass_rate": 0.0,
+          "quality_threshold": 0.92,
+          "scores": [
+            0.1,
+            0.2,
+            0.1,
+            0.2,
+            0.8
+          ],
+          "wilson_ci": {
+            "pass_rate": 0.0,
+            "ci_lower": 0.0,
+            "ci_upper": 0.4345,
+            "ci_width": 0.4345,
+            "n": 5,
+            "pass_count": 0,
+            "alpha": 0.05,
+            "method": "wilson"
+          },
+          "wilcoxon": {
+            "status": "INSUFFICIENT_N",
+            "note": "N=5 < 20. Wilcoxon requires Phase 3 data (N>=20)."
+          },
+          "classification": "INSUFFICIENT_DATA",
+          "merge_decision": "DEFERRED"
+        },
+        "composite": {
+          "n": 5,
+          "mean": 0.421,
+          "min": 0.27,
+          "max": 0.755,
+          "std": 0.1956,
+          "pass_count": 0,
+          "pass_rate": 0.0,
+          "quality_threshold": 0.92,
+          "scores": [
+            0.29,
+            0.405,
+            0.385,
+            0.27,
+            0.755
+          ],
+          "wilson_ci": {
+            "pass_rate": 0.0,
+            "ci_lower": 0.0,
+            "ci_upper": 0.4345,
+            "ci_width": 0.4345,
+            "n": 5,
+            "pass_count": 0,
+            "alpha": 0.05,
+            "method": "wilson"
+          },
+          "wilcoxon": {
+            "status": "INSUFFICIENT_N",
+            "note": "N=5 < 20. Wilcoxon requires Phase 3 data (N>=20)."
+          },
+          "classification": "INSUFFICIENT_DATA",
+          "merge_decision": "DEFERRED"
+        }
+      },
+      "overall_classification": "INSUFFICIENT_DATA",
+      "overall_merge_decision": "DEFERRED"
+    },
+    "ps-architect": {
+      "n_prompts": 4,
+      "n_minimum_required": 20,
+      "sufficient_n": false,
+      "dimensions": {
+        "completeness": {
+          "n": 4,
+          "mean": 0.575,
+          "min": 0.4,
+          "max": 0.8,
+          "std": 0.2062,
+          "pass_count": 0,
+          "pass_rate": 0.0,
+          "quality_threshold": 0.92,
+          "scores": [
+            0.8,
+            0.4,
+            0.4,
+            0.7
+          ],
+          "wilson_ci": {
+            "pass_rate": 0.0,
+            "ci_lower": 0.0,
+            "ci_upper": 0.4899,
+            "ci_width": 0.4899,
+            "n": 4,
+            "pass_count": 0,
+            "alpha": 0.05,
+            "method": "wilson"
+          },
+          "wilcoxon": {
+            "status": "INSUFFICIENT_N",
+            "note": "N=4 < 20. Wilcoxon requires Phase 3 data (N>=20)."
+          },
+          "classification": "INSUFFICIENT_DATA",
+          "merge_decision": "DEFERRED"
+        },
+        "internal_consistency": {
+          "n": 4,
+          "mean": 0.45,
+          "min": 0.2,
+          "max": 0.6,
+          "std": 0.1915,
+          "pass_count": 0,
+          "pass_rate": 0.0,
+          "quality_threshold": 0.92,
+          "scores": [
+            0.6,
+            0.6,
+            0.4,
+            0.2
+          ],
+          "wilson_ci": {
+            "pass_rate": 0.0,
+            "ci_lower": 0.0,
+            "ci_upper": 0.4899,
+            "ci_width": 0.4899,
+            "n": 4,
+            "pass_count": 0,
+            "alpha": 0.05,
+            "method": "wilson"
+          },
+          "wilcoxon": {
+            "status": "INSUFFICIENT_N",
+            "note": "N=4 < 20. Wilcoxon requires Phase 3 data (N>=20)."
+          },
+          "classification": "INSUFFICIENT_DATA",
+          "merge_decision": "DEFERRED"
+        },
+        "methodological_rigor": {
+          "n": 4,
+          "mean": 0.625,
+          "min": 0.3,
+          "max": 0.8,
+          "std": 0.2217,
+          "pass_count": 0,
+          "pass_rate": 0.0,
+          "quality_threshold": 0.92,
+          "scores": [
+            0.7,
+            0.8,
+            0.7,
+            0.3
+          ],
+          "wilson_ci": {
+            "pass_rate": 0.0,
+            "ci_lower": 0.0,
+            "ci_upper": 0.4899,
+            "ci_width": 0.4899,
+            "n": 4,
+            "pass_count": 0,
+            "alpha": 0.05,
+            "method": "wilson"
+          },
+          "wilcoxon": {
+            "status": "INSUFFICIENT_N",
+            "note": "N=4 < 20. Wilcoxon requires Phase 3 data (N>=20)."
+          },
+          "classification": "INSUFFICIENT_DATA",
+          "merge_decision": "DEFERRED"
+        },
+        "evidence_quality": {
+          "n": 4,
+          "mean": 0.7,
+          "min": 0.4,
+          "max": 0.8,
+          "std": 0.2,
+          "pass_count": 0,
+          "pass_rate": 0.0,
+          "quality_threshold": 0.92,
+          "scores": [
+            0.8,
+            0.8,
+            0.8,
+            0.4
+          ],
+          "wilson_ci": {
+            "pass_rate": 0.0,
+            "ci_lower": 0.0,
+            "ci_upper": 0.4899,
+            "ci_width": 0.4899,
+            "n": 4,
+            "pass_count": 0,
+            "alpha": 0.05,
+            "method": "wilson"
+          },
+          "wilcoxon": {
+            "status": "INSUFFICIENT_N",
+            "note": "N=4 < 20. Wilcoxon requires Phase 3 data (N>=20)."
+          },
+          "classification": "INSUFFICIENT_DATA",
+          "merge_decision": "DEFERRED"
+        },
+        "actionability": {
+          "n": 4,
+          "mean": 0.8,
+          "min": 0.6,
+          "max": 1.0,
+          "std": 0.1826,
+          "pass_count": 1,
+          "pass_rate": 0.25,
+          "quality_threshold": 0.92,
+          "scores": [
+            0.7,
+            0.6,
+            0.9,
+            1.0
+          ],
+          "wilson_ci": {
+            "pass_rate": 0.25,
+            "ci_lower": 0.0456,
+            "ci_upper": 0.6994,
+            "ci_width": 0.6538,
+            "n": 4,
+            "pass_count": 1,
+            "alpha": 0.05,
+            "method": "wilson"
+          },
+          "wilcoxon": {
+            "status": "INSUFFICIENT_N",
+            "note": "N=4 < 20. Wilcoxon requires Phase 3 data (N>=20)."
+          },
+          "classification": "INSUFFICIENT_DATA",
+          "merge_decision": "DEFERRED"
+        },
+        "traceability": {
+          "n": 4,
+          "mean": 0.525,
+          "min": 0.3,
+          "max": 0.8,
+          "std": 0.2217,
+          "pass_count": 0,
+          "pass_rate": 0.0,
+          "quality_threshold": 0.92,
+          "scores": [
+            0.3,
+            0.6,
+            0.8,
+            0.4
+          ],
+          "wilson_ci": {
+            "pass_rate": 0.0,
+            "ci_lower": 0.0,
+            "ci_upper": 0.4899,
+            "ci_width": 0.4899,
+            "n": 4,
+            "pass_count": 0,
+            "alpha": 0.05,
+            "method": "wilson"
+          },
+          "wilcoxon": {
+            "status": "INSUFFICIENT_N",
+            "note": "N=4 < 20. Wilcoxon requires Phase 3 data (N>=20)."
+          },
+          "classification": "INSUFFICIENT_DATA",
+          "merge_decision": "DEFERRED"
+        },
+        "composite": {
+          "n": 4,
+          "mean": 0.6075,
+          "min": 0.49,
+          "max": 0.675,
+          "std": 0.0809,
+          "pass_count": 0,
+          "pass_rate": 0.0,
+          "quality_threshold": 0.92,
+          "scores": [
+            0.675,
+            0.63,
+            0.635,
+            0.49
+          ],
+          "wilson_ci": {
+            "pass_rate": 0.0,
+            "ci_lower": 0.0,
+            "ci_upper": 0.4899,
+            "ci_width": 0.4899,
+            "n": 4,
+            "pass_count": 0,
+            "alpha": 0.05,
+            "method": "wilson"
+          },
+          "wilcoxon": {
+            "status": "INSUFFICIENT_N",
+            "note": "N=4 < 20. Wilcoxon requires Phase 3 data (N>=20)."
+          },
+          "classification": "INSUFFICIENT_DATA",
+          "merge_decision": "DEFERRED"
+        }
+      },
+      "overall_classification": "INSUFFICIENT_DATA",
+      "overall_merge_decision": "DEFERRED"
+    }
+  },
+  "validation_mode": true,
+  "timestamp": "2026-03-08T19:30:07.642608+00:00"
+}

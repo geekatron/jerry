@@ -20,7 +20,7 @@
 #
 # Security controls per system-design.md Part 3 threat model:
 #   MC-07: Docker read-only filesystem + dropped capabilities + whitelisted paths
-#   MC-08: Docker image pinned to version tag 0.86.0 (not :latest); SHA digest pending Docker daemon availability — see CG-007 inline
+#   MC-08: Docker image pinned to SHA-256 digest (ghcr.io/promptfoo/promptfoo@sha256:de1e686e...)
 #   MC-10: All config mounts read-only (:ro)
 #   MC-13: Docker memory + CPU resource limits
 #   MC-14: --security-opt=no-new-privileges:true, --cap-drop=ALL
@@ -221,11 +221,12 @@ jobs:
           #   --memory=512m: Memory limit (MC-13)
           #   --cpus=1: CPU limit (MC-13)
           #   :ro mounts: All config/source mounts are read-only (MC-10)
-          # CG-007: Version-pinned Docker image (supply chain security).
-          # Previously :latest — pinned to 0.86.0 for reproducibility.
-          # To upgrade to SHA pinning: docker pull <tag> && docker inspect --format='{{index .RepoDigests 0}}' <tag>
-          # Then replace the tag with the @sha256: digest.
-          PROMPTFOO_IMAGE="ghcr.io/promptfoo/promptfoo:0.86.0"
+          # MC-08 / CG-007: Docker image pinned to SHA-256 digest for supply chain integrity.
+          # Resolved from ghcr.io/promptfoo/promptfoo:latest (v24.14.0) on 2026-03-07.
+          # Note: GHCR does not publish version tags (e.g., 0.86.0); only :latest and sha-* commit tags.
+          # For version-pinned promptfoo, use docker/promptfoo/Dockerfile (installs 0.86.0 via npm).
+          # To update: docker pull ghcr.io/promptfoo/promptfoo:latest && docker inspect --format='{{index .RepoDigests 0}}' ghcr.io/promptfoo/promptfoo:latest
+          PROMPTFOO_IMAGE="ghcr.io/promptfoo/promptfoo@sha256:de1e686ee190201a3d4e2631c60647c64fd96e203faa2bdb95f99b339efbbcd2"
 
           docker run --rm \
             --read-only \

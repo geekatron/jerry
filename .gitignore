@@ -54,6 +54,7 @@ htmlcov/
 # Testing
 .tox/
 .nox/
+.deepeval/
 
 # Misc
 *.tgz

@@ -93,6 +93,75 @@ logger = logging.getLogger(__name__)
 #: and to guard against oversized payloads crashing the evaluation pipeline.
 _MAX_OUTPUT_CHARS: int = 8000
 
+#: Maximum character length for LLMTestCase input (prompt).
+#: Inputs exceeding this length are truncated before DeepEval metric
+#: construction. 10,000 characters aligns with MC-06 payload size limit.
+_MAX_INPUT_CHARS: int = 10_000
+
+
+def _sanitize_input(text: str, field_name: str, max_chars: int) -> str:
+    """Sanitize a text input before passing to DeepEval LLMTestCase (MC-02).
+
+    Validates that the input is a string, strips null bytes and control
+    characters that could interfere with LLM judge processing, and truncates
+    to ``max_chars`` to enforce payload size limits (MC-06).
+
+    This function implements the MC-02 input sanitization layer documented
+    in system-design.md Part 4. It is applied to both ``prompt`` and
+    ``output_text`` before ``LLMTestCase`` construction in ``evaluate_batch()``.
+
+    Args:
+        text: The raw text to sanitize.
+        field_name: Name of the field (for logging), e.g. ``"prompt"``
+            or ``"output"``.
+        max_chars: Maximum allowed character length after sanitization.
+
+    Returns:
+        Sanitized text, guaranteed to be a non-null string with no null
+        bytes, no bare carriage returns, and length <= ``max_chars``.
+
+    Raises:
+        TypeError: If ``text`` is not a string.
+
+    References:
+        - MC-02: Input sanitization for prompt injection
+        - MC-06: Test input length limits
+        - F-001: Security assessment finding (CWE-20)
+    """
+    if not isinstance(text, str):
+        raise TypeError(
+            f"Expected str for {field_name}, got {type(text).__name__}. "
+            f"MC-02 requires string inputs to the evaluation adapter."
+        )
+
+    sanitized = text
+
+    # Strip null bytes (common injection vector for C-based parsers and
+    # can cause truncation in downstream string processing).
+    if "\x00" in sanitized:
+        logger.warning(
+            "MC-02: Null bytes stripped from %s (count=%d).",
+            field_name,
+            sanitized.count("\x00"),
+        )
+        sanitized = sanitized.replace("\x00", "")
+
+    # Normalize bare carriage returns to prevent line-splitting attacks
+    # in downstream log consumers and GHA output protocol (CG-018).
+    sanitized = sanitized.replace("\r\n", "\n").replace("\r", "\n")
+
+    # Truncate to max length
+    if len(sanitized) > max_chars:
+        logger.warning(
+            "MC-02: %s truncated from %d to %d characters.",
+            field_name,
+            len(sanitized),
+            max_chars,
+        )
+        sanitized = sanitized[:max_chars]
+
+    return sanitized
+
 
 @dataclass
 class DeepEvalAdapter:
@@ -504,6 +573,9 @@ class DeepEvalAdapter:
         # any condition that would cause every output to silently score 0.0.
         self._pre_batch_health_check(outputs=outputs, criteria=criteria)
 
+        # MC-02: Sanitize prompt input once (shared across all outputs in batch).
+        sanitized_prompt = _sanitize_input(prompt, "prompt", _MAX_INPUT_CHARS)
+
         # Initialize per-criterion score lists (FR-009: one array per metric)
         score_lists: dict[str, ScoreArray] = {c.name: [] for c in criteria}
         score_lists["composite"] = []
@@ -522,21 +594,12 @@ class DeepEvalAdapter:
         )
 
         for i, output_text in enumerate(outputs):
-            # CG-017: Truncate oversized outputs before LLMTestCase construction
-            # to prevent unbounded token consumption in the DeepEval LLM judge.
-            if len(output_text) > _MAX_OUTPUT_CHARS:
-                logger.warning(
-                    "Batch evaluation run %d/%d for agent '%s': output_text truncated "
-                    "from %d to %d characters (CG-017 _MAX_OUTPUT_CHARS limit).",
-                    i + 1,
-                    len(outputs),
-                    agent_name,
-                    len(output_text),
-                    _MAX_OUTPUT_CHARS,
-                )
-                output_text = output_text[:_MAX_OUTPUT_CHARS]
+            # MC-02 + CG-017: Sanitize and truncate output before LLMTestCase
+            # construction. _sanitize_input handles null bytes, CR normalization,
+            # and length truncation in a single pass.
+            output_text = _sanitize_input(output_text, f"output[{i}]", _MAX_OUTPUT_CHARS)
             test_case = LLMTestCase(
-                input=prompt,
+                input=sanitized_prompt,
                 actual_output=output_text,
             )
             try:

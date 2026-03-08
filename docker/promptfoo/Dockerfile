@@ -31,12 +31,10 @@
 # Base image pinned to digest for supply chain integrity (MC-08)
 # Using node:20-alpine for minimal attack surface
 # ==============================================================================
-# TODO: Pin to SHA digest in production (MC-08). Run:
-#   docker pull node:20-alpine3.21
-#   docker inspect --format='{{index .RepoDigests 0}}' node:20-alpine3.21
-# Replace the FROM line below with the fully-qualified digest form, e.g.:
-#   FROM node:20-alpine3.21@sha256:<real-64-char-digest> AS base
-FROM node:20-alpine3.21 AS base
+# MC-08: Base image pinned to SHA-256 digest for supply chain integrity.
+# To verify: docker pull node:20-alpine3.21 && docker inspect --format='{{index .RepoDigests 0}}' node:20-alpine3.21
+# To update: resolve new tag digest and replace the sha256 value below.
+FROM node:20-alpine3.21@sha256:eb0b81f6eb35ec5ecd1cab181801f93a6314127580b416e6e290363b724e1686 AS base
 
 # Metadata labels for image identification and security scanning
 LABEL maintainer="jerry-framework"
@@ -45,7 +43,7 @@ LABEL org.opencontainers.image.description="promptfoo containerized runtime for 
 LABEL org.opencontainers.image.source="https://github.com/geekatron/jerry"
 LABEL proj036.layer="layer1-cicd-gate"
 LABEL proj036.security.mc07="non-root-user,dropped-capabilities"
-LABEL proj036.security.mc08="tag-pinned-digest-pending"
+LABEL proj036.security.mc08="sha256-digest-pinned"
 
 # Security: Create non-root user for promptfoo execution (MC-07)
 # UID/GID 1001 reserved for promptfoo runner

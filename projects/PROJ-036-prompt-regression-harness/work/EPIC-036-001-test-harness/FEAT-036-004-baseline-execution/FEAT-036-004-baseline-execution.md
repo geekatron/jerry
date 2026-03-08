@@ -7,7 +7,7 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.4
 -->
 
 > **Type:** feature
-> **Status:** pending
+> **Status:** in_progress
 > **Priority:** critical
 > **Impact:** high
 > **Created:** 2026-03-07T00:00:00Z

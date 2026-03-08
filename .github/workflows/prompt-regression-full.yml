@@ -35,7 +35,7 @@
 #
 # Security controls per system-design.md Part 3 threat model:
 #   MC-07: Docker hardened execution (read-only, cap-drop, no-new-privileges)
-#   MC-08: Docker image pinned to version tag 0.86.0 (not :latest); SHA digest pending Docker daemon availability — see CG-007 inline
+#   MC-08: Docker image pinned to SHA-256 digest (ghcr.io/promptfoo/promptfoo@sha256:de1e686e...)
 #   MC-09: Output volume validation before statistical consumption
 #   MC-10: Read-only config mounts (:ro)
 #   MC-13: Docker memory (4g) and CPU (4) limits — Full tier needs more resources
@@ -274,10 +274,12 @@ jobs:
           #
           # MC-07/MC-14: Docker hardening parameters
           # MC-13: Larger resource limits for Full tier (4g memory, 4 CPU)
-          # CG-007: Version-pinned Docker image (supply chain security).
-          # To upgrade to SHA pinning: docker pull <tag> && docker inspect --format='{{index .RepoDigests 0}}' <tag>
-          # Then replace the tag with the @sha256: digest.
-          PROMPTFOO_IMAGE="ghcr.io/promptfoo/promptfoo:0.86.0"
+          # MC-08 / CG-007: Docker image pinned to SHA-256 digest for supply chain integrity.
+          # Resolved from ghcr.io/promptfoo/promptfoo:latest (v24.14.0) on 2026-03-07.
+          # Note: GHCR does not publish version tags (e.g., 0.86.0); only :latest and sha-* commit tags.
+          # For version-pinned promptfoo, use docker/promptfoo/Dockerfile (installs 0.86.0 via npm).
+          # To update: docker pull ghcr.io/promptfoo/promptfoo:latest && docker inspect --format='{{index .RepoDigests 0}}' ghcr.io/promptfoo/promptfoo:latest
+          PROMPTFOO_IMAGE="ghcr.io/promptfoo/promptfoo@sha256:de1e686ee190201a3d4e2631c60647c64fd96e203faa2bdb95f99b339efbbcd2"
 
           mkdir -p tests/prompt-regression/results
 
