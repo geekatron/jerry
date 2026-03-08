@@ -1,0 +1,418 @@
+# adv-scorer Canonical Test Prompts
+# PROJ-036 Baseline Capture -- Stream 1C
+#
+# These prompts exercise adv-scorer's core competencies:
+#   - SSOT 6-dimension weighted composite scoring (S-014)
+#   - Per-dimension independence: no dimension pulls others up
+#   - Score band classification: PASS (>= 0.92) / REVISE (0.85-0.91) / REJECTED (< 0.85)
+#   - Strict leniency bias counteraction (choosing lower score when uncertain)
+#   - Calibration anchor application (0.50/0.70/0.85/0.92/1.00)
+#   - Evidence specification: specific textual evidence for every score
+#
+# KEY DISTINCTION from ps-critic: adv-scorer is a standalone scorer (not iterative).
+# Its prompts focus on: ADV CONTEXT block parsing, score band determination,
+# and the formal anti-leniency protocol. ps-critic focuses on iterative improvement.
+#
+# Fixture artifacts include: a clearly weak artifact, a near-threshold artifact,
+# an artifact missing specific dimensions, a high-quality artifact (tempts leniency),
+# and a multi-type scoring task. This allows regression detection across the score spectrum.
+#
+# BEHAVIOR ID CONVENTION:
+#   Behavior IDs (B-001 through B-005 per prompt) are prompt-scoped identifiers.
+#   They cross-reference behavioral contracts in:
+#   projects/PROJ-036-prompt-regression-harness/contracts/behavioral-contracts.md
+#   Mapping: calibration anchor behaviors -> Section A.2 (adv-scorer invariants);
+#            anti-leniency behaviors -> Section B (quality bounds: methodological_rigor);
+#            score band classification -> Section B (quality bounds: internal_consistency).
+#
+# G-EVAL CRITERIA:
+#   DeepEval G-Eval evaluates each run against the following criteria strings.
+#   These strings are the exact text passed to DeepEval's GEval metric constructor
+#   as the `criteria` parameter.
+
+agent: "adv-scorer"
+system_prompt_path: "skills/adversary/agents/adv-scorer.md"
+
+# G-Eval evaluation criteria (passed to DeepEval GEval metric as `criteria` parameter)
+# Applied to ALL prompts for this agent unless overridden at the prompt level.
+g_eval_criteria:
+  completeness: >
+    The output scores all 6 SSOT dimensions (or all custom dimensions if specified in
+    ADV CONTEXT) with numeric scores, calibration anchor references, textual evidence, and
+    leniency notes where applicable. The weighted composite is computed. A score band
+    classification (PASS/REVISE/REJECTED) is explicitly stated. Score 0.0 if any dimension
+    is missing or if the score band is absent.
+  internal_consistency: >
+    The weighted composite is arithmetically consistent with the stated dimension scores
+    and weights. The score band matches the composite (PASS >= 0.92, REVISE 0.85-0.91,
+    REJECTED < 0.85). Custom dimension weights sum to 1.0 when custom dimensions are used.
+    Score 0.0 if arithmetic is incorrect or band is misclassified.
+  methodological_rigor: >
+    The adv-scorer applies calibration anchors explicitly (references 0.50, 0.70, 0.85,
+    0.92, or 1.00 as anchor points for each score). At least one dimension includes a note
+    about leniency temptation and counteraction. Scores are not uniformly clustered
+    (dimension score variance > 0.05 expected for fixture artifacts that have mixed quality).
+    Score proportionally for calibration anchor usage and anti-leniency rigor.
+  evidence_quality: >
+    Each dimension score is supported by specific textual evidence directly quoted or
+    specifically referenced from the fixture artifact. Generic justifications without
+    textual anchoring are insufficient. Strategy execution findings (if provided in
+    ADV CONTEXT) are mapped to specific dimensions with reasoning. Score proportionally
+    for evidence specificity.
+  actionability: >
+    Score band verdicts include enough context for a downstream agent or user to understand
+    what the verdict means for next steps. When adv-executor findings are incorporated,
+    the scoring explains how each finding affected the verdict. Custom dimension scoring
+    identifies the key driver of the overall result. Score proportionally.
+  traceability: >
+    The ADV CONTEXT block is parsed correctly (deliverable type, criticality, optional fields).
+    SSOT weight attribution is explicit (references quality-enforcement.md or states weights
+    directly as 0.20/0.20/0.20/0.15/0.15/0.10). Custom weights are stated when used.
+    Score proportionally for attribution coverage.
+
+prompts:
+  - id: "P-ADS-001"
+    description: "Standalone scoring of a weak artifact -- tests accurate score-band classification for REJECTED outcomes"
+    # Behavior IDs cross-reference:
+    #   B-001 -> behavioral-contracts.md Section A.2 (adv-scorer invariant: calibration anchor explicit reference)
+    #   B-002 -> behavioral-contracts.md Section B (quality bounds: evidence_quality floor for weak artifacts)
+    #   B-003 -> behavioral-contracts.md Section B (quality bounds: actionability floor for generic outputs)
+    #   B-004 -> behavioral-contracts.md Section A (Structural Invariant: REJECTED band for weak artifacts)
+    #   B-005 -> behavioral-contracts.md Section A.2 (adv-scorer invariant: leniency temptation logging)
+    user_prompt: |
+      ## ADV CONTEXT (REQUIRED)
+      - **Deliverable Type:** Research
+      - **Criticality Level:** C2
+
+      ## DELIVERABLE CONTENT
+
+      Evaluate the following artifact inline (treat it as the deliverable):
+
+      ---
+      # LLM Testing Framework Survey
+
+      DeepEval is a popular testing framework for LLMs. It has many metrics.
+      promptfoo is also popular and works well with CI/CD.
+
+      Both frameworks are open source. DeepEval uses Python, promptfoo uses Node.js.
+
+      For our project, we should probably use DeepEval because it integrates with pytest.
+
+      ## Next Steps
+      - Try DeepEval
+      - Set up promptfoo
+      - Run some tests
+      ---
+
+      Apply S-014 scoring. For each of the 6 SSOT dimensions:
+      1. State the score
+      2. State your calibration anchor reference (which anchor: 0.50, 0.70, 0.85, 0.92, 1.00)
+      3. Provide specific textual evidence from the artifact supporting the score
+      4. Note if leniency temptation was present and how you counteracted it
+
+      Compute the weighted composite (weights: completeness 0.20, internal_consistency 0.20,
+      methodological_rigor 0.20, evidence_quality 0.15, actionability 0.15, traceability 0.10).
+
+      State the score band: PASS (>= 0.92), REVISE (0.85-0.91), or REJECTED (< 0.85).
+    expected_behaviors:
+      - "B-001: References calibration anchors explicitly (e.g., 'this is closer to 0.50 than 0.70')"
+      - "B-002: Identifies evidence_quality as very low (no citations, no URLs, no methodology)"
+      - "B-003: Identifies actionability as very low (next steps are generic, no specifics)"
+      - "B-004: Weighted composite is correctly computed and lands in REJECTED band"
+      - "B-005: Notes at least one specific leniency temptation and explains counteraction"
+    evaluation_metrics:
+      - "methodological_rigor"
+      - "completeness"
+      - "internal_consistency"
+      - "evidence_quality"
+
+  - id: "P-ADS-002"
+    description: "Scoring with optional strategy execution context -- tests integration of adv-executor findings into score"
+    # Behavior IDs cross-reference:
+    #   B-001 -> behavioral-contracts.md Section A.2 (adv-scorer invariant: adv-executor finding mapping)
+    #   B-002 -> behavioral-contracts.md Section B (quality bounds: traceability, stale evidence penalty)
+    #   B-003 -> behavioral-contracts.md Section B (quality bounds: completeness, constraint analysis gap)
+    #   B-004 -> behavioral-contracts.md Section B (quality bounds: methodological_rigor, critical assessment)
+    #   B-005 -> behavioral-contracts.md Section B (quality bounds: completeness, criticality implications)
+    user_prompt: |
+      ## ADV CONTEXT (REQUIRED)
+      - **Deliverable Type:** ADR
+      - **Criticality Level:** C3
+
+      ## OPTIONAL CONTEXT
+      - **Strategy Execution Findings:** (inline, see below)
+
+      ## STRATEGY EXECUTION FINDINGS (from adv-executor, S-002 Devil's Advocate)
+
+      The following weaknesses were identified by adversarial critique:
+      1. The decision does not address the Node.js dependency conflict with H-05 (UV-only)
+      2. The positive consequences section is longer than negative consequences (5 vs 2 items) -- possible selection bias
+      3. No sensitivity analysis: the recommendation may flip if the Integration Feasibility weight changes from 0.15 to 0.25
+      4. The evidence for "DeepEval has 14K GitHub stars" is from a Phase 1 study with no date -- may be stale
+
+      ## DELIVERABLE CONTENT
+
+      ---
+      # ADR-003: Evaluation Backend Selection
+
+      ## Status: Proposed
+
+      ## Context
+      The regression harness needs evaluation metrics for LLM output quality.
+
+      ## Decision
+      We adopt DeepEval as the evaluation backend.
+
+      ## Consequences
+
+      ### Positive
+      - 14+ metrics including G-Eval for custom criteria
+      - pytest plugin (native H-20 compliance)
+      - 14K GitHub stars (evidence of adoption)
+      - Apache 2.0 license
+      - Active development and documentation
+
+      ### Negative
+      - DeepEval's scoring algorithm may change between versions
+      - Requires pinning version in uv.lock
+      ---
+
+      Produce per-dimension scores that INTEGRATE the adv-executor findings.
+      For each finding from adv-executor, identify which dimension it most affects and
+      explain how it is reflected in your score.
+
+      Compute weighted composite and state verdict.
+    expected_behaviors:
+      - "B-001: Explicitly maps each adv-executor finding to a scoring dimension"
+      - "B-002: Reduces traceability score due to the stale evidence finding"
+      - "B-003: Reduces completeness score due to missing H-05 conflict analysis"
+      - "B-004: Does not simply accept adv-executor findings uncritically -- states whether each finding is valid"
+      - "B-005: Final verdict acknowledges C3 criticality implications"
+    evaluation_metrics:
+      - "completeness"
+      - "methodological_rigor"
+      - "internal_consistency"
+      - "traceability"
+
+  - id: "P-ADS-003"
+    description: "Re-scoring after revision -- tests sensitivity to incremental improvement and delta assessment"
+    # Behavior IDs cross-reference:
+    #   B-001 -> behavioral-contracts.md Section A.2 (adv-scorer invariant: prior score delta assessment)
+    #   B-002 -> behavioral-contracts.md Section A (Structural Invariant: dual-threshold composite comparison)
+    #   B-003 -> behavioral-contracts.md Section B (quality bounds: methodological_rigor, improvement specificity)
+    #   B-004 -> behavioral-contracts.md Section A.2 (adv-scorer invariant: 0.92+ requires full justification)
+    #   B-005 -> behavioral-contracts.md Section B (quality bounds: actionability, iteration recommendation)
+    user_prompt: |
+      ## ADV CONTEXT (REQUIRED)
+      - **Deliverable Type:** Research
+      - **Criticality Level:** C2
+
+      ## OPTIONAL CONTEXT
+      - **Prior Score:** 0.73 (REJECTED at previous iteration)
+
+      ## DELIVERABLE CONTENT
+
+      This is a revised artifact. Evaluate it and compare against the prior score of 0.73.
+
+      ---
+      # Statistical Comparison Engine: Design Requirements
+
+      ## L0: Executive Summary
+
+      The regression harness statistical engine must answer one question: "Is prompt version B
+      significantly worse than prompt version A?" Think of it like a medical trial -- we need
+      enough patients (N=30 runs) to detect a real treatment effect rather than random noise.
+
+      ## L1: Technical Requirements
+
+      The engine implements three statistical methods:
+
+      **1. Wilcoxon Signed-Rank Test** (primary comparison method)
+      Appropriate because: LLM quality scores are ordinal, not normally distributed.
+      The test compares paired score distributions without assuming normality.
+      Minimum N: 20 pairs (Hollander & Wolfe, 1999). We use N=30 for 80%+ power.
+
+      **2. Wilson Score Confidence Intervals** (pass-rate uncertainty)
+      Formula: (p + z^2/(2n) ± z*sqrt(p*(1-p)/n + z^2/(4n^2))) / (1 + z^2/n)
+      Where p=pass rate, n=sample size, z=1.96 for 95% CI.
+      Used to estimate uncertainty around "what fraction of runs pass the 0.92 threshold."
+
+      **3. Bonferroni Correction** (multi-metric comparison)
+      When testing 6 dimensions simultaneously, alpha is divided by 6: alpha_corrected = 0.05/6 = 0.0083.
+      This prevents false regression detection from multiple simultaneous comparisons.
+
+      Implementation: scipy.stats.wilcoxon (BSD license), statsmodels.stats.proportion.proportion_confint.
+
+      ## L2: Strategic Context
+
+      The shift from point-estimate thresholds (>= 0.92 on a single run) to N=30 distribution
+      comparison represents closing the statistical debt identified in ICML 2025 position paper
+      ("CLT-based methods perform very poorly"). This decision trades higher API cost per evaluation
+      for reduced false alarm rate, which is the correct trade-off when false alarms block merges.
+      ---
+
+      Score all 6 dimensions. State whether the revision improved the composite above 0.73.
+      For each dimension, note whether it improved, regressed, or stayed the same vs. the prior version.
+      Compute the composite and state the verdict with comparison to both 0.73 and 0.92.
+    expected_behaviors:
+      - "B-001: Compares each dimension score trend against the prior score context (improved/regressed/same)"
+      - "B-002: Composite is computed correctly and compared explicitly to both 0.73 and 0.92"
+      - "B-003: Identifies specific improvements that justify score increases"
+      - "B-004: Does not award 0.92+ without specific justification for every dimension at that level"
+      - "B-005: Verdict addresses whether another iteration is statistically warranted"
+    evaluation_metrics:
+      - "completeness"
+      - "methodological_rigor"
+      - "internal_consistency"
+      - "actionability"
+
+  - id: "P-ADS-004"
+    description: "Custom dimension scoring -- tests ability to override SSOT dimensions when user specifies"
+    # Behavior IDs cross-reference:
+    #   B-001 -> behavioral-contracts.md Section A.2 (adv-scorer invariant: custom dimension compliance)
+    #   B-002 -> behavioral-contracts.md Section A (Structural Invariant: custom weight arithmetic)
+    #   B-003 -> behavioral-contracts.md Section B (quality bounds: completeness, bug identification)
+    #   B-004 -> behavioral-contracts.md Section B (quality bounds: methodological_rigor, correctness focus)
+    #   B-005 -> behavioral-contracts.md Section B (quality bounds: evidence_quality, correct code recognition)
+    user_prompt: |
+      ## ADV CONTEXT (REQUIRED)
+      - **Deliverable Type:** Other
+      - **Criticality Level:** C2
+      - **Custom Dimensions:**
+        - Statistical correctness (0.35): Are all statistical claims accurate and correctly applied?
+        - Code correctness (0.30): Is the code syntactically and logically correct?
+        - Documentation clarity (0.20): Is the code self-documenting and commented?
+        - Edge case handling (0.15): Does the code handle edge cases explicitly?
+
+      ## DELIVERABLE CONTENT
+
+      ---
+      # Wilcoxon Comparison Function
+
+      ```python
+      from scipy.stats import wilcoxon
+      from statsmodels.stats.proportion import proportion_confint
+      from statistics import mean
+
+      def compare_versions(scores_a, scores_b, alpha=0.05):
+          """Compare two prompt version score distributions.
+
+          Returns: 'NO_REGRESSION', 'MARGINAL', or 'REGRESSION'
+          """
+          if len(scores_a) < 20 or len(scores_b) < 20:
+              raise ValueError("Need N >= 20 per version")
+
+          stat, p_value = wilcoxon(scores_a, scores_b)
+
+          if p_value < alpha and mean(scores_b) < mean(scores_a):
+              return 'REGRESSION'
+          elif p_value < 0.10:
+              return 'MARGINAL'
+          return 'NO_REGRESSION'
+      ```
+      ---
+
+      Apply the CUSTOM dimensions above (not the SSOT 6-dimension composite).
+      The custom weights sum to 1.0 (0.35 + 0.30 + 0.20 + 0.15 = 1.00).
+
+      For each custom dimension:
+      1. Score (0.0-1.0)
+      2. Specific evidence from the code
+
+      Known issue to find: the Wilcoxon test requires paired data (len(scores_a) == len(scores_b)),
+      but the code only checks that each list has >= 20 elements. If the lists have unequal lengths,
+      scipy.stats.wilcoxon will raise a ValueError at runtime, not a helpful error message.
+
+      Identify this bug as part of edge case handling scoring.
+
+      Compute weighted composite using the custom weights and state verdict.
+    expected_behaviors:
+      - "B-001: Uses custom dimensions, not SSOT 6-dimension weights"
+      - "B-002: Correctly computes weighted composite with custom weights (0.35/0.30/0.20/0.15)"
+      - "B-003: Identifies the unequal-length paired data bug in edge case handling"
+      - "B-004: Does not penalize code for stylistic preferences -- focuses on correctness"
+      - "B-005: Statistical correctness score is high (Wilcoxon is correctly applied for paired comparison)"
+    evaluation_metrics:
+      - "completeness"
+      - "methodological_rigor"
+      - "internal_consistency"
+      - "evidence_quality"
+
+  - id: "P-ADS-005"
+    description: "Scoring of a genuinely high-quality artifact -- tests accurate high-score calibration without score inflation"
+    # Behavior IDs cross-reference:
+    #   B-001 -> behavioral-contracts.md Section A.2 (adv-scorer invariant: no artificial deflation)
+    #   B-002 -> behavioral-contracts.md Section A.2 (adv-scorer invariant: 1.00 requires extraordinary evidence)
+    #   B-003 -> behavioral-contracts.md Section B (quality bounds: evidence_quality, primary citation recognition)
+    #   B-004 -> behavioral-contracts.md Section A.2 (adv-scorer invariant: 1.00 gate enforcement)
+    #   B-005 -> behavioral-contracts.md Section B (quality bounds: methodological_rigor, threshold discussion)
+    user_prompt: |
+      ## ADV CONTEXT (REQUIRED)
+      - **Deliverable Type:** Analysis
+      - **Criticality Level:** C3
+
+      ## DELIVERABLE CONTENT
+
+      ---
+      # N=30 Sample Size Justification Analysis
+
+      ## L0: Executive Summary
+
+      Capturing 30 runs per prompt is the minimum defensible baseline. Fewer runs cannot reliably
+      distinguish real quality regressions from LLM stochasticity. Think of it as a medical trial:
+      you need enough patients to detect a treatment effect with confidence. 30 runs gives us
+      80%+ confidence of detecting a real 5-point quality drop.
+
+      ## L1: Technical Justification
+
+      Three independent statistical arguments all converge on N=30:
+
+      **Argument 1: Wilcoxon CLT applicability.**
+      The Wilcoxon signed-rank test's normal approximation is valid for N >= 25-30 (source:
+      Hollander, Wolfe & Chicken, Nonparametric Statistical Methods, 3rd ed., 2014, p. 35).
+      At N < 20, the approximation is unreliable; exact tables required.
+
+      **Argument 2: Power analysis.**
+      At delta=0.05 (5-point quality drop), sigma=0.10 (observed variance in PROJ-017 Phase 5
+      evaluation data), alpha=0.05, target power=0.80:
+      N >= (z_0.025 + z_0.20)^2 * sigma^2 / delta^2
+      N >= (1.96 + 0.84)^2 * 0.01 / 0.0025 = 31.4 (rounds to 32)
+
+      At lower sigma=0.08: N >= 20. So N=30 is conservative and covers sigma up to ~0.10.
+
+      **Argument 3: Wilson CI precision.**
+      At N=30, p=0.70, the 95% Wilson CI width is approximately 0.29.
+      At N=20: width is approximately 0.37. The 21% width reduction at N=30 provides
+      meaningful precision improvement for pass-rate comparison.
+      Formula: half-width = 1.96 * sqrt(p*(1-p)/N) / (1 + 1.96^2/N) [Wilson, 1927].
+
+      ## L2: Strategic Implications
+
+      N=30 represents a deliberate cost-rigor trade-off. The marginal value of each run
+      above N=30 decreases by approximately 1/(2*sqrt(N)), making N=50 only 12% more
+      precise than N=30 while adding 67% more API cost. If cost pressure increases,
+      N=20 is the defensible floor with explicit documentation.
+
+      This analysis also reveals that sigma > 0.10 would require N > 32, which is a decision
+      review trigger: if observed sigma exceeds 0.10 in practice, the N=30 standard should
+      be revised upward.
+      ---
+
+      Apply S-014 scoring with full anti-leniency. This artifact is well-written.
+      Your task is to find what prevents a perfect 1.00 score.
+
+      Even if the artifact scores above 0.92, identify the specific gaps preventing
+      each dimension from reaching 1.00.
+
+      State the verdict and explain why 0.92 would or would not be a fair threshold for this type of artifact.
+    expected_behaviors:
+      - "B-001: Accurately recognizes high quality -- does not artificially deflate scores"
+      - "B-002: Identifies specific gaps preventing 1.00 even on high-scoring dimensions"
+      - "B-003: Evidence quality score reflects the presence of primary citations (Hollander et al.)"
+      - "B-004: Does not award 1.00 on any dimension without extraordinary specific justification"
+      - "B-005: Verdict discusses whether 0.92 is the appropriate threshold for this deliverable type"
+    evaluation_metrics:
+      - "methodological_rigor"
+      - "evidence_quality"
+      - "internal_consistency"
+      - "completeness"

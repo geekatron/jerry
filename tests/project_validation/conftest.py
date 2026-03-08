@@ -16,6 +16,7 @@ Migration History:
 from __future__ import annotations
 
 import re
+import subprocess
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -139,18 +140,43 @@ def project_id(request: pytest.FixtureRequest) -> str:
     return request.param
 
 
+def _is_git_tracked(repo_root: Path, rel_path: str) -> bool:
+    """Check if a file is tracked by git (committed or staged)."""
+    try:
+        result = subprocess.run(
+            ["git", "ls-files", "--error-unmatch", rel_path],
+            cwd=repo_root,
+            capture_output=True,
+            check=False,
+        )
+        return result.returncode == 0
+    except OSError:
+        return True  # If git unavailable, assume tracked (don't block tests)
+
+
 @pytest.fixture
 def proj_root(project_root: Path, project_id: str) -> Path:
     """Return the root directory for the current project under test.
 
-    Skips if the project directory is missing or lacks required project
-    files (e.g., in CI where the projects/ directory is gitignored).
+    Skips if the project directory is missing, lacks required project
+    files, or has only untracked files (e.g., WIP projects not yet
+    committed, or CI where the projects/ directory is gitignored).
     """
     path = project_root / "projects" / project_id
     has_plan = (path / "PLAN.md").exists()
     has_tracker = (path / "WORKTRACKER.md").exists()
     if not path.is_dir() or not (has_plan or has_tracker):
         pytest.skip(f"Project directory not available: {project_id}")
+
+    # Verify at least one required file is git-tracked to avoid testing
+    # untracked WIP projects that happen to exist on disk.
+    plan_tracked = has_plan and _is_git_tracked(project_root, f"projects/{project_id}/PLAN.md")
+    tracker_tracked = has_tracker and _is_git_tracked(
+        project_root, f"projects/{project_id}/WORKTRACKER.md"
+    )
+    if not (plan_tracked or tracker_tracked):
+        pytest.skip(f"Project has no git-tracked required files: {project_id}")
+
     return path
 
 
@@ -212,6 +238,8 @@ OPTIONAL_CATEGORY_DIRS: tuple[str, ...] = (
     "reviews",
     "runbooks",
     "orchestration",
+    # Adversarial scoring iteration artifacts (S-014 quality gate reports)
+    "quality-gates",
 )
 
 # All valid subdirectories (required + optional).

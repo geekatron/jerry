@@ -1,0 +1,387 @@
+# Prompt Regression Smoke Check — Layer 1 CI/CD Gate (Tier 1: Structural Only)
+#
+# Purpose: Fast PR check that runs on every pull request modifying agent definition
+#   files. Validates structural assertions only — no LLM calls, no statistical
+#   comparison, no ANTHROPIC_API_KEY required. Completes in < 5 minutes.
+#
+# Report label: "STRUCTURAL ONLY — not statistically valid" (FR-005 Smoke mode)
+#
+# Trigger: PR that modifies skills/*/agents/*.md
+# Does NOT trigger: PRs that do not touch agent definitions (FR-002 cost control)
+# Fork PRs: Run without secrets (MC-28 fork secret isolation)
+#
+# FR traceability:
+#   FR-001: YAML test case definitions
+#   FR-002: PR-triggered GitHub Actions regression gate
+#   FR-005: Tiered evaluation mode — Smoke tier (N=1, structural only, $0)
+#   FR-023: UV-only Python execution (H-05)
+#   FR-025: promptfoo Docker isolation (no npm/Node.js in pyproject.toml)
+#   FR-027: Test case authorship enforcement (CI warning, not blocking)
+#
+# Security controls per system-design.md Part 3 threat model:
+#   MC-07: Docker read-only filesystem + dropped capabilities + whitelisted paths
+#   MC-08: Docker image pinned to SHA-256 digest (ghcr.io/promptfoo/promptfoo@sha256:de1e686e...)
+#   MC-10: All config mounts read-only (:ro)
+#   MC-13: Docker memory + CPU resource limits
+#   MC-14: --security-opt=no-new-privileges:true, --cap-drop=ALL
+#   MC-28: pull_request event (NOT pull_request_target) — no fork secret access
+#   MC-29: CODEOWNERS covers .github/workflows/ (enforced via branch protection)
+#   MC-31: No secret injection in Smoke tier — no keys to mask
+#   MC-32: concurrency group limits one active run per PR
+#   MC-33: Minimal permissions block (contents:read, pull-requests:write, checks:write)
+#
+# Stream: 3E (CI/CD Pipeline Setup)
+# Revision: Stream 3E — full production implementation with SHA-pinned actions
+
+name: Prompt Regression — Smoke Check
+
+on:
+  pull_request:
+    paths:
+      - "skills/*/agents/*.md"
+    types: [opened, synchronize, reopened]
+
+# MC-32: One active evaluation per PR; cancel stale runs on new push
+concurrency:
+  group: prompt-regression-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+# MC-33: Principle of least privilege — no write to contents, no admin, no packages
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
+env:
+  # DeepEval telemetry opt-out (CG-016)
+  DEEPEVAL_TELEMETRY_OPT_OUT: "YES"
+
+jobs:
+  # ==========================================================================
+  # Job 1: Detect which agent definition files changed
+  # ==========================================================================
+  detect-changed-agents:
+    name: Detect Changed Agent Definitions
+    runs-on: ubuntu-latest
+    outputs:
+      changed_agents: ${{ steps.detect.outputs.changed_agents }}
+      has_changes: ${{ steps.detect.outputs.has_changes }}
+      has_missing_tests: ${{ steps.test-authorship.outputs.has_missing_tests }}
+      missing_test_agents: ${{ steps.test-authorship.outputs.missing_test_agents }}
+    steps:
+      - name: Checkout PR branch
+        # SHA-pinned per MC-29 / OWASP CI/CD Top-10 C-05 (action version pinning)
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Detect changed agent definition files
+        id: detect
+        shell: bash
+        run: |
+          # Identify agent definition files changed in this PR vs. base branch
+          CHANGED_FILES=$(git diff --name-only \
+            "origin/${{ github.base_ref }}...HEAD" \
+            -- 'skills/*/agents/*.md' 2>/dev/null || echo "")
+
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            echo "changed_agents=[]" >> "$GITHUB_OUTPUT"
+            echo "No agent definition files changed — skipping smoke check"
+            exit 0
+          fi
+
+          echo "Changed agent files:"
+          echo "$CHANGED_FILES"
+
+          # Extract agent IDs from file paths
+          # Example: skills/problem-solving/agents/ps-researcher.md -> ps-researcher
+          AGENT_IDS=$(echo "$CHANGED_FILES" \
+            | sed 's|.*/agents/||' \
+            | sed 's|\.md$||' \
+            | sort -u \
+            | tr '\n' ' ')
+          echo "Affected agents: $AGENT_IDS"
+
+          # Build JSON array for matrix strategy
+          JSON_ARRAY=$(echo "$AGENT_IDS" \
+            | tr ' ' '\n' \
+            | grep -v '^$' \
+            | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          echo "changed_agents=$JSON_ARRAY" >> "$GITHUB_OUTPUT"
+          echo "has_changes=true" >> "$GITHUB_OUTPUT"
+
+      - name: Check test case authorship (FR-027 warning)
+        id: test-authorship
+        if: steps.detect.outputs.has_changes == 'true'
+        shell: bash
+        run: |
+          # FR-027: Warn when agent definition changes have no corresponding
+          # test case update. This is a warning, not a blocking failure, to
+          # avoid over-enforcement for trivial whitespace changes.
+          CHANGED_AGENTS_JSON='${{ steps.detect.outputs.changed_agents }}'
+          MISSING=()
+
+          for AGENT in $(echo "$CHANGED_AGENTS_JSON" | jq -r '.[]'); do
+            TEST_YAML="tests/prompt-regression/test-cases/${AGENT}.yaml"
+            if [ ! -f "$TEST_YAML" ]; then
+              MISSING+=("$AGENT")
+              echo "::warning::No test case file found for agent '${AGENT}' at ${TEST_YAML}"
+              echo "::warning::FR-027: Add test cases in tests/prompt-regression/test-cases/${AGENT}.yaml"
+            fi
+          done
+
+          if [ ${#MISSING[@]} -gt 0 ]; then
+            echo "has_missing_tests=true" >> "$GITHUB_OUTPUT"
+            # Build JSON array of agents with missing tests
+            MISSING_JSON=$(printf '%s\n' "${MISSING[@]}" \
+              | jq -R -s -c 'split("\n") | map(select(length > 0))')
+            echo "missing_test_agents=$MISSING_JSON" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_missing_tests=false" >> "$GITHUB_OUTPUT"
+            echo "missing_test_agents=[]" >> "$GITHUB_OUTPUT"
+          fi
+
+  # ==========================================================================
+  # Job 2: Per-agent structural check via promptfoo Docker (Smoke tier)
+  # ==========================================================================
+  smoke-structural-check:
+    name: Smoke — ${{ matrix.agent }}
+    runs-on: ubuntu-latest
+    needs: detect-changed-agents
+    if: needs.detect-changed-agents.outputs.has_changes == 'true'
+    timeout-minutes: 5
+    strategy:
+      matrix:
+        agent: ${{ fromJson(needs.detect-changed-agents.outputs.changed_agents) }}
+      fail-fast: false  # Run all agents even if one fails
+
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@f0ec1fc3b38f5e7cd731bb1ce926ae18e12f4ccd  # v5.4.1
+        with:
+          version: "latest"
+
+      - name: Set up Python 3.12
+        run: uv python install 3.12
+
+      - name: Install project dependencies (structural checks only — no LLM packages)
+        run: uv sync --no-dev
+
+      - name: Audit dependencies for known CVEs (CG-030)
+        # CG-030: pip-audit catches known CVEs in the resolved dependency set before
+        # they reach full/standard CI. --strict fails the job on any vulnerability.
+        # --desc shows human-readable descriptions for triaging findings.
+        run: |
+          uv pip install pip-audit
+          uv run pip-audit --strict --desc
+
+      - name: Validate test case YAML exists for agent (FR-027)
+        id: validate-yaml
+        shell: bash
+        run: |
+          AGENT="${{ matrix.agent }}"
+          TEST_YAML="tests/prompt-regression/test-cases/${AGENT}.yaml"
+
+          if [ ! -f "$TEST_YAML" ]; then
+            # FR-027: Missing test case authorship is a WARNING, not a blocking failure.
+            # Over-enforcement would block PRs for trivial whitespace changes.
+            # Structural assertion failures (promptfoo exit code) are the only hard gate.
+            echo "::warning file=${TEST_YAML}::Missing promptfoo test case file for agent '${AGENT}'"
+            echo "::warning::FR-027: Create tests/prompt-regression/test-cases/${AGENT}.yaml to add coverage for this agent"
+            echo "::warning::See: https://github.com/${{ github.repository }}/blob/main/tests/prompt-regression/README.md"
+            exit 0
+          fi
+          echo "Test case file found: $TEST_YAML"
+
+      - name: Run structural assertions via promptfoo (Docker, Smoke tier)
+        id: structural-check
+        shell: bash
+        env:
+          EVALUATION_MODE: smoke
+          AGENT_ID: ${{ matrix.agent }}
+          PROMPTFOO_CACHE_ENABLED: "false"
+        run: |
+          # MC-25: ANTHROPIC_API_KEY is intentionally NOT injected in Smoke tier.
+          # Smoke mode = structural checks only, no LLM calls (FR-005).
+          echo "STRUCTURAL ONLY — not statistically valid (FR-005 Smoke mode)"
+          echo "Evaluation mode: smoke | Agent: ${{ matrix.agent }}"
+
+          # Create output directory for results
+          mkdir -p tests/prompt-regression/results
+
+          # MC-07: Docker hardened execution
+          #   --read-only: Immutable container filesystem (prevents runtime tampering)
+          #   --security-opt=no-new-privileges:true: Prevent privilege escalation (MC-14)
+          #   --cap-drop=ALL: Drop all Linux capabilities (MC-14)
+          #   --network=none: No outbound network access in Smoke mode (no LLM calls)
+          #   --memory=512m: Memory limit (MC-13)
+          #   --cpus=1: CPU limit (MC-13)
+          #   :ro mounts: All config/source mounts are read-only (MC-10)
+          # MC-08 / CG-007: Docker image pinned to SHA-256 digest for supply chain integrity.
+          # Resolved from ghcr.io/promptfoo/promptfoo:latest (v24.14.0) on 2026-03-07.
+          # Note: GHCR does not publish version tags (e.g., 0.86.0); only :latest and sha-* commit tags.
+          # For version-pinned promptfoo, use docker/promptfoo/Dockerfile (installs 0.86.0 via npm).
+          # To update: docker pull ghcr.io/promptfoo/promptfoo:latest && docker inspect --format='{{index .RepoDigests 0}}' ghcr.io/promptfoo/promptfoo:latest
+          PROMPTFOO_IMAGE="ghcr.io/promptfoo/promptfoo@sha256:de1e686ee190201a3d4e2631c60647c64fd96e203faa2bdb95f99b339efbbcd2"
+
+          docker run --rm \
+            --read-only \
+            --security-opt=no-new-privileges:true \
+            --cap-drop=ALL \
+            --network=none \
+            --memory=512m \
+            --cpus=1 \
+            --tmpfs /tmp:rw,size=64m,noexec,nodev \
+            -v "$(pwd)/tests/prompt-regression:/workspace/tests:ro" \
+            -v "$(pwd)/skills:/workspace/skills:ro" \
+            -v "$(pwd)/tests/prompt-regression/results:/workspace/output:rw" \
+            -e EVALUATION_MODE=smoke \
+            -e AGENT_ID="${{ matrix.agent }}" \
+            -e PROMPTFOO_CACHE_ENABLED=false \
+            -e DEEPEVAL_TELEMETRY_OPT_OUT \
+            "${PROMPTFOO_IMAGE}" \
+            eval \
+              --config "/workspace/tests/test-cases/${{ matrix.agent }}.yaml" \
+              --no-progress-bar \
+              --output "/workspace/output/smoke-${{ matrix.agent }}.json" \
+            2>&1; DOCKER_EXIT=$?
+
+          # In Smoke mode: exit code 0 = structural pass, non-zero = structural failure.
+          # Structural failures block the PR (unlike Standard/Full where MARGINAL warns).
+          if [ $DOCKER_EXIT -ne 0 ]; then
+            echo "::error::Structural check FAILED for agent '${{ matrix.agent }}' (exit code: $DOCKER_EXIT)"
+            echo "::error::STRUCTURAL ONLY — not statistically valid. Fix structural assertions."
+            exit 1
+          fi
+
+          echo "Structural check PASSED for agent '${{ matrix.agent }}'"
+
+      - name: Validate output JSON schema (MC-09)
+        if: success()
+        shell: bash
+        run: |
+          # MC-09: Validate promptfoo output before consuming downstream.
+          # This catches tampering of the output volume.
+          RESULT_FILE="tests/prompt-regression/results/smoke-${{ matrix.agent }}.json"
+          if [ -f "$RESULT_FILE" ]; then
+            uv run python -c "
+          import json, sys
+          with open('$RESULT_FILE') as f:
+              data = json.load(f)
+          # Basic schema validation: must be a dict with expected top-level keys
+          required_keys = {'results', 'stats'}
+          present = set(data.keys()) if isinstance(data, dict) else set()
+          missing = required_keys - present
+          if missing:
+              # Non-fatal in smoke: promptfoo schema varies by version
+              print(f'Warning: output missing expected keys: {missing}', file=sys.stderr)
+          print('Output JSON schema: OK')
+          "
+          else
+            echo "::warning::No result file found at $RESULT_FILE (promptfoo may not have produced output)"
+          fi
+
+      - name: Upload smoke check results
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449bea1e5c8c7e45e428  # v4.6.2
+        with:
+          name: smoke-results-${{ matrix.agent }}-pr${{ github.event.pull_request.number }}
+          path: tests/prompt-regression/results/smoke-${{ matrix.agent }}.json
+          if-no-files-found: warn
+          retention-days: 7
+
+  # ==========================================================================
+  # Job 3: Post summary comment to PR
+  # ==========================================================================
+  post-smoke-summary:
+    name: Post Smoke Check Summary
+    runs-on: ubuntu-latest
+    needs: [detect-changed-agents, smoke-structural-check]
+    if: always() && needs.detect-changed-agents.outputs.has_changes == 'true'
+    steps:
+      - name: Post PR comment with smoke check results
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea  # v7.0.1
+        with:
+          script: |
+            const agentsJson = '${{ needs.detect-changed-agents.outputs.changed_agents }}';
+            const agents = JSON.parse(agentsJson);
+            const smokeResult = '${{ needs.smoke-structural-check.result }}';
+            const hasMissingTests = '${{ needs.detect-changed-agents.outputs.has_missing_tests }}' === 'true';
+            const missingTestsJson = '${{ needs.detect-changed-agents.outputs.missing_test_agents }}';
+            const missingTests = JSON.parse(missingTestsJson || '[]');
+
+            const statusIcon = smokeResult === 'success'
+              ? ':white_check_mark:'
+              : smokeResult === 'failure'
+                ? ':x:'
+                : ':warning:';
+            const statusText = smokeResult === 'success'
+              ? 'PASS'
+              : smokeResult === 'failure'
+                ? 'FAIL'
+                : 'SKIPPED';
+
+            const lines = [
+              '## Prompt Regression Smoke Check',
+              '',
+              '> **STRUCTURAL ONLY — not statistically valid** (FR-005 Smoke mode)',
+              '> Run Standard or Full tier for statistical regression analysis.',
+              '',
+              `**Verdict:** ${statusIcon} ${statusText}`,
+              `**Affected agents:** ${agents.join(', ')}`,
+              `**Evaluation tier:** Smoke (structural assertions only — no LLM calls, no API cost)`,
+              '',
+              '### Per-Agent Results',
+              '',
+              '| Agent | Structural Check | Test Cases |',
+              '|-------|-----------------|------------|',
+            ];
+
+            for (const agent of agents) {
+              const testStatus = missingTests.includes(agent)
+                ? ':warning: Missing test YAML'
+                : ':white_check_mark: Present';
+              lines.push(`| \`${agent}\` | ${statusIcon} ${statusText} | ${testStatus} |`);
+            }
+
+            lines.push('');
+
+            if (smokeResult === 'failure') {
+              lines.push('**Action required:** Fix structural assertion failures before this PR can be merged.');
+              lines.push('Structural failures indicate missing required sections, invalid YAML, or format violations.');
+            } else if (hasMissingTests) {
+              lines.push(':warning: **Test authorship gap detected (FR-027):**');
+              for (const agent of missingTests) {
+                lines.push(`- Missing: \`tests/prompt-regression/test-cases/${agent}.yaml\``);
+              }
+              lines.push('');
+              lines.push('Create test case files for modified agents or document why no new test cases are required.');
+            } else {
+              lines.push('Structural checks passed. For full statistical regression analysis, trigger the Standard tier evaluation.');
+            }
+
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: lines.join('\n'),
+            });
+
+  # ==========================================================================
+  # Job 4: No-op when no agent definitions changed
+  # ==========================================================================
+  skip-notice:
+    name: No Agent Definitions Changed
+    runs-on: ubuntu-latest
+    needs: detect-changed-agents
+    if: needs.detect-changed-agents.outputs.has_changes == 'false'
+    steps:
+      - name: Report skip (FR-002 cost control)
+        run: |
+          echo "No agent definition files (skills/*/agents/*.md) changed in this PR."
+          echo "Prompt regression smoke check skipped per FR-002."
+          echo "This is correct behavior — skipping avoids unnecessary cost."

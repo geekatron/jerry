@@ -1,0 +1,297 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jerry.internal/schemas/baseline-run/v1.0.0",
+  "title": "BaselineRunRecord",
+  "description": "Schema for a single baseline run record in the PROJ-036 prompt regression harness. Each record captures one LLM invocation with evaluation scores for a specific agent/prompt combination.",
+  "type": "object",
+  "required": [
+    "run_id",
+    "agent_name",
+    "prompt_id",
+    "run_index",
+    "model_version",
+    "judge_model_version",
+    "capture_timestamp_utc",
+    "capture_session_id",
+    "agent_definition_git_hash",
+    "agent_definition_path",
+    "prompt_git_hash",
+    "prompt_file_path",
+    "temperature",
+    "raw_output",
+    "output_token_count",
+    "input_token_count",
+    "latency_ms",
+    "api_error",
+    "scores",
+    "evaluation_method",
+    "evaluation_error",
+    "expected_behaviors_met",
+    "behaviors_met_count",
+    "behaviors_total_count",
+    "behaviors_pass_rate"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "description": "Globally unique run identifier. Format: RUN-{agent-short}-{prompt-id-lower}-{run_index:03d}-{uuid4-prefix}",
+      "pattern": "^RUN-[a-z]+-[a-z0-9-]+-[0-9]{3}-[a-f0-9]{4}$",
+      "examples": ["RUN-psr-p-psr-001-027-a3f2", "RUN-ads-p-ads-003-001-b7c9"]
+    },
+    "agent_name": {
+      "type": "string",
+      "description": "Target agent identifier matching the agent definition filename without extension.",
+      "enum": ["ps-researcher", "ps-analyst", "ps-architect", "ps-critic", "adv-scorer"]
+    },
+    "prompt_id": {
+      "type": "string",
+      "description": "Canonical prompt identifier from the prompt YAML file. Format: P-{AGENT_PREFIX}-{NNN}",
+      "pattern": "^P-[A-Z]+-[0-9]{3}$",
+      "examples": ["P-PSR-001", "P-PSA-003", "P-ADS-005"]
+    },
+    "run_index": {
+      "type": "integer",
+      "description": "Run sequence number within the N=30 set for this agent/prompt pair. 1-indexed.",
+      "minimum": 1,
+      "maximum": 50
+    },
+    "model_version": {
+      "type": "string",
+      "description": "Exact Anthropic API model identifier used for the agent invocation. Must not use alias strings.",
+      "pattern": "^claude-[a-z0-9-]+-[0-9]{8}$",
+      "examples": ["claude-sonnet-4-20250514", "claude-opus-4-20250514"]
+    },
+    "judge_model_version": {
+      "type": "string",
+      "description": "Exact model identifier used for LLM-as-Judge evaluation (may differ from agent invocation model).",
+      "examples": ["claude-sonnet-4-20250514", "gpt-4-0125-preview"]
+    },
+    "capture_timestamp_utc": {
+      "type": "string",
+      "description": "ISO 8601 UTC timestamp at run initiation.",
+      "format": "date-time",
+      "examples": ["2026-03-07T14:23:11.482Z"]
+    },
+    "capture_session_id": {
+      "type": "string",
+      "description": "Session-level identifier shared across all runs in a single capture invocation.",
+      "pattern": "^SESSION-[0-9]{8}-[0-9]{4}-[a-f0-9]{6}$",
+      "examples": ["SESSION-20260307-1423-a2b3c4"]
+    },
+    "agent_definition_git_hash": {
+      "type": "string",
+      "description": "Full or short git commit hash of the agent definition file at capture time.",
+      "pattern": "^[a-f0-9]{7,40}$",
+      "examples": ["f92a9d7e", "f92a9d7e841dd961a3859f1f73fb679b91ba5c4a"]
+    },
+    "agent_definition_path": {
+      "type": "string",
+      "description": "Repo-relative path to the agent definition file. Used with git_hash for exact version identification.",
+      "pattern": "^skills/.+/agents/.+\\.md$",
+      "examples": [
+        "skills/problem-solving/agents/ps-researcher.md",
+        "skills/adversary/agents/adv-scorer.md"
+      ]
+    },
+    "prompt_git_hash": {
+      "type": "string",
+      "description": "Full or short git commit hash of the prompt YAML file at capture time.",
+      "pattern": "^[a-f0-9]{7,40}$"
+    },
+    "prompt_file_path": {
+      "type": "string",
+      "description": "Repo-relative path to the prompt YAML file containing this prompt's definition.",
+      "pattern": "^projects/PROJ-036-.+/baselines/prompts/.+\\.yaml$",
+      "examples": [
+        "projects/PROJ-036-prompt-regression-harness/baselines/prompts/ps-researcher-prompts.yaml"
+      ]
+    },
+    "temperature": {
+      "type": "number",
+      "description": "Temperature parameter used for the LLM invocation. Baseline captures MUST use temperature=1.0. Smoke mode (temperature=0) is excluded from baseline data.",
+      "minimum": 0.0,
+      "maximum": 2.0,
+      "examples": [1.0]
+    },
+    "raw_output": {
+      "type": ["string", "null"],
+      "description": "Complete unmodified LLM output text. Null only if api_error is non-null (failed invocation)."
+    },
+    "output_token_count": {
+      "type": ["integer", "null"],
+      "description": "Token count of raw_output as reported by the API response. Null if api_error is non-null.",
+      "minimum": 0
+    },
+    "input_token_count": {
+      "type": ["integer", "null"],
+      "description": "Token count of the full prompt sent to the API (system + user message combined). Null if api_error is non-null.",
+      "minimum": 0
+    },
+    "latency_ms": {
+      "type": ["integer", "null"],
+      "description": "Wall-clock API call latency in milliseconds from request send to response receipt. Null if api_error is non-null.",
+      "minimum": 0
+    },
+    "api_error": {
+      "type": ["string", "null"],
+      "description": "Error message if the API call failed, null if successful. Runs with api_error non-null are excluded from statistical analysis.",
+      "enum": [
+        null,
+        "timeout_after_3_retries",
+        "rate_limit_exceeded",
+        "api_error_500",
+        "api_error_529",
+        "model_not_found",
+        "context_length_exceeded",
+        "content_filtered",
+        "unknown_error"
+      ]
+    },
+    "scores": {
+      "type": "object",
+      "description": "Quality scores per evaluation dimension and weighted composite. Uses SSOT 6-dimension weighted composite from quality-enforcement.md.",
+      "required": [
+        "completeness",
+        "internal_consistency",
+        "methodological_rigor",
+        "evidence_quality",
+        "actionability",
+        "traceability",
+        "weighted_composite"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "completeness": {
+          "type": ["number", "null"],
+          "description": "Completeness dimension score (weight 0.20). Null if evaluation_error is non-null.",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "internal_consistency": {
+          "type": ["number", "null"],
+          "description": "Internal consistency dimension score (weight 0.20). Null if evaluation_error is non-null.",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "methodological_rigor": {
+          "type": ["number", "null"],
+          "description": "Methodological rigor dimension score (weight 0.20). Null if evaluation_error is non-null.",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "evidence_quality": {
+          "type": ["number", "null"],
+          "description": "Evidence quality dimension score (weight 0.15). Null if evaluation_error is non-null.",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "actionability": {
+          "type": ["number", "null"],
+          "description": "Actionability dimension score (weight 0.15). Null if evaluation_error is non-null.",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "traceability": {
+          "type": ["number", "null"],
+          "description": "Traceability dimension score (weight 0.10). Null if evaluation_error is non-null.",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "weighted_composite": {
+          "type": ["number", "null"],
+          "description": "Weighted composite score: (completeness*0.20 + internal_consistency*0.20 + methodological_rigor*0.20 + evidence_quality*0.15 + actionability*0.15 + traceability*0.10). Pass threshold >= 0.92. Null if evaluation_error is non-null.",
+          "minimum": 0.0,
+          "maximum": 1.0
+        }
+      }
+    },
+    "evaluation_method": {
+      "type": "string",
+      "description": "Evaluation mechanism used to produce scores.",
+      "enum": [
+        "deepeval_g_eval",
+        "deepeval_llm_judge",
+        "custom_rubric",
+        "not_evaluated"
+      ]
+    },
+    "evaluation_error": {
+      "type": ["string", "null"],
+      "description": "Error message if the evaluation pipeline failed, null if successful. Runs with evaluation_error non-null have null scores but may still have valid raw_output.",
+      "examples": [
+        null,
+        "deepeval_timeout",
+        "judge_model_error",
+        "output_parse_error",
+        "rubric_load_error"
+      ]
+    },
+    "expected_behaviors_met": {
+      "type": "object",
+      "description": "Per-behavior pass/fail assessment. Keys are behavior IDs from the prompt definition (e.g., B-001). Values are booleans or null if assessment was not performed.",
+      "additionalProperties": {
+        "type": ["boolean", "null"]
+      },
+      "examples": [
+        {"B-001": true, "B-002": false, "B-003": true, "B-004": true, "B-005": null}
+      ]
+    },
+    "behaviors_met_count": {
+      "type": "integer",
+      "description": "Count of expected behaviors that were observed as true in expected_behaviors_met.",
+      "minimum": 0
+    },
+    "behaviors_total_count": {
+      "type": "integer",
+      "description": "Total number of expected behaviors defined for this prompt.",
+      "minimum": 0
+    },
+    "behaviors_pass_rate": {
+      "type": ["number", "null"],
+      "description": "Fraction of expected behaviors met: behaviors_met_count / behaviors_total_count. Null if behaviors_total_count is 0.",
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "mr_results": {
+      "type": ["object", "null"],
+      "description": "Metamorphic relation check results. Null for Phase A-B captures (MR layer not yet active). Required for Phase D+ captures.",
+      "properties": {
+        "MR-001_paraphrase_delta": {
+          "type": ["number", "null"],
+          "description": "Score delta between original and paraphrased prompt invocations. Pass threshold: abs(delta) <= 0.05.",
+          "minimum": -1.0,
+          "maximum": 1.0
+        },
+        "MR-002_negation_handled": {
+          "type": ["boolean", "null"],
+          "description": "Whether the agent correctly handled a negated version of the prompt."
+        },
+        "MR-003_irrelevant_context_delta": {
+          "type": ["number", "null"],
+          "description": "Score delta when irrelevant context is appended to the prompt. Pass threshold: abs(delta) <= 0.05.",
+          "minimum": -1.0,
+          "maximum": 1.0
+        },
+        "MR-004_formatting_perturbation_delta": {
+          "type": ["number", "null"],
+          "description": "Score delta under formatting perturbation (whitespace, markdown changes). Pass threshold: abs(delta) <= 0.05.",
+          "minimum": -1.0,
+          "maximum": 1.0
+        },
+        "MR-005_language_roundtrip_delta": {
+          "type": ["number", "null"],
+          "description": "Score delta for prompt translated to French then back to English. Pass threshold: abs(delta) <= 0.05.",
+          "minimum": -1.0,
+          "maximum": 1.0
+        }
+      },
+      "additionalProperties": true
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Optional additional metadata for this run. Free-form extension point.",
+      "additionalProperties": true
+    }
+  }
+}

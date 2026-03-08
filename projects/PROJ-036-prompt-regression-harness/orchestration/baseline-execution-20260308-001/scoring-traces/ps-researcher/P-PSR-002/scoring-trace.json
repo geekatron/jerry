@@ -1,0 +1,75 @@
+{
+  "agent": "ps-researcher",
+  "prompt_id": "P-PSR-002",
+  "judge_model": "claude-sonnet-4-20250514",
+  "timestamp": "2026-03-08T18:54:35.203385+00:00",
+  "dimension_scores": {
+    "completeness": 0.4,
+    "methodological_rigor": 0.3,
+    "internal_consistency": 0.4,
+    "evidence_quality": 0.2,
+    "traceability": 0.2,
+    "actionability": 0.9
+  },
+  "composite_score": 0.405,
+  "debiasing_applied": true,
+  "criteria_order": [
+    "completeness",
+    "methodological_rigor",
+    "internal_consistency",
+    "evidence_quality",
+    "traceability",
+    "actionability"
+  ],
+  "scoring_results": [
+    {
+      "criterion_name": "completeness",
+      "score": 0.4,
+      "weight": 0.2,
+      "weighted_score": 0.08000000000000002,
+      "evidence": "The response contains clear L0 and L1 sections but is incomplete, cutting off mid-sentence in the L1 section and completely missing the required L2 section. The L0 section provides a good non-technical explanation with appropriate analogies and meets length requirements. The L1 section demonstrates strong technical depth with mathematical formulations, code examples, and specific implementation details, but is truncated. The absence of the L2 section addressing strategic implications for architects is a critical omission that significantly impacts the overall response quality.",
+      "debiasing_applied": true
+    },
+    {
+      "criterion_name": "methodological_rigor",
+      "score": 0.3,
+      "weight": 0.2,
+      "weighted_score": 0.06,
+      "evidence": "The response lacks any structured methodology as required by the input. There is no evidence of 5W1H framework, systematic source comparison, or equivalent structured approach. While the output attempts to gather sources through web searches, it fails to demonstrate organized analysis or clear framework implementation. The response does distinguish between primary sources (statistical literature like Hollander Wolfe textbooks) and secondary sources (tutorials, blog posts), and shows some breadth in source coverage. However, the methodology application is severely lacking - the output reads more like preliminary research notes than a systematic comparative analysis across sources.",
+      "debiasing_applied": true
+    },
+    {
+      "criterion_name": "internal_consistency",
+      "score": 0.4,
+      "weight": 0.2,
+      "weighted_score": 0.08000000000000002,
+      "evidence": "The response is incomplete, cutting off mid-sentence in the L1 section during the Bonferroni correction code example. The L2 section for architects is entirely missing. While the L0 and partial L1 sections show good technical depth and appropriate audience targeting, the incomplete nature means the response fails to deliver the full analysis requested across all three levels.",
+      "debiasing_applied": true
+    },
+    {
+      "criterion_name": "evidence_quality",
+      "score": 0.2,
+      "weight": 0.15,
+      "weighted_score": 0.03,
+      "evidence": "The response contains only 2 distinct sources with URLs (NCBI PMC article and Boston University educational material), falling far short of the required 5 sources. While it attempts to cite some statistical concepts and provides implementation examples, most claims lack proper citation support. The response does distinguish between primary and secondary sources conceptually but doesn't actually provide sufficient primary statistical literature references as requested. The mathematical explanations and code examples are present but are not adequately supported by the limited sources provided.",
+      "debiasing_applied": true
+    },
+    {
+      "criterion_name": "traceability",
+      "score": 0.2,
+      "weight": 0.1,
+      "weighted_score": 0.020000000000000004,
+      "evidence": "The response contains numerous uncited claims throughout all sections. While it mentions searching for authoritative sources like 'Hollander Wolfe Nonparametric Statistical Methods' and 'Conover Practical Nonparametric Statistics', these are never properly cited in the actual content. Mathematical formulas, statistical assumptions, sample size calculations, effect size estimates (δ = 0.05, σ ≈ 0.15), power analysis results (n ≈ 75 pairs), and efficiency claims (85% efficiency) are presented without source attribution. The response includes code examples and specific statistical procedures but fails to link them to the referenced literature. Most critically, the input explicitly required citing statistical references and distinguishing between primary and secondary sources, but the final output provides no citations despite the extensive research process shown.",
+      "debiasing_applied": true
+    },
+    {
+      "criterion_name": "actionability",
+      "score": 0.9,
+      "weight": 0.15,
+      "weighted_score": 0.135,
+      "evidence": "The response provides highly specific and implementable guidance including detailed mathematical formulations, complete Python code examples with imports and function implementations, sample size calculation code, and step-by-step implementation instructions. The code snippets are production-ready and include proper error handling, statistical calculations, and practical examples for LLM quality comparison. A software engineer could directly implement the Wilcoxon test using the provided code without additional research.",
+      "debiasing_applied": true
+    }
+  ],
+  "latency_ms": 54509
+}

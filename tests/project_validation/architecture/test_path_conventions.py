@@ -81,10 +81,11 @@ class TestProjectIsolation:
             if "BUG-" in md_file.name:
                 continue
 
-            # Skip orchestration research artifacts that legitimately analyze
-            # other projects as study subjects (e.g., SPIKE research)
+            # Skip orchestration and quality-gate scoring artifacts that
+            # legitimately reference upstream projects (e.g., scoring reports
+            # critique evidence quality from predecessor project research)
             rel_parts = md_file.relative_to(proj_root).parts
-            if "orchestration" in rel_parts:
+            if "orchestration" in rel_parts or "quality-gates" in rel_parts:
                 continue
 
             content = md_file.read_text()

@@ -1,0 +1,572 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jerry.internal/schemas/regression-threshold/v1.0.0",
+  "title": "Regression Detection Threshold Configuration",
+  "description": "Schema for regression detection threshold configuration in the PROJ-036 Prompt Regression Test Harness. Regression thresholds govern the statistical comparison engine (Layer 4 of the Four-Layer Composite Architecture) that classifies score distribution shifts between prompt versions as NO_REGRESSION, MARGINAL, or REGRESSION.",
+  "type": "object",
+  "required": [
+    "agent",
+    "version",
+    "wilcoxon",
+    "wilson_score",
+    "bonferroni",
+    "effect_size",
+    "evaluation_mode_thresholds",
+    "regression_classification_rules"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "agent": {
+      "description": "The agent this threshold configuration applies to, or 'all' for universal configuration.",
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": ["all", "ps-researcher", "ps-analyst", "ps-architect", "ps-critic", "adv-scorer"]
+        }
+      ]
+    },
+    "version": {
+      "type": "string",
+      "description": "Contract version for this threshold configuration.",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "wilcoxon": {
+      "type": "object",
+      "description": "Wilcoxon signed-rank test configuration. Used for comparing score distributions between prompt version A (baseline) and version B (candidate).",
+      "required": [
+        "regression_p_cutoff",
+        "marginal_p_cutoff",
+        "no_regression_p_floor",
+        "alternative_hypothesis",
+        "minimum_n_per_version",
+        "recommended_n_per_version",
+        "tie_handling"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "regression_p_cutoff": {
+          "type": "number",
+          "description": "P-value below which a score distribution difference is classified as statistically significant (required for REGRESSION classification, combined with effect size). Standard: 0.05.",
+          "exclusiveMinimum": 0.0,
+          "maximum": 0.20,
+          "default": 0.05
+        },
+        "marginal_p_cutoff": {
+          "type": "number",
+          "description": "P-value below which a result is flagged as MARGINAL (possible regression requiring monitoring). Must be > regression_p_cutoff. Standard: 0.10.",
+          "exclusiveMinimum": 0.0,
+          "maximum": 0.30,
+          "default": 0.10
+        },
+        "no_regression_p_floor": {
+          "type": "number",
+          "description": "P-value at or above which the null hypothesis (no difference) is accepted and NO_REGRESSION is declared. Must equal marginal_p_cutoff for consistency.",
+          "exclusiveMinimum": 0.0,
+          "maximum": 0.30,
+          "default": 0.10
+        },
+        "alternative_hypothesis": {
+          "type": "string",
+          "description": "The alternative hypothesis for the Wilcoxon test. 'two-sided' detects any significant change (both regression and improvement). Recommended for regression testing to avoid missing regressions masked by concurrent improvements in other dimensions.",
+          "enum": ["two-sided", "less", "greater"],
+          "default": "two-sided"
+        },
+        "minimum_n_per_version": {
+          "type": "integer",
+          "description": "Minimum number of evaluation runs per prompt version required before Wilcoxon test is valid. Below this minimum, InsufficientSamplesError is raised and the evaluation is labeled INSUFFICIENT_SAMPLE. Per ADR-001 FM-002.",
+          "minimum": 10,
+          "maximum": 50,
+          "default": 20
+        },
+        "recommended_n_per_version": {
+          "type": "integer",
+          "description": "Recommended number of evaluation runs per prompt version to achieve 80% statistical power for detecting medium effects (Cohen's r = 0.30) at alpha = 0.05.",
+          "minimum": 20,
+          "maximum": 100,
+          "default": 30
+        },
+        "tie_handling": {
+          "type": "string",
+          "description": "How tied ranks are handled in the Wilcoxon test. 'average' is the scipy default and is appropriate for bounded quality scores that may cluster at common values.",
+          "enum": ["average", "drop", "pratt", "wilcox"],
+          "default": "average"
+        },
+        "rationale": {
+          "type": "string",
+          "description": "Rationale for the chosen Wilcoxon configuration, citing the statistical basis.",
+          "default": "Wilcoxon signed-rank is distribution-free and appropriate for bounded [0,1] quality scores that may not be normally distributed. Per ADR-001 Force F-2 and ICML 2025 position paper: CLT-based methods perform poorly for small N LLM evaluation sets. Minimum N=20 per FM-002 mitigation."
+        }
+      }
+    },
+    "wilson_score": {
+      "type": "object",
+      "description": "Wilson score interval configuration for estimating the proportion of runs meeting the quality gate threshold (score >= 0.92).",
+      "required": [
+        "confidence_level",
+        "pass_rate_threshold",
+        "minimum_n_for_reliable_interval",
+        "maximum_acceptable_interval_width"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "confidence_level": {
+          "type": "number",
+          "description": "Confidence level for the Wilson score interval. Must match 1 - alpha used in Wilcoxon test for consistency. Standard: 0.95.",
+          "minimum": 0.80,
+          "maximum": 0.99,
+          "default": 0.95
+        },
+        "pass_rate_threshold": {
+          "type": "number",
+          "description": "Score threshold defining 'pass' for Wilson interval calculation. A run is counted as a pass if score >= this threshold. Must be 0.92 per quality-enforcement.md H-13.",
+          "const": 0.92
+        },
+        "minimum_n_for_reliable_interval": {
+          "type": "integer",
+          "description": "Minimum N below which Wilson intervals are too wide to be useful (interval width > maximum_acceptable_interval_width). Below this N, interval results are flagged INSUFFICIENT_SAMPLE.",
+          "minimum": 10,
+          "maximum": 50,
+          "default": 20
+        },
+        "maximum_acceptable_interval_width": {
+          "type": "number",
+          "description": "Maximum acceptable Wilson interval width (upper_bound - lower_bound). Intervals wider than this value provide insufficient precision for go/no-go decisions. Standard: 0.30.",
+          "minimum": 0.10,
+          "maximum": 0.60,
+          "default": 0.30
+        },
+        "rate_regression_detection": {
+          "type": "object",
+          "description": "Configuration for detecting RATE_REGRESSION via non-overlapping Wilson intervals.",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "Whether RATE_REGRESSION detection via Wilson interval comparison is enabled.",
+              "default": true
+            },
+            "detection_criterion": {
+              "type": "string",
+              "description": "Criterion for declaring RATE_REGRESSION: 'non_overlapping' means the intervals must be completely non-overlapping with the candidate interval being lower.",
+              "enum": ["non_overlapping", "lower_bound_below_baseline_upper"],
+              "default": "non_overlapping"
+            }
+          }
+        }
+      }
+    },
+    "bonferroni": {
+      "type": "object",
+      "description": "Bonferroni correction configuration for controlling family-wise error rate when comparing multiple metrics simultaneously.",
+      "required": ["base_alpha", "correction_method", "comparison_sets"],
+      "additionalProperties": false,
+      "properties": {
+        "base_alpha": {
+          "type": "number",
+          "description": "Base significance level before correction. Standard: 0.05.",
+          "minimum": 0.001,
+          "maximum": 0.20,
+          "default": 0.05
+        },
+        "correction_method": {
+          "type": "string",
+          "description": "Multiple testing correction method. 'bonferroni' applies the classical correction; 'holm' applies the less conservative Holm-Bonferroni step-down method.",
+          "enum": ["bonferroni", "holm", "fdr_bh"],
+          "default": "holm"
+        },
+        "comparison_sets": {
+          "type": "array",
+          "description": "Defined sets of simultaneous comparisons with pre-computed corrected alpha levels.",
+          "items": {
+            "type": "object",
+            "required": ["set_id", "description", "k_comparisons", "corrected_alpha"],
+            "properties": {
+              "set_id": {
+                "type": "string",
+                "description": "Identifier for this comparison set.",
+                "examples": ["single_metric", "all_six_dimensions", "full_evaluation"]
+              },
+              "description": {
+                "type": "string",
+                "description": "Description of what metrics are compared in this set.",
+                "minLength": 5
+              },
+              "k_comparisons": {
+                "type": "integer",
+                "description": "Number of simultaneous comparisons in this set.",
+                "minimum": 1,
+                "maximum": 50
+              },
+              "corrected_alpha": {
+                "type": "number",
+                "description": "Bonferroni-corrected alpha = base_alpha / k_comparisons (or Holm-adjusted equivalent). Pre-computed for implementation reference.",
+                "minimum": 0.0001,
+                "maximum": 0.20
+              },
+              "recommended_for": {
+                "type": "string",
+                "description": "Evaluation mode(s) where this comparison set is applied.",
+                "examples": ["Full mode only", "Standard and Full modes"]
+              }
+            }
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "effect_size": {
+      "type": "object",
+      "description": "Effect size (Cohen's r) thresholds for regression classification. Cohen's r is derived from Wilcoxon Z-statistic: r = Z / sqrt(N).",
+      "required": [
+        "negligible_maximum",
+        "small_maximum",
+        "medium_maximum",
+        "regression_minimum"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "negligible_maximum": {
+          "type": "number",
+          "description": "Maximum Cohen's r below which the effect is classified as negligible. Even statistically significant results with r < negligible_maximum are classified as NO_REGRESSION. Standard: 0.10.",
+          "minimum": 0.05,
+          "maximum": 0.20,
+          "default": 0.10
+        },
+        "small_maximum": {
+          "type": "number",
+          "description": "Maximum Cohen's r for 'small' effect size. Results with r in [negligible_maximum, small_maximum) with p < regression_p_cutoff are classified as MARGINAL. Standard: 0.20.",
+          "minimum": 0.10,
+          "maximum": 0.30,
+          "default": 0.20
+        },
+        "medium_maximum": {
+          "type": "number",
+          "description": "Maximum Cohen's r for 'medium' effect size. Results with r in [small_maximum, medium_maximum) may be MARGINAL or REGRESSION depending on p-value. Standard: 0.30.",
+          "minimum": 0.20,
+          "maximum": 0.50,
+          "default": 0.30
+        },
+        "regression_minimum": {
+          "type": "number",
+          "description": "Minimum Cohen's r at which a statistically significant result (p < regression_p_cutoff) with mean_delta < 0 is classified as REGRESSION rather than MARGINAL. Standard: 0.30.",
+          "minimum": 0.20,
+          "maximum": 0.60,
+          "default": 0.30
+        },
+        "rationale": {
+          "type": "string",
+          "description": "Rationale for the chosen effect size thresholds, citing Cohen (1988) conventions.",
+          "default": "Cohen (1988) conventions: r=0.10 small, r=0.30 medium, r=0.50 large. The regression_minimum of 0.30 ensures that only medium-or-larger effects trigger REGRESSION classification, preventing false alarms from small score fluctuations that are within expected measurement noise. At N=30, a Wilcoxon test can detect r as small as 0.05, making the effect size filter essential."
+        }
+      }
+    },
+    "evaluation_mode_thresholds": {
+      "type": "object",
+      "description": "Mode-specific threshold configurations overriding defaults where applicable.",
+      "required": ["smoke", "standard", "full"],
+      "additionalProperties": false,
+      "properties": {
+        "smoke": {
+          "type": "object",
+          "description": "Smoke mode (N=1) configuration. Statistical testing is disabled; only structural invariants are checked.",
+          "required": ["statistical_testing_enabled", "mr_testing_enabled", "regression_classifications_available"],
+          "additionalProperties": false,
+          "properties": {
+            "statistical_testing_enabled": {
+              "type": "boolean",
+              "const": false
+            },
+            "mr_testing_enabled": {
+              "type": "boolean",
+              "const": false
+            },
+            "regression_classifications_available": {
+              "type": "array",
+              "items": {"type": "string"},
+              "const": ["STRUCTURAL_PASS", "STRUCTURAL_FAIL"]
+            }
+          }
+        },
+        "standard": {
+          "type": "object",
+          "description": "Standard mode (N=10) configuration. Statistical testing disabled (N < 20 minimum); simple quality check against agent floor. QUALITY_FLOOR_BREACH is intentionally excluded from Standard mode: it requires Wilson score intervals which need N >= 20. Standard mode uses QUALITY_CHECK_FAIL (mean-based) as the floor signal instead. Per-agent merge_decisions tables that list QUALITY_FLOOR_BREACH apply that classification only when the harness is running in Full mode.",
+          "required": ["statistical_testing_enabled", "mr_testing_enabled", "regression_classifications_available", "simple_quality_check"],
+          "additionalProperties": false,
+          "properties": {
+            "statistical_testing_enabled": {
+              "type": "boolean",
+              "const": false,
+              "description": "N=10 < 20 minimum for Wilcoxon; statistical testing is disabled in Standard mode."
+            },
+            "mr_testing_enabled": {
+              "type": "boolean",
+              "const": true,
+              "description": "Subset of MRs (MR-001, MR-004) is tested in Standard mode."
+            },
+            "mr_subset": {
+              "type": "array",
+              "items": {"type": "string", "pattern": "^MR-\\d{3}$"},
+              "const": ["MR-001", "MR-004"]
+            },
+            "regression_classifications_available": {
+              "type": "array",
+              "items": {"type": "string"},
+              "const": ["QUALITY_CHECK_PASS", "QUALITY_CHECK_FAIL", "MR_WARNING", "MR_REGRESSION"],
+              "description": "Standard mode classifications. QUALITY_FLOOR_BREACH is absent by design: it requires Wilson intervals (N >= 20). QUALITY_CHECK_FAIL is the Standard-mode equivalent floor signal (mean-based, not interval-based)."
+            },
+            "simple_quality_check": {
+              "type": "object",
+              "description": "Simple mean-based quality check replacing Wilcoxon in Standard mode.",
+              "additionalProperties": false,
+              "properties": {
+                "enabled": {"type": "boolean", "const": true},
+                "criterion": {
+                  "type": "string",
+                  "const": "mean_score_across_10_runs >= agent_quality_floor"
+                }
+              }
+            }
+          }
+        },
+        "full": {
+          "type": "object",
+          "description": "Full mode (N=30) configuration. All statistical tests, all 5 MRs, full classification available.",
+          "required": ["statistical_testing_enabled", "mr_testing_enabled", "regression_classifications_available"],
+          "additionalProperties": false,
+          "properties": {
+            "statistical_testing_enabled": {
+              "type": "boolean",
+              "const": true
+            },
+            "mr_testing_enabled": {
+              "type": "boolean",
+              "const": true
+            },
+            "mr_subset": {
+              "type": "array",
+              "items": {"type": "string", "pattern": "^MR-\\d{3}$"},
+              "const": ["MR-001", "MR-002", "MR-003", "MR-004", "MR-005"]
+            },
+            "regression_classifications_available": {
+              "type": "array",
+              "items": {"type": "string"},
+              "const": [
+                "NO_REGRESSION",
+                "MARGINAL",
+                "REGRESSION",
+                "IMPROVEMENT",
+                "QUALITY_FLOOR_BREACH",
+                "RATE_REGRESSION",
+                "MR_WARNING",
+                "MR_REGRESSION",
+                "MR_MULTI_REGRESSION",
+                "STRUCTURAL_FAIL",
+                "INSUFFICIENT_SAMPLE"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "regression_classification_rules": {
+      "type": "array",
+      "description": "Ordered list of classification rules evaluated against Wilcoxon results. Rules are evaluated in order; the first matching rule determines the classification.",
+      "items": {
+        "type": "object",
+        "required": ["priority", "classification", "conditions", "merge_decision"],
+        "properties": {
+          "priority": {
+            "type": "integer",
+            "description": "Evaluation order (lower number = evaluated first).",
+            "minimum": 1
+          },
+          "classification": {
+            "type": "string",
+            "description": "Output classification if all conditions are met.",
+            "enum": ["NO_REGRESSION", "MARGINAL", "REGRESSION", "IMPROVEMENT", "QUALITY_FLOOR_BREACH"]
+          },
+          "conditions": {
+            "type": "array",
+            "description": "Conditions that must all be true (AND logic) for this rule to match.",
+            "items": {"type": "string"},
+            "minItems": 1
+          },
+          "merge_decision": {
+            "type": "string",
+            "enum": ["ALLOW", "ALLOW_WITH_WARNING", "BLOCK"],
+            "description": "Merge gate decision for this classification."
+          },
+          "rationale": {
+            "type": "string",
+            "description": "Explanation of why this rule produces this classification."
+          }
+        }
+      },
+      "minItems": 5
+    },
+    "source": {
+      "type": "string",
+      "description": "Reference to behavioral-contracts.md section defining these thresholds.",
+      "pattern": "^behavioral-contracts\\.md#.+$"
+    }
+  },
+  "examples": [
+    {
+      "agent": "all",
+      "version": "1.0.0",
+      "wilcoxon": {
+        "regression_p_cutoff": 0.05,
+        "marginal_p_cutoff": 0.10,
+        "no_regression_p_floor": 0.10,
+        "alternative_hypothesis": "two-sided",
+        "minimum_n_per_version": 20,
+        "recommended_n_per_version": 30,
+        "tie_handling": "average",
+        "rationale": "Wilcoxon is distribution-free, robust to outliers, and appropriate for bounded [0,1] quality scores. Per ADR-001 FM-002 and ICML 2025 evidence."
+      },
+      "wilson_score": {
+        "confidence_level": 0.95,
+        "pass_rate_threshold": 0.92,
+        "minimum_n_for_reliable_interval": 20,
+        "maximum_acceptable_interval_width": 0.30,
+        "rate_regression_detection": {
+          "enabled": true,
+          "detection_criterion": "non_overlapping"
+        }
+      },
+      "bonferroni": {
+        "base_alpha": 0.05,
+        "correction_method": "holm",
+        "comparison_sets": [
+          {
+            "set_id": "single_metric",
+            "description": "Composite score only",
+            "k_comparisons": 1,
+            "corrected_alpha": 0.050,
+            "recommended_for": "All modes"
+          },
+          {
+            "set_id": "all_six_dimensions",
+            "description": "All 6 S-014 dimensions simultaneously",
+            "k_comparisons": 6,
+            "corrected_alpha": 0.008,
+            "recommended_for": "Full mode only"
+          },
+          {
+            "set_id": "dimensions_plus_composite",
+            "description": "All 6 dimensions + composite score",
+            "k_comparisons": 7,
+            "corrected_alpha": 0.007,
+            "recommended_for": "Full mode only"
+          },
+          {
+            "set_id": "full_evaluation",
+            "description": "Full evaluation: 6 S-014 dimensions + 1 composite + 5 MRs + 1 pass rate = 13 comparisons (authoritative k value; field corrected_alpha_full_k13 in per-agent contracts references this set)",
+            "k_comparisons": 13,
+            "corrected_alpha": 0.004,
+            "recommended_for": "Full mode only"
+          }
+        ]
+      },
+      "effect_size": {
+        "negligible_maximum": 0.10,
+        "small_maximum": 0.20,
+        "medium_maximum": 0.30,
+        "regression_minimum": 0.30,
+        "rationale": "Cohen (1988) conventions with r=0.10 as negligible-to-small boundary. r>=0.30 (medium) required to classify as REGRESSION to prevent false alarms at N=30."
+      },
+      "evaluation_mode_thresholds": {
+        "smoke": {
+          "statistical_testing_enabled": false,
+          "mr_testing_enabled": false,
+          "regression_classifications_available": ["STRUCTURAL_PASS", "STRUCTURAL_FAIL"]
+        },
+        "standard": {
+          "statistical_testing_enabled": false,
+          "mr_testing_enabled": true,
+          "mr_subset": ["MR-001", "MR-004"],
+          "regression_classifications_available": ["QUALITY_CHECK_PASS", "QUALITY_CHECK_FAIL", "MR_WARNING", "MR_REGRESSION"],
+          "simple_quality_check": {
+            "enabled": true,
+            "criterion": "mean_score_across_10_runs >= agent_quality_floor"
+          }
+        },
+        "full": {
+          "statistical_testing_enabled": true,
+          "mr_testing_enabled": true,
+          "mr_subset": ["MR-001", "MR-002", "MR-003", "MR-004", "MR-005"],
+          "regression_classifications_available": [
+            "NO_REGRESSION", "MARGINAL", "REGRESSION", "IMPROVEMENT",
+            "QUALITY_FLOOR_BREACH", "RATE_REGRESSION",
+            "MR_WARNING", "MR_REGRESSION", "MR_MULTI_REGRESSION",
+            "STRUCTURAL_FAIL", "INSUFFICIENT_SAMPLE"
+          ]
+        }
+      },
+      "regression_classification_rules": [
+        {
+          "priority": 1,
+          "classification": "NO_REGRESSION",
+          "conditions": [
+            "wilcoxon_p_value >= 0.10"
+          ],
+          "merge_decision": "ALLOW",
+          "rationale": "P >= 0.10: null hypothesis accepted; differences within expected random variation regardless of effect size."
+        },
+        {
+          "priority": 2,
+          "classification": "NO_REGRESSION",
+          "conditions": [
+            "wilcoxon_p_value < 0.05",
+            "cohens_r < 0.10"
+          ],
+          "merge_decision": "ALLOW",
+          "rationale": "Statistically significant but negligible effect (r < 0.10). At N=30, Wilcoxon detects differences as small as r=0.05. Below 0.10, practical significance is absent."
+        },
+        {
+          "priority": 3,
+          "classification": "IMPROVEMENT",
+          "conditions": [
+            "wilcoxon_p_value < 0.05",
+            "cohens_r >= 0.30",
+            "mean_delta > 0"
+          ],
+          "merge_decision": "ALLOW",
+          "rationale": "Statistically significant improvement. Log and allow merge; not a regression."
+        },
+        {
+          "priority": 4,
+          "classification": "MARGINAL",
+          "conditions": [
+            "0.05 <= wilcoxon_p_value < 0.10"
+          ],
+          "merge_decision": "ALLOW_WITH_WARNING",
+          "rationale": "Borderline significance; possible regression. Allow merge with logged warning and monitoring."
+        },
+        {
+          "priority": 5,
+          "classification": "MARGINAL",
+          "conditions": [
+            "wilcoxon_p_value < 0.05",
+            "0.10 <= cohens_r < 0.30",
+            "mean_delta < 0"
+          ],
+          "merge_decision": "ALLOW_WITH_WARNING",
+          "rationale": "Significant but small-to-medium effect. Not definitively regression-level; allow merge with warning."
+        },
+        {
+          "priority": 6,
+          "classification": "REGRESSION",
+          "conditions": [
+            "wilcoxon_p_value < 0.05",
+            "cohens_r >= 0.30",
+            "mean_delta < 0"
+          ],
+          "merge_decision": "BLOCK",
+          "rationale": "Statistically significant medium-or-larger degradation. This is a regression; block merge."
+        }
+      ],
+      "source": "behavioral-contracts.md#d-regression-detection-thresholds"
+    }
+  ]
+}

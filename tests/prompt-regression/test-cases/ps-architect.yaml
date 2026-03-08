@@ -1,0 +1,461 @@
+# Test Cases: ps-architect
+# PROJ-036 Prompt Regression Harness — Layer 1 (promptfoo CI/CD Gate)
+#
+# Agent: ps-architect (problem-solving skill, convergent cognitive mode)
+# Agent definition: skills/problem-solving/agents/ps-architect.md
+# Baseline prompts: baselines/prompts/ps-architect-prompts.yaml
+#
+# Purpose: Regression test cases for ps-architect covering:
+#   - Nygard ADR format compliance (Status, Context, Decision, Consequences)
+#   - Navigation table with section links (SI-ARCH-010)
+#   - L0 summary and L2 architectural implications sections
+#   - Minimum 2 alternatives evaluated (SI-ARCH-005)
+#   - Negative consequences disclosed (SI-ARCH-006)
+#   - Minimum output length >= 1200 characters (SI-ARCH-007)
+#   - Quality floor: overall >= 0.88 (behavioral-contracts.md Section B.3)
+#
+# Structural invariants tested per behavioral-contracts.md Section A.4:
+#   SI-ARCH-001: Status: Draft|Proposed|Accepted|Deprecated|Superseded
+#   SI-ARCH-002: ## Context section present
+#   SI-ARCH-003: ## Decision section present
+#   SI-ARCH-004: ## Consequences section present
+#   SI-ARCH-005: At least 2 alternatives evaluated
+#   SI-ARCH-006: At least one negative consequence
+#   SI-ARCH-007: Output length >= 1200 characters
+#   SI-ARCH-008: ## L0 summary section present
+#   SI-ARCH-009: ## L2 architectural implications section present
+#   SI-ARCH-010: Navigation table with >= 4 anchor links
+#
+# Note: ps-architect uses Claude Opus model for production; test harness uses
+# claude-sonnet-4-20250514 for cost efficiency. Baselines are captured at sonnet
+# for consistency with test harness (see baselines/protocol.md Section 3.2).
+#
+# FR traceability:
+#   FR-001: Declarative YAML test case definitions with assertion config
+#   FR-008: Deterministic property assertions (< 100ms, zero stochasticity)
+
+providers:
+  - id: anthropic:messages:claude-sonnet-4-20250514
+    config:
+      apiKey: env:ANTHROPIC_API_KEY
+      temperature: 0.0
+      max_tokens: 8192  # ADRs are longer documents; increased from default
+
+prompts:
+  - label: "ps-architect system prompt"
+    raw: "file://skills/problem-solving/agents/ps-architect.md"
+
+tests:
+  # ----------------------------------------------------------------------------
+  # P-PAC-001: Standard ADR with 2 options and steelman analysis
+  # Tests: complete Nygard format compliance, steelman both options, negative consequences
+  # Quality floor: methodological_rigor >= 0.87, internal_consistency >= 0.86
+  # ----------------------------------------------------------------------------
+  - description: "P-PAC-001: ADR — Python runtime approach for test harness (UV vs. direct Python)"
+    vars:
+      system_prompt: "file://skills/problem-solving/agents/ps-architect.md"
+      agent_id: "ps-architect"
+      prompt_id: "P-PAC-001"
+    input: |
+      Produce an Architecture Decision Record (ADR) in Nygard format for the following decision:
+
+      DECISION REQUIRED: How should the PROJ-036 prompt regression test harness execute Python scripts
+      within a CI/CD GitHub Actions workflow?
+
+      Context:
+      - The Jerry Framework mandates UV-only Python execution per H-05 (NEVER use python/pip/pip3 directly)
+      - GitHub Actions runners have Python pre-installed but not UV
+      - The test harness needs to run: pytest for Layer 2 (DeepEval), custom assertion scripts for Layer 1 (promptfoo), and statistical engine for Layer 4
+      - CI builds must be reproducible across macOS, Ubuntu, and Windows runners
+      - The pyproject.toml already defines the UV project configuration
+
+      Options to evaluate:
+      A. Install UV in each GitHub Actions job via setup-uv action, use `uv run` for all Python execution
+      B. Use actions/setup-python and pip install for GitHub Actions, bypass UV restriction with documented justification
+
+      Evaluation dimensions (include weights):
+      - H-05 compliance (0.35): alignment with Jerry Framework constitutional constraint
+      - Reproducibility (0.25): deterministic builds across environments
+      - Setup complexity (0.20): effort to configure and maintain in CI
+      - Developer experience (0.20): friction for engineers running locally vs. CI
+
+      Apply steelman analysis: present the strongest possible case for Option B before critiquing it.
+
+      Output must include:
+      - Status: Draft
+      - Context section (forces, constraints, alternatives considered)
+      - Decision section (chosen option with primary rationale)
+      - Consequences section (positive AND negative consequences — do not omit negatives)
+      - Weighted evaluation matrix with computed totals
+      - L0 summary (one paragraph)
+      - L2 architectural implications (evolution path, review triggers)
+      - Navigation table with section anchor links
+    assert:
+      # Structural invariant: Status field (SI-ARCH-001)
+      - type: regex
+        value: "Status:\\s*(Draft|Proposed|Accepted|Deprecated|Superseded)"
+        metric: structural/status_field_present
+
+      # Structural invariant: Context section (SI-ARCH-002)
+      - type: iregex
+        value: "##\\s+(?:L1:\\s+)?Context"
+        metric: structural/context_section_present
+
+      # Structural invariant: Decision section (SI-ARCH-003)
+      - type: iregex
+        value: "##\\s+(?:L1:\\s+)?Decision"
+        metric: structural/decision_section_present
+
+      # Structural invariant: Consequences section (SI-ARCH-004)
+      - type: iregex
+        value: "##\\s+(?:L1:\\s+)?Consequences"
+        metric: structural/consequences_section_present
+
+      # Structural invariant: L0 section (SI-ARCH-008)
+      - type: contains
+        value: "## L0"
+        metric: structural/l0_section_present
+
+      # Structural invariant: L2 section (SI-ARCH-009)
+      - type: contains
+        value: "## L2"
+        metric: structural/l2_section_present
+
+      # Structural invariant: minimum 2 alternatives (SI-ARCH-005)
+      - type: icontains
+        value: "Option A"
+        metric: structural/option_a_present
+
+      - type: icontains
+        value: "Option B"
+        metric: structural/option_b_present
+
+      # Structural invariant: minimum output length 1200 chars (SI-ARCH-007)
+      - type: javascript
+        value: "output.length >= 1200"
+        metric: structural/min_length_1200
+
+      # Structural invariant: navigation table with anchor links (SI-ARCH-010)
+      - type: javascript
+        value: |
+          const anchorLinks = (output.match(/\[.*?\]\(#.*?\)/g) || []).length;
+          anchorLinks >= 4
+        metric: structural/navigation_table_anchors
+
+      # H-05 compliance: Option A (UV) should be recommended
+      - type: icontains
+        value: "Option A"
+        metric: structural/option_a_in_decision
+
+      # G-Eval: methodological rigor — steelman analysis + weighted matrix
+      - type: llm-rubric
+        value: |
+          The output applies steelman analysis: the strongest possible case for Option B is presented
+          before it is critiqued. The evaluation matrix dimensions are applied consistently across both options.
+          Dimension weights are stated and used correctly in computing weighted totals.
+          The constraint most strongly influencing the recommendation (H-05 compliance) is identified.
+          Score >= 0.87 required for methodological_rigor.
+        threshold: 0.87
+        metric: quality/methodological_rigor
+
+      # G-Eval: internal consistency — decision matches matrix
+      - type: llm-rubric
+        value: |
+          The Decision section recommends the option with the highest weighted total in the evaluation matrix.
+          Weighted totals are arithmetically correct using the stated dimension weights.
+          The L0 summary recommendation is consistent with the Decision section.
+          Negative consequences are documented (not omitted, per P-022).
+          Score >= 0.86 required for internal_consistency.
+        threshold: 0.86
+        metric: quality/internal_consistency
+
+  # ----------------------------------------------------------------------------
+  # P-PAC-002: Three-option ADR with weighted matrix and sensitivity analysis
+  # Tests: 3-option comparison, sensitivity analysis, traceability to constraints
+  # Quality floor: completeness >= 0.85, traceability >= 0.88
+  # ----------------------------------------------------------------------------
+  - description: "P-PAC-002: ADR — Baseline storage strategy (3 options)"
+    vars:
+      system_prompt: "file://skills/problem-solving/agents/ps-architect.md"
+      agent_id: "ps-architect"
+      prompt_id: "P-PAC-002"
+    input: |
+      Produce an Architecture Decision Record (ADR) in Nygard format for the following decision:
+
+      DECISION REQUIRED: Where and how should the PROJ-036 prompt regression harness store baseline
+      quality score arrays between CI/CD runs?
+
+      Context:
+      - Baseline scores must be retrievable by composite key: {git_commit_hash}:{file_path}
+      - Baselines are written after successful NO_REGRESSION evaluation; read during regression comparison
+      - The harness runs in GitHub Actions; storage must be accessible across workflow runs
+      - Storage must not introduce external service dependencies that could fail independently
+      - Read latency tolerance: < 5 seconds (non-interactive, CI context)
+      - Baseline data volume: ~50KB per agent per evaluation run; 5 agents; expected ~100 baseline versions total
+
+      Options to evaluate:
+      A. Git-indexed JSON files committed to the repository in baselines/scores/ directory
+      B. GitHub Actions cache (actions/cache) keyed by composite key
+      C. GitHub Releases as artifact store (upload/download per release tag)
+
+      Evaluation dimensions (with weights):
+      - Key lookup reliability (0.30): will the correct baseline always be found for a given commit hash?
+      - Failure independence (0.25): does baseline storage failure prevent CI from running other checks?
+      - Operational simplicity (0.20): how much operational complexity does this add?
+      - Auditability (0.15): can we inspect what baseline data was used for a specific comparison?
+      - Cost (0.10): direct or indirect cost implications
+
+      Include sensitivity analysis: what is the recommendation if key lookup reliability weight changes from 0.30 to 0.15?
+
+      Status: Draft. Apply steelman to all 3 options. Disclose negative consequences for chosen option.
+    assert:
+      - type: regex
+        value: "Status:\\s*(Draft|Proposed|Accepted|Deprecated|Superseded)"
+        metric: structural/status_field_present
+
+      - type: iregex
+        value: "##\\s+(?:L1:\\s+)?Context"
+        metric: structural/context_section_present
+
+      - type: iregex
+        value: "##\\s+(?:L1:\\s+)?Decision"
+        metric: structural/decision_section_present
+
+      - type: iregex
+        value: "##\\s+(?:L1:\\s+)?Consequences"
+        metric: structural/consequences_section_present
+
+      - type: javascript
+        value: "output.length >= 1200"
+        metric: structural/min_length_1200
+
+      # All 3 options present
+      - type: icontains
+        value: "Option A"
+        metric: structural/option_a_present
+
+      - type: icontains
+        value: "Option B"
+        metric: structural/option_b_present
+
+      - type: icontains
+        value: "Option C"
+        metric: structural/option_c_present
+
+      # Sensitivity analysis present
+      - type: icontains-any
+        value:
+          - "sensitivity"
+          - "Sensitivity"
+          - "what if"
+          - "weight changes"
+        metric: structural/sensitivity_analysis_present
+
+      - type: llm-rubric
+        value: |
+          The output is a complete Nygard ADR with Status, Context, Decision, and Consequences sections.
+          A weighted evaluation matrix is present with computed totals for all 3 options and 5 dimensions.
+          An L2 architectural implications section is present and substantive.
+          All 3 options are steelmanned before evaluation.
+          Sensitivity analysis addresses the weight change from 0.30 to 0.15 for key lookup reliability.
+          Score >= 0.85 required for completeness.
+        threshold: 0.85
+        metric: quality/completeness
+
+      - type: llm-rubric
+        value: |
+          Architectural constraints are explicitly referenced by ID where relevant (H-05, H-07, etc.).
+          The decision traces back to the stated forces and context in the ADR.
+          L2 implications trace to specific L1 analysis findings.
+          Evolution triggers reference specific conditions, not generic statements.
+          Score >= 0.88 required for traceability (highest traceability requirement for ps-architect).
+        threshold: 0.88
+        metric: quality/traceability
+
+  # ----------------------------------------------------------------------------
+  # P-PAC-003: ADR with security-relevant decision
+  # Tests: threat model integration, negative consequence disclosure, STRIDE reference
+  # Quality floor: evidence_quality >= 0.82, actionability >= 0.84
+  # ----------------------------------------------------------------------------
+  - description: "P-PAC-003: ADR — LLM API key management in CI/CD (security-relevant)"
+    vars:
+      system_prompt: "file://skills/problem-solving/agents/ps-architect.md"
+      agent_id: "ps-architect"
+      prompt_id: "P-PAC-003"
+    input: |
+      Produce an Architecture Decision Record (ADR) in Nygard format for the following decision:
+
+      DECISION REQUIRED: How should the PROJ-036 prompt regression harness manage the ANTHROPIC_API_KEY
+      required for LLM inference during CI/CD evaluation runs?
+
+      Context:
+      - The harness invokes the Anthropic Claude API (claude-sonnet-4-20250514) during Standard and Full evaluation tiers
+      - GitHub Actions workflows execute the promptfoo Docker container with the API key
+      - Pull requests may originate from forked repositories (security boundary)
+      - The STRIDE threat model for this system identifies T-25 (API key exposure in CI logs, Medium risk) and T-29 (GHA workflow hijacking, High risk)
+      - LLM API costs must be attributable to specific evaluation runs for cost tracking
+
+      Options to evaluate:
+      A. GitHub Actions Secrets (repository-level) + environment protection rules for PRs from forks
+      B. OpenID Connect (OIDC) token exchange with a secret management service (Vault, AWS SSM) — key never stored in GHA
+      C. Per-PR ephemeral API keys provisioned by a key management service, rotated after each PR
+
+      Apply steelman analysis to all options. Security considerations must be explicit.
+      Reference the STRIDE threat model categories (Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, Elevation of Privilege).
+
+      Include:
+      - Threat mitigation coverage for T-25 and T-29 under each option
+      - Negative consequences for the chosen option (P-022 compliance: do not omit)
+      - Review trigger: when should this decision be reconsidered?
+
+      Status: Draft.
+    assert:
+      - type: regex
+        value: "Status:\\s*(Draft|Proposed|Accepted|Deprecated|Superseded)"
+        metric: structural/status_field_present
+
+      - type: iregex
+        value: "##\\s+(?:L1:\\s+)?Context"
+        metric: structural/context_section_present
+
+      - type: iregex
+        value: "##\\s+(?:L1:\\s+)?Decision"
+        metric: structural/decision_section_present
+
+      - type: iregex
+        value: "##\\s+(?:L1:\\s+)?Consequences"
+        metric: structural/consequences_section_present
+
+      - type: javascript
+        value: "output.length >= 1200"
+        metric: structural/min_length_1200
+
+      # Security-specific: STRIDE referenced
+      - type: icontains-any
+        value:
+          - "STRIDE"
+          - "Spoofing"
+          - "Information Disclosure"
+        metric: structural/stride_referenced
+
+      # Threat references
+      - type: icontains-any
+        value:
+          - "T-25"
+          - "T-29"
+        metric: structural/threat_ids_referenced
+
+      # Negative consequences disclosed (P-022)
+      - type: icontains-any
+        value:
+          - "Negative"
+          - "negative"
+          - "Disadvantage"
+          - "Risk:"
+        metric: structural/negative_consequences_present
+
+      - type: llm-rubric
+        value: |
+          The ADR addresses security explicitly with reference to STRIDE categories.
+          Threat mitigation coverage for T-25 and T-29 is analyzed for each option.
+          Negative consequences for the chosen option are documented (P-022 compliance).
+          A review trigger is specified with concrete conditions (not generic "when things change").
+          Evidence for evaluation scores references the specific security properties of each option.
+          Score >= 0.82 required for evidence_quality.
+        threshold: 0.82
+        metric: quality/evidence_quality
+
+  # ----------------------------------------------------------------------------
+  # P-PAC-004: ADR with evolution path and deprecation planning
+  # Tests: long-term architectural thinking, L2 section quality, evolution triggers
+  # Quality floor: completeness >= 0.85, actionability >= 0.84
+  # ----------------------------------------------------------------------------
+  - description: "P-PAC-004: ADR — Evaluation tier architecture and future extensibility"
+    vars:
+      system_prompt: "file://skills/problem-solving/agents/ps-architect.md"
+      agent_id: "ps-architect"
+      prompt_id: "P-PAC-004"
+    input: |
+      Produce an Architecture Decision Record (ADR) in Nygard format for the following decision:
+
+      DECISION REQUIRED: How should the PROJ-036 test harness implement and expose the three
+      evaluation tiers (Smoke, Standard, Full) to allow extensibility as the harness matures?
+
+      Context:
+      - The harness currently has 3 tiers: Smoke (N=1, structural only), Standard (N=10, LLM-as-Judge), Full (N=30, all layers)
+      - A Phase E (PPI Calibration) and Phase F (Perturbation Testing) are planned as future layers
+      - The evaluation mode must be selectable via: CLI argument, GitHub Action input parameter, and environment variable (FR-005)
+      - Adding a new layer must not require modifying existing Layer 1-4 code
+      - Future tiers (e.g., "Full+PPI" or "nightly") should be addable without breaking existing tier semantics
+
+      Options to evaluate:
+      A. Enum + configuration dictionary (current approach): EvaluationTier enum with per-tier config dict; new tiers added as enum values + config entries
+      B. Plugin pattern: each tier is a Python module with a standard interface; tiers registered via entry points; new tiers added as new modules without modifying core
+      C. Layered composition: tiers are defined as ordered sets of layer invocations; new layers auto-compose with existing tiers based on a dependency graph
+
+      Evaluation dimensions with weights:
+      - Extension cost (0.30): effort to add a new tier or layer
+      - Backward compatibility (0.25): existing test configurations continue to work after adding new tiers
+      - Debuggability (0.20): ability to understand what a tier does by reading its definition
+      - H-07 compliance (0.15): does the approach maintain domain/adapter separation?
+      - Implementation complexity now (0.10): cost to implement the chosen approach in the current state
+
+      Include: L0 summary, L2 architectural implications with evolution path to 5+ tiers, navigation table.
+      Status: Draft.
+    assert:
+      - type: regex
+        value: "Status:\\s*(Draft|Proposed|Accepted|Deprecated|Superseded)"
+        metric: structural/status_field_present
+
+      - type: iregex
+        value: "##\\s+(?:L1:\\s+)?Context"
+        metric: structural/context_section_present
+
+      - type: iregex
+        value: "##\\s+(?:L1:\\s+)?Decision"
+        metric: structural/decision_section_present
+
+      - type: iregex
+        value: "##\\s+(?:L1:\\s+)?Consequences"
+        metric: structural/consequences_section_present
+
+      - type: contains
+        value: "## L0"
+        metric: structural/l0_section_present
+
+      - type: contains
+        value: "## L2"
+        metric: structural/l2_section_present
+
+      - type: javascript
+        value: "output.length >= 1200"
+        metric: structural/min_length_1200
+
+      - type: javascript
+        value: |
+          const anchorLinks = (output.match(/\[.*?\]\(#.*?\)/g) || []).length;
+          anchorLinks >= 4
+        metric: structural/navigation_table_anchors
+
+      - type: icontains
+        value: "Option A"
+        metric: structural/option_a_present
+
+      - type: icontains
+        value: "Option B"
+        metric: structural/option_b_present
+
+      - type: icontains
+        value: "Option C"
+        metric: structural/option_c_present
+
+      - type: llm-rubric
+        value: |
+          The ADR is a complete Nygard format document with all required sections.
+          The evaluation matrix covers all 3 options with 5 dimensions and computed weighted totals.
+          The L2 section addresses the evolution path to 5+ tiers with specific triggers.
+          H-07 compliance (domain/adapter separation) is explicitly evaluated in the matrix.
+          The decision is actionable: the chosen option is named with clear rationale.
+          Score >= 0.84 required for actionability.
+        threshold: 0.84
+        metric: quality/actionability

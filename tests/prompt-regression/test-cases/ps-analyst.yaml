@@ -1,0 +1,460 @@
+# Test Cases: ps-analyst
+# PROJ-036 Prompt Regression Harness — Layer 1 (promptfoo CI/CD Gate)
+#
+# Agent: ps-analyst (problem-solving skill, convergent cognitive mode)
+# Agent definition: skills/problem-solving/agents/ps-analyst.md
+# Baseline prompts: baselines/prompts/ps-analyst-prompts.yaml
+#
+# Purpose: Regression test cases for ps-analyst covering:
+#   - Structured table presence (SI-ANLT-001: markdown table with |...|...|)
+#   - Evaluation criteria presence (SI-ANLT-002)
+#   - Recommendation presence (SI-ANLT-003)
+#   - Minimum output length (SI-ANLT-004: >= 600 characters)
+#   - Arithmetic correctness (FMEA RPN = S x O x D, weighted matrix totals)
+#   - Quality floor: overall >= 0.85 (behavioral-contracts.md Section B.3)
+#
+# Structural invariants tested per behavioral-contracts.md Section A.3:
+#   SI-ANLT-001: At least one markdown table with | delimiters spanning >= 2 rows
+#   SI-ANLT-002: Explicit evaluation criteria or dimensions
+#   SI-ANLT-003: At least one recommendation or conclusion
+#   SI-ANLT-004: Output length >= 600 characters
+#
+# FR traceability:
+#   FR-001: Declarative YAML test case definitions with assertion config
+#   FR-008: Deterministic property assertions
+
+providers:
+  - id: anthropic:messages:claude-sonnet-4-20250514
+    config:
+      apiKey: env:ANTHROPIC_API_KEY
+      temperature: 0.0
+      max_tokens: 4096
+
+prompts:
+  - label: "ps-analyst system prompt"
+    raw: "file://skills/problem-solving/agents/ps-analyst.md"
+
+tests:
+  # ----------------------------------------------------------------------------
+  # P-PSA-001: FMEA analysis on test harness component
+  # Tests: complete RPN calculation, risk-priority ordering, L0/L1/L2 format
+  # Quality floor: methodological_rigor >= 0.83, internal_consistency >= 0.84
+  # Critical check: RPN arithmetic correctness (S x O x D)
+  # ----------------------------------------------------------------------------
+  - description: "P-PSA-001: FMEA analysis on statistical comparison engine"
+    vars:
+      system_prompt: "file://skills/problem-solving/agents/ps-analyst.md"
+      agent_id: "ps-analyst"
+      prompt_id: "P-PSA-001"
+    input: |
+      Perform a Failure Mode and Effects Analysis (FMEA) on the statistical comparison engine
+      of a prompt regression test harness.
+
+      The statistical engine:
+      - Collects N=30 quality scores per prompt per model version
+      - Runs Wilcoxon signed-rank tests to detect regressions between versions
+      - Computes Wilson score confidence intervals for pass rates
+      - Applies Bonferroni correction when testing 6 quality dimensions simultaneously
+
+      Identify at minimum 8 failure modes. For each failure mode, provide:
+      - Failure Mode ID (FM-001, FM-002, etc.)
+      - Description of the failure mode
+      - Effect on the system (what happens when this fails)
+      - Severity (S): 1-10 scale
+      - Occurrence (O): 1-10 scale
+      - Detection (D): 1-10 scale (1=easy to detect, 10=hard to detect)
+      - RPN: S x O x D
+      - Mitigation strategy
+
+      Order by RPN descending. Identify the highest-priority failure mode and explain why it is
+      structurally irreducible (i.e., cannot be eliminated, only mitigated).
+
+      Output: L0 (top 3 risks in plain language), L1 (full FMEA table), L2 (systemic risk patterns).
+    assert:
+      # Structural invariant: markdown table present (SI-ANLT-001)
+      - type: regex
+        value: "\\|.+\\|.+\\|"
+        metric: structural/markdown_table_present
+
+      # Structural invariant: minimum output length (SI-ANLT-004)
+      - type: javascript
+        value: "output.length >= 600"
+        metric: structural/min_length_600
+
+      # SI-ANLT-002: Explicit evaluation criteria or dimensions
+      # (behavioral-contracts.md Section A.3)
+      - type: icontains-any
+        value:
+          - "Severity"
+          - "Occurrence"
+          - "Detection"
+          - "criteria"
+          - "dimension"
+        metric: structural/evaluation_criteria_present
+
+      # Structural invariant: recommendation present (SI-ANLT-003)
+      - type: icontains-any
+        value:
+          - "Recommend"
+          - "recommend"
+          - "mitigation"
+          - "Mitigation"
+        metric: structural/recommendation_present
+
+      # FMEA-specific: FM-001 pattern present (8+ failure modes required)
+      - type: regex
+        value: "FM-00[1-8]"
+        metric: structural/fmea_ids_present
+
+      # FMEA-specific: RPN values present
+      - type: icontains
+        value: "RPN"
+        metric: structural/rpn_field_present
+
+      # Structural: S x O x D formula referenced or RPN computed
+      - type: regex
+        value: "\\b[1-9][0-9]{0,2}\\b"  # RPN values should be 1-1000
+        metric: structural/rpn_numeric_present
+
+      # G-Eval: methodological rigor — correct FMEA application
+      - type: llm-rubric
+        value: |
+          The output provides at least 8 failure modes with all required fields:
+          FM-ID, description, effect, Severity (S), Occurrence (O), Detection (D), RPN, mitigation.
+          All RPN values are correctly computed as S x O x D (verify arithmetic).
+          Failure modes are ordered by RPN descending.
+          One failure mode is identified as structurally irreducible with explanation.
+          The L2 section identifies a systemic pattern across multiple failure modes.
+          Score >= 0.83 required for methodological_rigor.
+        threshold: 0.83
+        metric: quality/methodological_rigor
+
+      # G-Eval: internal consistency — arithmetic correctness
+      - type: llm-rubric
+        value: |
+          Numeric calculations are internally consistent: RPN = S x O x D (verify arithmetic).
+          At minimum, spot-check 3 RPN values for correctness.
+          Conclusions in L0 are consistent with the detailed analysis in L1.
+          No claim in one section contradicts another.
+          Score 0.0 if any arithmetic check fails. Score >= 0.84 required.
+        threshold: 0.84
+        metric: quality/internal_consistency
+
+  # ----------------------------------------------------------------------------
+  # P-PSA-002: Gap analysis with weighted evaluation matrix
+  # Tests: trade-off analysis, numeric scoring, priority ordering
+  # Quality floor: actionability >= 0.85, completeness >= 0.82
+  # ----------------------------------------------------------------------------
+  - description: "P-PSA-002: Gap analysis of quality measurement framework"
+    vars:
+      system_prompt: "file://skills/problem-solving/agents/ps-analyst.md"
+      agent_id: "ps-analyst"
+      prompt_id: "P-PSA-002"
+    input: |
+      Perform a gap analysis comparing the current state of Jerry's quality measurement framework
+      against the desired state for a statistically rigorous prompt regression harness.
+
+      Current state:
+      - ps-critic produces a 0.92 quality gate based on a 6-dimension weighted composite
+      - Scoring is a point estimate (single pass of LLM-as-Judge)
+      - No confidence intervals on scores
+      - No statistical comparison between prompt versions
+      - No automated CI/CD gate blocking merge on regression
+
+      Desired state:
+      - Multiple runs per evaluation (N>=20) to characterize variance
+      - Wilcoxon signed-rank test for version comparison
+      - Wilson score confidence intervals on pass rates
+      - Automated PR-blocking CI/CD gate
+      - Regression classified as NO_REGRESSION / MARGINAL / REGRESSION
+
+      For each gap, provide:
+      - Gap ID and description
+      - Current capability (what we have)
+      - Desired capability (what we need)
+      - Impact score (1-5: how much does this gap reduce regression safety?)
+      - Effort score (1-5: how hard is this to close?)
+      - Priority: Impact / Effort ratio
+      - Closing action
+
+      Order by priority descending. Identify the highest-ROI gap to close first.
+
+      Output: L0 (which gap hurts us most right now), L1 (full gap analysis matrix), L2 (strategic sequencing rationale).
+    assert:
+      - type: regex
+        value: "\\|.+\\|.+\\|"
+        metric: structural/markdown_table_present
+
+      - type: javascript
+        value: "output.length >= 600"
+        metric: structural/min_length_600
+
+      # SI-ANLT-002: Explicit evaluation criteria or dimensions
+      # (behavioral-contracts.md Section A.3)
+      - type: icontains-any
+        value:
+          - "Priority"
+          - "Impact"
+          - "Effort"
+          - "criteria"
+          - "dimension"
+          - "Score"
+        metric: structural/evaluation_criteria_present
+
+      # Must have numeric scores in the matrix
+      - type: regex
+        value: "\\b[1-5]\\s*/\\s*[1-5]\\b"  # Impact/Effort ratio pattern
+        metric: structural/numeric_ratio_present
+
+      - type: llm-rubric
+        value: |
+          The output identifies at least 5 gaps from the current-vs-desired description.
+          Each gap has numeric Impact and Effort scores with a priority ratio.
+          Gaps are ordered by priority and the highest-ROI gap is identified.
+          Closing actions are specific and implementable (not generic statements like "improve X").
+          The L2 section addresses sequencing trade-offs between quick wins and foundational gaps.
+          Score >= 0.85 required for actionability (core competency for ps-analyst).
+        threshold: 0.85
+        metric: quality/actionability
+
+  # ----------------------------------------------------------------------------
+  # P-PSA-003: Root cause analysis using 5 Whys
+  # Tests: forensic convergent reasoning, root vs. intermediate cause distinction
+  # Quality floor: methodological_rigor >= 0.83, actionability >= 0.85
+  # ----------------------------------------------------------------------------
+  - description: "P-PSA-003: 5 Whys root cause analysis on false regression"
+    vars:
+      system_prompt: "file://skills/problem-solving/agents/ps-analyst.md"
+      agent_id: "ps-analyst"
+      prompt_id: "P-PSA-003"
+    input: |
+      Apply the 5 Whys root cause analysis methodology to the following observed failure:
+
+      SYMPTOM: A prompt regression test harness produces a REGRESSION verdict for a PR that
+      contains only a minor formatting change to an agent's system prompt (whitespace cleanup).
+      The PR author is confident the change is semantically neutral. The harness blocks the merge.
+
+      Perform the 5 Whys analysis. For each "Why", provide:
+      - The question asked
+      - The answer and evidence basis
+      - Whether this is a root cause or an intermediate cause (and why)
+
+      Identify the true root cause (the deepest "Why" that, if fixed, would prevent recurrence).
+      Distinguish it from contributing factors.
+
+      Then provide:
+      1. Recommended fix for the root cause
+      2. Short-term workaround (unblock the PR without fixing the root cause)
+      3. Detection improvement: how would we detect this failure mode earlier in future?
+      4. Confidence assessment: high/medium/low confidence in root cause identification, with rationale
+
+      Output: L0 (what went wrong and how to fix it), L1 (full 5 Whys trace with fix options), L2 (systemic implications).
+    assert:
+      - type: javascript
+        value: "output.length >= 600"
+        metric: structural/min_length_600
+
+      # SI-ANLT-002: Explicit evaluation criteria or dimensions
+      # (behavioral-contracts.md Section A.3)
+      - type: icontains-any
+        value:
+          - "root cause"
+          - "intermediate cause"
+          - "confidence"
+          - "criteria"
+          - "dimension"
+        metric: structural/evaluation_criteria_present
+
+      # Must contain "Why" iterations (5 Whys methodology)
+      - type: javascript
+        value: |
+          const whyCount = (output.match(/\bWhy\s+[1-5]\b/gi) || []).length;
+          whyCount >= 3  // Minimum 3 of 5 Whys visible
+        metric: structural/5_whys_iterations_present
+
+      # Must distinguish root cause
+      - type: icontains
+        value: "root cause"
+        metric: structural/root_cause_identified
+
+      # Must have workaround + fix (two distinct recommendations)
+      - type: icontains-any
+        value:
+          - "workaround"
+          - "short-term"
+        metric: structural/workaround_present
+
+      - type: llm-rubric
+        value: |
+          The output traces through exactly 5 Why iterations (not stopping early).
+          It distinguishes the root cause from intermediate causes explicitly.
+          It provides both a short-term workaround AND a long-term fix.
+          The confidence assessment includes specific rationale (not generic "medium confidence").
+          The L2 section discusses systemic implications (what this reveals about the harness design).
+          Score >= 0.83 required for methodological_rigor.
+        threshold: 0.83
+        metric: quality/methodological_rigor
+
+  # ----------------------------------------------------------------------------
+  # P-PSA-004: Multi-criteria trade-off analysis with weighted decision matrix
+  # Tests: convergent option comparison, weighted total arithmetic, sensitivity analysis
+  # Quality floor: internal_consistency >= 0.84, completeness >= 0.82
+  # ----------------------------------------------------------------------------
+  - description: "P-PSA-004: Weighted decision matrix for LLM-as-Judge evaluation options"
+    vars:
+      system_prompt: "file://skills/problem-solving/agents/ps-analyst.md"
+      agent_id: "ps-analyst"
+      prompt_id: "P-PSA-004"
+    input: |
+      Analyze the trade-offs between three approaches to LLM-as-Judge evaluation for a quality regression harness:
+
+      Option A: Single-pass LLM-as-Judge (one evaluation per output)
+      Option B: Multi-pass LLM-as-Judge with debiasing (position randomization + rubric shuffling, 3 evaluations averaged)
+      Option C: Ensemble judge (3 different model variants vote, majority rules)
+
+      Evaluation dimensions (with weights):
+      - Score reliability (0.30): consistency of scores across repeated evaluation of the same output
+      - Bias resistance (0.25): resistance to leniency, position, and verbosity biases
+      - API cost per evaluation (0.20): relative cost (1=cheapest, 5=most expensive)
+      - Implementation complexity (0.15): effort to implement correctly
+      - Interpretability (0.10): ability to explain why a score was given
+
+      For each option:
+      - Score each dimension 1-5
+      - Justify each score with specific reasoning
+      - Compute weighted total
+      - Identify the dimension where this option is weakest
+
+      State your recommendation and the key trade-off that most influenced the decision.
+
+      Output: L0 (recommendation in one sentence), L1 (full weighted matrix with justifications), L2 (when the recommendation changes under different weight assumptions).
+    assert:
+      - type: regex
+        value: "\\|.+\\|.+\\|"
+        metric: structural/markdown_table_present
+
+      - type: javascript
+        value: "output.length >= 600"
+        metric: structural/min_length_600
+
+      # SI-ANLT-002: Explicit evaluation criteria or dimensions
+      # (behavioral-contracts.md Section A.3)
+      - type: icontains-any
+        value:
+          - "Score reliability"
+          - "Bias resistance"
+          - "weight"
+          - "criteria"
+          - "dimension"
+        metric: structural/evaluation_criteria_present
+
+      # Weighted totals must be present (numeric matrix)
+      - type: javascript
+        value: |
+          const scores = output.match(/\b[0-9]\.[0-9]{1,2}\b/g) || [];
+          scores.length >= 3  // At least 3 weighted totals
+        metric: structural/weighted_totals_present
+
+      # All 3 options must be present
+      - type: icontains
+        value: "Option A"
+        metric: structural/option_a_present
+
+      - type: icontains
+        value: "Option B"
+        metric: structural/option_b_present
+
+      - type: icontains
+        value: "Option C"
+        metric: structural/option_c_present
+
+      - type: llm-rubric
+        value: |
+          The output provides a complete 3x5 matrix with all 15 scores filled in and justified.
+          Weighted totals are correctly computed using the provided dimension weights (verify arithmetic).
+          The weakest dimension is identified for each option.
+          An explicit recommendation is stated with the key trade-off rationale.
+          The L2 section discusses sensitivity to weight changes with at minimum one alternative scenario.
+          Score >= 0.84 required for internal_consistency (arithmetic correctness is critical).
+        threshold: 0.84
+        metric: quality/internal_consistency
+
+  # ----------------------------------------------------------------------------
+  # P-PSA-005: Impact and dependency mapping
+  # Tests: first-order vs. second-order effect separation, dependency graph, risk assessment
+  # Quality floor: completeness >= 0.82, actionability >= 0.85
+  # ----------------------------------------------------------------------------
+  - description: "P-PSA-005: Impact and dependency mapping for model version pinning"
+    vars:
+      system_prompt: "file://skills/problem-solving/agents/ps-analyst.md"
+      agent_id: "ps-analyst"
+      prompt_id: "P-PSA-005"
+    input: |
+      Analyze the impact of the following change on the Jerry Framework:
+
+      PROPOSED CHANGE: Pin all 5 target agents (ps-researcher, ps-analyst, ps-architect,
+      ps-critic, adv-scorer) to claude-sonnet-4-20250514 in the test harness configuration,
+      while keeping the main Jerry framework using whatever the current default model is.
+
+      Map the direct impacts and second-order dependencies:
+
+      First-order impacts (direct effects of the change):
+      - List each system component directly affected
+      - Describe how it is affected
+
+      Second-order impacts (effects of the first-order effects):
+      - What breaks or changes because of the first-order effects?
+
+      Dependency graph:
+      - Which components must be updated BEFORE this change is viable?
+      - Which components can be updated AFTER?
+      - Are there any circular dependencies?
+
+      Risk assessment:
+      - What is the highest-risk dependency in this chain?
+      - What could go wrong that the impact map does not capture?
+
+      Output: L0 (is this change safe to make now?), L1 (full impact map with dependency graph), L2 (long-term implications of model version divergence).
+    assert:
+      - type: javascript
+        value: "output.length >= 600"
+        metric: structural/min_length_600
+
+      # SI-ANLT-002: Explicit evaluation criteria or dimensions
+      # (behavioral-contracts.md Section A.3)
+      - type: icontains-any
+        value:
+          - "first-order"
+          - "second-order"
+          - "risk"
+          - "criteria"
+          - "dimension"
+        metric: structural/evaluation_criteria_present
+
+      # Must distinguish first-order from second-order
+      - type: icontains-any
+        value:
+          - "first-order"
+          - "First-order"
+          - "second-order"
+          - "Second-order"
+        metric: structural/order_separation_present
+
+      # Must include risk assessment
+      - type: icontains-any
+        value:
+          - "risk"
+          - "Risk"
+          - "highest-risk"
+        metric: structural/risk_assessment_present
+
+      - type: llm-rubric
+        value: |
+          The output explicitly separates first-order from second-order impacts.
+          It provides a sequencing recommendation (what must happen before vs. after).
+          It identifies circular dependencies if any exist, or explicitly states none found.
+          The risk assessment names the highest-risk dependency with specific reasoning.
+          The L2 section addresses the long-term model version divergence risk.
+          Score >= 0.82 required for completeness.
+        threshold: 0.82
+        metric: quality/completeness

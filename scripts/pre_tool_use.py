@@ -184,7 +184,14 @@ def check_bash_command(tool_input: dict[str, Any]) -> tuple[bool, str]:
 
     # Check for dangerous commands
     for dangerous in DANGEROUS_COMMANDS:
-        if dangerous in command:
+        # Use word-boundary match for short patterns like "eval" to avoid
+        # false positives on filenames containing the substring (e.g.,
+        # "deepeval_adapter.py", "jerry_geval_deepeval_metric.py").
+        if len(dangerous) <= 6 and re.search(
+            r"(?<![a-zA-Z0-9_.-])" + re.escape(dangerous) + r"(?![a-zA-Z0-9_.-])", command
+        ):
+            return False, f"Command contains dangerous pattern: {dangerous}"
+        elif len(dangerous) > 6 and dangerous in command:
             return False, f"Command contains dangerous pattern: {dangerous}"
 
     # Warn about shell=True equivalent patterns

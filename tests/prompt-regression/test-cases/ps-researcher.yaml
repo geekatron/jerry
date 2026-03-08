@@ -1,0 +1,434 @@
+# Test Cases: ps-researcher
+# PROJ-036 Prompt Regression Harness — Layer 1 (promptfoo CI/CD Gate)
+#
+# Agent: ps-researcher (problem-solving skill, divergent cognitive mode)
+# Agent definition: skills/problem-solving/agents/ps-researcher.md
+# Baseline prompts: baselines/prompts/ps-researcher-prompts.yaml
+#
+# Purpose: Regression test cases for ps-researcher covering:
+#   - L0/L1/L2 structural output format (SI-RSRCH-001 through SI-RSRCH-003)
+#   - Source citation discipline (SI-RSRCH-004: >= 3 distinct sources)
+#   - Minimum output length (SI-RSRCH-005: >= 800 characters)
+#   - Concise L0 section (SI-RSRCH-006: <= 500 words)
+#   - G-Eval quality scoring across 6 S-014 dimensions
+#   - Quality floor: overall >= 0.82 (behavioral-contracts.md Section B.3)
+#
+# Structural invariants tested per behavioral-contracts.md Section A.2:
+#   SI-RSRCH-001: Output contains "## L0" section heading
+#   SI-RSRCH-002: Output contains "## L1" section heading
+#   SI-RSRCH-003: Output contains "## L2" section heading
+#   SI-RSRCH-004: At least 3 distinct cited sources
+#   SI-RSRCH-005: Output length >= 800 characters
+#   SI-RSRCH-006: L0 section <= 500 words
+#
+# FR traceability:
+#   FR-001: Declarative YAML test case definitions with assertion config
+#   FR-008: Deterministic property assertions (< 100ms, zero stochasticity)
+#
+# Security: No secrets, API keys, or credentials in this file (MC-01).
+# All test inputs are treated as untrusted and validated before execution (MC-03).
+
+# ==============================================================================
+# SHARED PROVIDER CONFIGURATION
+# System prompt is loaded from the agent definition file (FR-001 AC-1).
+# ==============================================================================
+providers:
+  - id: anthropic:messages:claude-sonnet-4-20250514
+    config:
+      apiKey: env:ANTHROPIC_API_KEY
+      temperature: 0.0
+      max_tokens: 4096
+
+prompts:
+  - label: "ps-researcher system prompt"
+    raw: "file://skills/problem-solving/agents/ps-researcher.md"
+
+# ==============================================================================
+# TEST CASES
+# Each test case corresponds to a canonical prompt from baselines/prompts/ps-researcher-prompts.yaml
+# ==============================================================================
+tests:
+  # ----------------------------------------------------------------------------
+  # P-PSR-001: Multi-source web research with L0/L1/L2 structure
+  # Tests: divergent breadth, source citation, L0/L1/L2 format compliance
+  # Quality floor: evidence_quality >= 0.82, completeness >= 0.78 (per-dimension bounds)
+  # ----------------------------------------------------------------------------
+  - description: "P-PSR-001: Multi-source web research with L0/L1/L2 structure"
+    vars:
+      system_prompt: "file://skills/problem-solving/agents/ps-researcher.md"
+      agent_id: "ps-researcher"
+      prompt_id: "P-PSR-001"
+    options:
+      provider: anthropic:messages:claude-sonnet-4-20250514
+    input: |
+      Research LLM evaluation frameworks that support statistical significance testing for regression detection.
+      Focus on frameworks released or significantly updated in 2024-2025.
+
+      Survey at minimum: DeepEval, promptfoo, RAGAS, and any others you discover.
+
+      Use the 5W1H framework:
+      - Who: Which organizations/teams use these frameworks
+      - What: What statistical methods each framework provides
+      - Where: Where frameworks integrate (CI/CD, pytest, standalone)
+      - When: Recent release timeline and version history
+      - Why: Why statistical rigor matters for LLM regression testing
+      - How: How to integrate into a Python project using UV
+
+      Output structure required: L0 (executive summary for non-technical stakeholder),
+      L1 (technical findings for software engineer), L2 (strategic implications for architect).
+
+      Include at minimum 5 cited sources with URLs.
+    assert:
+      # Structural invariant: L0 section (SI-RSRCH-001)
+      - type: contains
+        value: "## L0"
+        metric: structural/l0_section_present
+
+      # Structural invariant: L1 section (SI-RSRCH-002)
+      - type: contains
+        value: "## L1"
+        metric: structural/l1_section_present
+
+      # Structural invariant: L2 section (SI-RSRCH-003)
+      - type: contains
+        value: "## L2"
+        metric: structural/l2_section_present
+
+      # Structural invariant: minimum output length (SI-RSRCH-005)
+      - type: javascript
+        value: "output.length >= 800"
+        metric: structural/min_length_800
+
+      # Structural invariant: no secrets (SI-UNIV-003)
+      - type: not-regex
+        value: "(Bearer\\s+[A-Za-z0-9\\-_\\.]+|sk-[A-Za-z0-9]+)"
+        metric: structural/no_secrets
+
+      # At least 3 URLs cited (SI-RSRCH-004, relaxed to 3 for framework compatibility)
+      - type: javascript
+        value: "(output.match(/https?:\\/\\/[^\\s)]+/g) || []).length >= 3"
+        metric: structural/min_citations_3
+
+      # Structural invariant: L0 section <= 500 words (SI-RSRCH-006)
+      # Extracts text from the L0 section (between "## L0" and the next "## L" heading)
+      # and counts whitespace-delimited tokens. Marked WARNING in behavioral-contracts.md;
+      # included here as a Smoke-tier gate to detect severe overruns early.
+      - type: javascript
+        value: |
+          const l0Match = output.match(/##\s*L0([\s\S]*?)(?=##\s*L[1-9]|$)/i);
+          if (!l0Match) return true;  // L0 absence is caught by SI-RSRCH-001 assertion
+          const l0Text = l0Match[1].trim();
+          const wordCount = l0Text.split(/\s+/).filter(w => w.length > 0).length;
+          return wordCount <= 500;
+        metric: structural/l0_word_count_lte_500
+
+      # G-Eval: completeness dimension (Layer 2 metric; scored 0.0-1.0)
+      - type: llm-rubric
+        value: |
+          The output contains all three required sections: L0 (executive summary accessible to
+          non-technical stakeholders with no unexplained jargon), L1 (technical findings with
+          specific details, data, or code examples), and L2 (strategic implications for architects
+          or decision-makers). Each section is substantive (at least 2 paragraphs or equivalent).
+          Score 0.0 if any section is absent; score proportionally for section quality and depth.
+          Score >= 0.78 is acceptable; score < 0.78 indicates structural completeness regression.
+        threshold: 0.78
+        metric: quality/completeness
+
+      # G-Eval: evidence_quality dimension — core competency for ps-researcher
+      - type: llm-rubric
+        value: |
+          Claims are supported by specific sources cited inline with URLs or bibliographic
+          references. At least 5 distinct sources are cited. Claims flagged as uncertain are
+          identified as such. Blog posts or informal sources are distinguished from primary
+          literature. Score 0.0 if no URLs or references are present.
+          Score >= 0.82 is acceptable per per-dimension quality floor.
+        threshold: 0.82
+        metric: quality/evidence_quality
+
+  # ----------------------------------------------------------------------------
+  # P-PSR-002: Domain-specific research with credibility assessment
+  # Tests: evidence hierarchy, source distinction, uncertainty flagging
+  # Quality floor: evidence_quality >= 0.82, methodological_rigor >= 0.75
+  # ----------------------------------------------------------------------------
+  - description: "P-PSR-002: Domain-specific research with credibility assessment"
+    vars:
+      system_prompt: "file://skills/problem-solving/agents/ps-researcher.md"
+      agent_id: "ps-researcher"
+      prompt_id: "P-PSR-002"
+    input: |
+      Research the Wilcoxon signed-rank test as applied to comparing LLM output quality distributions.
+
+      I need to understand:
+      1. The mathematical basis: what assumptions the test makes and why they are appropriate for LLM output scores
+      2. Sample size requirements: minimum N for reliable results with practical effect sizes (delta ~ 0.05 on a 0-1 score scale)
+      3. What "paired" means in this context: are individual LLM invocations naturally paired?
+      4. Alternatives: when would a Mann-Whitney U test be preferred instead?
+      5. Correction for multiple comparisons: how to apply Bonferroni correction when testing 6 quality dimensions simultaneously
+
+      Cite statistical references (textbooks, papers, or authoritative statistical documentation).
+      Distinguish between primary sources (statistical literature) and secondary sources (tutorials, blog posts).
+      Flag any claims that require verification against primary literature.
+
+      Output: L0 for non-statistician, L1 for software engineer implementing the test, L2 for architect assessing statistical rigor of the overall approach.
+    assert:
+      - type: contains
+        value: "## L0"
+        metric: structural/l0_section_present
+
+      - type: contains
+        value: "## L1"
+        metric: structural/l1_section_present
+
+      - type: contains
+        value: "## L2"
+        metric: structural/l2_section_present
+
+      - type: javascript
+        value: "output.length >= 800"
+        metric: structural/min_length_800
+
+      # Structural invariant: L0 section <= 500 words (SI-RSRCH-006)
+      - type: javascript
+        value: |
+          const l0Match = output.match(/##\s*L0([\s\S]*?)(?=##\s*L[1-9]|$)/i);
+          if (!l0Match) return true;
+          const l0Text = l0Match[1].trim();
+          const wordCount = l0Text.split(/\s+/).filter(w => w.length > 0).length;
+          return wordCount <= 500;
+        metric: structural/l0_word_count_lte_500
+
+      # Traceability: must address all 5 numbered questions
+      - type: javascript
+        value: |
+          const nums = ["1.", "2.", "3.", "4.", "5."];
+          nums.every(n => output.includes(n))
+        metric: structural/all_5_questions_addressed
+
+      - type: llm-rubric
+        value: |
+          The research addresses all 5 numbered questions with distinct answers.
+          It distinguishes primary statistical sources from secondary sources (blog posts, tutorials).
+          It flags claims that require verification rather than stating them as definitive.
+          It provides a concrete minimum N value with derivation rationale.
+          It covers Bonferroni correction with a practical example for 6 dimensions.
+          Score >= 0.75 acceptable; lower indicates methodological regression.
+        threshold: 0.75
+        metric: quality/methodological_rigor
+
+      - type: llm-rubric
+        value: |
+          Claims are supported by specific sources. Primary vs. secondary sources are explicitly distinguished.
+          Unverified claims are flagged. Score >= 0.82 is the per-dimension floor for evidence_quality.
+        threshold: 0.82
+        metric: quality/evidence_quality
+
+  # ----------------------------------------------------------------------------
+  # P-PSR-003: Codebase research with web supplement
+  # Tests: hybrid research approach, codebase-first ordering, source distinction
+  # Quality floor: completeness >= 0.78, actionability >= 0.65
+  # ----------------------------------------------------------------------------
+  - description: "P-PSR-003: Codebase research with web supplement"
+    vars:
+      system_prompt: "file://skills/problem-solving/agents/ps-researcher.md"
+      agent_id: "ps-researcher"
+      prompt_id: "P-PSR-003"
+    input: |
+      Research how pytest plugins are structured and how to create a custom pytest plugin that integrates with DeepEval.
+
+      First search the local codebase for any existing pytest configuration or test infrastructure:
+      - Look for pyproject.toml for existing pytest configuration
+      - Look for any files in tests/ directories
+      - Look for any existing conftest.py files
+
+      Then supplement with web research on:
+      - pytest plugin architecture (entry points, conftest.py vs installed plugins)
+      - DeepEval's pytest integration mechanism
+      - How to write a custom metric that plugs into DeepEval's evaluation pipeline
+
+      Output should contrast: what exists in the codebase vs. what needs to be built.
+      Include at minimum one code example showing the plugin structure.
+
+      Format: L0 (what we have vs. what we need to build), L1 (technical integration guide), L2 (architectural implications of the plugin approach).
+    assert:
+      - type: contains
+        value: "## L0"
+        metric: structural/l0_section_present
+
+      - type: contains
+        value: "## L1"
+        metric: structural/l1_section_present
+
+      - type: contains
+        value: "## L2"
+        metric: structural/l2_section_present
+
+      - type: javascript
+        value: "output.length >= 800"
+        metric: structural/min_length_800
+
+      # Structural invariant: L0 section <= 500 words (SI-RSRCH-006)
+      - type: javascript
+        value: |
+          const l0Match = output.match(/##\s*L0([\s\S]*?)(?=##\s*L[1-9]|$)/i);
+          if (!l0Match) return true;
+          const l0Text = l0Match[1].trim();
+          const wordCount = l0Text.split(/\s+/).filter(w => w.length > 0).length;
+          return wordCount <= 500;
+        metric: structural/l0_word_count_lte_500
+
+      # Actionability: must include at least one code example
+      - type: regex
+        value: "```(?:python|yaml|toml)?"
+        metric: structural/code_example_present
+
+      - type: llm-rubric
+        value: |
+          The output explicitly searches the codebase before supplementing with web research.
+          It clearly distinguishes codebase findings from external research findings.
+          It includes a concrete code example for pytest plugin structure.
+          It addresses the entry points vs. conftest.py distinction.
+          The L2 section discusses the plugin approach vs. alternatives at architectural level.
+          Score >= 0.65 acceptable for actionability (research may lack direct recommendations).
+        threshold: 0.65
+        metric: quality/actionability
+
+  # ----------------------------------------------------------------------------
+  # P-PSR-004: Landscape survey with synthesis
+  # Tests: convergence pattern identification, divergence flagging, LLMORPH coverage
+  # Quality floor: evidence_quality >= 0.82, traceability >= 0.78
+  # ----------------------------------------------------------------------------
+  - description: "P-PSR-004: Landscape survey with synthesis and convergence patterns"
+    vars:
+      system_prompt: "file://skills/problem-solving/agents/ps-researcher.md"
+      agent_id: "ps-researcher"
+      prompt_id: "P-PSR-004"
+    input: |
+      Survey the current landscape of metamorphic testing as applied to AI and machine learning systems.
+      Focus on: what metamorphic relations (MRs) have been validated for text generation tasks,
+      what false positive rates have been measured, and what tooling exists.
+
+      Key questions to answer:
+      1. What is the ASE 2025 LLMORPH result? What metamorphic relations did they validate and at what false positive rate?
+      2. What 5 universal metamorphic relations apply to any text generation system regardless of task?
+      3. What MR tolerance thresholds are supported by empirical evidence?
+      4. What tooling (if any) implements metamorphic testing for LLMs out of the box?
+
+      Identify convergence patterns: where do multiple independent sources agree on the same MR or threshold?
+      Flag divergence points: where do sources contradict each other?
+
+      Output: L0 (is metamorphic testing production-ready?), L1 (MR catalog with implementation guidance), L2 (strategic maturity assessment).
+    assert:
+      - type: contains
+        value: "## L0"
+        metric: structural/l0_section_present
+
+      - type: contains
+        value: "## L1"
+        metric: structural/l1_section_present
+
+      - type: contains
+        value: "## L2"
+        metric: structural/l2_section_present
+
+      - type: javascript
+        value: "output.length >= 800"
+        metric: structural/min_length_800
+
+      # Structural invariant: L0 section <= 500 words (SI-RSRCH-006)
+      - type: javascript
+        value: |
+          const l0Match = output.match(/##\s*L0([\s\S]*?)(?=##\s*L[1-9]|$)/i);
+          if (!l0Match) return true;
+          const l0Text = l0Match[1].trim();
+          const wordCount = l0Text.split(/\s+/).filter(w => w.length > 0).length;
+          return wordCount <= 500;
+        metric: structural/l0_word_count_lte_500
+
+      # Must reference LLMORPH (specific study)
+      - type: icontains
+        value: "LLMORPH"
+        metric: structural/llmorph_referenced
+
+      - type: llm-rubric
+        value: |
+          The output covers the LLMORPH ASE 2025 study with a specific false positive rate statistic.
+          It lists at least 5 metamorphic relations applicable to text generation.
+          It identifies at least one convergence pattern with supporting source count.
+          It flags at least one divergence point or unresolved question.
+          The L2 section includes a maturity assessment with evidence basis.
+          Score >= 0.82 required for evidence_quality (core competency).
+        threshold: 0.82
+        metric: quality/evidence_quality
+
+  # ----------------------------------------------------------------------------
+  # P-PSR-005: Rapid focused research on narrow technical topic
+  # Tests: scope adherence, formula precision, code implementation quality
+  # Quality floor: actionability >= 0.65, completeness >= 0.78
+  # ----------------------------------------------------------------------------
+  - description: "P-PSR-005: Rapid focused research — Wilson score confidence intervals"
+    vars:
+      system_prompt: "file://skills/problem-solving/agents/ps-researcher.md"
+      agent_id: "ps-researcher"
+      prompt_id: "P-PSR-005"
+    input: |
+      Research Wilson score confidence intervals as used for pass-rate estimation.
+      This is a focused technical research task: cover exactly this topic, do not expand scope.
+
+      Required content:
+      1. The Wilson score formula (exact formula with variable definitions)
+      2. Why Wilson is preferred over normal approximation (Wald) for small N and extreme proportions
+      3. What N is needed for the Wilson interval width to be <= 0.15 at p=0.70 (95% confidence)
+      4. Python implementation using scipy.stats or statsmodels (exact function call with parameters)
+      5. Interpretation guidance: what does a Wilson CI of [0.42, 0.68] mean in plain language?
+
+      Citation requirement: cite at least one statistical reference (paper, textbook, or authoritative source)
+      for the Wilson formula itself. Blog posts do not count as primary citations for the formula.
+
+      Output: L0 (one-paragraph plain-language explanation), L1 (technical guide with formula and code), L2 (when to use Wilson vs. alternatives in a quality framework context).
+    assert:
+      - type: contains
+        value: "## L0"
+        metric: structural/l0_section_present
+
+      - type: contains
+        value: "## L1"
+        metric: structural/l1_section_present
+
+      - type: contains
+        value: "## L2"
+        metric: structural/l2_section_present
+
+      - type: javascript
+        value: "output.length >= 800"
+        metric: structural/min_length_800
+
+      # Structural invariant: L0 section <= 500 words (SI-RSRCH-006)
+      - type: javascript
+        value: |
+          const l0Match = output.match(/##\s*L0([\s\S]*?)(?=##\s*L[1-9]|$)/i);
+          if (!l0Match) return true;
+          const l0Text = l0Match[1].trim();
+          const wordCount = l0Text.split(/\s+/).filter(w => w.length > 0).length;
+          return wordCount <= 500;
+        metric: structural/l0_word_count_lte_500
+
+      # Must include Python code example (actionability)
+      - type: regex
+        value: "```python"
+        metric: structural/python_code_present
+
+      # Must reference Wilson formula explicitly
+      - type: icontains
+        value: "Wilson"
+        metric: structural/wilson_formula_referenced
+
+      - type: llm-rubric
+        value: |
+          The output provides the exact Wilson score formula with all variables defined.
+          It computes or derives the required N for the specified width constraint.
+          It provides working Python code with exact scipy or statsmodels function call.
+          It cites a primary statistical source (not a blog post) for the formula.
+          It stays on-scope and does not expand into unrelated topics.
+          Score >= 0.78 required for completeness.
+        threshold: 0.78
+        metric: quality/completeness

@@ -1,0 +1,55 @@
+{
+  "agents": {
+    "ps-researcher": {
+      "prompts": {
+        "P-PSR-001": {
+          "composite": 0.29
+        },
+        "P-PSR-002": {
+          "composite": 0.405
+        },
+        "P-PSR-003": {
+          "composite": 0.385
+        },
+        "P-PSR-004": {
+          "composite": 0.27
+        },
+        "P-PSR-005": {
+          "composite": 0.755
+        }
+      },
+      "mean_composite": 0.421,
+      "quality_floor": 0.82,
+      "floor_met": false,
+      "prompt_count": 5
+    },
+    "ps-architect": {
+      "prompts": {
+        "P-PAC-001": {
+          "composite": 0.675
+        },
+        "P-PAC-002": {
+          "composite": 0.63
+        },
+        "P-PAC-003": {
+          "composite": 0.635
+        },
+        "P-PAC-004": {
+          "composite": 0.49
+        }
+      },
+      "mean_composite": 0.6075,
+      "quality_floor": 0.88,
+      "floor_met": false,
+      "prompt_count": 4
+    }
+  },
+  "judge_model": "claude-sonnet-4-20250514",
+  "total_scoring_calls": 54,
+  "timestamp": "2026-03-08T19:02:24.376848+00:00",
+  "notes": {
+    "calibration_issue": "Scores significantly below quality floors. Root cause: output truncation to 8000 chars loses 38-62% of content. Judge reports outputs as 'incomplete' and 'cut off mid-sentence' because it only sees truncated text. This is a known limitation of _MAX_OUTPUT_CHARS=8000 in DeepEvalAdapter. Scores should be interpreted as baseline measurements under current truncation constraints, not as reflections of actual agent output quality.",
+    "ps_researcher_score_range": "0.270-0.755 (high variance driven by which content survives truncation)",
+    "ps_architect_score_range": "0.490-0.675 (more consistent, shorter outputs lose less to truncation)"
+  }
+}

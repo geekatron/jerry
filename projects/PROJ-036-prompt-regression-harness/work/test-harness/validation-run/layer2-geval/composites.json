@@ -1,0 +1,67 @@
+{
+  "ps-researcher": {
+    "composite": 0.935,
+    "floor": 0.82,
+    "verdict": "PASS",
+    "per_dimension": {
+      "evidence_quality": 1.0,
+      "internal_consistency": 0.9,
+      "methodological_rigor": 0.9,
+      "traceability": 0.9,
+      "completeness": 1.0,
+      "actionability": 0.9
+    }
+  },
+  "ps-analyst": {
+    "composite": 0.51,
+    "floor": 0.85,
+    "verdict": "FAIL",
+    "per_dimension": {
+      "evidence_quality": 0.9,
+      "actionability": 0.9,
+      "completeness": 0.0,
+      "methodological_rigor": 0.9,
+      "internal_consistency": 0.2,
+      "traceability": 0.2
+    }
+  },
+  "ps-architect": {
+    "composite": 0.86,
+    "floor": 0.88,
+    "verdict": "FAIL",
+    "per_dimension": {
+      "actionability": 0.9,
+      "evidence_quality": 0.9,
+      "traceability": 0.1,
+      "methodological_rigor": 1.0,
+      "completeness": 1.0,
+      "internal_consistency": 0.9
+    }
+  },
+  "ps-critic": {
+    "composite": 0.575,
+    "floor": 0.83,
+    "verdict": "FAIL",
+    "per_dimension": {
+      "evidence_quality": 0.0,
+      "internal_consistency": 0.9,
+      "methodological_rigor": 0.3,
+      "actionability": 0.9,
+      "traceability": 0.9,
+      "completeness": 0.9
+    }
+  },
+  "adv-scorer": {
+    "composite": 0.785,
+    "floor": 0.9,
+    "verdict": "FAIL",
+    "per_dimension": {
+      "actionability": 1.0,
+      "evidence_quality": 0.9,
+      "completeness": 1.0,
+      "internal_consistency": 0.2,
+      "methodological_rigor": 0.9,
+      "traceability": 0.8
+    }
+  }
+}

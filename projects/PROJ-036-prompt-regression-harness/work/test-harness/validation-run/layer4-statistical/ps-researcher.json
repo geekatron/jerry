@@ -1,0 +1,39 @@
+{
+  "evaluation_mode": "Full",
+  "agent": "ps-researcher",
+  "prompt_version_baseline": "baseline:ps-researcher",
+  "prompt_version_candidate": "candidate:ps-researcher",
+  "n_baseline": 20,
+  "n_candidate": 20,
+  "timestamp": "2026-03-07T23:26:47.163820+00:00Z",
+  "classification": "IMPROVEMENT",
+  "merge_recommendation": "ALLOW_WITH_WARNING",
+  "dimension_driver": null,
+  "narrative": "Candidate prompt shows statistically significant improvement in composite_score (p=0.0000, r=0.843, effect=Medium-to-Large). Mean composite score changed by +0.0595 (A=0.8708 \u2192 B=0.9303).",
+  "bonferroni_corrected": null,
+  "per_metric": {
+    "composite_score": {
+      "statistic": 4.0,
+      "p_value": 1.33514404296875e-05,
+      "mean_delta": 0.059487336951480785,
+      "mean_a": 0.8707731179011317,
+      "mean_b": 0.9302604548526124,
+      "cohens_r": 0.843131709840979,
+      "effect_size_label": "Medium-to-Large",
+      "classification": "IMPROVEMENT",
+      "rate_class": "RATE_STABLE",
+      "wilson_ci_baseline": {
+        "ci_lower": 0.0,
+        "ci_upper": 0.16112515805281938,
+        "pass_rate": 0.0,
+        "n_pass": 0
+      },
+      "wilson_ci_candidate": {
+        "ci_lower": 0.43285427668523624,
+        "ci_upper": 0.818808175898918,
+        "pass_rate": 0.65,
+        "n_pass": 13
+      }
+    }
+  }
+}

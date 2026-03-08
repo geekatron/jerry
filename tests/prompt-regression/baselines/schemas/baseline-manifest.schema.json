@@ -1,0 +1,382 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jerry.internal/schemas/baseline-manifest/v1.0.0",
+  "title": "BaselineManifest",
+  "description": "Schema for the baseline manifest file at baselines/manifest.json. Tracks all captured baseline suites, their provenance, model version, and integrity checksums. Acts as the authoritative index for the statistical engine when looking up baselines for regression comparison.",
+  "type": "object",
+  "required": [
+    "manifest_version",
+    "baseline_protocol_version",
+    "model_version",
+    "judge_model_version",
+    "created_timestamp_utc",
+    "last_updated_timestamp_utc",
+    "capture_sessions",
+    "agents",
+    "integrity"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "manifest_version": {
+      "type": "string",
+      "description": "Semantic version of this manifest file's schema.",
+      "const": "1.0.0"
+    },
+    "baseline_protocol_version": {
+      "type": "string",
+      "description": "Version of the baseline generation protocol used to create this manifest.",
+      "const": "1.0.0"
+    },
+    "model_version": {
+      "type": "string",
+      "description": "The Anthropic API model version against which all baselines in this manifest were captured. All agents in this manifest must have been captured against this model version.",
+      "pattern": "^claude-[a-z0-9-]+-[0-9]{8}$",
+      "examples": ["claude-sonnet-4-20250514"]
+    },
+    "judge_model_version": {
+      "type": "string",
+      "description": "The model version used for LLM-as-Judge evaluation across all baselines in this manifest.",
+      "examples": ["claude-sonnet-4-20250514"]
+    },
+    "created_timestamp_utc": {
+      "type": "string",
+      "description": "ISO 8601 UTC timestamp when this manifest was first initialized.",
+      "format": "date-time"
+    },
+    "last_updated_timestamp_utc": {
+      "type": "string",
+      "description": "ISO 8601 UTC timestamp of the most recent update to this manifest.",
+      "format": "date-time"
+    },
+    "capture_sessions": {
+      "type": "array",
+      "description": "Log of all capture sessions that contributed to this manifest. Provides audit trail for multi-session captures.",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/CaptureSession"
+      }
+    },
+    "agents": {
+      "type": "object",
+      "description": "Per-agent baseline status and suite references. Keys are agent names.",
+      "required": ["ps-researcher", "ps-analyst", "ps-architect", "ps-critic", "adv-scorer"],
+      "additionalProperties": false,
+      "properties": {
+        "ps-researcher": {"$ref": "#/$defs/AgentBaselineEntry"},
+        "ps-analyst": {"$ref": "#/$defs/AgentBaselineEntry"},
+        "ps-architect": {"$ref": "#/$defs/AgentBaselineEntry"},
+        "ps-critic": {"$ref": "#/$defs/AgentBaselineEntry"},
+        "adv-scorer": {"$ref": "#/$defs/AgentBaselineEntry"}
+      }
+    },
+    "integrity": {
+      "type": "object",
+      "description": "Integrity verification metadata for the full manifest.",
+      "required": ["manifest_checksum", "total_run_count", "total_valid_run_count"],
+      "additionalProperties": false,
+      "properties": {
+        "manifest_checksum": {
+          "type": "string",
+          "description": "SHA-256 checksum of all suite checksums concatenated in agent-alphabetical order. Recomputed on every manifest update.",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "total_run_count": {
+          "type": "integer",
+          "description": "Total number of run records across all agents and prompts in this manifest (including error runs).",
+          "minimum": 0
+        },
+        "total_valid_run_count": {
+          "type": "integer",
+          "description": "Total number of valid (api_error=null, evaluation_error=null) run records.",
+          "minimum": 0
+        },
+        "total_prompt_count": {
+          "type": "integer",
+          "description": "Total number of canonical prompt/agent combinations with complete baselines.",
+          "minimum": 0
+        }
+      }
+    },
+    "refresh_history": {
+      "type": "array",
+      "description": "Log of baseline refresh events. Empty for initial captures. Entries added by record_refresh.py.",
+      "items": {
+        "$ref": "#/$defs/RefreshEvent"
+      }
+    },
+    "quality_gate_history": {
+      "type": "array",
+      "description": "Log of baseline quality gate checks run against this manifest.",
+      "items": {
+        "$ref": "#/$defs/QualityGateEvent"
+      }
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional free-text notes about this baseline capture (reasons, known issues, context)."
+    }
+  },
+  "$defs": {
+    "CaptureSession": {
+      "type": "object",
+      "description": "Record of a single capture session that contributed to this manifest.",
+      "required": [
+        "session_id",
+        "started_timestamp_utc",
+        "completed_timestamp_utc",
+        "git_hash_at_capture",
+        "agents_captured",
+        "status"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "session_id": {
+          "type": "string",
+          "description": "Unique session identifier.",
+          "pattern": "^SESSION-[0-9]{8}-[0-9]{4}-[a-f0-9]{6}$"
+        },
+        "started_timestamp_utc": {
+          "type": "string",
+          "description": "ISO 8601 UTC timestamp when this session started.",
+          "format": "date-time"
+        },
+        "completed_timestamp_utc": {
+          "type": ["string", "null"],
+          "description": "ISO 8601 UTC timestamp when this session completed. Null if session was interrupted.",
+          "format": "date-time"
+        },
+        "git_hash_at_capture": {
+          "type": "string",
+          "description": "Git HEAD commit hash at the start of this capture session.",
+          "pattern": "^[a-f0-9]{40}$"
+        },
+        "agents_captured": {
+          "type": "array",
+          "description": "Agent names for which capture was initiated in this session.",
+          "items": {
+            "type": "string",
+            "enum": ["ps-researcher", "ps-analyst", "ps-architect", "ps-critic", "adv-scorer"]
+          }
+        },
+        "status": {
+          "type": "string",
+          "description": "Session completion status.",
+          "enum": ["completed", "interrupted", "failed", "resumed"]
+        },
+        "interruption_reason": {
+          "type": ["string", "null"],
+          "description": "Reason for interruption if status is 'interrupted' or 'failed'."
+        },
+        "resumed_by_session": {
+          "type": ["string", "null"],
+          "description": "Session ID that resumed this session, if applicable.",
+          "pattern": "^SESSION-[0-9]{8}-[0-9]{4}-[a-f0-9]{6}$"
+        }
+      }
+    },
+    "AgentBaselineEntry": {
+      "type": "object",
+      "description": "Baseline status and suite reference for one target agent.",
+      "required": [
+        "agent_name",
+        "status",
+        "agent_definition_path",
+        "agent_definition_git_hash",
+        "suite_file_path",
+        "suite_id",
+        "suite_checksum",
+        "prompt_count",
+        "valid_run_count",
+        "overall_median_composite",
+        "overall_pass_rate_at_0_92",
+        "quality_gate_passed",
+        "capture_completed_timestamp_utc"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "agent_name": {
+          "type": "string",
+          "description": "Agent name matching the parent object key.",
+          "enum": ["ps-researcher", "ps-analyst", "ps-architect", "ps-critic", "adv-scorer"]
+        },
+        "status": {
+          "type": "string",
+          "description": "Baseline capture status for this agent.",
+          "enum": [
+            "not_started",
+            "in_progress",
+            "captured",
+            "validated",
+            "quality_gate_passed",
+            "quality_gate_failed",
+            "refresh_required"
+          ]
+        },
+        "agent_definition_path": {
+          "type": "string",
+          "description": "Repo-relative path to the agent definition file.",
+          "pattern": "^skills/.+/agents/.+\\.md$"
+        },
+        "agent_definition_git_hash": {
+          "type": "string",
+          "description": "Git commit hash of the agent definition file used in this baseline.",
+          "pattern": "^[a-f0-9]{7,40}$"
+        },
+        "suite_file_path": {
+          "type": ["string", "null"],
+          "description": "Repo-relative path to the agent's baseline suite JSON file. Null if not yet captured.",
+          "examples": ["projects/PROJ-036-prompt-regression-harness/baselines/suites/ps-researcher-baseline-suite.json"]
+        },
+        "suite_id": {
+          "type": ["string", "null"],
+          "description": "Suite ID from the baseline suite file. Null if not yet captured.",
+          "pattern": "^SUITE-[a-z]+-[a-z0-9]+-[0-9]{8}$"
+        },
+        "suite_checksum": {
+          "type": ["string", "null"],
+          "description": "SHA-256 checksum of the suite file. Null if not yet captured. Used for manifest integrity verification.",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "prompt_count": {
+          "type": "integer",
+          "description": "Number of canonical test prompts captured for this agent.",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "valid_run_count": {
+          "type": "integer",
+          "description": "Total valid (non-error) run count for this agent across all prompts.",
+          "minimum": 0
+        },
+        "overall_median_composite": {
+          "type": ["number", "null"],
+          "description": "Median weighted composite score across all valid runs for this agent. Null if not yet captured.",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "overall_pass_rate_at_0_92": {
+          "type": ["number", "null"],
+          "description": "Fraction of valid runs scoring >= 0.92 for this agent. Null if not yet captured.",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "quality_gate_passed": {
+          "type": ["boolean", "null"],
+          "description": "Result of baseline quality gate (median >= 0.65). Null if quality gate has not been run.",
+          "examples": [true, false, null]
+        },
+        "capture_completed_timestamp_utc": {
+          "type": ["string", "null"],
+          "description": "ISO 8601 UTC timestamp when capture for this agent completed. Null if in progress.",
+          "format": "date-time"
+        },
+        "refresh_required_reason": {
+          "type": ["string", "null"],
+          "description": "Reason why a baseline refresh is required for this agent. Null if no refresh is needed.",
+          "examples": [
+            "model-upgrade: HARNESS_MODEL_VERSION changed",
+            "agent-definition-changed: git hash mismatch",
+            "scoring-algorithm-changed: DeepEval version bumped"
+          ]
+        }
+      }
+    },
+    "RefreshEvent": {
+      "type": "object",
+      "description": "Record of a baseline refresh event.",
+      "required": [
+        "refresh_timestamp_utc",
+        "reason",
+        "old_model_version",
+        "new_model_version",
+        "agents_refreshed"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "refresh_timestamp_utc": {
+          "type": "string",
+          "description": "ISO 8601 UTC timestamp when the refresh was initiated.",
+          "format": "date-time"
+        },
+        "reason": {
+          "type": "string",
+          "description": "Machine-readable reason code for the refresh.",
+          "enum": [
+            "model-upgrade",
+            "agent-definition-changed",
+            "prompt-changed",
+            "scoring-algorithm-changed",
+            "quality-gate-failure",
+            "scheduled-refresh",
+            "manual-refresh"
+          ]
+        },
+        "reason_comment": {
+          "type": "string",
+          "description": "Human-readable comment explaining the refresh reason."
+        },
+        "old_model_version": {
+          "type": "string",
+          "description": "Model version of the baselines being replaced."
+        },
+        "new_model_version": {
+          "type": "string",
+          "description": "Model version of the new baselines being captured."
+        },
+        "agents_refreshed": {
+          "type": "array",
+          "description": "List of agent names for which baselines are being refreshed.",
+          "items": {
+            "type": "string",
+            "enum": ["ps-researcher", "ps-analyst", "ps-architect", "ps-critic", "adv-scorer"]
+          }
+        },
+        "archive_path": {
+          "type": "string",
+          "description": "Repo-relative path where old baseline data was archived.",
+          "examples": ["projects/PROJ-036-prompt-regression-harness/baselines/archive/data-claude-sonnet-4-20250514-20260307"]
+        }
+      }
+    },
+    "QualityGateEvent": {
+      "type": "object",
+      "description": "Record of a baseline quality gate check.",
+      "required": [
+        "checked_timestamp_utc",
+        "min_median_threshold",
+        "results_per_agent",
+        "overall_passed"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "checked_timestamp_utc": {
+          "type": "string",
+          "description": "ISO 8601 UTC timestamp of the quality gate check.",
+          "format": "date-time"
+        },
+        "min_median_threshold": {
+          "type": "number",
+          "description": "Minimum median composite score threshold used for this check.",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "results_per_agent": {
+          "type": "object",
+          "description": "Quality gate result per agent. Keys are agent names.",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["median_composite", "passed"],
+            "properties": {
+              "median_composite": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+              "passed": {"type": "boolean"}
+            }
+          }
+        },
+        "overall_passed": {
+          "type": "boolean",
+          "description": "True if all agents passed the quality gate."
+        }
+      }
+    }
+  }
+}

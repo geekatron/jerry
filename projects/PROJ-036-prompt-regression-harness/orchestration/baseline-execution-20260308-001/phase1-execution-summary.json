@@ -1,0 +1,92 @@
+{
+  "timestamp": "2026-03-08T18:43:42.666839+00:00",
+  "model": "claude-opus-4-20250514",
+  "agents": {
+    "ps-researcher": {
+      "agent": "ps-researcher",
+      "model": "claude-opus-4-20250514",
+      "prompt_count": 5,
+      "total_input_tokens": 26894,
+      "total_output_tokens": 24214,
+      "per_prompt": {
+        "P-PSR-001": {
+          "output_chars": 21263,
+          "input_tokens": 5351,
+          "output_tokens": 5619,
+          "latency_ms": 138703,
+          "stop_reason": "end_turn"
+        },
+        "P-PSR-002": {
+          "output_chars": 18199,
+          "input_tokens": 5398,
+          "output_tokens": 5092,
+          "latency_ms": 122592,
+          "stop_reason": "end_turn"
+        },
+        "P-PSR-003": {
+          "output_chars": 16411,
+          "input_tokens": 5358,
+          "output_tokens": 4390,
+          "latency_ms": 102615,
+          "stop_reason": "end_turn"
+        },
+        "P-PSR-004": {
+          "output_chars": 16385,
+          "input_tokens": 5390,
+          "output_tokens": 4426,
+          "latency_ms": 115469,
+          "stop_reason": "end_turn"
+        },
+        "P-PSR-005": {
+          "output_chars": 15676,
+          "input_tokens": 5397,
+          "output_tokens": 4687,
+          "latency_ms": 87222,
+          "stop_reason": "end_turn"
+        }
+      }
+    },
+    "ps-architect": {
+      "agent": "ps-architect",
+      "model": "claude-opus-4-20250514",
+      "prompt_count": 4,
+      "total_input_tokens": 24738,
+      "total_output_tokens": 14684,
+      "per_prompt": {
+        "P-PAC-001": {
+          "output_chars": 10415,
+          "input_tokens": 6171,
+          "output_tokens": 2814,
+          "latency_ms": 79451,
+          "stop_reason": "end_turn"
+        },
+        "P-PAC-002": {
+          "output_chars": 18088,
+          "input_tokens": 6190,
+          "output_tokens": 4641,
+          "latency_ms": 119842,
+          "stop_reason": "end_turn"
+        },
+        "P-PAC-003": {
+          "output_chars": 13328,
+          "input_tokens": 6193,
+          "output_tokens": 3215,
+          "latency_ms": 89721,
+          "stop_reason": "end_turn"
+        },
+        "P-PAC-004": {
+          "output_chars": 15353,
+          "input_tokens": 6184,
+          "output_tokens": 4014,
+          "latency_ms": 112288,
+          "stop_reason": "end_turn"
+        }
+      }
+    }
+  },
+  "verification": {
+    "passed": true,
+    "failure_count": 0,
+    "failures": []
+  }
+}

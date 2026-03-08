@@ -1,0 +1,75 @@
+{
+  "agent": "ps-researcher",
+  "prompt_id": "P-PSR-005",
+  "judge_model": "claude-sonnet-4-20250514",
+  "timestamp": "2026-03-08T18:57:21.028234+00:00",
+  "dimension_scores": {
+    "completeness": 1.0,
+    "internal_consistency": 0.9,
+    "actionability": 1.0,
+    "methodological_rigor": 0.2,
+    "evidence_quality": 0.7,
+    "traceability": 0.8
+  },
+  "composite_score": 0.755,
+  "debiasing_applied": true,
+  "criteria_order": [
+    "completeness",
+    "internal_consistency",
+    "actionability",
+    "methodological_rigor",
+    "evidence_quality",
+    "traceability"
+  ],
+  "scoring_results": [
+    {
+      "criterion_name": "completeness",
+      "score": 1.0,
+      "weight": 0.2,
+      "weighted_score": 0.2,
+      "evidence": "The response contains all three required sections (L0, L1, L2) with clear headers. L0 provides an accessible executive summary with substantive content explaining Wilson intervals in plain language. L1 delivers comprehensive technical content including the exact Wilson formula with variable definitions, detailed comparison with Wald method, sample size calculation (N≥143), Python implementation with both statsmodels and scipy approaches, and clear interpretation guidance. L2 addresses strategic implications with a decision matrix and integration recommendations for quality frameworks. All sections meet length requirements and the response includes proper statistical citations including the original Wilson 1927 paper. The content directly addresses all five required technical points with appropriate depth.",
+      "debiasing_applied": true
+    },
+    {
+      "criterion_name": "internal_consistency",
+      "score": 0.9,
+      "weight": 0.2,
+      "weighted_score": 0.18000000000000002,
+      "evidence": "The response demonstrates strong internal consistency across all sections. L0's plain-language claims about Wilson intervals being more accurate for small samples and extreme proportions are fully supported by L1's technical details explaining Wald's failures and Wilson's solutions. The sample size calculation (N≥143) and Python implementation in L1 are technically sound and align with the stated requirements. L2's recommendations logically follow from L1's technical findings, particularly the decision matrix based on sample size and proportion extremes. All sections consistently emphasize Wilson's advantages for small N and extreme proportions without any contradictory statements.",
+      "debiasing_applied": true
+    },
+    {
+      "criterion_name": "actionability",
+      "score": 1.0,
+      "weight": 0.15,
+      "weighted_score": 0.15,
+      "evidence": "The response provides highly specific, implementable guidance including the exact Wilson score formula with variable definitions, precise Python code examples with function calls and parameters (statsmodels.stats.proportion.proportion_confint and manual scipy implementation), step-by-step sample size calculation yielding N≥143, and concrete interpretation guidance. All technical requirements are addressed with implementation-ready details that a software engineer could execute without additional research.",
+      "debiasing_applied": true
+    },
+    {
+      "criterion_name": "methodological_rigor",
+      "score": 0.2,
+      "weight": 0.2,
+      "weighted_score": 0.04000000000000001,
+      "evidence": "The response demonstrates no application of structured methodology like 5W1H framework or systematic source comparison as required. While it covers a broad range of sources through web searches, it lacks organized analysis showing convergence/divergence patterns. The input does not require primary/secondary source distinction, but the output fails to demonstrate systematic comparative analysis. The research is comprehensive but methodologically unstructured, missing the framework-based approach specified in the evaluation criteria.",
+      "debiasing_applied": true
+    },
+    {
+      "criterion_name": "evidence_quality",
+      "score": 0.7,
+      "weight": 0.15,
+      "weighted_score": 0.105,
+      "evidence": "The response contains 4 distinct academic sources with proper bibliographic citations (Wilson 1927, Agresti & Coull 1998, Brown et al. 2001, Newcombe 1998), falling short of the required 5 sources. All major claims are well-supported by the cited sources, with the Wilson formula properly attributed to the original 1927 paper. The response appropriately distinguishes between academic sources and informal sources, avoiding blog posts for primary citations as required. However, some technical claims like the sample size calculation formula lack explicit citation support, and no uncertain claims are flagged as speculative.",
+      "debiasing_applied": true
+    },
+    {
+      "criterion_name": "traceability",
+      "score": 0.8,
+      "weight": 0.1,
+      "weighted_score": 0.08000000000000002,
+      "evidence": "The response provides comprehensive technical content with four authoritative statistical references cited (Wilson 1927, Agresti & Coull 1998, Brown et al. 2001, Newcombe 1998) that properly support the Wilson formula and comparative claims. All major empirical claims including the formula derivation, sample size calculation (N≥143), and Python implementation are backed by these sources. However, the response fails to specify the output path or artifact location as required for persisted output, only showing a file path within a write operation without confirming the final location.",
+      "debiasing_applied": true
+    }
+  ],
+  "latency_ms": 55520
+}

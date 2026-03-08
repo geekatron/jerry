@@ -1,0 +1,603 @@
+# Prompt Regression Standard — Layer 1 CI/CD Gate (Tier 2: Statistical Analysis)
+#
+# Purpose: Full prompt regression suite for PRs modifying agent definition files.
+#   Runs N=10 LLM evaluations per prompt version, applies DeepEval G-Eval scoring,
+#   and performs Wilcoxon signed-rank statistical comparison. Produces a verdict
+#   (NO_REGRESSION / MARGINAL / REGRESSION) with Wilson confidence intervals and
+#   Bonferroni correction disclosure. REGRESSION verdict blocks merge.
+#
+# Trigger: PR that modifies skills/*/agents/*.md (same path filter as Smoke)
+#   Standard tier runs AFTER Smoke passes (dependency on smoke check job).
+#   For PRs from forks: falls back to Smoke tier (no LLM API key available).
+#
+# Target runtime: < 20 minutes for 1-3 changed agents
+#
+# FR traceability:
+#   FR-001: YAML test case definitions (declarative promptfoo YAML) — test case files
+#           delivered by Stream 3B; this workflow loads and passes them to promptfoo
+#   FR-002: PR-triggered regression gate
+#   FR-003: Before/after prompt version comparison (N=10 per version)
+#   FR-004: Version key management via git commit hash
+#   FR-005: Tiered evaluation mode — Standard tier (N>=10, LLM-as-Judge + structural)
+#   FR-015: Wilcoxon signed-rank version comparison
+#   FR-016: Wilson score confidence intervals per metric
+#   FR-017: Bonferroni correction for multi-metric comparison
+#   FR-018: Regression classification report with PR integration
+#   FR-019: Shared statistical module (jerry/testing/stats.py) — implemented in
+#           Stream 3C; this workflow invokes jerry.testing.layer4_stats which imports
+#           from stats.py without reimplementing statistical logic
+#   FR-023: UV-only Python execution (H-05)
+#   FR-025: promptfoo Docker isolation
+#   FR-027: Test case authorship enforcement (warning)
+#
+# Security controls per system-design.md Part 3 threat model:
+#   MC-07: Docker read-only filesystem + dropped capabilities + whitelisted paths
+#   MC-08: Docker image pinned to SHA-256 digest (ghcr.io/promptfoo/promptfoo@sha256:de1e686e...)
+#   MC-09: Output volume validation before consumption
+#   MC-10: All config mounts read-only (:ro)
+#   MC-12: Single-process container, no shell access
+#   MC-13: Docker memory + CPU resource limits
+#   MC-14: --security-opt=no-new-privileges:true, --cap-drop=ALL
+#   MC-19: API retry with exponential backoff + graceful degradation to Smoke
+#   MC-20: Per-workflow budget ceiling ($5 for Standard) via cost-monitor action
+#   MC-28: pull_request event (NOT pull_request_target) — fork secret isolation
+#   MC-29: CODEOWNERS for .github/workflows/; CODEOWNERS approval required
+#   MC-31: ::add-mask:: for any dynamic secrets; GHA auto-masks ANTHROPIC_API_KEY
+#   MC-32: concurrency group — one active evaluation per PR
+#   MC-33: Minimal permissions block
+#
+# Stream: 3E (CI/CD Pipeline Setup)
+
+name: Prompt Regression — Standard
+
+on:
+  pull_request:
+    paths:
+      - "skills/*/agents/*.md"
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      agent_id:
+        description: |
+          Agent ID to evaluate (e.g., ps-researcher). Required for manual dispatch.
+          Must correspond to a file at skills/{skill}/agents/{agent_id}.md.
+        required: true
+        type: string
+      base_ref:
+        description: |
+          Base branch or commit SHA to compare against (Version A).
+          Default: main branch HEAD.
+        required: false
+        default: "main"
+        type: string
+
+# MC-32: Cancel stale runs for same PR when new commits are pushed
+concurrency:
+  group: prompt-regression-standard-${{ github.ref }}
+  cancel-in-progress: true
+
+# MC-33: Principle of least privilege
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
+env:
+  # Evaluation configuration — Standard tier
+  EVALUATION_TIER: standard
+  N_RUNS_PER_VERSION: "10"
+  # Model versions pinned per protocol.md environment requirements
+  HARNESS_MODEL_VERSION: "claude-sonnet-4-20250514"
+  HARNESS_JUDGE_MODEL_VERSION: "claude-sonnet-4-20250514"
+  # Statistical parameters (H-13 alignment: 0.92 quality gate threshold)
+  QUALITY_PASS_THRESHOLD: "0.92"
+  STATISTICAL_ALPHA: "0.05"
+  # Cost ceiling for Standard tier: $5 (MC-20)
+  COST_CEILING_USD: "5.00"
+  TOKEN_CEILING_THOUSANDS: "500"
+  # DeepEval telemetry opt-out (CG-016)
+  DEEPEVAL_TELEMETRY_OPT_OUT: "YES"
+
+jobs:
+  # ==========================================================================
+  # Job 1: Detect changed agents and check fork status
+  # ==========================================================================
+  detect-changed-agents:
+    name: Detect Changed Agent Definitions
+    runs-on: ubuntu-latest
+    outputs:
+      changed_agents: ${{ steps.detect.outputs.changed_agents }}
+      has_changes: ${{ steps.detect.outputs.has_changes }}
+      is_fork: ${{ steps.fork-check.outputs.is_fork }}
+      base_sha: ${{ steps.shas.outputs.base_sha }}
+      head_sha: ${{ steps.shas.outputs.head_sha }}
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Check if PR is from a fork (MC-28)
+        id: fork-check
+        shell: bash
+        run: |
+          # MC-28: Fork PRs do not have access to repository secrets.
+          # For fork PRs, we fall back to Smoke-only mode (no LLM calls).
+          # workflow_dispatch is always from the repo itself (never a fork).
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "is_fork=false" >> "$GITHUB_OUTPUT"
+            echo "workflow_dispatch trigger — not a fork PR"
+          elif [ "${{ github.event.pull_request.head.repo.fork }}" = "true" ]; then
+            echo "is_fork=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::Fork PR detected — Standard tier requires repository secrets."
+            echo "::notice::Falling back to Smoke tier for fork PRs (MC-28 fork secret isolation)."
+          else
+            echo "is_fork=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Capture commit SHAs for version key management (FR-004)
+        id: shas
+        shell: bash
+        run: |
+          # FR-004: Version keys are composite (git_commit_hash:file_path).
+          # Base SHA = Version A (the prompt before the PR change).
+          # Head SHA = Version B (the PR branch prompt).
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            # Manual dispatch: resolve base ref to SHA
+            BASE_REF="${{ github.event.inputs.base_ref }}"
+            BASE_SHA=$(git rev-parse "origin/${BASE_REF}" 2>/dev/null || git rev-parse "${BASE_REF}" 2>/dev/null || echo "")
+            if [ -z "$BASE_SHA" ]; then
+              echo "::error::Could not resolve base ref '${BASE_REF}' to a commit SHA."
+              exit 1
+            fi
+            HEAD_SHA=$(git rev-parse HEAD)
+          else
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+            HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          fi
+          echo "base_sha=${BASE_SHA}" >> "$GITHUB_OUTPUT"
+          echo "head_sha=${HEAD_SHA}" >> "$GITHUB_OUTPUT"
+          echo "Version A (base): ${BASE_SHA}"
+          echo "Version B (head): ${HEAD_SHA}"
+
+      - name: Detect changed agent definition files
+        id: detect
+        shell: bash
+        run: |
+          # workflow_dispatch: use explicit agent_id input
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            AGENT_ID="${{ github.event.inputs.agent_id }}"
+            if [ -z "$AGENT_ID" ]; then
+              echo "::error::agent_id input is required for workflow_dispatch trigger"
+              exit 1
+            fi
+            JSON_ARRAY=$(echo "$AGENT_ID" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+            echo "changed_agents=$JSON_ARRAY" >> "$GITHUB_OUTPUT"
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+            echo "Manual dispatch: evaluating agent '${AGENT_ID}'"
+            exit 0
+          fi
+
+          # PR event: detect from changed files
+          CHANGED_FILES=$(git diff --name-only \
+            "origin/${{ github.base_ref }}...HEAD" \
+            -- 'skills/*/agents/*.md' 2>/dev/null || echo "")
+
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            echo "changed_agents=[]" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "Changed agent files:"
+          echo "$CHANGED_FILES"
+
+          AGENT_IDS=$(echo "$CHANGED_FILES" \
+            | sed 's|.*/agents/||' \
+            | sed 's|\.md$||' \
+            | sort -u \
+            | tr '\n' ' ')
+          echo "Affected agents: $AGENT_IDS"
+
+          JSON_ARRAY=$(echo "$AGENT_IDS" \
+            | tr ' ' '\n' \
+            | grep -v '^$' \
+            | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          echo "changed_agents=$JSON_ARRAY" >> "$GITHUB_OUTPUT"
+          echo "has_changes=true" >> "$GITHUB_OUTPUT"
+
+  # ==========================================================================
+  # Job 2: Per-agent Standard tier regression evaluation
+  # ==========================================================================
+  standard-regression:
+    name: Standard Regression — ${{ matrix.agent }}
+    runs-on: ubuntu-latest
+    needs: detect-changed-agents
+    if: |
+      needs.detect-changed-agents.outputs.has_changes == 'true' &&
+      needs.detect-changed-agents.outputs.is_fork == 'false'
+    timeout-minutes: 25
+    strategy:
+      matrix:
+        agent: ${{ fromJson(needs.detect-changed-agents.outputs.changed_agents) }}
+      fail-fast: false
+
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@f0ec1fc3b38f5e7cd731bb1ce926ae18e12f4ccd  # v5.4.1
+        with:
+          version: "latest"
+
+      - name: Set up Python 3.12
+        run: uv python install 3.12
+
+      - name: Install project dependencies
+        run: uv sync --no-dev
+
+      - name: Mask API key in logs (MC-31)
+        shell: bash
+        run: |
+          # MC-31: Register the API key as a masked secret so it is never
+          # printed even if a step accidentally echoes environment variables.
+          # GHA auto-masks secrets.ANTHROPIC_API_KEY, but ::add-mask:: provides
+          # defense-in-depth for any derived tokens or dynamic values.
+          if [ -n "${{ secrets.ANTHROPIC_API_KEY }}" ]; then
+            echo "::add-mask::${{ secrets.ANTHROPIC_API_KEY }}"
+          fi
+
+      - name: Validate test case YAML exists (FR-027)
+        shell: bash
+        run: |
+          AGENT="${{ matrix.agent }}"
+          TEST_YAML="tests/prompt-regression/test-cases/${AGENT}.yaml"
+          if [ ! -f "$TEST_YAML" ]; then
+            echo "::error::Missing test case file: $TEST_YAML"
+            echo "::error::FR-027: Create $TEST_YAML before modifying agent definition"
+            exit 1
+          fi
+
+      - name: Start cost monitor (MC-20)
+        uses: ./.github/actions/cost-monitor
+        with:
+          agent_name: ${{ matrix.agent }}
+          evaluation_tier: standard
+          cost_ceiling_usd: ${{ env.COST_CEILING_USD }}
+          token_ceiling_thousands: ${{ env.TOKEN_CEILING_THOUSANDS }}
+          phase: start
+
+      - name: Checkout base branch agent definition (Version A)
+        shell: bash
+        run: |
+          # FR-003, FR-004: Capture Version A (before) prompt at base branch SHA.
+          # We extract ONLY the specific agent file at the base SHA, not the whole tree.
+          mkdir -p /tmp/version-a/skills
+          git show "origin/${{ github.base_ref }}:skills" 2>/dev/null || true
+
+          # Find the agent's skill directory and export the file at base SHA
+          AGENT="${{ matrix.agent }}"
+          AGENT_PATH=$(git diff --name-only \
+            "origin/${{ github.base_ref }}...HEAD" \
+            -- "skills/*/agents/${AGENT}.md" | head -1)
+
+          if [ -z "$AGENT_PATH" ]; then
+            echo "::error::Could not determine agent file path for ${AGENT}"
+            exit 1
+          fi
+
+          echo "Agent file path: $AGENT_PATH"
+          echo "AGENT_FILE_PATH=${AGENT_PATH}" >> "$GITHUB_ENV"
+
+          # Export Version A to a temp location
+          mkdir -p "/tmp/version-a/$(dirname "$AGENT_PATH")"
+          git show "origin/${{ github.base_ref }}:${AGENT_PATH}" \
+            > "/tmp/version-a/${AGENT_PATH}" 2>/dev/null || {
+            echo "::warning::Could not retrieve base branch version of ${AGENT_PATH}"
+            echo "::warning::This may be a new agent definition with no baseline."
+            echo "VERSION_A_AVAILABLE=false" >> "$GITHUB_ENV"
+            exit 0
+          }
+          echo "VERSION_A_AVAILABLE=true" >> "$GITHUB_ENV"
+          echo "Captured Version A at commit: ${{ needs.detect-changed-agents.outputs.base_sha }}"
+
+      - name: Run Standard tier evaluation via promptfoo + DeepEval
+        id: regression-eval
+        shell: bash
+        env:
+          # MC-31: Secret injected as env var; GHA auto-masks in logs
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          LANGFUSE_PUBLIC_KEY: ${{ secrets.LANGFUSE_PUBLIC_KEY }}
+          LANGFUSE_SECRET_KEY: ${{ secrets.LANGFUSE_SECRET_KEY }}
+          GITHUB_BASE_SHA: ${{ needs.detect-changed-agents.outputs.base_sha }}
+          GITHUB_HEAD_SHA: ${{ needs.detect-changed-agents.outputs.head_sha }}
+          PROMPT_REGRESSION_AGENT_FILE: ${{ env.AGENT_FILE_PATH }}
+        run: |
+          # FR-005, FR-003: Standard tier — N=10 runs per version, LLM-as-Judge.
+          # MC-07: Docker hardened execution with read-only mounts and no-privilege.
+          # MC-13: Memory and CPU limits prevent resource exhaustion.
+          # MC-08 / CG-007: Docker image pinned to SHA-256 digest for supply chain integrity.
+          # Resolved from ghcr.io/promptfoo/promptfoo:latest (v24.14.0) on 2026-03-07.
+          # Note: GHCR does not publish version tags (e.g., 0.86.0); only :latest and sha-* commit tags.
+          # For version-pinned promptfoo, use docker/promptfoo/Dockerfile (installs 0.86.0 via npm).
+          # To update: docker pull ghcr.io/promptfoo/promptfoo:latest && docker inspect --format='{{index .RepoDigests 0}}' ghcr.io/promptfoo/promptfoo:latest
+          PROMPTFOO_IMAGE="ghcr.io/promptfoo/promptfoo@sha256:de1e686ee190201a3d4e2631c60647c64fd96e203faa2bdb95f99b339efbbcd2"
+
+          mkdir -p tests/prompt-regression/results
+
+          docker run --rm \
+            --read-only \
+            --security-opt=no-new-privileges:true \
+            --cap-drop=ALL \
+            --memory=2g \
+            --cpus=2 \
+            --tmpfs /tmp:rw,size=256m,noexec,nodev \
+            -v "$(pwd)/tests/prompt-regression:/workspace/tests:ro" \
+            -v "$(pwd)/skills:/workspace/skills:ro" \
+            -v "/tmp/version-a:/workspace/version-a:ro" \
+            -v "$(pwd)/tests/prompt-regression/results:/workspace/output:rw" \
+            -e ANTHROPIC_API_KEY \
+            -e EVALUATION_TIER=standard \
+            -e N_RUNS="${N_RUNS_PER_VERSION}" \
+            -e AGENT_ID="${{ matrix.agent }}" \
+            -e HARNESS_MODEL_VERSION \
+            -e GITHUB_BASE_SHA \
+            -e GITHUB_HEAD_SHA \
+            -e PROMPTFOO_CACHE_ENABLED=false \
+            -e DEEPEVAL_TELEMETRY_OPT_OUT \
+            "${PROMPTFOO_IMAGE}" \
+            eval \
+              --config "/workspace/tests/test-cases/${{ matrix.agent }}.yaml" \
+              --no-progress-bar \
+              --output "/workspace/output/standard-${{ matrix.agent }}.json" \
+            2>&1; PROMPTFOO_EXIT=$?
+
+          echo "promptfoo_exit=${PROMPTFOO_EXIT}" >> "$GITHUB_ENV"
+          echo "Promptfoo exit code: ${PROMPTFOO_EXIT}"
+
+      - name: Validate promptfoo output (MC-09)
+        shell: bash
+        run: |
+          # MC-09: Validate output before passing to statistical engine.
+          RESULT_FILE="tests/prompt-regression/results/standard-${{ matrix.agent }}.json"
+          if [ ! -f "$RESULT_FILE" ]; then
+            echo "::error::No promptfoo output file found at $RESULT_FILE"
+            exit 1
+          fi
+          uv run python -c "
+          import json, sys
+          with open('$RESULT_FILE') as f:
+              data = json.load(f)
+          if not isinstance(data, dict):
+              print('ERROR: promptfoo output is not a JSON object', file=sys.stderr)
+              sys.exit(1)
+          print('Output JSON validated: OK')
+          print(f'Keys present: {list(data.keys())}')
+          "
+
+      - name: Run Layer 4 statistical comparison (FR-015, FR-016, FR-017)
+        id: statistical-analysis
+        shell: bash
+        env:
+          GITHUB_BASE_SHA: ${{ needs.detect-changed-agents.outputs.base_sha }}
+          GITHUB_HEAD_SHA: ${{ needs.detect-changed-agents.outputs.head_sha }}
+          PROMPT_REGRESSION_AGENT_FILE: ${{ env.AGENT_FILE_PATH }}
+          PROMPT_REGRESSION_TIER: standard
+        run: |
+          # FR-015: Wilcoxon signed-rank test
+          # FR-016: Wilson score confidence intervals
+          # FR-017: Bonferroni correction for multi-metric comparison
+          # FR-018: Produce regression classification report
+          uv run python -m jerry.testing.layer4_stats \
+            --agent "${{ matrix.agent }}" \
+            --tier standard \
+            --results-file "tests/prompt-regression/results/standard-${{ matrix.agent }}.json" \
+            --base-sha "${{ needs.detect-changed-agents.outputs.base_sha }}" \
+            --head-sha "${{ needs.detect-changed-agents.outputs.head_sha }}" \
+            --agent-file "${{ env.AGENT_FILE_PATH }}" \
+            --output-report "tests/prompt-regression/results/report-${{ matrix.agent }}.json" \
+            --output-markdown "tests/prompt-regression/results/report-${{ matrix.agent }}.md" \
+            2>&1; STATS_EXIT=$?
+
+          echo "stats_exit=${STATS_EXIT}" >> "$GITHUB_ENV"
+
+          # Read verdict from report for downstream steps
+          if [ -f "tests/prompt-regression/results/report-${{ matrix.agent }}.json" ]; then
+            VERDICT=$(uv run python -c "
+          import json
+          with open('tests/prompt-regression/results/report-${{ matrix.agent }}.json') as f:
+              data = json.load(f)
+          print(data.get('classification', 'UNKNOWN'))
+          ")
+            echo "REGRESSION_VERDICT=${VERDICT}" >> "$GITHUB_ENV"
+            echo "Regression verdict for ${{ matrix.agent }}: ${VERDICT}"
+          else
+            echo "REGRESSION_VERDICT=ERROR" >> "$GITHUB_ENV"
+            echo "::error::No statistical report generated for ${{ matrix.agent }}"
+          fi
+
+      - name: Enforce regression gate (FR-018)
+        shell: bash
+        run: |
+          # FR-018: REGRESSION verdict => non-zero exit => CI check fails => merge blocked.
+          # MARGINAL => success with warning annotation (does not block merge).
+          # NO_REGRESSION => success (green check).
+          VERDICT="${REGRESSION_VERDICT}"
+          echo "Final verdict: ${VERDICT}"
+
+          case "${VERDICT}" in
+            REGRESSION)
+              echo "::error::REGRESSION detected for agent '${{ matrix.agent }}'"
+              echo "::error::Statistical analysis shows significant quality degradation (Wilcoxon p < alpha)"
+              echo "::error::Merge is blocked. Review the regression report and fix the prompt change."
+              exit 1
+              ;;
+            MARGINAL)
+              echo "::warning::MARGINAL result for agent '${{ matrix.agent }}'"
+              echo "::warning::Statistical analysis shows borderline significance (0.05 <= p < 0.10)"
+              echo "::warning::Human review recommended before merging."
+              exit 0
+              ;;
+            NO_REGRESSION)
+              echo "NO_REGRESSION confirmed for agent '${{ matrix.agent }}'"
+              echo "Statistical analysis shows no significant quality degradation."
+              exit 0
+              ;;
+            INSUFFICIENT_SAMPLES)
+              echo "::warning::INSUFFICIENT_SAMPLES for agent '${{ matrix.agent }}'"
+              echo "::warning::N=10 Standard tier may not meet the N>=20 Wilcoxon threshold."
+              echo "::warning::Run Full tier (N=30) for statistically valid comparison."
+              exit 0
+              ;;
+            *)
+              echo "::error::Unknown or missing verdict: ${VERDICT}"
+              echo "::error::Statistical analysis may have failed. Check the logs."
+              exit 1
+              ;;
+          esac
+
+      - name: Stop cost monitor and check budget (MC-20)
+        if: always()
+        uses: ./.github/actions/cost-monitor
+        with:
+          agent_name: ${{ matrix.agent }}
+          evaluation_tier: standard
+          cost_ceiling_usd: ${{ env.COST_CEILING_USD }}
+          token_ceiling_thousands: ${{ env.TOKEN_CEILING_THOUSANDS }}
+          phase: stop
+
+      - name: Publish evaluation artifacts
+        if: always()
+        uses: ./.github/actions/artifact-publish
+        with:
+          agent_name: ${{ matrix.agent }}
+          evaluation_tier: standard
+          pr_number: ${{ github.event.pull_request.number }}
+          report_json: tests/prompt-regression/results/report-${{ matrix.agent }}.json
+          report_markdown: tests/prompt-regression/results/report-${{ matrix.agent }}.md
+          raw_results: tests/prompt-regression/results/standard-${{ matrix.agent }}.json
+          retention_days: "30"
+
+  # ==========================================================================
+  # Job 3: Fork PR fallback — Smoke only (no secrets available)
+  # ==========================================================================
+  fork-smoke-notice:
+    name: Fork PR — Smoke Tier Only
+    runs-on: ubuntu-latest
+    needs: detect-changed-agents
+    if: |
+      needs.detect-changed-agents.outputs.has_changes == 'true' &&
+      needs.detect-changed-agents.outputs.is_fork == 'true'
+    steps:
+      - name: Notice fork PR limitation (MC-28)
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea  # v7.0.1
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: [
+                '## Prompt Regression — Fork PR Notice',
+                '',
+                '> **STRUCTURAL ONLY** — Standard tier evaluation requires repository secrets unavailable to fork PRs.',
+                '',
+                'This PR originates from a forked repository. Per MC-28 (fork secret isolation),',
+                'the Standard tier evaluation (N=10, LLM-as-Judge, statistical comparison) cannot',
+                'run because it requires `ANTHROPIC_API_KEY` which is not available to fork PRs.',
+                '',
+                'The Smoke tier structural check has run instead.',
+                '',
+                '**For maintainers:** To run the full Standard tier evaluation, pull this branch',
+                'to the main repository and push it to a new branch.',
+              ].join('\n'),
+            });
+
+  # ==========================================================================
+  # Job 4: Post aggregated summary when all agents complete
+  # ==========================================================================
+  post-standard-summary:
+    name: Post Standard Evaluation Summary
+    runs-on: ubuntu-latest
+    needs: [detect-changed-agents, standard-regression]
+    if: |
+      always() &&
+      needs.detect-changed-agents.outputs.has_changes == 'true' &&
+      needs.detect-changed-agents.outputs.is_fork == 'false'
+    steps:
+      - name: Post PR comment with regression results
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea  # v7.0.1
+        with:
+          script: |
+            const agentsJson = '${{ needs.detect-changed-agents.outputs.changed_agents }}';
+            const agents = JSON.parse(agentsJson);
+            const overallResult = '${{ needs.standard-regression.result }}';
+
+            const statusIcon = overallResult === 'success'
+              ? ':white_check_mark:'
+              : overallResult === 'failure'
+                ? ':x:'
+                : ':warning:';
+            const statusText = overallResult === 'success'
+              ? 'NO_REGRESSION'
+              : overallResult === 'failure'
+                ? 'REGRESSION DETECTED'
+                : 'MARGINAL / INCOMPLETE';
+
+            const lines = [
+              '## Prompt Regression — Standard Evaluation Results',
+              '',
+              `**Overall verdict:** ${statusIcon} ${statusText}`,
+              `**Evaluation tier:** Standard (N=10, LLM-as-Judge, Wilcoxon signed-rank)`,
+              `**Affected agents:** ${agents.join(', ')}`,
+              `**Base SHA (Version A):** \`${{ needs.detect-changed-agents.outputs.base_sha }}\``,
+              `**Head SHA (Version B):** \`${{ needs.detect-changed-agents.outputs.head_sha }}\``,
+              '',
+              '### Statistical Summary',
+              '',
+              '| Agent | Verdict | Statistical Validity |',
+              '|-------|---------|---------------------|',
+            ];
+
+            for (const agent of agents) {
+              const icon = overallResult === 'success' ? ':white_check_mark:' : ':x:';
+              const verdict = overallResult === 'success' ? 'NO_REGRESSION' : 'See detailed report';
+              lines.push(`| \`${agent}\` | ${icon} ${verdict} | Wilcoxon p-value in report |`);
+            }
+
+            lines.push('');
+            lines.push('> Detailed reports with p-values, Wilson confidence intervals, and Bonferroni');
+            lines.push('> correction disclosure are available as workflow artifacts.');
+            lines.push('');
+
+            if (overallResult === 'failure') {
+              lines.push('**Merge blocked.** A REGRESSION verdict indicates statistically significant quality');
+              lines.push('degradation (Wilcoxon p < corrected alpha). Fix the prompt change or justify the');
+              lines.push('regression before requesting re-evaluation.');
+            } else {
+              lines.push('No regression detected. Confidence intervals and statistical details in artifacts.');
+            }
+
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: lines.join('\n'),
+            });
+
+  # ==========================================================================
+  # Job 5: No-op when no agent definitions changed
+  # ==========================================================================
+  skip-notice:
+    name: No Agent Definitions Changed
+    runs-on: ubuntu-latest
+    needs: detect-changed-agents
+    if: needs.detect-changed-agents.outputs.has_changes == 'false'
+    steps:
+      - name: Report skip
+        run: |
+          echo "No agent definition files (skills/*/agents/*.md) changed."
+          echo "Standard regression check skipped per FR-002 (cost control)."

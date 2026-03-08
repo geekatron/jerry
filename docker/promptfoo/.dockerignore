@@ -1,0 +1,66 @@
+# .dockerignore — promptfoo Docker container
+# PROJ-036 Prompt Regression Harness
+#
+# Purpose: Exclude sensitive and unnecessary files from Docker build context.
+# Security: Prevents secrets, credentials, and large binaries from entering the image.
+# MC-01: No secrets in image (ANTHROPIC_API_KEY and other keys excluded here).
+
+# ==============================================================================
+# SECURITY: Exclude all secret/credential files
+# ==============================================================================
+.env
+.env.*
+*.key
+*.pem
+*.p12
+*.pfx
+*.cert
+*.crt
+secrets/
+.secrets/
+credentials.json
+auth.json
+token.json
+
+# ==============================================================================
+# SECURITY: Exclude git history and config (may contain tokens)
+# ==============================================================================
+.git/
+.gitconfig
+.netrc
+.ssh/
+
+# ==============================================================================
+# LARGE BINARIES: Exclude generated files and build artifacts
+# ==============================================================================
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+.uv/
+dist/
+build/
+*.egg-info/
+
+# ==============================================================================
+# TEST RESULTS: Exclude prior run results (not part of image)
+# ==============================================================================
+tests/prompt-regression/results/
+
+# ==============================================================================
+# DEVELOPMENT FILES: Not needed in production image
+# ==============================================================================
+*.md
+*.log
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# ==============================================================================
+# BASELINE DATA: Mounted at runtime, not baked into image
+# ==============================================================================
+baselines/scores/
+baselines/runs/

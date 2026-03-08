@@ -1,0 +1,174 @@
+# promptfoo Configuration — Four-Layer Composite Test Harness
+#
+# Purpose: Main promptfoo configuration for the PROJ-036 prompt regression harness.
+#   Defines providers, test case loading, assertion types, and output configuration.
+#   Test cases are split per-agent into test-cases/{agent}.yaml for maintainability.
+#
+# Security controls per system-design.md threat model:
+#   MC-01: No secrets in this file — ANTHROPIC_API_KEY via environment variable only
+#   MC-02: YAML validated against promptfoo schema before execution
+#   MC-03: Test case inputs treated as untrusted; custom assertion scripts perform validation
+#   MC-04: Baseline data integrity enforced via version_keys.py (tests/prompt-regression/version_keys.py) git hash verification
+#
+# FR traceability:
+#   FR-001: Declarative YAML test case definitions
+#   FR-003: Before/after prompt version comparison execution
+#   FR-005: Tiered evaluation mode selection (EVALUATION_MODE env var)
+#
+# Usage:
+#   Smoke:    EVALUATION_MODE=smoke    AGENT_ID=<agent> promptfoo eval
+#   Standard: EVALUATION_MODE=standard AGENT_ID=<agent> promptfoo eval
+#   Full:     EVALUATION_MODE=full    AGENT_ID=<agent> promptfoo eval
+#
+# Docker execution (ADR-001 constraint — promptfoo runs in Docker):
+#   docker run --rm -v $(pwd):/workspace ghcr.io/promptfoo/promptfoo:latest eval \
+#     --config /workspace/tests/prompt-regression/promptfoo-config.yaml
+
+description: "PROJ-036 Prompt Regression Harness — Four-Layer Composite Test Harness"
+
+# ==============================================================================
+# PROVIDER CONFIGURATION
+#
+# Security: API key sourced exclusively from environment variable.
+# Never hardcode or commit ANTHROPIC_API_KEY — MC-01.
+#
+# Model pinning: claude-sonnet-4-20250514 pinned for reproducibility.
+# Updating the model pin requires a re-baseline operation per protocol.md.
+# ==============================================================================
+providers:
+  - id: anthropic:messages:claude-sonnet-4-20250514
+    label: "claude-sonnet-4-20250514 (candidate)"
+    config:
+      apiKey: env:ANTHROPIC_API_KEY
+      temperature: 0.0  # Deterministic for structural assertions; baseline uses temp=0 per protocol.md
+      max_tokens: 4096
+
+  - id: anthropic:messages:claude-sonnet-4-20250514
+    label: "claude-sonnet-4-20250514 (baseline)"
+    config:
+      apiKey: env:ANTHROPIC_API_KEY
+      temperature: 0.0
+      max_tokens: 4096
+
+# ==============================================================================
+# PROMPT CONFIGURATION
+#
+# Prompts reference agent definition files via file:// prefix (FR-001 AC-1).
+# The agent ID is injected via AGENT_ID environment variable.
+#
+# FR-003 Before/After Comparison Architecture (how the two providers above work):
+#
+#   The two providers defined above are both declared as the same model. This is
+#   intentional: promptfoo's role in this harness is structural assertion and score
+#   generation ONLY — it does NOT perform the statistical before/after comparison.
+#
+#   The actual FR-003 paired comparison is performed by Layer 4 (statistical engine)
+#   in tests/prompt-regression/layer4/:
+#     - Baseline outputs are pre-captured and stored in baselines/captured/
+#       using the git commit hash as the version key (FR-004, version_keys.py)
+#     - Candidate outputs are generated fresh by promptfoo at evaluation time
+#     - Layer 4 performs Wilcoxon signed-rank test on (candidate, baseline) pairs
+#       per dimension (FR-003 AC-3: paired statistical comparison)
+#
+#   promptfoo's two-provider setup is a placeholder for future Phase B integration
+#   where the "baseline" provider could directly load pre-captured baseline outputs.
+#   Until that integration is complete, the Layer 4 statistical engine is the
+#   authoritative implementation of FR-003 before/after comparison.
+#
+# Version A (baseline): loaded from baselines/captured/{agent}/{version_key}/
+# Version B (candidate): loaded from skills/{skill}/agents/{agent}.md (working tree)
+#
+# The version_keys.py module (tests/prompt-regression/version_keys.py) validates
+# that baseline version keys match the target branch git commit hash before
+# comparison is performed (FR-004).
+# ==============================================================================
+prompts:
+  # System prompt is loaded dynamically per-agent via test case vars
+  # Each test case YAML specifies system_prompt_path relative to repo root
+  - "{{system_prompt}}"
+
+# ==============================================================================
+# TEST CASE LOADING
+#
+# Per-agent YAML files are loaded dynamically. The AGENT_ID environment variable
+# selects which agent's test cases to load.
+#
+# Test case files: tests/prompt-regression/test-cases/{agent}.yaml
+# Supported agents: ps-researcher, ps-analyst, ps-architect, ps-critic, adv-scorer
+# ==============================================================================
+tests:
+  # All 5 agent test files are listed here for full-harness execution.
+  # Primary CI path: per-agent `--config test-cases/{agent}.yaml` override
+  # set by the GitHub Actions workflow via AGENT_ID. Running without the
+  # per-agent override executes all agents simultaneously.
+  - file: "test-cases/ps-researcher.yaml"
+  - file: "test-cases/ps-analyst.yaml"
+  - file: "test-cases/ps-architect.yaml"
+  - file: "test-cases/ps-critic.yaml"
+  - file: "test-cases/adv-scorer.yaml"
+
+# ==============================================================================
+# DEFAULT ASSERTION CONFIGURATION
+#
+# These assertions apply to ALL test cases unless overridden at the test level.
+# Per FR-008: deterministic assertions execute < 100ms, zero stochasticity.
+# Per FR-001 AC-1: each test case must include at least one assertion.
+# ==============================================================================
+defaultTest:
+  assert:
+    # Universal structural invariant: output must be non-empty (SI-UNIV-001)
+    - type: not-empty
+      metric: structural/non_empty
+
+    # Universal structural invariant: no API keys or secrets (SI-UNIV-003)
+    # Pattern covers: bearer tokens, sk- API keys, long alphanumeric strings
+    - type: not-regex
+      value: "(Bearer\\s+[A-Za-z0-9\\-_\\.]+|sk-[A-Za-z0-9]+|[A-Za-z0-9]{40,})"
+      metric: structural/no_secrets
+
+    # Cost safety: maximum output length guard (prevents runaway generation)
+    - type: cost
+      threshold: 0.50  # USD per test case; fail if individual case exceeds $0.50
+
+  options:
+    # Prompt version tracking: inject version key metadata into each evaluation.
+    # version_keys.py (tests/prompt-regression/version_keys.py) uses these to
+    # validate baseline vs. candidate alignment (FR-004).
+    # AGENT_ID is set by the GitHub Actions workflows:
+    #   .github/workflows/prompt-regression-smoke.yml    (Tier 1: structural only)
+    #   .github/workflows/prompt-regression-standard.yml (Tier 2: LLM + N=10)
+    #   .github/workflows/prompt-regression-full.yml     (Tier 3: full N=30)
+    # via the matrix strategy; locally, callers pass AGENT_ID=<agent> as an env var.
+    transformVars:
+      agent_id: "{{AGENT_ID}}"
+
+# ==============================================================================
+# OUTPUT CONFIGURATION
+#
+# Score arrays written to deterministic paths per FR-009:
+#   tests/prompt-regression/results/{agent_id}/{version_key}/{metric_id}.json
+#
+# JSON output is consumed by Layer 2 (DeepEval), Layer 3 (MR checks),
+# and Layer 4 (statistical engine) — this is the inter-layer interface.
+# ==============================================================================
+outputPath: "tests/prompt-regression/results/promptfoo-output.json"
+
+# ==============================================================================
+# EVALUATION OPTIONS
+# ==============================================================================
+evaluateOptions:
+  # Number of runs per test case per provider
+  # Overridden by evaluation mode: Smoke=1, Standard=10, Full=30 (FR-005)
+  # Default here is 1 for local development; CI workflows set the appropriate N
+  maxConcurrency: 1  # Serial execution for reproducibility in baseline capture
+  repeat: 1  # Overridden by evaluation mode at invocation time
+
+  # Provider timeout: 60s per LLM call
+  # Matches retry/backoff policy in the LLM API adapter
+  timeout: 60000
+
+  # Delay between calls to respect rate limits
+  delay: 1000
+
+  # Cache settings
+  cache: false  # Disabled for regression testing — must get fresh responses

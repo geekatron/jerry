@@ -1,0 +1,246 @@
+# ps-researcher Canonical Test Prompts
+# PROJ-036 Baseline Capture -- Stream 1C
+#
+# These prompts exercise ps-researcher's core competencies:
+#   - Divergent exploration (breadth-first, 5W1H framework)
+#   - Multi-source synthesis with credibility assessment
+#   - L0/L1/L2 output structure
+#   - Source citation and evidence quality
+#   - Artifact persistence (P-002 compliance)
+#
+# Prompts are designed to produce outputs where quality is discriminable:
+#   - A degraded ps-researcher should visibly fail on source citation, L0/L1/L2 structure,
+#     or breadth of coverage
+#   - A strong ps-researcher should cite multiple sources, cover 5W1H dimensions,
+#     and produce all three output levels with strategic L2 insights
+#
+# BEHAVIOR ID CONVENTION:
+#   Behavior IDs (B-001 through B-005 per prompt) are prompt-scoped identifiers.
+#   They cross-reference behavioral contracts in:
+#   projects/PROJ-036-prompt-regression-harness/contracts/behavioral-contracts.md
+#   Mapping: structural output behaviors -> Section A (Structural Invariants);
+#            source citation behaviors -> Section B (Quality Bounds, evidence_quality);
+#            methodology behaviors -> Section B (Quality Bounds, methodological_rigor).
+#
+# G-EVAL CRITERIA:
+#   DeepEval G-Eval evaluates each run against the following criteria strings.
+#   These strings are the exact text passed to DeepEval's GEval metric constructor
+#   as the `criteria` parameter. They govern what the judge model looks for.
+
+agent: "ps-researcher"
+system_prompt_path: "skills/problem-solving/agents/ps-researcher.md"
+
+# G-Eval evaluation criteria (passed to DeepEval GEval metric as `criteria` parameter)
+# Applied to ALL prompts for this agent unless overridden at the prompt level.
+g_eval_criteria:
+  completeness: >
+    The output contains all three required sections: L0 (executive summary accessible to
+    non-technical stakeholders with no unexplained jargon), L1 (technical findings with
+    specific details, data, or code examples), and L2 (strategic implications for architects
+    or decision-makers). Each section is substantive (at least 2 paragraphs or equivalent).
+    Score 0.0 if any section is absent; score proportionally for section quality and depth.
+  internal_consistency: >
+    Claims made in L0 are consistent with the technical details in L1. Conclusions in L2
+    follow from the findings in L1. No contradictory assertions exist across sections.
+    Score 0.0 if a claim in one section directly contradicts another section.
+  methodological_rigor: >
+    The research applies a structured methodology (5W1H framework, systematic source
+    comparison, or equivalent). Coverage is broad enough to identify convergence and
+    divergence patterns across sources. The research distinguishes primary from secondary
+    sources where relevant. Score proportionally for methodology application quality.
+  evidence_quality: >
+    Claims are supported by specific sources cited inline with URLs or bibliographic
+    references. At least 5 distinct sources are cited. Claims flagged as uncertain are
+    identified as such. Blog posts or informal sources are distinguished from primary
+    literature. Score 0.0 if no URLs or references are present.
+  actionability: >
+    L1 and L2 contain specific, implementable guidance (code examples, specific commands,
+    concrete next steps). Recommendations are specific enough that a software engineer
+    could act on them without further clarification. Score 0.0 if guidance is entirely
+    generic (e.g., "consider using X" with no implementation detail).
+  traceability: >
+    Each major claim traces to a specific source cited in the output. The source of
+    empirical claims (statistics, benchmarks, version numbers) is identified. The output
+    path or artifact location is specified if the task requires persisted output.
+    Score proportionally for citation coverage.
+
+prompts:
+  - id: "P-PSR-001"
+    description: "Multi-source web research with L0/L1/L2 structure -- tests divergent breadth and source citation discipline"
+    # Behavior IDs cross-reference:
+    #   B-001 -> behavioral-contracts.md Section A.1 (structural invariant: L0/L1/L2 presence)
+    #   B-002 -> behavioral-contracts.md Section A.1 (structural invariant: L0/L1/L2 presence)
+    #   B-003 -> behavioral-contracts.md Section A.1 (structural invariant: L0/L1/L2 presence)
+    #   B-004 -> behavioral-contracts.md Section B (quality bounds: evidence_quality, min citations)
+    #   B-005 -> behavioral-contracts.md Section B (quality bounds: completeness, coverage breadth)
+    user_prompt: |
+      Research LLM evaluation frameworks that support statistical significance testing for regression detection.
+      Focus on frameworks released or significantly updated in 2024-2025.
+
+      Survey at minimum: DeepEval, promptfoo, RAGAS, and any others you discover.
+
+      Use the 5W1H framework:
+      - Who: Which organizations/teams use these frameworks
+      - What: What statistical methods each framework provides
+      - Where: Where frameworks integrate (CI/CD, pytest, standalone)
+      - When: Recent release timeline and version history
+      - Why: Why statistical rigor matters for LLM regression testing
+      - How: How to integrate into a Python project using UV
+
+      Output structure required: L0 (executive summary for non-technical stakeholder),
+      L1 (technical findings for software engineer), L2 (strategic implications for architect).
+
+      Include at minimum 5 cited sources with URLs.
+    expected_behaviors:
+      - "B-001: Produces L0 section with accessible executive summary and no technical jargon"
+      - "B-002: Produces L1 section with technical framework comparison and code examples or configuration snippets"
+      - "B-003: Produces L2 section with strategic architectural implications"
+      - "B-004: Cites at least 5 sources with URLs inline in the text"
+      - "B-005: Covers all four named frameworks (DeepEval, promptfoo, RAGAS) plus at least one additional discovery"
+    evaluation_metrics:
+      - "completeness"
+      - "evidence_quality"
+      - "methodological_rigor"
+      - "actionability"
+
+  - id: "P-PSR-002"
+    description: "Domain-specific research requiring credibility assessment -- tests evidence quality scoring and source hierarchy application"
+    # Behavior IDs cross-reference:
+    #   B-001 -> behavioral-contracts.md Section B (quality bounds: completeness, all items addressed)
+    #   B-002 -> behavioral-contracts.md Section B (quality bounds: evidence_quality, source hierarchy)
+    #   B-003 -> behavioral-contracts.md Section B (quality bounds: internal_consistency, uncertainty flagging)
+    #   B-004 -> behavioral-contracts.md Section B (quality bounds: methodological_rigor, N derivation)
+    #   B-005 -> behavioral-contracts.md Section B (quality bounds: completeness, Bonferroni coverage)
+    user_prompt: |
+      Research the Wilcoxon signed-rank test as applied to comparing LLM output quality distributions.
+
+      I need to understand:
+      1. The mathematical basis: what assumptions the test makes and why they are appropriate for LLM output scores
+      2. Sample size requirements: minimum N for reliable results with practical effect sizes (delta ~ 0.05 on a 0-1 score scale)
+      3. What "paired" means in this context: are individual LLM invocations naturally paired?
+      4. Alternatives: when would a Mann-Whitney U test be preferred instead?
+      5. Correction for multiple comparisons: how to apply Bonferroni correction when testing 6 quality dimensions simultaneously
+
+      Cite statistical references (textbooks, papers, or authoritative statistical documentation).
+      Distinguish between primary sources (statistical literature) and secondary sources (tutorials, blog posts).
+      Flag any claims that require verification against primary literature.
+
+      Output: L0 for non-statistician, L1 for software engineer implementing the test, L2 for architect assessing statistical rigor of the overall approach.
+    expected_behaviors:
+      - "B-001: Addresses all 5 numbered questions with distinct answers"
+      - "B-002: Distinguishes primary sources from secondary sources explicitly"
+      - "B-003: Flags unverified claims rather than stating them as definitive"
+      - "B-004: Provides concrete minimum N value with derivation rationale"
+      - "B-005: Covers Bonferroni correction with practical example for 6 dimensions"
+    evaluation_metrics:
+      - "evidence_quality"
+      - "methodological_rigor"
+      - "completeness"
+      - "traceability"
+
+  - id: "P-PSR-003"
+    description: "Codebase research with web supplement -- tests hybrid research approach across internal docs and external sources"
+    # Behavior IDs cross-reference:
+    #   B-001 -> behavioral-contracts.md Section A.1 (structural invariant: codebase-first research ordering)
+    #   B-002 -> behavioral-contracts.md Section B (quality bounds: internal_consistency, source distinction)
+    #   B-003 -> behavioral-contracts.md Section B (quality bounds: actionability, code example presence)
+    #   B-004 -> behavioral-contracts.md Section B (quality bounds: completeness, technical distinction)
+    #   B-005 -> behavioral-contracts.md Section A.1 (structural invariant: L2 presence)
+    user_prompt: |
+      Research how pytest plugins are structured and how to create a custom pytest plugin that integrates with DeepEval.
+
+      First search the local codebase for any existing pytest configuration or test infrastructure:
+      - Look for pyproject.toml for existing pytest configuration
+      - Look for any files in tests/ directories
+      - Look for any existing conftest.py files
+
+      Then supplement with web research on:
+      - pytest plugin architecture (entry points, conftest.py vs installed plugins)
+      - DeepEval's pytest integration mechanism
+      - How to write a custom metric that plugs into DeepEval's evaluation pipeline
+
+      Output should contrast: what exists in the codebase vs. what needs to be built.
+      Include at minimum one code example showing the plugin structure.
+
+      Format: L0 (what we have vs. what we need to build), L1 (technical integration guide), L2 (architectural implications of the plugin approach).
+    expected_behaviors:
+      - "B-001: Explicitly searches codebase before supplementing with web research"
+      - "B-002: Clearly distinguishes codebase findings from external research"
+      - "B-003: Includes concrete code example for pytest plugin structure"
+      - "B-004: Addresses entry points vs. conftest.py distinction"
+      - "B-005: L2 section discusses plugin approach vs. alternatives at architectural level"
+    evaluation_metrics:
+      - "completeness"
+      - "methodological_rigor"
+      - "actionability"
+      - "internal_consistency"
+
+  - id: "P-PSR-004"
+    description: "Landscape survey with synthesis -- tests ability to identify convergence patterns across multiple sources"
+    # Behavior IDs cross-reference:
+    #   B-001 -> behavioral-contracts.md Section B (quality bounds: evidence_quality, specific statistics)
+    #   B-002 -> behavioral-contracts.md Section B (quality bounds: completeness, MR catalog)
+    #   B-003 -> behavioral-contracts.md Section B (quality bounds: methodological_rigor, convergence analysis)
+    #   B-004 -> behavioral-contracts.md Section B (quality bounds: internal_consistency, divergence flagging)
+    #   B-005 -> behavioral-contracts.md Section A.1 (structural invariant: L2 presence with evidence)
+    user_prompt: |
+      Survey the current landscape of metamorphic testing as applied to AI and machine learning systems.
+      Focus on: what metamorphic relations (MRs) have been validated for text generation tasks,
+      what false positive rates have been measured, and what tooling exists.
+
+      Key questions to answer:
+      1. What is the ASE 2025 LLMORPH result? What metamorphic relations did they validate and at what false positive rate?
+      2. What 5 universal metamorphic relations apply to any text generation system regardless of task?
+      3. What MR tolerance thresholds are supported by empirical evidence?
+      4. What tooling (if any) implements metamorphic testing for LLMs out of the box?
+
+      Identify convergence patterns: where do multiple independent sources agree on the same MR or threshold?
+      Flag divergence points: where do sources contradict each other?
+
+      Output: L0 (is metamorphic testing production-ready?), L1 (MR catalog with implementation guidance), L2 (strategic maturity assessment).
+    expected_behaviors:
+      - "B-001: Covers LLMORPH ASE 2025 with specific false positive rate statistic"
+      - "B-002: Lists at least 5 metamorphic relations applicable to text generation"
+      - "B-003: Identifies at least one convergence pattern with supporting source count"
+      - "B-004: Flags at least one divergence point or unresolved question"
+      - "B-005: L2 section includes maturity assessment with evidence basis"
+    evaluation_metrics:
+      - "evidence_quality"
+      - "completeness"
+      - "methodological_rigor"
+      - "traceability"
+
+  - id: "P-PSR-005"
+    description: "Rapid focused research on a narrow technical topic -- tests ability to produce high-quality output with scope constraints"
+    # Behavior IDs cross-reference:
+    #   B-001 -> behavioral-contracts.md Section B (quality bounds: completeness, formula presence)
+    #   B-002 -> behavioral-contracts.md Section B (quality bounds: methodological_rigor, N derivation)
+    #   B-003 -> behavioral-contracts.md Section B (quality bounds: actionability, working code)
+    #   B-004 -> behavioral-contracts.md Section B (quality bounds: evidence_quality, primary citation)
+    #   B-005 -> behavioral-contracts.md Section B (quality bounds: internal_consistency, scope adherence)
+    user_prompt: |
+      Research Wilson score confidence intervals as used for pass-rate estimation.
+      This is a focused technical research task: cover exactly this topic, do not expand scope.
+
+      Required content:
+      1. The Wilson score formula (exact formula with variable definitions)
+      2. Why Wilson is preferred over normal approximation (Wald) for small N and extreme proportions
+      3. What N is needed for the Wilson interval width to be <= 0.15 at p=0.70 (95% confidence)
+      4. Python implementation using scipy.stats or statsmodels (exact function call with parameters)
+      5. Interpretation guidance: what does a Wilson CI of [0.42, 0.68] mean in plain language?
+
+      Citation requirement: cite at least one statistical reference (paper, textbook, or authoritative source)
+      for the Wilson formula itself. Blog posts do not count as primary citations for the formula.
+
+      Output: L0 (one-paragraph plain-language explanation), L1 (technical guide with formula and code), L2 (when to use Wilson vs. alternatives in a quality framework context).
+    expected_behaviors:
+      - "B-001: Provides the exact Wilson score formula with all variables defined"
+      - "B-002: Computes or derives the required N for the specified width constraint"
+      - "B-003: Provides working Python code with exact scipy or statsmodels function call"
+      - "B-004: Cites a primary statistical source for the formula (not a blog post)"
+      - "B-005: Stays on-scope -- does not expand into related topics not requested"
+    evaluation_metrics:
+      - "completeness"
+      - "evidence_quality"
+      - "actionability"
+      - "internal_consistency"

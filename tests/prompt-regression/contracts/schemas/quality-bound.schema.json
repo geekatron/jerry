@@ -1,0 +1,243 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jerry.internal/schemas/quality-bound/v1.0.0",
+  "title": "Quality Bound",
+  "description": "Schema for quality bound specifications in the PROJ-036 Prompt Regression Test Harness. Quality bounds define the acceptable score ranges per agent per evaluation dimension using the S-014 six-dimension rubric from quality-enforcement.md. These are probabilistic expectations, not hard Boolean invariants.",
+  "type": "object",
+  "required": [
+    "agent",
+    "version",
+    "overall_floor",
+    "minimum_acceptable",
+    "max_composite_std_dev",
+    "max_dimension_std_dev",
+    "per_dimension",
+    "band_thresholds",
+    "rationale"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "agent": {
+      "type": "string",
+      "description": "The agent identifier this quality bound applies to.",
+      "enum": ["ps-researcher", "ps-analyst", "ps-architect", "ps-critic", "adv-scorer"]
+    },
+    "version": {
+      "type": "string",
+      "description": "Contract version for this quality bound specification.",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "overall_floor": {
+      "type": "number",
+      "description": "Minimum acceptable S-014 composite score expected from a well-functioning agent on a standard task (mean across N=30 runs). Scores below this floor across N >= 20 runs (Wilson score lower bound) indicate systematic underperformance and trigger QUALITY_FLOOR_BREACH.",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "exclusiveMinimum": 0.0
+    },
+    "minimum_acceptable": {
+      "type": "number",
+      "description": "Absolute minimum composite score (overall_floor minus tolerance). Below this value, even the Wilson score lower bound triggers QUALITY_FLOOR_BREACH. Typically overall_floor - 0.04.",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "exclusiveMinimum": 0.0
+    },
+    "max_composite_std_dev": {
+      "type": "number",
+      "description": "Maximum acceptable standard deviation for composite quality scores across N=30 runs of identical prompts. Exceeding this threshold indicates the prompt is under-constrained and produces unstable quality.",
+      "minimum": 0.0,
+      "maximum": 0.5,
+      "exclusiveMinimum": 0.0
+    },
+    "max_dimension_std_dev": {
+      "type": "number",
+      "description": "Maximum acceptable standard deviation for any individual S-014 dimension score across N=30 runs. Must be >= max_composite_std_dev (dimension variance can exceed composite variance due to averaging).",
+      "minimum": 0.0,
+      "maximum": 0.5,
+      "exclusiveMinimum": 0.0
+    },
+    "max_cv": {
+      "type": "number",
+      "description": "Maximum acceptable coefficient of variation (CV = std_dev / mean) for composite scores. CV > 0.10 triggers STABILITY_WARNING. Default: 0.10.",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "default": 0.10
+    },
+    "per_dimension": {
+      "type": "object",
+      "description": "Per-dimension score bounds for each of the six S-014 evaluation dimensions. All six dimensions must be specified.",
+      "required": [
+        "completeness",
+        "internal_consistency",
+        "methodological_rigor",
+        "evidence_quality",
+        "actionability",
+        "traceability"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "completeness": {
+          "$ref": "#/$defs/dimension_bound",
+          "description": "Bound for the Completeness dimension (weight: 0.20). All necessary information must be present; nothing essential is omitted."
+        },
+        "internal_consistency": {
+          "$ref": "#/$defs/dimension_bound",
+          "description": "Bound for the Internal Consistency dimension (weight: 0.20). No conflicting statements; conclusions follow from evidence."
+        },
+        "methodological_rigor": {
+          "$ref": "#/$defs/dimension_bound",
+          "description": "Bound for the Methodological Rigor dimension (weight: 0.20). Appropriate methods applied correctly; reasoning is sound."
+        },
+        "evidence_quality": {
+          "$ref": "#/$defs/dimension_bound",
+          "description": "Bound for the Evidence Quality dimension (weight: 0.15). Claims are supported; sources are authoritative and cited."
+        },
+        "actionability": {
+          "$ref": "#/$defs/dimension_bound",
+          "description": "Bound for the Actionability dimension (weight: 0.15). Output can be acted upon; recommendations are concrete."
+        },
+        "traceability": {
+          "$ref": "#/$defs/dimension_bound",
+          "description": "Bound for the Traceability dimension (weight: 0.10). Claims trace to sources; reasoning chain is visible."
+        }
+      }
+    },
+    "band_thresholds": {
+      "type": "object",
+      "description": "Quality band classification thresholds per quality-enforcement.md H-13. These must align with the universal thresholds; agent-specific overrides are NOT permitted for PASS/REVISE boundaries (they are set by the Jerry Constitution).",
+      "required": ["pass_minimum", "revise_minimum", "rejected_maximum"],
+      "additionalProperties": false,
+      "properties": {
+        "pass_minimum": {
+          "type": "number",
+          "description": "Minimum score for PASS classification. Must be 0.92 per quality-enforcement.md H-13. This field exists for documentation; any value other than 0.92 is a contract error.",
+          "const": 0.92
+        },
+        "revise_minimum": {
+          "type": "number",
+          "description": "Minimum score for REVISE classification (below PASS, above REJECTED). Must be 0.85 per quality-enforcement.md.",
+          "const": 0.85
+        },
+        "rejected_maximum": {
+          "type": "number",
+          "description": "Maximum score for REJECTED classification (exclusive). Must be 0.85 per quality-enforcement.md.",
+          "const": 0.85
+        }
+      }
+    },
+    "floor_breach_detection": {
+      "type": "object",
+      "description": "Configuration for QUALITY_FLOOR_BREACH detection using Wilson score intervals.",
+      "additionalProperties": false,
+      "properties": {
+        "wilson_confidence_level": {
+          "type": "number",
+          "description": "Confidence level for Wilson score interval calculation.",
+          "default": 0.95,
+          "minimum": 0.80,
+          "maximum": 0.99
+        },
+        "minimum_n_for_floor_check": {
+          "type": "integer",
+          "description": "Minimum sample size required before Wilson-based floor check is applied.",
+          "default": 20,
+          "minimum": 10
+        }
+      }
+    },
+    "rationale": {
+      "type": "object",
+      "description": "Documented rationale for the quality floor and dimension bounds for this agent.",
+      "required": ["floor_rationale", "differentiation_from_universal"],
+      "additionalProperties": true,
+      "properties": {
+        "floor_rationale": {
+          "type": "string",
+          "description": "Explanation of why this agent's quality floor is set at its specified value.",
+          "minLength": 20
+        },
+        "differentiation_from_universal": {
+          "type": "string",
+          "description": "Explanation of how this agent's bounds differ from other agents and why.",
+          "minLength": 20
+        },
+        "key_dimension_notes": {
+          "type": "object",
+          "description": "Optional per-dimension notes explaining bounds for specific dimensions.",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "source": {
+      "type": "string",
+      "description": "Reference to the behavioral-contracts.md section that defines this quality bound.",
+      "pattern": "^behavioral-contracts\\.md#.+$"
+    }
+  },
+  "$defs": {
+    "dimension_bound": {
+      "type": "object",
+      "description": "Score range specification for a single S-014 dimension.",
+      "required": ["min", "max"],
+      "additionalProperties": false,
+      "properties": {
+        "min": {
+          "type": "number",
+          "description": "Minimum expected score for this dimension. Scores consistently below this minimum (across N >= 20 runs) trigger DIMENSION_FLOOR_WARNING.",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "max": {
+          "type": "number",
+          "description": "Maximum expected score for this dimension. Scores above this maximum are unexpected but not penalized (max is used for anomaly detection only).",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "const_note": "Should be 1.0 in most cases; only lower if there is a principled reason why the agent cannot achieve perfect scores on this dimension."
+        },
+        "rationale": {
+          "type": "string",
+          "description": "Optional dimension-specific rationale for why the bounds are set at these values.",
+          "maxLength": 500
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "agent": "adv-scorer",
+      "version": "1.0.0",
+      "overall_floor": 0.90,
+      "minimum_acceptable": 0.87,
+      "max_composite_std_dev": 0.04,
+      "max_dimension_std_dev": 0.07,
+      "max_cv": 0.10,
+      "per_dimension": {
+        "completeness": {"min": 0.88, "max": 1.0, "rationale": "All 6 S-014 dimensions must be scored; incomplete scoring is a hard failure covered by SI-SCOR-002"},
+        "internal_consistency": {"min": 0.90, "max": 1.0, "rationale": "Arithmetic consistency between dimension scores and composite is required"},
+        "methodological_rigor": {"min": 0.90, "max": 1.0, "rationale": "Systematic rubric application; highest rigor expectation among all agents"},
+        "evidence_quality": {"min": 0.85, "max": 1.0, "rationale": "Scores must cite artifact evidence; not purely impressionistic"},
+        "actionability": {"min": 0.82, "max": 1.0, "rationale": "Scores must enable quality gate decisions; PASS/REVISE/REJECTED must be stated"},
+        "traceability": {"min": 0.90, "max": 1.0, "rationale": "Every score must trace to a specific rubric criterion"}
+      },
+      "band_thresholds": {
+        "pass_minimum": 0.92,
+        "revise_minimum": 0.85,
+        "rejected_maximum": 0.85
+      },
+      "floor_breach_detection": {
+        "wilson_confidence_level": 0.95,
+        "minimum_n_for_floor_check": 20
+      },
+      "rationale": {
+        "floor_rationale": "adv-scorer applies a systematic rubric to a fixed set of dimensions. This is the most constrained task among the five target agents: the rubric is defined, the dimensions are known, and the scoring criteria are explicit. Higher floor (0.90) reflects this reduced task variability.",
+        "differentiation_from_universal": "adv-scorer's floor is 0.08 above ps-researcher's (0.82) because adv-scorer operates on a fixed rubric rather than open-ended research. Systematic tasks with clear criteria should produce higher and more consistent quality scores.",
+        "key_dimension_notes": {
+          "methodological_rigor": "adv-scorer's primary function is rubric application; this dimension reflects core competency",
+          "traceability": "Score rationale must be visible and traceable to rubric criteria; this is a primary output requirement"
+        }
+      },
+      "source": "behavioral-contracts.md#b4-per-agent-per-dimension-bounds"
+    }
+  ]
+}

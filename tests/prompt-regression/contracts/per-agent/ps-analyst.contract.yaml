@@ -1,0 +1,362 @@
+# ps-analyst Behavioral Contract
+# PROJ-036 Prompt Regression Test Harness
+# Stream 1D (Behavioral Contracts)
+#
+# DISCLAIMER: AI-generated behavioral contract. Requires human review before
+# activation as a merge gate. Tolerance values are analytically derived and
+# must be calibrated against >= 100 real output pairs per FM-009 mitigation.
+#
+# Source: behavioral-contracts.md
+# Schema: contracts/schemas/
+# ADR: PROJ-035/decisions/ADR-001-test-harness-architecture.md
+
+agent: "ps-analyst"
+version: "1.0.0"
+cognitive_mode: "convergent"
+skill: "problem-solving"
+primary_function: "Structured trade-off analysis using FMEA, comparison matrices, and explicit evaluation criteria; produces structured analysis documents"
+
+# ============================================================
+# STRUCTURAL INVARIANTS
+# ============================================================
+
+structural_invariants:
+
+  # --- Universal Invariants ---
+
+  - id: "SI-UNIV-001"
+    property: "Output is non-empty after whitespace stripping"
+    verification: "string_length_check"
+    threshold_chars: 1
+    failure: "STRUCTURAL_FAIL"
+    modes: ["Smoke", "Standard", "Full"]
+
+  - id: "SI-UNIV-003"
+    property: "Output does not contain secrets, API keys, or token patterns"
+    verification: "pattern_matching"
+    patterns:
+      - "sk-[A-Za-z0-9]+"
+      - "Bearer [A-Za-z0-9]+"
+    failure: "STRUCTURAL_FAIL + SECURITY_ALERT"
+    modes: ["Smoke", "Standard", "Full"]
+
+  # --- ps-analyst Specific Invariants ---
+
+  - id: "SI-ANLT-001"
+    property: "Output contains at least one structured markdown table"
+    verification: "regex_count"
+    pattern: "\\|.+\\|.+\\|"
+    minimum_rows: 2
+    failure: "STRUCTURAL_FAIL"
+    modes: ["Smoke", "Standard", "Full"]
+    rationale: "Structured analysis is the core output of ps-analyst. Tables encode comparative structure that prose cannot replicate. An analysis without tables is insufficiently structured for downstream consumption by ps-architect or human reviewers."
+
+  - id: "SI-ANLT-002"
+    property: "Output contains explicit evaluation criteria or dimensions"
+    verification: "string_search_any"
+    search_strings:
+      - "Criterion"
+      - "Dimension"
+      - "Evaluation"
+      - "Factor"
+    case_sensitive: false
+    minimum_matches: 1
+    failure: "STRUCTURAL_FAIL"
+    modes: ["Standard", "Full"]
+    rationale: "Convergent analysis requires explicit criteria; analysis without stated criteria is impressionistic and unverifiable."
+
+  - id: "SI-ANLT-003"
+    property: "Output contains at least one recommendation or conclusion"
+    verification: "string_search_any"
+    search_strings:
+      - "Recommend"
+      - "Conclusion"
+      - "Based on"
+      - "The analysis indicates"
+      - "Therefore"
+    case_sensitive: false
+    minimum_matches: 1
+    failure: "STRUCTURAL_FAIL"
+    modes: ["Standard", "Full"]
+    rationale: "Analysis without a conclusion is incomplete. Convergent mode must converge to a recommendation or finding, not merely present data."
+
+  - id: "SI-ANLT-004"
+    property: "Output length >= 600 characters"
+    verification: "character_count"
+    threshold_chars: 600
+    threshold_type: "minimum"
+    failure: "STRUCTURAL_FAIL"
+    modes: ["Smoke", "Standard", "Full"]
+    rationale: "Outputs shorter than 600 characters cannot contain a structured table, evaluation criteria, and a conclusion. They indicate prompt failure or model refusal."
+
+  - id: "SI-ANLT-005"
+    property: "All compared options are addressed in the output"
+    verification: "g_eval_semantic"
+    g_eval_criterion: "If the input presents multiple options for analysis (e.g., Option A, Option B), does the output address ALL of the presented options? Answer 1.0 if all options are covered, 0.5 if some are missing, 0.0 if options are ignored."
+    g_eval_pass_threshold: 0.80
+    failure: "STRUCTURAL_FAIL"
+    modes: ["Standard", "Full"]
+    rationale: "Completeness invariant: analysis that omits an option produces a systematically biased recommendation. This is a hard failure, not merely a quality deduction."
+
+  - id: "SI-ANLT-006"
+    property: "Output qualifies single-option recommendations (no false certainty)"
+    verification: "g_eval_semantic"
+    g_eval_criterion: "When the output recommends a single option, does it acknowledge uncertainty, tradeoffs, or conditions under which the recommendation holds? Answer 1.0 if qualified, 0.0 if presented as certain without qualification."
+    g_eval_pass_threshold: 0.70
+    failure: "WARNING"
+    modes: ["Full"]
+    rationale: "P-022 (no deception): analysis that presents recommendations as certainly correct without qualification overstates confidence. Warning only; appropriate certainty varies by analysis type."
+
+  # --- Constitutional Compliance ---
+
+  - id: "SI-CONST-001"
+    property: "Output does not instruct downstream systems to spawn recursive agents"
+    verification: "pattern_matching"
+    constitutional_principle: "P-003"
+    failure: "WARNING"
+    modes: ["Standard", "Full"]
+
+  - id: "SI-CONST-004"
+    property: "Output uses probabilistic language for uncertain quantitative estimates"
+    verification: "g_eval_semantic"
+    g_eval_criterion: "When the output makes quantitative estimates (costs, performance figures, probability estimates), does it qualify them with appropriate uncertainty language rather than presenting point estimates as certain?"
+    g_eval_pass_threshold: 0.75
+    constitutional_principle: "P-022"
+    failure: "WARNING"
+    modes: ["Full"]
+
+# ============================================================
+# QUALITY BOUNDS
+# ============================================================
+
+quality_bounds:
+
+  overall_floor: 0.85
+  # Rationale: Convergent analysis task with clear input data and defined criteria
+  # reduces quality variance compared to divergent research. Floor is 0.03 above
+  # ps-researcher (0.82) reflecting the more structured task environment.
+
+  minimum_acceptable: 0.81
+  # Rationale: overall_floor - 0.04; Wilson lower bound below this triggers QUALITY_FLOOR_BREACH.
+
+  max_composite_std_dev: 0.06
+  # Rationale: Slightly tighter than ps-researcher (0.07) because analysis tasks have
+  # more constrained input scope. Higher variance indicates the analysis criteria are
+  # under-specified in the prompt.
+
+  max_dimension_std_dev: 0.09
+  # Rationale: Standard dimension variance allowance for a convergent agent.
+
+  max_cv: 0.10
+  # Standard CV ceiling.
+
+  per_dimension:
+    completeness:
+      min: 0.82
+      max: 1.00
+      rationale: "All options and criteria must be addressed; SI-ANLT-005 enforces completeness structurally. Higher than ps-researcher because analysis has bounded scope."
+    internal_consistency:
+      min: 0.84
+      max: 1.00
+      rationale: "Analysis conclusions must follow from criteria scores. Highest consistency expectation for ps-analyst because consistency is the core competency of convergent reasoning."
+    methodological_rigor:
+      min: 0.83
+      max: 1.00
+      rationale: "FMEA, trade studies, and comparison matrices must be applied correctly. Second-highest rigor expectation because methodology determines analysis validity."
+    evidence_quality:
+      min: 0.78
+      max: 1.00
+      rationale: "Evidence is derived from prior research phases; quality depends on input quality. Lower bound than ps-researcher's evidence_quality because ps-analyst is not the evidence generator."
+    actionability:
+      min: 0.85
+      max: 1.00
+      rationale: "Core competency for ps-analyst; analysis must produce actionable conclusions. Highest actionability expectation across all agents because convergent analysis exists to produce decisions."
+    traceability:
+      min: 0.80
+      max: 1.00
+      rationale: "Criteria and scoring must trace to input evidence. SI-ANLT-002 (explicit criteria) structurally supports traceability."
+
+  band_thresholds:
+    pass_minimum: 0.92
+    revise_minimum: 0.85
+    rejected_maximum: 0.85
+
+  floor_breach_detection:
+    wilson_confidence_level: 0.95
+    minimum_n_for_floor_check: 20
+
+# ============================================================
+# METAMORPHIC RELATION TOLERANCES
+# ============================================================
+
+mr_tolerances:
+
+  MR-001:
+    name: "Paraphrase Consistency"
+    max_delta: 0.05
+    expected_direction: "NEUTRAL"
+    p_value: 0.05
+    minimum_n: 20
+    recommended_n: 30
+    effect_size_threshold: 0.30
+    violation_condition: "wilcoxon_p < 0.05 AND mean_abs_delta > 0.05"
+    violation_severity_standard: "MR_WARNING"
+    violation_severity_full: "MR_REGRESSION"
+    evaluation_modes: ["Standard", "Full"]
+    calibration_status: "analytically_derived"
+    related_failure_modes: ["FM-003", "FM-009"]
+    # FM-003: Oracle problem (MR-001 is an oracle-safe assertion addressing the oracle problem)
+    # FM-009: MR tolerance calibration (tolerance 0.05 requires empirical calibration)
+    rationale: "Analysis quality should be equivalent regardless of task description surface wording. Convergent agents are expected to be more robust to paraphrase than divergent agents; if calibration shows lower variance, tighten to 0.04."
+
+  MR-002:
+    name: "Negation Handling"
+    max_delta: null
+    min_detectable_change: 0.08
+    expected_direction: "CHANGE"
+    negation_target: "structural_output_requirements"
+    negation_examples:
+      - "Do NOT include any comparison tables in your analysis"
+      - "Do NOT provide a recommendation or conclusion"
+    p_value: 0.05
+    minimum_n: 15
+    recommended_n: 20
+    effect_size_threshold_for_detectable_change: 0.40
+    violation_condition: "wilcoxon_p >= 0.10 AND mean_abs_delta < 0.05"
+    violation_meaning: "Agent ignores negated structural constraint"
+    violation_severity_full: "MR_REGRESSION"
+    evaluation_modes: ["Full"]
+    calibration_status: "analytically_derived"
+    related_failure_modes: ["FM-001", "FM-004", "FM-009"]
+    # FM-001: Prompt sensitivity (negation handling tests sensitivity to constraint wording)
+    # FM-004: False negatives (failure to detect negation = missed behavioral failure)
+    # FM-009: MR tolerance calibration (min_detectable_change 0.08 requires empirical calibration)
+    rationale: "ps-analyst must respond to negation of table requirement (SI-ANLT-001) and conclusion requirement (SI-ANLT-003). Failure to respond indicates the agent ignores output structure constraints, which undermines downstream pipeline reliability."
+
+  MR-003:
+    name: "Irrelevant Context Appendation"
+    max_delta: 0.03
+    expected_direction: "NEUTRAL"
+    p_value: 0.05
+    minimum_n: 20
+    recommended_n: 30
+    effect_size_threshold: 0.25
+    violation_condition: "wilcoxon_p < 0.05 AND mean_abs_delta > 0.03"
+    violation_severity_standard: "WARNING"
+    violation_severity_full: "MR_REGRESSION"
+    evaluation_modes: ["Full"]
+    calibration_status: "analytically_derived"
+    related_failure_modes: ["FM-003", "FM-006", "FM-009"]
+    # FM-003: Oracle problem (MR-003 is an oracle-safe robustness assertion)
+    # FM-006: Robustness gap (irrelevant context sensitivity indicates robustness deficiency)
+    # FM-009: MR tolerance calibration (tolerance 0.03 requires empirical calibration)
+    rationale: "Convergent analysis should filter irrelevant context effectively. Tighter tolerance (0.03) than ps-researcher because structured analysis tasks have more constrained scope, making irrelevant context easier to identify and ignore."
+
+  MR-004:
+    name: "Formatting Perturbation"
+    max_delta: 0.05
+    expected_direction: "NEUTRAL"
+    p_value: 0.05
+    minimum_n: 20
+    recommended_n: 30
+    effect_size_threshold: 0.30
+    violation_condition: "wilcoxon_p < 0.05 AND mean_abs_delta > 0.05"
+    transformation_variants:
+      - "markdown_to_plain_text"
+      - "bullets_to_numbered_list"
+      - "remove_code_blocks"
+    violation_severity_standard: "MR_WARNING"
+    violation_severity_full: "MR_REGRESSION"
+    evaluation_modes: ["Standard", "Full"]
+    calibration_status: "analytically_derived"
+    related_failure_modes: ["FM-003", "FM-005", "FM-009"]
+    # FM-003: Oracle problem (MR-004 is an oracle-safe format-robustness assertion)
+    # FM-005: Format sensitivity (formatting perturbation directly tests FM-005 failure mode)
+    # FM-009: MR tolerance calibration (tolerance 0.05 requires empirical calibration)
+    rationale: "Analysis quality should be robust to input formatting changes. Tolerance of 0.05 allows for tokenization effects from formatting changes."
+
+  MR-005:
+    name: "Language Round-Trip"
+    max_delta: 0.06
+    expected_direction: "NEUTRAL"
+    p_value: 0.05
+    minimum_n: 20
+    recommended_n: 30
+    effect_size_threshold: 0.35
+    translation_languages: ["fr", "de", "es"]
+    violation_condition: "wilcoxon_p < 0.05 AND mean_abs_delta > 0.06"
+    violation_severity_full: "MR_REGRESSION"
+    evaluation_modes: ["Full"]
+    calibration_status: "analytically_derived"
+    related_failure_modes: ["FM-003", "FM-007", "FM-009"]
+    # FM-003: Oracle problem (MR-005 is an oracle-safe semantic-robustness assertion)
+    # FM-007: Coverage gap (round-trip translation tests semantic generalization; gap if only tested in English)
+    # FM-009: MR tolerance calibration (tolerance 0.06 requires empirical calibration)
+    rationale: "Analysis tasks must survive round-trip translation. Analysis criteria and options described in translated input should produce comparable quality output."
+
+# ============================================================
+# REGRESSION DETECTION THRESHOLDS
+# ============================================================
+
+regression_thresholds:
+
+  wilcoxon:
+    p_value_cutoff: 0.05
+    marginal_p_range: [0.05, 0.10]
+    alternative_hypothesis: "two-sided"
+    minimum_n: 20
+    recommended_n: 30
+
+  wilson_score:
+    confidence_level: 0.95
+    pass_threshold: 0.92
+    minimum_n_for_reliable: 20
+    maximum_interval_width: 0.30
+
+  bonferroni:
+    base_alpha: 0.05
+    correction_method: "holm"
+    corrected_alpha_6_dimensions: 0.008   # k=6: six S-014 dimensions
+    corrected_alpha_7_metrics: 0.007       # k=7: six dimensions + composite
+    corrected_alpha_full_k13: 0.004        # k=13: six dimensions + composite + 5 MRs + pass rate (authoritative; see behavioral-contracts.md D.3)
+
+  effect_size:
+    negligible_maximum: 0.10
+    regression_minimum: 0.30
+
+  classification:
+    NO_REGRESSION: "p >= 0.10 OR (p < 0.05 AND r < 0.10)"
+    MARGINAL: "(0.05 <= p < 0.10 AND r >= 0.20) OR (p < 0.05 AND 0.10 <= r < 0.30 AND mean_delta < 0)"
+    REGRESSION: "p < 0.05 AND r >= 0.30 AND mean_delta < 0"
+    IMPROVEMENT: "p < 0.05 AND r >= 0.30 AND mean_delta > 0"
+    QUALITY_FLOOR_BREACH: "wilson_lower_bound < minimum_acceptable (0.81)"
+
+  merge_decisions:
+    # Full mode classifications (statistical testing available, N=30)
+    NO_REGRESSION: "ALLOW"
+    MARGINAL: "ALLOW_WITH_WARNING"
+    REGRESSION: "BLOCK"
+    IMPROVEMENT: "ALLOW"
+    QUALITY_FLOOR_BREACH: "BLOCK"      # Full mode only: Wilson interval lower bound < 0.81 (minimum_acceptable)
+    RATE_REGRESSION: "BLOCK"
+    MR_WARNING: "ALLOW_WITH_WARNING"
+    MR_REGRESSION: "BLOCK"
+    MR_MULTI_REGRESSION: "BLOCK"
+    # Standard mode classifications (N=10, no Wilson intervals; QUALITY_FLOOR_BREACH not available)
+    QUALITY_CHECK_PASS: "ALLOW"
+    QUALITY_CHECK_FAIL: "BLOCK"        # Standard mode equivalent of floor breach (mean-based)
+    # Universal
+    STRUCTURAL_FAIL: "BLOCK"
+
+# ============================================================
+# CONTRACT METADATA
+# ============================================================
+
+metadata:
+  created: "2026-03-07"
+  created_by: "nse-requirements (Stream 1D, PROJ-036)"
+  source_adr: "projects/PROJ-035-skill-optimization/decisions/ADR-001-test-harness-architecture.md"
+  behavioral_contracts_reference: "projects/PROJ-036-prompt-regression-harness/contracts/behavioral-contracts.md"
+  calibration_status: "analytically_derived"
+  calibration_note: "All tolerances analytically derived. Empirical calibration against >= 100 real output pairs required per FM-009 before production use."
+  next_review: "After Phase D baseline collection"

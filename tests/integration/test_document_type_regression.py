@@ -47,7 +47,10 @@ from src.domain.markdown_ast.document_type import (
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 # Directories excluded from test discovery
-_EXCLUDED_DIRS = frozenset({".git", ".venv", ".pytest_cache"})
+# Directories excluded from test discovery.
+# .worktrees: temporary workspace copies (not committed)
+# quality-gates: adversarial scoring iteration artifacts — not document types
+_EXCLUDED_DIRS = frozenset({".git", ".venv", ".pytest_cache", ".worktrees", "quality-gates"})
 
 # Files intentionally classified as UNKNOWN -- each entry requires
 # a justification comment. Target: < 20 files.
@@ -55,6 +58,15 @@ EXPECTED_UNKNOWN: frozenset[str] = frozenset(
     {
         # Music playlist file -- intentionally outside the document ontology.
         "SOUNDTRACK.md",
+        # Session handoff document -- project-specific, not a recurring category.
+        "projects/PROJ-017-llm-skill-testing/HANDOFF.md",
+        # PROJ-036 engineering deliverables -- outside document type ontology.
+        "projects/PROJ-036-prompt-regression-harness/EXECUTION-PROMPT.md",
+        "projects/PROJ-036-prompt-regression-harness/design/harness-requirements.md",
+        "projects/PROJ-036-prompt-regression-harness/design/security-assessment.md",
+        "projects/PROJ-036-prompt-regression-harness/design/system-design.md",
+        # Prompt regression test infrastructure -- behavioral contracts.
+        "tests/prompt-regression/contracts/behavioral-contracts.md",
     }
 )
 

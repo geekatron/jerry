@@ -12,7 +12,7 @@ and copyright notice in the first 5 lines.
 
 Required headers:
     - ``# SPDX-License-Identifier: Apache-2.0``
-    - ``# Copyright (c) <year> Adam Nowak`` (year-flexible pattern)
+    - ``# Copyright (c) <year> <holder>`` where holder is an accepted copyright holder
 
 Empty ``__init__.py`` files (0 bytes) are exempt from header requirements,
 as they serve only as package markers and contain no copyrightable content.
@@ -38,7 +38,7 @@ from pathlib import Path
 
 SPDX_IDENTIFIER = "# SPDX-License-Identifier: Apache-2.0"
 COPYRIGHT_PREFIX = "# Copyright (c)"
-COPYRIGHT_HOLDER = "Adam Nowak"
+COPYRIGHT_HOLDERS = ("Adam Nowak", "Victor Lau")
 SCAN_DIRECTORIES = ("src", "scripts", "hooks", "tests")
 HEADER_SCAN_LINES = 5
 
@@ -91,11 +91,13 @@ def check_file_headers(file_path: Path) -> list[str]:
         )
 
     has_copyright = any(
-        line.startswith(COPYRIGHT_PREFIX) and COPYRIGHT_HOLDER in line for line in head_lines
+        line.startswith(COPYRIGHT_PREFIX) and any(holder in line for holder in COPYRIGHT_HOLDERS)
+        for line in head_lines
     )
     if not has_copyright:
+        holders_str = " or ".join(COPYRIGHT_HOLDERS)
         errors.append(
-            f"{file_path}: Missing '{COPYRIGHT_PREFIX} <year> {COPYRIGHT_HOLDER}' in first"
+            f"{file_path}: Missing '{COPYRIGHT_PREFIX} <year> <{holders_str}>' in first"
             f" {HEADER_SCAN_LINES} lines"
         )
 
@@ -149,7 +151,8 @@ def main() -> int:
     print(f"Checking SPDX license headers in {project_root}...")
     print(f"  Directories: {', '.join(SCAN_DIRECTORIES)}")
     print(f"  Required: {SPDX_IDENTIFIER}")
-    print(f"  Required: {COPYRIGHT_PREFIX} <year> {COPYRIGHT_HOLDER}")
+    holders_str = " or ".join(COPYRIGHT_HOLDERS)
+    print(f"  Required: {COPYRIGHT_PREFIX} <year> <{holders_str}>")
     print()
 
     py_files = collect_python_files(project_root)
@@ -181,7 +184,7 @@ def main() -> int:
             "\nTo fix, add the following to the top of each file (after shebang line if present):"
         )
         print(f"  {SPDX_IDENTIFIER}")
-        print(f"  {COPYRIGHT_PREFIX} <year> {COPYRIGHT_HOLDER}")
+        print(f"  {COPYRIGHT_PREFIX} <year> <{holders_str}>")
         return 1
 
     print("\nAll SPDX license header checks passed.")

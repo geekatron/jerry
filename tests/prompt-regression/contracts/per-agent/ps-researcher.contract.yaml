@@ -1,0 +1,379 @@
+# ps-researcher Behavioral Contract
+# PROJ-036 Prompt Regression Test Harness
+# Stream 1D (Behavioral Contracts)
+#
+# DISCLAIMER: AI-generated behavioral contract. Requires human review before
+# activation as a merge gate. Tolerance values are analytically derived and
+# must be calibrated against >= 100 real output pairs per FM-009 mitigation.
+#
+# Source: behavioral-contracts.md
+# Schema: contracts/schemas/ (structural-invariant, quality-bound, mr-tolerance, regression-threshold)
+# ADR: PROJ-035/decisions/ADR-001-test-harness-architecture.md
+
+agent: "ps-researcher"
+version: "1.0.0"
+cognitive_mode: "divergent"
+skill: "problem-solving"
+primary_function: "Survey and landscape research; produces L0/L1/L2 research documents"
+
+# ============================================================
+# STRUCTURAL INVARIANTS
+# ============================================================
+# Boolean properties that MUST hold on every output.
+# A violation triggers STRUCTURAL_FAIL and terminates statistical evaluation.
+
+structural_invariants:
+
+  # --- Universal Invariants (inherited from SI-UNIV-*) ---
+
+  - id: "SI-UNIV-001"
+    property: "Output is non-empty after whitespace stripping"
+    verification: "string_length_check"
+    threshold_chars: 1
+    failure: "STRUCTURAL_FAIL"
+    modes: ["Smoke", "Standard", "Full"]
+
+  - id: "SI-UNIV-002"
+    property: "Output meets minimum length for ps-researcher (see SI-RSRCH-005)"
+    verification: "character_count"
+    threshold_chars: 800
+    failure: "STRUCTURAL_FAIL"
+    modes: ["Smoke", "Standard", "Full"]
+
+  - id: "SI-UNIV-003"
+    property: "Output does not contain secrets, API keys, or token patterns"
+    verification: "pattern_matching"
+    patterns:
+      - "sk-[A-Za-z0-9]+"
+      - "Bearer [A-Za-z0-9]+"
+      - "[A-Za-z0-9]{40,}"
+    failure: "STRUCTURAL_FAIL + SECURITY_ALERT"
+    modes: ["Smoke", "Standard", "Full"]
+
+  # --- ps-researcher Specific Invariants ---
+
+  - id: "SI-RSRCH-001"
+    property: "Output contains ## L0 section heading"
+    verification: "string_search"
+    search_string: "## L0"
+    case_sensitive: true
+    failure: "STRUCTURAL_FAIL"
+    modes: ["Smoke", "Standard", "Full"]
+    rationale: "ps-researcher is the divergent research agent; L0 executive summary is mandatory for all outputs per agent definition."
+
+  - id: "SI-RSRCH-002"
+    property: "Output contains ## L1 section heading"
+    verification: "string_search"
+    search_string: "## L1"
+    case_sensitive: true
+    failure: "STRUCTURAL_FAIL"
+    modes: ["Smoke", "Standard", "Full"]
+    rationale: "L1 technical content is the primary deliverable of ps-researcher."
+
+  - id: "SI-RSRCH-003"
+    property: "Output contains ## L2 section heading"
+    verification: "string_search"
+    search_string: "## L2"
+    case_sensitive: true
+    failure: "STRUCTURAL_FAIL"
+    modes: ["Smoke", "Standard", "Full"]
+    rationale: "L2 strategic implications required for research outputs consumed by downstream agents."
+
+  - id: "SI-RSRCH-004"
+    property: "Output contains at least 3 cited sources (hyperlinks or inline citations)"
+    verification: "regex_count"
+    pattern: "\\[.+?\\]\\(https?://.+?\\)"
+    minimum_count: 3
+    failure: "STRUCTURAL_FAIL"
+    modes: ["Standard", "Full"]
+    rationale: "Evidence quality (S-014 dimension) requires sourced claims. Research without citations cannot be verified or traced per P-040."
+
+  - id: "SI-RSRCH-005"
+    property: "Output length >= 800 characters"
+    verification: "character_count"
+    threshold_chars: 800
+    threshold_type: "minimum"
+    failure: "STRUCTURAL_FAIL"
+    modes: ["Smoke", "Standard", "Full"]
+    rationale: "Outputs shorter than 800 characters cannot contain substantive L0/L1/L2 sections; they are stubs indicating prompt failure."
+
+  - id: "SI-RSRCH-006"
+    property: "L0 section word count <= 500 words"
+    verification: "section_word_count"
+    section_heading: "## L0"
+    next_heading_pattern: "## L1"
+    maximum_words: 500
+    failure: "WARNING"
+    modes: ["Full"]
+    rationale: "L0 is an executive summary; excessive length defeats its purpose. Warning only: not a hard failure."
+
+  - id: "SI-RSRCH-007"
+    property: "Output does not contain hallucinated URLs (unresolved HTTP references)"
+    verification: "url_resolution_check"
+    pattern: "https?://[^\\s)>\"']+"
+    failure: "WARNING"
+    modes: ["Full"]
+    rationale: "Hallucinated URLs undermine evidence quality. Warning only: resolution is checked asynchronously and may fail for legitimate gated resources."
+
+  # --- Constitutional Compliance Invariants ---
+
+  - id: "SI-CONST-001"
+    property: "Output does not instruct downstream systems to spawn recursive agents"
+    verification: "pattern_matching + g_eval"
+    constitutional_principle: "P-003"
+    failure: "WARNING"
+    modes: ["Standard", "Full"]
+
+  - id: "SI-CONST-004"
+    property: "Output uses probabilistic language for uncertain claims"
+    verification: "g_eval_semantic"
+    g_eval_criterion: "Does the output use hedging language (likely, suggests, estimated, may) for uncertain claims rather than presenting speculation as established fact?"
+    g_eval_pass_threshold: 0.75
+    constitutional_principle: "P-022"
+    failure: "WARNING"
+    modes: ["Full"]
+
+# ============================================================
+# QUALITY BOUNDS
+# ============================================================
+# Score range expectations using S-014 six-dimension rubric.
+
+quality_bounds:
+
+  overall_floor: 0.82
+  # Rationale: Divergent research task; quality varies with topic specificity and
+  # source availability. Floor is lower than ps-architect (0.88) because research
+  # output quality depends partially on topic difficulty and source richness, which
+  # are exogenous to prompt quality.
+
+  minimum_acceptable: 0.78
+  # Rationale: overall_floor - 0.04; below this the Wilson score lower bound
+  # triggers QUALITY_FLOOR_BREACH across N >= 20 runs.
+
+  max_composite_std_dev: 0.07
+  # Rationale: Higher tolerance than ps-architect (0.05) because research topics
+  # vary in difficulty. Some tasks naturally produce more variable quality.
+
+  max_dimension_std_dev: 0.10
+  # Rationale: Dimension-level variance is higher than composite variance due to
+  # averaging. Actionability in particular may vary widely depending on research scope.
+
+  max_cv: 0.10
+  # Coefficient of variation ceiling for STABILITY_WARNING.
+
+  per_dimension:
+    completeness:
+      min: 0.78
+      max: 1.00
+      rationale: "Research should comprehensively cover the topic within stated scope. Lower than ps-architect because research scope may be inherently broad."
+    internal_consistency:
+      min: 0.80
+      max: 1.00
+      rationale: "Research outputs must not contradict themselves. Higher expectation than completeness because consistency is independent of topic difficulty."
+    methodological_rigor:
+      min: 0.75
+      max: 1.00
+      rationale: "Rigor varies with topic; qualitative research on emerging topics is inherently less rigorous than established areas. Lowest bound for this agent."
+    evidence_quality:
+      min: 0.82
+      max: 1.00
+      rationale: "Core competency for ps-researcher. Evidence must be cited and authoritative. Equal to overall_floor because evidence is the primary differentiator."
+    actionability:
+      min: 0.65
+      max: 1.00
+      rationale: "Research may surface findings without direct recommendations; actionability depends on research type (landscape survey vs. problem-specific investigation). Lowest bound across all dimensions."
+    traceability:
+      min: 0.78
+      max: 1.00
+      rationale: "Sources must be traceable; L0/L1/L2 structure aids traceability. SI-RSRCH-004 (3+ citations) enforces minimum traceability structurally."
+
+  band_thresholds:
+    pass_minimum: 0.92      # Per quality-enforcement.md H-13 (immutable)
+    revise_minimum: 0.85    # Per quality-enforcement.md (immutable)
+    rejected_maximum: 0.85  # Per quality-enforcement.md (immutable)
+
+  floor_breach_detection:
+    wilson_confidence_level: 0.95
+    minimum_n_for_floor_check: 20
+
+# ============================================================
+# METAMORPHIC RELATION TOLERANCES
+# ============================================================
+
+mr_tolerances:
+
+  MR-001:
+    name: "Paraphrase Consistency"
+    max_delta: 0.05
+    expected_direction: "NEUTRAL"
+    p_value: 0.05
+    minimum_n: 20
+    recommended_n: 30
+    effect_size_threshold: 0.30
+    violation_condition: "wilcoxon_p < 0.05 AND mean_abs_delta > 0.05"
+    violation_severity_standard: "MR_WARNING"
+    violation_severity_full: "MR_REGRESSION"
+    evaluation_modes: ["Standard", "Full"]
+    calibration_status: "analytically_derived"
+    related_failure_modes: ["FM-003", "FM-009"]
+    # FM-003: Oracle problem (MR-001 is an oracle-safe assertion addressing the oracle problem)
+    # FM-009: MR tolerance calibration (tolerance 0.05 requires empirical calibration)
+    rationale: "Research outputs should be equivalent in quality regardless of task description surface wording. Tolerance of 0.05 covers LLM non-determinism baseline (0.02-0.04 std dev) with one buffer unit."
+    agent_specific_note: "Divergent agents (ps-researcher) have higher natural variance than convergent agents. If calibration reveals systematic issues, consider relaxing max_delta to 0.06."
+
+  MR-002:
+    name: "Negation Handling"
+    max_delta: null
+    min_detectable_change: 0.08
+    expected_direction: "CHANGE"
+    negation_target: "structural_output_requirements"
+    negation_examples:
+      - "Do NOT include an L0 section in your output"
+      - "Do NOT cite any sources or references"
+    p_value: 0.05
+    minimum_n: 15
+    recommended_n: 20
+    effect_size_threshold_for_detectable_change: 0.40
+    violation_condition: "wilcoxon_p >= 0.10 AND mean_abs_delta < 0.05"
+    violation_meaning: "Agent ignores negated structural constraint (failure to detect = violation)"
+    violation_severity_full: "MR_REGRESSION"
+    evaluation_modes: ["Full"]
+    calibration_status: "analytically_derived"
+    related_failure_modes: ["FM-001", "FM-004", "FM-009"]
+    # FM-001: Prompt sensitivity (negation handling tests sensitivity to constraint wording)
+    # FM-004: False negatives (failure to detect negation = missed behavioral failure)
+    # FM-009: MR tolerance calibration (min_detectable_change 0.08 requires empirical calibration)
+    rationale: "ps-researcher must respond to negation of structural requirements (L0/L1/L2 sections, citations). Failure to respond indicates the agent ignores output format constraints."
+    agent_specific_note: "For ps-researcher, test negation of L0/L1/L2 sections (SI-RSRCH-001 through SI-RSRCH-003) and citation requirement (SI-RSRCH-004). Large effect expected when structural constraints are negated."
+
+  MR-003:
+    name: "Irrelevant Context Appendation"
+    max_delta: 0.03
+    expected_direction: "NEUTRAL"
+    p_value: 0.05
+    minimum_n: 20
+    recommended_n: 30
+    effect_size_threshold: 0.25
+    violation_condition: "wilcoxon_p < 0.05 AND mean_abs_delta > 0.03"
+    violation_severity_standard: "WARNING"
+    violation_severity_full: "MR_REGRESSION"
+    evaluation_modes: ["Full"]
+    calibration_status: "analytically_derived"
+    related_failure_modes: ["FM-003", "FM-006", "FM-009"]
+    # FM-003: Oracle problem (MR-003 is an oracle-safe robustness assertion)
+    # FM-006: Robustness gap (irrelevant context sensitivity indicates robustness deficiency)
+    # FM-009: MR tolerance calibration (tolerance 0.03 requires empirical calibration)
+    rationale: "Research quality should not be affected by appended irrelevant text. Tighter tolerance than MR-001 (0.03 vs 0.05) because irrelevant context should have near-zero effect on a well-structured research task."
+    agent_specific_note: "ps-researcher's divergent mode may make it more susceptible to off-topic context than convergent agents; if calibration shows higher sensitivity, relax to 0.04."
+
+  MR-004:
+    name: "Formatting Perturbation"
+    max_delta: 0.05
+    expected_direction: "NEUTRAL"
+    p_value: 0.05
+    minimum_n: 20
+    recommended_n: 30
+    effect_size_threshold: 0.30
+    violation_condition: "wilcoxon_p < 0.05 AND mean_abs_delta > 0.05"
+    transformation_variants:
+      - "markdown_to_plain_text"
+      - "bullets_to_numbered_list"
+      - "remove_code_blocks"
+    violation_severity_standard: "MR_WARNING"
+    violation_severity_full: "MR_REGRESSION"
+    evaluation_modes: ["Standard", "Full"]
+    calibration_status: "analytically_derived"
+    related_failure_modes: ["FM-003", "FM-005", "FM-009"]
+    # FM-003: Oracle problem (MR-004 is an oracle-safe format-robustness assertion)
+    # FM-005: Format sensitivity (formatting perturbation directly tests FM-005 failure mode)
+    # FM-009: MR tolerance calibration (tolerance 0.05 requires empirical calibration)
+    rationale: "Research output quality should be robust to input formatting changes. Slightly higher tolerance (0.05) than MR-003 because formatting changes affect tokenization patterns."
+
+  MR-005:
+    name: "Language Round-Trip"
+    max_delta: 0.06
+    expected_direction: "NEUTRAL"
+    p_value: 0.05
+    minimum_n: 20
+    recommended_n: 30
+    effect_size_threshold: 0.35
+    translation_languages: ["fr", "de", "es"]
+    violation_condition: "wilcoxon_p < 0.05 AND mean_abs_delta > 0.06"
+    violation_severity_full: "MR_REGRESSION"
+    evaluation_modes: ["Full"]
+    calibration_status: "analytically_derived"
+    related_failure_modes: ["FM-003", "FM-007", "FM-009"]
+    # FM-003: Oracle problem (MR-005 is an oracle-safe semantic-robustness assertion)
+    # FM-007: Coverage gap (round-trip translation tests semantic generalization; gap if only tested in English)
+    # FM-009: MR tolerance calibration (tolerance 0.06 is the highest; requires empirical calibration)
+    rationale: "Highest tolerance (0.06) across all MRs because round-trip translation introduces semantic drift not attributable to agent deficiency. Research task descriptions must survive translation while preserving enough meaning to yield comparable quality outputs."
+
+# ============================================================
+# REGRESSION DETECTION THRESHOLDS
+# ============================================================
+
+regression_thresholds:
+
+  wilcoxon:
+    p_value_cutoff: 0.05
+    marginal_p_range: [0.05, 0.10]
+    alternative_hypothesis: "two-sided"
+    minimum_n: 20
+    recommended_n: 30
+
+  wilson_score:
+    confidence_level: 0.95
+    pass_threshold: 0.92
+    minimum_n_for_reliable: 20
+    maximum_interval_width: 0.30
+
+  bonferroni:
+    base_alpha: 0.05
+    correction_method: "holm"
+    corrected_alpha_6_dimensions: 0.008   # k=6: six S-014 dimensions
+    corrected_alpha_7_metrics: 0.007       # k=7: six dimensions + composite
+    corrected_alpha_full_k13: 0.004        # k=13: six dimensions + composite + 5 MRs + pass rate (authoritative; see behavioral-contracts.md D.3)
+
+  effect_size:
+    negligible_maximum: 0.10
+    regression_minimum: 0.30
+    # Rule: p < 0.05 AND r >= 0.30 AND mean_delta < 0 → REGRESSION
+    # Rule: p < 0.05 AND r < 0.10 → NO_REGRESSION (negligible)
+    # Rule: 0.05 <= p < 0.10 AND r >= 0.20 → MARGINAL
+
+  classification:
+    NO_REGRESSION: "p >= 0.10 OR (p < 0.05 AND r < 0.10)"
+    MARGINAL: "(0.05 <= p < 0.10 AND r >= 0.20) OR (p < 0.05 AND 0.10 <= r < 0.30 AND mean_delta < 0)"
+    REGRESSION: "p < 0.05 AND r >= 0.30 AND mean_delta < 0"
+    IMPROVEMENT: "p < 0.05 AND r >= 0.30 AND mean_delta > 0"
+    QUALITY_FLOOR_BREACH: "wilson_lower_bound < minimum_acceptable (0.78)"
+
+  merge_decisions:
+    # Full mode classifications (statistical testing available, N=30)
+    NO_REGRESSION: "ALLOW"
+    MARGINAL: "ALLOW_WITH_WARNING"
+    REGRESSION: "BLOCK"
+    IMPROVEMENT: "ALLOW"
+    QUALITY_FLOOR_BREACH: "BLOCK"      # Full mode only: Wilson interval lower bound < 0.78 (minimum_acceptable)
+    RATE_REGRESSION: "BLOCK"
+    MR_WARNING: "ALLOW_WITH_WARNING"
+    MR_REGRESSION: "BLOCK"
+    MR_MULTI_REGRESSION: "BLOCK"
+    # Standard mode classifications (N=10, no Wilson intervals; QUALITY_FLOOR_BREACH not available)
+    QUALITY_CHECK_PASS: "ALLOW"
+    QUALITY_CHECK_FAIL: "BLOCK"        # Standard mode equivalent of floor breach (mean-based)
+    # Universal
+    STRUCTURAL_FAIL: "BLOCK"
+
+# ============================================================
+# CONTRACT METADATA
+# ============================================================
+
+metadata:
+  created: "2026-03-07"
+  created_by: "nse-requirements (Stream 1D, PROJ-036)"
+  source_adr: "projects/PROJ-035-skill-optimization/decisions/ADR-001-test-harness-architecture.md"
+  behavioral_contracts_reference: "projects/PROJ-036-prompt-regression-harness/contracts/behavioral-contracts.md"
+  calibration_status: "analytically_derived"
+  calibration_note: "All tolerances are analytically derived. Empirical calibration against >= 100 real output pairs required per FM-009 mitigation before treating as production-grade merge gates."
+  next_review: "After Phase D baseline collection (N >= 100 output pairs per agent)"

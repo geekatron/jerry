@@ -1,0 +1,332 @@
+# Cost Monitor Composite Action
+# CG-012
+#
+# Purpose: Track token counts and LLM API costs during prompt regression evaluations.
+#   Enforces per-workflow budget ceilings to prevent cost overruns from misconfigured
+#   evaluation tiers, runaway retries, or adversarial N manipulation (FR-020, T-20).
+#
+# Usage:
+#   # At evaluation start:
+#   - uses: ./.github/actions/cost-monitor
+#     with:
+#       agent_name: ps-researcher
+#       evaluation_tier: standard
+#       cost_ceiling_usd: "5.00"
+#       token_ceiling_thousands: "500"
+#       phase: start
+#
+#   # After evaluation completes:
+#   - uses: ./.github/actions/cost-monitor
+#     with:
+#       agent_name: ps-researcher
+#       evaluation_tier: standard
+#       cost_ceiling_usd: "5.00"
+#       token_ceiling_thousands: "500"
+#       phase: stop
+#
+# Security controls implemented:
+#   MC-20: Per-workflow budget ceiling ($5 Standard, $50 Full) — alerts on breach (does not halt; see CG-012)
+#   MC-37: Token count logging for evaluation audit trail (DE.CM continuous monitoring)
+#
+# FR traceability:
+#   FR-005: Tiered evaluation mode cost management (Smoke=$0, Standard=~$2, Full=~$5-8)
+#
+# Stream: 3E (CI/CD Pipeline Setup)
+
+name: Cost Monitor
+description: |
+  Track LLM API token counts and costs during prompt regression evaluations.
+  Enforces per-workflow budget ceilings and alerts on threshold breach.
+  Implements MC-20 (cost monitoring) and MC-37 (evaluation audit trail).
+
+inputs:
+  agent_name:
+    description: "Agent identifier being evaluated (e.g., ps-researcher)"
+    required: true
+  evaluation_tier:
+    description: "Evaluation tier: smoke | standard | full"
+    required: true
+  cost_ceiling_usd:
+    description: "Maximum allowed cost in USD before alerting and halting (MC-20)"
+    required: true
+  token_ceiling_thousands:
+    description: "Maximum allowed token count (thousands) before alerting (MC-20)"
+    required: true
+  phase:
+    description: "Phase: 'start' (record baseline) or 'stop' (compute delta and enforce ceiling)"
+    required: true
+
+outputs:
+  budget_status:
+    description: "Budget status: WITHIN_BUDGET | TOKEN_CEILING_EXCEEDED | COST_CEILING_EXCEEDED"
+    value: ${{ steps.enforce-ceiling.outputs.budget_status }}
+  estimated_cost_usd:
+    description: "Estimated cost in USD"
+    value: ${{ steps.enforce-ceiling.outputs.estimated_cost_usd }}
+  total_tokens_k:
+    description: "Total tokens consumed (thousands)"
+    value: ${{ steps.enforce-ceiling.outputs.total_tokens_k }}
+
+runs:
+  using: composite
+  steps:
+
+    # ==========================================================================
+    # Phase: start — record evaluation start time and reset cost counters
+    # ==========================================================================
+    - name: Record evaluation start (phase=start)
+      if: inputs.phase == 'start'
+      shell: bash
+      run: |
+        # MC-20: Initialize cost tracking state for this agent evaluation.
+        # State is stored in the GitHub Actions step summary as a structured record
+        # and in GITHUB_ENV for cross-step propagation within the same job.
+
+        AGENT="${{ inputs.agent_name }}"
+        TIER="${{ inputs.evaluation_tier }}"
+        START_TIME=$(date -u +%s)
+
+        echo "Cost monitor STARTED: agent=${AGENT}, tier=${TIER}"
+        echo "Budget ceilings: USD ${{ inputs.cost_ceiling_usd }}, tokens ${{ inputs.token_ceiling_thousands }}K"
+
+        # Store start time in environment for stop phase
+        echo "COST_MONITOR_START_TIME=${START_TIME}" >> "$GITHUB_ENV"
+        echo "COST_MONITOR_AGENT=${AGENT}" >> "$GITHUB_ENV"
+        echo "COST_MONITOR_TIER=${TIER}" >> "$GITHUB_ENV"
+
+        # Write cost monitor start record to step summary
+        cat >> "$GITHUB_STEP_SUMMARY" << EOF
+        ## Cost Monitor: ${AGENT} (${TIER} tier)
+
+        | Field | Value |
+        |-------|-------|
+        | Agent | ${AGENT} |
+        | Tier | ${TIER} |
+        | Cost ceiling | \$${{ inputs.cost_ceiling_usd }} |
+        | Token ceiling | ${{ inputs.token_ceiling_thousands }}K tokens |
+        | Start time | $(date -u +%Y-%m-%dT%H:%M:%SZ) |
+        EOF
+
+    # ==========================================================================
+    # Phase: stop — read token counts from evaluation output, enforce ceilings
+    # ==========================================================================
+    - name: Compute token counts from evaluation output (phase=stop)
+      if: inputs.phase == 'stop'
+      shell: bash
+      run: |
+        # MC-20: Read token counts from promptfoo output and DeepEval evaluation logs.
+        # These files are written by the promptfoo Docker container and uv run python steps.
+        AGENT="${{ inputs.agent_name }}"
+        TIER="${{ inputs.evaluation_tier }}"
+        START_TIME="${COST_MONITOR_START_TIME:-0}"
+        END_TIME=$(date -u +%s)
+        ELAPSED=$((END_TIME - START_TIME))
+
+        echo "Cost monitor STOPPING: agent=${AGENT}, tier=${TIER}, elapsed=${ELAPSED}s"
+
+        # Read token counts from evaluation result files if available.
+        # Multiple possible output locations depending on tier.
+        RESULT_FILES=(
+          "tests/prompt-regression/results/${TIER}-${AGENT}.json"
+          "tests/prompt-regression/results/smoke-${AGENT}.json"
+        )
+
+        TOTAL_INPUT_TOKENS=0
+        # TOTAL_TOKENS accumulates prompt+completion tokens as reported by promptfoo.
+        # promptfoo folds both prompt and completion counts into tokenUsage.prompt and
+        # tokenUsage.completion respectively (see parsing loop below). A separate
+        # TOTAL_OUTPUT_TOKENS counter is not maintained because promptfoo does not
+        # expose a distinct output-only field in this schema version; both sides are
+        # summed directly into TOTAL_INPUT_TOKENS and then assigned to TOTAL_TOKENS.
+
+        for RESULT_FILE in "${RESULT_FILES[@]}"; do
+          if [ -f "$RESULT_FILE" ]; then
+            # Extract token counts if the promptfoo output includes usage data.
+            # Assumes promptfoo >=0.86.x output schema:
+            #   data.results[].promptResult.tokenUsage.{prompt, completion}
+            # (prompt = input tokens, completion = output tokens in this schema)
+            FILE_INPUT_TOKENS=$(uv run python -c "
+        import json, sys
+        try:
+            with open('$RESULT_FILE') as f:
+                data = json.load(f)
+            # promptfoo output structure: data.results[].promptResult.tokenUsage
+            total = 0
+            results = data.get('results', [])
+            if isinstance(results, list):
+                for r in results:
+                    usage = r.get('promptResult', {}).get('tokenUsage', {})
+                    total += usage.get('prompt', 0) + usage.get('completion', 0)
+            elif isinstance(results, dict):
+                for result_list in results.values():
+                    if isinstance(result_list, list):
+                        for r in result_list:
+                            usage = r.get('tokenUsage', {}) if isinstance(r, dict) else {}
+                            total += usage.get('prompt', 0) + usage.get('completion', 0)
+            print(total)
+        except Exception as e:
+            print(0)
+        " 2>/dev/null || echo 0)
+            TOTAL_INPUT_TOKENS=$((TOTAL_INPUT_TOKENS + FILE_INPUT_TOKENS))
+            echo "Token counts from $RESULT_FILE: ${FILE_INPUT_TOKENS}"
+          fi
+        done
+
+        TOTAL_TOKENS=$((TOTAL_INPUT_TOKENS))
+        TOTAL_TOKENS_K=$(uv run python -c "print(f'{$TOTAL_TOKENS / 1000:.1f}')" 2>/dev/null || echo "0.0")
+
+        # Estimate cost (approximate: claude-sonnet $3/MTok input, $15/MTok output)
+        # Rates as of 2026-03: Anthropic Claude Sonnet 4 pricing ($3/MTok input, $15/MTok output).
+        # Verify current rates at https://www.anthropic.com/pricing before relying on this estimate.
+        # This is a conservative estimate — actual cost depends on model and token split
+        ESTIMATED_COST=$(uv run python -c "
+        tokens = $TOTAL_TOKENS
+        # Estimate 70% input tokens at \$3/MTok, 30% output at \$15/MTok
+        input_cost = (tokens * 0.7 / 1_000_000) * 3.0
+        output_cost = (tokens * 0.3 / 1_000_000) * 15.0
+        total = input_cost + output_cost
+        print(f'{total:.4f}')
+        " 2>/dev/null || echo "0.0000")
+
+        echo "Total tokens: ${TOTAL_TOKENS} (${TOTAL_TOKENS_K}K)"
+        echo "Estimated cost: \$${ESTIMATED_COST}"
+        echo "Elapsed time: ${ELAPSED}s"
+
+        # Store results in environment for ceiling check step
+        echo "COST_MONITOR_TOTAL_TOKENS=${TOTAL_TOKENS}" >> "$GITHUB_ENV"
+        echo "COST_MONITOR_TOTAL_TOKENS_K=${TOTAL_TOKENS_K}" >> "$GITHUB_ENV"
+        echo "COST_MONITOR_ESTIMATED_COST=${ESTIMATED_COST}" >> "$GITHUB_ENV"
+        echo "COST_MONITOR_ELAPSED=${ELAPSED}" >> "$GITHUB_ENV"
+
+    - name: Enforce budget ceilings and write audit record (phase=stop)
+      id: enforce-ceiling
+      if: inputs.phase == 'stop'
+      shell: bash
+      run: |
+        # MC-20: Enforce per-workflow budget ceilings.
+        # Alert (warning) on threshold breach, but do NOT auto-terminate the
+        # current run — it is already complete at this point. The ceiling prevents
+        # STARTING future runs if cost has already exceeded the budget.
+        #
+        # MC-37: Write cost audit record to step summary for evaluation audit trail.
+        AGENT="${{ inputs.agent_name }}"
+        TIER="${{ inputs.evaluation_tier }}"
+        CEILING_USD="${{ inputs.cost_ceiling_usd }}"
+        CEILING_TOKENS_K="${{ inputs.token_ceiling_thousands }}"
+        ESTIMATED_COST="${COST_MONITOR_ESTIMATED_COST:-0.0000}"
+        TOTAL_TOKENS_K="${COST_MONITOR_TOTAL_TOKENS_K:-0.0}"
+        ELAPSED="${COST_MONITOR_ELAPSED:-0}"
+
+        BUDGET_STATUS="WITHIN_BUDGET"
+        BUDGET_ICON=":white_check_mark:"
+
+        # Check token ceiling (exit-code-based: sys.exit(1) on breach, sys.exit(0) on OK).
+        # A Python subprocess error also returns non-zero, so any failure is fail-safe
+        # (breach path triggers) rather than silently masking the ceiling check.
+        CEILING_BREACH=false
+        set +e
+        uv run python -c "
+        import sys
+        actual_k = float('${TOTAL_TOKENS_K}' or '0')
+        ceiling_k = float('${CEILING_TOKENS_K}')
+        if actual_k > ceiling_k:
+            print('BREACH: token ceiling exceeded')
+            sys.exit(1)
+        else:
+            print('OK: within token ceiling')
+            sys.exit(0)
+        "
+        TOKEN_CHECK_EXIT=$?
+        set -e
+        if [ $TOKEN_CHECK_EXIT -ne 0 ]; then
+          CEILING_BREACH=true
+          BUDGET_STATUS="TOKEN_CEILING_EXCEEDED"
+          BUDGET_ICON=":warning:"
+          echo "::warning::Cost monitor: Token ceiling exceeded for agent '${AGENT}'"
+          echo "::warning::Actual: ${TOTAL_TOKENS_K}K tokens | Ceiling: ${CEILING_TOKENS_K}K tokens"
+          echo "::warning::Review evaluation tier configuration and N_RUNS setting"
+        fi
+
+        # Check cost ceiling (exit-code-based: sys.exit(1) on breach, sys.exit(0) on OK).
+        # A Python subprocess error also returns non-zero, so any failure is fail-safe.
+        set +e
+        uv run python -c "
+        import sys
+        actual = float('${ESTIMATED_COST}' or '0')
+        ceiling = float('${CEILING_USD}')
+        if actual > ceiling:
+            print('BREACH: USD ceiling exceeded')
+            sys.exit(1)
+        else:
+            print('OK: within USD ceiling')
+            sys.exit(0)
+        "
+        COST_CHECK_EXIT=$?
+        set -e
+        if [ $COST_CHECK_EXIT -ne 0 ]; then
+          CEILING_BREACH=true
+          BUDGET_STATUS="COST_CEILING_EXCEEDED"
+          BUDGET_ICON=":x:"
+          echo "::error::Cost monitor: USD cost ceiling exceeded for agent '${AGENT}'"
+          echo "::error::Actual: \$${ESTIMATED_COST} | Ceiling: \$${CEILING_USD}"
+          echo "::error::Reduce N_RUNS, switch to a cheaper tier, or increase the ceiling"
+        fi
+
+        # Write audit record to step summary (MC-37)
+        cat >> "$GITHUB_STEP_SUMMARY" << EOF
+
+        ### Cost Monitor Result: ${AGENT}
+
+        | Metric | Value | Status |
+        |--------|-------|--------|
+        | Agent | ${AGENT} | — |
+        | Tier | ${TIER} | — |
+        | Total tokens | ${TOTAL_TOKENS_K}K | ${BUDGET_ICON} vs. ${CEILING_TOKENS_K}K ceiling |
+        | Estimated cost | \$${ESTIMATED_COST} | ${BUDGET_ICON} vs. \$${CEILING_USD} ceiling |
+        | Elapsed time | ${ELAPSED}s | — |
+        | Budget status | ${BUDGET_STATUS} | ${BUDGET_ICON} |
+        EOF
+
+        # Write structured cost record to file for artifact collection
+        mkdir -p tests/prompt-regression/results
+        uv run python -c "
+        import json, os
+        record = {
+            'agent': '${AGENT}',
+            'tier': '${TIER}',
+            'total_tokens_k': float('${TOTAL_TOKENS_K}' or 0),
+            'estimated_cost_usd': float('${ESTIMATED_COST}' or 0),
+            'elapsed_seconds': int('${ELAPSED}' or 0),
+            'ceiling_usd': float('${CEILING_USD}'),
+            'ceiling_tokens_k': float('${CEILING_TOKENS_K}'),
+            'budget_status': '${BUDGET_STATUS}',
+        }
+        output_path = f'tests/prompt-regression/results/cost-{os.environ.get(\"AGENT_ID\", \"${AGENT}\")}.json'
+        with open(output_path, 'w') as f:
+            json.dump(record, f, indent=2)
+        print(f'Cost record written: {output_path}')
+        " 2>/dev/null || echo "Warning: Could not write structured cost record"
+
+        # Propagate values as step outputs for composite action consumers
+        echo "budget_status=${BUDGET_STATUS}" >> "$GITHUB_OUTPUT"
+        echo "estimated_cost_usd=${ESTIMATED_COST}" >> "$GITHUB_OUTPUT"
+        echo "total_tokens_k=${TOTAL_TOKENS_K}" >> "$GITHUB_OUTPUT"
+
+        # Exit non-zero if cost ceiling was exceeded (allows matrix job to flag the breach)
+        # Using warning-only for token ceiling; error for USD ceiling
+        if [ "${BUDGET_STATUS}" = "COST_CEILING_EXCEEDED" ]; then
+          echo "::error::Cost ceiling exceeded — review evaluation configuration"
+          # Note: We do NOT exit 1 here. The evaluation result is the primary gate.
+          # Cost ceiling breach is reported but does not override the regression verdict.
+          # The operator must review and adjust configuration manually.
+        fi
+
+    # ==========================================================================
+    # Noop for invalid phase values
+    # ==========================================================================
+    - name: Validate phase input
+      if: inputs.phase != 'start' && inputs.phase != 'stop'
+      shell: bash
+      run: |
+        echo "::error::Invalid cost-monitor phase: '${{ inputs.phase }}'. Must be 'start' or 'stop'."
+        exit 1

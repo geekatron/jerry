@@ -1,0 +1,421 @@
+# ps-critic Canonical Test Prompts
+# PROJ-036 Baseline Capture -- Stream 1C
+#
+# These prompts exercise ps-critic's core competencies:
+#   - S-014 LLM-as-Judge scoring (6-dimension SSOT weighted composite)
+#   - Leniency bias counteraction (choosing lower score when uncertain)
+#   - Dimension-level independence (not letting strong dimensions pull up weak ones)
+#   - Specific evidence citation for each score
+#   - Constructive improvement recommendations
+#   - Generator-critic-revision cycle participation
+#
+# IMPORTANT: ps-critic requires an artifact to critique. Each prompt includes
+# a fixture artifact (inline text representing the artifact being evaluated).
+# These fixtures are deliberately designed with identifiable quality gaps
+# so that regression can be detected when ps-critic fails to identify them.
+#
+# A degraded ps-critic should fail to: identify the planted gaps,
+# apply the correct SSOT dimension weights, or produce specific evidence.
+# A strong ps-critic scores each dimension independently with specific citations
+# and identifies the planted quality gaps in the fixture artifacts.
+#
+# BEHAVIOR ID CONVENTION:
+#   Behavior IDs (B-001 through B-005 per prompt) are prompt-scoped identifiers.
+#   They cross-reference behavioral contracts in:
+#   projects/PROJ-036-prompt-regression-harness/contracts/behavioral-contracts.md
+#   Mapping: dimension independence behaviors -> Section A.2 (ps-critic invariants);
+#            anti-leniency behaviors -> Section B (quality bounds: methodological_rigor);
+#            gap identification behaviors -> Section B (quality bounds: evidence_quality).
+#
+# G-EVAL CRITERIA:
+#   DeepEval G-Eval evaluates each run against the following criteria strings.
+#   These strings are the exact text passed to DeepEval's GEval metric constructor
+#   as the `criteria` parameter.
+
+agent: "ps-critic"
+system_prompt_path: "skills/problem-solving/agents/ps-critic.md"
+
+# G-Eval evaluation criteria (passed to DeepEval GEval metric as `criteria` parameter)
+# Applied to ALL prompts for this agent unless overridden at the prompt level.
+g_eval_criteria:
+  completeness: >
+    The critique scores all 6 SSOT dimensions (completeness, internal_consistency,
+    methodological_rigor, evidence_quality, actionability, traceability) with a
+    numeric score, specific textual evidence from the artifact, and an improvement
+    recommendation for each. The weighted composite is computed and a verdict
+    (PASS/REVISION/REJECTED) is stated. Score 0.0 if any dimension is missing.
+  internal_consistency: >
+    The weighted composite matches the stated dimension scores when computed using
+    SSOT weights (0.20/0.20/0.20/0.15/0.15/0.10). Scores are internally consistent:
+    a dimension described as "strong" is not given a score below 0.70; a dimension
+    described as "weak" is not given a score above 0.75. The verdict matches the
+    composite score (PASS >= 0.92, REVISION 0.85-0.91, REJECTED < 0.85).
+    Score 0.0 if arithmetic or verdict is inconsistent.
+  methodological_rigor: >
+    The critique applies the S-014 anti-leniency protocol: when uncertain between
+    two adjacent scores, the lower score is chosen and the choice is explained.
+    Dimension scores are not uniformly high (score variance > 0.05 across dimensions
+    expected for the fixture artifacts). Improvement recommendations are specific enough
+    to implement. Score proportionally for anti-leniency protocol application quality.
+  evidence_quality: >
+    Each dimension score is supported by a direct quote or specific reference from the
+    fixture artifact (not a paraphrase). Generic justifications (e.g., "the artifact
+    is incomplete") without textual evidence are insufficient. Score proportionally
+    for evidence specificity and directness.
+  actionability: >
+    Improvement recommendations are specific and implementable. "What to change" is
+    more specific than "improve X". For iterative critique prompts, recommendations
+    are formatted so the generator agent can directly act on them. Score 0.0 if all
+    recommendations are generic or vague.
+  traceability: >
+    The critique references the SSOT document (quality-enforcement.md) for dimension
+    weights. The verdict threshold (0.92, 0.85) is attributed to the SSOT or the
+    prompt specification. Scores are traceable to specific artifact text.
+    Score proportionally for citation and attribution coverage.
+
+prompts:
+  - id: "P-PSC-001"
+    description: "Critique of a research artifact with planted gaps -- tests gap identification and dimension-level scoring independence"
+    # Behavior IDs cross-reference:
+    #   B-001 -> behavioral-contracts.md Section A.2 (ps-critic invariant: all 6 dimensions scored)
+    #   B-002 -> behavioral-contracts.md Section B (quality bounds: evidence_quality, L0 gap identification)
+    #   B-003 -> behavioral-contracts.md Section B (quality bounds: evidence_quality, citation gap identification)
+    #   B-004 -> behavioral-contracts.md Section B (quality bounds: actionability gap identification)
+    #   B-005 -> behavioral-contracts.md Section A (Structural Invariant: SSOT weight arithmetic)
+    user_prompt: |
+      Evaluate the following research artifact using S-014 LLM-as-Judge scoring.
+      Apply the SSOT 6-dimension weighted composite from quality-enforcement.md.
+
+      ARTIFACT TO EVALUATE (type: Research, criticality: C2):
+
+      ---
+      # Authentication Pattern Research
+
+      ## L0: Executive Summary
+
+      JWT tokens are commonly used for authentication. They have expiry times.
+      Refresh tokens extend sessions. This is the industry standard.
+
+      ## L1: Technical Findings
+
+      JWT (JSON Web Token) authentication works by:
+      1. User logs in with credentials
+      2. Server issues JWT with expiry
+      3. Client sends JWT in Authorization header
+      4. Server validates signature
+
+      Refresh tokens allow getting new JWTs without re-authenticating.
+
+      Some systems use Redis to store token blacklists for revocation.
+
+      ## L2: Strategic Implications
+
+      Teams should implement JWT authentication. Consider security implications.
+      Review the implementation regularly.
+      ---
+
+      For each of the 6 SSOT dimensions, provide:
+      1. Score (0.0-1.0)
+      2. Specific evidence from the artifact supporting that score
+      3. What would need to change to raise the score by 0.10
+
+      Then compute the weighted composite.
+
+      Apply anti-leniency: if uncertain between two scores, choose the lower one.
+      Flag any dimension where you noticed yourself being tempted toward leniency.
+
+      State whether this artifact PASSES (>= 0.92), needs REVISION (0.85-0.91), or is REJECTED (< 0.85).
+    expected_behaviors:
+      - "B-001: Scores all 6 SSOT dimensions independently with specific evidence from the artifact"
+      - "B-002: Identifies the weak L0 (lacks analogy, too brief, not accessible) as a low-completeness indicator"
+      - "B-003: Identifies missing citations/sources as evidence_quality gap"
+      - "B-004: Identifies vague L2 ('consider security implications') as low-actionability"
+      - "B-005: Weighted composite correctly computed using SSOT weights (0.20/0.20/0.20/0.15/0.15/0.10)"
+    evaluation_metrics:
+      - "methodological_rigor"
+      - "completeness"
+      - "internal_consistency"
+      - "evidence_quality"
+
+  - id: "P-PSC-002"
+    description: "Critique of a near-threshold artifact -- tests anti-leniency under ambiguity"
+    # Behavior IDs cross-reference:
+    #   B-001 -> behavioral-contracts.md Section A.2 (ps-critic invariant: explicit anti-leniency protocol)
+    #   B-002 -> behavioral-contracts.md Section B (quality bounds: evidence_quality, gap specificity)
+    #   B-003 -> behavioral-contracts.md Section B (quality bounds: internal_consistency, score variance)
+    #   B-004 -> behavioral-contracts.md Section B (quality bounds: evidence_quality, direct quote evidence)
+    #   B-005 -> behavioral-contracts.md Section A (Structural Invariant: verdict with threshold comparison)
+    user_prompt: |
+      Evaluate the following artifact using S-014 LLM-as-Judge scoring.
+
+      ARTIFACT TO EVALUATE (type: Analysis, criticality: C2):
+
+      ---
+      # FMEA Analysis: Statistical Engine Failure Modes
+
+      ## L0: Executive Summary
+
+      The statistical comparison engine in the regression harness has five key failure modes.
+      The most serious is statistical false alarms: when N is too small, random variance
+      produces a regression verdict even when the prompt change is neutral. Think of it like
+      a coin flip test with only 5 flips -- you cannot trust the result.
+
+      ## L1: FMEA Table
+
+      | ID | Failure Mode | S | O | D | RPN | Mitigation |
+      |----|-------------|---|---|---|-----|-----------|
+      | FM-001 | False alarm from small N | 7 | 6 | 4 | 168 | Enforce N >= 20 |
+      | FM-002 | Stale baseline (wrong model version) | 9 | 4 | 4 | 144 | Git hash composite key |
+      | FM-003 | LLM judge bias | 8 | 7 | 5 | 280 | Position randomization |
+      | FM-004 | Cost overrun | 7 | 5 | 4 | 140 | Tiered evaluation modes |
+      | FM-005 | Incomplete test coverage | 9 | 6 | 8 | 432 | Perturbation testing |
+
+      ## L2: Strategic Implications
+
+      FM-005 (coverage gap, RPN 432) is the highest-priority failure mode and is structurally
+      irreducible: any test harness without 100% behavioral coverage has this risk. The
+      mitigation (perturbation testing) reduces but cannot eliminate the risk.
+
+      The two highest-priority risks (FM-005, FM-003) are both partially irreducible,
+      suggesting the harness architecture must accept residual risk rather than eliminating it.
+      This is a normal engineering trade-off.
+
+      Risk density is uneven: FM-001 and FM-004 are addressable; FM-003 and FM-005 require
+      ongoing process discipline, not one-time technical fixes.
+      ---
+
+      Score each of the 6 dimensions independently. Note: this artifact is near the quality
+      gate threshold (somewhere in the 0.80-0.95 range). Apply strict anti-leniency:
+      when uncertain between adjacent scores, choose the lower score and explain why.
+
+      Identify at minimum 2 specific gaps that justify scores below 0.90 on any dimension.
+
+      Compute weighted composite and provide verdict.
+    expected_behaviors:
+      - "B-001: Applies anti-leniency explicitly (references the rule, not just follows it)"
+      - "B-002: Identifies at least 2 specific gaps with textual evidence from the artifact"
+      - "B-003: Does not score all dimensions uniformly high -- shows discrimination across dimensions"
+      - "B-004: Evidence for each score is a direct quote or specific reference from the artifact"
+      - "B-005: Verdict is specific: PASS, REVISION, or REJECTED with threshold comparison"
+    evaluation_metrics:
+      - "methodological_rigor"
+      - "evidence_quality"
+      - "internal_consistency"
+      - "actionability"
+
+  - id: "P-PSC-003"
+    description: "Iterative critique providing improvement recommendations -- tests constructive feedback quality for revision cycles"
+    # Behavior IDs cross-reference:
+    #   B-001 -> behavioral-contracts.md Section A.2 (ps-critic invariant: score before recommendations)
+    #   B-002 -> behavioral-contracts.md Section B (quality bounds: completeness, exactly 3 improvements)
+    #   B-003 -> behavioral-contracts.md Section B (quality bounds: actionability, specific text guidance)
+    #   B-004 -> behavioral-contracts.md Section B (quality bounds: methodological_rigor, score projection specificity)
+    #   B-005 -> behavioral-contracts.md Section B (quality bounds: traceability, URL/citation gap identification)
+    user_prompt: |
+      This is iteration 1 of a creator-critic-revision cycle. Evaluate the artifact below
+      and produce feedback that the generator agent can act on in the next iteration.
+
+      ARTIFACT TO EVALUATE (type: Research, criticality: C2, iteration: 1 of max 3):
+
+      ---
+      # Metamorphic Testing Literature Survey
+
+      ## L0: Summary
+
+      Metamorphic testing is a technique for testing software (including AI systems) when
+      there is no oracle -- no single correct expected output. Instead of checking if output
+      matches an expected value, metamorphic testing checks if relationships between outputs
+      are preserved when inputs are transformed.
+
+      For LLM systems: if we rephrase the prompt, the quality of the output should not change
+      significantly. This is a metamorphic relation.
+
+      ## L1: Technical Findings
+
+      The LLMORPH system (ASE 2025) tested metamorphic relations for LLMs at scale.
+      It reported an 8.6% false positive rate across 560,000 tests.
+
+      Key metamorphic relations for text generation:
+      - Paraphrase consistency: rephrase input, output quality should be similar
+      - Negation handling: negate a false premise in the input, output should change
+      - Irrelevant context: add irrelevant text, output should be unaffected
+
+      Tolerance threshold: a delta of <= 0.05 on a 0-1 quality score is considered neutral.
+
+      ## L2: Strategic Assessment
+
+      Metamorphic testing is mature enough for production use in LLM evaluation.
+      The 8.6% false positive rate is acceptable for a CI/CD gate.
+      Teams should implement MR-001 (paraphrase consistency) first as it has the highest
+      applicability across different task types.
+      ---
+
+      Apply S-014 scoring. Then provide:
+      1. Ordered list of 3 highest-priority improvements for the next iteration
+      2. For each improvement: specific text change needed, not vague guidance
+      3. Projected score increase if the improvement is implemented correctly
+      4. Which dimension each improvement most affects
+
+      The generator needs actionable, specific revision instructions.
+    expected_behaviors:
+      - "B-001: Scores all 6 dimensions with evidence before producing improvement recommendations"
+      - "B-002: Provides exactly 3 prioritized improvements (not more, not fewer)"
+      - "B-003: Each improvement includes specific text guidance (what to write, not just 'add more citations')"
+      - "B-004: Projected score increases are specific per dimension (not just 'will be higher')"
+      - "B-005: Identifies the traceability gap (no URLs for LLMORPH, no source for 8.6% claim) as a priority"
+    evaluation_metrics:
+      - "completeness"
+      - "actionability"
+      - "methodological_rigor"
+      - "internal_consistency"
+
+  - id: "P-PSC-004"
+    description: "Critique of a high-scoring artifact -- tests resistance to awarding near-perfect scores without full justification"
+    # Behavior IDs cross-reference:
+    #   B-001 -> behavioral-contracts.md Section A.2 (ps-critic invariant: score discrimination, not all 0.90+)
+    #   B-002 -> behavioral-contracts.md Section B (quality bounds: evidence_quality, high-score justification)
+    #   B-003 -> behavioral-contracts.md Section B (quality bounds: completeness, missing structure gap)
+    #   B-004 -> behavioral-contracts.md Section B (quality bounds: evidence_quality, unsourced claim identification)
+    #   B-005 -> behavioral-contracts.md Section A (Structural Invariant: threshold-referenced verdict)
+    user_prompt: |
+      Evaluate the following artifact. Be warned: this artifact is polished and may tempt you
+      toward inflated scores. Apply maximum anti-leniency. A score of 0.92 means genuinely
+      excellent across all dimensions -- this is a high bar.
+
+      ARTIFACT TO EVALUATE (type: ADR, criticality: C3):
+
+      ---
+      # ADR-007: Statistical Comparison Engine Module Location
+
+      ## Status
+      Proposed
+
+      ## Context
+      The regression harness requires a Python module implementing Wilcoxon signed-rank tests,
+      Wilson score confidence intervals, and Bonferroni correction for multi-metric comparison.
+      This module may be shared with PROJ-017 (skill evaluation framework).
+
+      Forces:
+      - H-05: UV-only Python execution
+      - H-07: Architecture layer isolation (domain, application, composition root)
+      - DRY principle: avoid duplicating statistical logic across projects
+
+      ## Decision
+      We adopt Option A: jerry/testing/stats.py as a shared module in the Jerry framework core.
+
+      Rationale: the Wilcoxon and Wilson implementations operate on the same data type (float[])
+      regardless of which project invokes them. Placing them in jerry/testing/ follows H-07's
+      composition root pattern while keeping statistical logic out of production domain code.
+
+      The dependency (scipy) is a test-only import, segregated via pyproject.toml [dev] group.
+
+      ## Consequences
+
+      ### Positive
+      - Single implementation maintained in one location
+      - Both PROJ-036 and PROJ-017 import from jerry.testing.stats
+      - H-07 compliant: statistical infrastructure in composition root
+
+      ### Negative
+      - Adding scipy to the dev dependency tree increases install time by ~30 seconds
+      - Any breaking change to stats.py affects both PROJ-036 and PROJ-017 simultaneously
+      - Module location in jerry/testing/ may be non-obvious to new contributors
+      ---
+
+      Score with full anti-leniency discipline. For each dimension below 0.90, identify
+      the specific gap preventing a higher score. For each dimension at or above 0.90,
+      provide the specific evidence that justifies the high score.
+
+      State the final verdict with comparison to the 0.92 quality gate.
+    expected_behaviors:
+      - "B-001: Does not award all dimensions 0.90+ -- identifies at least 2 dimensions with specific gaps below 0.90"
+      - "B-002: For high-scoring dimensions, cites specific text from the artifact as justification"
+      - "B-003: Identifies missing L0/L1/L2 structure as a completeness gap (ADR lacks executive summary structure)"
+      - "B-004: Identifies missing evidence basis for the 30-second scipy install claim as evidence quality gap"
+      - "B-005: Final verdict references the 0.92 threshold explicitly"
+    evaluation_metrics:
+      - "methodological_rigor"
+      - "evidence_quality"
+      - "internal_consistency"
+      - "completeness"
+
+  - id: "P-PSC-005"
+    description: "Cross-iteration comparison critique -- tests ability to assess quality delta between two versions of an artifact"
+    # Behavior IDs cross-reference:
+    #   B-001 -> behavioral-contracts.md Section A.2 (ps-critic invariant: prior feedback addressed check)
+    #   B-002 -> behavioral-contracts.md Section B (quality bounds: completeness, feedback addressed tracking)
+    #   B-003 -> behavioral-contracts.md Section A (Structural Invariant: composite with dual threshold comparison)
+    #   B-004 -> behavioral-contracts.md Section B (quality bounds: actionability, iteration recommendation)
+    #   B-005 -> behavioral-contracts.md Section B (quality bounds: evidence_quality, iteration-2 text only)
+    user_prompt: |
+      You are evaluating ITERATION 2 of an artifact. The creator revised it based on prior
+      critic feedback. Evaluate iteration 2 AND assess whether the revision addressed the feedback.
+
+      ITERATION 1 CRITIC FEEDBACK SUMMARY:
+      - Completeness gap: L2 section was too brief and lacked strategic implications
+      - Evidence quality gap: 3 claims were made without citations
+      - Actionability gap: recommendations were vague ("consider X" rather than "do X")
+      - Composite score: 0.74 (REJECTED)
+
+      ITERATION 2 ARTIFACT (type: Analysis, criticality: C2):
+
+      ---
+      # Analysis: Optimal Sample Size for Baseline Capture
+
+      ## L0: Summary
+
+      Capturing 30 runs per prompt is the recommended baseline sample size.
+      More runs would cost more; fewer runs would reduce statistical power below 80%.
+      Think of it as taking 30 coin flips to estimate a coin's bias -- fewer flips
+      mean wider uncertainty bands around your estimate.
+
+      ## L1: Technical Analysis
+
+      The Wilcoxon signed-rank test requires N >= 20 for the normal approximation to be valid
+      (Hollander & Wolfe, Nonparametric Statistical Methods, 2nd ed., 1999).
+
+      Power analysis at effect size delta=0.05 on a 0-1 scale, sigma=0.10, alpha=0.05:
+      Using Noether's approximation: N >= (1.96 + 0.84)^2 * (0.10)^2 / (0.05)^2 = 31.4
+
+      This rounds to N=32 at conservative sigma. N=30 is chosen as the practical standard,
+      providing 80%+ power at sigma <= 0.10.
+
+      Wilson interval width at N=30, p=0.70: approximately 0.29 (95% CI).
+      At N=20: approximately 0.37. The 21% width reduction at N=30 justifies the
+      10 additional runs.
+
+      Implementation: use `uv add scipy` and `from scipy.stats import wilcoxon`.
+
+      ## L2: Strategic Implications
+
+      The N=30 standard represents a deliberate trade-off between statistical rigor and
+      cost. Each additional run above N=30 reduces the Wilson CI width by approximately
+      1/sqrt(N), producing diminishing returns. At N=50, the CI width reduction versus
+      N=30 is only 12%.
+
+      If API costs increase significantly, N=20 is the defensible floor. Below N=20,
+      the Wilcoxon approximation is unreliable and confidence intervals are too wide to
+      distinguish real regressions from variance.
+
+      Budget monitoring recommendation: track cost per baseline capture in the session log.
+      If full capture exceeds $300, consider reducing to N=20 with explicit documentation
+      of the statistical trade-off.
+      ---
+
+      For each dimension:
+      1. Score with evidence
+      2. Explicitly state whether the prior feedback was addressed
+
+      Compute the composite. State whether the revision improved the score enough to pass
+      the 0.92 gate, and whether additional iteration is recommended.
+    expected_behaviors:
+      - "B-001: Evaluates each dimension against the prior iteration feedback explicitly"
+      - "B-002: Notes which specific pieces of feedback were addressed and which were not"
+      - "B-003: Computes composite and compares to both 0.92 gate and prior score of 0.74"
+      - "B-004: States whether additional iteration is recommended with specific rationale"
+      - "B-005: Evidence citations reference specific text from iteration 2, not iteration 1"
+    evaluation_metrics:
+      - "completeness"
+      - "methodological_rigor"
+      - "internal_consistency"
+      - "actionability"

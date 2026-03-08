@@ -56,7 +56,8 @@
       "Bash(uv run:*)",
       "Bash(wc:*)",
       "Bash(grep:*)",
-      "Skill(prompt-engineering)"
+      "Skill(prompt-engineering)",
+      "Skill(jerry:prompt-engineering)"
     ]
   },
   "hooks": {
