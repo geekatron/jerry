@@ -1,0 +1,39 @@
+{
+  "evaluation_mode": "Full",
+  "agent": "adv-scorer",
+  "prompt_version_baseline": "baseline:adv-scorer",
+  "prompt_version_candidate": "candidate:adv-scorer",
+  "n_baseline": 20,
+  "n_candidate": 20,
+  "timestamp": "2026-03-07T23:26:47.168207+00:00Z",
+  "classification": "REGRESSION",
+  "merge_recommendation": "BLOCK",
+  "dimension_driver": null,
+  "narrative": "Candidate prompt shows statistically significant regression in composite_score (p=0.0000, r=0.877, effect=Medium-to-Large). Mean composite score changed by -0.1718 (A=0.9588 \u2192 B=0.7871).",
+  "bonferroni_corrected": null,
+  "per_metric": {
+    "composite_score": {
+      "statistic": 0.0,
+      "p_value": 1.9073486328125e-06,
+      "mean_delta": -0.1717558503316059,
+      "mean_a": 0.9588446352815525,
+      "mean_b": 0.7870887849499466,
+      "cohens_r": 0.8765230646861663,
+      "effect_size_label": "Medium-to-Large",
+      "classification": "REGRESSION",
+      "rate_class": "RATE_REGRESSION",
+      "wilson_ci_baseline": {
+        "ci_lower": 0.763868806553258,
+        "ci_upper": 0.9911185511992047,
+        "pass_rate": 0.95,
+        "n_pass": 19
+      },
+      "wilson_ci_candidate": {
+        "ci_lower": 0.0,
+        "ci_upper": 0.16112515805281938,
+        "pass_rate": 0.0,
+        "n_pass": 0
+      }
+    }
+  }
+}

@@ -50,10 +50,14 @@ Implement the Four-Layer Composite Test Harness architecture defined in PROJ-035
 | ID | Title | Status | Priority | Progress |
 |----|-------|--------|----------|----------|
 | FEAT-036-001 | Test Harness Implementation | in_progress | critical | 0% |
+| FEAT-036-002 | Gap Analysis: Test Harness Integration Layer | in_progress | critical | 0% |
+| FEAT-036-003 | Gap Closure Remediation | pending | critical | 0% |
 
 ### Feature Links
 
 - [FEAT-036-001: Test Harness Implementation](./FEAT-036-001-implementation/FEAT-036-001-implementation.md)
+- [FEAT-036-002: Gap Analysis: Test Harness Integration Layer](./FEAT-036-002-gap-analysis/FEAT-036-002-gap-analysis.md)
+- [FEAT-036-003: Gap Closure Remediation](./FEAT-036-003-gap-closure/FEAT-036-003-gap-closure.md)
 
 ---
 
@@ -61,10 +65,10 @@ Implement the Four-Layer Composite Test Harness architecture defined in PROJ-035
 
 | Metric | Value |
 |--------|-------|
-| **Total Features** | 1 |
+| **Total Features** | 3 |
 | **Completed Features** | 0 |
-| **In Progress Features** | 1 |
-| **Pending Features** | 0 |
+| **In Progress Features** | 2 |
+| **Pending Features** | 1 |
 | **Feature Completion %** | 0% |
 
 ---

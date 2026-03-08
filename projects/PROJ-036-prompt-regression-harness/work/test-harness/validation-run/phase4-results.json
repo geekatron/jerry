@@ -1,0 +1,52 @@
+[
+  {
+    "agent_id": "ps-researcher",
+    "status": "WARNING",
+    "exit_code": 2,
+    "baseline_mean": 0.8708,
+    "candidate_mean": 0.9303,
+    "phase2_composite": 0.935,
+    "n_samples": 20,
+    "note": "Synthetic baseline -- validation only"
+  },
+  {
+    "agent_id": "ps-analyst",
+    "status": "BLOCK",
+    "exit_code": 1,
+    "baseline_mean": 0.9076,
+    "candidate_mean": 0.5122,
+    "phase2_composite": 0.51,
+    "n_samples": 20,
+    "note": "Synthetic baseline -- validation only"
+  },
+  {
+    "agent_id": "ps-architect",
+    "status": "BLOCK",
+    "exit_code": 1,
+    "baseline_mean": 0.9342,
+    "candidate_mean": 0.8613,
+    "phase2_composite": 0.86,
+    "n_samples": 20,
+    "note": "Synthetic baseline -- validation only"
+  },
+  {
+    "agent_id": "ps-critic",
+    "status": "BLOCK",
+    "exit_code": 1,
+    "baseline_mean": 0.8875,
+    "candidate_mean": 0.5776,
+    "phase2_composite": 0.575,
+    "n_samples": 20,
+    "note": "Synthetic baseline -- validation only"
+  },
+  {
+    "agent_id": "adv-scorer",
+    "status": "BLOCK",
+    "exit_code": 1,
+    "baseline_mean": 0.9588,
+    "candidate_mean": 0.7871,
+    "phase2_composite": 0.785,
+    "n_samples": 20,
+    "note": "Synthetic baseline -- validation only"
+  }
+]

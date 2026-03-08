@@ -80,7 +80,7 @@ Implement the Four-Layer Composite Test Harness architecture defined in PROJ-035
 
 | ID | Type | Title | Status | Priority | Effort |
 |----|------|-------|--------|----------|--------|
-| — | — | Decomposed via 8-group orchestration pipeline | — | — | — |
+| EN-036-001 | enabler | Model Flexibility for G-Eval Judge and Agent Execution | pending | medium | M |
 
 ---
 
@@ -90,7 +90,7 @@ Implement the Four-Layer Composite Test Harness architecture defined in PROJ-035
 |--------|-------|
 | **Total Stories** | 0 |
 | **Completed Stories** | 0 |
-| **Total Enablers** | 0 |
+| **Total Enablers** | 1 |
 | **Completed Enablers** | 0 |
 | **Completion %** | 0% |
 
