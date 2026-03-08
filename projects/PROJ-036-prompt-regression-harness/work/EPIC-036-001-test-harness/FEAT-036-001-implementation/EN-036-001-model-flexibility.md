@@ -7,16 +7,16 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.6
 -->
 
 > **Type:** enabler
-> **Enabler Type:** infrastructure
 > **Status:** pending
 > **Priority:** medium
 > **Impact:** medium
+> **Enabler Type:** infrastructure
 > **Created:** 2026-03-07T00:00:00Z
 > **Due:** —
 > **Completed:** —
 > **Parent:** FEAT-036-001
 > **Owner:** —
-> **Target Sprint:** —
+> **Effort:** —
 
 ---
 

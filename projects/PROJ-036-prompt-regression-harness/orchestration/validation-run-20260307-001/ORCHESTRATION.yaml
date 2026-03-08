@@ -1,0 +1,280 @@
+---
+# ORCHESTRATION.yaml — validation-run-20260307-001
+# PROJ-036-prompt-regression-harness
+# Generated: 2026-03-07 by orch-planner v2.2.0
+# Schema: Jerry Orchestration State v1.0
+
+workflow:
+  id: "validation-run-20260307-001"
+  name: "PROJ-036 Test Harness Validation Pipeline"
+  project: "PROJ-036-prompt-regression-harness"
+  status: "PLANNED"
+  criticality: "C2"
+  pattern: "Pattern 2 — Sequential Pipeline with Fan-Out/Fan-In"
+  date_planned: "2026-03-07"
+  date_started: null
+  date_completed: null
+
+paths:
+  base: "orchestration/validation-run-20260307-001/"
+  pipeline: "orchestration/validation-run-20260307-001/vp/{phase_id}/"
+  run_artifacts: "work/test-harness/validation-run/"
+  cost_ledger: "work/test-harness/cost-ledger.md"
+
+prerequisites:
+  - id: "PRE-001"
+    description: "Python dependencies installed"
+    check_command: "uv run python -c \"import anthropic, dotenv, deepeval, scipy; print('deps OK')\""
+    remediation: "uv add anthropic python-dotenv deepeval scipy"
+    status: "UNKNOWN"
+  - id: "PRE-002"
+    description: "ANTHROPIC_API_KEY loaded from .env"
+    check_command: "uv run python -c \"from dotenv import load_dotenv; import os; load_dotenv(); assert os.getenv('ANTHROPIC_API_KEY'), 'API key missing'\""
+    remediation: "Copy .env.example to .env and populate ANTHROPIC_API_KEY"
+    status: "UNKNOWN"
+
+pipelines:
+  - id: "vp"
+    name: "validation-pipeline"
+    skill_source: "validation-run"
+    phases:
+      - PH-001
+      - PH-002
+      - PH-003
+      - PH-004
+      - PH-005
+
+phases:
+  PH-001:
+    name: "Agent Output Generation"
+    status: "PLANNED"
+    execution_model: "fan-out-wave"
+    waves:
+      wave_1:
+        agents: ["ps-researcher", "ps-analyst", "ps-architect"]
+        parallel: true
+        dependencies: []
+        outputs:
+          - "work/test-harness/validation-run/ps-researcher-output.md"
+          - "work/test-harness/validation-run/ps-analyst-output.md"
+          - "work/test-harness/validation-run/ps-architect-output.md"
+      wave_2:
+        agents: ["ps-critic", "adv-scorer"]
+        parallel: true
+        dependencies:
+          ps-critic: "work/test-harness/validation-run/ps-researcher-output.md"
+          adv-scorer: "work/test-harness/validation-run/ps-architect-output.md"
+        outputs:
+          - "work/test-harness/validation-run/ps-critic-output.md"
+          - "work/test-harness/validation-run/adv-scorer-output.md"
+    checkpoint: "CP-001"
+    started_at: null
+    completed_at: null
+
+  PH-002:
+    name: "Layer 2 G-Eval Scoring"
+    status: "PLANNED"
+    depends_on: "PH-001"
+    execution_model: "parallel"
+    adapter: "DeepEvalAdapter"
+    model: "claude-sonnet-4-20250514"
+    scoring_tasks:
+      - agent_id: "ps-researcher"
+        criteria_file: "jerry/testing/evaluation/criteria/ps_researcher.py"
+        quality_floor: 0.82
+        input: "work/test-harness/validation-run/ps-researcher-output.md"
+        output: "work/test-harness/validation-run/layer2-scores-ps-researcher.md"
+        score: null
+        floor_met: null
+      - agent_id: "ps-analyst"
+        criteria_file: "jerry/testing/evaluation/criteria/ps_analyst.py"
+        quality_floor: 0.85
+        input: "work/test-harness/validation-run/ps-analyst-output.md"
+        output: "work/test-harness/validation-run/layer2-scores-ps-analyst.md"
+        score: null
+        floor_met: null
+      - agent_id: "ps-architect"
+        criteria_file: "jerry/testing/evaluation/criteria/ps_architect.py"
+        quality_floor: 0.88
+        input: "work/test-harness/validation-run/ps-architect-output.md"
+        output: "work/test-harness/validation-run/layer2-scores-ps-architect.md"
+        score: null
+        floor_met: null
+      - agent_id: "ps-critic"
+        criteria_file: "jerry/testing/evaluation/criteria/ps_critic.py"
+        quality_floor: 0.83
+        input: "work/test-harness/validation-run/ps-critic-output.md"
+        output: "work/test-harness/validation-run/layer2-scores-ps-critic.md"
+        score: null
+        floor_met: null
+      - agent_id: "adv-scorer"
+        criteria_file: "jerry/testing/evaluation/criteria/adv_scorer.py"
+        quality_floor: 0.90
+        input: "work/test-harness/validation-run/adv-scorer-output.md"
+        output: "work/test-harness/validation-run/layer2-scores-adv-scorer.md"
+        score: null
+        floor_met: null
+    checkpoint: "CP-002"
+    started_at: null
+    completed_at: null
+
+  PH-003:
+    name: "Layer 3 Metamorphic Relation Validation"
+    status: "PLANNED"
+    depends_on: "PH-002"
+    can_parallel_with: "PH-004"
+    execution_model: "sequential"
+    agents_under_test: ["ps-researcher", "ps-architect"]
+    relations:
+      - id: "MR-001"
+        name: "Paraphrase Consistency"
+        module: "jerry/testing/metamorphic/mr_001_paraphrase.py"
+        n: 5
+        statistically_powered: false
+        note: "ADR-001 requires N>=20 for statistical power; N=5 is smoke test only"
+      - id: "MR-003"
+        name: "Irrelevant Context Appendation"
+        module: "jerry/testing/metamorphic/mr_003_context.py"
+        n: 5
+        statistically_powered: false
+        note: "ADR-001 requires N>=20 for statistical power; N=5 is smoke test only"
+    output: "work/test-harness/validation-run/layer3-mr-results.md"
+    checkpoint: "CP-003"
+    started_at: null
+    completed_at: null
+
+  PH-004:
+    name: "Layer 4 Statistical Comparison Report"
+    status: "PLANNED"
+    depends_on: "PH-002"
+    can_parallel_with: "PH-003"
+    execution_model: "sequential"
+    module: "jerry/testing/layer4_stats.py"
+    class: "Layer4Pipeline"
+    candidate_source: "Phase 2 per-dimension scores"
+    baseline_source: "Phase 2 quality floor values"
+    statistical_methods:
+      - "Wilson score confidence intervals"
+      - "Bonferroni correction (k=6 dimensions)"
+    output: "work/test-harness/validation-run/layer4-statistical-report.md"
+    checkpoint: "CP-004"
+    started_at: null
+    completed_at: null
+
+  PH-005:
+    name: "Adversary Quality Gate"
+    status: "PLANNED"
+    depends_on: ["PH-001", "PH-002", "PH-003", "PH-004"]
+    execution_model: "sequential-with-revision"
+    max_iterations: 3
+    tasks:
+      - "Compile validation-summary.md from Phases 1-4"
+      - "Score against S-014 quality gate"
+      - "Include cost ledger evidence"
+    required_strategies: ["S-007", "S-002", "S-014"]
+    input_artifacts:
+      - "work/test-harness/validation-run/ps-researcher-output.md"
+      - "work/test-harness/validation-run/ps-analyst-output.md"
+      - "work/test-harness/validation-run/ps-architect-output.md"
+      - "work/test-harness/validation-run/ps-critic-output.md"
+      - "work/test-harness/validation-run/adv-scorer-output.md"
+      - "work/test-harness/validation-run/layer2-scores-ps-researcher.md"
+      - "work/test-harness/validation-run/layer2-scores-ps-analyst.md"
+      - "work/test-harness/validation-run/layer2-scores-ps-architect.md"
+      - "work/test-harness/validation-run/layer2-scores-ps-critic.md"
+      - "work/test-harness/validation-run/layer2-scores-adv-scorer.md"
+      - "work/test-harness/validation-run/layer3-mr-results.md"
+      - "work/test-harness/validation-run/layer4-statistical-report.md"
+      - "work/test-harness/cost-ledger.md"
+    output: "work/test-harness/validation-run/adversary-quality-gate.md"
+    started_at: null
+    completed_at: null
+
+checkpoints:
+  CP-001:
+    name: "Phase 1 Complete"
+    phase: "PH-001"
+    gate_condition: "All 5 agent output files exist"
+    expected_artifacts:
+      - "work/test-harness/validation-run/ps-researcher-output.md"
+      - "work/test-harness/validation-run/ps-analyst-output.md"
+      - "work/test-harness/validation-run/ps-architect-output.md"
+      - "work/test-harness/validation-run/ps-critic-output.md"
+      - "work/test-harness/validation-run/adv-scorer-output.md"
+    on_fail: "HALT — report which agent failed to produce output"
+    status: "PENDING"
+    passed_at: null
+
+  CP-002:
+    name: "Phase 2 Complete — Floor Check"
+    phase: "PH-002"
+    gate_condition: "All 5 score files exist; floor violations <= 2"
+    on_fail_floor_1_2: "WARN — log violations, continue to PH-003 and PH-004"
+    on_fail_floor_3_plus: "HALT — 3 or more agents below quality floor"
+    status: "PENDING"
+    floor_violations: 0
+    passed_at: null
+
+  CP-003:
+    name: "Phase 3 Complete"
+    phase: "PH-003"
+    gate_condition: "layer3-mr-results.md exists"
+    on_fail: "LOG error with stack trace; Phase 5 notes MR gap but continues"
+    status: "PENDING"
+    passed_at: null
+
+  CP-004:
+    name: "Phase 4 Complete"
+    phase: "PH-004"
+    gate_condition: "layer4-statistical-report.md exists"
+    on_fail: "LOG error; Phase 5 notes statistical gap but continues"
+    status: "PENDING"
+    passed_at: null
+
+quality:
+  threshold: 0.92
+  criticality: "C2"
+  scoring_mechanism: "S-014"
+  required_strategies:
+    - "S-007"   # Constitutional AI Critique
+    - "S-002"   # Devil's Advocate
+    - "S-014"   # LLM-as-Judge
+  optional_strategies:
+    - "S-003"   # Steelman
+    - "S-010"   # Self-Refine
+  phase_scores: {}
+  barrier_scores: {}
+  workflow_quality: {}
+
+cost_ledger:
+  path: "work/test-harness/cost-ledger.md"
+  pricing_model:
+    model: "claude-sonnet-4-20250514"
+    input_cost_per_million_tokens: 3.00
+    output_cost_per_million_tokens: 15.00
+  total_input_tokens: null
+  total_output_tokens: null
+  total_cost_usd: null
+  per_agent: {}
+
+gaps:
+  - id: "GAP-001"
+    severity: "BLOCKING"
+    description: "Pipeline must ensure Python dependencies are installed before execution"
+    affected_phases: ["PH-001", "PH-002", "PH-003", "PH-004"]
+    required_packages: ["anthropic", "python-dotenv", "deepeval", "scipy"]
+    remediation: "uv add anthropic python-dotenv deepeval scipy"
+    status: "OPEN"
+  - id: "GAP-002"
+    severity: "INFORMATIONAL"
+    description: "Phase 3 MR N=5 is a smoke test only; ADR-001 requires N>=20 for statistical power"
+    affected_phases: ["PH-003"]
+    remediation: "Promote to N>=20 in a follow-on validation run when cost budget permits"
+    status: "ACCEPTED"
+
+metrics:
+  phases_total: 5
+  agents_total: 7
+  checkpoints_total: 4
+  quality_gates_total: 2
+  pipeline_alias: "vp"
