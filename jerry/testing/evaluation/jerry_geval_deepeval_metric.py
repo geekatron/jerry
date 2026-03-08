@@ -33,6 +33,7 @@ import logging
 
 try:
     from deepeval.metrics import BaseMetric, GEval
+    from deepeval.models import AnthropicModel
     from deepeval.test_case import LLMTestCase, LLMTestCaseParams
 except ImportError as exc:  # pragma: no cover
     raise ImportError(
@@ -43,6 +44,11 @@ except ImportError as exc:  # pragma: no cover
     ) from exc
 
 from jerry.testing.evaluation.criterion import QualityCriterion
+from jerry.testing.evaluation.exceptions import (
+    EvaluationAPIError,
+    EvaluationConfigError,
+    EvaluationScoringError,
+)
 from jerry.testing.evaluation.metrics import JerryGEvalMetric
 from jerry.testing.evaluation.scoring_result import ScoringResult
 
@@ -234,14 +240,31 @@ class JerryGEvalDeepEvalMetric(BaseMetric):  # type: ignore[misc]
 
             return composite
 
-        except Exception as exc:  # noqa: BLE001 -- catch-all for adapter resilience
-            logger.error(
-                "DeepEval evaluation failed for agent '%s': %s. "
-                "Returning 0.0. Inspect test output for DeepEval errors.",
+        except EvaluationConfigError:
+            # Config errors must propagate — they indicate CI-breaking
+            # misconfiguration (missing API key, invalid model, etc.).
+            raise
+        except EvaluationAPIError as exc:
+            logger.warning(
+                "Transient API error during evaluation for agent '%s': %s. "
+                "Returning 0.0. The error may resolve on retry.",
                 self._jerry_metric.agent_name,
                 exc,
             )
             return 0.0
+        except EvaluationScoringError as exc:
+            logger.warning(
+                "Scoring failure during evaluation for agent '%s': %s. Returning 0.0.",
+                self._jerry_metric.agent_name,
+                exc,
+            )
+            return 0.0
+        except Exception as exc:  # noqa: BLE001 -- last resort; wrap and surface
+            raise EvaluationScoringError(
+                f"Unexpected error during evaluation for agent "
+                f"'{self._jerry_metric.agent_name}': {exc}",
+                context={"agent": self._jerry_metric.agent_name, "error": str(exc)},
+            ) from exc
 
     def evaluate_criteria(
         self,
@@ -272,6 +295,10 @@ class JerryGEvalDeepEvalMetric(BaseMetric):  # type: ignore[misc]
 
         for criterion in criteria:
             try:
+                # Resolve model: DeepEval requires AnthropicModel for Claude
+                # models; passing a raw string defaults to GPTModel (OpenAI).
+                resolved_model = self._resolve_model()
+
                 # Build per-criterion GEval metric with criterion description
                 # as the sole evaluation step (FR-007 standard GEval pattern).
                 g_eval = GEval(
@@ -281,7 +308,7 @@ class JerryGEvalDeepEvalMetric(BaseMetric):  # type: ignore[misc]
                         LLMTestCaseParams.INPUT,
                         LLMTestCaseParams.ACTUAL_OUTPUT,
                     ],
-                    model=self.model,
+                    model=resolved_model,
                     threshold=0.0,  # Raw score only; pass/fail at adapter level
                 )
                 g_eval.measure(test_case)
@@ -302,9 +329,23 @@ class JerryGEvalDeepEvalMetric(BaseMetric):  # type: ignore[misc]
                     )
                 )
 
-            except Exception as exc:  # noqa: BLE001
+            except EvaluationConfigError:
+                # Config errors must propagate — do not swallow them
+                # per-criterion, as they indicate a CI-breaking setup problem.
+                raise
+            except EvaluationAPIError as exc:
                 logger.warning(
-                    "GEval evaluation failed for criterion '%s' on agent '%s': %s. "
+                    "Transient API error for criterion '%s' on agent '%s': %s. "
+                    "Criterion excluded from composite score.",
+                    criterion.name,
+                    self._jerry_metric.agent_name,
+                    exc,
+                )
+                # score_composite() normalizes by included weights; skipping
+                # a transient-failed criterion degrades gracefully.
+            except EvaluationScoringError as exc:
+                logger.warning(
+                    "Scoring failure for criterion '%s' on agent '%s': %s. "
                     "Criterion excluded from composite score.",
                     criterion.name,
                     self._jerry_metric.agent_name,
@@ -312,8 +353,69 @@ class JerryGEvalDeepEvalMetric(BaseMetric):  # type: ignore[misc]
                 )
                 # Excluded criteria: score_composite() normalizes by the sum
                 # of included weights, so partial failures degrade gracefully.
+            except Exception as exc:  # noqa: BLE001 -- last resort; wrap and log
+                wrapped = EvaluationScoringError(
+                    f"Unexpected error for criterion '{criterion.name}' on agent "
+                    f"'{self._jerry_metric.agent_name}': {exc}",
+                    context={
+                        "criterion": criterion.name,
+                        "agent": self._jerry_metric.agent_name,
+                        "error": str(exc),
+                    },
+                )
+                wrapped.__cause__ = exc
+                logger.warning(
+                    "Unexpected error for criterion '%s' on agent '%s': %s. "
+                    "Criterion excluded from composite score.",
+                    criterion.name,
+                    self._jerry_metric.agent_name,
+                    exc,
+                )
 
         return results
+
+    # CG-013 fix: Case-insensitive detection (gap-analysis-20260307-001).
+    def _resolve_model(self) -> AnthropicModel | str | None:
+        """Resolve the model string to a DeepEval model object.
+
+        DeepEval requires ``AnthropicModel`` for Claude models. Passing a
+        raw ``"claude-*"`` string causes DeepEval to wrap it in ``GPTModel``
+        which requires ``OPENAI_API_KEY``.
+
+        Detection is case-insensitive so mixed-case identifiers such as
+        ``"Claude-Sonnet-4-20250514"`` are handled correctly (CG-013).
+
+        Bedrock/Vertex model identifiers (``"anthropic.claude-*"``) are not
+        supported by the direct ``AnthropicModel`` wrapper and require a
+        different SDK configuration. Passing such an identifier raises a
+        ``ValueError`` to surface the misconfiguration early (CG-024).
+
+        Returns:
+            ``AnthropicModel`` for Claude model strings (case-insensitive),
+            the original string/None for other models (e.g., OpenAI model
+            names).
+
+        Raises:
+            ValueError: If the model string matches the Bedrock/Vertex
+                ``"anthropic.claude*"`` pattern. Use the standard Anthropic
+                SDK configuration for direct API access instead.
+        """
+        if self.model and isinstance(self.model, str):
+            # CG-024: Reject Bedrock/Vertex-style identifiers early.
+            # Case-insensitive for defensive consistency with CG-013.
+            if self.model.lower().startswith("anthropic.claude"):
+                raise ValueError(
+                    f"Model identifier '{self.model}' uses the Bedrock/Vertex "
+                    "naming convention ('anthropic.claude*'). This pattern is not "
+                    "supported by the direct AnthropicModel wrapper in DeepEval. "
+                    "Use a standard Anthropic model identifier (e.g., "
+                    "'claude-3-5-sonnet-20241022') and configure the Anthropic SDK "
+                    "directly. See gap-analysis-20260307-001 CG-024."
+                )
+            # CG-013: Case-insensitive match covers mixed-case identifiers.
+            if self.model.lower().startswith("claude"):
+                return AnthropicModel(model=self.model)
+        return self.model
 
     def _build_reason_string(self, composite_score: float) -> str:
         """Build a human-readable reason string for DeepEval test output.

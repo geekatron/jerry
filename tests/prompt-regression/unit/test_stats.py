@@ -15,6 +15,7 @@ Each test is independent and uses only deterministic, controlled inputs.
 No LLM calls or I/O are performed.
 
 References:
+    - CG-001: Statistical engine public API coverage
     - FR-014: N >= 20 enforcement (InsufficientSamplesError)
     - FR-015: Wilcoxon signed-rank test
     - FR-016: Wilson score confidence intervals
@@ -44,6 +45,8 @@ from jerry.testing.types import (
     MergeDecision,
     RegressionClass,
 )
+
+pytestmark = [pytest.mark.unit]
 
 # ---------------------------------------------------------------------------
 # Helper factories
@@ -81,21 +84,21 @@ def _improved_scores(n: int = 30) -> list[float]:
 
 
 class TestNamedConstants:
-    """Verify the module-level named constants match the FR-specified values."""
+    """Verify the module-level named constants match the FR-specified values (CG-001)."""
 
-    def test_min_statistical_sample_size(self) -> None:
+    def test_min_statistical_sample_size_should_equal_20(self) -> None:
         """FR-014: MIN_STATISTICAL_SAMPLE_SIZE shall be 20."""
         assert MIN_STATISTICAL_SAMPLE_SIZE == 20
 
-    def test_quality_pass_threshold(self) -> None:
+    def test_quality_pass_threshold_should_equal_0_92(self) -> None:
         """FR-016: QUALITY_PASS_THRESHOLD shall be 0.92."""
         assert QUALITY_PASS_THRESHOLD == 0.92
 
-    def test_bonferroni_k_full_suite(self) -> None:
+    def test_bonferroni_k_full_suite_should_equal_13(self) -> None:
         """FR-017: BONFERRONI_K_FULL_SUITE shall be 13."""
         assert BONFERRONI_K_FULL_SUITE == 13
 
-    def test_bonferroni_alpha_full(self) -> None:
+    def test_bonferroni_alpha_full_should_equal_0_004(self) -> None:
         """FR-017: BONFERRONI_ALPHA_FULL shall be 0.004 (conservative rounding of 0.05/13)."""
         assert BONFERRONI_ALPHA_FULL == 0.004
 
@@ -106,7 +109,7 @@ class TestNamedConstants:
 
 
 class TestCompareVersionsNoRegression:
-    """compare_versions() correctly classifies stable arrays as non-blocking.
+    """compare_versions() correctly classifies stable arrays as non-blocking (FR-015, CG-001).
 
     Per behavioral-contracts.md Section D.4:
         p >= alpha_marginal (any r)                 → NO_REGRESSION
@@ -118,7 +121,9 @@ class TestCompareVersionsNoRegression:
     outcome is correct per the contract; neither is a regression.
     """
 
-    def test_compare_versions_similar_arrays_not_blocking(self) -> None:
+    def test_compare_versions_with_similar_arrays_should_not_produce_blocking_classification(
+        self,
+    ) -> None:
         """Two similar score arrays must not produce a blocking classification.
 
         REGRESSION and QUALITY_FLOOR_BREACH are blocking; NO_REGRESSION and
@@ -130,21 +135,21 @@ class TestCompareVersionsNoRegression:
         blocking = {RegressionClass.REGRESSION, RegressionClass.QUALITY_FLOOR_BREACH}
         assert result.classification not in blocking
 
-    def test_compare_versions_similar_arrays_not_block_merge_decision(self) -> None:
+    def test_compare_versions_with_similar_arrays_should_not_block_merge(self) -> None:
         """Similar arrays must not produce BLOCK merge decision."""
         a = _good_scores(30)
         b = _good_scores(30)
         result = compare_versions(a, b, evaluation_mode=EvaluationMode.FULL)
         assert result.merge_decision != MergeDecision.BLOCK
 
-    def test_compare_versions_result_has_correct_metric_id(self) -> None:
+    def test_compare_versions_should_preserve_metric_id_argument(self) -> None:
         """compare_versions() should preserve the metric_id argument."""
         a = _good_scores(30)
         b = _good_scores(30)
         result = compare_versions(a, b, metric_id="my_metric", evaluation_mode=EvaluationMode.FULL)
         assert result.metric_id == "my_metric"
 
-    def test_compare_versions_result_has_sample_sizes(self) -> None:
+    def test_compare_versions_should_include_correct_sample_sizes(self) -> None:
         """compare_versions() result includes correct n_a and n_b fields."""
         a = _good_scores(25)
         b = _good_scores(28)
@@ -154,9 +159,9 @@ class TestCompareVersionsNoRegression:
 
 
 class TestCompareVersionsRegression:
-    """compare_versions() correctly classifies clearly degraded arrays as REGRESSION."""
+    """compare_versions() correctly classifies clearly degraded arrays as REGRESSION (FR-015, CG-001)."""
 
-    def test_compare_versions_regression(self) -> None:
+    def test_compare_versions_with_degraded_array_should_classify_as_regression(self) -> None:
         """Clearly degraded candidate array should produce REGRESSION or MARGINAL classification."""
         # Use extreme degradation to ensure classification
         a = _make_scores_varying(30, 0.93, 0.04)  # baseline: ~0.95 mean
@@ -167,7 +172,7 @@ class TestCompareVersionsRegression:
             RegressionClass.MARGINAL,
         )
 
-    def test_compare_versions_regression_blocks_merge(self) -> None:
+    def test_compare_versions_regression_should_block_or_warn_merge(self) -> None:
         """REGRESSION or QUALITY_FLOOR_BREACH classification should block the merge."""
         a = _make_scores_varying(30, 0.93, 0.04)
         b = _make_scores_varying(30, 0.40, 0.10)
@@ -176,7 +181,7 @@ class TestCompareVersionsRegression:
         # depending on effect size; BLOCK or ALLOW_WITH_WARNING are both valid here.
         assert result.merge_decision in (MergeDecision.BLOCK, MergeDecision.ALLOW_WITH_WARNING)
 
-    def test_compare_versions_regression_negative_mean_delta(self) -> None:
+    def test_compare_versions_regression_should_have_negative_mean_delta(self) -> None:
         """A regressed result should have negative mean_delta (candidate worse than baseline)."""
         a = _make_scores_varying(30, 0.93, 0.04)
         b = _make_scores_varying(30, 0.40, 0.10)
@@ -185,9 +190,9 @@ class TestCompareVersionsRegression:
 
 
 class TestCompareVersionsImprovement:
-    """compare_versions() correctly classifies improved arrays as IMPROVEMENT."""
+    """compare_versions() correctly classifies improved arrays as IMPROVEMENT (FR-015, CG-001)."""
 
-    def test_compare_versions_improvement(self) -> None:
+    def test_compare_versions_with_improved_array_should_classify_as_improvement(self) -> None:
         """Clearly improved candidate should produce IMPROVEMENT or NO_REGRESSION."""
         a = _make_scores_varying(30, 0.50, 0.10)  # baseline: ~0.55 mean
         b = _make_scores_varying(30, 0.93, 0.04)  # candidate: ~0.95 mean (clear improvement)
@@ -197,14 +202,14 @@ class TestCompareVersionsImprovement:
             RegressionClass.NO_REGRESSION,
         )
 
-    def test_compare_versions_improvement_positive_delta(self) -> None:
+    def test_compare_versions_improvement_should_have_positive_delta(self) -> None:
         """An improved result should have a positive mean_delta."""
         a = _make_scores_varying(30, 0.50, 0.10)
         b = _make_scores_varying(30, 0.93, 0.04)
         result = compare_versions(a, b, evaluation_mode=EvaluationMode.FULL)
         assert result.wilcoxon.mean_delta > 0.0
 
-    def test_compare_versions_improvement_allows_with_warning(self) -> None:
+    def test_compare_versions_improvement_should_allow_with_warning(self) -> None:
         """IMPROVEMENT should map to ALLOW_WITH_WARNING (FR-018: exit code 2)."""
         a = _make_scores_varying(30, 0.50, 0.10)
         b = _make_scores_varying(30, 0.93, 0.04)
@@ -213,9 +218,9 @@ class TestCompareVersionsImprovement:
 
 
 class TestCompareVersionsInsufficientSamples:
-    """compare_versions() enforces N >= 20 on both arrays (FR-014)."""
+    """compare_versions() enforces N >= 20 on both arrays (FR-014, CG-001)."""
 
-    def test_compare_versions_insufficient_samples_a(self) -> None:
+    def test_compare_versions_should_raise_for_insufficient_samples_in_a(self) -> None:
         """N < 20 in scores_a should raise InsufficientSamplesError."""
         small_a = _make_scores_varying(19, 0.93, 0.04)
         valid_b = _good_scores(30)
@@ -224,7 +229,7 @@ class TestCompareVersionsInsufficientSamples:
         assert "19" in str(exc_info.value)
         assert "Smoke mode" in str(exc_info.value)
 
-    def test_compare_versions_insufficient_samples_b(self) -> None:
+    def test_compare_versions_should_raise_for_insufficient_samples_in_b(self) -> None:
         """N < 20 in scores_b should raise InsufficientSamplesError."""
         valid_a = _good_scores(30)
         small_b = _make_scores_varying(5, 0.93, 0.04)
@@ -232,7 +237,7 @@ class TestCompareVersionsInsufficientSamples:
             compare_versions(valid_a, small_b, evaluation_mode=EvaluationMode.FULL)
         assert "5" in str(exc_info.value)
 
-    def test_compare_versions_insufficient_samples_error_format(self) -> None:
+    def test_compare_versions_insufficient_samples_error_should_match_fr014_format(self) -> None:
         """FR-014: error message format shall include N values and Smoke mode suggestion."""
         small = _make_scores_varying(10, 0.93, 0.04)
         with pytest.raises(InsufficientSamplesError) as exc_info:
@@ -241,15 +246,15 @@ class TestCompareVersionsInsufficientSamples:
         assert "Wilcoxon requires N >= 20" in error_msg
         assert "Smoke mode" in error_msg
 
-    def test_insufficient_samples_is_value_error_subclass(self) -> None:
+    def test_insufficient_samples_error_should_be_value_error_subclass(self) -> None:
         """InsufficientSamplesError must be a subclass of ValueError."""
         assert issubclass(InsufficientSamplesError, ValueError)
 
 
 class TestCompareVersionsInvalidScores:
-    """compare_versions() rejects score arrays with out-of-range values."""
+    """compare_versions() rejects score arrays with out-of-range values (CG-001)."""
 
-    def test_compare_versions_invalid_scores_above_one(self) -> None:
+    def test_compare_versions_should_reject_scores_above_one(self) -> None:
         """Score > 1.0 should raise InvalidScoreArrayError."""
         bad_scores = _make_scores_varying(30, 0.93, 0.04)
         bad_scores[5] = 1.5  # inject an out-of-range value
@@ -257,7 +262,7 @@ class TestCompareVersionsInvalidScores:
         with pytest.raises(InvalidScoreArrayError):
             compare_versions(bad_scores, valid, evaluation_mode=EvaluationMode.FULL)
 
-    def test_compare_versions_invalid_scores_below_zero(self) -> None:
+    def test_compare_versions_should_reject_scores_below_zero(self) -> None:
         """Score < 0.0 should raise InvalidScoreArrayError."""
         bad_scores = _good_scores(30)
         bad_scores[0] = -0.1
@@ -265,20 +270,20 @@ class TestCompareVersionsInvalidScores:
         with pytest.raises(InvalidScoreArrayError):
             compare_versions(valid, bad_scores, evaluation_mode=EvaluationMode.FULL)
 
-    def test_compare_versions_invalid_scores_empty(self) -> None:
+    def test_compare_versions_should_reject_empty_scores(self) -> None:
         """Empty scores_a should raise either InsufficientSamplesError or InvalidScoreArrayError."""
         with pytest.raises((InsufficientSamplesError, InvalidScoreArrayError)):
             compare_versions([], _good_scores(30), evaluation_mode=EvaluationMode.FULL)
 
-    def test_invalid_score_array_is_value_error_subclass(self) -> None:
+    def test_invalid_score_array_error_should_be_value_error_subclass(self) -> None:
         """InvalidScoreArrayError must be a subclass of ValueError."""
         assert issubclass(InvalidScoreArrayError, ValueError)
 
 
 class TestCompareVersionsIdenticalArrays:
-    """compare_versions() handles all-identical score arrays (degenerate case)."""
+    """compare_versions() handles all-identical score arrays (degenerate case) (CG-001)."""
 
-    def test_compare_versions_identical_arrays_raises(self) -> None:
+    def test_compare_versions_with_identical_arrays_should_raise(self) -> None:
         """All-identical scores defeat significance testing and should raise InvalidScoreArrayError."""
         identical = _make_scores(30, 0.93)
         with pytest.raises(InvalidScoreArrayError):
@@ -286,23 +291,23 @@ class TestCompareVersionsIdenticalArrays:
 
 
 class TestCompareVersionsAlphaValidation:
-    """compare_versions() validates the alpha parameter range."""
+    """compare_versions() validates the alpha parameter range (CG-001)."""
 
-    def test_compare_versions_alpha_too_high(self) -> None:
+    def test_compare_versions_should_reject_alpha_too_high(self) -> None:
         """alpha > 0.10 should raise ValueError."""
         a = _good_scores(30)
         b = _good_scores(30)
         with pytest.raises(ValueError):
             compare_versions(a, b, alpha=0.20, evaluation_mode=EvaluationMode.FULL)
 
-    def test_compare_versions_alpha_too_low(self) -> None:
+    def test_compare_versions_should_reject_alpha_too_low(self) -> None:
         """alpha < 0.001 should raise ValueError."""
         a = _good_scores(30)
         b = _good_scores(30)
         with pytest.raises(ValueError):
             compare_versions(a, b, alpha=0.0001, evaluation_mode=EvaluationMode.FULL)
 
-    def test_compare_versions_bonferroni_alpha_accepted(self) -> None:
+    def test_compare_versions_should_accept_bonferroni_alpha(self) -> None:
         """Bonferroni-corrected alpha (0.05/13 ~ 0.0038) should be accepted."""
         a = _good_scores(30)
         b = _good_scores(30)
@@ -320,9 +325,9 @@ class TestCompareVersionsAlphaValidation:
 
 
 class TestCompareMultipleMetrics:
-    """compare_multiple_metrics() applies Bonferroni correction across metrics."""
+    """compare_multiple_metrics() applies Bonferroni correction across metrics (FR-017, CG-001)."""
 
-    def test_compare_multiple_metrics_bonferroni_k13(self) -> None:
+    def test_compare_multiple_metrics_should_apply_bonferroni_k13(self) -> None:
         """k=13 Bonferroni correction should be applied and reflected in results."""
         a = _good_scores(30)
         b = _good_scores(30)
@@ -343,7 +348,7 @@ class TestCompareMultipleMetrics:
         assert "composite_score" in results
         assert "completeness" in results
 
-    def test_compare_multiple_metrics_returns_bonferroni_config(self) -> None:
+    def test_compare_multiple_metrics_should_return_bonferroni_config(self) -> None:
         """compare_multiple_metrics() returns a BonferroniConfig as second element."""
         a = _good_scores(30)
         b = _good_scores(30)
@@ -352,12 +357,12 @@ class TestCompareMultipleMetrics:
         assert bc is not None
         assert bc.alpha_per_test == bc.alpha_family / bc.k
 
-    def test_compare_multiple_metrics_empty_raises(self) -> None:
+    def test_compare_multiple_metrics_should_raise_for_empty_input(self) -> None:
         """Empty metric_scores dict should raise ValueError."""
         with pytest.raises(ValueError):
             compare_multiple_metrics({}, evaluation_mode=EvaluationMode.FULL)
 
-    def test_compare_multiple_metrics_bonferroni_in_result(self) -> None:
+    def test_compare_multiple_metrics_should_include_bonferroni_in_each_result(self) -> None:
         """Each per-metric result should include the Bonferroni config."""
         a = _good_scores(30)
         b = _good_scores(30)
@@ -377,9 +382,11 @@ class TestCompareMultipleMetrics:
 
 
 class TestWilsonScoreIntervals:
-    """wilson_score_intervals() computes valid confidence intervals."""
+    """wilson_score_intervals() computes valid confidence intervals (FR-016, CG-001)."""
 
-    def test_wilson_score_intervals_known_input(self) -> None:
+    def test_wilson_score_intervals_should_give_perfect_pass_rate_for_all_above_threshold(
+        self,
+    ) -> None:
         """Known input: all 20 scores >= 0.92 should give pass_rate=1.0."""
         scores = [0.93] * 20
         result = wilson_score_intervals(scores)
@@ -387,26 +394,30 @@ class TestWilsonScoreIntervals:
         assert result.n_total == 20
         assert result.n_pass == 20
 
-    def test_wilson_score_intervals_zero_pass_rate(self) -> None:
+    def test_wilson_score_intervals_should_give_zero_pass_rate_for_all_below_threshold(
+        self,
+    ) -> None:
         """All scores below threshold should give pass_rate=0.0."""
         scores = _make_scores_varying(20, 0.50, 0.10)
         result = wilson_score_intervals(scores)
         assert result.pass_rate == 0.0
         assert result.n_pass == 0
 
-    def test_wilson_score_intervals_ci_bounds(self) -> None:
+    def test_wilson_score_intervals_should_have_valid_ci_bounds(self) -> None:
         """Wilson CI lower bound must be <= pass_rate <= upper bound."""
         scores = _make_scores_varying(30, 0.90, 0.06)
         result = wilson_score_intervals(scores)
         assert result.ci_lower <= result.pass_rate <= result.ci_upper
 
-    def test_wilson_score_intervals_ci_width_positive(self) -> None:
+    def test_wilson_score_intervals_should_have_positive_ci_width(self) -> None:
         """CI width should be positive (not a degenerate interval)."""
         scores = _make_scores_varying(30, 0.90, 0.06)
         result = wilson_score_intervals(scores)
         assert result.ci_width > 0.0
 
-    def test_wilson_score_intervals_mixed_scores(self) -> None:
+    def test_wilson_score_intervals_should_produce_fractional_pass_rate_for_mixed_scores(
+        self,
+    ) -> None:
         """Mixed scores produce pass_rate between 0 and 1."""
         # 15 above, 15 below threshold (0.92)
         scores = [0.95] * 15 + [0.85] * 15
@@ -414,20 +425,20 @@ class TestWilsonScoreIntervals:
         assert 0.0 < result.pass_rate < 1.0
         assert result.n_pass == 15
 
-    def test_wilson_score_intervals_invalid_score_raises(self) -> None:
+    def test_wilson_score_intervals_should_reject_out_of_range_score(self) -> None:
         """Out-of-range score should raise InvalidScoreArrayError."""
         scores = _make_scores_varying(20, 0.90, 0.05)
         scores[0] = 1.5
         with pytest.raises(InvalidScoreArrayError):
             wilson_score_intervals(scores)
 
-    def test_wilson_score_intervals_custom_threshold(self) -> None:
+    def test_wilson_score_intervals_should_respect_custom_threshold(self) -> None:
         """Custom threshold parameter should be respected."""
         scores = [0.80] * 20  # all below 0.92 but all above 0.70
         result = wilson_score_intervals(scores, threshold=0.70)
         assert result.pass_rate == 1.0
 
-    def test_wilson_score_intervals_all_identical_accepted(self) -> None:
+    def test_wilson_score_intervals_should_accept_all_identical_scores(self) -> None:
         """All-identical scores are valid for Wilson CI (require_variation=False).
 
         Unlike compare_versions() which requires variation for Wilcoxon,
@@ -447,34 +458,34 @@ class TestWilsonScoreIntervals:
 
 
 class TestMergeDecisionFromClassification:
-    """merge_decision_from_classification() maps every RegressionClass correctly."""
+    """merge_decision_from_classification() maps every RegressionClass correctly (FR-018, CG-001)."""
 
-    def test_merge_decision_regression_blocks(self) -> None:
+    def test_merge_decision_should_block_for_regression(self) -> None:
         """REGRESSION classification shall map to BLOCK merge decision."""
         decision = merge_decision_from_classification(RegressionClass.REGRESSION)
         assert decision == MergeDecision.BLOCK
 
-    def test_merge_decision_quality_floor_breach_blocks(self) -> None:
+    def test_merge_decision_should_block_for_quality_floor_breach(self) -> None:
         """QUALITY_FLOOR_BREACH classification shall map to BLOCK merge decision."""
         decision = merge_decision_from_classification(RegressionClass.QUALITY_FLOOR_BREACH)
         assert decision == MergeDecision.BLOCK
 
-    def test_merge_decision_structural_fail_blocks(self) -> None:
+    def test_merge_decision_should_block_for_structural_fail(self) -> None:
         """STRUCTURAL_FAIL classification shall map to BLOCK merge decision."""
         decision = merge_decision_from_classification(RegressionClass.STRUCTURAL_FAIL)
         assert decision == MergeDecision.BLOCK
 
-    def test_merge_decision_marginal_warns(self) -> None:
+    def test_merge_decision_should_warn_for_marginal(self) -> None:
         """MARGINAL classification shall map to ALLOW_WITH_WARNING."""
         decision = merge_decision_from_classification(RegressionClass.MARGINAL)
         assert decision == MergeDecision.ALLOW_WITH_WARNING
 
-    def test_merge_decision_improvement_warns(self) -> None:
+    def test_merge_decision_should_warn_for_improvement(self) -> None:
         """IMPROVEMENT classification shall map to ALLOW_WITH_WARNING (log but don't block)."""
         decision = merge_decision_from_classification(RegressionClass.IMPROVEMENT)
         assert decision == MergeDecision.ALLOW_WITH_WARNING
 
-    def test_merge_decision_no_regression_allows(self) -> None:
+    def test_merge_decision_should_allow_for_no_regression(self) -> None:
         """NO_REGRESSION classification shall map to ALLOW."""
         decision = merge_decision_from_classification(RegressionClass.NO_REGRESSION)
         assert decision == MergeDecision.ALLOW
@@ -486,32 +497,32 @@ class TestMergeDecisionFromClassification:
 
 
 class TestBonferroniCorrection:
-    """bonferroni_correction() computes correct per-test alpha values."""
+    """bonferroni_correction() computes correct per-test alpha values (FR-017, CG-001)."""
 
-    def test_bonferroni_correction_k13_alpha(self) -> None:
+    def test_bonferroni_correction_should_compute_correct_k13_alpha(self) -> None:
         """k=13 with alpha_family=0.05 should give alpha_per_test = 0.05/13."""
         bc = bonferroni_correction(k=13)
         expected = 0.05 / 13
         assert abs(bc.alpha_per_test - expected) < 1e-10
 
-    def test_bonferroni_correction_k1_unchanged(self) -> None:
+    def test_bonferroni_correction_should_leave_alpha_unchanged_for_k1(self) -> None:
         """k=1 should leave alpha unchanged."""
         bc = bonferroni_correction(k=1)
         assert bc.alpha_per_test == 0.05
 
-    def test_bonferroni_correction_invalid_k(self) -> None:
+    def test_bonferroni_correction_should_reject_invalid_k(self) -> None:
         """k < 1 should raise ValueError."""
         with pytest.raises(ValueError):
             bonferroni_correction(k=0)
 
-    def test_bonferroni_correction_invalid_alpha_family(self) -> None:
+    def test_bonferroni_correction_should_reject_invalid_alpha_family(self) -> None:
         """alpha_family outside (0, 1) should raise ValueError."""
         with pytest.raises(ValueError):
             bonferroni_correction(k=13, alpha_family=1.0)
         with pytest.raises(ValueError):
             bonferroni_correction(k=13, alpha_family=0.0)
 
-    def test_bonferroni_description_included(self) -> None:
+    def test_bonferroni_correction_should_produce_description_with_k_and_alpha(self) -> None:
         """BonferroniConfig.description property should reference k and alpha."""
         bc = bonferroni_correction(k=13)
         desc = bc.description
@@ -525,9 +536,9 @@ class TestBonferroniCorrection:
 
 
 class TestStatsDependencyGuard:
-    """stats.py must only import from types.py — no upstream dependencies (FR-019)."""
+    """stats.py must only import from types.py — no upstream dependencies (FR-019, CG-001)."""
 
-    def test_stats_py_no_forbidden_imports(self) -> None:
+    def test_stats_py_should_have_no_forbidden_imports(self) -> None:
         """Verify stats.py does not import from evaluation, metamorphic, baselines,
         or layer4_stats modules. Uses ast.parse() for static analysis so this
         test fails at CI time if someone adds an illegal import.

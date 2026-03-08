@@ -392,6 +392,34 @@ class Layer4Pipeline:
     # Artifact persistence and CI/CD integration
     # ------------------------------------------------------------------
 
+    @staticmethod
+    def _validate_output_path(path: Path) -> Path:
+        """Validate that an output path is within safe boundaries (CG-025).
+
+        Resolves the path to its absolute form and verifies it is contained
+        within the current working directory.  Paths that resolve outside the
+        CWD (e.g., via ``../`` traversal sequences) are rejected to prevent
+        accidental or malicious writes to arbitrary filesystem locations.
+
+        Args:
+            path: The output path to validate.
+
+        Returns:
+            The resolved absolute Path when validation passes.
+
+        Raises:
+            ValueError: If the resolved path escapes the current working
+                        directory (path traversal rejected).
+        """
+        resolved = path.resolve()
+        cwd = Path.cwd().resolve()
+        if not resolved.is_relative_to(cwd):
+            raise ValueError(
+                f"Output path {path} resolves to {resolved} which is outside "
+                f"the working directory {cwd}. Path traversal rejected (CG-025)."
+            )
+        return resolved
+
     def _persist_report(
         self,
         report: ComparisonReport,
@@ -400,20 +428,28 @@ class Layer4Pipeline:
     ) -> None:
         """Write JSON and Markdown reports to disk if paths are provided.
 
+        Validates each path against the current working directory before
+        writing to prevent path traversal writes (CG-025).
+
         Args:
             report:        The ComparisonReport to persist.
             json_path:     Destination path for JSON report.
             markdown_path: Destination path for Markdown report.
+
+        Raises:
+            ValueError: If either path resolves outside the working directory.
         """
         if json_path is not None:
-            json_path.parent.mkdir(parents=True, exist_ok=True)
-            json_path.write_text(self._gen.to_json(report), encoding="utf-8")
-            logger.info("JSON report written to %s.", json_path)
+            safe_json = self._validate_output_path(json_path)
+            safe_json.parent.mkdir(parents=True, exist_ok=True)
+            safe_json.write_text(self._gen.to_json(report), encoding="utf-8")
+            logger.info("JSON report written to %s.", safe_json)
 
         if markdown_path is not None:
-            markdown_path.parent.mkdir(parents=True, exist_ok=True)
-            markdown_path.write_text(self._gen.to_markdown(report), encoding="utf-8")
-            logger.info("Markdown report written to %s.", markdown_path)
+            safe_md = self._validate_output_path(markdown_path)
+            safe_md.parent.mkdir(parents=True, exist_ok=True)
+            safe_md.write_text(self._gen.to_markdown(report), encoding="utf-8")
+            logger.info("Markdown report written to %s.", safe_md)
 
     @staticmethod
     def _emit_gha_outputs(report: ComparisonReport) -> None:
@@ -443,14 +479,20 @@ class Layer4Pipeline:
             try:
                 with open(gha_output_file, "a", encoding="utf-8") as fh:
                     for key, value in outputs.items():
-                        fh.write(f"{key}={value}\n")
+                        # CG-018A: Sanitize newlines to prevent GHA output format
+                        # corruption. Newlines in values break the key=value\n
+                        # protocol that GitHub Actions uses to parse workflow outputs.
+                        safe_value = str(value).replace("\n", " ").replace("\r", " ")
+                        fh.write(f"{key}={safe_value}\n")
             except OSError as exc:
                 logger.warning("Failed to write GHA outputs: %s", exc)
         else:
             # Local development — emit to stdout for debugging.
             # Uses plain key=value format (GHA ::set-output is deprecated).
             for key, value in outputs.items():
-                logger.info("GHA_OUTPUT %s=%s", key, value)
+                # CG-018A: Sanitize newlines in logged values as well.
+                safe_value = str(value).replace("\n", " ").replace("\r", " ")
+                logger.info("GHA_OUTPUT %s=%s", key, safe_value)
 
     @staticmethod
     def _exit_code(report: ComparisonReport) -> int:
@@ -473,3 +515,210 @@ class Layer4Pipeline:
         if recommendation == MergeDecision.ALLOW_WITH_WARNING.value:
             return 2
         return 0
+
+
+# ------------------------------------------------------------------
+# CLI entry point (CG-001)
+# ------------------------------------------------------------------
+
+
+def main() -> int:
+    """CLI entry point for the Layer 4 statistical comparison pipeline.
+
+    Parses command-line arguments matching the GitHub Actions workflow
+    invocation flags (prompt-regression-full.yml, prompt-regression-standard.yml)
+    and initialises the pipeline.  Pipeline execution is wired via
+    extract_score_arrays() and pipeline.run() (CG-001/CG-002).
+
+    Returns:
+        Exit code: 0 (pass), 1 (regression/error), 2 (marginal) per FR-018.
+
+    References:
+        CG-001: main() argparse entry point (gap-analysis-20260307-001).
+        CG-002: BaselineStore integration (gap-closure-20260307-001).
+        FR-015: Per-agent score extraction and comparison — CLI must accept and route
+                multiple metric score arrays to the pipeline for comparison.
+        FR-016: Statistical significance testing with Wilcoxon signed-rank — mandated
+                as the primary non-parametric test for paired score comparison.
+        FR-017: Bonferroni correction for multiple comparisons — --bonferroni-k overrides
+                the correction factor (default: 13 for full tier, metric count otherwise).
+        FR-018: CI/CD exit codes and GHA outputs — exit 0 (pass), exit 1 (regression),
+                exit 2 (marginal warning); $GITHUB_OUTPUT writes for verdict,
+                merge_recommendation, agent, evaluation_mode.
+    """
+    import argparse  # noqa: PLC0415
+    import json as json_mod  # noqa: PLC0415
+    import re  # noqa: PLC0415
+
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    )
+
+    parser = argparse.ArgumentParser(
+        description="Layer 4 statistical comparison pipeline for prompt regression harness.",
+    )
+    parser.add_argument(
+        "--agent",
+        required=True,
+        help="Agent ID string (e.g., 'ps-researcher').",
+    )
+    parser.add_argument(
+        "--tier",
+        required=True,
+        choices=["smoke", "standard", "full"],
+        help=(
+            "Evaluation tier: smoke (structural checks only, no statistical tests),"
+            " standard (default, all agents, Wilcoxon per metric, k=metric count),"
+            " full (N>=30 statistical baseline, Bonferroni k=13 per FR-017)."
+        ),  # FR-005: Tiered evaluation mode (SMOKE/STANDARD/FULL).
+    )
+    parser.add_argument(
+        "--results-file",
+        required=True,
+        help="Path to promptfoo results JSON file.",
+    )
+    parser.add_argument(
+        "--head-sha",
+        required=True,
+        help="Git HEAD commit SHA.",
+    )
+    parser.add_argument(
+        "--base-sha",
+        default=None,
+        help="Git base commit SHA for comparison (optional).",
+    )
+    parser.add_argument(
+        "--agent-file",
+        default=None,
+        help="Agent definition file path for version key construction (optional).",
+    )
+    parser.add_argument(
+        "--bonferroni-k",
+        type=int,
+        default=None,
+        help=(
+            "Number of simultaneous comparisons for Bonferroni correction;"
+            " defaults to 13 for full tier or metric count for standard tier."
+            " See FR-017."
+        ),  # FR-017: Bonferroni correction factor.
+    )
+    parser.add_argument(
+        "--output-report",
+        default=None,
+        help="Path for JSON report output (optional).",
+    )
+    parser.add_argument(
+        "--output-markdown",
+        default=None,
+        help="Path for Markdown report output (optional).",
+    )
+
+    args = parser.parse_args()
+
+    # --- CG-018B: Validate agent ID format before constructing the pipeline ---
+    # agent_id must start with a lowercase letter and contain only lowercase
+    # alphanumerics, hyphens, and underscores.  This prevents injection of
+    # malformed identifiers into log messages, GHA outputs, and filesystem paths.
+    if not re.match(r"^[a-z][a-z0-9_-]*$", args.agent):
+        logger.error("Invalid agent ID format: %s (must match ^[a-z][a-z0-9_-]*$)", args.agent)
+        return 1
+
+    # --- Validate results file exists and is valid JSON ---
+    results_path = Path(args.results_file)
+    if not results_path.exists():
+        logger.error("Results file does not exist: %s", results_path)
+        return 1
+
+    try:
+        json_mod.loads(results_path.read_text(encoding="utf-8"))
+    except json_mod.JSONDecodeError as exc:
+        logger.error("Results file is not valid JSON: %s — %s", results_path, exc)
+        return 1
+
+    # --- Construct version keys ---
+    if args.agent_file:
+        head_version_key = f"{args.head_sha}:{args.agent_file}"
+    else:
+        head_version_key = args.head_sha
+
+    base_version_key: str | None = None
+    if args.base_sha:
+        if args.agent_file:
+            base_version_key = f"{args.base_sha}:{args.agent_file}"
+        else:
+            base_version_key = args.base_sha
+
+    # --- Create pipeline instance ---
+    # CG-002: BaselineStore is constructed here with the conventional baselines/data
+    # directory.  This path is the agreed storage root for persisted score records
+    # (gap-closure-20260307-001).  Path is anchored to the package root via __file__
+    # to remain correct regardless of the caller's working directory.
+    from jerry.testing.baselines.store import BaselineStore  # noqa: PLC0415
+
+    store = BaselineStore(
+        Path(__file__).parents[3] / "baselines" / "data"
+    )  # NB: __file__-relative; independent of CWD.
+    pipeline = Layer4Pipeline(baseline_store=store)
+
+    # --- Log configuration ---
+    logger.info("Layer 4 pipeline initialised.")
+    logger.info("  agent:            %s", args.agent)
+    logger.info("  tier:             %s", args.tier)
+    logger.info("  results-file:     %s", results_path)
+    logger.info("  head-sha:         %s", args.head_sha)
+    logger.info("  base-sha:         %s", args.base_sha)
+    logger.info("  agent-file:       %s", args.agent_file)
+    logger.info("  head-version-key: %s", head_version_key)
+    logger.info("  base-version-key: %s", base_version_key)
+    logger.info("  bonferroni-k:     %s", args.bonferroni_k)
+    logger.info("  output-report:    %s", args.output_report)
+    logger.info("  output-markdown:  %s", args.output_markdown)
+
+    # --- Extract score arrays from results file (CG-008) ---
+    # extract_score_arrays returns {metric: (head_scores, base_scores)}.
+    # pipeline.run() expects metric_scores as {metric: (scores_a, scores_b)}
+    # where a=baseline (base) and b=candidate (head).  Swap accordingly.
+    from jerry.testing.extraction.promptfoo_extractor import extract_score_arrays  # noqa: PLC0415
+
+    try:
+        raw_arrays = extract_score_arrays(results_path)
+    except (FileNotFoundError, ValueError) as exc:
+        logger.error("Failed to extract score arrays from results file: %s", exc)
+        return 1
+
+    # Swap (head, base) → (base, head) to match pipeline.run() convention (a=baseline).
+    metric_scores = {
+        metric: (base_scores, head_scores)
+        for metric, (head_scores, base_scores) in raw_arrays.items()
+    }
+
+    # --- Map tier string to EvaluationMode enum ---
+    evaluation_mode = EvaluationMode[args.tier.upper()]  # smoke→SMOKE, standard→STANDARD, full→FULL
+
+    # --- Resolve output paths (CG-010) ---
+    output_json_path = Path(args.output_report) if args.output_report else None
+    output_markdown_path = Path(args.output_markdown) if args.output_markdown else None
+
+    # --- Execute pipeline (FR-015, FR-016, FR-017, FR-018) ---
+    # For SMOKE tier: metric_scores is not consumed by _run_smoke(); version_key_a
+    # is used as the structural check key.  For STANDARD/FULL: metric_scores drives
+    # Wilcoxon comparison with optional Bonferroni correction.
+    exit_code = pipeline.run(
+        agent_id=args.agent,
+        version_key_a=base_version_key or head_version_key,
+        version_key_b=head_version_key,
+        metric_scores=metric_scores,
+        evaluation_mode=evaluation_mode,
+        bonferroni_k=args.bonferroni_k,
+        output_json_path=output_json_path,
+        output_markdown_path=output_markdown_path,
+    )
+
+    return exit_code
+
+
+if __name__ == "__main__":
+    import sys  # noqa: PLC0415
+
+    sys.exit(main())

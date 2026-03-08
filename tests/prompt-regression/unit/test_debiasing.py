@@ -28,6 +28,8 @@ from jerry.testing.evaluation.position_randomization_result import (
     PositionRandomizationResult,
 )
 
+pytestmark = [pytest.mark.unit]
+
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
@@ -60,35 +62,35 @@ def seeded_strategy() -> DebiasingStrategy:
 
 
 class TestDebiasingStrategyConstruction:
-    """Tests for DebiasingStrategy construction and parameter validation."""
+    """Tests for DebiasingStrategy construction and parameter validation (FR-021)."""
 
-    def test_default_construction_succeeds(self) -> None:
+    def test_default_construction_should_succeed(self) -> None:
         """Default DebiasingStrategy() should construct without error."""
         strategy = DebiasingStrategy()
         assert strategy.seed is None
         assert strategy.swap_probability == 0.5
 
-    def test_seeded_construction_succeeds(self) -> None:
+    def test_seeded_construction_should_succeed(self) -> None:
         """DebiasingStrategy with seed=42 should construct without error."""
         strategy = DebiasingStrategy(seed=42)
         assert strategy.seed == 42
 
-    def test_swap_probability_above_one_raises(self) -> None:
+    def test_swap_probability_above_one_should_raise(self) -> None:
         """swap_probability > 1.0 should raise ValueError."""
         with pytest.raises(ValueError):
             DebiasingStrategy(swap_probability=1.01)
 
-    def test_swap_probability_below_zero_raises(self) -> None:
+    def test_swap_probability_below_zero_should_raise(self) -> None:
         """swap_probability < 0.0 should raise ValueError."""
         with pytest.raises(ValueError):
             DebiasingStrategy(swap_probability=-0.01)
 
-    def test_swap_probability_boundary_zero(self) -> None:
+    def test_swap_probability_at_zero_boundary_should_be_accepted(self) -> None:
         """swap_probability=0.0 should be accepted (never swap)."""
         strategy = DebiasingStrategy(swap_probability=0.0)
         assert strategy.swap_probability == 0.0
 
-    def test_swap_probability_boundary_one(self) -> None:
+    def test_swap_probability_at_one_boundary_should_be_accepted(self) -> None:
         """swap_probability=1.0 should be accepted (always swap)."""
         strategy = DebiasingStrategy(swap_probability=1.0)
         assert strategy.swap_probability == 1.0
@@ -100,9 +102,9 @@ class TestDebiasingStrategyConstruction:
 
 
 class TestShuffleCriteria:
-    """Tests for DebiasingStrategy.shuffle_criteria()."""
+    """Tests for DebiasingStrategy.shuffle_criteria() — covers FR-021 AC-1."""
 
-    def test_shuffle_criteria_changes_order(
+    def test_shuffle_criteria_should_change_element_order(
         self,
         seeded_strategy: DebiasingStrategy,
         sample_criteria: list[QualityCriterion],
@@ -118,7 +120,7 @@ class TestShuffleCriteria:
         # (probability of same order = 1/720 ≈ 0.14%)
         assert original_order != shuffled_order
 
-    def test_shuffle_criteria_preserves_all_items(
+    def test_shuffle_criteria_should_preserve_all_items(
         self,
         seeded_strategy: DebiasingStrategy,
         sample_criteria: list[QualityCriterion],
@@ -128,7 +130,7 @@ class TestShuffleCriteria:
         assert len(shuffled) == len(sample_criteria)
         assert {c.name for c in shuffled} == {c.name for c in sample_criteria}
 
-    def test_shuffle_criteria_does_not_mutate_original(
+    def test_shuffle_criteria_should_not_mutate_original_list(
         self,
         seeded_strategy: DebiasingStrategy,
         sample_criteria: list[QualityCriterion],
@@ -138,12 +140,14 @@ class TestShuffleCriteria:
         _ = seeded_strategy.shuffle_criteria(sample_criteria)
         assert [c.name for c in sample_criteria] == original_names
 
-    def test_shuffle_criteria_empty_raises(self, seeded_strategy: DebiasingStrategy) -> None:
+    def test_shuffle_criteria_should_raise_for_empty_list(
+        self, seeded_strategy: DebiasingStrategy
+    ) -> None:
         """Empty criteria list should raise ValueError."""
         with pytest.raises(ValueError):
             seeded_strategy.shuffle_criteria([])
 
-    def test_shuffle_criteria_single_item_unchanged(
+    def test_shuffle_criteria_should_leave_single_item_unchanged(
         self, seeded_strategy: DebiasingStrategy
     ) -> None:
         """Single criterion should remain the same after shuffling."""
@@ -152,7 +156,9 @@ class TestShuffleCriteria:
         assert len(shuffled) == 1
         assert shuffled[0].name == "solo"
 
-    def test_shuffle_deterministic_with_seed(self, sample_criteria: list[QualityCriterion]) -> None:
+    def test_shuffle_criteria_should_be_deterministic_with_same_seed(
+        self, sample_criteria: list[QualityCriterion]
+    ) -> None:
         """Two strategies with the same seed should produce the same shuffle."""
         strategy_a = DebiasingStrategy(seed=99)
         strategy_b = DebiasingStrategy(seed=99)
@@ -167,16 +173,18 @@ class TestShuffleCriteria:
 
 
 class TestRandomizeCandidatePositions:
-    """Tests for DebiasingStrategy.randomize_candidate_positions()."""
+    """Tests for DebiasingStrategy.randomize_candidate_positions() — covers FR-021 AC-3."""
 
-    def test_randomize_positions_returns_result(self, seeded_strategy: DebiasingStrategy) -> None:
+    def test_randomize_positions_should_return_result_instance(
+        self, seeded_strategy: DebiasingStrategy
+    ) -> None:
         """randomize_candidate_positions() returns PositionRandomizationResult (FR-021 AC-3)."""
         result = seeded_strategy.randomize_candidate_positions(
             candidate_a="Output A", candidate_b="Output B"
         )
         assert isinstance(result, PositionRandomizationResult)
 
-    def test_randomize_positions_both_candidates_present(
+    def test_randomize_positions_should_include_both_candidates(
         self, seeded_strategy: DebiasingStrategy
     ) -> None:
         """Both candidates must appear in the result regardless of swap."""
@@ -187,7 +195,7 @@ class TestRandomizeCandidatePositions:
         assert "Alpha" in candidates
         assert "Beta" in candidates
 
-    def test_randomize_positions_never_swap_probability(self) -> None:
+    def test_randomize_positions_should_never_swap_at_zero_probability(self) -> None:
         """swap_probability=0.0 should never swap candidates (FR-021 AC-3)."""
         strategy = DebiasingStrategy(swap_probability=0.0, seed=42)
         result = strategy.randomize_candidate_positions(candidate_a="A", candidate_b="B")
@@ -195,7 +203,7 @@ class TestRandomizeCandidatePositions:
         assert result.presented_first == "A"
         assert result.presented_second == "B"
 
-    def test_randomize_positions_always_swap_probability(self) -> None:
+    def test_randomize_positions_should_always_swap_at_one_probability(self) -> None:
         """swap_probability=1.0 should always swap candidates."""
         strategy = DebiasingStrategy(swap_probability=1.0, seed=42)
         result = strategy.randomize_candidate_positions(candidate_a="A", candidate_b="B")
@@ -203,7 +211,9 @@ class TestRandomizeCandidatePositions:
         assert result.presented_first == "B"
         assert result.presented_second == "A"
 
-    def test_randomize_positions_labels_preserved(self, seeded_strategy: DebiasingStrategy) -> None:
+    def test_randomize_positions_should_assign_labels_correctly_after_swap(
+        self, seeded_strategy: DebiasingStrategy
+    ) -> None:
         """Labels should be correctly assigned to the (possibly swapped) candidates."""
         result = seeded_strategy.randomize_candidate_positions(
             candidate_a="Output A",
@@ -218,7 +228,7 @@ class TestRandomizeCandidatePositions:
             assert result.label_first == "Baseline"
             assert result.label_second == "Candidate"
 
-    def test_randomize_positions_deterministic_with_seed(self) -> None:
+    def test_randomize_positions_should_be_deterministic_with_same_seed(self) -> None:
         """Two strategies with the same seed produce the same swap decision."""
         strategy_a = DebiasingStrategy(seed=77)
         strategy_b = DebiasingStrategy(seed=77)
@@ -233,9 +243,11 @@ class TestRandomizeCandidatePositions:
 
 
 class TestResetRng:
-    """Tests for DebiasingStrategy.reset_rng()."""
+    """Tests for DebiasingStrategy.reset_rng() — covers FR-021 determinism."""
 
-    def test_reset_rng_reproduces_sequence(self, sample_criteria: list[QualityCriterion]) -> None:
+    def test_reset_rng_should_reproduce_same_sequence(
+        self, sample_criteria: list[QualityCriterion]
+    ) -> None:
         """After reset_rng(), a seeded strategy should reproduce the same sequence."""
         strategy = DebiasingStrategy(seed=42)
         shuffled_first = [c.name for c in strategy.shuffle_criteria(sample_criteria)]
@@ -250,9 +262,9 @@ class TestResetRng:
 
 
 class TestBuildDebiasedPromptSection:
-    """Tests for DebiasingStrategy.build_debiased_prompt_section()."""
+    """Tests for DebiasingStrategy.build_debiased_prompt_section() — covers FR-021."""
 
-    def test_prompt_section_contains_criteria(
+    def test_prompt_section_should_contain_each_criterion_name(
         self,
         seeded_strategy: DebiasingStrategy,
         sample_criteria: list[QualityCriterion],
@@ -265,7 +277,7 @@ class TestBuildDebiasedPromptSection:
         for c in sample_criteria:
             assert c.name in section
 
-    def test_prompt_section_truncates_long_output(
+    def test_prompt_section_should_truncate_long_output(
         self,
         seeded_strategy: DebiasingStrategy,
         sample_criteria: list[QualityCriterion],

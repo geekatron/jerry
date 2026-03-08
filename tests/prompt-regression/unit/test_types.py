@@ -12,6 +12,7 @@ Tests the data contracts for all types shared across harness layers:
 No LLM calls or I/O performed. All tests are deterministic.
 
 References:
+    - CG-005: Typed exception hierarchy and domain type definitions
     - H-07: Domain module types (stdlib-only imports)
     - H-20: 90% line coverage target
 """
@@ -38,33 +39,35 @@ from jerry.testing.types import (
     WilsonResult,
 )
 
+pytestmark = [pytest.mark.unit]
+
 # ---------------------------------------------------------------------------
 # EvaluationMode
 # ---------------------------------------------------------------------------
 
 
 class TestEvaluationMode:
-    """Verify EvaluationMode enum values match FR-005 specification."""
+    """Verify EvaluationMode enum values match FR-005 specification (CG-005)."""
 
-    def test_smoke_value(self) -> None:
+    def test_smoke_value_should_equal_smoke_string(self) -> None:
         """EvaluationMode.SMOKE should have value 'Smoke'."""
         assert EvaluationMode.SMOKE.value == "Smoke"
 
-    def test_standard_value(self) -> None:
+    def test_standard_value_should_equal_standard_string(self) -> None:
         """EvaluationMode.STANDARD should have value 'Standard'."""
         assert EvaluationMode.STANDARD.value == "Standard"
 
-    def test_full_value(self) -> None:
+    def test_full_value_should_equal_full_string(self) -> None:
         """EvaluationMode.FULL should have value 'Full'."""
         assert EvaluationMode.FULL.value == "Full"
 
-    def test_evaluation_mode_is_str_enum(self) -> None:
+    def test_evaluation_mode_should_be_str_enum(self) -> None:
         """EvaluationMode members should compare equal to their string values."""
         assert EvaluationMode.SMOKE == "Smoke"
         assert EvaluationMode.STANDARD == "Standard"
         assert EvaluationMode.FULL == "Full"
 
-    def test_evaluation_mode_from_value(self) -> None:
+    def test_evaluation_mode_should_be_constructable_from_value(self) -> None:
         """EvaluationMode instances should be constructable from their string value."""
         assert EvaluationMode("Smoke") == EvaluationMode.SMOKE
         assert EvaluationMode("Standard") == EvaluationMode.STANDARD
@@ -77,33 +80,33 @@ class TestEvaluationMode:
 
 
 class TestRegressionClass:
-    """Verify RegressionClass has all six required members."""
+    """Verify RegressionClass has all six required members (CG-005)."""
 
-    def test_no_regression_member(self) -> None:
+    def test_no_regression_member_should_have_correct_value(self) -> None:
         """RegressionClass must have NO_REGRESSION member."""
         assert RegressionClass.NO_REGRESSION.value == "NO_REGRESSION"
 
-    def test_marginal_member(self) -> None:
+    def test_marginal_member_should_have_correct_value(self) -> None:
         """RegressionClass must have MARGINAL member."""
         assert RegressionClass.MARGINAL.value == "MARGINAL"
 
-    def test_regression_member(self) -> None:
+    def test_regression_member_should_have_correct_value(self) -> None:
         """RegressionClass must have REGRESSION member."""
         assert RegressionClass.REGRESSION.value == "REGRESSION"
 
-    def test_improvement_member(self) -> None:
+    def test_improvement_member_should_have_correct_value(self) -> None:
         """RegressionClass must have IMPROVEMENT member."""
         assert RegressionClass.IMPROVEMENT.value == "IMPROVEMENT"
 
-    def test_quality_floor_breach_member(self) -> None:
+    def test_quality_floor_breach_member_should_have_correct_value(self) -> None:
         """RegressionClass must have QUALITY_FLOOR_BREACH member."""
         assert RegressionClass.QUALITY_FLOOR_BREACH.value == "QUALITY_FLOOR_BREACH"
 
-    def test_structural_fail_member(self) -> None:
+    def test_structural_fail_member_should_have_correct_value(self) -> None:
         """RegressionClass must have STRUCTURAL_FAIL member."""
         assert RegressionClass.STRUCTURAL_FAIL.value == "STRUCTURAL_FAIL"
 
-    def test_all_six_members_present(self) -> None:
+    def test_all_six_members_should_be_present(self) -> None:
         """RegressionClass must have exactly 6 members (or more, but the 6 required ones)."""
         member_values = {m.value for m in RegressionClass}
         required = {
@@ -123,13 +126,13 @@ class TestRegressionClass:
 
 
 class TestRateClass:
-    """Verify RateClass enum for Wilson interval comparison."""
+    """Verify RateClass enum for Wilson interval comparison (CG-005)."""
 
-    def test_rate_stable_value(self) -> None:
+    def test_rate_stable_value_should_equal_rate_stable_string(self) -> None:
         """RateClass.RATE_STABLE should have value 'RATE_STABLE'."""
         assert RateClass.RATE_STABLE.value == "RATE_STABLE"
 
-    def test_rate_regression_value(self) -> None:
+    def test_rate_regression_value_should_equal_rate_regression_string(self) -> None:
         """RateClass.RATE_REGRESSION should have value 'RATE_REGRESSION'."""
         assert RateClass.RATE_REGRESSION.value == "RATE_REGRESSION"
 
@@ -140,21 +143,21 @@ class TestRateClass:
 
 
 class TestEffectSizeLabel:
-    """Verify EffectSizeLabel enum values."""
+    """Verify EffectSizeLabel enum values (CG-005)."""
 
-    def test_negligible_value(self) -> None:
+    def test_negligible_value_should_equal_negligible_string(self) -> None:
         """EffectSizeLabel.NEGLIGIBLE should have value 'Negligible'."""
         assert EffectSizeLabel.NEGLIGIBLE.value == "Negligible"
 
-    def test_small_value(self) -> None:
+    def test_small_value_should_equal_small_string(self) -> None:
         """EffectSizeLabel.SMALL should have value 'Small'."""
         assert EffectSizeLabel.SMALL.value == "Small"
 
-    def test_small_to_medium_value(self) -> None:
+    def test_small_to_medium_value_should_equal_small_to_medium_string(self) -> None:
         """EffectSizeLabel.SMALL_TO_MEDIUM should have value 'Small-to-Medium'."""
         assert EffectSizeLabel.SMALL_TO_MEDIUM.value == "Small-to-Medium"
 
-    def test_medium_to_large_value(self) -> None:
+    def test_medium_to_large_value_should_equal_medium_to_large_string(self) -> None:
         """EffectSizeLabel.MEDIUM_TO_LARGE should have value 'Medium-to-Large'."""
         assert EffectSizeLabel.MEDIUM_TO_LARGE.value == "Medium-to-Large"
 
@@ -165,17 +168,17 @@ class TestEffectSizeLabel:
 
 
 class TestMergeDecision:
-    """Verify MergeDecision enum values."""
+    """Verify MergeDecision enum values (CG-005)."""
 
-    def test_allow_value(self) -> None:
+    def test_allow_value_should_equal_allow_string(self) -> None:
         """MergeDecision.ALLOW should have value 'ALLOW'."""
         assert MergeDecision.ALLOW.value == "ALLOW"
 
-    def test_allow_with_warning_value(self) -> None:
+    def test_allow_with_warning_value_should_equal_allow_with_warning_string(self) -> None:
         """MergeDecision.ALLOW_WITH_WARNING should have value 'ALLOW_WITH_WARNING'."""
         assert MergeDecision.ALLOW_WITH_WARNING.value == "ALLOW_WITH_WARNING"
 
-    def test_block_value(self) -> None:
+    def test_block_value_should_equal_block_string(self) -> None:
         """MergeDecision.BLOCK should have value 'BLOCK'."""
         assert MergeDecision.BLOCK.value == "BLOCK"
 
@@ -186,7 +189,7 @@ class TestMergeDecision:
 
 
 class TestBaselineRecord:
-    """BaselineRecord is a mutable dataclass (not frozen)."""
+    """BaselineRecord is a mutable dataclass (not frozen) — covers CG-005."""
 
     def _make_record(self) -> BaselineRecord:
         """Return a fully populated BaselineRecord for testing."""
@@ -204,7 +207,7 @@ class TestBaselineRecord:
             invalidated_by=None,
         )
 
-    def test_baseline_record_fields_present(self) -> None:
+    def test_baseline_record_should_have_all_required_fields(self) -> None:
         """BaselineRecord must have all required fields."""
         record = self._make_record()
         assert record.version_key is not None
@@ -214,13 +217,13 @@ class TestBaselineRecord:
         assert record.baseline_status == "active"
         assert record.invalidated_by is None
 
-    def test_baseline_record_is_mutable(self) -> None:
+    def test_baseline_record_should_be_mutable(self) -> None:
         """BaselineRecord is NOT frozen — it should allow field mutation."""
         record = self._make_record()
         record.baseline_status = "invalidated"
         assert record.baseline_status == "invalidated"
 
-    def test_baseline_record_default_status(self) -> None:
+    def test_baseline_record_should_default_status_to_active(self) -> None:
         """BaselineRecord default baseline_status should be 'active'."""
         record = BaselineRecord(
             version_key="abc" * 13 + "a:skills/x/agents/y.md",
@@ -243,7 +246,7 @@ class TestBaselineRecord:
 
 
 class TestWilcoxonResult:
-    """WilcoxonResult is a frozen dataclass with required fields."""
+    """WilcoxonResult is a frozen dataclass with required fields (CG-005)."""
 
     def _make_wilcoxon_result(self) -> WilcoxonResult:
         return WilcoxonResult(
@@ -257,13 +260,13 @@ class TestWilcoxonResult:
             mean_b=0.94,
         )
 
-    def test_wilcoxon_result_frozen(self) -> None:
+    def test_wilcoxon_result_should_be_frozen(self) -> None:
         """WilcoxonResult should be immutable (frozen=True)."""
         result = self._make_wilcoxon_result()
         with pytest.raises((dataclasses.FrozenInstanceError, AttributeError)):
             result.p_value = 0.99  # type: ignore[misc]
 
-    def test_wilcoxon_result_fields(self) -> None:
+    def test_wilcoxon_result_should_expose_all_required_fields(self) -> None:
         """WilcoxonResult must expose all required fields with correct values."""
         result = self._make_wilcoxon_result()
         assert result.statistic == pytest.approx(150.0)
@@ -282,7 +285,7 @@ class TestWilcoxonResult:
 
 
 class TestWilsonResult:
-    """WilsonResult is a frozen dataclass with confidence interval fields."""
+    """WilsonResult is a frozen dataclass with confidence interval fields (CG-005)."""
 
     def _make_wilson_result(self) -> WilsonResult:
         return WilsonResult(
@@ -294,13 +297,13 @@ class TestWilsonResult:
             ci_width=0.20,
         )
 
-    def test_wilson_result_frozen(self) -> None:
+    def test_wilson_result_should_be_frozen(self) -> None:
         """WilsonResult should be immutable (frozen=True)."""
         result = self._make_wilson_result()
         with pytest.raises((dataclasses.FrozenInstanceError, AttributeError)):
             result.pass_rate = 0.5  # type: ignore[misc]
 
-    def test_wilson_result_fields(self) -> None:
+    def test_wilson_result_should_expose_all_confidence_interval_fields(self) -> None:
         """WilsonResult must expose all confidence interval fields."""
         result = self._make_wilson_result()
         assert result.n_total == 30
@@ -316,16 +319,16 @@ class TestWilsonResult:
 
 
 class TestBonferroniConfig:
-    """BonferroniConfig is a frozen dataclass with a description property."""
+    """BonferroniConfig is a frozen dataclass with a description property (CG-005)."""
 
-    def test_bonferroni_config_description_property(self) -> None:
+    def test_bonferroni_config_description_should_include_k_and_alpha(self) -> None:
         """BonferroniConfig.description should include k and alpha values."""
         bc = BonferroniConfig(k=13, alpha_family=0.05, alpha_per_test=0.05 / 13)
         desc = bc.description
         assert "13" in desc
         assert "Bonferroni" in desc
 
-    def test_bonferroni_config_frozen(self) -> None:
+    def test_bonferroni_config_should_be_frozen(self) -> None:
         """BonferroniConfig should be immutable (frozen=True)."""
         bc = BonferroniConfig(k=13, alpha_family=0.05, alpha_per_test=0.05 / 13)
         with pytest.raises((dataclasses.FrozenInstanceError, AttributeError)):
@@ -338,7 +341,7 @@ class TestBonferroniConfig:
 
 
 class TestRegressionResult:
-    """RegressionResult is a frozen dataclass that consolidates all comparison output."""
+    """RegressionResult is a frozen dataclass that consolidates all comparison output (CG-005)."""
 
     def _make_regression_result(self) -> RegressionResult:
         wilcoxon = WilcoxonResult(
@@ -377,7 +380,7 @@ class TestRegressionResult:
             n_b=30,
         )
 
-    def test_regression_result_fields_present(self) -> None:
+    def test_regression_result_should_expose_all_required_fields(self) -> None:
         """RegressionResult must expose all required fields."""
         result = self._make_regression_result()
         assert result.classification == RegressionClass.NO_REGRESSION
@@ -388,19 +391,19 @@ class TestRegressionResult:
         assert result.agent_id == "ps-researcher"
         assert result.bonferroni is None
 
-    def test_regression_result_frozen(self) -> None:
+    def test_regression_result_should_be_frozen(self) -> None:
         """RegressionResult should be immutable (frozen=True)."""
         result = self._make_regression_result()
         with pytest.raises((dataclasses.FrozenInstanceError, AttributeError)):
             result.classification = RegressionClass.REGRESSION  # type: ignore[misc]
 
-    def test_regression_result_timestamp_populated(self) -> None:
+    def test_regression_result_should_have_populated_timestamp(self) -> None:
         """RegressionResult.timestamp should be auto-populated with a non-empty string."""
         result = self._make_regression_result()
         assert isinstance(result.timestamp, str)
         assert len(result.timestamp) > 0
 
-    def test_regression_result_dimension_driver_default_none(self) -> None:
+    def test_regression_result_should_default_dimension_driver_to_none(self) -> None:
         """RegressionResult.dimension_driver defaults to None."""
         result = self._make_regression_result()
         assert result.dimension_driver is None
@@ -412,7 +415,7 @@ class TestRegressionResult:
 
 
 class TestMultiMetricResult:
-    """MultiMetricResult is a frozen dataclass for aggregated multi-metric results."""
+    """MultiMetricResult is a frozen dataclass for aggregated multi-metric results (CG-005)."""
 
     def _make_multi_metric_result(
         self, dimension_driver: str | None = "completeness"
@@ -427,12 +430,12 @@ class TestMultiMetricResult:
             dimension_driver=dimension_driver,
         )
 
-    def test_multi_metric_result_instantiation(self) -> None:
+    def test_multi_metric_result_should_instantiate_without_error(self) -> None:
         """MultiMetricResult should instantiate without error."""
         result = self._make_multi_metric_result()
         assert result is not None
 
-    def test_multi_metric_result_fields_present(self) -> None:
+    def test_multi_metric_result_should_expose_all_required_fields(self) -> None:
         """MultiMetricResult must expose results, bonferroni, and dimension_driver fields
         with the exact values passed to the constructor."""
         result = self._make_multi_metric_result()
@@ -442,7 +445,7 @@ class TestMultiMetricResult:
         assert result.overall_classification == RegressionClass.NO_REGRESSION
         assert result.merge_decision == MergeDecision.ALLOW
 
-    def test_multi_metric_result_is_frozen(self) -> None:
+    def test_multi_metric_result_should_be_frozen(self) -> None:
         """MultiMetricResult must be immutable (frozen=True)."""
         import dataclasses
 
@@ -450,22 +453,22 @@ class TestMultiMetricResult:
         with pytest.raises((dataclasses.FrozenInstanceError, AttributeError)):
             result.overall_classification = RegressionClass.REGRESSION  # type: ignore[misc]
 
-    def test_multi_metric_result_dimension_driver_none_default(self) -> None:
+    def test_multi_metric_result_should_accept_none_dimension_driver(self) -> None:
         """MultiMetricResult.dimension_driver=None should be accepted."""
         result = self._make_multi_metric_result(dimension_driver=None)
         assert result.dimension_driver is None
 
-    def test_multi_metric_result_dimension_driver_set(self) -> None:
+    def test_multi_metric_result_should_hold_provided_dimension_driver(self) -> None:
         """MultiMetricResult.dimension_driver should hold the provided metric ID."""
         result = self._make_multi_metric_result(dimension_driver="completeness")
         assert result.dimension_driver == "completeness"
 
-    def test_multi_metric_result_per_metric_is_dict(self) -> None:
+    def test_multi_metric_result_per_metric_should_be_dict(self) -> None:
         """MultiMetricResult.per_metric must be a dict."""
         result = self._make_multi_metric_result()
         assert isinstance(result.per_metric, dict)
 
-    def test_multi_metric_result_bonferroni_is_config(self) -> None:
+    def test_multi_metric_result_bonferroni_should_be_config_instance(self) -> None:
         """MultiMetricResult.bonferroni must be a BonferroniConfig instance."""
         result = self._make_multi_metric_result()
         assert isinstance(result.bonferroni, BonferroniConfig)
@@ -477,9 +480,9 @@ class TestMultiMetricResult:
 
 
 class TestScoreArray:
-    """ScoreArray is a type alias for list[float]."""
+    """ScoreArray is a type alias for list[float] (CG-005)."""
 
-    def test_score_array_is_list(self) -> None:
+    def test_score_array_should_be_valid_as_plain_list(self) -> None:
         """ScoreArray values should be valid as plain Python lists."""
         scores: ScoreArray = [0.93, 0.91, 0.95]
         assert isinstance(scores, list)

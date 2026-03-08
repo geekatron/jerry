@@ -51,6 +51,7 @@ import dataclasses
 import hashlib
 import json
 import logging
+import re
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -62,6 +63,12 @@ from jerry.testing.types import (
 )
 
 logger = logging.getLogger(__name__)
+
+#: CG-027: Compiled regex for version key format validation.
+#: Format: "{git_hash}:{file_path}" where:
+#:   - git_hash must be 7-40 lowercase hexadecimal characters (short or full SHA)
+#:   - file_path must not contain newlines or null bytes (injection prevention)
+VERSION_KEY_PATTERN: re.Pattern[str] = re.compile(r"^[0-9a-f]{7,40}:[^\n\r\0]+$")
 
 #: Quality gate threshold for baseline acceptance (mirrors stats.QUALITY_PASS_THRESHOLD).
 #: FR-020 acceptance criterion: "verify that the candidate baseline's quality score
@@ -414,12 +421,22 @@ class BaselineStore:
 
         FR-004: "The composite key format shall be {git_commit_hash}:{file_path}."
 
+        CG-027 strengthened validation:
+            1. Colon-split structural check (original): key must contain ":"
+               with non-empty hash and path components.
+            2. Regex format check (CG-027): git hash must be 7-40 lowercase hex
+               characters; file path must not contain newlines (\\n, \\r) or null
+               bytes (\\0) which would enable log injection or header splitting.
+
         Args:
             version_key: Key to validate.
 
         Raises:
-            ValueError: If the key does not contain exactly one ":" separator.
+            ValueError: If the key does not contain ":" separator, has empty
+                        components, the git hash is not 7-40 lowercase hex chars,
+                        or the path part contains newlines or null bytes.
         """
+        # --- Original colon-split structural check ---
         if ":" not in version_key:
             raise ValueError(
                 f"version_key must follow the format '{{git_hash}}:{{file_path}}', "
@@ -430,3 +447,276 @@ class BaselineStore:
             raise ValueError(
                 f"version_key has empty git hash or file path component: {version_key!r}."
             )
+
+        # --- CG-027: Regex format check ---
+        # Validates git hash is 7-40 lowercase hex chars and path contains no
+        # newlines or null bytes that could cause log injection or file corruption.
+        if not VERSION_KEY_PATTERN.match(version_key):
+            raise ValueError(
+                f"version_key does not match required pattern "
+                f"'^[0-9a-f]{{7,40}}:[^\\n\\r\\0]+$' (CG-027). "
+                f"The git hash must be 7-40 lowercase hexadecimal characters; "
+                f"the file path must not contain newlines or null bytes. "
+                f"Got: {version_key!r}."
+            )
+
+
+# CG-002 fix: __main__ entry point (gap-analysis-20260307-001).
+def main() -> int:
+    """CLI entry point for the BaselineStore management commands.
+
+    Parses command-line arguments matching the GitHub Actions workflow
+    invocation flags (prompt-regression-full.yml, FR-020) and dispatches
+    to the appropriate BaselineStore method.  Score extraction wiring
+    will be added in CG-008.
+
+    Returns:
+        Exit code: 0 on success, 1 on argument/validation errors.
+    """
+    import argparse  # noqa: PLC0415
+    import json as json_mod  # noqa: PLC0415
+
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    )
+
+    parser = argparse.ArgumentParser(
+        description="BaselineStore management CLI for the prompt regression harness.",
+    )
+    parser.add_argument(
+        "--action",
+        required=True,
+        choices=["store", "retrieve", "audit", "invalidate"],
+        help="Action to perform on the baseline store.",
+    )
+    parser.add_argument(
+        "--agent",
+        default=None,
+        help="Agent ID string (e.g., 'ps-researcher'). Required for store/retrieve/invalidate.",
+    )
+    parser.add_argument(
+        "--results-file",
+        default=None,
+        help="Path to promptfoo results JSON file. Required for store.",
+    )
+    parser.add_argument(
+        "--report-file",
+        default=None,
+        help="Path to statistical report JSON file (optional for store).",
+    )
+    parser.add_argument(
+        "--commit-sha",
+        default=None,
+        help="Git HEAD commit SHA. Required for store.",
+    )
+    parser.add_argument(
+        "--tier",
+        default=None,
+        choices=["smoke", "standard", "full"],
+        help="Evaluation tier. Required for store.",
+    )
+    parser.add_argument(
+        "--reason",
+        default=None,
+        help="Logged reason for the action (optional).",
+    )
+    parser.add_argument(
+        "--metric-id",
+        default="composite_score",
+        help="Metric identifier for retrieve/invalidate (default: composite_score).",
+    )
+    parser.add_argument(
+        "--agent-file",
+        default=None,
+        help="Agent definition file path for version key construction (optional).",
+    )
+    parser.add_argument(
+        "--contract-version",
+        default=None,
+        help="Contract version string. Required for invalidate.",
+    )
+
+    args = parser.parse_args()
+
+    # --- Validate action-specific required arguments ---
+    if args.action in ("store", "retrieve", "invalidate") and not args.agent:
+        logger.error("--agent is required for action '%s'.", args.action)
+        return 1
+
+    if args.action == "store":
+        if not args.results_file:
+            logger.error("--results-file is required for action 'store'.")
+            return 1
+        if not args.commit_sha:
+            logger.error("--commit-sha is required for action 'store'.")
+            return 1
+        if not args.tier:
+            logger.error("--tier is required for action 'store'.")
+            return 1
+
+    if args.action == "invalidate" and not args.contract_version:
+        logger.error("--contract-version is required for action 'invalidate'.")
+        return 1
+
+    # --- Resolve store root relative to the project root ---
+    store_root = Path("projects/PROJ-036-prompt-regression-harness/baselines/data")
+    store = BaselineStore(store_root)
+
+    # ------------------------------------------------------------------
+    # Action: store
+    # ------------------------------------------------------------------
+    if args.action == "store":
+        results_path = Path(args.results_file)
+        if not results_path.exists():
+            logger.error("Results file does not exist: %s", results_path)
+            return 1
+
+        try:
+            json_mod.loads(results_path.read_text(encoding="utf-8"))
+        except json_mod.JSONDecodeError as exc:
+            logger.error("Results file is not valid JSON: %s — %s", results_path, exc)
+            return 1
+
+        report_data: dict | None = None
+        if args.report_file:
+            report_path = Path(args.report_file)
+            if report_path.exists():
+                try:
+                    report_data = json_mod.loads(report_path.read_text(encoding="utf-8"))
+                except json_mod.JSONDecodeError as exc:
+                    logger.warning(
+                        "Report file is not valid JSON (skipping): %s — %s",
+                        report_path,
+                        exc,
+                    )
+            else:
+                logger.warning("Report file does not exist (skipping): %s", report_path)
+
+        # --- Construct version key from commit SHA and optional agent-file path ---
+        if args.agent_file:
+            version_key = f"{args.commit_sha}:{args.agent_file}"
+        else:
+            version_key = f"{args.commit_sha}:{args.agent}"
+
+        # --- Log configuration ---
+        logger.info("BaselineStore store action initiated.")
+        logger.info("  agent:        %s", args.agent)
+        logger.info("  tier:         %s", args.tier)
+        logger.info("  results-file: %s", results_path)
+        logger.info("  report-file:  %s", args.report_file)
+        logger.info("  commit-sha:   %s", args.commit_sha)
+        logger.info("  agent-file:   %s", args.agent_file)
+        logger.info("  version-key:  %s", version_key)
+        logger.info("  reason:       %s", args.reason)
+        if report_data is not None:
+            logger.info("  report:       loaded (%d top-level keys)", len(report_data))
+
+        # TODO(CG-008): Extract scores from results file and wire into store.store().
+        # Score extraction requires the promptfoo results schema parser which will be
+        # implemented as part of the Layer 2 results adapter.  For now, log that the
+        # store invocation was received and exit cleanly to unblock CI.
+        logger.info(
+            "TODO(CG-008): Score extraction not yet wired. "
+            "Store invocation received for agent=%s version=%s.",
+            args.agent,
+            version_key,
+        )
+        return 0
+
+    # ------------------------------------------------------------------
+    # Action: retrieve
+    # ------------------------------------------------------------------
+    if args.action == "retrieve":
+        version_key_retrieve: str
+        if args.commit_sha and args.agent_file:
+            version_key_retrieve = f"{args.commit_sha}:{args.agent_file}"
+        elif args.commit_sha:
+            version_key_retrieve = f"{args.commit_sha}:{args.agent}"
+        else:
+            logger.error("retrieve requires --commit-sha to construct the version key.")
+            return 1
+
+        logger.info(
+            "Retrieving baseline: agent=%s metric=%s version=%s",
+            args.agent,
+            args.metric_id,
+            version_key_retrieve,
+        )
+        try:
+            record = store.retrieve(
+                version_key=version_key_retrieve,
+                agent_id=args.agent,
+                metric_id=args.metric_id,
+            )
+        except ValueError as exc:
+            logger.error("Retrieve failed: %s", exc)
+            return 1
+
+        if record is None:
+            logger.info(
+                "No baseline found for agent=%s metric=%s version=%s.",
+                args.agent,
+                args.metric_id,
+                version_key_retrieve,
+            )
+            print(json_mod.dumps(None))
+        else:
+            import dataclasses as dc  # noqa: PLC0415
+
+            print(json_mod.dumps(dc.asdict(record), indent=2))
+        return 0
+
+    # ------------------------------------------------------------------
+    # Action: audit
+    # ------------------------------------------------------------------
+    if args.action == "audit":
+        logger.info("Running baseline audit on store root: %s", store_root)
+        entries = store.audit()
+        if not entries:
+            print("No baseline records found.")
+            return 0
+
+        # Print formatted table header
+        header = (
+            f"{'agent_id':<24} {'metric_id':<20} {'status':<12} "
+            f"{'mean':>6} {'n':>4} {'age_days':>9} version_key"
+        )
+        print(header)
+        print("-" * len(header))
+        for entry in entries:
+            print(
+                f"{entry.agent_id:<24} {entry.metric_id:<20} "
+                f"{entry.baseline_status:<12} {entry.mean_score:>6.4f} "
+                f"{entry.n_runs:>4} {entry.age_days:>9.1f} "
+                f"{entry.version_key}"
+            )
+        return 0
+
+    # ------------------------------------------------------------------
+    # Action: invalidate
+    # ------------------------------------------------------------------
+    if args.action == "invalidate":
+        logger.info(
+            "Invalidating baselines: agent=%s metric=%s contract-version=%s",
+            args.agent,
+            args.metric_id,
+            args.contract_version,
+        )
+        count = store.invalidate(
+            agent_id=args.agent,
+            metric_id=args.metric_id,
+            contract_version=args.contract_version,
+        )
+        logger.info("Invalidated %d record(s).", count)
+        return 0
+
+    # Unreachable: argparse choices enforce valid actions.
+    logger.error("Unhandled action: %s", args.action)
+    return 1
+
+
+if __name__ == "__main__":
+    import sys  # noqa: PLC0415
+
+    sys.exit(main())

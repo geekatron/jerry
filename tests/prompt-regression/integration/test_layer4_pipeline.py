@@ -19,6 +19,7 @@ References:
     - FR-018: CI/CD exit codes (0/1/2)
     - FR-019: One-way dependency rule (stats.py -> types.py only)
     - H-20: 90% line coverage target
+    - WI-5B: FIX-WI5-B integration marker enforcement
     - behavioral-contracts.md Section D.6: ComparisonReport schema
 """
 
@@ -37,6 +38,9 @@ from jerry.testing.types import (
     MergeDecision,
     RegressionClass,
 )
+
+# H-20: 90% line coverage target. WI-5B: integration marker enforcement.
+pytestmark = [pytest.mark.integration]
 
 # ---------------------------------------------------------------------------
 # Helper factories
@@ -780,8 +784,10 @@ class TestPersistReport:
         mock_store: MagicMock,
         mock_generator: MagicMock,
         tmp_path,
+        monkeypatch,
     ) -> None:
         """_persist_report() writes JSON file when json_path is provided."""
+        monkeypatch.setattr("os.getcwd", lambda: str(tmp_path))
         scores = _make_scores(30)
         json_path = tmp_path / "report.json"
 
@@ -803,8 +809,10 @@ class TestPersistReport:
         mock_store: MagicMock,
         mock_generator: MagicMock,
         tmp_path,
+        monkeypatch,
     ) -> None:
         """_persist_report() writes Markdown file when output_markdown_path is provided."""
+        monkeypatch.setattr("os.getcwd", lambda: str(tmp_path))
         scores = _make_scores(30)
         md_path = tmp_path / "report.md"
 
@@ -826,8 +834,10 @@ class TestPersistReport:
         mock_store: MagicMock,
         mock_generator: MagicMock,
         tmp_path,
+        monkeypatch,
     ) -> None:
         """_persist_report() creates parent directories for JSON output."""
+        monkeypatch.setattr("os.getcwd", lambda: str(tmp_path))
         scores = _make_scores(30)
         nested_json = tmp_path / "nested" / "deep" / "report.json"
 
