@@ -122,7 +122,7 @@ class ParseTranscriptCommandHandler:
                     for seg in parse_result.segments
                 ],
             }
-            canonical_path.write_text(json.dumps(canonical_data, indent=2))
+            canonical_path.write_text(json.dumps(canonical_data, indent=2), encoding="utf-8")
 
             # Generate chunks if requested
             index_path = None
@@ -139,7 +139,7 @@ class ParseTranscriptCommandHandler:
                 index_path = chunker.chunk(parse_result.segments, str(output_dir))
 
                 # Count chunks from index
-                index_data = json.loads(Path(index_path).read_text())
+                index_data = json.loads(Path(index_path).read_text(encoding="utf-8"))
                 chunk_count = index_data.get("total_chunks", 0)
 
             # Collect warnings

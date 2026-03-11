@@ -162,11 +162,11 @@ class ToonSerializer:
         # Check for TOON indicators
         if ":" in text and not text.startswith("{"):
             # Look for tabular array header pattern
-            if "[" in text.split("\n")[0] and "]" in text.split("\n")[0]:
+            if "[" in text.splitlines()[0] and "]" in text.splitlines()[0]:
                 return OutputFormat.TOON
             # Look for key: value pattern without braces
-            if "\n" in text:
-                lines = text.split("\n")
+            if "\n" in text or "\r\n" in text:
+                lines = text.splitlines()
                 if any(":" in line and not line.strip().startswith("{") for line in lines):
                     return OutputFormat.TOON
 
@@ -363,9 +363,10 @@ class ToonSerializer:
 
     def _decode_toon(self, text: str) -> Any:
         """Decode TOON format to Python data."""
-        lines = text.strip().split("\n")
-        if not lines:
-            return None
+        stripped = text.strip()
+        if not stripped:
+            return {}
+        lines = stripped.splitlines()
 
         # Check for tabular array
         first_line = lines[0].strip()
