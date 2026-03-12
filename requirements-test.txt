@@ -2,7 +2,7 @@
 #    uv pip compile pyproject.toml --extra test -o requirements-test.txt
 coverage==7.13.4
     # via pytest-cov
-gherkin-official==29.0.0
+gherkin-official==39.0.0
     # via pytest-bdd
 iniconfig==2.3.0
     # via pytest
