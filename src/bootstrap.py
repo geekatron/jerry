@@ -784,6 +784,46 @@ def create_ci_detect_bump_type_handler(
     )
 
 
+
+# =============================================================================
+# Documentation Generation Factories (PROJ-0037)
+# =============================================================================
+
+
+def create_docs_generator() -> Any:
+    """Create a fully configured GenerateDocsCommandHandler.
+
+    Wires YamlFrontmatterReader -> SkillExtractor -> Jinja2Renderer ->
+    GenerateDocsCommandHandler following the composition root pattern.
+
+    Returns:
+        GenerateDocsCommandHandler ready to handle GenerateDocsCommand.
+
+    References:
+        - PROJ-0037: Auto-Documentation Module
+        - ADR-PROJ0037-001: Doc Module Design
+        - BUG-001: Replaced AstFrontmatterReader with YamlFrontmatterReader
+    """
+    from src.docs.application.handlers.commands.generate_docs_command_handler import (
+        GenerateDocsCommandHandler,
+    )
+    from src.docs.application.services.skill_extractor import SkillExtractor
+    from src.docs.infrastructure.adapters.jinja2_renderer import Jinja2Renderer
+    from src.docs.infrastructure.adapters.yaml_frontmatter_reader import (
+        YamlFrontmatterReader,
+    )
+
+    reader = YamlFrontmatterReader()
+    extractor = SkillExtractor(reader=reader)
+    renderer = Jinja2Renderer(template_dir=".context/templates/docs")
+
+    return GenerateDocsCommandHandler(
+        extractor=extractor,
+        renderer=renderer,
+        reader=reader,
+    )
+
+
 def reset_singletons() -> None:
     """Reset all module-level singletons (for testing).
 

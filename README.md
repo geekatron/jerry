@@ -106,12 +106,39 @@ Jerry provides **skills**—natural language interfaces you invoke with slash co
 
 | Skill | Purpose | Example |
 |-------|---------|---------|
-| `/problem-solving` | Research, analysis, root cause investigation | "Research OAuth2 patterns" |
-| `/worktracker` | Task and work item management | "Create a task for login feature" |
-| `/nasa-se` | Systems engineering (NPR 7123.1D) | "Define requirements for API" |
-| `/orchestration` | Multi-phase workflow coordination | "Orchestrate the release pipeline" |
-| `/architecture` | Design decisions and ADRs | "Create ADR for caching strategy" |
-| `/transcript` | Meeting transcript parsing | "Parse the meeting notes" |
+<!-- BEGIN:GENERATED:SKILLS_TABLE -->
+| `/adversary` | On-demand adversarial quality reviews using strategy temp... | "Run adversarial review on this ADR" |
+| `/architecture` | This skill should be used when the user asks to "design s... | "Create ADR for caching strategy" |
+| `/ast` | Markdown AST operations for Jerry documents. Provides str... | "Validate entity frontmatter" |
+| `/bootstrap` | This skill should be used when the user says "bootstrap",... | "Bootstrap Jerry" |
+| `/contract-design` | API contract generation from use case realization artifac... | "Generate OpenAPI contract from use case" |
+| `/diataxis` | Four-quadrant documentation framework. Produces tutorials... | "Write a tutorial for the CLI" |
+| `/eng-team` | Secure engineering team skill providing methodology guida... | "Threat model the auth service" |
+| `/nasa-se` | NASA Systems Engineering skill implementing NPR 7123.1D p... | "Define requirements for API" |
+| `/orchestration` | Multi-agent workflow orchestration with state tracking, c... | "Orchestrate the release pipeline" |
+| `/pm-pmm` | Product management and product marketing decision framewo... | "Create product strategy PRD" |
+| `/problem-solving` | Structured problem-solving framework with specialized age... | "Research OAuth2 patterns" |
+| `/prompt-engineering` | Structured prompt construction and quality validation for... | "Build structured prompt for analysis" |
+| `/red-team` | Offensive security team skill providing methodology guida... | "Recon the target application" |
+| `/saucer-boy` | Session conversational voice with McConkey personality. I... | "Give me a pep talk" |
+| `/saucer-boy-framework-voice` | INTERNAL SKILL — auto-loaded for framework output voice q... | "Auto-loaded for output text" |
+| `/test-spec` | BDD test specification generation from use case artifacts... | "Generate test specification" |
+| `/transcript` | Parse, extract, and format transcripts (VTT, SRT, plain t... | "Parse the meeting notes" |
+| `/use-case` | Guided use case authoring and decomposition using Cockbur... | "Create use case for login flow" |
+| `/user-experience` | Parent orchestrator for AI-augmented UX methodology targe... | "Run UX audit on dashboard" |
+| `/ux-ai-first-design` | AI-first interaction design sub-skill (CONDITIONAL) for t... | "Evaluate AI-first design patterns" |
+| `/ux-atomic-design` | Atomic Design component taxonomy sub-skill for the /user-... | "Build component taxonomy" |
+| `/ux-behavior-design` | Fogg Behavior Model B=MAP bottleneck diagnosis sub-skill ... | "Map user behavior triggers" |
+| `/ux-design-sprint` | AJ&Smart Design Sprint 2.0 facilitation sub-skill for the... | "Plan 5-day design sprint" |
+| `/ux-heart-metrics` | HEART Metrics framework sub-skill for the /user-experienc... | "Define HEART metrics for feature" |
+| `/ux-heuristic-eval` | Nielsen heuristic evaluation sub-skill for the /user-expe... | "Run heuristic evaluation" |
+| `/ux-inclusive-design` | Inclusive design and WCAG 2.2 accessibility evaluation su... | "Audit for accessibility compliance" |
+| `/ux-jtbd` | Jobs-to-Be-Done research and analysis sub-skill for the /... | "Map jobs to be done" |
+| `/ux-kano-model` | Kano model feature classification and prioritization sub-... | "Classify features with Kano model" |
+| `/ux-lean-ux` | Lean UX hypothesis-driven design sub-skill for the /user-... | "Define lean UX hypothesis" |
+| `/worktracker` | Work item tracking and task management using the Jerry Fr... | "Create a task for login feature" |
+
+<!-- END:GENERATED:SKILLS_TABLE -->
 
 ### Example Session
 
@@ -132,11 +159,19 @@ All outputs are **persisted to files**, surviving context compaction and buildin
 
 ## Features
 
-- **Structured Problem-Solving**: 8 specialized agents (researcher, analyst, architect, validator, synthesizer, reviewer, investigator, reporter)
-- **Work Tracking**: Local task management with status, priorities, and dependencies
-- **Knowledge Accrual**: Persistent artifacts in `docs/` that survive session boundaries
-- **NASA Systems Engineering**: NPR 7123.1D processes for mission-grade rigor
-- **Multi-Agent Orchestration**: Coordinate complex workflows with checkpointing
+<!-- BEGIN:GENERATED:FEATURES -->
+- **89 Specialized Agents** across 30 skills — from research and analysis to security testing and infrastructure hardening. See [AGENTS.md](AGENTS.md) for the full registry.
+- **Structured Problem-Solving**: 9 agents (researcher, analyst, architect, validator, synthesizer, reviewer, critic, investigator, reporter) with adversarial quality gates
+- **Work Tracking**: Local task management with status, priorities, dependencies, and template-enforced consistency
+- **Knowledge Accrual**: Persistent artifacts in `projects/` that survive session boundaries
+- **NASA Systems Engineering**: 10 agents implementing NPR 7123.1D processes for mission-grade rigor
+- **Multi-Agent Orchestration**: Coordinate complex workflows with parallel pipelines, sync barriers, and checkpointing
+- **Adversarial Quality Reviews**: 10 adversarial strategies (Red Team, Devil's Advocate, Pre-Mortem, FMEA, and more) with LLM-as-Judge scoring
+- **Secure Engineering**: 10 agents covering threat modeling (STRIDE), secure code review (OWASP ASVS), DevSecOps pipelines, and incident response
+- **Offensive Security**: 11 agents covering the full MITRE ATT&CK kill chain — reconnaissance through reporting — with mandatory scope authorization
+- **AST-Based Parsing**: Structured markdown frontmatter extraction for worktracker entities and validation
+
+<!-- END:GENERATED:FEATURES -->
 
 ## Documentation
 

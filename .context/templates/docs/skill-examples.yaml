@@ -1,0 +1,46 @@
+# skill-examples.yaml
+#
+# Static one-line examples for each Jerry skill, rendered in the README.md
+# skills table "Example" column.
+#
+# Key:   skill name (matches the `name` field in skills/*/SKILL.md frontmatter)
+# Value: quoted example string as it appears in the README table cell
+#
+# Source: README.md skills table (seeded from A2 README-draft.md via
+#         cross-workstream synthesis 2026-03-08).
+#
+# Maintenance: Update this file when a skill is added, removed, or renamed.
+# The auto-doc module reads this file during `jerry docs generate`.
+#
+# Count: 30 skills
+
+adversary: '"Run adversarial review on this ADR"'
+architecture: '"Create ADR for caching strategy"'
+ast: '"Validate entity frontmatter"'
+bootstrap: '"Bootstrap Jerry"'
+contract-design: '"Generate OpenAPI contract from use case"'
+diataxis: '"Write a tutorial for the CLI"'
+eng-team: '"Threat model the auth service"'
+nasa-se: '"Define requirements for API"'
+orchestration: '"Orchestrate the release pipeline"'
+pm-pmm: '"Create product strategy PRD"'
+problem-solving: '"Research OAuth2 patterns"'
+prompt-engineering: '"Build structured prompt for analysis"'
+red-team: '"Recon the target application"'
+saucer-boy: '"Give me a pep talk"'
+saucer-boy-framework-voice: '"Auto-loaded for output text"'
+test-spec: '"Generate test specification"'
+transcript: '"Parse the meeting notes"'
+use-case: '"Create use case for login flow"'
+user-experience: '"Run UX audit on dashboard"'
+ux-ai-first-design: '"Evaluate AI-first design patterns"'
+ux-atomic-design: '"Build component taxonomy"'
+ux-behavior-design: '"Map user behavior triggers"'
+ux-design-sprint: '"Plan 5-day design sprint"'
+ux-heart-metrics: '"Define HEART metrics for feature"'
+ux-heuristic-eval: '"Run heuristic evaluation"'
+ux-inclusive-design: '"Audit for accessibility compliance"'
+ux-jtbd: '"Map jobs to be done"'
+ux-kano-model: '"Classify features with Kano model"'
+ux-lean-ux: '"Define lean UX hypothesis"'
+worktracker: '"Create a task for login feature"'
