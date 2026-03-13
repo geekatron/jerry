@@ -123,6 +123,22 @@ repos:
         stages: [pre-commit]
 
   # =============================================================================
+  # README Documentation Drift Detection (PROJ-0037)
+  # Runs `jerry docs generate --check` to verify README skills table and
+  # features section match current SKILL.md files. Fails if drift detected.
+  # Fix: uv run jerry docs generate --write
+  # =============================================================================
+  - repo: local
+    hooks:
+      - id: check-docs
+        name: Check README documentation sections
+        entry: uv run --frozen python scripts/check_docs.py
+        language: system
+        files: (skills/.*/SKILL\.md|\.context/templates/docs/|README\.md|src/docs/)
+        pass_filenames: false
+        stages: [pre-commit]
+
+  # =============================================================================
   # Test Suite (configurable stage)
   # Uses uv run to ensure correct dependency management (DISC-008)
   # =============================================================================
