@@ -56,7 +56,12 @@
       "Bash(uv run:*)",
       "Bash(wc:*)",
       "Bash(grep:*)",
-      "Skill(prompt-engineering)"
+      "Skill(prompt-engineering)",
+      "Bash(gh issue:*)",
+      "Bash(which dot:*)",
+      "Bash(dot:*)",
+      "Bash(git:*)",
+      "Bash(unlink:*)"
     ]
   },
   "hooks": {
