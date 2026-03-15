@@ -1,0 +1,3 @@
+# Generated canary files — run generate_canaries.py to create
+# Not committed because pre-commit detect-private-key blocks PEM headers
+*/canary.txt

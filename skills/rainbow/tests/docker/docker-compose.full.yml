@@ -1,0 +1,322 @@
+# =============================================================================
+# Rainbow Series -- Full E2E Docker Compose
+# =============================================================================
+# Brings up ALL domain containers for end-to-end testing.
+# Extends docker-compose.base.yml with a test-runner service.
+#
+# Usage:
+#   # Full E2E (all domains):
+#   docker compose -f docker-compose.full.yml up --build
+#
+#   # Specific domain only:
+#   docker compose -f docker-compose.full.yml up --build rainbow-supply-chain test-runner
+#
+#   # Blue-team only:
+#   docker compose -f docker-compose.full.yml up --build blue-detection blue-compliance test-runner
+#
+# SLSA: Build process documented (Level 1)
+# =============================================================================
+
+x-common-env: &common-env
+  JERRY_PROJECT: "${JERRY_PROJECT:-PROJ-023}"
+  RAINBOW_LOG_LEVEL: "${RAINBOW_LOG_LEVEL:-INFO}"
+  CREDENTIAL_FILTER_ENABLED: "true"
+  CREDENTIAL_FILTER_ENTROPY_THRESHOLD: "4.5"
+  CREDENTIAL_FILTER_MIN_STRING_LENGTH: "16"
+
+x-common-volumes: &common-volumes
+  - type: bind
+    source: ../fixtures
+    target: /fixtures
+    read_only: true
+  - type: bind
+    source: ../fixtures/canary
+    target: /fixtures/canary
+    read_only: true
+  - type: volume
+    source: shared-output
+    target: /output
+
+x-healthcheck-defaults: &healthcheck-defaults
+  interval: 30s
+  timeout: 10s
+  retries: 3
+  start_period: 10s
+
+services:
+  # =========================================================================
+  # /rainbow Domain Services
+  # =========================================================================
+
+  rainbow-supply-chain:
+    build:
+      context: ./supply-chain
+      dockerfile: Dockerfile
+    container_name: rainbow-supply-chain
+    environment:
+      <<: *common-env
+      DOMAIN: "supply-chain"
+    volumes: *common-volumes
+    networks:
+      - rainbow-net
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "syft", "version"]
+
+  rainbow-recon:
+    build:
+      context: ./recon
+      dockerfile: Dockerfile
+    container_name: rainbow-recon
+    environment:
+      <<: *common-env
+      DOMAIN: "recon"
+      RECON_SCOPE: "localhost,127.0.0.0/8,10.0.0.0/8"
+    volumes: *common-volumes
+    networks:
+      - rainbow-net
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "subfinder", "-version"]
+
+  rainbow-cloud:
+    build:
+      context: ./cloud
+      dockerfile: Dockerfile
+    container_name: rainbow-cloud
+    environment:
+      <<: *common-env
+      DOMAIN: "cloud"
+      AWS_ACCESS_KEY_ID: ""
+      AWS_SECRET_ACCESS_KEY: ""
+    volumes: *common-volumes
+    networks:
+      - rainbow-net
+    depends_on:
+      neo4j:
+        condition: service_healthy
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "checkov", "--version"]
+
+  rainbow-exploit:
+    build:
+      context: ./exploit
+      dockerfile: Dockerfile
+    container_name: rainbow-exploit
+    environment:
+      <<: *common-env
+      DOMAIN: "exploit"
+      ZONE: "3"
+    volumes: *common-volumes
+    networks:
+      - exploit-net
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "python", "-c", "import pwnlib; print('ok')"]
+
+  # =========================================================================
+  # /blue-team Domain Services
+  # =========================================================================
+
+  blue-detection:
+    build:
+      context: ../../blue-team/tests/docker/detection
+      dockerfile: Dockerfile
+    container_name: blue-detection
+    environment:
+      <<: *common-env
+      DOMAIN: "detection"
+    volumes:
+      - type: bind
+        source: ../fixtures
+        target: /fixtures
+        read_only: true
+      - type: bind
+        source: ../fixtures/canary
+        target: /fixtures/canary
+        read_only: true
+      - type: bind
+        source: ../fixtures/yara-rules
+        target: /fixtures/yara-rules
+        read_only: true
+      - type: bind
+        source: ../fixtures/evtx-samples
+        target: /fixtures/evtx-samples
+        read_only: true
+      - type: volume
+        source: shared-output
+        target: /output
+    networks:
+      - blue-net
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "yr", "--version"]
+
+  blue-forensics:
+    build:
+      context: ../../blue-team/tests/docker/forensics
+      dockerfile: Dockerfile
+    container_name: blue-forensics
+    environment:
+      <<: *common-env
+      DOMAIN: "forensics"
+    volumes: *common-volumes
+    networks:
+      - blue-net
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "jadx", "--version"]
+
+  blue-compliance:
+    build:
+      context: ../../blue-team/tests/docker/compliance
+      dockerfile: Dockerfile
+    container_name: blue-compliance
+    environment:
+      <<: *common-env
+      DOMAIN: "compliance"
+    volumes: *common-volumes
+    networks:
+      - blue-net
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "checkov", "--version"]
+
+  blue-intel:
+    build:
+      context: ../../blue-team/tests/docker/intel
+      dockerfile: Dockerfile
+    container_name: blue-intel
+    environment:
+      <<: *common-env
+      DOMAIN: "intel"
+    volumes: *common-volumes
+    networks:
+      - blue-net
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "python", "-c", "import stix2; print('ok')"]
+
+  # =========================================================================
+  # Supporting Services
+  # =========================================================================
+
+  neo4j:
+    image: neo4j:5.17-community
+    container_name: rainbow-neo4j
+    environment:
+      NEO4J_AUTH: "neo4j/test-only-not-real"
+      NEO4J_PLUGINS: '["apoc"]'
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    networks:
+      - rainbow-net
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "neo4j", "status"]
+    volumes:
+      - neo4j-data:/data
+
+  # =========================================================================
+  # Test Runner
+  # =========================================================================
+
+  test-runner:
+    build:
+      context: ./base
+      dockerfile: Dockerfile
+    container_name: rainbow-test-runner
+    environment:
+      <<: *common-env
+      TEST_MODE: "e2e"
+      # Service hostnames for cross-domain E2E tests
+      SUPPLY_CHAIN_HOST: "rainbow-supply-chain"
+      RECON_HOST: "rainbow-recon"
+      CLOUD_HOST: "rainbow-cloud"
+      EXPLOIT_HOST: "rainbow-exploit"
+      DETECTION_HOST: "blue-detection"
+      FORENSICS_HOST: "blue-forensics"
+      COMPLIANCE_HOST: "blue-compliance"
+      INTEL_HOST: "blue-intel"
+    volumes:
+      - type: bind
+        source: ../fixtures
+        target: /fixtures
+        read_only: true
+      - type: bind
+        source: ../fixtures/canary
+        target: /fixtures/canary
+        read_only: true
+      - type: bind
+        source: ../e2e
+        target: /app/e2e
+        read_only: true
+      - type: volume
+        source: shared-output
+        target: /output
+      - type: volume
+        source: test-results
+        target: /app/results
+    networks:
+      - rainbow-net
+      - blue-net
+    depends_on:
+      rainbow-supply-chain:
+        condition: service_healthy
+      rainbow-recon:
+        condition: service_healthy
+      rainbow-cloud:
+        condition: service_healthy
+      blue-detection:
+        condition: service_healthy
+      blue-compliance:
+        condition: service_healthy
+      blue-intel:
+        condition: service_healthy
+    # Exploit container excluded from test-runner deps by default (Zone 3)
+    # Add explicitly when running Zone 3 E2E tests
+    entrypoint: ["/bin/bash"]
+    command:
+      - "-c"
+      - |
+        echo "=== Rainbow Series E2E Test Runner ==="
+        echo "Domains available:"
+        echo "  - Supply Chain: $${SUPPLY_CHAIN_HOST}"
+        echo "  - Recon: $${RECON_HOST}"
+        echo "  - Cloud: $${CLOUD_HOST}"
+        echo "  - Detection: $${DETECTION_HOST}"
+        echo "  - Forensics: $${FORENSICS_HOST}"
+        echo "  - Compliance: $${COMPLIANCE_HOST}"
+        echo "  - Intel: $${INTEL_HOST}"
+        echo ""
+        echo "Running E2E test suite..."
+        if [ -d /app/e2e ]; then
+          python -m pytest /app/e2e/ \
+            --tb=short \
+            --junitxml=/app/results/e2e-results.xml \
+            -v
+        else
+          echo "No E2E tests found at /app/e2e/"
+          echo "Mount your test scripts to /app/e2e/"
+        fi
+
+networks:
+  rainbow-net:
+    driver: bridge
+    internal: true
+  blue-net:
+    driver: bridge
+    internal: true
+  exploit-net:
+    driver: bridge
+    internal: true
+
+volumes:
+  shared-output:
+    driver: local
+  test-results:
+    driver: local
+  neo4j-data:
+    driver: local

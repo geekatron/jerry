@@ -1,0 +1,228 @@
+# =============================================================================
+# Rainbow Series -- Base Docker Compose Template
+# =============================================================================
+# Service definitions for each tool domain group with:
+#   - Volume mounts for test fixtures and canary files (read-only)
+#   - Isolated network configuration
+#   - Environment variable templates
+#
+# Usage:
+#   docker compose -f docker-compose.base.yml up <service>
+#   docker compose -f docker-compose.base.yml --profile blue up
+#   docker compose -f docker-compose.base.yml --profile rainbow up
+#
+# SLSA: Build process documented (Level 1)
+# =============================================================================
+
+x-common-env: &common-env
+  JERRY_PROJECT: "${JERRY_PROJECT:-PROJ-023}"
+  RAINBOW_LOG_LEVEL: "${RAINBOW_LOG_LEVEL:-INFO}"
+  # Credential filter: NEVER set real credentials here
+  CREDENTIAL_FILTER_ENABLED: "true"
+  CREDENTIAL_FILTER_ENTROPY_THRESHOLD: "4.5"
+  CREDENTIAL_FILTER_MIN_STRING_LENGTH: "16"
+
+x-common-volumes: &common-volumes
+  - type: bind
+    source: ../fixtures
+    target: /fixtures
+    read_only: true
+  - type: bind
+    source: ../fixtures/canary
+    target: /fixtures/canary
+    read_only: true
+  - type: volume
+    source: shared-output
+    target: /output
+
+x-healthcheck-defaults: &healthcheck-defaults
+  interval: 30s
+  timeout: 10s
+  retries: 3
+  start_period: 10s
+
+services:
+  # -------------------------------------------------------------------------
+  # /rainbow domain services
+  # -------------------------------------------------------------------------
+
+  rainbow-supply-chain:
+    build:
+      context: ./supply-chain
+      dockerfile: Dockerfile
+    profiles: ["rainbow", "supply-chain"]
+    environment:
+      <<: *common-env
+      DOMAIN: "supply-chain"
+    volumes: *common-volumes
+    networks:
+      - rainbow-isolated
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "syft", "version"]
+
+  rainbow-recon:
+    build:
+      context: ./recon
+      dockerfile: Dockerfile
+    profiles: ["rainbow", "recon"]
+    environment:
+      <<: *common-env
+      DOMAIN: "recon"
+      # Scope constraints -- no live external targets in testing
+      RECON_SCOPE: "localhost,127.0.0.0/8,10.0.0.0/8"
+    volumes: *common-volumes
+    networks:
+      - rainbow-isolated
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "subfinder", "-version"]
+
+  rainbow-cloud:
+    build:
+      context: ./cloud
+      dockerfile: Dockerfile
+    profiles: ["rainbow", "cloud"]
+    environment:
+      <<: *common-env
+      DOMAIN: "cloud"
+      # No real cloud credentials -- tests use mock targets
+      AWS_ACCESS_KEY_ID: ""
+      AWS_SECRET_ACCESS_KEY: ""
+    volumes: *common-volumes
+    networks:
+      - rainbow-isolated
+    depends_on:
+      neo4j:
+        condition: service_healthy
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "checkov", "--version"]
+
+  rainbow-exploit:
+    build:
+      context: ./exploit
+      dockerfile: Dockerfile
+    profiles: ["rainbow", "exploit"]
+    environment:
+      <<: *common-env
+      DOMAIN: "exploit"
+      # Zone 3: exploitation tools -- isolated network only
+      ZONE: "3"
+    volumes: *common-volumes
+    networks:
+      - exploit-isolated
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "python", "-c", "import pwnlib; print('ok')"]
+
+  # -------------------------------------------------------------------------
+  # /blue-team domain services
+  # -------------------------------------------------------------------------
+
+  blue-detection:
+    build:
+      context: ../../blue-team/tests/docker/detection
+      dockerfile: Dockerfile
+    profiles: ["blue", "detection"]
+    environment:
+      <<: *common-env
+      DOMAIN: "detection"
+    volumes:
+      - <<: *common-volumes
+      - type: bind
+        source: ../fixtures/yara-rules
+        target: /fixtures/yara-rules
+        read_only: true
+      - type: bind
+        source: ../fixtures/evtx-samples
+        target: /fixtures/evtx-samples
+        read_only: true
+    networks:
+      - blue-isolated
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "yr", "--version"]
+
+  blue-forensics:
+    build:
+      context: ../../blue-team/tests/docker/forensics
+      dockerfile: Dockerfile
+    profiles: ["blue", "forensics"]
+    environment:
+      <<: *common-env
+      DOMAIN: "forensics"
+    volumes: *common-volumes
+    networks:
+      - blue-isolated
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "jadx", "--version"]
+
+  blue-compliance:
+    build:
+      context: ../../blue-team/tests/docker/compliance
+      dockerfile: Dockerfile
+    profiles: ["blue", "compliance"]
+    environment:
+      <<: *common-env
+      DOMAIN: "compliance"
+    volumes: *common-volumes
+    networks:
+      - blue-isolated
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "checkov", "--version"]
+
+  blue-intel:
+    build:
+      context: ../../blue-team/tests/docker/intel
+      dockerfile: Dockerfile
+    profiles: ["blue", "intel"]
+    environment:
+      <<: *common-env
+      DOMAIN: "intel"
+    volumes: *common-volumes
+    networks:
+      - blue-isolated
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "python", "-c", "import stix2; print('ok')"]
+
+  # -------------------------------------------------------------------------
+  # Supporting services
+  # -------------------------------------------------------------------------
+
+  neo4j:
+    image: neo4j:5.17-community
+    profiles: ["rainbow", "cloud"]
+    environment:
+      NEO4J_AUTH: "neo4j/test-only-not-real"
+      NEO4J_PLUGINS: '["apoc"]'
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    networks:
+      - rainbow-isolated
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "neo4j", "status"]
+    volumes:
+      - neo4j-data:/data
+
+networks:
+  rainbow-isolated:
+    driver: bridge
+    internal: true
+  blue-isolated:
+    driver: bridge
+    internal: true
+  exploit-isolated:
+    driver: bridge
+    internal: true
+
+volumes:
+  shared-output:
+    driver: local
+  neo4j-data:
+    driver: local

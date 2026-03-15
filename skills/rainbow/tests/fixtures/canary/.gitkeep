@@ -1,0 +1,13 @@
+# Canary credential fixtures directory
+# Mount as read-only in all containers for credential filter testing
+# See: skill-architecture.md Credential Filter Architecture
+#
+# Expected fixture files (to be created):
+#   canary-aws-creds.txt      -- AKIA... pattern for L1 regex testing
+#   canary-ssh-key.txt        -- PEM private key header for L1 regex testing
+#   canary-high-entropy.txt   -- High-entropy string for L2 entropy testing
+#   canary-json-secrets.json  -- JSON with "password"/"secret" keys for L3 structural testing
+#   canary-ntlm-hash.txt     -- LM:NT format for L1 regex testing
+#   canary-bearer-token.txt  -- Bearer token pattern for L1 regex testing
+#
+# NO REAL CREDENTIALS -- all fixtures contain clearly synthetic values

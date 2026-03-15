@@ -1,0 +1,17 @@
+# Rainbow Series Base -- Python Dependencies
+# Credential filter and common utilities
+#
+# Version pins: minimum tested versions from Phase 4 design
+
+# Credential filter: entropy-based detection (L2 layer)
+# Shannon entropy calculation for high-entropy string detection
+# threshold: > 4.5 for strings > 16 chars (per truffleHog/detect-secrets basis)
+pyyaml>=6.0.1
+regex>=2024.1.0
+
+# Test utilities
+pytest>=8.0.0
+pytest-timeout>=2.3.0
+
+# SARIF/JSON output parsing (shared across tool domains)
+jsonschema>=4.21.0

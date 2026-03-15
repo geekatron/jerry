@@ -1,0 +1,3 @@
+# E2E test scripts directory
+# Mounted into test-runner container at /app/e2e/
+# Test files should follow pytest conventions: test_*.py

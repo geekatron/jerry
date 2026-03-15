@@ -1,0 +1,5 @@
+# YARA rule fixtures for blue-detect and blue-ioc testing
+# Expected fixture files:
+#   test-match.yar    -- Simple string match rule for positive testing
+#   test-nomatch.yar  -- Rule that should NOT match test targets
+#   test-invalid.yar  -- Intentionally malformed rule for error handling

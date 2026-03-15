@@ -1,0 +1,18 @@
+# Rainbow Series Docker build exclusions
+# Keep images as small as practical (CIS 4.9)
+.git
+.github
+__pycache__
+*.pyc
+*.pyo
+.pytest_cache
+.mypy_cache
+.ruff_cache
+*.egg-info
+dist
+build
+node_modules
+.env
+.env.*
+*.md
+!requirements*.txt

@@ -1,0 +1,4 @@
+# EVTX sample fixtures for Hayabusa and Chainsaw testing
+# Expected fixture files:
+#   sample-security.evtx  -- Windows Security event log sample
+#   sample-system.evtx    -- Windows System event log sample
