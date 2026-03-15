@@ -1,0 +1,33 @@
+# Rainbow Supply Chain Verifier - Docker Compose
+# Purpose: Orchestrate verifier container for testing and development
+# Usage: docker compose up --build
+
+services:
+  verifier:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rainbow-sc-verifier
+    volumes:
+      - ./workspace:/workspace
+    environment:
+      - COSIGN_EXPERIMENTAL=0
+    healthcheck:
+      test: ["CMD", "cosign", "version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /home/verifier/.cache
+      - /home/verifier/.npm
+    networks:
+      - verifier-net
+
+networks:
+  verifier-net:
+    driver: bridge

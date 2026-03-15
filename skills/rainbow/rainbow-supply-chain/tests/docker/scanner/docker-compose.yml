@@ -1,0 +1,33 @@
+# Rainbow Supply Chain Scanner - Docker Compose
+# Purpose: Orchestrate scanner container for testing and development
+# Usage: docker compose up --build
+
+services:
+  scanner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rainbow-sc-scanner
+    volumes:
+      - ./workspace:/workspace
+    environment:
+      - GRYPE_DB_AUTO_UPDATE=true
+      - TRIVY_CACHE_DIR=/workspace/.cache/trivy
+    healthcheck:
+      test: ["CMD", "syft", "version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /home/scanner/.cache
+    networks:
+      - scanner-net
+
+networks:
+  scanner-net:
+    driver: bridge
