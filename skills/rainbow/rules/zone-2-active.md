@@ -43,11 +43,11 @@ Zone 2 operations MUST NOT begin until an engagement scope document exists and h
 
 ### Scope Document Structure
 
-The engagement scope document is a markdown file persisted at `work/rainbow/engagement/{engagement-id}/SCOPE.md` within the active project workspace. It MUST contain the following fields.
+The engagement scope document is a markdown file persisted at `skills/rainbow/output/{engagement-id}/SCOPE.md` within the active project workspace. It MUST contain the following fields.
 
 | Field | Description | Validation Rule |
 |-------|-------------|-----------------|
-| `engagement_id` | Unique identifier for this engagement | Pattern: `ENG-{YYYYMMDD}-{NNN}` |
+| `engagement_id` | Unique identifier for this engagement | Pattern: `RBW-NNNN` (e.g., `RBW-0001`) |
 | `created_by` | Agent or operator who created the scope | Must be `rainbow-orchestrator`, `red-lead`, or operator name |
 | `created_at` | ISO 8601 timestamp | Must be a valid timestamp |
 | `authorized_targets` | Exhaustive list of targets (IPs, domains, URLs, cloud accounts, registries) | At least 1 target; no wildcards without explicit operator approval |
@@ -144,7 +144,7 @@ Before every tool invocation, the agent MUST:
 
 ## Dual-Zone Tool Escalation
 
-Three tools span the Zone 2/Zone 3 boundary. The classification is based on the specific CLI subcommand or template category -- not on agent judgment.
+Three tools span the Zone 2/Zone 3 boundary. The classification is based on the specific CLI subcommand or template category -- not on agent judgment. For unrecognized subcommands not listed below, the default classification is the HIGHER zone (fail-closed).
 
 ### Nuclei (Home: `/rainbow-recon`)
 
@@ -211,7 +211,7 @@ Zone 2 operations follow a structured engagement lifecycle. Each phase has a gat
 | Action | Owner | Gate |
 |--------|-------|------|
 | Aggregate findings from all Zone 2 operations | `rainbow-reporter` | All Zone 2 tasks complete or time window expired |
-| Produce reconnaissance/assessment report | `rainbow-reporter` | Report persisted to `work/rainbow/engagement/{id}/reports/` |
+| Produce reconnaissance/assessment report | `rainbow-reporter` | Report persisted to `skills/rainbow/output/{id}/reports/` |
 | Identify findings requiring Zone 3 escalation | `rainbow-reporter` | Zone 3 candidates flagged in report |
 
 ### Phase 4: Debrief
@@ -220,7 +220,7 @@ Zone 2 operations follow a structured engagement lifecycle. Each phase has a gat
 |--------|-------|------|
 | Review scope coverage (targets assessed vs. authorized) | Operator + `rainbow-orchestrator` | -- |
 | Review any scope violations or escalation events | Operator | -- |
-| Archive engagement artifacts | `rainbow-orchestrator` | All artifacts in `work/rainbow/engagement/{id}/` |
+| Archive engagement artifacts | `rainbow-orchestrator` | All artifacts in `skills/rainbow/output/{id}/` |
 | Close engagement if Zone 3 is not needed | Operator | Explicit operator decision |
 
 ---
@@ -256,7 +256,7 @@ Every Zone 2 operation MUST produce a detailed audit log entry. Zone 2 logging i
 |-------|-------------|---------|
 | `timestamp` | ISO 8601 operation timestamp | `2026-03-14T10:30:00Z` |
 | `zone` | Always `2` | `2` |
-| `engagement_id` | Reference to engagement scope document | `ENG-20260314-001` |
+| `engagement_id` | Reference to engagement scope document | `RBW-0001` |
 | `agent` | Agent name that executed the operation | `rainbow-recon-pipeline` |
 | `tool` | Tool name | `nuclei` |
 | `subcommand` | Specific subcommand/mode invoked | `detection scan` |
@@ -271,7 +271,7 @@ Every Zone 2 operation MUST produce a detailed audit log entry. Zone 2 logging i
 
 ### Log Location
 
-Audit logs are persisted to `work/rainbow/engagement/{engagement-id}/audit/zone-2/{date}-{agent}-{tool}.log` within the active project workspace.
+Audit logs are persisted to `skills/rainbow/output/{engagement-id}/audit/zone-2/{date}-{agent}-{tool}.log` within the active project workspace.
 
 ---
 

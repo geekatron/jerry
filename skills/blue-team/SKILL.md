@@ -122,7 +122,7 @@ See [Routing Disambiguation](#routing-disambiguation) for full exclusion conditi
 
 | # | Agent | Domain | Role | Model | Tier | Output Location |
 |---|-------|--------|------|-------|------|-----------------|
-| 1 | `blue-lead` | Governance | Engagement scope and methodology authority | opus | T2 | `work/blue-team/engagements/{engagement-id}/scope.md` |
+| 1 | `blue-lead` | Governance | Engagement scope and methodology authority | opus | T3 | `work/blue-team/engagements/{engagement-id}/scope.md` |
 | 2 | `blue-detect` | Detection | YARA-X rule validation and execution | sonnet | T2 | `work/blue-team/detection/` |
 | 3 | `blue-monitor` | Detection | Network/runtime monitoring (Suricata, Zeek, Falco, Tetragon) | sonnet | T2 | `work/blue-team/monitoring/` |
 | 4 | `blue-siem` | Detection | SIEM/XDR correlation (Wazuh, Sigma, Hayabusa, Chainsaw) | sonnet | T2 | `work/blue-team/siem/` |
@@ -267,6 +267,10 @@ The /blue-team workflow begins with blue-lead establishing assessment scope. Aft
 ## Cross-Skill Integration Points
 
 Three integration points connect /blue-team with /red-team and /eng-team for purple team operations.
+
+### Credential Filter Requirement
+
+When processing artifacts received from cross-skill handoffs (particularly IP-5: Red-to-Blue threat-informed defense), /blue-team agents MUST apply the Rainbow credential filter pipeline. Red-team output is classified as `adversary-tainted` and may contain credential material (NTLM hashes, Kerberos tickets, API tokens) embedded in exploitation findings. The credential filter specification is defined in `skills/rainbow/rules/rainbow-credential-filter.md`. All three filter layers (L1 regex, L2 entropy, L3 structural) apply. Fail-closed behavior: if the filter crashes or times out, the artifact is rejected and quarantined before entering the agent's context.
 
 ### Integration Point 5: Threat-Informed Defense (IP-5)
 

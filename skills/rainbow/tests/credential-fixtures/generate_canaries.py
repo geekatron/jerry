@@ -432,8 +432,85 @@ def generate_plaintext_password() -> None:
     _write_fixture("plaintext-password", "\n".join(lines))
 
 
+def generate_l2_entropy() -> None:
+    """Category 8: L2 Entropy Canaries.
+
+    These fixtures contain high-entropy random strings (Shannon >= 4.5,
+    minimum 20 chars) that do NOT match any L1 regex pattern prefix.
+    They MUST be detected by L2 entropy analysis only.
+    """
+    import hashlib
+
+    # Generate deterministic high-entropy strings using hash functions.
+    # These produce alphanumeric output that does not match any L1 pattern
+    # prefix (no AKIA, ghp_, xox, PEM headers, krb5, connection-string
+    # keywords, or password labels).
+    seed_a = hashlib.sha256(b"canary-l2-entropy-test-alpha").hexdigest()
+    seed_b = hashlib.sha256(b"canary-l2-entropy-test-bravo").hexdigest()
+    seed_c = hashlib.blake2b(b"canary-l2-entropy-test-charlie", digest_size=24).hexdigest()
+
+    lines = [
+        "# CANARY TEST FIXTURE -- Category 8: L2 Entropy Detection",
+        "# High-entropy strings that ONLY trigger L2 detection, NOT L1 regex.",
+        "# Shannon entropy >= 4.5 for each string; no L1 pattern prefix match.",
+        "",
+        "# --- Test 1: SHA-256 hex digest (64 chars, entropy ~4.0 per hex char) ---",
+        "config_value: " + seed_a,
+        "",
+        "# --- Test 2: Different SHA-256 digest ---",
+        "internal_setting: " + seed_b,
+        "",
+        "# --- Test 3: BLAKE2b hex digest (48 chars) ---",
+        "opaque_ref: " + seed_c,
+        "",
+        "# --- Test 4: Mixed-case high-entropy string (no known prefix) ---",
+        "random_field: " + "mR7kPx2Qn9vLw4Fj8Ys5Td3Bc6Ah1Ge",
+        "",
+        "# --- Test 5: Numeric-heavy high-entropy string ---",
+        "nonce_value: " + "48291073562849175036284917503628",
+        "",
+    ]
+    _write_fixture("l2-entropy", "\n".join(lines))
+
+
+def generate_l3_structural() -> None:
+    """Category 9: L3 Structural Canaries.
+
+    These fixtures contain JSON/YAML objects with sensitive key names
+    (matching L3 structural patterns) but whose VALUES do NOT match L1
+    regex patterns and are NOT high-entropy (below L2 threshold).
+    They MUST be detected by L3 structural analysis only.
+    """
+    lines = [
+        "# CANARY TEST FIXTURE -- Category 9: L3 Structural Detection",
+        "# Structured data with sensitive keys that ONLY trigger L3 detection.",
+        "# Values are low-entropy and do not match L1 regex patterns.",
+        "",
+        "# --- Test 1: JSON object with database_password key ---",
+        '{"database_password": "test-canary-value-123"}',
+        "",
+        "# --- Test 2: JSON object with api_secret key ---",
+        '{"api_secret": "simple-test-secret-abc"}',
+        "",
+        "# --- Test 3: YAML-style key-value with credential key ---",
+        "service_credential: basic-service-token-xyz",
+        "",
+        "# --- Test 4: Nested JSON with sensitive key ---",
+        '{"config": {"db": {"connection_password": "dev-only-pass-456"}}}',
+        "",
+        "# --- Test 5: INI-style with auth_token key ---",
+        "[service]",
+        "auth_token = my-local-dev-token-789",
+        "",
+        "# --- Test 6: JSON with access_key (low-entropy value, no AKIA prefix) ---",
+        '{"access_key": "dev-testing-key-value-000"}',
+        "",
+    ]
+    _write_fixture("l3-structural", "\n".join(lines))
+
+
 def main() -> None:
-    """Generate all 7 canary fixture categories."""
+    """Generate all 9 canary fixture categories."""
     print("Generating canary test fixtures for credential filter validation...")
     print(f"Target directory: {_fixture_dir()}")
     print()
@@ -445,10 +522,15 @@ def main() -> None:
     generate_kerberos()
     generate_connection_string()
     generate_plaintext_password()
+    generate_l2_entropy()
+    generate_l3_structural()
 
     print()
-    print("All 7 fixture categories generated successfully.")
+    print("All 9 fixture categories generated successfully.")
     print("Run credential filter against fixtures to validate AC-F-05/AC-F-05a.")
+    print("  Categories 1-7: L1 regex detection (AC-F-05a)")
+    print("  Category 8: L2 entropy detection only")
+    print("  Category 9: L3 structural detection only")
 
 
 if __name__ == "__main__":

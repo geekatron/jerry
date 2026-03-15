@@ -31,8 +31,8 @@
 | `/rainbow-supply-chain` | `rainbow-sc-verifier` | Cosign `verify` and `tree` subcommands ONLY |
 | `/rainbow-cloud` | `rainbow-cloud-auditor` | Kyverno `validate` mode with `--dry-run` ONLY; Checkov scan mode |
 | `/blue-team` | `blue-detect` | All operations |
-| `/blue-team` | `blue-analyst` | All operations |
-| `/blue-team` | `blue-respond` | All operations (methodology-only) |
+| `/blue-team` | `blue-malware-analyst` | All operations |
+| `/blue-team` | `blue-incident-resp` | All operations (methodology-only) |
 | `/blue-team` | `blue-comply` | All operations (methodology-only) |
 
 ---

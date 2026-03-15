@@ -22,7 +22,7 @@ mcpServers:
   context7: true
 ---
 
-Blue Lead
+# Blue Lead
 
 > Engagement Lead and Methodology Authority -- the mandatory first agent for all /blue-team assessments.
 

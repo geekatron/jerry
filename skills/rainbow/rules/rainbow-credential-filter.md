@@ -30,6 +30,18 @@ The filter is a **shared infrastructure component**, not owned by any single sub
 
 ---
 
+## Implementation Mechanism
+
+The credential filter is enforced as **agent behavioral rules**, not as runtime middleware. Claude Code does not provide pre-processing hooks on tool output; there is no adapter, wrapper, or middleware layer that intercepts Bash stdout before context window entry. Instead, agents self-enforce by following the rules in this specification, which are loaded at agent invocation time via the /rainbow and /blue-team rule files.
+
+**W0/W1 boundary:** W0 (this wave) delivers the filter specification, regex patterns (`credential-regex-patterns.yaml`), entropy configuration (`credential-entropy-config.yaml`), structural rules (`credential-structural-rules.yaml`), and canary test fixtures (`skills/rainbow/tests/credential-fixtures/`). W1+ delivers runtime validation scripts that agents invoke post-tool-execution to programmatically scan output against these configurations before presenting results.
+
+**False Positive Rate Target:** < 5% FPR across L1+L2+L3 combined, measured against the canary fixture corpus. L1 targets < 1% FPR (high-confidence patterns). L2 targets < 10% FPR (entropy threshold tunable). L3 targets < 5% FPR (structural key matching with exclude_contexts).
+
+**Compensating control (W0):** Until runtime validation scripts exist, agents MUST NOT process raw credential-bearing tool output without explicit user awareness. Agents MUST inform the user when tool output may contain credential material (Zone 2/3 operations) and MUST apply the behavioral rules from this specification (pattern recognition, quarantine placeholder insertion) manually. The canary fixtures validate pattern correctness at the specification level; runtime enforcement validates integration at the execution level.
+
+---
+
 ## Execution Position
 
 The credential filter operates at the adapter layer, between raw tool output and context window ingestion.
@@ -162,11 +174,11 @@ L3 flags any key-value pair where the key matches a sensitive pattern and the va
 |-------------|---------------|-----------------|
 | `password` | No | -- |
 | `secret` | No | -- |
-| `token` | No | -- |
-| `key` | No | `public_key`, `key_name`, `key_id`, `primary_key`, `foreign_key`, `sort_key`, `partition_key` |
+| `token` | No | `token_count`, `token_limit`, `token_type`, `token_endpoint`, `csrf_token`, `pagination_token`, `next_page_token` |
+| `key` | No | `public_key`, `key_name`, `key_id`, `primary_key`, `foreign_key`, `sort_key`, `partition_key`, `key_type`, `key_length`, `key_usage`, `key_vault`, `registry_key` |
 | `credential` | No | -- |
-| `auth` | No | `author`, `authority`, `authorization_url`, `auth_type`, `auth_method` |
-| `private` | No | `private_ip`, `private_subnet`, `private_dns` |
+| `auth` | No | `author`, `authority`, `authorization_url`, `auth_type`, `auth_method`, `auth_provider`, `auth_endpoint`, `authenticated`, `authentication_method` |
+| `private` | No | `private_ip`, `private_subnet`, `private_dns`, `private_zone`, `private_network`, `is_private` |
 | `apikey` | No | -- |
 | `api_key` | No | -- |
 | `access_key` | No | -- |

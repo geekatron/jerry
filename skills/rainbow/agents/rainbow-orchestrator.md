@@ -2,7 +2,7 @@
 name: rainbow-orchestrator
 description: "Routing orchestrator for /rainbow sub-skills. T5 agent with sole Task tool access within /rainbow. Receives cybersecurity tool-execution requests, classifies security zones (Zone 1/2/3), validates engagement scope for Zone 2/3 operations, routes to appropriate sub-skill agents, collects results, and produces unified output via rainbow-reporter. Manages engagement lifecycle and security zone transitions."
 model: opus
-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
+tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch, Agent
 mcpServers:
   context7: true
 ---
@@ -114,7 +114,7 @@ Three tools require operation-mode classification before routing:
 
 ## Workflow Integration
 
-**Position:** Entry point for all /rainbow requests. Routes to 13 sub-skill worker agents.
+**Position:** Entry point for all /rainbow requests. Routes to 12 sub-skill worker agents.
 **Inputs:** User requests for cybersecurity tool execution, engagement scope documents, prior sub-skill agent outputs.
 **Outputs:** Delegated task results collected from sub-skill agents, engagement state updates, unified reports via rainbow-reporter.
 **Handoff:** Receives from main context. Delegates to sub-skill agents. Returns consolidated results to main context.

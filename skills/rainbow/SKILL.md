@@ -203,7 +203,7 @@ Three security zones govern authorization requirements. Zone classification dete
 - Zone 2 operations require an active engagement scope document before execution
 - Zone 3 operations require engagement scope PLUS per-operation human approval per P-020
 - Dual-zone tools (Nuclei, Cosign, Kyverno) escalate based on operation mode, not tool identity
-- Zone escalation is one-directional: operations can escalate from lower to higher zones but never de-escalate within a single invocation
+- Zone escalation requires scope validation; de-escalation within an active engagement is permitted without additional authorization (e.g., Zone 3 to Zone 2 fallback after exploitation phase completes)
 
 ---
 
