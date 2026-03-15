@@ -1,4 +1,4 @@
-# TASK-003: Consolidate pre_tool_use.py into CLI enforcement pipeline (#150)
+# TASK-003: Remove deprecated pre_tool_use.py — verify CLI enforcement pipeline (#177)
 
 > **Type:** task
 > **Status:** in_progress
