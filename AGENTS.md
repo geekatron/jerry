@@ -23,6 +23,8 @@
 | [Prompt Engineering Skill Agents](#prompt-engineering-skill-agents) | pe-* agents (3 total) |
 | [Diataxis Skill Agents](#diataxis-skill-agents) | diataxis-* agents (6 total) |
 | [User-Experience Skill Agents](#user-experience-skill-agents) | ux-* agents (11 total) |
+| [Rainbow Skill Agents](#rainbow-skill-agents) | rainbow-* agents (14 total) |
+| [Blue-Team Skill Agents](#blue-team-skill-agents) | blue-* agents (12 total) |
 | [MCP Tool Access](#mcp-tool-access) | Context7 and Memory-Keeper agent matrix |
 | [Agent Handoff Protocol](#agent-handoff-protocol) | Multi-agent coordination |
 | [Adding New Agents](#adding-new-agents) | Extension guide |
@@ -59,13 +61,15 @@ to specific skills. This provides:
 | Diataxis Agents | 6 | `/diataxis` skill |
 | Prompt Engineering Agents | 3 | `/prompt-engineering` skill |
 | User-Experience Agents | 11 | `/user-experience` skill |
-| **Total** | **83** | |
+| Rainbow Agents | 14 | `/rainbow` skill |
+| Blue-Team Agents | 12 | `/blue-team` skill |
+| **Total** | **109** | |
 
 > **Verification:** Agent counts verified against filesystem scan (`skills/*/agents/*.md`).
-> 76 total files found; 4 template/extension files excluded from counts:
+> 4 template/extension files excluded from counts:
 > `NSE_AGENT_TEMPLATE.md`, `NSE_EXTENSION.md`, `PS_AGENT_TEMPLATE.md`, `PS_EXTENSION.md`.
-> Per-skill sum: 9 + 10 + 3 + 3 + 3 + 5 + 3 + 1 + 10 + 11 + 5 +6 + 3 + 11 = 83 invokable agents.
-> Last verified: 2026-03-03.
+> Per-skill sum: 9 + 10 + 3 + 3 + 3 + 5 + 3 + 1 + 10 + 11 + 5 + 6 + 3 + 11 + 14 + 12 = 109 invokable agents.
+> Last verified: 2026-03-14.
 
 ---
 
@@ -377,6 +381,100 @@ These agents implement AI-augmented UX methodology for tiny teams through the `/
 
 ---
 
+## Rainbow Skill Agents
+
+These agents implement composable cybersecurity tool execution through the `/rainbow` skill, organized across 5 sub-skills (supply-chain, recon, cloud, exploit, runtime) with a three-zone security model. One T5 routing orchestrator delegates to 13 T2 worker agents spanning 28 security tools. Follows MITRE ATT&CK, PTES, and NIST CSF methodology frameworks.
+
+| Agent | File | Role | Cognitive Mode |
+|-------|------|------|----------------|
+| rainbow-orchestrator | `skills/rainbow/agents/rainbow-orchestrator.md` | T5 Routing Orchestrator | Convergent |
+| rainbow-reporter | `skills/rainbow/agents/rainbow-reporter.md` | Engagement Reporter | Integrative |
+| rainbow-sc-scanner | `skills/rainbow/agents/rainbow-sc-scanner.md` | Supply Chain Scanner (Syft, Grype, Trivy, OSV-Scanner, Checkov, Snyk CLI) | Systematic |
+| rainbow-sc-verifier | `skills/rainbow/agents/rainbow-sc-verifier.md` | Supply Chain Verifier (Cosign) | Systematic |
+| rainbow-recon-pipeline | `skills/rainbow/agents/rainbow-recon-pipeline.md` | Reconnaissance Pipeline (Subfinder, httpx, dnsx, Naabu, Katana, Nuclei) | Systematic |
+| rainbow-recon-osint | `skills/rainbow/agents/rainbow-recon-osint.md` | OSINT Specialist (OWASP Amass, Maigret) | Divergent |
+| rainbow-cloud-auditor | `skills/rainbow/agents/rainbow-cloud-auditor.md` | Cloud Security Auditor (Checkov, Prowler, Kubescape, Kyverno) | Systematic |
+| rainbow-cloud-mapper | `skills/rainbow/agents/rainbow-cloud-mapper.md` | Cloud Infrastructure Mapper (Cartography) | Systematic |
+| rainbow-exploit-ops | `skills/rainbow/agents/rainbow-exploit-ops.md` | Binary Exploitation Specialist (pwntools) | Systematic |
+| rainbow-exploit-c2 | `skills/rainbow/agents/rainbow-exploit-c2.md` | C2 Infrastructure Specialist (Empire, Mythic, Donut) | Systematic |
+| rainbow-exploit-ad | `skills/rainbow/agents/rainbow-exploit-ad.md` | Active Directory Attack Specialist (Impacket, BloodHound CE) | Systematic |
+| rainbow-exploit-msf | `skills/rainbow/agents/rainbow-exploit-msf.md` | Metasploit Integration Specialist | Systematic |
+| rainbow-runtime-instrument | `skills/rainbow/agents/rainbow-runtime-instrument.md` | Runtime Instrumentation Specialist (mitmproxy, Frida) | Systematic |
+
+**Key Capabilities:**
+
+| Agent | Primary Use Case | Output Type |
+|-------|------------------|-------------|
+| rainbow-orchestrator | Route requests to sub-skill agents, validate engagement scope, enforce zone gates | Routing decisions, engagement lifecycle |
+| rainbow-reporter | Generate unified findings reports from all sub-skill outputs | Engagement reports |
+| rainbow-sc-scanner | SBOM generation, vulnerability scanning, container/IaC auditing | Scan reports, SBOMs |
+| rainbow-sc-verifier | Container image signature verification, artifact provenance | Verification reports |
+| rainbow-recon-pipeline | Subdomain enumeration, port scanning, HTTP probing, vulnerability detection | Reconnaissance reports |
+| rainbow-recon-osint | OSINT collection, social profiling, domain intelligence | OSINT reports |
+| rainbow-cloud-auditor | Cloud configuration auditing, Kubernetes policy validation | Cloud posture reports |
+| rainbow-cloud-mapper | Infrastructure graph mapping, cloud asset inventory | Infrastructure maps |
+| rainbow-exploit-ops | Binary exploitation methodology, payload crafting | Exploitation reports |
+| rainbow-exploit-c2 | C2 framework configuration, payload delivery | C2 methodology reports |
+| rainbow-exploit-ad | Active Directory attack path analysis, credential attacks | AD attack reports |
+| rainbow-exploit-msf | Metasploit module execution, exploit chaining | Metasploit reports |
+| rainbow-runtime-instrument | Traffic interception, dynamic analysis, mobile instrumentation | Instrumentation reports |
+
+**Invocation**: Use `/rainbow` skill. `rainbow-orchestrator` routes to the appropriate sub-skill agent.
+
+**Model Tiers:** rainbow-orchestrator (opus); all others (sonnet).
+
+**Security Zones:** Zone 1 (audit, no scope needed), Zone 2 (recon, engagement scope required), Zone 3 (exploitation, scope + per-operation human approval).
+
+**Artifact Location**: `skills/rainbow/output/{engagement-id}/`
+
+---
+
+## Blue-Team Skill Agents
+
+These agents implement defensive cybersecurity operations through the `/blue-team` skill, covering threat detection, forensics, compliance scanning, and threat intelligence. All 12 agents operate exclusively in Security Zone 1 (read-only analysis and local artifact production). Follows NIST 800-61r2, CIS, and D3FEND methodologies.
+
+| Agent | File | Role | Cognitive Mode |
+|-------|------|------|----------------|
+| blue-lead | `skills/blue-team/agents/blue-lead.md` | Engagement Scope and Methodology Authority | Strategic |
+| blue-detect | `skills/blue-team/agents/blue-detect.md` | YARA-X Rule Validation and Execution | Systematic |
+| blue-monitor | `skills/blue-team/agents/blue-monitor.md` | Network/Runtime Monitoring Specialist | Systematic |
+| blue-siem | `skills/blue-team/agents/blue-siem.md` | SIEM/XDR Correlation Specialist | Systematic |
+| blue-malware-analyst | `skills/blue-team/agents/blue-malware-analyst.md` | Malware RE and Binary Analysis Specialist | Systematic |
+| blue-incident-resp | `skills/blue-team/agents/blue-incident-resp.md` | IR Playbook Execution and Timeline Specialist | Systematic |
+| blue-comply | `skills/blue-team/agents/blue-comply.md` | Compliance Scan Orchestrator | Systematic |
+| blue-posture-k8s | `skills/blue-team/agents/blue-posture-k8s.md` | Kubernetes Security Posture Specialist | Systematic |
+| blue-posture-sys | `skills/blue-team/agents/blue-posture-sys.md` | System-Level Compliance Specialist | Systematic |
+| blue-intel | `skills/blue-team/agents/blue-intel.md` | Threat Intelligence Analyst | Divergent |
+| blue-d3fend | `skills/blue-team/agents/blue-d3fend.md` | D3FEND Countermeasure Mapper | Convergent |
+| blue-ioc | `skills/blue-team/agents/blue-ioc.md` | IOC Lifecycle Manager and YARA Rule Author | Systematic |
+
+**Key Capabilities:**
+
+| Agent | Primary Use Case | Output Type |
+|-------|------------------|-------------|
+| blue-lead | Engagement scope establishment, methodology authority, assessment governance | Scope documents |
+| blue-detect | YARA-X rule validation and execution against samples | Detection scan reports |
+| blue-monitor | Suricata, Zeek, Falco, Tetragon monitoring methodology | Monitoring rule sets |
+| blue-siem | Wazuh, Sigma, Hayabusa, Chainsaw log correlation | SIEM correlation reports |
+| blue-malware-analyst | Malware reverse engineering with Ghidra and JADX | Malware analysis reports |
+| blue-incident-resp | NIST 800-61r2 IR playbook execution, Plaso timeline reconstruction | IR reports, timelines |
+| blue-comply | Compliance scanning with Checkov, Trivy, Prowler | Compliance reports |
+| blue-posture-k8s | Kubernetes posture with Kubescape, kube-bench, Kyverno | K8s security reports |
+| blue-posture-sys | System compliance with OpenSCAP, Cosign | System compliance reports |
+| blue-intel | MISP/STIX/TAXII threat intelligence lifecycle | Intelligence products |
+| blue-d3fend | ATT&CK-to-D3FEND countermeasure mapping | D3FEND coverage reports |
+| blue-ioc | IOC lifecycle management, YARA rule authoring from indicators | IOC artifacts, YARA rules |
+
+**Invocation**: Use `/blue-team` skill. `blue-lead` MUST establish scope first (mandatory). After scope, any agent is invocable.
+
+**Model Tiers:** blue-lead (opus), blue-intel (opus); all others (sonnet).
+
+**Zone 1 Only:** All agents operate exclusively in Security Zone 1 (read-only analysis). No active response, no infrastructure modification, no live system interaction.
+
+**Artifact Location**: `work/blue-team/{domain}/` and `work/compliance/{assessment-id}/`
+
+---
+
 ## MCP Tool Access
 
 Agents with MCP (Model Context Protocol) tool access for external documentation lookup and cross-session memory.
@@ -419,6 +517,9 @@ Agents with MCP (Model Context Protocol) tool access for external documentation 
 | ux-atomic-architect | user-experience | resolve-library-id, query-docs |
 | ux-inclusive-evaluator | user-experience | resolve-library-id, query-docs |
 | ux-ai-design-guide | user-experience | resolve-library-id, query-docs |
+| rainbow-orchestrator | rainbow | resolve-library-id, query-docs |
+| rainbow-reporter | rainbow | resolve-library-id, query-docs |
+| blue-lead | blue-team | resolve-library-id, query-docs |
 
 ### Memory-Keeper (Cross-Session Persistence)
 
@@ -432,7 +533,7 @@ Agents with MCP (Model Context Protocol) tool access for external documentation 
 | ts-parser | transcript | store, retrieve |
 | ts-extractor | transcript | store, retrieve |
 
-> **Not included (by design):** adv-* (self-contained strategy execution), sb-* (voice quality gate), wt-* (read-only auditing), ps-critic/ps-validator (quality evaluation), ps-reporter (report generation). eng-*/red-* agents do not use Memory-Keeper; their persistence model uses file-based output per P-002 (engagement-scoped output directories), not cross-session MCP storage.
+> **Not included (by design):** adv-* (self-contained strategy execution), sb-* (voice quality gate), wt-* (read-only auditing), ps-critic/ps-validator (quality evaluation), ps-reporter (report generation). eng-*/red-*/rainbow-*/blue-* agents do not use Memory-Keeper; their persistence model uses file-based output per P-002 (engagement-scoped output directories), not cross-session MCP storage. Remaining rainbow-* and blue-* agents will be registered for Context7 as they are created in subsequent implementation waves.
 
 ---
 

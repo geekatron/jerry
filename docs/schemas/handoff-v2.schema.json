@@ -1,0 +1,236 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jerry.dev/schemas/handoff-v2.schema.json",
+  "title": "Jerry Handoff Protocol v2",
+  "description": "Schema for structured agent-to-agent handoffs within and across skills. Cross-skill handoffs require source_skill, target_skill, trust_boundary, and data_classification fields. Intra-skill handoffs omit these fields and validate unchanged.",
+  "type": "object",
+  "required": [
+    "from_agent",
+    "to_agent",
+    "task",
+    "success_criteria",
+    "artifacts",
+    "key_findings",
+    "blockers",
+    "confidence",
+    "criticality"
+  ],
+  "properties": {
+    "from_agent": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z]+-[a-z]+(-[a-z]+)*$",
+      "description": "Identity of sending agent. Must match a registered agent name (kebab-case)."
+    },
+    "to_agent": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z]+-[a-z]+(-[a-z]+)*$",
+      "description": "Identity of receiving agent. Must match a registered agent name (kebab-case)."
+    },
+    "task": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Description of the delegated work."
+    },
+    "success_criteria": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "Verifiable criteria for downstream agent. At least one entry required."
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "Prior output file paths. Validated for existence before delivery (SV-04, RV-02)."
+    },
+    "key_findings": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 5,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "Orientation bullets from upstream. 3-5 entries per CB-04."
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "Known impediments. May be empty. Persistent items prefixed with [PERSISTENT] per CP-05."
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "Sending agent self-assessed confidence. Calibration: 0.0-0.3 low, 0.4-0.6 moderate, 0.7-0.8 high, 0.9-1.0 very high."
+    },
+    "criticality": {
+      "type": "string",
+      "enum": ["C1", "C2", "C3", "C4"],
+      "description": "Work criticality level. Must not decrease through handoff chains (CP-04)."
+    },
+    "constraints": {
+      "type": "object",
+      "description": "Optional constraints for the receiving agent.",
+      "additionalProperties": true
+    },
+    "routing_metadata": {
+      "type": "object",
+      "description": "Optional routing context for circuit breaker and observability.",
+      "properties": {
+        "routing_depth": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3,
+          "description": "Current routing hop count. Circuit breaker activates at 3 (H-36)."
+        },
+        "routing_history": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "hop": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "from": {
+                "type": "string"
+              },
+              "to": {
+                "type": "string"
+              },
+              "method": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "History of routing hops for cycle detection."
+        }
+      },
+      "additionalProperties": true
+    },
+    "quality_context": {
+      "type": "object",
+      "description": "Optional quality gate context from prior iterations.",
+      "properties": {
+        "prior_score": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "critic_findings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "task_id": {
+      "type": "string",
+      "description": "Optional worktracker entity ID for traceability."
+    },
+    "source_skill": {
+      "type": "string",
+      "description": "Originating skill for cross-skill handoffs. Omit for intra-skill.",
+      "pattern": "^/(red-team|blue-team|eng-team|rainbow[a-z-]*)$"
+    },
+    "target_skill": {
+      "type": "string",
+      "description": "Destination skill for cross-skill handoffs. Omit for intra-skill.",
+      "pattern": "^/(red-team|blue-team|eng-team|rainbow[a-z-]*)$"
+    },
+    "trust_boundary": {
+      "type": "object",
+      "description": "Trust classification for cross-skill artifact transfer. Required for cross-skill handoffs.",
+      "required": ["trust_level", "taint_source"],
+      "properties": {
+        "trust_level": {
+          "type": "string",
+          "enum": ["adversary-tainted", "analysis-verified", "engineering-context"],
+          "description": "Three-level trust classification. See Trust Boundary Model."
+        },
+        "taint_source": {
+          "type": "string",
+          "description": "Agent or source that originated the tainted content.",
+          "examples": ["red-reporter", "blue-detect", "internal"]
+        },
+        "taint_propagation": {
+          "type": "string",
+          "enum": ["propagate", "contained", "neutralized"],
+          "default": "propagate",
+          "description": "Whether downstream handoffs inherit this trust level."
+        },
+        "verification_evidence": {
+          "type": "string",
+          "description": "File path to verification report justifying trust_level upgrade. Required when trust_level is analysis-verified or taint_propagation is neutralized. Path MUST resolve to an existing file (RV-02).",
+          "pattern": "^work/.*\\.md$"
+        },
+        "verification_method": {
+          "type": "string",
+          "enum": ["rule_validation", "scan_execution", "manual_review", "analysis_synthesis"],
+          "description": "Method used to verify trust upgrade. Required when trust_level is analysis-verified or engineering-context."
+        },
+        "verified_by": {
+          "type": "string",
+          "description": "Agent name that performed the verification. Required when trust_level is analysis-verified or engineering-context. MUST differ from taint_source for separation of duties (SV-13).",
+          "pattern": "^[a-z]+-[a-z]+(-[a-z]+)*$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "data_classification": {
+      "type": "object",
+      "description": "Sensitivity classification for the handoff payload. Required for cross-skill handoffs.",
+      "required": ["tlp", "contains_credentials", "engagement_scope_id"],
+      "properties": {
+        "tlp": {
+          "type": "string",
+          "enum": ["TLP:CLEAR", "TLP:GREEN", "TLP:AMBER", "TLP:AMBER+STRICT", "TLP:RED"],
+          "description": "Traffic Light Protocol marking per FIRST TLP v2.0."
+        },
+        "contains_credentials": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether any artifact may contain credential material. When true, receiving skill MUST apply credential filter pipeline."
+        },
+        "engagement_scope_id": {
+          "type": "string",
+          "description": "Reference to the governing engagement scope document.",
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "retention_policy": {
+          "type": "string",
+          "enum": ["engagement-scoped", "project-scoped", "permanent"],
+          "default": "engagement-scoped"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "dependentRequired": {
+    "source_skill": ["target_skill", "trust_boundary", "data_classification"],
+    "target_skill": ["source_skill", "trust_boundary", "data_classification"]
+  },
+  "if": {
+    "required": ["source_skill", "target_skill"],
+    "properties": {
+      "source_skill": { "type": "string" },
+      "target_skill": { "type": "string" }
+    }
+  },
+  "then": {
+    "required": ["source_skill", "target_skill", "trust_boundary", "data_classification"]
+  }
+}

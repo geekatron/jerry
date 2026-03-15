@@ -1,0 +1,581 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jerry.dev/schemas/purple-team-checkpoint.schema.json",
+  "title": "Purple Team Checkpoint Schema",
+  "description": "Schema for purple team multi-session checkpoint artifacts. Contains 7 base fields (Phase 4) plus 12 extension fields organized into three groups: cross-skill coordination (Handoff pattern, 4 fields), exchange state (Red-Blue pattern, 3 fields), and loop state (Purple Automation pattern, 5 fields). Canonical storage path: work/exercises/{exercise-id}/checkpoints/checkpoint-s{N}.yaml",
+  "type": "object",
+  "required": [
+    "session_id",
+    "phase_completed",
+    "artifacts_produced",
+    "agent_handoff_state",
+    "next_phase_entry_point"
+  ],
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^purple-[a-z0-9-]+-s[0-9]+$",
+      "description": "Unique session identifier. Format: purple-{engagement-id}-s{N} where N is the session number.",
+      "examples": ["purple-2026-001-s1", "purple-engagement-alpha-s2"]
+    },
+    "phase_completed": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 8,
+      "description": "Last fully completed phase number. Purple team exercises use phases 1-8 (lifecycle phases)."
+    },
+    "artifacts_produced": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "File paths to all artifacts produced in this session (YARA rules, Sigma rules, detection reports, IOC bundles, etc.). All paths must resolve to existing files at session resumption (RV-02 per handoff protocol)."
+    },
+    "agent_handoff_state": {
+      "type": "object",
+      "description": "Per-agent completion status and last handoff data. Keys are agent names (kebab-case), values are status objects indicating which agents produced output and which handoffs are pending.",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["completed", "in_progress", "pending", "skipped"],
+            "description": "Agent completion status for this session."
+          },
+          "last_handoff": {
+            "type": "object",
+            "description": "Last handoff data from this agent, if any."
+          },
+          "artifacts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Artifact paths produced by this specific agent."
+          }
+        }
+      }
+    },
+    "next_phase_entry_point": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Phase number and entry criteria for the next session. Example: 'Phase 5: requires Phase 4 detection rules and coverage matrix'."
+    },
+    "d3fend_coverage_baseline": {
+      "type": "object",
+      "description": "Running D3FEND coverage matrix state from blue-d3fend. Contains technique IDs mapped and gaps identified.",
+      "properties": {
+        "techniques_mapped": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "attack_technique_id": {
+                "type": "string",
+                "pattern": "^T[0-9]{4}(\\.[0-9]{3})?$",
+                "description": "ATT&CK technique ID."
+              },
+              "d3fend_countermeasures": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "D3FEND countermeasure IDs mapped to this technique."
+              },
+              "confidence": {
+                "type": "string",
+                "enum": ["Verified", "Partial", "Unverified"],
+                "description": "Coverage confidence level per D3FEND Coverage Matrix taxonomy."
+              }
+            }
+          },
+          "description": "ATT&CK techniques mapped to D3FEND countermeasures."
+        },
+        "gaps_identified": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "ATT&CK technique IDs with no D3FEND countermeasure mapping."
+        },
+        "d3fend_tactics_covered": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["Harden", "Detect", "Isolate", "Deceive", "Evict"]
+          },
+          "description": "D3FEND tactics with at least one countermeasure mapped."
+        }
+      }
+    },
+    "token_usage": {
+      "type": "object",
+      "description": "Actual token consumption for the completed session.",
+      "properties": {
+        "work_tokens": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Tokens consumed by agent work (prompts, reasoning, tool calls)."
+        },
+        "framework_overhead": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Tokens consumed by framework enforcement layers (L1-L5)."
+        },
+        "total": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total token consumption (work_tokens + framework_overhead)."
+        }
+      },
+      "required": ["work_tokens", "framework_overhead", "total"]
+    },
+
+    "exercise_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z]+-[a-z0-9-]+$",
+      "description": "Cross-skill exercise identifier. Format: {exercise-type}-{engagement-id}. Example: 'purple-2026-001'.",
+      "examples": ["purple-2026-001", "purple-engagement-alpha"]
+    },
+    "skills_involved": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^/[a-z-]+$",
+        "description": "Skill path in slash-command format."
+      },
+      "description": "Skills participating in this cross-skill exercise.",
+      "examples": [["/red-team", "/blue-team", "/eng-team"]]
+    },
+    "cross_skill_handoffs_completed": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "integration_point": {
+            "type": "string",
+            "pattern": "^IP-[0-9]+$",
+            "description": "Integration point identifier (e.g., IP-5, IP-6, IP-7)."
+          },
+          "from_skill": {
+            "type": "string",
+            "description": "Source skill path."
+          },
+          "to_skill": {
+            "type": "string",
+            "description": "Target skill path."
+          },
+          "artifacts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Artifact paths transferred in this handoff."
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 timestamp of handoff completion."
+          },
+          "trust_level": {
+            "type": "string",
+            "enum": ["adversary-tainted", "analysis-verified", "engineering-context"],
+            "description": "Trust classification of the transferred data."
+          }
+        },
+        "required": ["integration_point", "from_skill", "to_skill", "artifacts"]
+      },
+      "description": "Integration point handoffs completed during this session."
+    },
+    "pending_cross_skill_handoffs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "integration_point": {
+            "type": "string",
+            "pattern": "^IP-[0-9]+$",
+            "description": "Integration point identifier."
+          },
+          "from_skill": {
+            "type": "string",
+            "description": "Source skill path."
+          },
+          "to_skill": {
+            "type": "string",
+            "description": "Target skill path."
+          },
+          "prerequisite_artifacts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Artifacts that must exist before this handoff can proceed."
+          },
+          "reason_pending": {
+            "type": "string",
+            "description": "Why this handoff could not complete in the current session."
+          }
+        },
+        "required": ["integration_point", "from_skill", "to_skill"]
+      },
+      "description": "Integration point handoffs pending for the next session."
+    },
+
+    "red_team_findings_digest": {
+      "type": "object",
+      "description": "Digest of red team findings for quick orientation without loading full RBEE envelopes.",
+      "properties": {
+        "finding_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total number of findings from red team engagement."
+        },
+        "technique_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^T[0-9]{4}(\\.[0-9]{3})?$"
+          },
+          "description": "ATT&CK technique IDs observed in findings."
+        },
+        "severity_distribution": {
+          "type": "object",
+          "properties": {
+            "critical": { "type": "integer", "minimum": 0 },
+            "high": { "type": "integer", "minimum": 0 },
+            "medium": { "type": "integer", "minimum": 0 },
+            "low": { "type": "integer", "minimum": 0 },
+            "informational": { "type": "integer", "minimum": 0 }
+          },
+          "description": "Count of findings by severity level."
+        }
+      }
+    },
+    "exchange_envelope_manifest": {
+      "type": "object",
+      "description": "Manifest of exchange envelopes produced. Tracks RBEE, CFE, and DGE envelope counts and paths.",
+      "properties": {
+        "rbee_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of Red-to-Blue Exchange Envelopes (one per ATT&CK technique)."
+        },
+        "cfe_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of Coverage Feedback Envelopes."
+        },
+        "dge_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of D3FEND Gap Envelopes."
+        },
+        "manifest_path": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Path to the exchange directory manifest.yaml file. Format: work/purple-team/exchange/{engagement-id}/manifest.yaml"
+        }
+      },
+      "required": ["rbee_count", "cfe_count", "dge_count", "manifest_path"]
+    },
+    "coverage_delta": {
+      "type": "object",
+      "description": "Pre/post-exercise coverage change tracking for measuring exercise effectiveness.",
+      "properties": {
+        "previous": {
+          "type": "object",
+          "properties": {
+            "verified_detection_rate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Verified detection rate before this session's work."
+            },
+            "gap_count": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Number of detection gaps before this session."
+            }
+          },
+          "description": "Coverage state at session start."
+        },
+        "current": {
+          "type": "object",
+          "properties": {
+            "verified_detection_rate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Verified detection rate after this session's work."
+            },
+            "gap_count": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Number of detection gaps after this session."
+            }
+          },
+          "description": "Coverage state at session end."
+        },
+        "improvement": {
+          "type": "object",
+          "properties": {
+            "detection_rate_delta": {
+              "type": "number",
+              "description": "Change in verified detection rate (current - previous). Positive = improvement."
+            },
+            "gaps_closed": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Number of detection gaps closed during this session."
+            },
+            "rules_created": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Number of new detection rules created."
+            },
+            "rules_validated": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Number of rules that passed validation."
+            },
+            "rules_untestable": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Number of rules that could not be validated (missing Tier C infrastructure)."
+            }
+          },
+          "description": "Improvement metrics for this session."
+        }
+      }
+    },
+
+    "emulation_manifest": {
+      "type": "object",
+      "description": "Phase A technique-artifact-indicator mapping from red team emulation. Maps ATT&CK techniques to their execution artifacts and extracted indicators.",
+      "properties": {
+        "techniques": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "technique_id": {
+                "type": "string",
+                "pattern": "^T[0-9]{4}(\\.[0-9]{3})?$",
+                "description": "ATT&CK technique ID."
+              },
+              "technique_name": {
+                "type": "string",
+                "description": "Human-readable technique name."
+              },
+              "artifact_paths": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Paths to emulation artifacts for this technique."
+              },
+              "indicators": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": ["file_hash", "filename", "network", "process", "registry", "command_line"],
+                      "description": "Indicator type."
+                    },
+                    "value": {
+                      "type": "string",
+                      "description": "Indicator value."
+                    }
+                  },
+                  "required": ["type", "value"]
+                },
+                "description": "Indicators extracted from emulation of this technique."
+              }
+            },
+            "required": ["technique_id", "technique_name"]
+          },
+          "description": "Emulated techniques with artifact and indicator mappings."
+        },
+        "agent_contributions": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "description": "Agent name to technique IDs mapping. Derivable from techniques array (EM-07)."
+        },
+        "artifact_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total artifact count. Must match sum of all artifact_paths arrays (EM-08)."
+        }
+      }
+    },
+    "detection_inventory": {
+      "type": "object",
+      "description": "Current rule inventory with paths and validation status. Tracks all detection rules across rule types.",
+      "properties": {
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "rule_id": {
+                "type": "string",
+                "description": "Unique rule identifier."
+              },
+              "rule_type": {
+                "type": "string",
+                "enum": ["yara", "sigma", "suricata", "falco", "custom"],
+                "description": "Detection rule type."
+              },
+              "path": {
+                "type": "string",
+                "description": "File path to the rule artifact."
+              },
+              "target_technique": {
+                "type": "string",
+                "pattern": "^T[0-9]{4}(\\.[0-9]{3})?$",
+                "description": "ATT&CK technique this rule detects."
+              },
+              "validation_status": {
+                "type": "string",
+                "enum": ["validated", "pending", "failed", "untestable"],
+                "description": "Current validation status of this rule."
+              }
+            },
+            "required": ["rule_id", "rule_type", "path", "target_technique", "validation_status"]
+          },
+          "description": "All detection rules in the current inventory."
+        },
+        "total_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total number of rules in inventory."
+        },
+        "validated_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of rules with validation_status = validated."
+        }
+      }
+    },
+    "iteration_history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "iteration_number": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Loop iteration number (1-based)."
+          },
+          "verified_detection_rate": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Verified detection rate at end of this iteration."
+          },
+          "rules_created": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Rules created in this iteration."
+          },
+          "gaps_closed": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Gaps closed in this iteration."
+          },
+          "delta_from_previous": {
+            "type": "number",
+            "description": "Change in verified_detection_rate from previous iteration. Used for plateau detection (delta < 0.05 for 2 consecutive iterations triggers termination)."
+          }
+        },
+        "required": ["iteration_number", "verified_detection_rate"]
+      },
+      "description": "Array of iteration records for plateau detection. Each entry captures the state at the end of one emulation-validation-gap loop iteration."
+    },
+    "coverage_dashboard": {
+      "type": "object",
+      "description": "Latest coverage dashboard snapshot for quick session-start orientation. Contains minimum required fields per Coverage Dashboard Schema.",
+      "properties": {
+        "verified_detection_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Primary termination metric per CFE normative mapping. Ratio of techniques with FULL_DETECTION status to total emulated techniques."
+        },
+        "detection_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Situational awareness metric including partial detections."
+        },
+        "gap_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of NO_DETECTION + PARTIAL_DETECTION techniques."
+        },
+        "iteration_number": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Current loop iteration number for plateau detection."
+        },
+        "validation_ratio": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Ratio of validated techniques to total techniques. When < 0.50, dashboard is DEGRADED_CONFIDENCE."
+        },
+        "confidence_qualifier": {
+          "type": "string",
+          "enum": ["NORMAL", "DEGRADED_CONFIDENCE"],
+          "description": "Dashboard confidence level. DEGRADED_CONFIDENCE when validation_ratio < 0.50."
+        }
+      },
+      "required": ["verified_detection_rate", "detection_rate", "gap_count", "iteration_number"]
+    },
+    "loop_state": {
+      "type": "object",
+      "description": "Current position in the purple team automation loop (Phases A-E). Tracks iteration progress and termination conditions.",
+      "properties": {
+        "current_phase": {
+          "type": "string",
+          "enum": ["A", "B", "C", "D", "E"],
+          "description": "Current loop phase. A=Emulation, B=Detection Validation, C=Coverage Assessment, D=Gap-Targeted Rule Generation, E=Re-Validation."
+        },
+        "iteration_number": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3,
+          "description": "Current iteration number (1-based). Maximum 3 iterations per termination ceiling."
+        },
+        "target_detection_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Target verified detection rate for termination (default: 0.80)."
+        },
+        "termination_reason": {
+          "type": ["string", "null"],
+          "enum": ["user_requested", "target_met", "ceiling_reached", "plateau_detected", null],
+          "description": "Reason for loop termination, if terminated. Precedence: user > target_met > ceiling > plateau. Null if loop is still active."
+        },
+        "is_terminated": {
+          "type": "boolean",
+          "description": "Whether the loop has terminated."
+        }
+      },
+      "required": ["current_phase", "iteration_number", "is_terminated"]
+    }
+  },
+  "additionalProperties": false
+}
