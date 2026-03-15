@@ -9,6 +9,14 @@
 | EN-001 | Enabler | CI pipeline security hardening | in_progress | PROJ-030-bugs |
 | TASK-003 | Task | Consolidate pre_tool_use.py into CLI enforcement pipeline (#150) | in_progress | EN-001 |
 | TASK-004 | Task | Claude Code permission syntax reference (#179) | in_progress | PROJ-030-bugs |
+| BUG-006 | Bug | statusLine command uses python3 which fails on Windows (#113) | pending | PROJ-030-bugs |
+| BUG-007 | Bug | file_repository.py uses hardcoded forward slash instead of pathlib (#117) | pending | PROJ-030-bugs |
+| BUG-008 | Bug | Replace /tmp with tempfile.gettempdir() in docstring examples (#119) | pending | PROJ-030-bugs |
+| BUG-009 | Bug | tspec-generator silently skips extensions with unrecognized outcome values (#195) | pending | PROJ-030-bugs |
+| BUG-010 | Bug | tspec-analyst has no cross-slice aggregate coverage mechanism (#196) | pending | PROJ-030-bugs |
+| BUG-011 | Bug | tspec-analyst uses live UC as coverage denominator instead of snapshot (#197) | pending | PROJ-030-bugs |
+| BUG-012 | Bug | cd-generator banned-term check false positives on domain vocabulary (#198) | pending | PROJ-030-bugs |
+| BUG-013 | Bug | uc-slicer append-only re-invocation lacks duplicate slice_id detection (#199) | pending | PROJ-030-bugs |
 
 ## Completed
 
