@@ -136,3 +136,4 @@ Workflow exits with error code 2: "Git working directory is not clean: M uv.lock
 |------|--------|--------|-------|
 | 2026-03-09 | Claude | pending | Initial report from GitHub Issue #151 |
 | 2026-03-09 | Claude | in_progress | Investigation and fix started |
+| 2026-03-09 | Claude | completed | Fixed with uv sync --frozen + SHA-pinned actions. Spawned EN-001 for systemic CI hardening. |

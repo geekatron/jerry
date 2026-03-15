@@ -100,15 +100,15 @@ The `grep -qE` patterns in the workflow use `^[a-z]+` for the type prefix and or
 
 ### Fix Verification
 
-- [ ] `feat(GH-122):` detected as MINOR bump
-- [ ] `FEAT(scope):` detected as MINOR bump
-- [ ] `Fix(Mixed-CASE):` detected as PATCH bump
-- [ ] `feat(GH-NNN)!:` detected as MAJOR bump
-- [ ] Version detection extracted to `src/version/` bounded context
-- [ ] Full test pyramid: unit, integration, contract, architecture, e2e
-- [ ] >= 90% line coverage on `src/version/`
-- [ ] Workflow updated to use `jerry ci detect-bump-type --since-tag`
-- [ ] After merge: pipeline auto-heals to v0.23.0
+- [x] `feat(GH-122):` detected as MINOR bump
+- [x] `FEAT(scope):` detected as MINOR bump
+- [x] `Fix(Mixed-CASE):` detected as PATCH bump
+- [x] `feat(GH-NNN)!:` detected as MAJOR bump
+- [x] Version detection extracted to `src/version/` bounded context
+- [x] Full test pyramid: unit, integration, contract, architecture, e2e
+- [x] >= 90% line coverage on `src/version/`
+- [x] Workflow updated to use `jerry ci detect-bump-type --since-tag`
+- [x] After merge: pipeline auto-heals to v0.23.0
 
 ### Quality Checklist
 
@@ -138,3 +138,4 @@ The `grep -qE` patterns in the workflow use `^[a-z]+` for the type prefix and or
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-03-02 | Claude | in_progress | Initial report. Fix implementation started. |
+| 2026-03-09 | Claude | completed | Version detection extracted to src/version/ bounded context with case-insensitive regex. Full test pyramid passing. |
