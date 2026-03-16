@@ -282,6 +282,20 @@ Prowler and Kubescape findings may identify targets that warrant deeper reconnai
 |-------|-------------|-------------|------|-------------------|
 | 1 | `rainbow-cloud-auditor` (Prowler) | `rainbow-recon-pipeline` (Nuclei) | Publicly exposed endpoints from cloud audit | Construct handoff with artifact path |
 
+**Minimum Entry Schema (JSON-OCSF):**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `finding_info.uid` | string | Yes | Prowler finding unique identifier |
+| `severity_id` | integer | Yes | OCSF severity (1-5) |
+| `resources[].uid` | string | Yes | Affected cloud resource ARN/identifier |
+| `resources[].cloud.region` | string | Yes | Cloud region |
+| `status_id` | integer | Yes | OCSF status (pass/fail/warning) |
+
+**Empty-Result Handling:** If Prowler reports zero findings (all checks pass), the source agent MUST: (1) persist the clean audit report, (2) include `finding_count: 0, all_checks_passed: true` in handoff `key_findings`, (3) set `confidence` to 0.9. The orchestrator SHOULD still route to recon if the operator has authorized reconnaissance regardless of cloud audit findings.
+
+**Handoff Quality:** Handoff follows `handoff-v2.schema.json`. Required: `confidence` >= 0.7 before routing to recon pipeline. `key_findings` MUST include finding count by severity, check coverage percentage, and any provider API limitations encountered.
+
 ### Cloud Mapper to Exploit Pipeline (Cross-Sub-Skill)
 
 Cartography attack surface maps may identify targets for exploitation assessment. This is a Zone 2 -> Zone 3 escalation managed by `rainbow-orchestrator` with per-operation approval.
@@ -290,6 +304,19 @@ Cartography attack surface maps may identify targets for exploitation assessment
 |-------|-------------|-------------|------|-------------------|
 | 1 | `rainbow-cloud-mapper` (Cartography) | `rainbow-exploit-*` | Attack paths from graph analysis | Per-operation approval required (Zone 3) |
 
+**Minimum Entry Schema (JSON):**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `source_node` | string | Yes | Source asset identifier in graph |
+| `target_node` | string | Yes | Target asset identifier in graph |
+| `relationship` | string | Yes | Relationship type (e.g., `TRUSTS`, `HAS_ACCESS_TO`) |
+| `risk_score` | number | No | Computed path risk score (0.0-1.0) |
+
+**Empty-Result Handling:** If Cartography discovers no exploitable attack paths, the source agent MUST: (1) persist the graph analysis report noting zero attack paths, (2) include `attack_path_count: 0` in handoff `key_findings`, (3) set `confidence` to 0.7 (graph analysis completeness depends on API permissions). The orchestrator MUST NOT route to `/rainbow-exploit` when no attack paths are identified.
+
+**Handoff Quality:** Handoff follows `handoff-v2.schema.json`. Required: `confidence` >= 0.7. Zone 3 per-operation approval is mandatory regardless of confidence score.
+
 ### Supply Chain to Cloud Pipeline (Cross-Sub-Skill)
 
 Checkov findings from `/rainbow-supply-chain` may feed into cloud-specific Checkov assessments.
@@ -297,6 +324,19 @@ Checkov findings from `/rainbow-supply-chain` may feed into cloud-specific Check
 | Stage | Source Agent | Target Agent | Data | Orchestrator Action |
 |-------|-------------|-------------|------|-------------------|
 | 1 | `rainbow-sc-scanner` (Checkov) | `rainbow-cloud-auditor` (Checkov) | IaC findings for cloud-specific follow-up | Construct handoff with artifact path |
+
+**Minimum Entry Schema (JSON):**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `check_id` | string | Yes | Checkov check identifier (e.g., `CKV_AWS_123`) |
+| `check_result.result` | enum | Yes | `passed`, `failed`, `skipped` |
+| `resource` | string | Yes | Resource path or identifier |
+| `file_path` | string | Yes | Source IaC file path |
+
+**Empty-Result Handling:** If Checkov reports zero IaC findings (all checks pass), the source agent MUST: (1) persist the clean scan report, (2) include `iac_finding_count: 0` in handoff `key_findings`, (3) set `confidence` to 0.9. The orchestrator MAY still route to cloud auditor for live cloud validation if the operator has authorized Zone 2 assessment.
+
+**Handoff Quality:** Handoff follows `handoff-v2.schema.json`. Required: `confidence` >= 0.6 (IaC findings are infrastructure-as-code level and may not reflect live cloud state).
 
 ---
 

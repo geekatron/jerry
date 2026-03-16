@@ -19,6 +19,31 @@ engagement:
   # Version of this scope document (REQUIRED)
   version: "1.0"
 
+  # Current lifecycle state (REQUIRED -- maintained by rainbow-orchestrator)
+  # Valid values: scope_defined, authorized, executing, reporting, closed
+  # See engagement-lifecycle.md Lifecycle State Machine for valid transitions.
+  lifecycle_state: "scope_defined"
+
+  # Lifecycle state transition history (maintained by rainbow-orchestrator)
+  # Each entry records a state transition with timestamp and trigger.
+  lifecycle_state_history:
+    - from_state: null
+      to_state: "scope_defined"
+      timestamp: ""              # ISO 8601: populated when scope document is created
+      trigger: "scope_document_created"
+      actor: ""                  # Agent or operator who triggered the transition
+    # Example transitions (populated by rainbow-orchestrator):
+    # - from_state: "scope_defined"
+    #   to_state: "authorized"
+    #   timestamp: "2026-03-16T09:05:00Z"
+    #   trigger: "operator_approval_obtained"
+    #   actor: "rainbow-orchestrator"
+    # - from_state: "authorized"
+    #   to_state: "executing"
+    #   timestamp: "2026-03-16T09:10:00Z"
+    #   trigger: "first_zone_2_operation"
+    #   actor: "rainbow-recon-pipeline"
+
   # Agent or operator who created the scope (REQUIRED)
   # Must be: rainbow-orchestrator, red-lead, or operator name
   created_by: ""
@@ -108,7 +133,8 @@ engagement:
       evidence_destruction_method: "secure-delete"
 
     # Emergency stop contact
-    emergency_stop_contact: ""        # Name and communication channel
+    emergency_stop_contact: ""        # Name of the emergency stop contact
+    communication_channel: ""         # Channel for emergency stop communication (e.g., "Slack #security-ops", "phone: +1-555-0100")
 
     # Additional constraints (free-form)
     additional_constraints:

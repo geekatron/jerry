@@ -98,7 +98,7 @@ Three tools require operation-mode classification before routing:
 - `sign`, `attest`, `attach` subcommands -> Zone 3 (require per-operation approval + signing key vault authorization)
 
 **Kyverno:**
-- `validate` with `--dry-run` -> Zone 1 (route to `rainbow-cloud-auditor`)
+- `validate` with `--resource` -> Zone 1 (route to `rainbow-cloud-auditor`)
 - `mutate` after scope validation -> Zone 2
 - `generate` -> Zone 3 (require per-operation approval)
 

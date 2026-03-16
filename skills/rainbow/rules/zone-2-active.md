@@ -30,7 +30,7 @@
 |-----------|-------|-----------|
 | `/rainbow-recon` | `rainbow-recon-pipeline` | All operations |
 | `/rainbow-recon` | `rainbow-recon-osint` | All operations |
-| `/rainbow-cloud` | `rainbow-cloud-auditor` | Kyverno `mutate` mode (without `--dry-run`) |
+| `/rainbow-cloud` | `rainbow-cloud-auditor` | Kyverno `mutate` mode (without `--resource`) |
 | `/rainbow-cloud` | `rainbow-cloud-mapper` | All operations (Cartography queries live cloud APIs) |
 | `/rainbow-runtime` | `rainbow-runtime-instrument` | `intercept` mode (mitmproxy traffic capture, Frida read-only hooks) |
 | `/rainbow-supply-chain` | `rainbow-sc-verifier` | Cosign `download signature`, `download sbom` (remote registry access) |
@@ -86,7 +86,7 @@ Zone 2 agents are authorized to perform the following operation types, subject t
 | Vulnerability detection scanning | Run Nuclei detection templates against authorized targets | `nuclei -t cves/ -u https://target.com` |
 | OSINT gathering | Collect publicly available intelligence on authorized targets | `amass enum -d target.com` |
 | Cloud asset mapping | Map cloud infrastructure for authorized accounts | Cartography against authorized cloud accounts |
-| Kubernetes resource mutation | Apply Kyverno mutations to authorized clusters | `kyverno apply policy.yaml --resource pod.yaml` (without `--dry-run`) |
+| Kubernetes resource mutation | Apply Kyverno mutations to authorized clusters | `kyverno apply policy.yaml` (without `--resource`, targets live cluster) |
 | Traffic interception | Capture and inspect traffic from authorized targets | `mitmproxy` in transparent or regular mode |
 | Remote signature/SBOM download | Download signatures or SBOMs from authorized registries | `cosign download signature image:tag` |
 | Username enumeration (OSINT) | Discover usernames/profiles on public platforms | `maigret username` |
@@ -126,7 +126,7 @@ Only the following tools and subcommands are permitted at Zone 2. Engagement sco
 | **OWASP Amass** | `enum` subcommand | -- |
 | **Maigret** | Username search | -- |
 | **Cartography** | Cloud asset mapping for authorized accounts | Accounts outside scope |
-| **Kyverno** | `apply` without `--dry-run` (mutate mode); `validate` | `generate` mode |
+| **Kyverno** | `apply` without `--resource` (mutate mode); `validate` | `generate` mode |
 | **Cosign** | `download signature`, `download sbom` | `sign`, `attest`, `attach` |
 | **mitmproxy** | Transparent/regular proxy capture | Traffic modification (use `mitmdump` scripts that modify responses) |
 | **Frida** | Read-only hooks, function tracing | Write hooks, memory patching |
@@ -150,15 +150,15 @@ Three tools span the Zone 2/Zone 3 boundary. The classification is based on the 
 
 | Operation | Zone | Classification Rule |
 |-----------|------|-------------------|
-| Detection templates: severity `info`, `low`, `medium`, `high`, `critical` WITHOUT tags `exploit`, `rce`, `upload`, `sqli-blind` | Zone 2 | Template is on the allowlist maintained in `/rainbow-recon/rules/nuclei-template-allowlist.yaml` |
-| Exploit templates: tagged `exploit`, `rce`, `upload`, `sqli-blind`, OR templates with `extractors` targeting credential/session fields | Zone 3 | Template matches deny-tag list; agent presents template metadata to user for per-operation approval per P-020 |
+| Detection templates: severity `info`, `low`, `medium`, `high`, `critical` WITHOUT any `deny_tags` per `nuclei-template-allowlist.yaml` (11 tags as of v1.0) | Zone 2 | Template is on the allowlist maintained in `/rainbow-recon/rules/nuclei-template-allowlist.yaml` |
+| Exploit templates: matching any `deny_tags` entry per `nuclei-template-allowlist.yaml`, OR templates with `extractors` targeting `deny_extractor_fields` (12 fields as of v1.0) | Zone 3 | Template matches deny-tag list; agent presents template metadata to user for per-operation approval per P-020 |
 | Custom/community templates not on allowlist | Zone 3 (default) | Fail-closed: all custom templates default to Zone 3 until reviewed and added to allowlist |
 
 **Enforcement procedure:**
 
 1. Agent parses the Nuclei template YAML to extract `info.severity` and `info.tags`.
-2. Agent checks tags against the deny-tag list: `exploit`, `rce`, `upload`, `sqli-blind`.
-3. Agent checks for `extractors` targeting fields matching: `password`, `secret`, `token`, `key`, `credential`, `session`, `auth`, `cookie`.
+2. Agent checks tags against the `deny_tags` list in `nuclei-template-allowlist.yaml` (11 tags as of v1.0).
+3. Agent checks for `extractors` targeting fields matching the `deny_extractor_fields` list in `nuclei-template-allowlist.yaml` (12 fields as of v1.0).
 4. If any deny-tag matches OR extractor targets sensitive fields: HALT and escalate to Zone 3.
 5. If the template is not on the allowlist: HALT and escalate to Zone 3.
 6. Otherwise: proceed at Zone 2.
@@ -167,8 +167,8 @@ Three tools span the Zone 2/Zone 3 boundary. The classification is based on the 
 
 | Operation | Zone | Classification Rule |
 |-----------|------|-------------------|
-| `validate` mode | Zone 1 | `--dry-run` enforced (see `zone-1-analysis.md`) |
-| `mutate` mode (`apply` without `--dry-run`) | Zone 2 | Requires engagement scope + cluster authorization |
+| `validate` mode | Zone 1 | `--resource` enforced (see `zone-1-analysis.md`) |
+| `mutate` mode (`apply` without `--resource`) | Zone 2 | Requires engagement scope + cluster authorization |
 | `generate` mode | Zone 3 | Resource generation requires per-operation human approval |
 
 **Enforcement:** The `rainbow-cloud-auditor` agent MUST parse the Kyverno policy YAML to determine the operation type (`validate`, `mutate`, `generate`). Policies containing `generate` rules trigger Zone 3 escalation regardless of other content.
@@ -210,9 +210,11 @@ Zone 2 operations follow a structured engagement lifecycle. Each phase has a gat
 
 | Action | Owner | Gate |
 |--------|-------|------|
-| Aggregate findings from all Zone 2 operations | `rainbow-reporter` | All Zone 2 tasks complete or time window expired |
-| Produce reconnaissance/assessment report | `rainbow-reporter` | Report persisted to `skills/rainbow/output/{id}/reports/` |
-| Identify findings requiring Zone 3 escalation | `rainbow-reporter` | Zone 3 candidates flagged in report |
+| Aggregate findings from all Zone 2 operations | `rainbow-reporter` (future W3+ agent) | All Zone 2 tasks complete or time window expired |
+| Produce reconnaissance/assessment report | `rainbow-reporter` (future W3+ agent) | Report persisted to `skills/rainbow/output/{id}/reports/` |
+| Identify findings requiring Zone 3 escalation | `rainbow-reporter` (future W3+ agent) | Zone 3 candidates flagged in report |
+
+> **Note:** `rainbow-reporter` is a planned future agent (W3+ wave). Until implemented, Phase 3 reporting is performed by `rainbow-orchestrator` or the operator directly.
 
 ### Phase 4: Debrief
 

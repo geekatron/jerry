@@ -138,7 +138,7 @@ The pipeline follows a structured order. Each stage feeds into the next.
 1. Input: Live targets from prior stages.
 2. Template classification: Parse template YAML for `info.severity` and `info.tags` BEFORE execution.
 3. Allowlist check: Verify template is on the allowlist at `skills/rainbow/rainbow-recon/rules/nuclei-template-allowlist.yaml`.
-4. Deny-tag check: If template tags include `exploit`, `rce`, `upload`, or `sqli-blind`, HALT and escalate to Zone 3.
+4. Deny-tag check: If template tags include any tag from the `deny_tags` list in `skills/rainbow/rainbow-recon/rules/nuclei-template-allowlist.yaml` (11 tags as of v1.0), HALT and escalate to Zone 3.
 5. Extractor check: If template has `extractors` targeting `password`, `secret`, `token`, `key`, `credential`, `session`, `auth`, `cookie`, HALT and escalate to Zone 3.
 6. Execute detection scan: `nuclei -l targets.txt -jsonl -o nuclei-results.json -severity info,low,medium,high,critical`.
 7. Validate output: Verify JSONL with template ID, severity, matched-at fields.
@@ -167,7 +167,7 @@ All tool output MUST pass through the credential filter before context window en
 - Nuclei detection templates only (allowlisted)
 
 **Zone 3 escalation triggers:**
-- Nuclei template matches deny-tag list (exploit, rce, upload, sqli-blind) -- HALT and escalate
+- Nuclei template matches deny-tag list per `nuclei-template-allowlist.yaml` (11 tags as of v1.0) -- HALT and escalate
 - Nuclei template not on allowlist -- HALT and escalate
 - Nuclei template has extractors targeting credential/session fields -- HALT and escalate
 - Any exploitation or payload delivery attempt -- HALT and escalate

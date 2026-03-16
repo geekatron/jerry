@@ -271,6 +271,21 @@ Nuclei vulnerability findings feed into /rainbow-exploit for exploitation assess
 |-------|-------------|-------------|------|-------------------|
 | 1 | `rainbow-recon-pipeline` (Nuclei) | `/rainbow-exploit` agents | Vulnerability findings JSONL | Construct handoff with artifact path; Zone 3 approval required |
 
+**Minimum Entry Schema (JSONL):**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `template-id` | string | Yes | Nuclei template identifier |
+| `matched-at` | string | Yes | Target URL or endpoint where finding was detected |
+| `severity` | enum | Yes | `info`, `low`, `medium`, `high`, `critical` |
+| `host` | string | Yes | Target host |
+| `timestamp` | string | Yes | ISO 8601 detection timestamp |
+| `info.name` | string | Yes | Template name (human-readable finding title) |
+
+**Empty-Result Handling:** If Nuclei produces zero findings (no vulnerabilities detected), the source agent MUST: (1) persist an empty JSONL artifact with a header comment noting zero findings, (2) include `result_count: 0` in the handoff `key_findings`, (3) set handoff `confidence` to 0.9 (high -- scan completed successfully with no findings). The orchestrator MUST NOT route to `/rainbow-exploit` when findings are empty.
+
+**Handoff Quality:** Handoff follows `handoff-v2.schema.json`. Required: `confidence` >= 0.7 before routing to exploit pipeline. `key_findings` MUST include finding count by severity, target coverage percentage, and any scan limitations.
+
 ### Supply Chain to Recon Pipeline (Cross-Sub-Skill)
 
 Grype vulnerability reports from /rainbow-supply-chain feed into Nuclei for web-facing validation.
@@ -279,6 +294,19 @@ Grype vulnerability reports from /rainbow-supply-chain feed into Nuclei for web-
 |-------|-------------|-------------|------|-------------------|
 | 1 | `rainbow-sc-scanner` (Grype) | `rainbow-recon-pipeline` (Nuclei) | Vulnerability report JSON | Construct handoff with artifact path |
 
+**Minimum Entry Schema (JSON):**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `vulnerability.id` | string | Yes | CVE or advisory identifier |
+| `vulnerability.severity` | enum | Yes | Severity rating |
+| `artifact.name` | string | Yes | Affected package name |
+| `artifact.version` | string | Yes | Affected package version |
+
+**Empty-Result Handling:** If Grype reports zero vulnerabilities, the source agent MUST: (1) persist the clean scan report, (2) include `vulnerability_count: 0` in handoff `key_findings`, (3) set `confidence` to 0.9. The orchestrator SHOULD still route to recon pipeline if the operator has authorized web-facing validation regardless of supply chain findings.
+
+**Handoff Quality:** Handoff follows `handoff-v2.schema.json`. Required: `confidence` >= 0.6 (supply chain findings are preliminary and may not have web-facing exposure).
+
 ### Recon to Cloud Pipeline (Cross-Sub-Skill)
 
 Cloud infrastructure discovered via Amass or Subfinder feeds into /rainbow-cloud for posture assessment.
@@ -286,6 +314,18 @@ Cloud infrastructure discovered via Amass or Subfinder feeds into /rainbow-cloud
 | Stage | Source Agent | Target Agent | Data | Orchestrator Action |
 |-------|-------------|-------------|------|-------------------|
 | 1 | `rainbow-recon-osint` (Amass) | `/rainbow-cloud` agents | Cloud asset discovery JSON | Construct handoff with artifact path |
+
+**Minimum Entry Schema (JSON):**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `name` | string | Yes | Asset identifier (domain, IP, cloud resource) |
+| `type` | enum | Yes | Asset type (e.g., `domain`, `ip`, `cloud_service`) |
+| `source` | string | Yes | Discovery source (e.g., `amass`, `subfinder`) |
+
+**Empty-Result Handling:** If Amass discovers zero cloud assets, the source agent MUST: (1) persist the empty discovery report, (2) include `cloud_asset_count: 0` in handoff `key_findings`, (3) set `confidence` to 0.7 (absence of cloud assets may indicate incomplete OSINT rather than true absence). The orchestrator MUST NOT route to `/rainbow-cloud` when no cloud assets are discovered.
+
+**Handoff Quality:** Handoff follows `handoff-v2.schema.json`. Required: `confidence` >= 0.6 (OSINT discovery completeness is inherently uncertain).
 
 ---
 
@@ -333,6 +373,18 @@ Engagement scope validation is performed by the agent before each operation. No 
 2. **Pre-execution gate** -- Both agents document the 5-check validation procedure
 3. **BDD scenarios** -- Scope validation scenarios in test suite
 4. **Audit logging** -- Every operation logs `target_authorized` and `technique_authorized` fields
+
+### Pipeline Agent Operates 6 CLI Tools (AC-F-17 Exception)
+
+The `rainbow-recon-pipeline` agent operates 6 CLI tools (Subfinder, httpx, dnsx, Naabu, Katana, Nuclei) against the AC-F-17 design target of maximum 5 CLI tools per agent. This is a documented exception per AP-07 (Tool Overload Creep) analysis.
+
+**Justification:** All 6 tools are from the ProjectDiscovery ecosystem and share unified CLI patterns (JSONL output, `-l` list input, consistent flag conventions). They form a single sequential reconnaissance pipeline where each tool's output feeds the next stage. The agent never selects between tools based on context -- it executes the full pipeline in fixed order. This is functionally a single pipeline with 6 stages, not 6 independent tool selections.
+
+**Compensating controls:**
+1. **Sequential pipeline execution** -- Only one tool is active at any time; no parallel tool selection decision
+2. **Unified CLI patterns** -- All 6 tools share ProjectDiscovery conventions (JSONL output, `-l`/`-u` input, `-o` output), reducing tool selection complexity
+3. **Fixed pipeline order** -- Subfinder -> dnsx -> httpx -> Naabu -> Katana -> Nuclei; agent does not dynamically select which tools to run
+4. **AP-07 monitoring** -- Tool count monitored; if additional tools are needed, they route to `rainbow-recon-osint` instead
 
 ### Tool Availability Is Environment-Dependent
 

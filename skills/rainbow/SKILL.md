@@ -231,7 +231,7 @@ Three tools span security zone boundaries with explicit, technically-enforced cl
 |------|---------------|-------------------|-------------------|-------------------|
 | **Nuclei** | `/rainbow-recon` | -- | Detection templates (severity-based, no exploit tags) | Exploit templates (tagged `exploit`, `rce`, `upload`) |
 | **Cosign** | `/rainbow-supply-chain` | `verify`, `tree` | `download signature/sbom` | `sign`, `attest`, `attach` |
-| **Kyverno** | `/rainbow-cloud` | `validate` (with mandatory `--dry-run`) | `mutate` (after scope validation) | `generate` (per-operation approval) |
+| **Kyverno** | `/rainbow-cloud` | `validate` (with mandatory `--resource`) | `mutate` (after scope validation) | `generate` (per-operation approval) |
 
 ---
 

@@ -152,11 +152,13 @@ Aggregate findings from all Zone 2 and Zone 3 operations. Produce a structured e
 
 | Action | Owner | Gate |
 |--------|-------|------|
-| Aggregate findings from all operations | rainbow-reporter | All Zone 2/3 tasks complete or time_window expired |
-| Classify findings by severity | rainbow-reporter | Every finding has severity rating |
-| Identify Zone 3 escalation candidates | rainbow-reporter | Findings requiring deeper exploitation flagged |
-| Produce engagement report | rainbow-reporter | Report persisted to `skills/rainbow/output/{engagement-id}/reports/` |
-| Include scope compliance summary | rainbow-reporter | Coverage percentage, any scope violations, escalation events |
+| Aggregate findings from all operations | rainbow-reporter (future W3+ agent) | All Zone 2/3 tasks complete or time_window expired |
+| Classify findings by severity | rainbow-reporter (future W3+ agent) | Every finding has severity rating |
+| Identify Zone 3 escalation candidates | rainbow-reporter (future W3+ agent) | Findings requiring deeper exploitation flagged |
+| Produce engagement report | rainbow-reporter (future W3+ agent) | Report persisted to `skills/rainbow/output/{engagement-id}/reports/` |
+| Include scope compliance summary | rainbow-reporter (future W3+ agent) | Coverage percentage, any scope violations, escalation events |
+
+> **Note:** `rainbow-reporter` is a planned future agent (W3+ wave). It is listed in the parent SKILL.md agent registry as a cross-cutting agent. Until `rainbow-reporter` is implemented, Phase 4 reporting is performed by `rainbow-orchestrator` or the operator directly.
 
 ### Report Structure
 
@@ -262,6 +264,42 @@ The engagement lifecycle applies uniformly across all /rainbow sub-skills that o
 | /rainbow-exploit | All exploit agents | Zone 3 |
 
 All agents in this table share the same engagement scope document and follow the same per-operation gate checks.
+
+---
+
+## Audit Log Entry Schema
+
+The following 13-field schema is the SSOT for audit log entries across all /rainbow zones. Zone 1 uses a subset (8 fields -- `engagement_id` is null, `target_authorized`/`technique_authorized`/`escalation_triggered` fields are omitted). Zone 2 and Zone 3 use all 13 fields.
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Rainbow Audit Log Entry",
+  "type": "object",
+  "required": ["timestamp", "zone", "agent", "tool", "subcommand", "target", "result_summary", "credential_filter_status"],
+  "properties": {
+    "timestamp":                { "type": "string", "format": "date-time", "description": "ISO 8601 operation timestamp" },
+    "zone":                     { "type": "integer", "enum": [1, 2, 3], "description": "Security zone" },
+    "engagement_id":            { "type": ["string", "null"], "pattern": "^RBW-\\d{4}$", "description": "Engagement scope ref (null for Zone 1)" },
+    "agent":                    { "type": "string", "description": "Agent that executed the operation" },
+    "tool":                     { "type": "string", "description": "Tool name" },
+    "subcommand":               { "type": "string", "description": "Specific subcommand or mode" },
+    "target":                   { "type": "string", "description": "Target addressed" },
+    "target_authorized":        { "type": "boolean", "description": "Whether target passed scope validation" },
+    "technique":                { "type": "string", "description": "Technique category" },
+    "technique_authorized":     { "type": "boolean", "description": "Whether technique passed allowlist check" },
+    "result_summary":           { "type": "string", "description": "One-line summary of findings" },
+    "credential_filter_status": { "type": "string", "enum": ["passed", "quarantined", "rejected"], "description": "Credential filter outcome" },
+    "duration_seconds":         { "type": "integer", "minimum": 0, "description": "Operation duration" },
+    "escalation_triggered":     { "type": "boolean", "description": "Whether zone escalation was triggered" }
+  }
+}
+```
+
+**Zone-specific requirements:**
+- **Zone 1:** `engagement_id` is null. `target_authorized`, `technique_authorized`, `escalation_triggered` are omitted (not applicable). 8 fields required.
+- **Zone 2:** All 13 fields required. `engagement_id` must reference a valid scope document.
+- **Zone 3:** All 13 fields required. Additionally, Zone 3 audit entries include the `operator_approval` from the scope document.
 
 ---
 
