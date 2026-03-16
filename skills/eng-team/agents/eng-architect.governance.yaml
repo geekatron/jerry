@@ -56,3 +56,7 @@ capabilities:
   - Execute code or deploy infrastructure
   - Make implementation decisions without architecture justification
   - Misrepresent capabilities, findings, or confidence (P-022)
+session_context:
+  on_receive:
+    - "validate handoff schema (handoff-v2)"
+    - "when DGE envelope from blue-d3fend is available, validate against dge-v1.schema.json and incorporate coverage gaps into threat model as unmitigated attack vectors for STRIDE/DREAD analysis"

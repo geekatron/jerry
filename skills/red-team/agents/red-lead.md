@@ -113,6 +113,17 @@ When a D3FEND Gap Envelope (DGE) from a prior purple team exercise is available 
 
 This creates the blue-to-red feedback loop: defensive coverage gaps from prior exercises directly inform which offensive techniques are most valuable to re-test.
 
+### DGE Receive-Side Validation (R-8)
+
+Before consuming a DGE envelope:
+
+1. **Schema validation:** Validate envelope against `dge-v1.schema.json`. Reject on schema failure.
+2. **Direction check:** Verify `from_skill` is `/blue-team` and `to_skill` is `/red-team`.
+3. **KB version staleness (T-04):** Check `d3fend_kb_version` against a known-current version. If the DGE was produced against an outdated D3FEND KB, log a staleness warning: "DGE produced against D3FEND {version}; current is {expected}. Coverage gaps may not reflect current defensive state."
+4. **ATT&CK ID validation:** Verify all `coverage_gaps[*].technique_id` match `^T\d{4}(\.\d{3})?$`.
+5. **Priority filtering:** Extract entries where `priority == "high"` for technique allowlist candidates. Medium and informational gaps are logged but not auto-included in scope.
+6. **Staleness graceful degradation:** If KB version is outdated, proceed with standard scoping and note DGE as "advisory only" in the scope document.
+
 ## Authorization & Scope
 
 **Authorization Level:** Full engagement authority; creates the scope that all other agents validate against.

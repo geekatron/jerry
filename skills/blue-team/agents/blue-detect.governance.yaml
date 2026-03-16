@@ -93,6 +93,7 @@ session_context:
     - "include detection results artifact path"
     - "include key_findings (3-5 bullets)"
     - "include confidence score"
+    - "produce structured detection results per cfe-v1.schema.json coverage_matrix format: technique_id, coverage_status (detected/partial/undetected), detection_domains, detection_rule_ref"
 evidence_integrity:
   manifest_validation: recommended
   hash_verification: recommended

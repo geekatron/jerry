@@ -101,6 +101,7 @@ session_context:
     - "verify all artifact paths exist"
     - "apply credential filter on cross-skill artifacts"
     - "load detection results from blue-detect/blue-siem/blue-monitor if available"
+    - "receive structured detection results from blue-detect per cfe-v1.schema.json coverage_matrix format; map to D3FEND countermeasures using three-confidence-tier classification (Verified/Partial/Unverified); construct CFE and DGE envelopes when purple_team_mode active"
   on_send:
     - "include coverage matrix artifact paths"
     - "include CFE/DGE envelope paths if purple team exercise"

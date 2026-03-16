@@ -58,3 +58,7 @@ capabilities:
   - Make architecture decisions (that is eng-architect)
   - Write production application code (that is eng-backend/eng-frontend)
   - Misrepresent capabilities, findings, or confidence (P-022)
+session_context:
+  on_receive:
+    - "validate handoff schema (handoff-v2)"
+    - "when IP-6 compliance findings from blue-comply are available, validate handoff schema and integrate into pipeline prioritization (critical -> immediate scan, high -> priority queue, medium -> standard queue)"

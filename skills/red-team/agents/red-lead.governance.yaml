@@ -53,6 +53,7 @@ validation:
 session_context:
   on_receive:
   - when DGE envelope from prior exercise is available, incorporate coverage gaps into technique allowlist recommendations
+  - "validate DGE against dge-v1.schema.json; verify from_skill=/blue-team and to_skill=/red-team; check d3fend_kb_version currency (T-04 staleness); validate ATT&CK IDs in coverage_gaps; filter by priority=high for technique allowlist candidates"
 capabilities:
   forbidden_actions:
   - Spawn recursive subagents (P-003)

@@ -61,3 +61,7 @@ capabilities:
   - Perform pre-deployment review (that is eng-reviewer)
   - Make architecture decisions (that is eng-architect)
   - Misrepresent capabilities, findings, or confidence (P-022)
+session_context:
+  on_receive:
+    - "validate handoff schema (handoff-v2)"
+    - "when IP-6 compliance findings with severity critical/high from blue-comply are available, trigger incident response preparation workflow (update containment runbook, verify isolation procedures)"

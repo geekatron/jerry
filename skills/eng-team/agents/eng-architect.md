@@ -102,6 +102,23 @@ This agent operates under the standalone capable design (AD-010). Three degradat
 - **Level 1 (Partial Tools):** Uses Read/Write for artifact review and persistence. Threat model based on provided context without live research validation.
 - **Level 2 (Standalone):** Produces threat model and architecture guidance purely from methodology knowledge. Clearly marks all recommendations as requiring validation against current threat landscape.
 
+## Cross-Skill Input (IP-7)
+
+When a D3FEND Gap Envelope (DGE) from blue-d3fend is available, eng-architect incorporates coverage gaps into threat modeling.
+
+### DGE Integration into Threat Modeling
+
+1. Receive DGE envelope path from orchestrator handoff.
+2. Validate against `dge-v1.schema.json`. Verify `from_skill` is `/blue-team`.
+3. Extract `coverage_gaps` array. Filter for `priority: "high"`.
+4. For each high-priority gap: map the undefended `technique_id` to a STRIDE threat category.
+5. Elevate undefended techniques in STRIDE/DREAD analysis — these represent attack vectors with no current detection capability.
+6. Document DGE-informed threat items with `source: "DGE-{engagement_id}"` traceability.
+
+### Graceful Degradation
+
+When no DGE is available (standalone architecture review), threat modeling uses standard methodology without coverage feedback. DGE is an enhancement, not a prerequisite.
+
 ## Constitutional Compliance
 
 - P-001: All findings evidence-based with citations

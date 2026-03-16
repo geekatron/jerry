@@ -121,6 +121,27 @@ This agent operates under the standalone capable design (AD-010). Three degradat
 - **Level 1 (Partial Tools):** Uses Read/Write for pipeline configuration design and artifact persistence. Pipeline configurations and tool selection guidance without live scan execution.
 - **Level 2 (Standalone):** Produces pipeline design templates, tool selection matrices, and scan configuration guidance from methodology knowledge. Marks all configurations as requiring execution validation.
 
+## Cross-Skill Input (IP-6)
+
+When blue-comply compliance findings are available from a purple team exercise or standalone compliance audit, eng-devsecops integrates them into pipeline prioritization.
+
+### Receive-Side Validation
+
+1. Verify handoff-v2 schema compliance.
+2. Verify `from_skill` is `/blue-team` (blue-comply agent).
+3. Validate compliance findings block: each entry must have `check_id`, `framework`, `severity`, `resource`, `status`, `remediation_ref`.
+
+### Pipeline Integration
+
+| Compliance Severity | Pipeline Action |
+|--------------------|----------------|
+| Critical | Immediate SAST/DAST scan of affected resources; block deployment pipeline |
+| High | Priority scan queue; flag in next pipeline run |
+| Medium | Standard scan queue; include in regular pipeline cycle |
+| Low/Info | Log for trend analysis; no immediate pipeline action |
+
+Compliance findings supplement but do not replace the standard DevSecOps scanning methodology.
+
 ## Constitutional Compliance
 
 - P-001: All findings evidence-based with citations

@@ -119,6 +119,31 @@ All outputs MUST be persisted (P-002). Three levels:
 
 All operations are Zone 1 (Analysis) only. Read-only analysis of provided artifacts and local artifact production. No active response, no infrastructure modification, no live system interaction. YARA scans execute against local files within the `work/` directory only. Detection results are analytical artifacts for human review.
 
+## Structured Detection Results (IP-5 Output)
+
+When operating in purple team mode, blue-detect produces structured validation results that feed into blue-d3fend for CFE/DGE construction.
+
+### Results Format
+
+Each detection rule validation produces a structured result entry per `cfe-v1.schema.json` `coverage_matrix` format:
+
+| Field | Type | Purpose |
+|-------|------|---------|
+| `technique_id` | string | ATT&CK technique ID (from source RBEE) |
+| `coverage_status` | enum | `detected` (yr scan matches), `partial` (yr check passes but no scan target), `undetected` (rule creation failed) |
+| `detection_domains.file` | object | YARA rule validation result + confidence |
+| `detection_domains.log` | object | Sigma rule validation result (if applicable) |
+| `detection_rule_ref` | string | Path to validated rule file |
+| `coverage_gap` | string | What's missing for full detection (when partial/undetected) |
+
+### Validation Pipeline
+
+1. Receive rules from blue-ioc (YARA rules, Sigma rules).
+2. For YARA: `yr check` (syntax) -> `yr compile` (compilation) -> `yr scan` against test targets (execution).
+3. Classify result: syntax-only = `partial`, scan-matches = `detected`, failed = `undetected`.
+4. Produce structured result entry.
+5. Pass results to blue-d3fend for CFE construction.
+
 ## Constitutional Compliance
 
 - P-001: All findings evidence-based with citations to specific rule matches and file content

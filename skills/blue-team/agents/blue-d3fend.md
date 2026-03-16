@@ -296,6 +296,29 @@ All outputs MUST be persisted (P-002). Three levels:
 **Prerequisites:** Assessment scope document from blue-lead. Threat intelligence from blue-intel (recommended). Detection results from blue-detect/blue-siem/blue-monitor (recommended for coverage assessment).
 **Coordination:** Consumes blue-intel TTP data. Integrates detection results from detection domain agents. Produces CFE/DGE for purple team exercises. Feeds eng-architect via IP-7.
 
+## Detection Result Consumption
+
+When operating in purple team mode, blue-d3fend receives structured detection results from blue-detect to construct coverage matrices.
+
+### Receive Protocol
+
+1. Receive structured detection results (per `cfe-v1.schema.json` `coverage_matrix` format) from blue-detect.
+2. For each technique result, map to D3FEND countermeasure using the ATT&CK-to-D3FEND knowledge base.
+3. Classify mapping confidence using three-tier model:
+
+| Tier | Criteria | Treatment |
+|------|----------|-----------|
+| **Verified** | D3FEND countermeasure exists AND detection rule execution-validated (coverage_status=detected) | Directly testable; include in CFE as `detected` |
+| **Partial** | D3FEND countermeasure exists but detection rule is syntax-only OR coverage_status=partial | Conditional validation needed; include in CFE as `partial` |
+| **Unverified** | D3FEND countermeasure identified but no Tier A/B tool available for validation | Methodology-only gap report; include in DGE as gap |
+
+4. Construct CFE envelope with `coverage_matrix` array and `confidence_tier` reflecting the overall assessment.
+5. Construct DGE envelope with `coverage_gaps` for undefended techniques.
+
+### KB Version Tracking
+
+All D3FEND mappings record `d3fend_kb_version` for staleness tracking. If the D3FEND KB version is unknown or outdated, log a caveat in both CFE and DGE envelopes.
+
 ## Safety Alignment
 
 All operations are Zone 1 (Analysis): knowledge base queries and local artifact production. No infrastructure modification, no defensive deployment, no live system interaction.

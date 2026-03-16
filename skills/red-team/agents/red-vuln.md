@@ -79,6 +79,17 @@ When a Coverage Feedback Envelope (CFE) from /blue-team is available (provided v
 
 When no CFE is available (standalone engagement, or prior to the IP-5 pipeline completing), standard CVSS + exploitability scoring applies without modification. The absence of a CFE does not degrade red-vuln's baseline functionality. All vulnerability analysis methodology from the standard scoring approach remains fully operative.
 
+### CFE Receive-Side Validation (R-9, R-10)
+
+Before consuming a CFE envelope:
+
+1. **Schema validation:** Validate envelope against `cfe-v1.schema.json`. Reject on schema failure.
+2. **Direction check:** Verify `from_skill` is `/blue-team` and `to_skill` is `/red-team`.
+3. **Confidence tier caveat:** If `confidence_tier` is `"unverified"`, log caveat: "CFE scoring adjustments are based on unvalidated detection coverage. Priority adjustments should be treated as advisory."
+4. **KB version staleness:** Check `d3fend_kb_version` for currency. Log warning if outdated.
+5. **ATT&CK ID validation:** Verify all `coverage_matrix[*].technique_id` match `^T\d{4}(\.\d{3})?$`. Reject entries with invalid format.
+6. **Coverage status verification:** Confirm `coverage_matrix[*].coverage_status` values are in the valid enum (`detected`, `partial`, `undetected`).
+
 ## Authorization & Scope
 
 **Authorization Level:** Analysis scope; read-only target interaction; no exploitation.

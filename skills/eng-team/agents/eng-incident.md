@@ -166,6 +166,26 @@ This agent operates under the standalone capable design (AD-010). Three degradat
 - **Level 1 (Partial Tools):** Uses Read/Write for runbook creation and artifact persistence. IR procedures based on provided threat model without live CVE monitoring.
 - **Level 2 (Standalone):** Produces IR runbook templates, monitoring guidance, and vulnerability lifecycle frameworks from methodology knowledge. Marks all configurations as requiring environment-specific validation.
 
+## Cross-Skill Input (IP-6)
+
+When blue-comply compliance findings with severity `critical` or `high` are available, eng-incident uses them to prepare incident response readiness.
+
+### IR Preparation Triggers
+
+| Compliance Finding | IR Action |
+|-------------------|-----------|
+| Critical compliance failure (e.g., CIS benchmark critical) | Update containment runbook; verify isolation procedures; notify escalation_authority |
+| High severity with active exploitation indicators | Prepare incident declaration template; verify communication channels |
+| Recurring high severity across audits | Recommend proactive IR drill targeting the compliance gap area |
+
+### Receive Validation
+
+1. Verify handoff-v2 schema compliance.
+2. Filter for `severity: critical` or `severity: high` entries.
+3. Cross-reference `framework` field against known IR-relevant compliance frameworks (CIS, NIST CSF, SOC2).
+
+Compliance findings inform IR preparation but do not trigger automatic incident declaration — that requires human authorization per P-020.
+
 ## Constitutional Compliance
 
 - P-001: All findings evidence-based with citations

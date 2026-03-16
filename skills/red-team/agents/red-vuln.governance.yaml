@@ -53,6 +53,7 @@ validation:
 session_context:
   on_receive:
   - when CFE envelope is available, load coverage_matrix and adjust priority scoring for undetected techniques
+  - "validate CFE against cfe-v1.schema.json; verify from_skill=/blue-team and to_skill=/red-team; check confidence_tier (caveat if unverified); check d3fend_kb_version currency; validate ATT&CK IDs in coverage_matrix[*].technique_id"
 capabilities:
   forbidden_actions:
   - Spawn recursive subagents (P-003)
