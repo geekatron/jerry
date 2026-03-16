@@ -42,7 +42,7 @@ Each phase has a gate that MUST be passed before proceeding to the next phase. G
 | Scope | Scope document complete with all required fields | Operator + rainbow-orchestrator | Cannot proceed to Authorize |
 | Authorize | operator_approval present, scope validation passes | rainbow-orchestrator | Cannot proceed to Execute |
 | Execute | Per-operation scope checks pass (target authorized, technique on allowlist, time_window current) | Each Zone 2/3 agent | Operation rejected; agent halts |
-| Report | All Zone 2/3 operations complete or time_window expired | rainbow-reporter (future W3+ agent; currently rainbow-orchestrator or operator) | Cannot proceed to Close |
+| Report | All Zone 2/3 operations complete or time_window expired | rainbow-reporter (future agent (post-W3); currently rainbow-orchestrator or operator) | Cannot proceed to Close |
 | Close | Operator reviews scope coverage and any escalation events | Operator | Engagement remains open |
 
 ---
@@ -152,13 +152,13 @@ Aggregate findings from all Zone 2 and Zone 3 operations. Produce a structured e
 
 | Action | Owner | Gate |
 |--------|-------|------|
-| Aggregate findings from all operations | rainbow-reporter (future W3+ agent) | All Zone 2/3 tasks complete or time_window expired |
-| Classify findings by severity | rainbow-reporter (future W3+ agent) | Every finding has severity rating |
-| Identify Zone 3 escalation candidates | rainbow-reporter (future W3+ agent) | Findings requiring deeper exploitation flagged |
-| Produce engagement report | rainbow-reporter (future W3+ agent) | Report persisted to `skills/rainbow/output/{engagement-id}/reports/` |
-| Include scope compliance summary | rainbow-reporter (future W3+ agent) | Coverage percentage, any scope violations, escalation events |
+| Aggregate findings from all operations | rainbow-reporter (future agent (post-W3)) | All Zone 2/3 tasks complete or time_window expired |
+| Classify findings by severity | rainbow-reporter (future agent (post-W3)) | Every finding has severity rating |
+| Identify Zone 3 escalation candidates | rainbow-reporter (future agent (post-W3)) | Findings requiring deeper exploitation flagged |
+| Produce engagement report | rainbow-reporter (future agent (post-W3)) | Report persisted to `skills/rainbow/output/{engagement-id}/reports/` |
+| Include scope compliance summary | rainbow-reporter (future agent (post-W3)) | Coverage percentage, any scope violations, escalation events |
 
-> **Note:** `rainbow-reporter` is a planned future agent (W3+ wave). It is listed in the parent SKILL.md agent registry as a cross-cutting agent. Until `rainbow-reporter` is implemented, Phase 4 reporting is performed by `rainbow-orchestrator` or the operator directly.
+> **Note:** `rainbow-reporter` is a planned future agent (post-W3 wave). It is listed in the parent SKILL.md agent registry as a cross-cutting agent. Until `rainbow-reporter` is implemented, Phase 4 reporting is performed by `rainbow-orchestrator` or the operator directly.
 
 ### Report Structure
 

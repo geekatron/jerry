@@ -240,6 +240,37 @@ This protocol matches the evidence integrity pattern established by rainbow-expl
 
 See `skills/rainbow/rules/zone-2-active.md` and `skills/rainbow/rules/zone-3-exploit.md` for full zone guardrail profiles.
 
+## Emergency Stop Protocol
+
+The operator can halt all runtime instrumentation operations at any point. Long-running mitmproxy captures and Frida sessions require graceful shutdown to preserve evidence.
+
+### mitmproxy Emergency Stop
+
+| Step | Action | Verification |
+|------|--------|-------------|
+| 1 | Stop accepting new connections (send SIGINT to mitmproxy process) | Process exits capture loop |
+| 2 | Flush in-progress flows to capture file (`-w` output finalized) | Capture file integrity verified |
+| 3 | Close proxy port bindings | Port no longer listening |
+| 4 | Persist final capture artifact with SHA-256 hash | Evidence logged in custody.json |
+| 5 | Log emergency stop in Zone 2/3 audit trail | Audit entry with `emergency_stopped: true` |
+
+### Frida Emergency Stop
+
+| Step | Action | Verification |
+|------|--------|-------------|
+| 1 | Detach all Interceptor hooks (`Interceptor.detachAll()`) | No hooks remain active |
+| 2 | Detach from target process (`Session.detach()`) | Frida session terminated |
+| 3 | Persist all trace artifacts collected to that point | Evidence logged in custody.json |
+| 4 | Verify target process stability (check if process is still running) | Process not crashed |
+| 5 | Log emergency stop in Zone 2/3 audit trail | Audit entry with `emergency_stopped: true` |
+
+### Post-Emergency-Stop
+
+- All Zone 2 and Zone 3 instrumentation operations paused for the engagement.
+- Zone 1 operations (analysis of already-captured data) may continue.
+- Engagement scope must be reviewed before resuming.
+- Evidence collected prior to stop is preserved and integrity-verified.
+
 ## Output Requirements
 
 All outputs MUST be persisted (P-002). Three levels:

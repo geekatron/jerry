@@ -14,6 +14,9 @@ Feature: Rainbow Runtime Instrument Agent
     And a valid engagement scope document exists at "skills/rainbow/output/RBW-0001/SCOPE.md"
     And the engagement scope has operator_approval present
     And the engagement scope time_window includes the current time
+    And the engagement scope has escalation_authority naming a human operator
+    And the engagement scope has data_handling_rules field present
+    And the engagement scope has emergency_contact field present
 
   # --- Engagement Scope Validation ---
 

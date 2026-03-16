@@ -356,6 +356,15 @@ Zone enforcement relies on LLM behavioral compliance with the zone classificatio
 4. **Engagement scope validation** -- Every tool invocation gated by engagement scope checks
 5. **Fail-closed default** -- Unrecognized operations classified as Zone 3
 
+**Residual risk (FMEA):**
+
+| Failure Mode | S | O | D | RPN | Mitigation |
+|-------------|---|---|---|-----|------------|
+| Agent executes Zone 3 write hook misclassified as Zone 2 | 8 | 4 | 8 | 256 | Fail-closed default; obfuscation-aware classification; BDD scenarios |
+| Agent ignores zone restrictions under adversarial prompt | 10 | 3 | 8 | 240 | NPT-009 constraints; engagement scope validation; operator oversight |
+
+> S=Severity, O=Occurrence, D=Detection. Scale 1-10 per FMEA standard. RPN >= 200 = Critical, monitored. These RPNs are accepted per ADR-PROJ023-001; reduction requires L3 runtime gate implementation.
+
 ### Credential Filter Is W0 Specification-Only
 
 The credential filter pipeline is a W0 specification. The agent declares `credential_filter_applied_to_all_tool_output` as a behavioral constraint. Runtime enforcement deferred to W1.
@@ -366,6 +375,12 @@ The credential filter pipeline is a W0 specification. The agent declares `creden
 3. **Fail-closed specification** -- Filter crash or timeout rejects entire tool output block
 4. **BDD credential filter scenarios** -- Comprehensive credential filter application and quarantine scenarios
 5. **Heightened sensitivity** -- Agent assumes all intercepted traffic contains credentials
+
+**Residual risk (FMEA):**
+
+| Failure Mode | S | O | D | RPN | Mitigation |
+|-------------|---|---|---|-----|------------|
+| Credential material enters context window unfiltered | 9 | 5 | 6 | 270 | W0 behavioral spec; heightened sensitivity; fail-closed; operator awareness |
 
 ### Script Classification Is LLM-Parsed
 

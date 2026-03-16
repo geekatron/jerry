@@ -210,11 +210,11 @@ Zone 2 operations follow a structured engagement lifecycle. Each phase has a gat
 
 | Action | Owner | Gate |
 |--------|-------|------|
-| Aggregate findings from all Zone 2 operations | `rainbow-reporter` (future W3+ agent) | All Zone 2 tasks complete or time window expired |
-| Produce reconnaissance/assessment report | `rainbow-reporter` (future W3+ agent) | Report persisted to `skills/rainbow/output/{id}/reports/` |
-| Identify findings requiring Zone 3 escalation | `rainbow-reporter` (future W3+ agent) | Zone 3 candidates flagged in report |
+| Aggregate findings from all Zone 2 operations | `rainbow-reporter` (future agent (post-W3)) | All Zone 2 tasks complete or time window expired |
+| Produce reconnaissance/assessment report | `rainbow-reporter` (future agent (post-W3)) | Report persisted to `skills/rainbow/output/{id}/reports/` |
+| Identify findings requiring Zone 3 escalation | `rainbow-reporter` (future agent (post-W3)) | Zone 3 candidates flagged in report |
 
-> **Note:** `rainbow-reporter` is a planned future agent (W3+ wave). Until implemented, Phase 3 reporting is performed by `rainbow-orchestrator` or the operator directly.
+> **Note:** `rainbow-reporter` is a planned future agent (post-W3 wave). Until implemented, Phase 3 reporting is performed by `rainbow-orchestrator` or the operator directly.
 
 ### Phase 4: Debrief
 

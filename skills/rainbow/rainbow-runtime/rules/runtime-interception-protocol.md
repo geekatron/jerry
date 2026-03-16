@@ -165,6 +165,21 @@ Before executing any script (mitmproxy `-s` or Frida `-l`), the agent MUST:
 5. **If Zone 2:** Proceed with execution.
 6. **If classification is ambiguous:** Default to Zone 3 (fail-closed).
 
+### Obfuscation-Aware Classification
+
+Scripts that use dynamic code generation or obfuscation techniques to hide Zone 3 operations MUST be classified as Zone 3 regardless of whether literal Zone 3 indicators are visible. The following patterns trigger mandatory Zone 3 classification:
+
+| Pattern | Example | Rationale |
+|---------|---------|-----------|
+| `eval()` | `eval("Interceptor" + ".replace(...)")` | Dynamic code execution hides API calls |
+| `Function()` constructor | `new Function("Memory.writeByteArray(...)")` | Runtime function generation |
+| Computed property access | `Interceptor['rep'+'lace']` or `obj[variable]` | Bypasses literal string matching |
+| Dynamic string assembly | `var m = "rep"; m += "lace"; Interceptor[m](...)` | Evades pattern-based detection |
+| `require()` for Frida modules | `require('./modify-module.js')` | External module may contain Zone 3 calls |
+| Minified/obfuscated source | Unreadable variable names, no whitespace | Cannot verify zone classification |
+
+**When in doubt, classify as Zone 3.** The fail-closed default applies to obfuscated scripts even when individual API calls appear read-only.
+
 ### Compound Scripts
 
 Scripts may contain both read-only and write operations. If ANY write operation is present, the ENTIRE script is classified as Zone 3. There is no partial zone classification.
