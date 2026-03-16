@@ -196,7 +196,7 @@ Maigret (username OSINT)       --> correlate with pipeline findings
 | Zone | Operations | Authorization |
 |------|-----------|---------------|
 | **Zone 2** | All Subfinder, httpx, dnsx, Naabu, Katana operations; Nuclei detection templates; Amass enum; Maigret search | Engagement scope required (operator-approved) |
-| **Zone 3** | Nuclei exploit templates (tagged exploit, rce, upload, sqli-blind); custom/community templates not on allowlist | Per-operation human approval required |
+| **Zone 3** | Nuclei exploit templates (matching deny_tags per `nuclei-template-allowlist.yaml`, 11 tags as of v1.0); custom/community templates not on allowlist | Per-operation human approval required |
 
 ### Dual-Zone Nuclei Classification
 

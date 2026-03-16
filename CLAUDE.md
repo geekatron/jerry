@@ -88,7 +88,7 @@ See `docs/governance/JERRY_CONSTITUTION.md` for full governance.
 | `/prompt-engineering` | Structured prompt construction, NPT constraint generation, prompt quality scoring (3 agents: builder, constraint-gen, scorer) |
 | `/diataxis` | Four-quadrant documentation methodology (6 agents: 4 writers, classifier, auditor) |
 | `/user-experience` | AI-augmented UX methodology for tiny teams (11 agents: orchestrator + 10 framework specialists across 5 criteria-gated waves) |
-| `/rainbow` | Composable cybersecurity tool execution suite (14 agents across 5 sub-skills: supply-chain, recon, cloud, exploit, runtime). Tool-assisted pentesting, supply chain scanning, reconnaissance, cloud security posture, exploitation frameworks. Three-zone security model. |
+| `/rainbow` | Composable cybersecurity tool execution suite (13 agents across 5 sub-skills: supply-chain, recon, cloud, exploit, runtime). Tool-assisted pentesting, supply chain scanning, reconnaissance, cloud security posture, exploitation frameworks. Three-zone security model. |
 | `/blue-team` | Defensive cybersecurity operations (12 agents: detection, forensics, compliance, threat intel). YARA-X, Ghidra, Sigma, Checkov, Trivy, MISP, D3FEND. Zone 1 analysis only. |
 
 **SessionStart Hook Tags:**

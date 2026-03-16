@@ -140,7 +140,7 @@ The pipeline follows a structured order. Each stage feeds into the next.
 3. Allowlist check: Verify template is on the allowlist at `skills/rainbow/rainbow-recon/rules/nuclei-template-allowlist.yaml`.
 4. Deny-tag check: If template tags include any tag from the `deny_tags` list in `skills/rainbow/rainbow-recon/rules/nuclei-template-allowlist.yaml` (11 tags as of v1.0), HALT and escalate to Zone 3.
 5. Extractor check: If template has `extractors` targeting `password`, `secret`, `token`, `key`, `credential`, `session`, `auth`, `cookie`, HALT and escalate to Zone 3.
-6. Execute detection scan: `nuclei -l targets.txt -jsonl -o nuclei-results.json -severity info,low,medium,high,critical`.
+6. Execute detection scan: `nuclei -l targets.txt -t cves/ -t misconfiguration/ -t exposed-panels/ -t technologies/ -t dns/ -t ssl/ -t http/ -t network/ -t file/ -t headless/ -jsonl -o nuclei-results.json -severity info,low,medium,high,critical`. The `-t <dir>` flags restrict template loading to the 10 Zone 2-classified directories from `nuclei-template-allowlist.yaml`. This provides non-behavioral defense-in-depth: even if the classification procedure (Steps 1-5) is bypassed, Nuclei only loads templates from allowed directories.
 7. Validate output: Verify JSONL with template ID, severity, matched-at fields.
 8. Apply credential filter to output.
 9. Persist artifact to `skills/rainbow/output/{engagement-id}/recon/nuclei-{domain-slug}.jsonl`.

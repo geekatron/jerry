@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Rainbow Audit Log Entry",
+  "description": "SSOT schema for audit log entries across all /rainbow security zones. Zone 1 uses a subset (8 fields). Zone 2 and Zone 3 use all 14 fields. Extracted from engagement-lifecycle.md.",
+  "type": "object",
+  "required": ["timestamp", "zone", "agent", "tool", "subcommand", "target", "result_summary", "credential_filter_status"],
+  "properties": {
+    "timestamp":                { "type": "string", "format": "date-time", "description": "ISO 8601 operation timestamp" },
+    "zone":                     { "type": "integer", "enum": [1, 2, 3], "description": "Security zone" },
+    "engagement_id":            { "type": ["string", "null"], "pattern": "^RBW-\\d{4}$", "description": "Engagement scope ref (null for Zone 1)" },
+    "agent":                    { "type": "string", "description": "Agent that executed the operation" },
+    "tool":                     { "type": "string", "description": "Tool name" },
+    "subcommand":               { "type": "string", "description": "Specific subcommand or mode" },
+    "target":                   { "type": "string", "description": "Target addressed" },
+    "target_authorized":        { "type": "boolean", "description": "Whether target passed scope validation (omitted for Zone 1)" },
+    "technique":                { "type": "string", "description": "Technique category" },
+    "technique_authorized":     { "type": "boolean", "description": "Whether technique passed allowlist check (omitted for Zone 1)" },
+    "result_summary":           { "type": "string", "description": "One-line summary of findings" },
+    "credential_filter_status": { "type": "string", "enum": ["passed", "quarantined", "rejected"], "description": "Credential filter outcome" },
+    "duration_seconds":         { "type": "integer", "minimum": 0, "description": "Operation duration" },
+    "escalation_triggered":     { "type": "boolean", "description": "Whether zone escalation was triggered (omitted for Zone 1)" }
+  }
+}

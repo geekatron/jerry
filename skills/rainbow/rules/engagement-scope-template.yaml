@@ -20,26 +20,31 @@ engagement:
   version: "1.0"
 
   # Current lifecycle state (REQUIRED -- maintained by rainbow-orchestrator)
-  # Valid values: scope_defined, authorized, executing, reporting, closed
-  # See engagement-lifecycle.md Lifecycle State Machine for valid transitions.
-  lifecycle_state: "scope_defined"
+  # Valid values: CREATED, SCOPED, AUTHORIZED, EXECUTING, REPORTING, CLOSED
+  # Canonical enum per engagement-lifecycle.md Lifecycle State Machine.
+  lifecycle_state: "CREATED"
 
   # Lifecycle state transition history (maintained by rainbow-orchestrator)
   # Each entry records a state transition with timestamp and trigger.
   lifecycle_state_history:
     - from_state: null
-      to_state: "scope_defined"
+      to_state: "CREATED"
       timestamp: ""              # ISO 8601: populated when scope document is created
       trigger: "scope_document_created"
       actor: ""                  # Agent or operator who triggered the transition
     # Example transitions (populated by rainbow-orchestrator):
-    # - from_state: "scope_defined"
-    #   to_state: "authorized"
+    # - from_state: "CREATED"
+    #   to_state: "SCOPED"
+    #   timestamp: "2026-03-16T09:03:00Z"
+    #   trigger: "scope_document_fields_complete"
+    #   actor: "rainbow-orchestrator"
+    # - from_state: "SCOPED"
+    #   to_state: "AUTHORIZED"
     #   timestamp: "2026-03-16T09:05:00Z"
     #   trigger: "operator_approval_obtained"
     #   actor: "rainbow-orchestrator"
-    # - from_state: "authorized"
-    #   to_state: "executing"
+    # - from_state: "AUTHORIZED"
+    #   to_state: "EXECUTING"
     #   timestamp: "2026-03-16T09:10:00Z"
     #   trigger: "first_zone_2_operation"
     #   actor: "rainbow-recon-pipeline"

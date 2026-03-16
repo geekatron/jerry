@@ -128,7 +128,7 @@ See [Routing Disambiguation](#routing-disambiguation) for full exclusion conditi
 | `/rainbow-exploit` | 3 | `rainbow-exploit-ops`, `rainbow-exploit-c2`, `rainbow-exploit-ad`, `rainbow-exploit-msf` | pwntools, Impacket, Donut, Empire, Mythic, BloodHound CE, Metasploit | Binary exploitation, C2, Active Directory attacks, Metasploit |
 | `/rainbow-runtime` | 2/3 | `rainbow-runtime-instrument` | mitmproxy, Frida | Traffic interception, dynamic analysis, runtime instrumentation |
 
-**Cross-cutting:** `rainbow-orchestrator` (T5, routing only), `rainbow-reporter` (T1, report generation from outputs)
+**Cross-cutting:** `rainbow-orchestrator` (T5, routing only), `rainbow-reporter` (T1, report generation from outputs -- future W3+ agent; currently manual via rainbow-orchestrator or operator)
 
 ---
 
@@ -162,7 +162,7 @@ User Request -> rainbow-orchestrator
     |   Route to rainbow-runtime-instrument
     |
     +-- Contains report keywords (report, summarize findings)?
-    |   YES -> Route to rainbow-reporter
+    |   YES -> Route to rainbow-reporter (future W3+ agent; currently rainbow-orchestrator performs reporting directly)
     |
     +-- No match -> Escalate to user per H-31
 ```
@@ -172,7 +172,7 @@ User Request -> rainbow-orchestrator
 | Agent | Sub-Skill | Security Zone |
 |-------|-----------|---------------|
 | `rainbow-orchestrator` | `/rainbow` (parent) | Governance |
-| `rainbow-reporter` | `/rainbow` (cross-cutting) | -- |
+| `rainbow-reporter` | `/rainbow` (cross-cutting) | -- | *(future W3+ agent; currently manual)* |
 | `rainbow-sc-scanner` | `/rainbow-supply-chain` | Zone 1 |
 | `rainbow-sc-verifier` | `/rainbow-supply-chain` | Zone 1/2 |
 | `rainbow-recon-pipeline` | `/rainbow-recon` | Zone 2 |
@@ -229,7 +229,7 @@ Three tools span security zone boundaries with explicit, technically-enforced cl
 
 | Tool | Home Sub-Skill | Zone 1 Operations | Zone 2 Operations | Zone 3 Operations |
 |------|---------------|-------------------|-------------------|-------------------|
-| **Nuclei** | `/rainbow-recon` | -- | Detection templates (severity-based, no exploit tags) | Exploit templates (tagged `exploit`, `rce`, `upload`) |
+| **Nuclei** | `/rainbow-recon` | -- | Detection templates (severity-based, no deny_tags matches) | Exploit templates (matching deny_tags per `nuclei-template-allowlist.yaml`, 11 tags as of v1.0) |
 | **Cosign** | `/rainbow-supply-chain` | `verify`, `tree` | `download signature/sbom` | `sign`, `attest`, `attach` |
 | **Kyverno** | `/rainbow-cloud` | `validate` (with mandatory `--resource`) | `mutate` (after scope validation) | `generate` (per-operation approval) |
 
@@ -297,7 +297,7 @@ P-003 AGENT HIERARCHY:
 | **1. Scope Establishment** | Create engagement scope document (engagement_id, authorized targets, technique allowlist, time window, exclusions, RoE) | Required for Zone 2/3 |
 | **2. Tool Execution** | Route requests to sub-skill agents per internal routing decision tree | Zone-specific gates apply |
 | **3. Evidence Collection** | All tool outputs persisted to engagement output directory | Credential filter applied |
-| **4. Reporting** | `rainbow-reporter` generates unified findings report from all sub-skill outputs | No zone gate |
+| **4. Reporting** | `rainbow-reporter` generates unified findings report from all sub-skill outputs (future W3+ agent; currently rainbow-orchestrator or operator performs reporting directly) | No zone gate |
 | **5. Engagement Close** | Scope document archived, evidence retention policy applied | -- |
 
 ### Engagement Scope Document
@@ -429,7 +429,7 @@ Six integration points connect /rainbow with /red-team, /blue-team, and /eng-tea
 | Analyze AD attack paths | rainbow-exploit-ad | "Map AD attack paths with BloodHound" |
 | Run Metasploit module | rainbow-exploit-msf | "Execute the Metasploit module for CVE-2026-XXXX" |
 | Intercept traffic | rainbow-runtime-instrument | "Set up mitmproxy to intercept HTTPS traffic from the target app" |
-| Generate engagement report | rainbow-reporter | "Generate findings report for engagement RBW-0001" |
+| Generate engagement report | rainbow-reporter *(future W3+ agent; currently manual)* | "Generate findings report for engagement RBW-0001" |
 
 ### Sub-Skill Creation Criterion
 

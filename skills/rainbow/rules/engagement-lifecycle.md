@@ -42,7 +42,7 @@ Each phase has a gate that MUST be passed before proceeding to the next phase. G
 | Scope | Scope document complete with all required fields | Operator + rainbow-orchestrator | Cannot proceed to Authorize |
 | Authorize | operator_approval present, scope validation passes | rainbow-orchestrator | Cannot proceed to Execute |
 | Execute | Per-operation scope checks pass (target authorized, technique on allowlist, time_window current) | Each Zone 2/3 agent | Operation rejected; agent halts |
-| Report | All Zone 2/3 operations complete or time_window expired | rainbow-reporter | Cannot proceed to Close |
+| Report | All Zone 2/3 operations complete or time_window expired | rainbow-reporter (future W3+ agent; currently rainbow-orchestrator or operator) | Cannot proceed to Close |
 | Close | Operator reviews scope coverage and any escalation events | Operator | Engagement remains open |
 
 ---
@@ -269,32 +269,28 @@ All agents in this table share the same engagement scope document and follow the
 
 ## Audit Log Entry Schema
 
-The following 13-field schema is the SSOT for audit log entries across all /rainbow zones. Zone 1 uses a subset (8 fields -- `engagement_id` is null, `target_authorized`/`technique_authorized`/`escalation_triggered` fields are omitted). Zone 2 and Zone 3 use all 13 fields.
+The following 14-field schema is the SSOT for audit log entries across all /rainbow zones. Zone 1 uses a subset (8 fields -- `engagement_id` is null, `target_authorized`/`technique_authorized`/`escalation_triggered` fields are omitted, and `duration_seconds` is optional). Zone 2 and Zone 3 use all 14 fields.
 
-```json
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Rainbow Audit Log Entry",
-  "type": "object",
-  "required": ["timestamp", "zone", "agent", "tool", "subcommand", "target", "result_summary", "credential_filter_status"],
-  "properties": {
-    "timestamp":                { "type": "string", "format": "date-time", "description": "ISO 8601 operation timestamp" },
-    "zone":                     { "type": "integer", "enum": [1, 2, 3], "description": "Security zone" },
-    "engagement_id":            { "type": ["string", "null"], "pattern": "^RBW-\\d{4}$", "description": "Engagement scope ref (null for Zone 1)" },
-    "agent":                    { "type": "string", "description": "Agent that executed the operation" },
-    "tool":                     { "type": "string", "description": "Tool name" },
-    "subcommand":               { "type": "string", "description": "Specific subcommand or mode" },
-    "target":                   { "type": "string", "description": "Target addressed" },
-    "target_authorized":        { "type": "boolean", "description": "Whether target passed scope validation" },
-    "technique":                { "type": "string", "description": "Technique category" },
-    "technique_authorized":     { "type": "boolean", "description": "Whether technique passed allowlist check" },
-    "result_summary":           { "type": "string", "description": "One-line summary of findings" },
-    "credential_filter_status": { "type": "string", "enum": ["passed", "quarantined", "rejected"], "description": "Credential filter outcome" },
-    "duration_seconds":         { "type": "integer", "minimum": 0, "description": "Operation duration" },
-    "escalation_triggered":     { "type": "boolean", "description": "Whether zone escalation was triggered" }
-  }
-}
-```
+**Canonical schema:** `skills/rainbow/rules/audit-log-entry.schema.json` (JSON Schema Draft 2020-12)
+
+**Schema fields summary:**
+
+| Field | Type | Required | Zone Applicability |
+|-------|------|----------|--------------------|
+| `timestamp` | string (date-time) | Yes | All zones |
+| `zone` | integer (1, 2, 3) | Yes | All zones |
+| `engagement_id` | string or null | Yes | Zone 2/3 (null for Zone 1) |
+| `agent` | string | Yes | All zones |
+| `tool` | string | Yes | All zones |
+| `subcommand` | string | Yes | All zones |
+| `target` | string | Yes | All zones |
+| `target_authorized` | boolean | No | Zone 2/3 only |
+| `technique` | string | No | Zone 2/3 only |
+| `technique_authorized` | boolean | No | Zone 2/3 only |
+| `result_summary` | string | Yes | All zones |
+| `credential_filter_status` | enum | Yes | All zones |
+| `duration_seconds` | integer | No | All zones |
+| `escalation_triggered` | boolean | No | Zone 2/3 only |
 
 **Zone-specific requirements:**
 - **Zone 1:** `engagement_id` is null. `target_authorized`, `technique_authorized`, `escalation_triggered` are omitted (not applicable). 8 fields required.
