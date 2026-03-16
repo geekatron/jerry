@@ -135,7 +135,7 @@ All /blue-team agents are confined to Zone 1 (Analysis). No live system interact
 
 | Name | File path | Role | Cognitive mode | Tool tier | Security zone | Model |
 |------|-----------|------|----------------|-----------|---------------|-------|
-| `blue-lead` | `skills/blue-team/agents/blue-lead.md` | Coordinates /blue-team agents, scopes defensive exercises, produces consolidated reports. | strategic | T3 | Zone 1 | opus |
+| `blue-lead` | `skills/blue-team/agents/blue-lead.md` | Coordinates /blue-team agents, scopes defensive exercises, produces consolidated reports. | convergent | T3 | Zone 1 | opus |
 | `blue-detect` | `skills/blue-team/agents/blue-detect.md` | Writes and validates detection rules (YARA-X, Sigma). | systematic | T2 | Zone 1 | sonnet |
 | `blue-monitor` | `skills/blue-team/agents/blue-monitor.md` | Produces monitoring configurations and Suricata/Falco rule templates. | systematic | T2 | Zone 1 | sonnet |
 | `blue-siem` | `skills/blue-team/agents/blue-siem.md` | Creates and validates Sigma rules for SIEM integration. | systematic | T2 | Zone 1 | sonnet |
@@ -197,4 +197,4 @@ All /blue-team agents are confined to Zone 1 (Analysis). No live system interact
 ---
 
 *Source: `AGENTS.md` (agent registry), sub-skill `SKILL.md` files.*
-*Schema: `docs/schemas/agent-definition-v1.schema.json`.*
+*Schema: `docs/schemas/agent-governance-v1.schema.json` (governance metadata), Claude Code official frontmatter (runtime config).*
