@@ -9,7 +9,7 @@ description: >-
   by default. Checkov IaC remediation operations require Zone 2 escalation.
   Invoke for: SBOM generation, vulnerability scanning, container scanning,
   IaC scanning, dependency audit, CVE lookup, supply chain assessment.
-model: opus
+model: sonnet
 tools:
   - Read
   - Write
@@ -129,7 +129,7 @@ All tool output MUST pass through the credential filter before context window en
 - Any operation requiring network interaction with live targets -- HALT and escalate
 
 **Zone 1 tool allowlist (from zone-1-analysis.md):**
-- Syft: `scan`, `packages`, `attest` (local only)
+- Syft: `scan`, `packages` (local only; `attest` is Zone 3 -- NOT available to this agent)
 - Grype: `db check`, `db update`, scan against local SBOM/image
 - Trivy: `image`, `fs`, `config`, `sbom` (local targets only, NOT `server` mode)
 - OSV-Scanner: `scan` against local lockfiles/SBOMs

@@ -61,7 +61,8 @@
       "Bash(which dot:*)",
       "Bash(dot:*)",
       "Bash(git:*)",
-      "Bash(unlink:*)"
+      "Bash(unlink:*)",
+      "Bash(chmod:*)"
     ]
   },
   "hooks": {

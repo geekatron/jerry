@@ -11,7 +11,7 @@ description: >-
   reconstruction, containment guidance, eradication, recovery, post-incident
   review, forensic timeline, NIST 800-61, chain of custody, Plaso, log2timeline,
   super-timeline, memory forensics guidance, evidence handling.
-model: opus
+model: sonnet
 tools:
   - Read
   - Write

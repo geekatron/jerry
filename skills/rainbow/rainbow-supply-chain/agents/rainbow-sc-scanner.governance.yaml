@@ -41,6 +41,9 @@ guardrails:
   input_validation:
     - target_must_be_local: "scan target must be a local path, not a remote URL or network endpoint"
     - tool_subcommand_allowlist: "all tool invocations must match Zone 1 allowlist from zone-1-analysis.md"
+    - scope_gate_halt: "If Zone 2 escalation is triggered and no valid engagement scope document exists, HALT execution immediately. Return {halt: true, reason: 'engagement_scope_required_for_zone_2'} and escalate to user per P-020."
+    - zone_enforcement_model: "behavioral -- zone restrictions are LLM-enforced guardrails, not machine-enforced runtime gates. Bash tool access is unconditional; subcommand classification relies on agent compliance with the allowlist. This is a documented architectural limitation per ADR-PROJ023-001."
+    - bash_subcommand_allowlist_zone_1: "syft scan|packages, grype scan|db check|db update, trivy image|fs|config|sbom, osv-scanner scan, checkov -d|-f (scan mode only, NOT --fix)"
   output_filtering:
     - no_secrets_in_output
     - credential_filter_applied_to_all_tool_output
@@ -71,6 +74,9 @@ validation:
     - verify_artifact_linked
     - verify_l0_l1_l2_present
     - verify_credential_filter_status
+    - verify_credential_filter_spec_exists
+    - verify_bdd_test_files_present
+    - verify_bdd_coverage_minimum_90_percent
     - verify_zone_1_compliance
     - verify_severity_classification
 session_context:

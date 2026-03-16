@@ -9,7 +9,7 @@ description: >-
   Invoke for: Kubernetes security, K8s compliance, kube-bench, Kubescape,
   Kyverno validation, CIS K8s benchmark, NSA-CISA K8s hardening, K8s RBAC
   audit, pod security assessment, K8s security posture.
-model: opus
+model: sonnet
 tools:
   - Read
   - Write

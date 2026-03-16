@@ -41,12 +41,16 @@ guardrails:
     - evtx_file_path: "^work/.*\\.evtx$"
     - sigma_rule_path: "^work/.*\\.ya?ml$"
     - log_file_path: "^work/.*$"
+    - scope_gate_halt: "If no valid assessment scope document from blue-lead is found, HALT execution immediately. Return {halt: true, reason: 'scope_document_required'} and escalate to user per P-020."
+    - zone_enforcement_model: "behavioral -- zone restrictions are LLM-enforced guardrails, not machine-enforced runtime gates. Bash tool access is unconditional; subcommand classification relies on agent compliance with the allowlist. This is a documented architectural limitation per ADR-PROJ023-001."
+    - bash_subcommand_allowlist_zone_1: "hayabusa csv-timeline|json-timeline|logon-summary|pivot-keywords-list (local EVTX targets only), chainsaw hunt|search|dump (local EVTX targets only), sigma convert/validate (pySigma backends). Wazuh is Tier C -- no direct execution."
   output_filtering:
     - no_secrets_in_output
     - no_executable_code_without_context
     - all_claims_must_have_citations
     - correlation_confidence_required
     - tier_c_limitation_disclosed_for_wazuh
+    - credential_filter_applied_to_all_tool_output
   fallback_behavior: persist_and_halt
 output:
   required: true
@@ -71,6 +75,9 @@ validation:
     - verify_sigma_syntax_validated
     - verify_attack_mapping_present
     - verify_correlation_findings_documented
+    - verify_credential_filter_spec_exists
+    - verify_bdd_test_files_present
+    - verify_bdd_coverage_minimum_90_percent
 session_context:
   on_receive:
     - "validate handoff schema (handoff-v2)"

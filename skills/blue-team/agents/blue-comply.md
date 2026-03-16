@@ -10,7 +10,7 @@ description: >-
   IaC scanning, Checkov scan, Trivy compliance, Prowler audit, CIS benchmark,
   NIST mapping, SOC 2 assessment, PCI DSS audit, HIPAA compliance, posture
   assessment, compliance gap analysis.
-model: opus
+model: sonnet
 tools:
   - Read
   - Write

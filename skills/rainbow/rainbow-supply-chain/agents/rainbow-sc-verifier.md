@@ -9,7 +9,7 @@ description: >-
   = NOT AVAILABLE (Zone 3, reserved for rainbow-orchestrator). Invoke for:
   signature verification, SBOM attestation, provenance checking, license
   compliance, Cosign verify, Snyk test, supply chain trust validation.
-model: opus
+model: sonnet
 tools:
   - Read
   - Write

@@ -1,6 +1,6 @@
 ---
 name: rainbow
-description: "Composable cybersecurity tool-execution skill with 5 sub-skills spanning supply chain security, reconnaissance, cloud security posture, exploitation frameworks, and runtime instrumentation. Invoked when users request tool-assisted security operations: SBOM generation, vulnerability scanning, subdomain enumeration, cloud posture auditing, exploit framework usage, or C2 infrastructure. Routes to 14 specialized agents across 3 security zones. Requires engagement scope for Zone 2/3 operations. Follows MITRE ATT&CK, PTES, and NIST CSF methodology frameworks."
+description: "Composable cybersecurity tool-execution skill with 5 sub-skills spanning supply chain security, reconnaissance, cloud security posture, exploitation frameworks, and runtime instrumentation. Invoked when users request tool-assisted security operations: SBOM generation, vulnerability scanning, subdomain enumeration, cloud posture auditing, exploit framework usage, or C2 infrastructure. Routes to 13 specialized agents across 3 security zones. Requires engagement scope for Zone 2/3 operations. Follows MITRE ATT&CK, PTES, and NIST CSF methodology frameworks."
 version: "1.0.0"
 agents:
   - rainbow-orchestrator
@@ -69,7 +69,7 @@ activation-keywords:
 
 ## Purpose
 
-The Rainbow skill provides **composable tool-execution capability** for cybersecurity operations. It routes to 14 specialized agents organized across 5 sub-skills, each aligned to a distinct security domain and tool ecosystem. Unlike /red-team (methodology guidance) and /eng-team (secure development), /rainbow executes security tools (scanners, exploit frameworks, reconnaissance pipelines) within a governed security zone model.
+The Rainbow skill provides **composable tool-execution capability** for cybersecurity operations. It routes to 13 specialized agents organized across 5 sub-skills, each aligned to a distinct security domain and tool ecosystem. Unlike /red-team (methodology guidance) and /eng-team (secure development), /rainbow executes security tools (scanners, exploit frameworks, reconnaissance pipelines) within a governed security zone model.
 
 ### Key Capabilities
 
@@ -122,7 +122,7 @@ See [Routing Disambiguation](#routing-disambiguation) for full exclusion conditi
 
 | Sub-Skill | Zone | Agents | Tools | Description |
 |-----------|------|--------|-------|-------------|
-| `/rainbow-supply-chain` | 1 (1/3 for signing) | `rainbow-sc-scanner`, `rainbow-sc-verifier` | Syft, Grype, Trivy, OSV-Scanner, Checkov, Cosign, Snyk CLI | SBOM generation, vulnerability scanning, signature verification |
+| `/rainbow-supply-chain` | 1 (1/2 for download) | `rainbow-sc-scanner`, `rainbow-sc-verifier` | Syft, Grype, Trivy, OSV-Scanner, Checkov, Cosign, Snyk CLI | SBOM generation, vulnerability scanning, signature verification |
 | `/rainbow-recon` | 2 | `rainbow-recon-pipeline`, `rainbow-recon-osint` | Subfinder, httpx, dnsx, Naabu, Katana, Nuclei, OWASP Amass, Maigret | Subdomain enumeration, port scanning, OSINT, vulnerability detection |
 | `/rainbow-cloud` | 1/2 | `rainbow-cloud-auditor`, `rainbow-cloud-mapper` | Checkov, Prowler, Kubescape, Kyverno, Cartography | Cloud posture auditing, Kubernetes policy, infrastructure mapping |
 | `/rainbow-exploit` | 3 | `rainbow-exploit-ops`, `rainbow-exploit-c2`, `rainbow-exploit-ad`, `rainbow-exploit-msf` | pwntools, Impacket, Donut, Empire, Mythic, BloodHound CE, Metasploit | Binary exploitation, C2, Active Directory attacks, Metasploit |
@@ -174,7 +174,7 @@ User Request -> rainbow-orchestrator
 | `rainbow-orchestrator` | `/rainbow` (parent) | Governance |
 | `rainbow-reporter` | `/rainbow` (cross-cutting) | -- |
 | `rainbow-sc-scanner` | `/rainbow-supply-chain` | Zone 1 |
-| `rainbow-sc-verifier` | `/rainbow-supply-chain` | Zone 1/3 |
+| `rainbow-sc-verifier` | `/rainbow-supply-chain` | Zone 1/2 |
 | `rainbow-recon-pipeline` | `/rainbow-recon` | Zone 2 |
 | `rainbow-recon-osint` | `/rainbow-recon` | Zone 2 |
 | `rainbow-cloud-auditor` | `/rainbow-cloud` | Zone 1/2 |

@@ -8,7 +8,7 @@ description: >-
   Security Zone 1 (Analysis) only. Invoke for: Suricata rules, Zeek scripts,
   Falco rules, Tetragon policies, IDS configuration, network monitoring,
   runtime detection, eBPF security, container monitoring, PCAP analysis guidance.
-model: opus
+model: sonnet
 tools:
   - Read
   - Write

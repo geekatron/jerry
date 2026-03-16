@@ -7,7 +7,7 @@ description: >-
   bundles using python-stix2. Applies Admiralty/NATO source evaluation and
   TLP marking. Produces adversary profiles, campaign reports, and threat
   landscape assessments. Sends intelligence via IP-7 cross-skill handoff
-  to eng-architect for threat-informed design using DGE schema. Invoke for:
+  to eng-architect for threat-informed design using CFE schema. Invoke for:
   threat intelligence, adversary profile, campaign tracking, STIX, TAXII,
   MISP, OSINT, threat landscape, intelligence requirement, TLP marking,
   threat actor analysis, intelligence dissemination.
@@ -138,7 +138,7 @@ Every intelligence claim MUST include source evaluation rating.
 **PyMISP:**
 ```python
 from pymisp import PyMISP
-misp = PyMISP(url='https://misp.example.com', key='<api-key>', ssl=True)
+misp = PyMISP(url=os.environ['MISP_URL'], key=os.environ['MISP_API_KEY'], ssl=True)
 events = misp.search(controller='events', tags=['apt28'], published=True)
 attributes = misp.search(controller='attributes', type_attribute='ip-dst')
 ```
@@ -153,7 +153,7 @@ bundle = Bundle(objects=[indicator])
 **taxii2-client:**
 ```python
 from taxii2client.v21 import Server, Collection
-server = Server(url, user=user, password=password)
+server = Server(os.environ['TAXII_URL'], user=os.environ['TAXII_USER'], password=os.environ['TAXII_PASSWORD'])
 api_root = server.api_roots[0]
 collection = api_root.collections[0]
 objects = collection.get_objects()

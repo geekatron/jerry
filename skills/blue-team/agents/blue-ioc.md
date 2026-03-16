@@ -10,7 +10,7 @@ description: >-
   Invoke for: IOC lifecycle, indicator enrichment, YARA rule creation, YARA rule
   authoring, detection signature authoring, STIX indicator creation, IOC aging,
   IOC retirement, indicator management.
-model: opus
+model: sonnet
 tools:
   - Read
   - Write

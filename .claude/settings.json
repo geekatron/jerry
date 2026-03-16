@@ -22,7 +22,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "python3 .claude/statusline.py",
+    "command": "python3 ~/.claude/jerry-statusline/statusline.py",
     "padding": 0
   },
   "version": "1.0",

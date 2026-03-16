@@ -9,7 +9,7 @@ description: >-
   (Analysis) only. Invoke for: Sigma rules, SIEM correlation, Wazuh configuration,
   Hayabusa timeline, Chainsaw hunting, EVTX analysis, log correlation,
   detection-as-code, XDR correlation, Windows event log analysis.
-model: opus
+model: sonnet
 tools:
   - Read
   - Write

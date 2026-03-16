@@ -9,7 +9,7 @@ description: >-
   SCAP profile, system compliance, DISA STIG, system hardening, Cosign verify,
   container signing verification, SBOM verification, XCCDF benchmark,
   system-level posture assessment.
-model: opus
+model: sonnet
 tools:
   - Read
   - Write

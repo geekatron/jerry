@@ -10,7 +10,7 @@ description: >-
   recommendations for eng-architect via IP-7. Invoke for: D3FEND,
   countermeasure mapping, defensive coverage, ATT&CK mapping, detection gap,
   countermeasure matrix, defensive architecture, coverage analysis.
-model: opus
+model: sonnet
 tools:
   - Read
   - Write

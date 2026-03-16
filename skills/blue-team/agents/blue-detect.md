@@ -8,7 +8,7 @@ description: >-
   Invoke for: YARA scanning, detection rule validation, malware pattern matching,
   IOC matching, threat detection execution, yr scan, YARA-X execution,
   detection rule compilation, rule optimization.
-model: opus
+model: sonnet
 tools:
   - Read
   - Write
