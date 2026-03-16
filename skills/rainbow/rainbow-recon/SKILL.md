@@ -58,6 +58,7 @@ activation-keywords:
 | [Cross-Sub-Skill Data Contracts](#cross-sub-skill-data-contracts) | Pipeline integration with other sub-skills |
 | [Known Limitations](#known-limitations) | Honest limitations disclosure per P-022 |
 | [Constitutional Compliance](#constitutional-compliance) | Governance alignment |
+| [Acceptance Criteria Coverage Matrix](#acceptance-criteria-coverage-matrix) | AC-to-file traceability |
 
 ---
 
@@ -354,6 +355,19 @@ All reconnaissance tools must be installed in the execution environment. Tool av
 | **P-001** | All findings evidence-based with tool output citations and template/CVE references. |
 | **P-002** | All scan reports, JSONL artifacts, and audit logs persisted. |
 | **H-34** | Both agents use dual-file architecture (.md + .governance.yaml). Constitutional compliance triplet in every agent. |
+
+---
+
+## Acceptance Criteria Coverage Matrix
+
+| AC | Description | Satisfied By |
+|----|-------------|-------------|
+| AC-F-02 | Agent definition follows dual-file architecture (H-34) | `agents/rainbow-recon-pipeline.md` + `.governance.yaml`; `agents/rainbow-recon-osint.md` + `.governance.yaml` |
+| AC-F-03 | Constitutional compliance triplet (H-35) | All `.governance.yaml` files: `constitution.principles_applied` includes P-003, P-020, P-022; `capabilities.forbidden_actions` >= 3 entries |
+| AC-F-04 | Zone enforcement rules and escalation protocols | `rules/nuclei-template-allowlist.yaml` (dual-zone classification); `rules/nuclei-escalation-protocol.md` (Zone 2->3 procedure); SKILL.md [Security Zone Enforcement](#security-zone-enforcement) |
+| AC-F-16 | BDD scenarios per agent (H-20) | `tests/bdd/test_recon_pipeline.feature` (34 scenarios); `tests/bdd/test_recon_osint.feature` (29 scenarios) |
+| AC-F-17 | Credential filter integration | SKILL.md [Credential Filter](#credential-filter); both agent `.md` files Credential Filter Application section; BDD credential filter scenarios in both feature files |
+| H-20 | BDD test-first, 90% line coverage | 63 total BDD scenarios across 2 agents covering: engagement scope, tool workflows, credential filter, constitutional, adversarial, degradation |
 
 ---
 

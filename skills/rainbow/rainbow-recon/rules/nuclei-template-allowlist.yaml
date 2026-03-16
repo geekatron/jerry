@@ -103,10 +103,19 @@ deny_extractor_fields:
   - private_key
   - connection_string
 
+# --- FAIL-CLOSED DEFAULT ---
+# Malformed or unparseable templates default to Zone 3 (DENY).
+# If YAML parsing fails, the template MUST NOT execute at Zone 2.
+# The agent MUST HALT and present the parse failure to the user for review.
+# This ensures that template format errors never result in unsafe execution.
+
 # --- CLASSIFICATION PROCEDURE ---
 # The rainbow-recon-pipeline agent MUST follow this procedure for EVERY Nuclei
 # template before execution:
 #
+# 0. Attempt to parse the Nuclei template YAML file. If parsing fails
+#    (malformed YAML, missing required fields, unrecognized format),
+#    classify as Zone 3 immediately. HALT and present parse failure to user.
 # 1. Parse the Nuclei template YAML file.
 # 2. Extract info.severity and info.tags.
 # 3. Check tags against deny_tags list.

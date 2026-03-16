@@ -159,12 +159,20 @@ Every audit operation produces an audit log entry per zone rules:
 |-------|-------------|
 | `timestamp` | ISO 8601 operation timestamp |
 | `zone` | `1` for local operations, `2` for cloud/cluster operations |
+| `engagement_id` | Reference to engagement scope document (null for Zone 1 operations) |
 | `agent` | `rainbow-cloud-auditor` |
 | `tool` | Tool name (checkov, prowler, kubescape, kyverno) |
 | `subcommand` | Specific subcommand invoked |
 | `target` | What was audited (local path, cloud account, cluster) |
+| `target_authorized` | Whether target passed scope validation (true implicit for Zone 1) |
+| `technique` | Technique category (e.g., iac-scanning, cloud-compliance-audit) |
+| `technique_authorized` | Whether technique passed allowlist check (true implicit for Zone 1) |
 | `result_summary` | One-line summary of findings |
 | `credential_filter_status` | passed, quarantined, or rejected |
+| `duration_seconds` | How long the operation took |
+| `escalation_triggered` | Whether this operation triggered zone escalation (false for Zone 1) |
+
+> **Note:** Zone 1 operations omit `engagement_id`, `technique_authorized`, and `escalation_triggered` fields (set to null/true/false respectively). Zone 2 operations MUST populate all 13 fields per zone-2-active.md Required Log Fields.
 
 ## Tool Integration
 

@@ -143,9 +143,12 @@ Every mapping operation produces an audit log entry:
 | `subcommand` | `sync` or `query` |
 | `target` | Cloud accounts mapped |
 | `target_authorized` | Whether target passed scope validation |
+| `technique` | Technique category (e.g., cloud-asset-mapping) |
+| `technique_authorized` | Whether technique passed allowlist check |
 | `result_summary` | One-line summary (asset count, relationship count) |
 | `credential_filter_status` | passed, quarantined, or rejected |
 | `duration_seconds` | Sync/query duration |
+| `escalation_triggered` | Whether this operation triggered zone escalation |
 
 ## Tool Integration
 

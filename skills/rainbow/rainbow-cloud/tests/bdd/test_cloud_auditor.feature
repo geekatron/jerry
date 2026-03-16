@@ -1,4 +1,4 @@
-@rainbow @cloud @auditor
+@rainbow @cloud @auditor @AC-F-02 @AC-F-03 @AC-F-04 @AC-F-16 @AC-F-17 @H-20
 Feature: Rainbow Cloud Auditor Agent
   As a security operator using /rainbow-cloud
   I want the rainbow-cloud-auditor agent to scan IaC, audit cloud posture, assess K8s security, and validate policies
@@ -229,7 +229,9 @@ Feature: Rainbow Cloud Auditor Agent
   Scenario: Audit log entry created for every operation
     Given any auditor tool is executed
     When the operation completes (pass or fail)
-    Then an audit log entry is created with timestamp, zone, agent, tool, subcommand, target, result_summary, and credential_filter_status
+    Then an audit log entry is created with all required fields
+    And the audit log includes timestamp, zone, engagement_id, agent, tool, subcommand, target, target_authorized, technique, technique_authorized, result_summary, credential_filter_status, duration_seconds, and escalation_triggered
+    And Zone 1 operations set engagement_id to null, target_authorized to true, and escalation_triggered to false
 
   # --- Constitutional Compliance ---
 

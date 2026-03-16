@@ -1,4 +1,4 @@
-@rainbow @recon @pipeline
+@rainbow @recon @pipeline @AC-F-02 @AC-F-03 @AC-F-04 @AC-F-16 @AC-F-17 @H-20
 Feature: Rainbow Recon Pipeline Agent
   As a security operator using /rainbow-recon
   I want the rainbow-recon-pipeline agent to execute systematic reconnaissance pipelines

@@ -29,7 +29,7 @@
 |-----------|-------|-----------|
 | `/rainbow-supply-chain` | `rainbow-sc-scanner` | All operations |
 | `/rainbow-supply-chain` | `rainbow-sc-verifier` | Cosign `verify` and `tree` subcommands ONLY |
-| `/rainbow-cloud` | `rainbow-cloud-auditor` | Kyverno `validate` mode with `--dry-run` ONLY; Checkov scan mode |
+| `/rainbow-cloud` | `rainbow-cloud-auditor` | Kyverno `validate` mode with `--resource` ONLY; Checkov scan mode |
 | `/blue-team` | `blue-detect` | All operations |
 | `/blue-team` | `blue-malware-analyst` | All operations |
 | `/blue-team` | `blue-incident-resp` | All operations (methodology-only) |
@@ -48,7 +48,7 @@ Zone 1 agents are authorized to perform the following operation types. Any opera
 | Vulnerability matching | Match SBOMs or package lists against vulnerability databases | `grype sbom:./sbom.json` |
 | Configuration auditing | Assess IaC and cloud configuration files against policy baselines | `checkov -d ./terraform/` |
 | Signature verification | Verify existing signatures on container images or artifacts | `cosign verify --key cosign.pub image:tag` |
-| Policy validation | Validate Kubernetes resources against policies without mutation | `kyverno apply policy.yaml --resource pod.yaml --dry-run` |
+| Policy validation | Validate Kubernetes resources against policies without mutation | `kyverno apply policy.yaml --resource pod.yaml` |
 | Static malware analysis | Analyze binary artifacts without execution | Ghidra headless analysis, JADX decompilation |
 | Detection rule evaluation | Apply YARA rules to local samples | `yara-x rules.yar sample.bin` |
 | Report generation | Produce analysis reports from tool output | Aggregation and formatting of scan results |
@@ -85,7 +85,7 @@ Only the following tools and subcommands are permitted at Zone 1. Any tool invoc
 | **OSV-Scanner** | `scan` against local lockfiles/SBOMs | -- |
 | **Checkov** | `-d`, `-f`, `--framework` (scan mode) | `--fix` (auto-remediation) |
 | **Cosign** | `verify`, `tree` | `sign`, `attest`, `attach`, `download` |
-| **Kyverno** | `apply --dry-run`, `test` | `apply` without `--dry-run`, `mutate`, `generate` |
+| **Kyverno** | `apply --resource`, `test`, `json` | `apply` without `--resource`, `mutate`, `generate` |
 | **Snyk CLI** | `test`, `monitor` (read-only analysis) | `fix`, `ignore` (state-changing) |
 | **YARA-X** | Rule matching against local samples | -- |
 | **Ghidra** | Headless analysis, decompilation | -- |
@@ -122,10 +122,11 @@ Two tools span security zone boundaries. At Zone 1, only the following restricte
 
 | Permitted at Zone 1 | Prohibited at Zone 1 | Escalation Target |
 |---------------------|---------------------|-------------------|
-| `kyverno apply --dry-run <policy> --resource <resource>` | `kyverno apply` without `--dry-run` | Zone 2 (engagement scope + cluster authorization) |
+| `kyverno apply <policy> --resource <resource>` | `kyverno apply` without `--resource` | Zone 2 (engagement scope + cluster authorization) |
 | `kyverno test <test-dir>` | `kyverno apply --generate` | Zone 3 (per-operation approval) |
+| `kyverno json --payload --policy` | -- | -- |
 
-**Enforcement:** The `rainbow-cloud-auditor` agent MUST verify that `--dry-run` is present in all Kyverno `apply` invocations at Zone 1. Absence of `--dry-run` triggers zone escalation.
+**Enforcement:** The `rainbow-cloud-auditor` agent MUST verify that `--resource` is present in all Kyverno `apply` invocations at Zone 1. The `--resource` flag forces local-only evaluation (dry-run semantics). Absence of `--resource` triggers zone escalation. See `skills/rainbow/rainbow-cloud/rules/kyverno-escalation-protocol.md` for the full Kyverno dual-zone escalation protocol and `skills/rainbow/rainbow-cloud/rules/kyverno-dryrun-enforcement.yaml` for the enforcement configuration.
 
 ---
 

@@ -1,4 +1,4 @@
-@rainbow @cloud @mapper
+@rainbow @cloud @mapper @AC-F-02 @AC-F-03 @AC-F-04 @AC-F-16 @AC-F-17 @H-20
 Feature: Rainbow Cloud Mapper Agent
   As a security operator using /rainbow-cloud
   I want the rainbow-cloud-mapper agent to map infrastructure relationships via Cartography
@@ -172,7 +172,8 @@ Feature: Rainbow Cloud Mapper Agent
   Scenario: Audit log entry created for every mapping operation
     Given any mapper operation is executed
     When the operation completes (pass or fail)
-    Then an audit log entry is created with timestamp, zone "2", engagement_id, agent, tool, target, target_authorized, result_summary, credential_filter_status, and duration_seconds
+    Then an audit log entry is created with all required fields
+    And the audit log includes timestamp, zone, engagement_id, agent, tool, subcommand, target, target_authorized, technique, technique_authorized, result_summary, credential_filter_status, duration_seconds, and escalation_triggered
 
   # --- Constitutional Compliance ---
 

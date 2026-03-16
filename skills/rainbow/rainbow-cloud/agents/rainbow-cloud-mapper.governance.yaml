@@ -41,12 +41,12 @@ capabilities:
     Neo4j: ">=4.0"
 guardrails:
   input_validation:
-    engagement_scope_required: "all operations require Zone 2 engagement scope document with authorized cloud accounts"
-    target_must_be_authorized: "cloud accounts must appear in authorized_targets of engagement scope; excluded_targets take precedence"
-    scope_gate_halt: "If no valid engagement scope document exists, HALT execution immediately. Return {halt: true, reason: 'engagement_scope_required_for_zone_2'} and escalate to user per P-020."
-    zone_enforcement_model: "behavioral -- zone restrictions are LLM-enforced guardrails, not machine-enforced runtime gates. Bash tool access is unconditional; target validation relies on agent compliance with the engagement scope. This is a documented architectural limitation per ADR-PROJ023-001."
-    neo4j_connectivity_check: "verify Neo4j instance is accessible before sync operations; degrade to Level 1/2 if unavailable"
-    bash_subcommand_allowlist_zone_2: "cartography --neo4j-uri <uri> (sync against authorized cloud accounts only)"
+    - engagement_scope_required: "all operations require Zone 2 engagement scope document with authorized cloud accounts"
+    - target_must_be_authorized: "cloud accounts must appear in authorized_targets of engagement scope; excluded_targets take precedence"
+    - scope_gate_halt: "If no valid engagement scope document exists, HALT execution immediately. Return {halt: true, reason: 'engagement_scope_required_for_zone_2'} and escalate to user per P-020."
+    - zone_enforcement_model: "behavioral -- zone restrictions are LLM-enforced guardrails, not machine-enforced runtime gates. Bash tool access is unconditional; target validation relies on agent compliance with the engagement scope. This is a documented architectural limitation per ADR-PROJ023-001."
+    - neo4j_connectivity_check: "verify Neo4j instance is accessible before sync operations; degrade to Level 1/2 if unavailable"
+    - bash_subcommand_allowlist_zone_2: "cartography --neo4j-uri <uri> (sync against authorized cloud accounts only)"
   output_filtering:
     - no_secrets_in_output
     - no_executable_code_without_context

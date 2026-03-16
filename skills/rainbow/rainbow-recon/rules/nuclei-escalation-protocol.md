@@ -47,6 +47,17 @@ The following conditions MUST trigger escalation from Zone 2 to Zone 3. The agen
 
 The `rainbow-recon-pipeline` agent MUST execute this procedure for EVERY Nuclei template before execution. No exceptions.
 
+### Step 0: Parse Validation (Fail-Closed Default)
+
+Attempt to parse the Nuclei template as valid YAML. If parsing fails for any reason (malformed YAML, missing `id` or `info` fields, unrecognized template format, I/O error):
+
+- **HALT. Classify as Zone 3 immediately.**
+- Present the parse failure details to the user.
+- Log the failure in the audit log with escalation reason "template_parse_failure".
+- Do NOT attempt to execute a template that cannot be parsed and classified.
+
+This ensures that template format errors or corruption never bypass the classification procedure.
+
 ### Step 1: Parse Template YAML
 
 Read the Nuclei template file and extract:

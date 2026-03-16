@@ -1,4 +1,4 @@
-@rainbow @recon @osint
+@rainbow @recon @osint @AC-F-02 @AC-F-03 @AC-F-04 @AC-F-16 @AC-F-17 @H-20
 Feature: Rainbow Recon OSINT Agent
   As a security operator using /rainbow-recon
   I want the rainbow-recon-osint agent to execute OSINT and passive reconnaissance

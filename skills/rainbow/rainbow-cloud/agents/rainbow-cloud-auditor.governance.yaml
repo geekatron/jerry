@@ -45,13 +45,13 @@ capabilities:
     Kyverno: ">=1.11"
 guardrails:
   input_validation:
-    target_must_be_local_for_zone_1: "IaC scan targets and manifest files must be local paths at Zone 1; cloud accounts and live clusters require Zone 2 engagement scope"
-    tool_subcommand_allowlist: "all tool invocations must match zone allowlist from zone-1-analysis.md and zone-2-active.md"
-    kyverno_policy_type_classification: "all Kyverno policies must be classified as validate/mutate/generate before execution per kyverno-escalation-protocol.md"
-    scope_gate_halt: "If Zone 2 escalation is triggered and no valid engagement scope document exists, HALT execution immediately. Return {halt: true, reason: 'engagement_scope_required_for_zone_2'} and escalate to user per P-020."
-    zone_enforcement_model: "behavioral -- zone restrictions are LLM-enforced guardrails, not machine-enforced runtime gates. Bash tool access is unconditional; subcommand classification relies on agent compliance with the allowlist. This is a documented architectural limitation per ADR-PROJ023-001."
-    bash_subcommand_allowlist_zone_1: "checkov -d|-f|--framework (scan mode only, NOT --fix), kubescape scan <local-manifest> --format json, kyverno apply --resource <file>|test <dir>"
-    bash_subcommand_allowlist_zone_2: "prowler aws|azure|gcp --output-formats json-ocsf, kubescape scan (live cluster), kyverno apply (mutate mode without --resource, targeting live cluster)"
+    - target_must_be_local_for_zone_1: "IaC scan targets and manifest files must be local paths at Zone 1; cloud accounts and live clusters require Zone 2 engagement scope"
+    - tool_subcommand_allowlist: "all tool invocations must match zone allowlist from zone-1-analysis.md and zone-2-active.md"
+    - kyverno_policy_type_classification: "all Kyverno policies must be classified as validate/mutate/generate before execution per kyverno-escalation-protocol.md"
+    - scope_gate_halt: "If Zone 2 escalation is triggered and no valid engagement scope document exists, HALT execution immediately. Return {halt: true, reason: 'engagement_scope_required_for_zone_2'} and escalate to user per P-020."
+    - zone_enforcement_model: "behavioral -- zone restrictions are LLM-enforced guardrails, not machine-enforced runtime gates. Bash tool access is unconditional; subcommand classification relies on agent compliance with the allowlist. This is a documented architectural limitation per ADR-PROJ023-001."
+    - bash_subcommand_allowlist_zone_1: "checkov -d|-f|--framework (scan mode only, NOT --fix), kubescape scan <local-manifest> --format json, kyverno apply --resource <file>|test <dir>"
+    - bash_subcommand_allowlist_zone_2: "prowler aws|azure|gcp --output-formats json-ocsf, kubescape scan (live cluster), kyverno apply (mutate mode without --resource, targeting live cluster)"
   output_filtering:
     - no_secrets_in_output
     - no_executable_code_without_context

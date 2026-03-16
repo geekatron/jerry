@@ -73,6 +73,13 @@ engagement:
     - vulnerability-detection-scanning
     - osint-gathering
     - username-enumeration
+    # Cloud security techniques (Zone 2):
+    # - cloud-asset-mapping
+    # - cloud-compliance-audit
+    # - kubernetes-security-scan
+    # - kubernetes-policy-enforcement
+    # - iac-scanning
+    # - cloud-posture-audit
     # Zone 3 techniques (require explicit Zone 3 approval):
     # - nuclei-exploit-templates
     # - exploitation

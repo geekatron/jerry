@@ -57,6 +57,7 @@ activation-keywords:
 | [Cross-Sub-Skill Data Contracts](#cross-sub-skill-data-contracts) | Pipeline integration with other sub-skills |
 | [Known Limitations and Compensating Controls](#known-limitations-and-compensating-controls) | P-022 honest disclosure |
 | [Constitutional Compliance](#constitutional-compliance) | Governance alignment |
+| [Acceptance Criteria Coverage Matrix](#acceptance-criteria-coverage-matrix) | AC-to-file traceability |
 
 ---
 
@@ -108,10 +109,10 @@ Do NOT invoke when:
 
 ## Agent Registry
 
-| Agent | Role | Zone | Tools | Cognitive Mode |
-|-------|------|------|-------|---------------|
-| `rainbow-cloud-auditor` | Cloud security posture auditor | Zone 1/2 | Checkov, Prowler, Kubescape, Kyverno | systematic |
-| `rainbow-cloud-mapper` | Cloud infrastructure relationship mapper | Zone 2 | Cartography (+ Neo4j) | divergent |
+| Agent | Role | Zone | Tools | Cognitive Mode | Tier |
+|-------|------|------|-------|---------------|------|
+| `rainbow-cloud-auditor` | Cloud security posture auditor | Zone 1/2 | Checkov, Prowler, Kubescape, Kyverno | systematic | Tier A |
+| `rainbow-cloud-mapper` | Cloud infrastructure relationship mapper | Zone 2 | Cartography (+ Neo4j) | divergent | Tier B |
 
 **Tool tier:** Both agents are T2 (Read-Write). Neither agent has Task tool access per H-34/P-003.
 
@@ -309,6 +310,19 @@ Checkov findings from `/rainbow-supply-chain` may feed into cloud-specific Check
 | **P-001** | All findings evidence-based with benchmark references and tool output citations. |
 | **P-002** | All audit reports, policy reports, mapping results, and audit logs persisted. |
 | **H-34** | Both agents use dual-file architecture (.md + .governance.yaml). Constitutional compliance triplet in every agent. |
+
+---
+
+## Acceptance Criteria Coverage Matrix
+
+| AC | Description | Satisfied By |
+|----|-------------|-------------|
+| AC-F-02 | Agent definition follows dual-file architecture (H-34) | `agents/rainbow-cloud-auditor.md` + `.governance.yaml`; `agents/rainbow-cloud-mapper.md` + `.governance.yaml` |
+| AC-F-03 | Constitutional compliance triplet (H-35) | All `.governance.yaml` files: `constitution.principles_applied` includes P-003, P-020, P-022; `capabilities.forbidden_actions` >= 3 entries |
+| AC-F-04 | Zone enforcement rules and escalation protocols | `rules/kyverno-escalation-protocol.md` (tri-zone classification); `rules/kyverno-dryrun-enforcement.yaml` (enforcement config); SKILL.md [Security Zone Enforcement](#security-zone-enforcement) |
+| AC-F-16 | BDD scenarios per agent (H-20) | `tests/bdd/test_cloud_auditor.feature` (36 scenarios); `tests/bdd/test_cloud_mapper.feature` (29 scenarios) |
+| AC-F-17 | Credential filter integration | SKILL.md [Credential Filter](#credential-filter); both agent `.md` files Credential Filter Application section; BDD credential filter scenarios in both feature files |
+| H-20 | BDD test-first, 90% line coverage | 65 total BDD scenarios across 2 agents covering: engagement scope, tool workflows, credential filter, constitutional, adversarial, degradation |
 
 ---
 
