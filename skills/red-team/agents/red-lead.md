@@ -107,7 +107,7 @@ scope:
 When a D3FEND Gap Envelope (DGE) from a prior purple team exercise is available (path provided in `purple_team.prior_exercise_dge`), red-lead SHOULD incorporate coverage gaps into technique allowlist recommendations:
 
 1. **Load the DGE** from the provided path. Verify the `d3fend_kb_version` field is current before use (stale DGE data may reference gaps that have since been closed).
-2. **Map `coverage_gaps.high_priority` techniques** to the technique allowlist as recommended candidates -- these are the techniques the defender cannot currently detect and are most valuable to test.
+2. **Filter `coverage_gaps` array** for entries where `priority == "high"` (per `dge-v1.schema.json` flat array format) and map to the technique allowlist as recommended candidates -- these are the techniques the defender cannot currently detect and are most valuable to test.
 3. **Annotate the scope document** with the DGE source and the gaps that informed the technique selection, providing traceability from coverage gap to engagement scope.
 4. **Graceful degradation:** When no DGE is available (`prior_exercise_dge: null`), standard scope creation based on client requirements and target assessment proceeds without modification.
 
