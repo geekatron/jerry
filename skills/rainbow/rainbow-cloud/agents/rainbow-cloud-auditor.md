@@ -172,7 +172,7 @@ Every audit operation produces an audit log entry per zone rules:
 | `duration_seconds` | How long the operation took |
 | `escalation_triggered` | Whether this operation triggered zone escalation (false for Zone 1) |
 
-> **Note:** Zone 1 operations omit `engagement_id`, `technique_authorized`, and `escalation_triggered` fields (set to null/true/false respectively). Zone 2 operations MUST populate all 13 fields per zone-2-active.md Required Log Fields.
+> **Note:** Zone 1 operations omit `engagement_id`, `target_authorized`, `technique_authorized`, and `escalation_triggered` fields (set to null/true/false respectively). Zone 2 operations MUST populate all 14 fields per zone-2-active.md Required Log Fields and audit-log-entry.schema.json.
 
 ## Tool Integration
 

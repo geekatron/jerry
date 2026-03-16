@@ -4,7 +4,7 @@ description: "Composable cybersecurity tool-execution skill with 5 sub-skills sp
 version: "1.0.0"
 agents:
   - rainbow-orchestrator
-  - rainbow-reporter
+  # - rainbow-reporter  # future W3+ agent; not yet implemented
   - rainbow-sc-scanner
   - rainbow-sc-verifier
   - rainbow-recon-pipeline

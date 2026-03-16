@@ -294,8 +294,8 @@ The following 14-field schema is the SSOT for audit log entries across all /rain
 
 **Zone-specific requirements:**
 - **Zone 1:** `engagement_id` is null. `target_authorized`, `technique_authorized`, `escalation_triggered` are omitted (not applicable). 8 fields required.
-- **Zone 2:** All 13 fields required. `engagement_id` must reference a valid scope document.
-- **Zone 3:** All 13 fields required. Additionally, Zone 3 audit entries include the `operator_approval` from the scope document.
+- **Zone 2:** All 14 fields required. `engagement_id` must reference a valid scope document.
+- **Zone 3:** All 14 fields required. Additionally, Zone 3 audit entries include the `operator_approval` from the scope document.
 
 ---
 
