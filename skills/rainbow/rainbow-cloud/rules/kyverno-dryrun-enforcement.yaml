@@ -1,0 +1,74 @@
+# Kyverno Dry-Run Enforcement Configuration
+# Applied to: rainbow-cloud-auditor agent
+# Purpose: Enforce local-only (dry-run) Kyverno operations at Zone 1
+# Reference: kyverno-escalation-protocol.md, zone-1-analysis.md
+# Version: 1.0.0
+
+enforcement:
+  zone_1_defaults:
+    # At Zone 1, all Kyverno apply operations MUST target local resource files.
+    # The --resource flag forces local-only evaluation without cluster interaction.
+    require_resource_flag: true
+    require_local_target: true
+    cluster_interaction_forbidden: true
+
+  allowed_subcommands:
+    - subcommand: "apply"
+      required_flags:
+        - "--resource"
+      description: "Validate local resource manifests against policy"
+      zone: 1
+    - subcommand: "test"
+      required_flags: []
+      description: "Run policy test cases from test directory"
+      zone: 1
+    - subcommand: "json"
+      required_flags:
+        - "--payload"
+        - "--policy"
+      description: "Validate JSON payloads against CEL/JMESPath expressions"
+      zone: 1
+
+  forbidden_at_zone_1:
+    - subcommand: "apply"
+      condition: "without --resource flag (targets live cluster)"
+      escalation_zone: 2
+      reason: "Cluster-targeted apply performs live policy enforcement (mutate)"
+    - subcommand: "apply"
+      condition: "policy contains generate rules"
+      escalation_zone: 3
+      reason: "Resource generation requires per-operation human approval"
+
+  policy_classification:
+    # Rules for classifying Kyverno policy YAML content
+    validate_only:
+      zone: 1
+      description: "Policy contains only validate rules"
+      enforcement: "apply with --resource"
+    contains_mutate:
+      zone: 2
+      description: "Policy contains mutate rules"
+      enforcement: "requires engagement scope + cluster authorization"
+    contains_generate:
+      zone: 3
+      description: "Policy contains generate rules"
+      enforcement: "NEVER execute; per-operation human approval required"
+    mixed_validate_mutate:
+      zone: 2
+      description: "Policy contains both validate and mutate rules"
+      enforcement: "highest zone wins; requires engagement scope"
+    mixed_with_generate:
+      zone: 3
+      description: "Policy contains generate rules alongside other types"
+      enforcement: "NEVER execute; generate rules block entire policy"
+
+  default_policy_flags:
+    # Default flags applied to all Zone 1 Kyverno operations
+    output_format: "--policy-report"
+    resource_required: true
+    cluster_context_forbidden: true
+
+  escalation_behavior:
+    zone_2_halt_message: "Kyverno mutate mode requires Zone 2 engagement scope. HALT: verify engagement scope document exists with authorized cluster target."
+    zone_3_halt_message: "Kyverno generate mode is Zone 3 (per-operation human approval). This agent NEVER executes generate policies. Returning to orchestrator."
+    missing_resource_flag_message: "Kyverno apply without --resource targets a live cluster (Zone 2). At Zone 1, --resource <file> is required for local validation."

@@ -1,0 +1,132 @@
+# Nuclei Template Allowlist -- Dual-Zone Classification
+#
+# Zone 2 (Active Reconnaissance): Detection templates ONLY.
+# Zone 3 (Exploitation): Exploit templates -- require per-operation human approval.
+#
+# Default classification: Zone 3 (fail-closed). Templates not on this allowlist
+# default to Zone 3 and require human review before execution.
+#
+# Validated by: rainbow-recon-pipeline agent before every Nuclei invocation.
+# Source: ADR-PROJ023-001, zone-2-active.md Dual-Zone Tool Escalation section.
+# Nuclei version: >= 3.0 (template format v10.x)
+# Last reviewed: 2026-03-16
+
+# --- ZONE 2 ALLOWED TEMPLATE CATEGORIES ---
+# These categories contain detection-only templates safe for Zone 2 execution.
+# The agent MUST additionally verify individual template tags against deny_tags.
+
+zone_2_allowed:
+  # Template directory categories permitted at Zone 2
+  template_directories:
+    - cves/               # CVE detection templates (detection probes, not exploitation)
+    - misconfiguration/   # Misconfiguration detection
+    - exposed-panels/     # Exposed admin panel detection
+    - technologies/       # Technology fingerprinting
+    - dns/                # DNS misconfiguration detection
+    - ssl/                # SSL/TLS configuration checks
+    - http/               # HTTP header and response analysis
+    - network/            # Network service detection
+    - file/               # File exposure detection
+    - headless/           # Headless browser-based detection
+
+  # Severity levels permitted at Zone 2
+  allowed_severities:
+    - info
+    - low
+    - medium
+    - high
+    - critical
+
+  # Tags permitted at Zone 2 (detection-oriented)
+  allowed_tags:
+    - cve
+    - misconfig
+    - exposure
+    - panel
+    - tech
+    - detect
+    - default-login       # Detection of default credentials (does not exploit)
+    - unauth              # Unauthenticated access detection
+    - disclosure          # Information disclosure
+    - redirect            # Open redirect detection
+    - ssrf                # SSRF detection probes
+    - xss                 # XSS detection probes (reflected, does not exploit)
+    - sqli                # SQL injection detection probes (error-based, does not exploit)
+    - lfi                 # LFI detection probes
+    - crlf                # CRLF injection detection
+    - cors                # CORS misconfiguration
+    - token-spray         # Token/credential spray detection
+    - takeover            # Subdomain takeover detection
+    - osint               # OSINT data collection
+    - cloud               # Cloud misconfiguration detection
+    - kubernetes          # Kubernetes exposure detection
+    - docker              # Docker exposure detection
+    - wordpress           # WordPress vulnerability detection
+    - joomla              # Joomla vulnerability detection
+    - drupal              # Drupal vulnerability detection
+    - apache              # Apache misconfiguration detection
+    - nginx               # Nginx misconfiguration detection
+    - iis                 # IIS misconfiguration detection
+
+# --- ZONE 3 DENY TAGS (HARD BOUNDARY) ---
+# Templates with ANY of these tags are classified Zone 3 regardless of directory
+# or severity. The agent MUST HALT and escalate to Zone 3.
+
+deny_tags:
+  - exploit              # Exploitation templates
+  - rce                  # Remote code execution
+  - upload               # File upload exploitation
+  - sqli-blind           # Blind SQL injection (active exploitation, not detection)
+  - intrusive            # Templates that modify target state
+  - dos                  # Denial of service templates
+  - fuzzing              # Active fuzzing (may cause instability)
+  - brute-force          # Brute force authentication attempts
+  - command-injection    # Active command injection exploitation
+  - deserialization      # Deserialization exploitation
+  - code-injection       # Code injection exploitation
+
+# --- ZONE 3 EXTRACTOR DENY FIELDS ---
+# Templates with extractors targeting these fields are classified Zone 3.
+# The agent MUST parse the template YAML to check extractor targets.
+
+deny_extractor_fields:
+  - password
+  - secret
+  - token
+  - key
+  - credential
+  - session
+  - auth
+  - cookie
+  - api_key
+  - access_key
+  - private_key
+  - connection_string
+
+# --- CLASSIFICATION PROCEDURE ---
+# The rainbow-recon-pipeline agent MUST follow this procedure for EVERY Nuclei
+# template before execution:
+#
+# 1. Parse the Nuclei template YAML file.
+# 2. Extract info.severity and info.tags.
+# 3. Check tags against deny_tags list.
+#    - If ANY deny_tag matches: HALT. Escalate to Zone 3. Present template
+#      metadata to user for per-operation approval per P-020.
+# 4. Check for extractors section in the template.
+#    - If extractors target ANY deny_extractor_fields: HALT. Escalate to Zone 3.
+# 5. Check if the template directory is in zone_2_allowed.template_directories.
+#    - If NOT in allowed directories: HALT. Escalate to Zone 3.
+# 6. If all checks pass: Execute at Zone 2.
+#
+# Default classification: Zone 3 (fail-closed).
+# Custom/community templates not on this allowlist: Zone 3 (require human review).
+
+# --- UPDATE CADENCE ---
+# This allowlist is reviewed when:
+# 1. Nuclei template repository releases a new version (template format changes)
+# 2. New template categories are added to the community repository
+# 3. Quarterly security review (alignment with zone-2-active.md)
+# 4. Incident-driven: any template misclassification event triggers immediate review
+#
+# Pattern additions: standard PR review process.
+# Pattern removals: C3 minimum review (AE-005 security-relevant).

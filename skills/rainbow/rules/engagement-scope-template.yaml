@@ -1,0 +1,135 @@
+# Engagement Scope Template -- /rainbow
+#
+# Use this template to create engagement scope documents for Zone 2 and Zone 3
+# operations. Copy to skills/rainbow/output/{engagement-id}/SCOPE.md and fill
+# in all required fields before requesting operator approval.
+#
+# Engagement ID format: RBW-NNNN (e.g., RBW-0001)
+# Validated by: rainbow-orchestrator before routing Zone 2/3 tasks.
+# Source: ADR-PROJ023-001, zone-2-active.md Engagement Scope Requirement.
+# See also: skills/rainbow/rules/engagement-lifecycle.md
+
+# --- REQUIRED FIELDS ---
+# All fields marked (REQUIRED) must be populated before operator approval.
+
+engagement:
+  # Unique engagement identifier (REQUIRED)
+  engagement_id: "RBW-NNNN"
+
+  # Version of this scope document (REQUIRED)
+  version: "1.0"
+
+  # Agent or operator who created the scope (REQUIRED)
+  # Must be: rainbow-orchestrator, red-lead, or operator name
+  created_by: ""
+
+  # ISO 8601 creation timestamp (REQUIRED)
+  created_at: ""
+
+  # --- TARGETS ---
+
+  # Exhaustive list of authorized targets (REQUIRED, minimum 1)
+  # No wildcards without explicit operator justification.
+  # Each entry must specify type and value.
+  authorized_targets:
+    - type: domain          # domain, ip, ip_range, url, cloud_account, registry, username
+      value: ""
+    # - type: ip_range
+    #   value: "10.0.0.0/24"
+    # - type: url
+    #   value: "https://app.example.com"
+    # - type: cloud_account
+    #   value: "aws:123456789012"
+    # - type: username
+    #   value: "target-user"
+
+  # Targets explicitly excluded from scope (may be empty)
+  # Takes precedence over authorized_targets.
+  excluded_targets:
+    []
+    # - type: domain
+    #   value: "production.example.com"
+    # - type: ip
+    #   value: "10.0.0.1"
+
+  # --- TIME WINDOW ---
+
+  # Start and end of authorized activity (REQUIRED)
+  # start must be present or future; end must be after start.
+  time_window:
+    start: ""              # ISO 8601: "2026-03-16T09:00:00Z"
+    end: ""                # ISO 8601: "2026-03-16T17:00:00Z"
+
+  # --- TECHNIQUES ---
+
+  # Specific techniques/tool modes authorized (REQUIRED, minimum 1)
+  # Must map to Zone 2 permitted operations from zone-2-active.md.
+  technique_allowlist:
+    - subdomain-enumeration
+    - port-scanning
+    - http-probing
+    - dns-resolution
+    - web-crawling
+    - vulnerability-detection-scanning
+    - osint-gathering
+    - username-enumeration
+    # Zone 3 techniques (require explicit Zone 3 approval):
+    # - nuclei-exploit-templates
+    # - exploitation
+
+  # --- ESCALATION ---
+
+  # Who can approve Zone 3 escalation (REQUIRED)
+  # Must name a human operator, not an agent.
+  escalation_authority: ""
+
+  # --- RULES OF ENGAGEMENT ---
+
+  rules_of_engagement:
+    # Rate limiting constraints
+    max_requests_per_second: 10
+    max_concurrent_scans: 3
+
+    # Stealth requirements (if any)
+    stealth_required: false
+    # stealth_notes: ""
+
+    # Data handling
+    data_handling:
+      credential_quarantine: true     # Always true for /rainbow
+      evidence_retention_days: 90
+      evidence_destruction_method: "secure-delete"
+
+    # Emergency stop contact
+    emergency_stop_contact: ""        # Name and communication channel
+
+    # Additional constraints (free-form)
+    additional_constraints:
+      []
+      # - "Do not scan during business hours (09:00-17:00 local)"
+      # - "Limit port scan to top 1000 ports"
+      # - "Web crawl depth limited to 3 levels"
+
+  # --- OPERATOR APPROVAL ---
+  # This section MUST be populated before any Zone 2 operation executes.
+
+  operator_approval:
+    approved_by: ""                   # Human operator name
+    approved_at: ""                   # ISO 8601 timestamp
+    confirmation: ""                  # Free-form confirmation statement
+
+# --- VALIDATION RULES ---
+# rainbow-orchestrator validates these rules before routing Zone 2/3 tasks:
+#
+# 1. engagement_id matches pattern RBW-NNNN
+# 2. created_by is rainbow-orchestrator, red-lead, or operator name
+# 3. created_at is valid ISO 8601
+# 4. authorized_targets has at least 1 entry
+# 5. Each target has valid type and non-empty value
+# 6. excluded_targets entries (if any) have valid type and non-empty value
+# 7. time_window.start is present or future
+# 8. time_window.end is after time_window.start
+# 9. technique_allowlist has at least 1 entry
+# 10. escalation_authority is non-empty and names a human
+# 11. operator_approval.approved_by is non-empty
+# 12. operator_approval.approved_at is valid ISO 8601
