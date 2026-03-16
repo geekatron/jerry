@@ -119,37 +119,31 @@ For each pipeline, resolve the short alias:
 
 When the user requests a Consensus Panel (multi-model drafting and cross-critique), the planner MUST:
 
-#### Step 1: CLI Detection Block
+#### Step 1: Pre-Flight Resolution Chain
 
-Include a CLI detection bash block in the generated plan:
+The plan MUST include all 5 pre-flight steps from `docs/MULTI_CLI_INTEGRATION.md`:
 
-```bash
-# Phase 0: Detect available CLIs
-CLAUDE_CLI=""
-CODEX_CLI=""
-GEMINI_CLI=""
-command -v claude  >/dev/null 2>&1 && CLAUDE_CLI="claude"
-command -v codex   >/dev/null 2>&1 && CODEX_CLI="codex"
-command -v gemini  >/dev/null 2>&1 && GEMINI_CLI="gemini"
-echo "CLI availability: claude=${CLAUDE_CLI:-MISSING} codex=${CODEX_CLI:-MISSING} gemini=${GEMINI_CLI:-MISSING}"
-```
+1. **0a Platform detection** — Bash `&` parallel requires WSL/Linux; warn if Windows native
+2. **0b CLI detection** — `command -v` for each CLI binary
+3. **0c Auth validation** — Check per-model API key env vars before launch
+4. **0d API fallback** — If CLI missing but API key present, use API transport
+5. **0e User gate** — AskUserQuestion before proceeding with degraded panel (H-31)
 
-#### Step 2: CLI Command Resolution
+**Transport resolution priority (per model):**
 
-The planner resolves CLI commands using this priority:
+| Priority | Condition | Transport |
+|----------|-----------|-----------|
+| 1 | `command -v {cli}` AND auth valid | CLI binary |
+| 2 | CLI missing or auth warning AND API key set | API (curl wrapper) |
+| 3 | Neither CLI nor API available | UNAVAILABLE → user gate |
 
-| Priority | Source | Action |
-|----------|--------|--------|
-| 1 | Runtime detection (above) | Use detected path |
-| 2 | Hardcoded fallbacks | Use table below |
+#### Step 2: CLI/API Command Reference
 
-**Fallback CLI Commands:**
-
-| CLI | Command |
-|-----|---------|
-| Claude | `claude --dangerously-skip-permissions --model claude-opus-4-6 --thinking-budget high -p` |
-| Codex | `codex --yolo --model gpt-5.2 --reasoning-effort high --full-auto exec` |
-| Gemini | `gemini --yolo --model gemini-2.5-pro --prompt` |
+| Model | CLI Command | API Fallback |
+|-------|-------------|--------------|
+| Claude | `claude --dangerously-skip-permissions --model claude-opus-4-6 --thinking-budget high -p` | Anthropic API via `invoke_claude_api` |
+| Codex | `codex --yolo --model gpt-5.2 --reasoning-effort high --full-auto exec` | OpenAI API via `invoke_codex_api` |
+| Gemini | `gemini --yolo --model gemini-2.5-pro --prompt` | Google API via `invoke_gemini_api` |
 
 #### Step 3: Artifact Path Scheme
 
@@ -202,12 +196,18 @@ INTENT DOCUMENT
 
 Add the `consensus_panel` section to ORCHESTRATION.yaml (see `docs/MULTI_CLI_INTEGRATION.md` for full schema).
 
-#### Step 6: Degradation Strategy
+#### Step 6: Degradation + User Gate (H-31 REQUIRED)
 
-The plan MUST document behavior when CLIs are missing:
-- **2 of 3 available:** Proceed with available CLIs, note gap in synthesis
-- **1 of 3 available:** Warn user, recommend falling back to Pattern 3 (Fan-Out with Jerry agents)
-- **0 of 3 available:** Abort Consensus Panel; fall back to single orch-synthesizer call
+The plan MUST specify user confirmation behavior for each degradation level:
+
+| Workers | Gate | Options presented to user |
+|---------|------|---------------------------|
+| 3 of 3 | None — proceed | — |
+| 2 of 3 | AskUserQuestion | Proceed with 2-model panel / Cancel |
+| 1 of 3 | AskUserQuestion | Single-model draft / Fall back to Jerry agents / Cancel |
+| 0 of 3 | AskUserQuestion | Fall back to Jerry agents / Cancel |
+
+**NEVER silently proceed with a degraded panel.** Violates P-020 (user authority) and H-31 (clarify when scope changes).
 
 #### Trigger Conditions
 

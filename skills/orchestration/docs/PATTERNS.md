@@ -220,7 +220,7 @@ Orchestrator (main context)
          └──► Task(orch-synthesizer) → synthesis.md
 ```
 
-**Graceful Degradation:** If one CLI is unavailable or fails, the panel proceeds with available outputs. The synthesizer notes any gaps.
+**Fault Tolerance:** Pre-flight resolves CLI → API → sub-agent for each model. If panel is degraded (< 3 workers), user is asked to confirm or cancel before any work begins (H-31/P-020). A hung worker is killed after configurable timeout. Individual exit codes are captured per-PID.
 
 **Reference:** See `docs/MULTI_CLI_INTEGRATION.md` for CLI flags, detection logic, exit code handling, and ORCHESTRATION.yaml extensions.
 

@@ -1137,91 +1137,98 @@ CROSS-SKILL HANDOFF:
 ## Consensus Panel (Pattern 6): Step-by-Step
 
 > Use when multi-model perspectives improve quality. Triggers: "use Gemini and Codex", "consensus panel", "competitive ideation", "parallel CLI drafts".
+> **Full reference:** `docs/MULTI_CLI_INTEGRATION.md` (v1.1.0 — includes auth, timeout, API fallback, user gate)
 
-### Step 0: Detect CLIs
+### Step 0: Pre-Flight (MANDATORY — do not skip)
 
-```bash
-CLAUDE_CLI=""; CODEX_CLI=""; GEMINI_CLI=""
-command -v claude  >/dev/null 2>&1 && CLAUDE_CLI="claude"
-command -v codex   >/dev/null 2>&1 && CODEX_CLI="codex"
-command -v gemini  >/dev/null 2>&1 && GEMINI_CLI="gemini"
-echo "Available: claude=${CLAUDE_CLI:-MISSING} codex=${CODEX_CLI:-MISSING} gemini=${GEMINI_CLI:-MISSING}"
-```
+Run the full resolution chain from `MULTI_CLI_INTEGRATION.md` Phase 0:
 
-If fewer than 2 CLIs are available, warn the user and offer to fall back to Fan-Out with Jerry agents.
+1. **0a Platform detection** — Check if bash `&` parallel execution is supported (WSL/Linux only; not Windows native cmd/PowerShell)
+2. **0b CLI detection** — `command -v` for each of claude, codex, gemini
+3. **0c Auth validation** — Check `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY` / `GOOGLE_API_KEY`
+4. **0d API fallback** — If CLI missing but API key present, set transport to `api`
+5. **0e Panel composition summary** — Count available workers, then:
+
+| Workers | Action |
+|---------|--------|
+| 3 of 3 | Proceed automatically |
+| 2 of 3 | **AskUserQuestion** — confirm degraded panel or cancel |
+| 1 of 3 | **AskUserQuestion** — proceed as single-model draft, fall back to Jerry agents, or cancel |
+| 0 of 3 | **AskUserQuestion** — fall back to Jerry agents or cancel |
+
+**NEVER silently proceed with a degraded panel (H-31, P-020).**
 
 ### Step 1: Write the Intent Document
 
-Before launching any CLI, the **orchestrator** writes a shared seed document to:
+The **orchestrator** writes a shared seed document to:
 ```
 orchestration/{workflow_id}/consensus/{phase_id}-intent.md
 ```
+Contains: objective, codebase context, constraints, success criteria, uncertainty level.
 
-The intent document contains: the objective, relevant codebase context, constraints, success criteria, and uncertainty level.
+Then write per-model prompt files (include the intent content + output path instructions).
 
 ### Step 2: Launch Draft Phase in Parallel
 
+Use the `launch_worker` helper from `MULTI_CLI_INTEGRATION.md`. Capture each PID individually, then wait with per-PID timeout:
+
 ```bash
-INTENT="orchestration/{workflow_id}/consensus/{phase_id}-intent.md"
-CLAUDE_OUT="orchestration/{workflow_id}/consensus/{phase_id}-claude-draft.md"
-CODEX_OUT="orchestration/{workflow_id}/consensus/{phase_id}-codex-draft.md"
-GEMINI_OUT="orchestration/{workflow_id}/consensus/{phase_id}-gemini-draft.md"
+CLAUDE_PID=$(launch_worker claude "$CLAUDE_TRANSPORT" "$CLAUDE_PROMPT" "$CLAUDE_OUT")
+CODEX_PID=$(launch_worker codex  "$CODEX_TRANSPORT"  "$CODEX_PROMPT"  "$CODEX_OUT")
+GEMINI_PID=$(launch_worker gemini "$GEMINI_TRANSPORT" "$GEMINI_PROMPT" "$GEMINI_OUT")
 
-[ -n "$CLAUDE_CLI" ] && $CLAUDE_CLI --dangerously-skip-permissions --model claude-opus-4-6 \
-  --thinking-budget high -p "Read $INTENT and write an independent draft to $CLAUDE_OUT. {task_instructions}" &
-[ -n "$CODEX_CLI"  ] && $CODEX_CLI --yolo --model gpt-5.2 --reasoning-effort high --full-auto exec \
-  "Read $INTENT and write an independent draft to $CODEX_OUT. {task_instructions}" &
-[ -n "$GEMINI_CLI" ] && $GEMINI_CLI --yolo --model gemini-2.5-pro \
-  --prompt "Read $INTENT and write an independent draft to $GEMINI_OUT. {task_instructions}" &
-
-wait
+wait_with_timeout "$CLAUDE_PID" "claude" "${CONSENSUS_TIMEOUT:-300}"
+CLAUDE_EXIT=$?
+wait_with_timeout "$CODEX_PID"  "codex"  "${CONSENSUS_TIMEOUT:-300}"
+CODEX_EXIT=$?
+wait_with_timeout "$GEMINI_PID" "gemini" "${CONSENSUS_TIMEOUT:-300}"
+GEMINI_EXIT=$?
 ```
+
+Key details: each `wait_with_timeout` captures that PID's individual exit code; a watchdog process kills hung workers after the timeout.
 
 ### Step 3: Verify Draft Outputs
 
 ```bash
-for f in "$CLAUDE_OUT" "$CODEX_OUT" "$GEMINI_OUT"; do
-  [ -f "$f" ] && echo "OK: $f" || echo "MISSING: $f (will note gap in synthesis)"
-done
+verify_outputs "draft" \
+  "claude" "$CLAUDE_OUT" \
+  "codex"  "$CODEX_OUT" \
+  "gemini" "$GEMINI_OUT"
 ```
+
+Log missing outputs. Update `consensus_panel.exit_codes` in ORCHESTRATION.yaml.
 
 ### Step 4: Launch Critique Phase in Parallel
 
-Each CLI critiques the other two. Swap the file arguments — each agent reads the two files it did NOT write:
+Only launch a critique worker if the two draft files it needs to read actually exist:
 
 ```bash
-CLAUDE_CRIT="orchestration/{workflow_id}/consensus/{phase_id}-claude-critique.md"
-CODEX_CRIT="orchestration/{workflow_id}/consensus/{phase_id}-codex-critique.md"
-GEMINI_CRIT="orchestration/{workflow_id}/consensus/{phase_id}-gemini-critique.md"
-
-[ -n "$CLAUDE_CLI" ] && $CLAUDE_CLI --dangerously-skip-permissions --model claude-opus-4-6 \
-  --thinking-budget high -p \
-  "Read $CODEX_OUT and $GEMINI_OUT. Write a critique to $CLAUDE_CRIT. Identify strengths, weaknesses, gaps, and missed edge cases." &
-[ -n "$CODEX_CLI"  ] && $CODEX_CLI --yolo --model gpt-5.2 --reasoning-effort high --full-auto exec \
-  "Read $CLAUDE_OUT and $GEMINI_OUT. Write a critique to $CODEX_CRIT. Identify strengths, weaknesses, gaps, and missed edge cases." &
-[ -n "$GEMINI_CLI" ] && $GEMINI_CLI --yolo --model gemini-2.5-pro \
-  --prompt "Read $CLAUDE_OUT and $CODEX_OUT. Write a critique to $GEMINI_CRIT. Identify strengths, weaknesses, gaps, and missed edge cases." &
-
-wait
+# Claude critiques codex+gemini only if both drafts present
+CLAUDE_CRIT_PID=$([ -f "$CODEX_OUT" ] && [ -f "$GEMINI_OUT" ] && [ -n "$CLAUDE_TRANSPORT" ] && \
+  launch_worker claude "$CLAUDE_TRANSPORT" "$CLAUDE_CRIT_PROMPT" "$CLAUDE_CRIT" || echo "")
+# ... similarly for CODEX_CRIT and GEMINI_CRIT
 ```
+
+Wait with timeout, verify outputs.
 
 ### Step 5: Invoke orch-synthesizer
 
-Pass all draft and critique paths to `orch-synthesizer` via the Task tool. The synthesizer:
-1. Identifies **consensus points** (all CLIs agree → high confidence)
-2. Identifies **divergence points** (CLIs disagree → flag for human review)
-3. Notes any gaps from missing CLI outputs
-4. Produces `{phase_id}-synthesis.md`
-5. Self-applies S-014 quality score
+Pass all available draft/critique paths plus panel composition metadata to `orch-synthesizer`. The synthesizer MUST:
+1. Surface panel composition prominently (full 3-way vs. partial)
+2. Identify **consensus points** (all available models agree → high confidence)
+3. Identify **divergence points** (models disagree → flag for human review)
+4. Include a **PANEL GAPS section** if any model was absent
+5. Self-apply S-014 quality score
 
 ### Step 6: Update Orchestration State
 
-Call `orch-tracker` to update the `consensus_panel` section in ORCHESTRATION.yaml:
-- Set `draft_phase: COMPLETE` (or `PARTIAL` if any CLI failed)
-- Set `critique_phase: COMPLETE` (or `PARTIAL`)
-- Set `synthesis: COMPLETE`
-- Populate `consensus_points` and `divergence_points` arrays
-- Record `cli_failures` if any
+Call `orch-tracker` to update `consensus_panel` in ORCHESTRATION.yaml:
+- `platform`, `parallel_supported`
+- Per-model `cli_availability` (cli | api | unavailable)
+- `workers_available`, `user_confirmed_degraded`
+- Per-phase exit codes
+- `draft_phase`, `critique_phase`, `synthesis` statuses
+- `consensus_points`, `divergence_points`, `panel_gaps`
 
 ---
 
