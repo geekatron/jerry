@@ -164,7 +164,7 @@ emulation_manifest_entry:
   artifacts:
     - path: "{artifact path}"            # Pattern: {technique-id}-{artifact-name}.{ext}
       type: "payload|log_evidence|config|pcap"
-      taint_level: "adversary-modeled"
+      taint_level: "engagement-generated"       # Per rbee-v1.schema.json: adversary-produced | adversary-controlled | engagement-generated
   network_indicators:
     - type: "domain|ip|url|user-agent"
       value: "{value}"
@@ -643,7 +643,7 @@ The checkpoint schema includes 16 base fields from `docs/schemas/purple-team-che
 | `token_usage` | object | `work_tokens`, `framework_overhead`, `total` (all integers) |
 | `exercise_id` | string | Cross-skill exercise ID. Pattern: `^[a-z]+-[a-z0-9-]+$` |
 | `skills_involved` | array[string] | Skills participating (e.g., `["/red-team", "/blue-team"]`) |
-| `cross_skill_handoffs_completed` | array[object] | Completed IP handoffs with `integration_point`, `from_skill`, `to_skill`, `artifacts`, `trust_level` |
+| `cross_skill_handoffs_completed` | array[object] | Completed IP handoffs with `integration_point`, `from_skill`, `to_skill`, `artifacts`, `taint_level` (per rbee-v1.schema.json) |
 | `pending_cross_skill_handoffs` | array[object] | Handoffs pending for next session with `prerequisite_artifacts` |
 | `emulation_manifest` | object | Phase A technique-artifact-indicator mapping |
 | `detection_inventory` | object | Current rule inventory (YARA, Sigma, Suricata, Falco) with validation status |
