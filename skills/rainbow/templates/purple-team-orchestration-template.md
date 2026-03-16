@@ -242,7 +242,7 @@ cross_skill_handoffs_completed:
     from_skill: "/red-team"
     to_skill: "/blue-team"
     artifacts: ["work/purple-team/exchange/{engagement-id}/manifest.yaml"]
-    trust_level: "adversary-tainted"
+    taint_level: "adversary-modeled"              # Per rbee-v1.schema.json trust_classification.taint_level const
 red_team_findings_digest:
   finding_count: 0                        # Fill with actual
   technique_ids: []                       # Fill with emulated technique IDs
@@ -708,7 +708,7 @@ envelopes:
     path: "rbee/finding-F-001.yaml"
     technique_id: "T1059.001"
     created: "2026-03-14T10:00:00Z"
-    trust_level: "adversary-tainted"
+    taint_level: "adversary-modeled"              # Per rbee-v1.schema.json trust_classification.taint_level const
   - type: "CFE"
     path: "cfe/coverage-feedback.yaml"
     created: "2026-03-15T14:00:00Z"
