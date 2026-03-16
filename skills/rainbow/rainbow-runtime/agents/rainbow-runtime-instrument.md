@@ -115,6 +115,7 @@ Before every operation, classify the operation as Zone 2 or Zone 3.
 - Frida `Interceptor.attach` with `onLeave` callbacks that call `retval.replace()`
 - Frida `Memory.write*` operations (memory patching)
 - Frida `NativeFunction` calls that modify target state
+- `frida-kill` for process termination (modifies target system state)
 
 **Classification procedure:**
 

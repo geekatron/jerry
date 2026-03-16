@@ -121,13 +121,13 @@ Do NOT invoke when:
 
 ## Agent Registry
 
-| Agent | Role | Zone | Tools | Cognitive Mode | Tier |
+| Agent | Role | Zone | Tools | Cognitive Mode | Exec Class |
 |-------|------|------|-------|---------------|------|
-| `rainbow-runtime-instrument` | Dual-zone runtime instrumentation specialist | Zone 2/3 | mitmproxy, mitmdump, mitmweb, Frida (frida, frida-trace, frida-ps, frida-ls-devices, frida-discover, frida-kill) | convergent | Tier B |
+| `rainbow-runtime-instrument` | Dual-zone runtime instrumentation specialist | Zone 2/3 | mitmproxy, mitmdump, mitmweb, Frida (frida, frida-trace, frida-ps, frida-ls-devices, frida-discover, frida-kill) | convergent | B (Env-Dependent) |
 
 **Tool tier:** T2 (Read-Write). Agent does NOT have Task tool access per H-34/P-003. Agent uses opus model due to Zone 3 complexity requirements (script content classification for zone determination is a security-critical reasoning task requiring the same model tier as rainbow-exploit agents per AD-M-009).
 
-**Tier classification rationale:** Both mitmproxy and Frida are classified as Tier B because they require external target interaction (network proxy setup, process attachment). Tier A tools (like Subfinder, Nuclei in /rainbow-recon) have direct CLI execution patterns; Tier B tools require environment configuration (proxy routing, device attachment, root/administrator access for transparent mode).
+**Tier classification rationale:** Both mitmproxy and Frida are classified as Execution Class B because they require external target interaction (network proxy setup, process attachment). Class A tools (like Subfinder, Nuclei in /rainbow-recon) have direct CLI execution patterns; Tier B tools require environment configuration (proxy routing, device attachment, root/administrator access for transparent mode).
 
 ### Agent Selection Guide
 
@@ -145,7 +145,7 @@ Do NOT invoke when:
 
 ## Tool Inventory
 
-### Tier B Tools (Agent: rainbow-runtime-instrument)
+### Execution Class B Tools (Environment-Dependent — Agent: rainbow-runtime-instrument)
 
 **mitmproxy Suite:**
 
@@ -168,7 +168,7 @@ Do NOT invoke when:
 
 ### Tier C Tools (Methodology Reference Only)
 
-No Tier C tools for /rainbow-runtime. All tools are Tier B with direct CLI execution.
+No Class C tools for /rainbow-runtime. All tools are Class B with environment-dependent CLI execution.
 
 ### Tool Relationship Diagram
 
@@ -364,6 +364,8 @@ Zone enforcement relies on LLM behavioral compliance with the zone classificatio
 | Agent ignores zone restrictions under adversarial prompt | 10 | 3 | 8 | 240 | NPT-009 constraints; engagement scope validation; operator oversight |
 
 > S=Severity, O=Occurrence, D=Detection. Scale 1-10 per FMEA standard. RPN >= 200 = Critical, monitored. These RPNs are accepted per ADR-PROJ023-001; reduction requires L3 runtime gate implementation.
+>
+> **O/D Calibration basis:** Occurrence (O) rated at 3-4 based on the fail-closed default and explicit indicator lists reducing misclassification likelihood compared to open-ended behavioral constraints. Detection (D) rated at 8 because script misclassification is only detectable through post-hoc audit review — the agent's classification decision is not independently verified before Bash execution. These ratings are provisional and should be recalibrated after operational deployment data is available.
 
 ### Credential Filter Is W0 Specification-Only
 
