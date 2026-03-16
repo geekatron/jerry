@@ -181,7 +181,7 @@ User Request -> rainbow-orchestrator
 | `rainbow-cloud-mapper` | `/rainbow-cloud` | Zone 2 |
 | `rainbow-exploit-ops` | `/rainbow-exploit` | Zone 3 |
 | `rainbow-exploit-c2` | `/rainbow-exploit` | Zone 3 |
-| `rainbow-exploit-ad` | `/rainbow-exploit` | Zone 3 |
+| `rainbow-exploit-ad` | `/rainbow-exploit` | Zone 2/3 |
 | `rainbow-exploit-msf` | `/rainbow-exploit` | Zone 3 |
 | `rainbow-runtime-instrument` | `/rainbow-runtime` | Zone 2/3 |
 

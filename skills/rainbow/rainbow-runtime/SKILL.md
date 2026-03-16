@@ -125,7 +125,7 @@ Do NOT invoke when:
 |-------|------|------|-------|---------------|------|
 | `rainbow-runtime-instrument` | Dual-zone runtime instrumentation specialist | Zone 2/3 | mitmproxy, mitmdump, mitmweb, Frida (frida, frida-trace, frida-ps, frida-ls-devices, frida-discover, frida-kill) | convergent | Tier B |
 
-**Tool tier:** T2 (Read-Write). Agent does NOT have Task tool access per H-34/P-003.
+**Tool tier:** T2 (Read-Write). Agent does NOT have Task tool access per H-34/P-003. Agent uses opus model due to Zone 3 complexity requirements (script content classification for zone determination is a security-critical reasoning task requiring the same model tier as rainbow-exploit agents per AD-M-009).
 
 **Tier classification rationale:** Both mitmproxy and Frida are classified as Tier B because they require external target interaction (network proxy setup, process attachment). Tier A tools (like Subfinder, Nuclei in /rainbow-recon) have direct CLI execution patterns; Tier B tools require environment configuration (proxy routing, device attachment, root/administrator access for transparent mode).
 
@@ -398,6 +398,16 @@ The `rainbow-runtime-instrument` agent operates 2 CLI toolkits: mitmproxy suite 
 2. **Unified purpose** -- Both toolkits serve the single purpose of runtime instrumentation
 3. **AP-07 monitoring** -- Combined tool count monitored; if additional tools are needed, they should route to a new agent or sub-skill
 4. **Suite binaries share patterns** -- mitmproxy suite shares proxy patterns; Frida suite shares `-n`/`-U`/`-R` targeting patterns
+
+### Zone 3 Per-Operation Approval Is Operator-Dependent
+
+Per-operation approval quality for Zone 3 modification operations depends entirely on the human operator reviewing approval requests. An operator approving without careful review of script content defeats the purpose of the control.
+
+**Compensating controls:**
+1. **Structured approval requests** -- Approval requests include operation_id, tool, target, full script content, expected_impact, reversibility, risk_assessment
+2. **No batch approval** -- Each Zone 3 operation individually presented and approved
+3. **No implied approval** -- Prior approval does not authorize similar operations
+4. **Audit logging** -- All approvals and rejections logged with timestamps and script SHA-256 hashes
 
 ### Tool Availability Is Environment-Dependent
 

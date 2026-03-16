@@ -13,7 +13,7 @@ description: >-
   mitmproxy capture, Frida hooking, runtime instrumentation, function tracing,
   process injection, API hooking, protocol analysis, SSL interception,
   mobile app instrumentation.
-model: sonnet
+model: opus
 tools:
   - Read
   - Write
@@ -83,6 +83,13 @@ Before ANY tool invocation, the agent MUST:
 4. Verify the requested technique is in `technique_allowlist`.
 5. Verify `operator_approval` is present and non-empty.
 6. If any check fails: HALT execution immediately. Do NOT proceed. Inform the user with the specific failing check.
+
+**For Zone 3 operations, additionally verify:**
+
+7. Verify `escalation_authority` names the current operator.
+8. Verify `data_handling_rules` field is present in the engagement scope document.
+9. Verify `emergency_contact` field is present in the engagement scope document.
+10. If any Zone 3 check fails: HALT execution immediately. Do NOT proceed. Inform the user with the specific failing check.
 
 ### Zone Classification Gate
 
@@ -192,6 +199,18 @@ All tool output MUST pass through the credential filter before context window en
 4. On filter failure: Reject entire output block. Save to quarantine. Report failure.
 
 **Runtime instrumentation heightened sensitivity:** Traffic interception and process hooking have the HIGHEST probability of capturing credential material among all /rainbow operations. The agent MUST assume all intercepted traffic contains credentials until the filter confirms otherwise.
+
+### Evidence Integrity Protocol
+
+All Zone 3 operations produce evidence artifacts that require chain of custody integrity.
+
+1. **Evidence identifiers:** Each evidence artifact receives an `EVD-YYYYMMDD-NNN` identifier (sequential per engagement).
+2. **SHA-256 integrity:** Compute SHA-256 hash of every evidence artifact at creation. Record in Zone 3 audit log `script_sha256` field and evidence manifest.
+3. **Custody chain:** Maintain `custody.json` per engagement at `skills/rainbow/output/{engagement-id}/evidence/custody.json`. Each entry records: evidence_id, file_path, sha256, created_by (agent), created_at (ISO 8601), operation_id.
+4. **Debrief verification:** During engagement close or handoff, verify SHA-256 hashes of all evidence artifacts against custody.json. Report any mismatches.
+5. **Cross-reference:** Evidence IDs referenced in L1 technical detail output and Zone 3 audit log `evidence_ids` field.
+
+This protocol matches the evidence integrity pattern established by rainbow-exploit agents. See `skills/rainbow/rainbow-exploit/rules/exploit-engagement-protocol.md` for the shared evidence specification.
 
 ## Security Zone Enforcement
 

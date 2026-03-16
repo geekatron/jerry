@@ -395,11 +395,11 @@ These agents implement composable cybersecurity tool execution through the `/rai
 | rainbow-recon-osint | `skills/rainbow/agents/rainbow-recon-osint.md` | OSINT Specialist (OWASP Amass, Maigret) | Divergent |
 | rainbow-cloud-auditor | `skills/rainbow/agents/rainbow-cloud-auditor.md` | Cloud Security Auditor (Checkov, Prowler, Kubescape, Kyverno) | Systematic |
 | rainbow-cloud-mapper | `skills/rainbow/agents/rainbow-cloud-mapper.md` | Cloud Infrastructure Mapper (Cartography) | Systematic |
-| rainbow-exploit-ops | `skills/rainbow/agents/rainbow-exploit-ops.md` | Binary Exploitation Specialist (pwntools) | Systematic |
-| rainbow-exploit-c2 | `skills/rainbow/agents/rainbow-exploit-c2.md` | C2 Infrastructure Specialist (Empire, Mythic, Donut) | Systematic |
-| rainbow-exploit-ad | `skills/rainbow/agents/rainbow-exploit-ad.md` | Active Directory Attack Specialist (Impacket, BloodHound CE) | Systematic |
-| rainbow-exploit-msf | `skills/rainbow/agents/rainbow-exploit-msf.md` | Metasploit Integration Specialist | Systematic |
-| rainbow-runtime-instrument | `skills/rainbow/agents/rainbow-runtime-instrument.md` | Runtime Instrumentation Specialist (mitmproxy, Frida) | Systematic |
+| rainbow-exploit-ops | `skills/rainbow/rainbow-exploit/agents/rainbow-exploit-ops.md` | Binary Exploitation Specialist (pwntools) | Convergent |
+| rainbow-exploit-c2 | `skills/rainbow/rainbow-exploit/agents/rainbow-exploit-c2.md` | C2 Infrastructure Specialist (Empire, Mythic, Donut) | Convergent |
+| rainbow-exploit-ad | `skills/rainbow/rainbow-exploit/agents/rainbow-exploit-ad.md` | Active Directory Attack Specialist (Impacket, BloodHound CE) | Forensic |
+| rainbow-exploit-msf | `skills/rainbow/rainbow-exploit/agents/rainbow-exploit-msf.md` | Metasploit Integration Specialist | Convergent |
+| rainbow-runtime-instrument | `skills/rainbow/rainbow-runtime/agents/rainbow-runtime-instrument.md` | Runtime Instrumentation Specialist (mitmproxy, Frida) | Convergent |
 
 **Key Capabilities:**
 
@@ -421,7 +421,7 @@ These agents implement composable cybersecurity tool execution through the `/rai
 
 **Invocation**: Use `/rainbow` skill. `rainbow-orchestrator` routes to the appropriate sub-skill agent.
 
-**Model Tiers:** rainbow-orchestrator (opus); all others (sonnet).
+**Model Tiers:** rainbow-orchestrator (opus), rainbow-exploit-ops (opus), rainbow-exploit-c2 (opus), rainbow-exploit-ad (opus), rainbow-exploit-msf (opus), rainbow-runtime-instrument (opus); all others (sonnet).
 
 **Security Zones:** Zone 1 (audit, no scope needed), Zone 2 (recon, engagement scope required), Zone 3 (exploitation, scope + per-operation human approval).
 
