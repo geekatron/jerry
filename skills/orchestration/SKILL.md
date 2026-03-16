@@ -1,7 +1,7 @@
 ---
 name: orchestration
 description: Multi-agent workflow orchestration with state tracking, checkpointing, and cross-pollinated pipelines. Use when coordinating parallel agent pipelines, managing sync barriers, or tracking complex workflow execution state across sessions.
-version: "2.2.0"
+version: "2.3.0"
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, WebSearch, WebFetch, mcp__memory-keeper__context_save, mcp__memory-keeper__context_get, mcp__memory-keeper__context_search
 activation-keywords:
   - "orchestration"
@@ -14,6 +14,11 @@ activation-keywords:
   - "parallel agents"
   - "agent coordination"
   - "execution tracking"
+  - "consensus panel"
+  - "gemini and codex"
+  - "multi-model drafts"
+  - "competitive ideation"
+  - "parallel CLI"
 ---
 
 # Orchestration Skill
@@ -50,6 +55,7 @@ The Orchestration skill provides a structured framework for managing **multi-age
 ### Key Capabilities
 
 - **Cross-Pollinated Pipelines** - Bidirectional agent pipelines with barrier synchronization
+- **Consensus Panel** - Parallel Gemini/Codex/Claude CLI invocation for multi-model drafts and cross-critique (P-003 compliant via OS subprocess, not agent nesting)
 - **State Management** - YAML-based machine-readable state (SSOT)
 - **Checkpoint Recovery** - Resume workflows from any checkpoint
 - **Execution Queues** - Priority-ordered agent execution with dependencies
@@ -176,6 +182,28 @@ Parallel execution with synthesis.
             │ Synthesize │
             └────────────┘
 ```
+
+### Pattern 6: Consensus Panel
+
+Parallel external AI CLI invocations (Claude + Codex + Gemini) as OS subprocesses, cross-critique, then synthesis. P-003 compliant — CLIs are not Jerry sub-agents.
+
+```
+Orchestrator
+    │  [Draft Phase]
+    ├──► Bash: claude ... &  → claude-draft.md
+    ├──► Bash: codex  ... &  → codex-draft.md
+    ├──► Bash: gemini ... &  → gemini-draft.md
+    └──► wait
+    │  [Critique Phase]
+    ├──► Bash: claude critiques codex+gemini &  → claude-critique.md
+    ├──► Bash: codex  critiques claude+gemini &  → codex-critique.md
+    ├──► Bash: gemini critiques claude+codex  &  → gemini-critique.md
+    └──► wait
+    │  [Synthesis Phase]
+    └──► Task(orch-synthesizer) → synthesis.md
+```
+
+See `docs/MULTI_CLI_INTEGRATION.md` for CLI flags, detection, and YAML schema.
 
 ---
 

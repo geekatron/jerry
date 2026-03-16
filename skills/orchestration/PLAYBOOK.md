@@ -1134,6 +1134,97 @@ CROSS-SKILL HANDOFF:
 
 ---
 
+## Consensus Panel (Pattern 6): Step-by-Step
+
+> Use when multi-model perspectives improve quality. Triggers: "use Gemini and Codex", "consensus panel", "competitive ideation", "parallel CLI drafts".
+
+### Step 0: Detect CLIs
+
+```bash
+CLAUDE_CLI=""; CODEX_CLI=""; GEMINI_CLI=""
+command -v claude  >/dev/null 2>&1 && CLAUDE_CLI="claude"
+command -v codex   >/dev/null 2>&1 && CODEX_CLI="codex"
+command -v gemini  >/dev/null 2>&1 && GEMINI_CLI="gemini"
+echo "Available: claude=${CLAUDE_CLI:-MISSING} codex=${CODEX_CLI:-MISSING} gemini=${GEMINI_CLI:-MISSING}"
+```
+
+If fewer than 2 CLIs are available, warn the user and offer to fall back to Fan-Out with Jerry agents.
+
+### Step 1: Write the Intent Document
+
+Before launching any CLI, the **orchestrator** writes a shared seed document to:
+```
+orchestration/{workflow_id}/consensus/{phase_id}-intent.md
+```
+
+The intent document contains: the objective, relevant codebase context, constraints, success criteria, and uncertainty level.
+
+### Step 2: Launch Draft Phase in Parallel
+
+```bash
+INTENT="orchestration/{workflow_id}/consensus/{phase_id}-intent.md"
+CLAUDE_OUT="orchestration/{workflow_id}/consensus/{phase_id}-claude-draft.md"
+CODEX_OUT="orchestration/{workflow_id}/consensus/{phase_id}-codex-draft.md"
+GEMINI_OUT="orchestration/{workflow_id}/consensus/{phase_id}-gemini-draft.md"
+
+[ -n "$CLAUDE_CLI" ] && $CLAUDE_CLI --dangerously-skip-permissions --model claude-opus-4-6 \
+  --thinking-budget high -p "Read $INTENT and write an independent draft to $CLAUDE_OUT. {task_instructions}" &
+[ -n "$CODEX_CLI"  ] && $CODEX_CLI --yolo --model gpt-5.2 --reasoning-effort high --full-auto exec \
+  "Read $INTENT and write an independent draft to $CODEX_OUT. {task_instructions}" &
+[ -n "$GEMINI_CLI" ] && $GEMINI_CLI --yolo --model gemini-2.5-pro \
+  --prompt "Read $INTENT and write an independent draft to $GEMINI_OUT. {task_instructions}" &
+
+wait
+```
+
+### Step 3: Verify Draft Outputs
+
+```bash
+for f in "$CLAUDE_OUT" "$CODEX_OUT" "$GEMINI_OUT"; do
+  [ -f "$f" ] && echo "OK: $f" || echo "MISSING: $f (will note gap in synthesis)"
+done
+```
+
+### Step 4: Launch Critique Phase in Parallel
+
+Each CLI critiques the other two. Swap the file arguments — each agent reads the two files it did NOT write:
+
+```bash
+CLAUDE_CRIT="orchestration/{workflow_id}/consensus/{phase_id}-claude-critique.md"
+CODEX_CRIT="orchestration/{workflow_id}/consensus/{phase_id}-codex-critique.md"
+GEMINI_CRIT="orchestration/{workflow_id}/consensus/{phase_id}-gemini-critique.md"
+
+[ -n "$CLAUDE_CLI" ] && $CLAUDE_CLI --dangerously-skip-permissions --model claude-opus-4-6 \
+  --thinking-budget high -p \
+  "Read $CODEX_OUT and $GEMINI_OUT. Write a critique to $CLAUDE_CRIT. Identify strengths, weaknesses, gaps, and missed edge cases." &
+[ -n "$CODEX_CLI"  ] && $CODEX_CLI --yolo --model gpt-5.2 --reasoning-effort high --full-auto exec \
+  "Read $CLAUDE_OUT and $GEMINI_OUT. Write a critique to $CODEX_CRIT. Identify strengths, weaknesses, gaps, and missed edge cases." &
+[ -n "$GEMINI_CLI" ] && $GEMINI_CLI --yolo --model gemini-2.5-pro \
+  --prompt "Read $CLAUDE_OUT and $CODEX_OUT. Write a critique to $GEMINI_CRIT. Identify strengths, weaknesses, gaps, and missed edge cases." &
+
+wait
+```
+
+### Step 5: Invoke orch-synthesizer
+
+Pass all draft and critique paths to `orch-synthesizer` via the Task tool. The synthesizer:
+1. Identifies **consensus points** (all CLIs agree → high confidence)
+2. Identifies **divergence points** (CLIs disagree → flag for human review)
+3. Notes any gaps from missing CLI outputs
+4. Produces `{phase_id}-synthesis.md`
+5. Self-applies S-014 quality score
+
+### Step 6: Update Orchestration State
+
+Call `orch-tracker` to update the `consensus_panel` section in ORCHESTRATION.yaml:
+- Set `draft_phase: COMPLETE` (or `PARTIAL` if any CLI failed)
+- Set `critique_phase: COMPLETE` (or `PARTIAL`)
+- Set `synthesis: COMPLETE`
+- Populate `consensus_points` and `divergence_points` arrays
+- Record `cli_failures` if any
+
+---
+
 ## Templates Reference
 
 | Template | Location | Purpose |
@@ -1147,6 +1238,7 @@ CROSS-SKILL HANDOFF:
 ## References
 
 - [ORCHESTRATION_PATTERNS.md](../shared/ORCHESTRATION_PATTERNS.md) - 8 canonical patterns with L0/L1/L2
+- [MULTI_CLI_INTEGRATION.md](docs/MULTI_CLI_INTEGRATION.md) - Consensus Panel: CLI flags, detection, exit code handling, YAML schema
 - [AGENT_TEMPLATE_CORE.md](../shared/AGENT_TEMPLATE_CORE.md) - Agent definition format
 - [Jerry Constitution](../../docs/governance/JERRY_CONSTITUTION.md) - P-003 No Recursive Subagents
 
@@ -1164,12 +1256,14 @@ CROSS-SKILL HANDOFF:
 | Resume workflow | `"Resume orchestration from checkpoint CP-{n}"` |
 | Check status | `"Show orchestration status"` |
 | Final synthesis | `"Create final orchestration synthesis"` |
+| Consensus panel | `"Run consensus panel on {topic} using Gemini and Codex"` |
 
 ---
 
-*Playbook Version: 3.2.0*
+*Playbook Version: 3.3.0*
 *Skill: orchestration*
 *Constitutional Compliance: Jerry Constitution v1.0*
 *Enhancement: EN-709 Adversarial quality integration (phase gates, barrier quality, strategy selection)*
-*Last Updated: 2026-02-14*
+*Enhancement: Multi-CLI Integration - Consensus Panel pattern (Gemini + Codex + Claude parallel subprocess invocation)*
+*Last Updated: 2026-03-16*
 *Template: PLAYBOOK_TEMPLATE.md v1.0.0*

@@ -180,6 +180,52 @@ PIPELINE A                              PIPELINE B
 
 ---
 
+## Pattern 6: Consensus Panel
+
+**Description:** Three independent external AI CLIs (Claude, Codex, Gemini) produce artifacts in parallel as OS subprocesses, cross-critique each other's outputs, then an `orch-synthesizer` merges the strongest points. Delivers multi-model consensus without increasing Jerry agent nesting depth.
+
+**Use When:**
+- Ambiguous requirements benefit from multiple independent perspectives
+- High-stakes decisions require cross-model validation
+- Planning artifacts need competitive ideation before synthesis
+
+**P-003 Note:** CLI processes invoked via `Bash` are OS subprocesses, not Jerry sub-agents. They do not affect agent nesting depth and are fully P-003 compliant.
+
+```
+Orchestrator (main context)
+         │
+         │  Phase: Draft
+         ├──► Bash: claude --dangerously-skip-permissions ... -p "{prompt}" &
+         ├──► Bash: codex  --yolo ... --full-auto exec "{prompt}"           &
+         ├──► Bash: gemini --yolo ... --prompt "{prompt}"                   &
+         │
+         └──► wait  (blocking until all three processes exit)
+                    │
+                    ├── claude-draft.md
+                    ├── codex-draft.md
+                    └── gemini-draft.md
+
+         │  Phase: Cross-Critique
+         ├──► Bash: claude critiques codex + gemini &
+         ├──► Bash: codex  critiques claude + gemini &
+         ├──► Bash: gemini critiques claude + codex  &
+         │
+         └──► wait
+                    │
+                    ├── claude-critique.md
+                    ├── codex-critique.md
+                    └── gemini-critique.md
+
+         │  Phase: Synthesis
+         └──► Task(orch-synthesizer) → synthesis.md
+```
+
+**Graceful Degradation:** If one CLI is unavailable or fails, the panel proceeds with available outputs. The synthesizer notes any gaps.
+
+**Reference:** See `docs/MULTI_CLI_INTEGRATION.md` for CLI flags, detection logic, exit code handling, and ORCHESTRATION.yaml extensions.
+
+---
+
 ## Pattern Selection Guide
 
 | Scenario | Recommended Pattern |
@@ -189,6 +235,7 @@ PIPELINE A                              PIPELINE B
 | Independent parallel research | Fan-Out / Fan-In |
 | Complex task routing | Hierarchical Delegation |
 | Quality-critical output | Iterative Refinement |
+| Multi-model consensus on ambiguous/high-stakes decisions | **Consensus Panel** |
 
 ---
 
