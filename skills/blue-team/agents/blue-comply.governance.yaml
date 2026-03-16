@@ -100,5 +100,5 @@ session_context:
     - "include scan results artifact paths"
     - "include key_findings (3-5 bullets) with severity breakdown"
     - "include confidence score"
-    - "prepare IP-6 CFE schema if eng-devsecops handoff in scope"
+    - "prepare IP-6 compliance findings handoff (handoff-v2 format) if eng-devsecops handoff in scope"
     - "produce IP-6 standardized compliance findings for eng-devsecops and eng-incident consumption: include check_id, framework, severity, resource, status, remediation_ref per finding; include aggregated severity summary table; include remediation priority calculation"

@@ -61,15 +61,15 @@ When a Coverage Feedback Envelope (CFE) from /blue-team is available (provided v
 
 ### Scoring Adjustment Protocol
 
-1. **Load the CFE** from the provided path. The `coverage_matrix` field contains three categories:
-   - `techniques_covered` -- ATT&CK techniques with validated detection rules
-   - `techniques_uncovered` -- ATT&CK techniques with no detection rules
-   - `techniques_partial` -- ATT&CK techniques with unvalidated or incomplete coverage
+1. **Load the CFE** from the provided path. The `coverage_matrix` is an array of objects per `cfe-v1.schema.json`, each with `technique_id`, `coverage_status` (enum: `detected`, `partial`, `undetected`), `detection_rule_ref`, `detection_domains`, `coverage_gap`, and `reason_uncovered`. Filter by `coverage_status` to identify coverage categories:
+   - `coverage_status == "detected"` -- ATT&CK techniques with validated detection rules
+   - `coverage_status == "undetected"` -- ATT&CK techniques with no detection rules
+   - `coverage_status == "partial"` -- ATT&CK techniques with unvalidated or incomplete coverage
 
 2. **Priority adjustment rules:**
-   - Vulnerabilities mapped to `techniques_uncovered` receive a priority bump (increased risk score) because the defender cannot detect exploitation of these techniques
-   - Vulnerabilities mapped to `techniques_covered` with `validation_status: validated` may be scored at standard priority -- detection capability exists
-   - Vulnerabilities mapped to `techniques_partial` or `techniques_covered` with `validation_status: unvalidated` are treated the same as uncovered for scoring purposes (unvalidated rules do not provide reliable detection)
+   - Vulnerabilities mapped to techniques where `coverage_status == "undetected"` receive a priority bump (increased risk score) because the defender cannot detect exploitation of these techniques
+   - Vulnerabilities mapped to techniques where `coverage_status == "detected"` may be scored at standard priority -- detection capability exists
+   - Vulnerabilities mapped to techniques where `coverage_status == "partial"` are treated the same as undetected for scoring purposes (partial rules do not provide reliable detection)
 
 3. **Score the adjusted priority** using the combined CVSS + exploitability + coverage gap factor. Document which vulnerabilities received coverage-adjusted scores in the output.
 

@@ -197,30 +197,30 @@ cfe:
   confidence: 0.80
   criticality: "C3"
   d3fend_kb_version: "{D3FEND version used for this mapping}"    # Staleness tracking
-  coverage_matrix:
-    techniques_covered:
-      - attack_id: "T{NNNN}"
-        d3fend_countermeasure: "D3-{XXX}"
-        coverage_status: "validated|syntax-only|untestable"
-        detection_rule_ref: "work/blue-team/ioc/{engagement-id}/rules/{rule-file}"
-    techniques_uncovered:
-      - attack_id: "T{NNNN}"
-        reason: "no-file-indicators|no-behavioral-pattern|tier-c-tool-required|no-d3fend-mapping"
-    techniques_partial:
-      - attack_id: "T{NNNN}"
-        coverage_gap: "{what is missing for full detection}"
+  coverage_matrix:                                          # Array of objects per cfe-v1.schema.json
+    - technique_id: "T{NNNN}"
+      coverage_status: "detected"                           # enum: detected | partial | undetected
+      d3fend_countermeasure: "D3-{XXX}"
+      detection_rule_ref: "work/blue-team/ioc/{engagement-id}/rules/{rule-file}"
+    - technique_id: "T{NNNN}"
+      coverage_status: "undetected"
+      reason_uncovered: "no-file-indicators"                # enum per cfe-v1.schema.json
+      coverage_gap: "No detection coverage for this technique"
+    - technique_id: "T{NNNN}"
+      coverage_status: "partial"
+      coverage_gap: "{what is missing for full detection}"
 ```
 
-**CFE field descriptions:**
+**CFE field descriptions (per cfe-v1.schema.json):**
 
 | Field | Type | Purpose |
 |-------|------|---------|
 | `d3fend_kb_version` | string | D3FEND KB version used for all mappings in this envelope; enables staleness detection if KB is updated |
-| `coverage_matrix.techniques_covered` | array | ATT&CK techniques with at least one validated D3FEND countermeasure and a detection rule reference |
-| `coverage_matrix.coverage_status` | enum | `validated` (rule executed and confirmed), `syntax-only` (rule passes `yr check` but not execution-tested), `untestable` (Unverified Tier C; methodology guidance only) |
-| `coverage_matrix.detection_rule_ref` | string | File path to the YARA/Sigma/Suricata rule that provides coverage |
-| `coverage_matrix.techniques_uncovered` | array | ATT&CK techniques with no coverage and the reason |
-| `coverage_matrix.techniques_partial` | array | ATT&CK techniques with incomplete coverage and the specific gap |
+| `coverage_matrix[*].technique_id` | string | ATT&CK technique ID (pattern: `^T\d{4}(\.\d{3})?$`) |
+| `coverage_matrix[*].coverage_status` | enum | `detected` (validated detection rule exists), `partial` (incomplete coverage), `undetected` (no detection rule) |
+| `coverage_matrix[*].detection_rule_ref` | string | File path to the YARA/Sigma/Suricata rule that provides coverage (present when detected/partial) |
+| `coverage_matrix[*].coverage_gap` | string | What is missing for full detection (present when partial/undetected) |
+| `coverage_matrix[*].reason_uncovered` | enum | Reason code: no-file-indicators, no-behavioral-pattern, tier-c-tool-required, no-d3fend-mapping, etc. |
 
 **CFE output path:** `work/purple-team/exchange/{engagement-id}/cfe/coverage-feedback.yaml`
 
