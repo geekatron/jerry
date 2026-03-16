@@ -36,9 +36,9 @@ capabilities:
     - markdown
     - json
   tool_version_requirements:
-    Kubescape: "latest"
-    kube-bench: "latest"
-    Kyverno: "latest"
+    Kubescape: ">=3.0"
+    kube-bench: ">=0.7"
+    Kyverno: ">=1.11"
 guardrails:
   input_validation:
     - assessment_id_format: "^[a-z0-9-]+$"

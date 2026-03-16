@@ -37,9 +37,9 @@ capabilities:
     - yaml
     - json
   tool_version_requirements:
-    Hayabusa: "latest"
-    Chainsaw: "latest"
-    pySigma: "latest"
+    Hayabusa: ">=2.0"
+    Chainsaw: ">=2.0"
+    pySigma: ">=0.2.0"
 guardrails:
   input_validation:
     - evtx_file_path: "^work/.*\\.evtx$"

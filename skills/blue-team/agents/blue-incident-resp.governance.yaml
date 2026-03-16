@@ -36,11 +36,11 @@ capabilities:
     - markdown
     - json
   tool_version_requirements:
-    Plaso: "latest"
-    Volatility-3: "latest"
-    KAPE: "latest"
-    Velociraptor: "latest"
-    TheHive: "latest"
+    Plaso: ">=20230717"
+    Volatility-3: ">=2.5"
+    KAPE: ">=1.3"
+    Velociraptor: ">=0.7"
+    TheHive: ">=5.2"
 guardrails:
   input_validation:
     - evidence_file_path: "^work/.*$"
@@ -91,6 +91,7 @@ session_context:
     - "validate handoff schema (handoff-v2)"
     - "verify all artifact paths exist"
     - "verify evidence hash integrity"
+    - "apply credential filter for cross-skill artifacts (skills/rainbow/rules/rainbow-credential-filter.md)"
   on_send:
     - "include IR report artifact path"
     - "include timeline artifact path"

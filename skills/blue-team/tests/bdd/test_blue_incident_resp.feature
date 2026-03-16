@@ -173,6 +173,17 @@ Feature: Incident Response Timeline Analysis and Forensic Artifact Processing
     And all outputs are persisted to "work/blue-team/incidents/{incident-id}/" per P-002
 
   # -----------------------------------------------------------------------
+  # Cross-Skill Credential Filter
+  # -----------------------------------------------------------------------
+
+  Scenario: Apply credential filter to cross-skill artifacts
+    Given an artifact received from /red-team via IP-5 handoff
+    When blue-incident-resp processes the cross-skill artifact
+    Then the credential filter pipeline is applied (L1 regex, L2 entropy, L3 structural)
+    And any detected credentials are quarantined
+    And a sanitized version is used for forensic timeline context
+
+  # -----------------------------------------------------------------------
   # Constitutional Compliance
   # -----------------------------------------------------------------------
 

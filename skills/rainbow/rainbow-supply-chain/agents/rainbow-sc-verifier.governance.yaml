@@ -53,6 +53,7 @@ guardrails:
   output_filtering:
     - no_secrets_in_output
     - no_executable_code_without_context
+    - all_claims_must_have_citations
     - credential_filter_applied_to_all_tool_output  # behavioral: agent self-enforces per W0 credential filter spec
     - no_signing_keys_in_output
     - verification_results_must_include_trust_chain

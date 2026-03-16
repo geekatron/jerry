@@ -86,6 +86,7 @@ session_context:
   on_receive:
     - "validate handoff schema (handoff-v2)"
     - "verify all artifact paths exist"
+    - "apply credential filter for cross-skill artifacts (skills/rainbow/rules/rainbow-credential-filter.md)"
   on_send:
     - "include monitoring rule artifact paths"
     - "include key_findings (3-5 bullets)"

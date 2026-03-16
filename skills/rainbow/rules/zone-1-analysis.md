@@ -79,7 +79,7 @@ Only the following tools and subcommands are permitted at Zone 1. Any tool invoc
 
 | Tool | Allowed Subcommands/Modes | Forbidden at Zone 1 |
 |------|--------------------------|---------------------|
-| **Syft** | `scan`, `packages`, `attest` (local only) | Remote registry pulls without local cache |
+| **Syft** | `scan`, `packages` | `attest` (Zone 3 -- creates cryptographic artifacts), remote registry pulls without local cache |
 | **Grype** | `db check`, `db update`, scan against local SBOM/image | -- |
 | **Trivy** | `image`, `fs`, `config`, `sbom` (local targets) | `server` mode, remote repository scanning |
 | **OSV-Scanner** | `scan` against local lockfiles/SBOMs | -- |

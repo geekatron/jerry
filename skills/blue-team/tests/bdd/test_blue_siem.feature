@@ -152,6 +152,17 @@ Feature: SIEM/Log Analysis and Detection Rule Translation
     And alternative instructions for local analysis are provided
 
   # -----------------------------------------------------------------------
+  # Cross-Skill Credential Filter
+  # -----------------------------------------------------------------------
+
+  Scenario: Apply credential filter to cross-skill artifacts
+    Given an artifact received from /red-team via IP-5 handoff
+    When blue-siem processes the cross-skill artifact
+    Then the credential filter pipeline is applied (L1 regex, L2 entropy, L3 structural)
+    And any detected credentials are quarantined
+    And a sanitized version is used for SIEM correlation context
+
+  # -----------------------------------------------------------------------
   # Constitutional Compliance
   # -----------------------------------------------------------------------
 

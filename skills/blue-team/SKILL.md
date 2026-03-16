@@ -294,10 +294,10 @@ When processing artifacts received from cross-skill handoffs (particularly IP-5:
 
 | Attribute | Value |
 |-----------|-------|
-| **Source** | /blue-team (blue-comply, blue-posture-k8s, blue-posture-sys) |
+| **Source** | /blue-team (blue-comply, blue-posture-k8s, blue-posture-sys, blue-intel, blue-d3fend) |
 | **Target** | /eng-team (eng-architect, eng-infra) |
-| **Data Exchanged** | Compliance findings, misconfiguration reports, hardening recommendations |
-| **Value** | Architecture and infrastructure decisions informed by measured compliance posture |
+| **Data Exchanged** | Compliance findings, misconfiguration reports, hardening recommendations, D3FEND countermeasure mappings, CTI-informed security requirements |
+| **Value** | Architecture and infrastructure decisions informed by measured compliance posture and threat intelligence |
 
 ---
 
@@ -484,6 +484,10 @@ blue-lead (default fallback for ambiguous defensive requests)
 ## Known Limitations and Compensating Controls
 
 > Honest disclosure per P-022. These are accepted architectural limitations documented in ADR-PROJ023-001.
+
+### Zone 1 and T3 External Access Disambiguation
+
+Two agents (blue-intel and blue-d3fend) are T3 tier with WebSearch and WebFetch access while operating within Zone 1. This is not a contradiction. Zone 1's "no live system interaction" prohibition refers to interaction with **target infrastructure** -- no network scanning, no service probing, no active reconnaissance against systems under assessment. T3 external access for blue-intel and blue-d3fend is used exclusively for **public internet research resources**: OSINT databases, threat intelligence feeds, D3FEND knowledge base queries, CVE databases, and published adversary reports. These are outbound queries to public research services, not inbound interaction with target systems. The distinction is: target-directed network I/O is prohibited at Zone 1; external research and documentation access is permitted for T3 agents.
 
 ### Zone Enforcement Is Behavioral-Only
 

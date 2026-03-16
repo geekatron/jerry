@@ -393,7 +393,7 @@ Six integration points connect /rainbow with /red-team, /blue-team, and /eng-tea
 | IP-3 | /rainbow-exploit | eng-security, eng-backend, eng-frontend | Exploitation results (enriched with tool output) |
 | IP-4 | red-persist, red-lateral | eng-incident | IR exercise results |
 | IP-5 | /rainbow-recon, /rainbow-exploit | blue-detect | TTPs, IOC patterns for detection tuning |
-| IP-6 | blue-detect, blue-analyst | eng-incident, eng-devsecops | Detection coverage reports, analysis findings |
+| IP-6 | blue-detect, blue-malware-analyst | eng-incident, eng-devsecops | Detection coverage reports, analysis findings |
 
 ---
 
