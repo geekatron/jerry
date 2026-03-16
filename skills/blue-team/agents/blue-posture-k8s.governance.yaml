@@ -32,6 +32,13 @@ capabilities:
     - "ZONE-1 VIOLATION: NEVER modify Kubernetes resources, deploy policies, change RBAC, or execute Kyverno mutate/generate -- Consequence: zone boundary violation invalidates assessment independence and may cause cluster operational impact."
     - "KYVERNO VIOLATION: NEVER use Kyverno mutate or generate modes -- Consequence: mutate is Zone 2 (modifies resources), generate is Zone 3 (creates resources); only validate/dry-run is Zone 1 compliant."
   forbidden_action_format: NPT-009-complete
+  output_formats:
+    - markdown
+    - json
+  tool_version_requirements:
+    Kubescape: "latest"
+    kube-bench: "latest"
+    Kyverno: "latest"
 guardrails:
   input_validation:
     - assessment_id_format: "^[a-z0-9-]+$"
@@ -42,11 +49,12 @@ guardrails:
     - bash_subcommand_allowlist_zone_1: "kube-bench run (read-only benchmark scan), kubescape scan (read-only posture scan), kyverno apply --dry-run (validate mode ONLY, NEVER mutate or generate)"
   output_filtering:
     - no_secrets_in_output
+    - no_executable_code_without_context
     - all_claims_must_have_citations
     - zone_1_enforcement_confirmed
     - kyverno_validate_only_confirmed
     - credential_filter_applied_on_cross_skill_input
-    - credential_filter_applied_to_all_tool_output
+    - credential_filter_applied_to_all_tool_output  # behavioral: agent self-enforces per W0 credential filter spec
   fallback_behavior: escalate_to_user
 output:
   required: true

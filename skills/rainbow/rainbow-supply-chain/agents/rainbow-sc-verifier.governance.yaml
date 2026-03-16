@@ -37,6 +37,9 @@ capabilities:
   output_formats:
     - markdown
     - json
+  tool_version_requirements:
+    Cosign: ">=2.2"
+    Snyk-CLI: "latest"
 guardrails:
   input_validation:
     - cosign_subcommand_classification: "cosign subcommand must be classified to correct zone before execution"
@@ -49,7 +52,8 @@ guardrails:
     - bash_subcommand_deny_zone_3: "cosign sign|attest|attach -- NEVER execute, HALT immediately"
   output_filtering:
     - no_secrets_in_output
-    - credential_filter_applied_to_all_tool_output
+    - no_executable_code_without_context
+    - credential_filter_applied_to_all_tool_output  # behavioral: agent self-enforces per W0 credential filter spec
     - no_signing_keys_in_output
     - verification_results_must_include_trust_chain
     - zone_classification_reported

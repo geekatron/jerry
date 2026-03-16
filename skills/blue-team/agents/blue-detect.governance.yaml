@@ -34,6 +34,8 @@ capabilities:
   output_formats:
     - markdown
     - json
+  tool_version_requirements:
+    YARA-X: ">=0.9.0"
 guardrails:
   input_validation:
     - rule_file_path: "^work/.*\\.yar[a]?$"
@@ -48,7 +50,7 @@ guardrails:
     - all_claims_must_have_citations
     - detection_confidence_bounds_required
     - validation_status_required_per_rule
-    - credential_filter_applied_to_all_tool_output
+    - credential_filter_applied_to_all_tool_output  # behavioral: agent self-enforces per W0 credential filter spec
   fallback_behavior: persist_and_halt
 output:
   required: true

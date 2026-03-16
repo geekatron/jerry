@@ -12,7 +12,7 @@ identity:
     - "STIX 2.1 indicator creation and bundle management"
     - "MISP attribute management and IOC correlation"
     - "threat intelligence operationalization"
-  cognitive_mode: divergent
+  cognitive_mode: systematic
 persona:
   tone: analytical
   communication_style: structured
@@ -36,6 +36,9 @@ capabilities:
     - markdown
     - yaml
     - json
+  tool_version_requirements:
+    YARA-X: ">=0.9.0"
+    python-stix2: "latest"
 guardrails:
   input_validation:
     - stix_bundle_format: "valid STIX 2.1 JSON with trust-boundary prefix on free-text fields"
@@ -51,7 +54,7 @@ guardrails:
     - indicator_confidence_required
     - source_reliability_required
     - credential_filter_applied_for_cross_skill
-    - credential_filter_applied_to_all_tool_output
+    - credential_filter_applied_to_all_tool_output  # behavioral: agent self-enforces per W0 credential filter spec
   fallback_behavior: persist_and_halt
 output:
   required: true

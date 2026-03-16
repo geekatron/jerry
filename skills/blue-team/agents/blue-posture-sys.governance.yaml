@@ -32,6 +32,12 @@ capabilities:
     - "ZONE-1 VIOLATION: NEVER modify system configurations, use oscap --remediate, or execute Cosign sign/attest/attach -- Consequence: zone boundary violation invalidates assessment independence and may cause system operational impact or create unauthorized cryptographic material."
     - "COSIGN VIOLATION: NEVER use Cosign sign, attest, or attach operations -- Consequence: these are Zone 3 operations that create cryptographic artifacts; only verify, verify-attestation, and tree are Zone 1 compliant."
   forbidden_action_format: NPT-009-complete
+  output_formats:
+    - markdown
+    - json
+  tool_version_requirements:
+    OpenSCAP: "latest"
+    Cosign: ">=2.2"
 guardrails:
   input_validation:
     - assessment_id_format: "^[a-z0-9-]+$"
@@ -41,12 +47,13 @@ guardrails:
     - bash_subcommand_allowlist_zone_1: "oscap xccdf eval (scan mode only, NEVER --remediate), cosign verify|verify-attestation|tree (verification only, NEVER sign|attest|attach)"
   output_filtering:
     - no_secrets_in_output
+    - no_executable_code_without_context
     - all_claims_must_have_citations
     - zone_1_enforcement_confirmed
     - cosign_verify_only_confirmed
     - no_remediate_flag_used
     - credential_filter_applied_on_cross_skill_input
-    - credential_filter_applied_to_all_tool_output
+    - credential_filter_applied_to_all_tool_output  # behavioral: agent self-enforces per W0 credential filter spec
   fallback_behavior: escalate_to_user
 output:
   required: true

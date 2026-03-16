@@ -36,10 +36,16 @@ capabilities:
     - markdown
     - yaml
     - text
+  tool_version_requirements:
+    Suricata: "latest"
+    Zeek: "latest"
+    Falco: "latest"
+    Tetragon: "latest"
 guardrails:
   input_validation:
     - monitoring_output_path: "^work/.*$"
     - rule_file_path: "^work/.*$"
+    - scope_gate_halt: "If no valid assessment scope document from blue-lead is found, HALT execution immediately. Return {halt: true, reason: 'scope_document_required'} and escalate to user per P-020."
     - zone_enforcement_model: "behavioral -- zone restrictions are LLM-enforced guardrails, not machine-enforced runtime gates. Bash tool access is unconditional; subcommand classification relies on agent compliance with the allowlist. This is a documented architectural limitation per ADR-PROJ023-001."
     - bash_subcommand_allowlist_zone_1: "All Suricata, Zeek, Falco, Tetragon tools are Tier C (methodology-only). Bash is used solely for file I/O operations on local detection rule artifacts. No network monitoring tool execution."
   output_filtering:
@@ -48,7 +54,7 @@ guardrails:
     - all_claims_must_have_citations
     - tier_c_limitation_disclosed
     - deployment_prerequisites_stated
-    - credential_filter_applied_to_all_tool_output
+    - credential_filter_applied_to_all_tool_output  # behavioral: agent self-enforces per W0 credential filter spec
   fallback_behavior: escalate_to_user
 output:
   required: true

@@ -307,7 +307,7 @@ When processing artifacts received from cross-skill handoffs (particularly IP-5:
 |----------|-------|---------|
 | **Tier A (Execute)** | 11 | YARA-X, Hayabusa, Chainsaw, Checkov, Trivy, Prowler, Kubescape, kube-bench, Cosign, JADX, Plaso |
 | **Tier B (Guide-then-execute)** | 7 | Sigma, Ghidra headless, Kyverno, OpenSCAP, MISP API, python-stix2, taxii2-client |
-| **Tier C (Methodology-only)** | 10 | Suricata, Zeek, Falco, Tetragon, Wazuh, Volatility 3, Velociraptor, DFIR-IRIS, GRR |
+| **Tier C (Methodology-only)** | 10 | Suricata, Zeek, Falco, Tetragon, Wazuh, Volatility 3, Velociraptor, DFIR-IRIS, GRR, TheHive |
 | **Total** | **28** | |
 
 All tools operate within Zone 1. Tier A tools execute locally; Tier B tools require some user setup; Tier C tools provide methodology guidance for user-managed infrastructure.
@@ -478,6 +478,33 @@ blue-lead (default fallback for ambiguous defensive requests)
 | IOC lifecycle, IOC management, indicator enrichment, IOC aging, IOC retirement, YARA rule creation, YARA rule authoring, detection signature, STIX indicator | YARA scanning, yr scan, threat intelligence collection, D3FEND | 12 | "IOC lifecycle" OR "YARA rule creation" OR "indicator enrichment" | blue-ioc |
 
 **Priority ordering rationale:** 1=blue-lead (governance, default authority). 2=blue-intel (intelligence drives all other domains). 3-5=Detection domain (most frequently invoked). 6-7=Forensics domain. 8-10=Compliance domain (narrower scope). 11-12=D3FEND/IOC (specialized analytical functions).
+
+---
+
+## Known Limitations and Compensating Controls
+
+> Honest disclosure per P-022. These are accepted architectural limitations documented in ADR-PROJ023-001.
+
+### Zone Enforcement Is Behavioral-Only
+
+Zone 1 enforcement relies on LLM behavioral compliance with subcommand allowlists declared in each agent's `.governance.yaml`. There is no L3 runtime gate that programmatically validates Bash commands before execution. This means zone boundary violations are possible if the agent's instruction-following degrades under context pressure.
+
+**Compensating controls:**
+1. **Bash subcommand allowlists** -- Every agent declares an explicit `bash_subcommand_allowlist_zone_1` in `.governance.yaml` listing permitted CLI invocations
+2. **NPT-009-complete forbidden actions** -- Zone violation entries in `forbidden_actions` use structured negation with consequences, maximizing LLM instruction-following reliability
+3. **BDD zone enforcement scenarios** -- Every agent has BDD scenarios testing zone boundary refusal behavior
+4. **L2 per-prompt re-injection** -- H-36 zone constraints are re-injected on every prompt via the enforcement architecture
+5. **L5 CI validation** -- Planned CI gate to validate subcommand allowlist consistency across agent definitions
+
+### Credential Filter Is W0 Specification-Only
+
+The credential filter pipeline (`skills/rainbow/rules/rainbow-credential-filter.md`) is a W0 (Wave 0) specification. All 13 governance files declare `credential_filter_applied_to_all_tool_output` as a behavioral constraint that agents self-enforce. No runtime validation scripts exist. Runtime enforcement is deferred to W1.
+
+**Compensating controls:**
+1. **Behavioral declaration** -- All agents include the credential filter in `output_filtering` (behavioral self-enforcement)
+2. **BDD credential filter scenarios** -- All agents have BDD scenarios testing credential filter application behavior
+3. **Fail-closed specification** -- The W0 spec defines fail-closed behavior (filter crash rejects output)
+4. **Cross-skill trust boundary** -- IP-5 (Red-to-Blue) artifacts require explicit credential filter processing before context entry
 
 ---
 

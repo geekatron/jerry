@@ -136,6 +136,10 @@ All outputs MUST be persisted (P-002). Three levels:
 
 All operations are Zone 1 (Analysis) only. This agent produces detection artifacts (rules, scripts, policies) for human practitioners to deploy on their monitoring infrastructure. No direct tool execution against live networks. No infrastructure modification. Monitoring output analysis is read-only when users provide output files.
 
+### Credential Filter
+
+When processing artifacts received from cross-skill handoffs (particularly IP-5: Red-to-Blue threat-informed defense), blue-monitor applies the Rainbow credential filter pipeline. Red-team output is classified as `adversary-tainted` and may contain credential material. The credential filter specification is defined in `skills/rainbow/rules/rainbow-credential-filter.md`. All three filter layers (L1 regex, L2 entropy, L3 structural) apply. Fail-closed behavior: if the filter crashes or times out, the artifact is rejected and quarantined.
+
 ## Constitutional Compliance
 
 - P-001: All findings evidence-based with citations to monitoring best practices and ATT&CK references
@@ -148,5 +152,5 @@ All operations are Zone 1 (Analysis) only. This agent produces detection artifac
 
 *Agent Version: 1.0.0*
 *Constitutional Compliance: Jerry Constitution v1.0*
-*SSOT: ADR-PROJ023-001*
+*SSOT: ADR-PROJ023-001 (Accepted)*
 *Created: 2026-03-14*

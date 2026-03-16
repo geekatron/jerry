@@ -187,6 +187,32 @@ The credential filter pipeline is MANDATORY for all tool output. No tool output 
 
 ---
 
+## Known Limitations and Compensating Controls
+
+> Honest disclosure per P-022. These are accepted architectural limitations documented in ADR-PROJ023-001.
+
+### Zone Enforcement Is Behavioral-Only
+
+Zone enforcement relies on LLM behavioral compliance with subcommand allowlists. No L3 runtime gate validates Bash commands before execution.
+
+**Compensating controls:**
+1. **Bash subcommand allowlists** -- Both agents declare `bash_subcommand_allowlist_zone_1` (and zone_2 for verifier) in `.governance.yaml`
+2. **NPT-009-complete forbidden actions** -- Zone violation entries use structured negation with consequences
+3. **BDD zone enforcement scenarios** -- Both agents have BDD scenarios testing zone escalation and boundary refusal
+4. **Dual-zone Cosign classification** -- verify/tree = Zone 1, download = Zone 2, sign/attest/attach = Zone 3 (never executed)
+
+### Credential Filter Is W0 Specification-Only
+
+The credential filter pipeline is a W0 specification. Both agents declare `credential_filter_applied_to_all_tool_output` as a behavioral constraint. Runtime enforcement deferred to W1.
+
+**Compensating controls:**
+1. **Three-layer specification** -- L1 regex, L2 entropy, L3 structural analysis fully specified in `skills/rainbow/rules/rainbow-credential-filter.md`
+2. **Behavioral declaration** -- Both agents include credential filter in `output_filtering`
+3. **Fail-closed specification** -- Filter crash or timeout rejects entire tool output block
+4. **BDD credential filter scenarios** -- Both agents have credential filter application and quarantine scenarios
+
+---
+
 ## Internal Routing
 
 The `rainbow-orchestrator` routes to this sub-skill based on request keywords.

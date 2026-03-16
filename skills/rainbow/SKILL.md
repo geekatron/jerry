@@ -333,6 +333,33 @@ skills/rainbow/output/{engagement-id}/evidence/
 
 ---
 
+## Known Limitations and Compensating Controls
+
+> Honest disclosure per P-022. These are accepted architectural limitations documented in ADR-PROJ023-001.
+
+### Zone Enforcement Is Behavioral-Only
+
+Security zone enforcement relies on LLM behavioral compliance with subcommand allowlists declared in each agent's `.governance.yaml`. There is no L3 runtime gate that programmatically validates Bash commands before execution. This means zone boundary violations are possible if the agent's instruction-following degrades under context pressure.
+
+**Compensating controls:**
+1. **Bash subcommand allowlists** -- Every agent declares zone-specific `bash_subcommand_allowlist` entries in `.governance.yaml`
+2. **NPT-009-complete forbidden actions** -- Zone violation entries use structured negation with consequences
+3. **BDD zone enforcement scenarios** -- All agents have BDD scenarios testing zone boundary refusal behavior
+4. **Dual-zone tool classification** -- Tools spanning zones (Nuclei, Cosign, Kyverno) have explicit per-subcommand zone classification
+5. **L5 CI validation** -- Planned CI gate to validate subcommand allowlist consistency
+
+### Credential Filter Is W0 Specification-Only
+
+The credential filter pipeline (`skills/rainbow/rules/rainbow-credential-filter.md`) is a W0 (Wave 0) specification. All governance files declare `credential_filter_applied_to_all_tool_output` as a behavioral constraint. No runtime validation scripts exist. Runtime enforcement is deferred to W1.
+
+**Compensating controls:**
+1. **Three-layer specification** -- L1 regex, L2 entropy, L3 structural analysis fully specified
+2. **Behavioral declaration** -- All agents include credential filter in `output_filtering`
+3. **Fail-closed specification** -- Filter crash or timeout rejects entire tool output block
+4. **BDD credential filter scenarios** -- Scanner and verifier agents have credential filter BDD scenarios
+
+---
+
 ## Routing Disambiguation
 
 > When this skill is the wrong choice and what happens if misrouted.
