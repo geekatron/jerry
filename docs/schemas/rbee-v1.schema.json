@@ -1,0 +1,467 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jerry.dev/schemas/rbee-v1.schema.json",
+  "$comment": "Traceability: ADR-PROJ023-001 (Hybrid B+C), Phase 5 Red-Blue Composition (IP-5), Phase 5 Handoff Protocols (SV-08..SV-11, RV-05, RV-06), SEC-MAJOR-3 resolution. Data sanitization rules: ATT&CK ID regex ^T\\d{4}(\\.\\d{3})?$, SHA-256 regex ^[a-f0-9]{64}$, paths must not contain '..' and must resolve within work/ subtree.",
+  "title": "Red-Blue Exchange Envelope (RBEE) v1",
+  "description": "Cross-skill data contract for transferring red team engagement findings to blue team detection agents. The RBEE is a handoff-v2 extension that normalizes findings into a format blue-team agents can safely consume. All artifact paths are metadata references only -- blue-team agents MUST NOT Read artifact content directly into context. Trust level is always adversary-tainted for red-to-blue transfer.",
+  "type": "object",
+  "required": [
+    "finding_id",
+    "engagement_id",
+    "attack_technique",
+    "severity",
+    "taint_level",
+    "indicator_summary",
+    "artifacts"
+  ],
+  "properties": {
+    "finding_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^F-[0-9]{3,}$",
+      "description": "Engagement-scoped finding identifier. Format: F-{NNN}. Unique within the engagement.",
+      "examples": ["F-001", "F-012"]
+    },
+    "engagement_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z0-9-]+$",
+      "description": "Identifier of the red team engagement that produced this finding. Used to locate artifacts in work/red-team/engagements/{engagement-id}/.",
+      "examples": ["purple-2026-001", "engagement-alpha"]
+    },
+    "finding_title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "description": "Human-readable descriptive title for this finding."
+    },
+    "attack_technique": {
+      "type": "object",
+      "required": ["id", "tactic", "name"],
+      "description": "ATT&CK technique anchor for this finding. Provides the join key for D3FEND countermeasure mapping.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^T\\d{4}(\\.\\d{3})?$",
+          "description": "ATT&CK technique or sub-technique ID. Format: T{NNNN} or T{NNNN}.{NNN}.",
+          "examples": ["T1059", "T1059.001", "T1566.001"]
+        },
+        "subtechnique": {
+          "type": "string",
+          "pattern": "^T\\d{4}\\.\\d{3}$",
+          "description": "Optional sub-technique ID when the finding maps to a specific sub-technique. MUST be a child of the technique in the 'id' field.",
+          "examples": ["T1059.001", "T1566.002"]
+        },
+        "tactic": {
+          "type": "string",
+          "pattern": "^TA\\d{4}$",
+          "description": "Parent ATT&CK tactic ID. Format: TA{NNNN}.",
+          "examples": ["TA0002", "TA0001"]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "description": "Human-readable ATT&CK technique name.",
+          "examples": ["PowerShell", "Spearphishing Attachment"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "severity": {
+      "type": "object",
+      "required": ["qualitative"],
+      "description": "Severity assessment for this finding.",
+      "properties": {
+        "cvss_score": {
+          "type": "string",
+          "pattern": "^(10\\.0|[0-9]\\.[0-9])$",
+          "description": "CVSS base score as a decimal string. Range: 0.0 to 10.0.",
+          "examples": ["9.8", "7.2", "4.3"]
+        },
+        "cvss_vector": {
+          "type": "string",
+          "minLength": 1,
+          "description": "CVSS vector string (CVSS v3.1 or v4.0). Optional but recommended when cvss_score is present.",
+          "examples": ["CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"]
+        },
+        "qualitative": {
+          "type": "string",
+          "enum": ["Critical", "High", "Medium", "Low", "Informational"],
+          "description": "Qualitative severity classification. Required even when cvss_score is present."
+        },
+        "remediation_priority": {
+          "type": "string",
+          "enum": ["Immediate", "Short-term", "Long-term"],
+          "description": "Recommended remediation timeframe."
+        }
+      },
+      "additionalProperties": false
+    },
+    "file_indicators": {
+      "type": "array",
+      "description": "File-based indicators of compromise. Each entry drives YARA rule creation in blue-ioc.",
+      "items": {
+        "type": "object",
+        "required": ["type", "value"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["hash-sha256", "hash-md5", "hash-sha1", "filename", "filepath", "filetype"],
+            "description": "Indicator type. hash-sha256 is preferred for detection precision."
+          },
+          "value": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000,
+            "description": "Indicator value. For hash-sha256: 64 lowercase hex characters. For filename/filepath: pattern string. Maximum 2000 characters per data sanitization rule."
+          },
+          "context": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "Observation context. MUST carry [ADVERSARY-TAINTED] prefix per trust-boundary framing rule when loaded in blue-team agent context. Maximum 2000 characters."
+          }
+        },
+        "if": {
+          "properties": {
+            "type": { "const": "hash-sha256" }
+          },
+          "required": ["type"]
+        },
+        "then": {
+          "properties": {
+            "value": {
+              "pattern": "^[a-f0-9]{64}$",
+              "description": "SHA-256 hash: exactly 64 lowercase hexadecimal characters."
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "network_indicators": {
+      "type": "array",
+      "description": "Network-based indicators of compromise. Each entry drives Suricata/Sigma rule creation in blue-ioc.",
+      "items": {
+        "type": "object",
+        "required": ["type", "value"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["domain", "ip", "url", "user-agent", "port", "protocol", "cidr"],
+            "description": "Network indicator type."
+          },
+          "value": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000,
+            "description": "Indicator value. Domain names, IP addresses, URLs, User-Agent strings, etc. Maximum 2000 characters per data sanitization rule. MUST carry [ADVERSARY-TAINTED] prefix when displayed as free-text in blue-team agent context."
+          },
+          "port": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 65535,
+            "description": "Associated network port (optional). Applicable to ip and domain types."
+          },
+          "protocol": {
+            "type": "string",
+            "enum": ["tcp", "udp", "http", "https", "dns", "icmp", "smb", "rdp", "other"],
+            "description": "Network protocol associated with this indicator."
+          },
+          "context": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "Observation context for this network indicator. Maximum 2000 characters."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "behavioral_indicators": {
+      "type": "array",
+      "description": "Behavioral patterns and TTPs. Each entry drives Sigma rule creation in blue-ioc.",
+      "items": {
+        "type": "object",
+        "required": ["type", "description"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "process-creation",
+              "registry-modification",
+              "service-installation",
+              "scheduled-task",
+              "file-creation",
+              "network-connection",
+              "command-execution",
+              "credential-access",
+              "privilege-escalation",
+              "lateral-movement",
+              "persistence",
+              "defense-evasion",
+              "other"
+            ],
+            "description": "Behavioral indicator type. Maps to corresponding Sigma rule category."
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000,
+            "description": "What the behavior looks like. Maximum 2000 characters per data sanitization rule."
+          },
+          "detection_logic": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "Pseudocode or natural-language detection criteria for this behavior. Used by blue-ioc to author Sigma rules. Maximum 2000 characters."
+          },
+          "parent_process": {
+            "type": "string",
+            "maxLength": 512,
+            "description": "Parent process name or pattern (for process-creation type)."
+          },
+          "command_line_pattern": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "Command-line argument pattern (for process-creation and command-execution types)."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "taint_level": {
+      "type": "string",
+      "enum": ["adversary-produced", "adversary-controlled", "engagement-generated"],
+      "description": "Taint classification for the finding and its artifacts. adversary-produced: artifact was produced by attacker tooling or code. adversary-controlled: artifact is controlled by (but not created by) attacker tools. engagement-generated: artifact was generated during the engagement by the red team operator."
+    },
+    "artifacts": {
+      "type": "array",
+      "description": "References to engagement artifacts. Contains metadata only -- paths and hashes -- never artifact content. Blue-team agents MUST NOT Read these paths directly into context; use tool-mediated analysis (YARA-X scanning, hash extraction) instead.",
+      "items": {
+        "type": "object",
+        "required": ["path", "taint_level"],
+        "description": "Single artifact reference with metadata for trust-boundary-compliant processing.",
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^work/[^.][^/]*((/[^.][^/]*)*)?[^/]$",
+            "description": "Filesystem path to the artifact. MUST resolve within work/ subtree. MUST NOT contain '..' path traversal sequences. Validated at envelope creation time by main context.",
+            "examples": [
+              "work/red-team/engagements/purple-2026-001/artifacts/t1059-001-payload.ps1",
+              "work/red-team/engagements/purple-2026-001/artifacts/t1059-001-evtx.evtx"
+            ]
+          },
+          "type": {
+            "type": "string",
+            "enum": ["binary", "script", "config", "log", "pcap", "evtx", "certificate", "other"],
+            "description": "Artifact type classification."
+          },
+          "sha256_hash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "description": "SHA-256 hash of the artifact file. 64 lowercase hexadecimal characters. Used for integrity verification without loading artifact content into context."
+          },
+          "taint_level": {
+            "type": "string",
+            "enum": ["adversary-produced", "adversary-controlled", "engagement-generated"],
+            "description": "Taint classification for this specific artifact. Overrides envelope-level taint_level for individual artifacts where the taint differs."
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "Human-readable description of what this artifact is and what it demonstrates. Maximum 2000 characters."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "indicator_summary": {
+      "type": "object",
+      "required": ["file_indicator_count", "network_indicator_count", "behavioral_indicator_count", "total_indicator_count"],
+      "description": "Summary counts for quick routing decisions -- which detection rule types blue-ioc should produce.",
+      "properties": {
+        "file_indicator_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Count of file_indicators entries."
+        },
+        "network_indicator_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Count of network_indicators entries."
+        },
+        "behavioral_indicator_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Count of behavioral_indicators entries."
+        },
+        "total_indicator_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Sum of all indicator counts. Must equal file_indicator_count + network_indicator_count + behavioral_indicator_count."
+        }
+      },
+      "additionalProperties": false
+    },
+    "d3fend_countermeasures": {
+      "type": "array",
+      "description": "Optional ATT&CK-to-D3FEND mapping. Populated by blue-d3fend when this finding is processed through the gap analysis pipeline. Used to link offensive findings to defensive countermeasures.",
+      "items": {
+        "type": "object",
+        "required": ["d3fend_id", "d3fend_tactic"],
+        "properties": {
+          "d3fend_id": {
+            "type": "string",
+            "pattern": "^D3-[A-Z]{2,5}$",
+            "description": "D3FEND countermeasure ID. Format: D3-{XX} to D3-{XXXXX}.",
+            "examples": ["D3-SEA", "D3-SJA", "D3-NTA"]
+          },
+          "d3fend_name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "Human-readable D3FEND countermeasure name."
+          },
+          "d3fend_tactic": {
+            "type": "string",
+            "enum": ["Harden", "Detect", "Isolate", "Deceive", "Evict"],
+            "description": "D3FEND tactic this countermeasure belongs to."
+          },
+          "confidence_tier": {
+            "type": "string",
+            "enum": ["Verified", "Partial", "Unverified"],
+            "description": "Coverage confidence level. Verified: backed by Tier A tool. Partial: Tier B/C mixed. Unverified: requires user-deployed Tier C infrastructure."
+          },
+          "detection_rule_ref": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Optional reference to the detection rule produced for this countermeasure. File path relative to work/."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "requested_rule_types": {
+      "type": "array",
+      "description": "Detection rule types that blue-ioc should produce for this finding. Derived from indicator types present.",
+      "items": {
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["yara", "sigma", "suricata", "falco", "stix-indicator"],
+            "description": "Rule type to produce. stix-indicator is always requested. yara when file_indicator_count > 0. sigma when behavioral_indicator_count > 0. suricata when network_indicator_count > 0."
+          },
+          "trigger_condition": {
+            "type": "string",
+            "description": "Condition that triggered this rule type request.",
+            "examples": ["file_indicator_count > 0", "behavioral_indicator_count > 0", "always"]
+          },
+          "target_agent": {
+            "type": "string",
+            "description": "Blue-team agent that should produce this rule type.",
+            "examples": ["blue-ioc", "blue-detect", "blue-siem", "blue-monitor"]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "trust_classification": {
+      "type": "object",
+      "required": ["source_skill", "taint_level"],
+      "description": "Trust boundary classification for this cross-skill envelope. Enforces SEC-MAJOR-3 resolution: Zone 1-to-Zone 1 transfer with asymmetric taint propagation.",
+      "properties": {
+        "source_skill": {
+          "type": "string",
+          "const": "/red-team",
+          "description": "Originating skill. Always /red-team for RBEE envelopes."
+        },
+        "target_skill": {
+          "type": "string",
+          "const": "/blue-team",
+          "description": "Destination skill. Always /blue-team for RBEE envelopes."
+        },
+        "source_zone": {
+          "type": "string",
+          "const": "Zone 1 (Analysis)",
+          "description": "Security zone classification. Red-team output is Zone 1 (Analysis) when produced by red-reporter."
+        },
+        "taint_level": {
+          "type": "string",
+          "const": "adversary-modeled",
+          "description": "Trust level for content crossing the red-to-blue boundary. Always adversary-modeled: red-team output models adversary behavior regardless of which agent produced it."
+        },
+        "validation_required": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Validation steps the receiving skill MUST perform before processing this envelope.",
+          "default": [
+            "STIX schema validation on all structured indicators",
+            "File path existence check on all artifact references",
+            "No direct Read of adversary-tainted artifacts into agent context"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "data_classification": {
+      "type": "object",
+      "required": ["tlp", "contains_credentials", "engagement_scope_id"],
+      "description": "Sensitivity classification for this envelope payload.",
+      "properties": {
+        "tlp": {
+          "type": "string",
+          "enum": ["TLP:CLEAR", "TLP:GREEN", "TLP:AMBER", "TLP:AMBER+STRICT", "TLP:RED"],
+          "description": "Traffic Light Protocol marking per FIRST TLP v2.0. RBEE envelopes are typically TLP:AMBER (engagement-restricted)."
+        },
+        "contains_credentials": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether any artifact may contain credential material. When true, receiving skill MUST apply credential filter pipeline before loading artifact content into context."
+        },
+        "engagement_scope_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$",
+          "description": "Reference to the governing engagement scope document. All cross-skill handoffs MUST operate within a shared engagement scope.",
+          "examples": ["purple-2026-001", "engagement-alpha"]
+        },
+        "retention_policy": {
+          "type": "string",
+          "enum": ["engagement-scoped", "project-scoped", "permanent"],
+          "default": "engagement-scoped",
+          "description": "How long this envelope and its artifacts should be retained."
+        }
+      },
+      "additionalProperties": false
+    },
+    "envelope_metadata": {
+      "type": "object",
+      "description": "Administrative metadata for envelope tracking and session resumption.",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp when the envelope was created by main context."
+        },
+        "created_by": {
+          "type": "string",
+          "description": "Agent or process that created the envelope.",
+          "examples": ["red-reporter", "main-context"]
+        },
+        "purple_iteration": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "description": "Purple team loop iteration this finding serves. Null for standalone (non-purple-team) engagements."
+        },
+        "session_id": {
+          "type": "string",
+          "description": "Session identifier from which this envelope was produced.",
+          "examples": ["purple-2026-001-s1"]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

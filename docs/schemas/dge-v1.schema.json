@@ -1,0 +1,278 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jerry.dev/schemas/dge-v1.schema.json",
+  "$comment": "Traceability: ADR-PROJ023-001 (Hybrid B+C), Phase 5 Red-Blue Composition (D3FEND Gap Envelope, blue-d3fend -> red-lead), Phase 5 Handoff Protocols. Data sanitization rules: ATT&CK ID regex ^T\\d{4}(\\.\\d{3})?$, D3FEND ID regex ^D3-[A-Z]{2,5}$. Security control T-04: DGE includes d3fend_kb_version for staleness tracking.",
+  "title": "D3FEND Gap Envelope (DGE) v1",
+  "description": "Cross-skill data contract for blue-team to red-team D3FEND coverage gap analysis. Informs red-lead of defensive coverage gaps so future engagements can be scoped to test undefended areas. Source: blue-d3fend. Destination: red-lead. Blue-to-Red direction: analysis-derived content. Red-lead MUST verify D3FEND KB version currency before incorporating gaps into future engagement scope.",
+  "type": "object",
+  "required": [
+    "engagement_id",
+    "from_skill",
+    "to_skill",
+    "coverage_gaps",
+    "d3fend_kb_version",
+    "analysis_date"
+  ],
+  "properties": {
+    "engagement_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z0-9-]+$",
+      "description": "Identifier of the engagement or exercise this gap analysis relates to.",
+      "examples": ["purple-2026-001", "engagement-alpha"]
+    },
+    "from_skill": {
+      "type": "string",
+      "const": "/blue-team",
+      "description": "Originating skill. Always /blue-team for DGE envelopes."
+    },
+    "to_skill": {
+      "type": "string",
+      "const": "/red-team",
+      "description": "Destination skill. Always /red-team for DGE envelopes."
+    },
+    "from_agent": {
+      "type": "string",
+      "const": "blue-d3fend",
+      "description": "Blue-team agent that produced this gap analysis. Always blue-d3fend for DGE envelopes."
+    },
+    "to_agent": {
+      "type": "string",
+      "const": "red-lead",
+      "description": "Red-team agent that receives this envelope for engagement scoping. Always red-lead for DGE envelopes."
+    },
+    "coverage_gaps": {
+      "type": "array",
+      "minItems": 0,
+      "description": "Per-technique coverage gap entries prioritized for red-lead engagement scoping. An empty array indicates no coverage gaps were identified (full D3FEND coverage achieved).",
+      "items": {
+        "type": "object",
+        "required": ["technique_id", "gap_type", "priority"],
+        "properties": {
+          "technique_id": {
+            "type": "string",
+            "pattern": "^T\\d{4}(\\.\\d{3})?$",
+            "description": "ATT&CK technique or sub-technique ID. Validated against ATT&CK format.",
+            "examples": ["T1059.001", "T1053.005", "T1566"]
+          },
+          "technique_name": {
+            "type": "string",
+            "maxLength": 256,
+            "description": "Human-readable technique name for traceability."
+          },
+          "tactic": {
+            "type": "string",
+            "pattern": "^TA\\d{4}$",
+            "description": "Parent ATT&CK tactic ID.",
+            "examples": ["TA0002", "TA0003"]
+          },
+          "d3fend_countermeasure_expected": {
+            "type": "string",
+            "pattern": "^D3-[A-Z]{2,5}$",
+            "description": "D3FEND countermeasure ID that should provide coverage for this technique per the D3FEND knowledge base. Validated against D3FEND ID format.",
+            "examples": ["D3-SEA", "D3-SJA", "D3-NTA"]
+          },
+          "d3fend_countermeasure_name": {
+            "type": "string",
+            "maxLength": 256,
+            "description": "Human-readable D3FEND countermeasure name."
+          },
+          "d3fend_tactic": {
+            "type": "string",
+            "enum": ["Harden", "Detect", "Isolate", "Deceive", "Evict"],
+            "description": "D3FEND tactic for the expected countermeasure."
+          },
+          "gap_type": {
+            "type": "string",
+            "enum": ["no_rule", "partial_rule", "untested"],
+            "description": "Gap classification. no_rule: no detection rule exists for this technique. partial_rule: rule exists but coverage is incomplete (some detection domains missing). untested: rule exists but validation requires deployed Tier C infrastructure not yet available."
+          },
+          "priority": {
+            "type": "string",
+            "enum": ["high", "medium", "informational"],
+            "description": "Gap priority for red-lead scoping decisions. high: recommend for next engagement RoE technique allowlist. medium: recommend for capability development roadmap. informational: track for maturity roadmap."
+          },
+          "recommended_action": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "Specific recommendation for red-lead on how to incorporate this gap into future engagement scoping. Maximum 2000 characters.",
+            "examples": [
+              "Include in RoE to test detection capability -- no detection coverage exists",
+              "Deploy Tier C Suricata infrastructure for verification of existing rule",
+              "Upgrade tool tier from B to A for full verification of partial coverage"
+            ]
+          },
+          "scoping_relevance": {
+            "type": "string",
+            "enum": ["include-in-roe", "develop-capability", "track-for-roadmap"],
+            "description": "Consumer-facing action classification for red-lead. Derived from priority: high=include-in-roe, medium=develop-capability, informational=track-for-roadmap."
+          },
+          "current_coverage_status": {
+            "type": "string",
+            "enum": ["NO_DETECTION", "PARTIAL_DETECTION", "FULL_DETECTION_UNVERIFIED", "FULL_DETECTION_VERIFIED"],
+            "description": "Current detection coverage classification from the purple team exercise."
+          },
+          "tool_tier_required": {
+            "type": "string",
+            "enum": ["A", "B", "C"],
+            "description": "Minimum tool tier required to close this gap. Tier C gaps require user-deployed infrastructure beyond Jerry framework tools."
+          },
+          "blocking_tools": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Specific tools that must be deployed to close a Tier C gap.",
+            "examples": [["Suricata", "Zeek"], ["Falco", "Tetragon"]]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "d3fend_kb_version": {
+      "type": "string",
+      "minLength": 1,
+      "description": "D3FEND knowledge base version used for countermeasure gap analysis. Required per security control T-04: red-lead MUST verify D3FEND version currency before incorporating gaps into engagement scope to prevent stale gap recommendations.",
+      "examples": ["v0.15.0-BETA-2", "v1.0.0"]
+    },
+    "analysis_date": {
+      "type": "string",
+      "format": "date",
+      "description": "ISO 8601 date when this gap analysis was performed. Used together with d3fend_kb_version for staleness detection.",
+      "examples": ["2026-03-14", "2026-01-01"]
+    },
+    "gap_summary": {
+      "type": "object",
+      "description": "Aggregate gap statistics for quick orientation without reading per-technique detail.",
+      "properties": {
+        "total_techniques_analyzed": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total number of techniques in the gap analysis."
+        },
+        "high_priority_gaps": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Count of gaps with priority = 'high'."
+        },
+        "medium_priority_gaps": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Count of gaps with priority = 'medium'."
+        },
+        "informational_gaps": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Count of gaps with priority = 'informational'."
+        },
+        "no_rule_gaps": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Count of techniques with gap_type = 'no_rule' (highest urgency for rule generation)."
+        },
+        "tier_c_blocked_gaps": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Count of techniques with gap_type = 'untested' (blocked on Tier C infrastructure deployment)."
+        },
+        "d3fend_verified_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Count of techniques with Verified D3FEND coverage (not included in coverage_gaps array)."
+        }
+      },
+      "additionalProperties": false
+    },
+    "trust_classification": {
+      "type": "object",
+      "required": ["source_skill", "taint_level"],
+      "description": "Trust boundary classification for this blue-to-red envelope.",
+      "properties": {
+        "source_skill": {
+          "type": "string",
+          "const": "/blue-team",
+          "description": "Originating skill. Always /blue-team for DGE envelopes."
+        },
+        "target_skill": {
+          "type": "string",
+          "const": "/red-team",
+          "description": "Destination skill. Always /red-team for DGE envelopes."
+        },
+        "source_zone": {
+          "type": "string",
+          "const": "Zone 1 (Analysis)",
+          "description": "Security zone. Blue-team is universally Zone 1 (Analysis)."
+        },
+        "taint_level": {
+          "type": "string",
+          "const": "analysis-derived",
+          "description": "Blue-to-red D3FEND gap analysis is analysis-derived -- it represents mapping and gap findings, not adversary-modeled behavior."
+        },
+        "validation_required": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Validation steps for red-lead when receiving this envelope.",
+          "default": [
+            "D3FEND technique IDs validated against current D3FEND knowledge base",
+            "Coverage confidence reflects actual tool tier, not aspirational",
+            "D3FEND KB version verified for currency before incorporating gaps into engagement scope"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "data_classification": {
+      "type": "object",
+      "required": ["tlp", "contains_credentials", "engagement_scope_id"],
+      "description": "Sensitivity classification for this gap envelope.",
+      "properties": {
+        "tlp": {
+          "type": "string",
+          "enum": ["TLP:CLEAR", "TLP:GREEN", "TLP:AMBER", "TLP:AMBER+STRICT", "TLP:RED"],
+          "description": "Traffic Light Protocol marking. DGE envelopes are typically TLP:GREEN (coverage gaps are non-sensitive analytical findings)."
+        },
+        "contains_credentials": {
+          "type": "boolean",
+          "default": false,
+          "description": "D3FEND gap analysis does not contain credential material. Always false for DGE per design."
+        },
+        "engagement_scope_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$",
+          "description": "Reference to the governing engagement scope document.",
+          "examples": ["purple-2026-001"]
+        },
+        "retention_policy": {
+          "type": "string",
+          "enum": ["engagement-scoped", "project-scoped", "permanent"],
+          "default": "project-scoped",
+          "description": "DGE envelopes have project-scoped retention by default: gap analysis is valuable for scoping future engagements beyond the current exercise."
+        }
+      },
+      "additionalProperties": false
+    },
+    "source_artifact": {
+      "type": "string",
+      "description": "Path to the D3FEND coverage matrix from which this DGE was constructed. Relative to work/.",
+      "examples": ["work/blue-team/d3fend/purple-2026-001/coverage-matrix.md"]
+    },
+    "envelope_metadata": {
+      "type": "object",
+      "description": "Administrative metadata for envelope tracking.",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp when this envelope was created."
+        },
+        "purple_iteration": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "description": "Purple team loop iteration this gap analysis relates to."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,327 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jerry.dev/schemas/cfe-v1.schema.json",
+  "$comment": "Traceability: ADR-PROJ023-001 (Hybrid B+C), Phase 5 Red-Blue Composition (Bidirectional Data Flow, Coverage Feedback), Phase 5 Handoff Protocols (IP-5). Data sanitization rules: ATT&CK ID regex ^T\\d{4}(\\.\\d{3})?$, D3FEND ID regex ^D3-[A-Z]{2,5}$. Taint model: Blue-to-Red data is analysis-derived, NOT adversary-modeled.",
+  "title": "Coverage Feedback Envelope (CFE) v1",
+  "description": "Cross-skill data contract for blue-team to red-team detection coverage feedback. Reports which ATT&CK techniques now have validated detection rules, enabling red-vuln to adjust vulnerability priority based on detection coverage status. Blue-to-Red direction: analysis-derived content (not adversary-modeled). Source: blue-detect, blue-siem, or blue-monitor. Destination: red-vuln.",
+  "type": "object",
+  "required": [
+    "engagement_id",
+    "from_skill",
+    "to_skill",
+    "coverage_matrix",
+    "confidence_tier",
+    "d3fend_kb_version"
+  ],
+  "properties": {
+    "engagement_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z0-9-]+$",
+      "description": "Identifier of the purple team engagement this feedback relates to. Must match the engagement_id in the originating RBEE envelopes.",
+      "examples": ["purple-2026-001", "engagement-alpha"]
+    },
+    "from_skill": {
+      "type": "string",
+      "const": "/blue-team",
+      "description": "Originating skill. Always /blue-team for CFE envelopes."
+    },
+    "to_skill": {
+      "type": "string",
+      "const": "/red-team",
+      "description": "Destination skill. Always /red-team for CFE envelopes."
+    },
+    "from_agents": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "^blue-[a-z]+(-[a-z]+)*$",
+        "description": "Blue-team agent that contributed detection results."
+      },
+      "description": "Blue-team agents that contributed to this coverage feedback. Typically blue-detect, blue-siem, blue-monitor, and/or blue-ioc.",
+      "examples": [["blue-detect", "blue-siem", "blue-monitor", "blue-ioc"]]
+    },
+    "to_agent": {
+      "type": "string",
+      "const": "red-vuln",
+      "description": "Red-team agent that receives this feedback for priority adjustment."
+    },
+    "coverage_matrix": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Per-technique coverage status. Each entry covers one ATT&CK technique and its detection rule status across detection domains.",
+      "items": {
+        "type": "object",
+        "required": ["technique_id", "coverage_status"],
+        "properties": {
+          "technique_id": {
+            "type": "string",
+            "pattern": "^T\\d{4}(\\.\\d{3})?$",
+            "description": "ATT&CK technique or sub-technique ID. Validated against ATT&CK technique ID format.",
+            "examples": ["T1059.001", "T1053.005"]
+          },
+          "technique_name": {
+            "type": "string",
+            "maxLength": 256,
+            "description": "Human-readable technique name for traceability."
+          },
+          "tactic": {
+            "type": "string",
+            "pattern": "^TA\\d{4}$",
+            "description": "Parent ATT&CK tactic ID.",
+            "examples": ["TA0002", "TA0003"]
+          },
+          "d3fend_countermeasure": {
+            "type": "string",
+            "pattern": "^D3-[A-Z]{2,5}$",
+            "description": "D3FEND countermeasure ID mapped to this technique. Validated against D3FEND ID format.",
+            "examples": ["D3-SEA", "D3-SJA"]
+          },
+          "d3fend_tactic": {
+            "type": "string",
+            "enum": ["Harden", "Detect", "Isolate", "Deceive", "Evict"],
+            "description": "D3FEND tactic for the countermeasure."
+          },
+          "coverage_status": {
+            "type": "string",
+            "enum": ["detected", "partial", "undetected"],
+            "description": "Overall detection coverage status for this technique. detected: full detection across all relevant domains. partial: detection in some domains but not all, or detection confidence < 0.70. undetected: no detection rule exists for this technique."
+          },
+          "detection_rule_ref": {
+            "type": "string",
+            "minLength": 1,
+            "description": "File path reference to the primary detection rule for this technique. Relative to work/. Presence indicates coverage_status is 'detected' or 'partial'.",
+            "examples": ["work/blue-team/ioc/yara/F-001-hash-match.yar", "work/blue-team/siem/sigma/t1059-001-powershell.yml"]
+          },
+          "detection_domains": {
+            "type": "object",
+            "description": "Per-domain detection breakdown. Each domain represents a different detection mechanism.",
+            "properties": {
+              "file": {
+                "type": "object",
+                "properties": {
+                  "result": {
+                    "type": "string",
+                    "enum": ["detected", "partial", "not_detected", "not_applicable"],
+                    "description": "File-based detection result (YARA rules)."
+                  },
+                  "rule_ref": { "type": "string", "description": "Path to YARA rule file." },
+                  "confidence": {
+                    "type": "number",
+                    "minimum": 0.0,
+                    "maximum": 1.0,
+                    "description": "Detection confidence score."
+                  }
+                }
+              },
+              "log": {
+                "type": "object",
+                "properties": {
+                  "result": {
+                    "type": "string",
+                    "enum": ["detected", "partial", "not_detected", "not_applicable"],
+                    "description": "Log-based detection result (Sigma rules, Hayabusa, Chainsaw)."
+                  },
+                  "rule_ref": { "type": "string", "description": "Path to Sigma rule file." },
+                  "confidence": {
+                    "type": "number",
+                    "minimum": 0.0,
+                    "maximum": 1.0,
+                    "description": "Detection confidence score."
+                  }
+                }
+              },
+              "network": {
+                "type": "object",
+                "properties": {
+                  "result": {
+                    "type": "string",
+                    "enum": ["detected", "partial", "not_detected", "not_applicable"],
+                    "description": "Network-based detection result (Suricata, Zeek)."
+                  },
+                  "rule_ref": { "type": "string", "description": "Path to Suricata/Zeek rule file." },
+                  "confidence": {
+                    "type": "number",
+                    "minimum": 0.0,
+                    "maximum": 1.0,
+                    "description": "Detection confidence score."
+                  },
+                  "tier": {
+                    "type": "string",
+                    "enum": ["A", "B", "C"],
+                    "description": "Tool tier for network detection. Tier C indicates rule authored but not execution-validated (Suricata/Zeek/Falco deployment required)."
+                  }
+                }
+              }
+            },
+            "additionalProperties": false
+          },
+          "coverage_gap": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "What is missing for full detection coverage. Present when coverage_status is 'partial' or 'undetected'. Used by red-vuln for priority adjustment rationale.",
+            "examples": [
+              "No log-based detection rule for encoded PowerShell download cradle",
+              "No detection coverage -- no YARA, Sigma, or Suricata rule for this technique"
+            ]
+          },
+          "reason_uncovered": {
+            "type": "string",
+            "enum": [
+              "no-file-indicators",
+              "no-behavioral-pattern",
+              "tier-c-tool-required",
+              "no-d3fend-mapping",
+              "insufficient-artifact-detail",
+              "rule-generation-blocked",
+              "other"
+            ],
+            "description": "Reason code for undetected or partial coverage. Present when coverage_status is 'partial' or 'undetected'."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "confidence_tier": {
+      "type": "string",
+      "enum": ["verified", "partial", "unverified"],
+      "description": "Overall confidence tier for this coverage feedback. verified: all detection results backed by Tier A tool execution. partial: mix of Tier A/B validated and Tier C methodology-only results. unverified: feedback based on rule authorship only, no execution validation performed."
+    },
+    "d3fend_kb_version": {
+      "type": "string",
+      "minLength": 1,
+      "description": "D3FEND knowledge base version used for technique-to-countermeasure mapping. Required for staleness tracking -- red-lead MUST verify D3FEND version currency before incorporating gaps into future engagement scope. Format: D3FEND version string.",
+      "examples": ["v0.15.0-BETA-2", "v1.0.0"]
+    },
+    "coverage_summary": {
+      "type": "object",
+      "description": "Aggregate coverage statistics for quick orientation without reading per-technique detail.",
+      "properties": {
+        "total_techniques": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total number of techniques in the coverage matrix."
+        },
+        "techniques_detected": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Techniques with coverage_status = 'detected'."
+        },
+        "techniques_partial": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Techniques with coverage_status = 'partial'."
+        },
+        "techniques_undetected": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Techniques with coverage_status = 'undetected'."
+        },
+        "detection_rate": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Ratio of detected+partial techniques to total techniques. Primary termination metric for purple team loop."
+        },
+        "full_detection_rate": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Ratio of techniques with coverage_status = 'detected' only. Stricter metric than detection_rate."
+        }
+      },
+      "additionalProperties": false
+    },
+    "trust_classification": {
+      "type": "object",
+      "required": ["source_skill", "taint_level"],
+      "description": "Trust boundary classification for this blue-to-red envelope. Analysis-derived (not adversary-modeled): blue-team output is analytical and does not model adversary behavior.",
+      "properties": {
+        "source_skill": {
+          "type": "string",
+          "const": "/blue-team",
+          "description": "Originating skill. Always /blue-team for CFE envelopes."
+        },
+        "target_skill": {
+          "type": "string",
+          "const": "/red-team",
+          "description": "Destination skill. Always /red-team for CFE envelopes."
+        },
+        "source_zone": {
+          "type": "string",
+          "const": "Zone 1 (Analysis)",
+          "description": "Security zone. Blue-team is universally Zone 1 (Analysis)."
+        },
+        "taint_level": {
+          "type": "string",
+          "const": "analysis-derived",
+          "description": "Blue-to-red content is analysis-derived -- it represents analytical findings, not adversary-modeled behavior."
+        },
+        "validation_required": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Validation steps for red-vuln when receiving this envelope.",
+          "default": [
+            "ATT&CK technique IDs validated against known technique catalog",
+            "Coverage status reflects actual rule validation results, not aspirational"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "data_classification": {
+      "type": "object",
+      "required": ["tlp", "contains_credentials", "engagement_scope_id"],
+      "description": "Sensitivity classification for this coverage feedback.",
+      "properties": {
+        "tlp": {
+          "type": "string",
+          "enum": ["TLP:CLEAR", "TLP:GREEN", "TLP:AMBER", "TLP:AMBER+STRICT", "TLP:RED"],
+          "description": "Traffic Light Protocol marking. CFE envelopes are typically TLP:GREEN or TLP:AMBER."
+        },
+        "contains_credentials": {
+          "type": "boolean",
+          "default": false,
+          "description": "Coverage feedback does not contain credential material. Always false for CFE per design."
+        },
+        "engagement_scope_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$",
+          "description": "Reference to the governing engagement scope document.",
+          "examples": ["purple-2026-001"]
+        },
+        "retention_policy": {
+          "type": "string",
+          "enum": ["engagement-scoped", "project-scoped", "permanent"],
+          "default": "engagement-scoped",
+          "description": "How long this envelope should be retained."
+        }
+      },
+      "additionalProperties": false
+    },
+    "envelope_metadata": {
+      "type": "object",
+      "description": "Administrative metadata for envelope tracking.",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp when this envelope was created."
+        },
+        "purple_iteration": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "description": "Purple team loop iteration this feedback relates to."
+        },
+        "source_artifact_path": {
+          "type": "string",
+          "description": "Path to the coverage-report.md from which this CFE was constructed.",
+          "examples": ["work/blue-team/detection/purple-2026-001/coverage-report.md"]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

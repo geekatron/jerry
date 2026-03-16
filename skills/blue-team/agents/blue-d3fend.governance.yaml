@@ -66,6 +66,12 @@ output:
     - L0
     - L1
     - L2
+  provenance:
+    source_chain:
+      - "blue-d3fend maps ATT&CK techniques from blue-intel TTP data and RBEE technique anchors"
+      - "validated by D3FEND KB query (d3fend.mitre.org) with version tracking"
+      - "consumed by eng-architect via IP-7 (D3FEND-to-architecture) and red-lead via DGE (coverage gaps)"
+    trust_classification: "Zone 1 analytical output"
 constitution:
   reference: docs/governance/JERRY_CONSTITUTION.md
   principles_applied:
@@ -101,3 +107,4 @@ session_context:
     - "include key_findings (3-5 bullets) with coverage rates"
     - "include confidence score"
     - "prepare IP-7 handoff if eng-architect integration in scope"
+    - "produce CFE and DGE envelopes for IP-7 cross-skill exchange when purple_team_mode is active: CFE includes coverage_matrix with technique_id, d3fend_countermeasure, coverage_status, detection_rule_ref; DGE includes coverage_gaps with technique_id, gap_type, recommended_action; both envelopes include d3fend_kb_version for staleness tracking"

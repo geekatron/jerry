@@ -32,6 +32,7 @@ tools:
 | [Methodology](#methodology) | Compliance assessment workflow |
 | [Tool Integration](#tool-integration) | Checkov, Trivy, Prowler usage patterns |
 | [Cross-Skill Integration](#cross-skill-integration) | IP-6 handoff to eng-devsecops |
+| [Cross-Skill Output (IP-6)](#cross-skill-output-ip-6) | Standardized output format for /eng-team consumption |
 | [Output Requirements](#output-requirements) | Artifact structure and persistence |
 | [Safety Alignment](#safety-alignment) | Zone 1 enforcement |
 | [Constitutional Compliance](#constitutional-compliance) | Governance adherence |
@@ -164,6 +165,87 @@ handoff:
 - Framework control mappings per finding
 - Remediation priority ranking
 - Compliance gap analysis with affected controls
+
+## Cross-Skill Output (IP-6)
+
+### Standardized Compliance Findings Format
+
+This section defines the IP-6 standardized output format that makes blue-comply findings consumable by /eng-team agents (eng-devsecops, eng-incident). All compliance assessment outputs destined for cross-skill consumption SHOULD include this structured findings block in addition to the narrative L0/L1/L2 report.
+
+**Compliance findings block (per finding):**
+
+```yaml
+compliance_finding:
+  check_id: "{tool-specific check identifier}"   # e.g., CKV_AWS_123, T-SEC-001
+  framework: "CIS|NIST|SOC2|PCI-DSS|HIPAA"       # Primary applicable framework
+  severity: "CRITICAL|HIGH|MEDIUM|LOW|INFO"       # Unified severity (normalized from tool scale)
+  resource: "{resource identifier}"               # e.g., aws_s3_bucket.data, /etc/ssh/sshd_config
+  status: "fail|pass|error"                       # Scan result status
+  remediation_ref: "{remediation guidance path}"  # Path to remediation detail or inline guidance
+```
+
+**Aggregated findings table (top 20 by remediation priority):**
+
+| Field | Type | Purpose |
+|-------|------|---------|
+| `check_id` | string | Machine-parseable identifier for the failed check (tool-specific) |
+| `framework` | string | Primary compliance framework this finding maps to |
+| `severity` | enum | Normalized severity: CRITICAL / HIGH / MEDIUM / LOW / INFO |
+| `resource` | string | The specific resource that failed the check |
+| `status` | enum | `fail` (check failed), `pass` (check passed, informational), `error` (scan error) |
+| `remediation_ref` | string | File path or inline remediation action |
+
+**Remediation priority formula (included in every IP-6 output):**
+
+```
+priority = severity_weight * framework_multiplier * exposure_factor
+
+severity_weight:      CRITICAL=10, HIGH=7, MEDIUM=4, LOW=1, INFO=0
+framework_multiplier: PCI_DSS=1.5, HIPAA=1.3, SOC2=1.2, CIS=1.0, NIST=1.0
+exposure_factor:      public-facing=2.0, internal=1.0, dev-only=0.5
+
+Thresholds:
+  priority >= 15: CRITICAL-remediation-priority (24-hour SLA)
+  priority >= 7:  HIGH-remediation-priority (7-day SLA)
+  priority < 7:   standard remediation queue (30-90 day SLA)
+```
+
+**IP-6 output requirements per eng-team consumer:**
+
+| Consumer | Required Sections | Trust Level | TLP |
+|----------|------------------|-------------|-----|
+| eng-devsecops | Severity Summary table, Findings table with remediation column, framework control mapping, remediation priority ranking | analysis-verified | TLP:AMBER |
+| eng-incident | Severity Summary table, Findings table, compliance gap analysis | analysis-verified | TLP:AMBER |
+
+**Cross-skill findings summary format (included in scan-results-summary.md):**
+
+```markdown
+## Compliance Scan Results: {assessment-id}
+
+### Scan Metadata
+| Field | Value |
+|-------|-------|
+| Assessment ID | {assessment-id} |
+| Scan Date | {ISO 8601 date} |
+| Tools Used | Checkov v{version}, Trivy v{version}, Prowler v{version} |
+| Frameworks Assessed | {CIS, NIST 800-53, SOC 2, PCI DSS, HIPAA} |
+
+### Severity Summary
+| Severity | Count | Remediation SLA |
+|----------|-------|-----------------|
+| CRITICAL | {N}   | 24 hours        |
+| HIGH     | {N}   | 7 days          |
+| MEDIUM   | {N}   | 30 days         |
+| LOW      | {N}   | 90 days         |
+| INFO     | {N}   | Advisory        |
+
+### Findings (Top 20 by Remediation Priority)
+| # | Tool | Check ID | Severity | Resource | Framework Control | Description | Remediation |
+|---|------|----------|----------|----------|-------------------|-------------|-------------|
+| 1 | Checkov | CKV_AWS_123 | CRITICAL | aws_s3_bucket.data | CIS 2.1.1 | ... | ... |
+```
+
+**Scope note:** The IP-6 structured output is produced in addition to the full L0/L1/L2 compliance report. It does not replace the narrative report; it provides the machine-parseable complement required for eng-devsecops pipeline integration.
 
 ## Output Requirements
 

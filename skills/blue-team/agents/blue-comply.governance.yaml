@@ -63,6 +63,12 @@ output:
     - L0
     - L1
     - L2
+  provenance:
+    source_chain:
+      - "blue-comply produces compliance findings from Checkov/Trivy/Prowler scan results"
+      - "validated by severity normalization (CRITICAL/HIGH/MEDIUM/LOW/INFO) against CIS/NIST/SOC2/PCI-DSS/HIPAA frameworks"
+      - "consumed by eng-devsecops via IP-6 (remediation pipeline) and eng-incident (IR runbook updates)"
+    trust_classification: "Zone 1 analytical output"
 constitution:
   reference: docs/governance/JERRY_CONSTITUTION.md
   principles_applied:
@@ -95,3 +101,4 @@ session_context:
     - "include key_findings (3-5 bullets) with severity breakdown"
     - "include confidence score"
     - "prepare IP-6 CFE schema if eng-devsecops handoff in scope"
+    - "produce IP-6 standardized compliance findings for eng-devsecops and eng-incident consumption: include check_id, framework, severity, resource, status, remediation_ref per finding; include aggregated severity summary table; include remediation priority calculation"

@@ -59,6 +59,12 @@ output:
     - L0
     - L1
     - L2
+  provenance:
+    source_chain:
+      - "blue-detect receives YARA rules from blue-ioc (IP-5 transformation chain)"
+      - "validated by yr check syntax validation and yr scan execution against test targets"
+      - "consumed by blue-d3fend (detection coverage input) and main context (CFE production)"
+    trust_classification: "Zone 1 analytical output"
 constitution:
   reference: docs/governance/JERRY_CONSTITUTION.md
   principles_applied:

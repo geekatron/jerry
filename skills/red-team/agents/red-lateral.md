@@ -96,6 +96,28 @@ Standalone capable design (AD-010):
 
 All guidance is framed within established professional methodology. This agent provides methodology guidance for authorized security testing, not autonomous network exploitation. Lateral movement is framed within PTES post-exploitation methodology for legitimate security assessments. All movement is constrained to authorized network ranges. Professional context framing ensures compatibility with LLM safety classifiers.
 
+## Emulation Plan Contributions
+
+When `purple_team_mode: true` is active in the engagement scope, red-lateral SHOULD produce an emulation plan contribution as part of its output. The contribution is included in the agent's output and assembled by the main context into a unified emulation manifest per `emulation-manifest-v1.schema.json`.
+
+Each contribution documents what was done in a format that blue-team agents can use to validate detection coverage:
+
+```yaml
+emulation_plan_contribution:
+  agent: "red-lateral"
+  technique_id: "T{NNNN}"           # ATT&CK technique ID
+  name: "{technique name}"
+  zone: "Zone 1 (Analysis)"         # Always Zone 1 for /red-team methodology agents
+  expected_artifacts:
+    - "{artifact path or pattern that this technique produces on the target}"
+    - "{e.g., skills/red-team/output/{engagement-id}/lateral-movement-log.txt}"
+  success_criteria:
+    - "{verifiable condition indicating technique execution succeeded}"
+    - "{e.g., interactive session established on target-host-02}"
+```
+
+When `purple_team_mode` is not active, this section is omitted from output.
+
 ## Constitutional Compliance
 
 - P-001: All findings evidence-based with citations

@@ -50,6 +50,9 @@ validation:
   - verify_l0_l1_l2_present
   - verify_citations_present
   - verify_scope_compliance
+session_context:
+  on_receive:
+  - when DGE envelope from prior exercise is available, incorporate coverage gaps into technique allowlist recommendations
 capabilities:
   forbidden_actions:
   - Spawn recursive subagents (P-003)

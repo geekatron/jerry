@@ -36,6 +36,7 @@ mcpServers:
 | [Methodology](#methodology) | D3FEND mapping workflow |
 | [Tool Integration](#tool-integration) | D3FEND KB, STIX2, WebSearch patterns |
 | [Cross-Skill Integration](#cross-skill-integration) | CFE, DGE, IP-7 handoffs |
+| [Cross-Skill Output (IP-7)](#cross-skill-output-ip-7) | CFE and DGE envelope schemas for cross-skill exchange |
 | [Output Requirements](#output-requirements) | Artifact structure and persistence |
 | [Safety Alignment](#safety-alignment) | Zone 1 enforcement |
 | [Constitutional Compliance](#constitutional-compliance) | Governance adherence |
@@ -166,6 +167,118 @@ handoff:
 - Architectural Recommendations section mapping D3FEND tactics to architectural layers
 - STRIDE Integration section mapping ATT&CK techniques to STRIDE threat categories
 - Coverage gap analysis with recommended controls per gap
+
+## Cross-Skill Output (IP-7)
+
+### CFE and DGE Production
+
+When `purple_team_mode` is active in the engagement scope, this agent SHOULD produce Coverage Feedback Envelopes (CFE) and D3FEND Gap Envelopes (DGE) for cross-skill exchange. These envelopes are written to the neutral exchange directory and consumed by /red-team agents (red-vuln for CFE, red-lead for DGE). Both envelopes include `d3fend_kb_version` for staleness tracking.
+
+#### Coverage Feedback Envelope (CFE)
+
+The CFE communicates which ATT&CK techniques now have detection coverage so /red-team can prioritize undetected attack paths.
+
+**CFE schema:**
+
+```yaml
+cfe:
+  from_agent: "blue-d3fend"       # Or blue-detect / blue-siem / blue-monitor
+  to_agent: "red-vuln"
+  task: "Update vulnerability priority based on detection coverage"
+  success_criteria:
+    - "Red-vuln acknowledges coverage status per technique"
+    - "Undetected techniques flagged for priority re-assessment"
+  artifacts:
+    - "work/blue-team/d3fend/{engagement-id}/coverage-matrix.md"
+  key_findings:
+    - "Detection coverage: {N}/{M} techniques now have validated rules"
+    - "Undetected: {list of ATT&CK IDs without detection rules}"
+    - "Partial detection: {list of ATT&CK IDs with unvalidated rules}"
+  confidence: 0.80
+  criticality: "C3"
+  d3fend_kb_version: "{D3FEND version used for this mapping}"    # Staleness tracking
+  coverage_matrix:
+    techniques_covered:
+      - attack_id: "T{NNNN}"
+        d3fend_countermeasure: "D3-{XXX}"
+        coverage_status: "validated|syntax-only|untestable"
+        detection_rule_ref: "work/blue-team/ioc/{engagement-id}/rules/{rule-file}"
+    techniques_uncovered:
+      - attack_id: "T{NNNN}"
+        reason: "no-file-indicators|no-behavioral-pattern|tier-c-tool-required|no-d3fend-mapping"
+    techniques_partial:
+      - attack_id: "T{NNNN}"
+        coverage_gap: "{what is missing for full detection}"
+```
+
+**CFE field descriptions:**
+
+| Field | Type | Purpose |
+|-------|------|---------|
+| `d3fend_kb_version` | string | D3FEND KB version used for all mappings in this envelope; enables staleness detection if KB is updated |
+| `coverage_matrix.techniques_covered` | array | ATT&CK techniques with at least one validated D3FEND countermeasure and a detection rule reference |
+| `coverage_matrix.coverage_status` | enum | `validated` (rule executed and confirmed), `syntax-only` (rule passes `yr check` but not execution-tested), `untestable` (Unverified Tier C; methodology guidance only) |
+| `coverage_matrix.detection_rule_ref` | string | File path to the YARA/Sigma/Suricata rule that provides coverage |
+| `coverage_matrix.techniques_uncovered` | array | ATT&CK techniques with no coverage and the reason |
+| `coverage_matrix.techniques_partial` | array | ATT&CK techniques with incomplete coverage and the specific gap |
+
+**CFE output path:** `work/purple-team/exchange/{engagement-id}/cfe/coverage-feedback.yaml`
+
+#### D3FEND Gap Envelope (DGE)
+
+The DGE communicates coverage gaps to /red-team so future engagement scoping can focus on undefended areas.
+
+**DGE schema:**
+
+```yaml
+dge:
+  from_agent: "blue-d3fend"
+  to_agent: "red-lead"
+  task: "Incorporate D3FEND coverage gaps into future engagement scoping"
+  success_criteria:
+    - "Red-lead acknowledges coverage gap analysis"
+    - "Gap techniques considered for future RoE technique allowlists"
+  artifacts:
+    - "work/blue-team/d3fend/{engagement-id}/coverage-matrix.md"
+  key_findings:
+    - "D3FEND coverage: {N}/{M} techniques have Verified countermeasures"
+    - "Partial coverage: {count} techniques at Partial confidence"
+    - "Unverified: {count} techniques at Unverified confidence"
+    - "Uncovered: {count} techniques with no D3FEND mapping"
+  confidence: 0.70
+  criticality: "C3"
+  d3fend_kb_version: "{D3FEND version used for this mapping}"    # Staleness tracking
+  coverage_gaps:
+    high_priority:              # Recommend for next engagement RoE
+      - technique_id: "T{NNNN}"
+        gap_type: "no_rule|partial_rule|untested"
+        recommended_action: "Include in RoE to test detection capability"
+    medium_priority:            # Recommend for capability development
+      - technique_id: "T{NNNN}"
+        gap_type: "no_rule|partial_rule|untested"
+        recommended_action: "Deploy Tier C infrastructure for verification"
+    informational:              # Track for maturity roadmap
+      - technique_id: "T{NNNN}"
+        gap_type: "no_rule|partial_rule|untested"
+        recommended_action: "Upgrade tool tier from B to A for full verification"
+```
+
+**DGE field descriptions:**
+
+| Field | Type | Purpose |
+|-------|------|---------|
+| `d3fend_kb_version` | string | D3FEND KB version used; enables red-lead to confirm mapping currency |
+| `coverage_gaps.high_priority` | array | Techniques with no D3FEND mapping or no_rule gap; highest priority for next engagement |
+| `coverage_gaps.medium_priority` | array | Techniques with Unverified (Tier C) countermeasures only; require infrastructure investment |
+| `coverage_gaps.informational` | array | Techniques at Partial confidence; tracked for maturity but not immediately actionable |
+| `gap_type` | enum | `no_rule` (no detection rule exists), `partial_rule` (rule authored but not validated), `untested` (rule exists but no execution verification) |
+| `recommended_action` | string | Specific action for red-lead to take regarding this gap |
+
+**DGE output path:** `work/purple-team/exchange/{engagement-id}/dge/d3fend-gap-analysis.yaml`
+
+**Purple team mode activation:** Both CFE and DGE production are conditional on `purple_team_mode` being active in the engagement scope. If `purple_team_mode` is not specified or is `false`, CFE and DGE are not produced and no exchange directory is written.
+
+**D3FEND KB version policy:** The `d3fend_kb_version` field MUST be populated from the KB query response. If the version cannot be determined (e.g., WebSearch returned an undated response), use the string `"unknown-{YYYY-MM-DD}"` where the date is the current query date. This enables downstream consumers to detect stale mappings.
 
 ## Output Requirements
 

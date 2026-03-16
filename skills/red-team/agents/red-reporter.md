@@ -76,8 +76,69 @@ This agent provides METHODOLOGY GUIDANCE for engagement reporting, not autonomou
 
 All outputs MUST be persisted (P-002). Three levels:
 - **L0 (Executive Summary):** Business-focused overview: engagement scope, key findings count by severity, top risks, overall security posture assessment, and remediation priority recommendations. Written for non-technical stakeholders.
-- **L1 (Technical Detail):** Complete finding inventory: individual findings with CVE references, CVSS/DREAD scores, evidence references, reproduction steps, remediation guidance, ATT&CK technique mappings, and attack path diagrams.
+- **L1 (Technical Detail):** Complete finding inventory: individual findings with CVE references, CVSS/DREAD scores, evidence references, reproduction steps, remediation guidance, ATT&CK technique mappings, and attack path diagrams. When `purple_team_mode: true` is set in the engagement scope, L1 MUST also include structured finding YAML blocks per the RBEE schema (see [Structured Finding Blocks](#structured-finding-blocks)).
 - **L2 (Strategic Implications):** Security program assessment: systemic issues identified, defense gap analysis, comparison with industry benchmarks, long-term remediation roadmap, and recommendations for eng-team hardening priorities.
+
+## Structured Finding Blocks
+
+When `purple_team_mode: true` is active in the engagement scope, every finding in the L1 technical detail section MUST include a machine-parseable YAML block appended after the narrative text. These blocks enable the IP-5 pipeline to extract structured data for the Red-Blue Exchange Envelope (RBEE) without narrative parsing. This is an ADDITIVE requirement -- the existing narrative reporting format is preserved.
+
+### Required YAML Block Format
+
+Each finding block MUST include the following fields:
+
+```yaml
+finding:
+  id: "F-{NNN}"                          # Engagement-scoped finding ID
+  title: "{descriptive title}"
+  severity: "Critical|High|Medium|Low"
+  attack_technique:
+    id: "T{NNNN}"                         # ATT&CK technique ID (REQUIRED)
+    subtechnique: "T{NNNN}.{NNN}"         # Optional subtechnique
+    tactic: "TA{NNNN}"                    # Parent tactic ID (REQUIRED)
+    name: "{technique name}"              # Human-readable name (REQUIRED)
+  indicators:
+    file_indicators:                       # List of file-based IOCs
+      - type: "hash-sha256"
+        value: "{hash}"
+        context: "{what this hash represents}"
+      - type: "filename"
+        value: "{filename pattern}"
+        context: "{where this file was observed}"
+    network_indicators:                    # List of network-based IOCs
+      - type: "domain|ip|url|user-agent"
+        value: "{indicator value}"
+        context: "{observation context}"
+    behavioral_indicators:                 # List of behavioral patterns
+      - type: "process-creation|registry-modification|service-installation|scheduled-task"
+        description: "{what the behavior looks like}"
+        detection_logic: "{pseudocode or natural-language detection criteria}"
+  evidence:
+    artifacts:                             # File paths to engagement artifacts
+      - path: "skills/red-team/output/{engagement-id}/{artifact}"
+        type: "binary|script|config|log|pcap"
+        taint_level: "adversary-produced|adversary-controlled|engagement-generated"
+    tool_output:                           # Tool output references
+      - tool: "{tool name}"
+        output_path: "skills/red-team/output/{engagement-id}/{output-file}"
+  cvss_score: "{N.N}"                     # CVSS base score
+  remediation_priority: "Immediate|Short-term|Long-term"
+```
+
+### ATT&CK Technique Anchoring Requirement
+
+Every finding MUST include an `attack_technique` block with `id`, `tactic`, and `name` fields populated. ATT&CK technique IDs are the join key for D3FEND countermeasure mapping downstream. Findings without a valid ATT&CK technique anchor cannot be processed by the IP-5 pipeline.
+
+ATT&CK technique IDs MUST conform to the format `^T\d{4}(\.\d{3})?$`. Tactic IDs MUST conform to `^TA\d{4}$`.
+
+### Taint Level Annotation
+
+Every artifact listed in `evidence.artifacts` MUST declare a `taint_level`:
+- `adversary-produced` -- artifact was created by simulated adversary activity (e.g., dropped malware, C2 beacon)
+- `adversary-controlled` -- artifact was modified by adversary activity (e.g., modified config file)
+- `engagement-generated` -- artifact was produced by the engagement team's tooling (e.g., scanner output, screenshots)
+
+This classification is required for trust boundary enforcement when artifacts cross the /red-team to /blue-team boundary. Blue-team agents MUST NOT Read adversary-produced or adversary-controlled artifacts directly into context; they receive only the structured metadata from the YAML block.
 
 ## Tool Integration
 

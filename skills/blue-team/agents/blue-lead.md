@@ -33,6 +33,7 @@ mcpServers:
 | [Identity](#identity) | Role, cognitive mode, boundaries |
 | [Methodology](#methodology) | Assessment scoping workflow |
 | [Workflow Integration](#workflow-integration) | Position in blue-team pipeline |
+| [Purple Team Coordination](#purple-team-coordination) | Cross-skill coordination when purple_team_mode is active |
 | [Output Requirements](#output-requirements) | L0/L1/L2 artifact structure |
 | [Tool Integration](#tool-integration) | Degradation levels |
 | [Safety Alignment](#safety-alignment) | Zone 1 enforcement |
@@ -125,6 +126,64 @@ scope:
 **Prerequisites:** User request for defensive assessment (no prior scope required -- this agent creates it).
 **Scope Modifications:** blue-lead is re-invoked when scope modifications are needed during the assessment. If any agent's findings expand the assessment surface, blue-lead evaluates whether the expansion falls within existing scope or requires a scope update.
 **Default Fallback:** Ambiguous defensive requests that do not match any other agent's trigger keywords route to blue-lead.
+
+## Purple Team Coordination
+
+### Purple Team Mode Recognition
+
+When the engagement scope includes `purple_team_mode: true`, blue-lead SHOULD recognize this as a cross-skill exercise requiring coordination with red-lead. Purple team mode is specified in the scope document and authorizes bidirectional data flow between /blue-team and /red-team via the neutral exchange directory.
+
+**Scope document extension for purple team mode:**
+
+```yaml
+scope:
+  engagement_id: "BLUE-NNNN"
+  ...
+  purple_team_mode: true                    # Activates cross-skill coordination
+  cross_skill_exercise:
+    exercise_id: "{exercise-type}-{engagement-id}"  # e.g., purple-2026-001
+    red_team_engagement_id: "{RED-NNNN}"    # Linked red-team engagement
+    integration_points_authorized:
+      - "IP-5"   # Red-to-Blue: findings to detection rules
+      - "IP-6"   # Blue-to-Eng: compliance findings to remediation
+      - "IP-7"   # Blue-to-Eng: D3FEND analysis to architecture
+    exchange_directory: "work/purple-team/exchange/{exercise-id}/"
+```
+
+### Coordination Protocol with red-lead
+
+During purple team exercises, blue-lead coordinates with red-lead via the exchange directory. Neither blue-lead nor red-lead writes directly to the exchange directory -- the main context constructs all envelopes and writes them to the neutral zone.
+
+**Session boundaries for purple team exercises:**
+
+| Session | Phases | blue-lead Responsibilities |
+|---------|--------|---------------------------|
+| Session 1 | Red team phases 1-4 (reconnaissance through exploitation) | Establish scope document with purple_team_mode enabled. Define which integration points are authorized. Document expected exchange directory structure. |
+| Cross-session boundary | IP-5 handoff (red-reporter -> blue-ioc) | Verify exchange directory exists and RBEE envelopes are present before resuming blue-team phases. |
+| Session 2 | Blue team phases 5-8 (detection through analysis) | Coordinate blue-ioc, blue-detect, blue-d3fend invocations. Validate CFE/DGE production. Confirm eng-team handoffs for authorized IP-6/IP-7 points. |
+
+**Coordination checklist for blue-lead at purple team exercise start:**
+
+1. Verify `red_team_engagement_id` is set and the linked red-team scope exists
+2. Confirm `exchange_directory` path is accessible (does not need to be populated yet at session start)
+3. Document which `/blue-team` agents will produce CFE/DGE (blue-d3fend for DGE, blue-detect/blue-siem/blue-monitor for CFE)
+4. Document which `/eng-team` agents are expected IP-6/IP-7 recipients (eng-devsecops for IP-6, eng-architect for IP-7)
+5. Include `## Cross-Skill Exercise Coordination` section in scope document
+
+**Exchange directory structure (read-only reference for blue-lead):**
+
+```
+work/purple-team/exchange/{exercise-id}/
+    manifest.yaml              # Lists all envelopes; blue-lead reads this to verify IP-5 completion
+    rbee/                      # Red-to-Blue envelopes (written by main context from red-reporter output)
+        finding-F-001.yaml
+    cfe/                       # Blue-to-Red Coverage Feedback Envelopes
+        coverage-feedback.yaml
+    dge/                       # Blue-to-Red D3FEND Gap Envelopes
+        d3fend-gap-analysis.yaml
+```
+
+**Session boundary validation:** Before recommending blue-team operational phases begin, blue-lead SHOULD verify that the exchange directory `manifest.yaml` exists and lists at least one RBEE envelope. If the manifest is absent or empty, IP-5 has not completed and blue-team detection phases cannot proceed with red-team-derived indicators.
 
 ## Output Requirements
 

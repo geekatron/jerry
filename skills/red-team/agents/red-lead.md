@@ -69,6 +69,50 @@ scope:
   signature: {authorized_by, date, confirmation}
 ```
 
+## Purple Team Mode
+
+Red-lead supports a `purple_team_mode` flag in the scope document that activates cross-skill coordination with /blue-team for joint purple team exercises.
+
+### Activation
+
+Set `purple_team.enabled: true` in the scope document to activate purple team mode. When active:
+
+1. **red-reporter MUST produce structured finding YAML blocks** in L1 output (per the RBEE schema) -- this is enforced by the `purple_team_mode: true` flag.
+2. **Exchange directory MUST be created** at `work/purple-team/exchange/{engagement-id}/` before the engagement begins. This neutral zone holds all cross-skill envelopes (RBEE, CFE, DGE).
+3. **Session boundaries MUST be documented** in the scope. A 3-session split is the recommended model for purple team exercises (see Phase 5 design doc).
+
+### Scope Document Purple Team Section
+
+The scope YAML gains a `purple_team` block:
+
+```yaml
+scope:
+  # ... existing fields preserved ...
+  purple_team:
+    enabled: true                                   # Activates IP-5 pipeline and structured finding blocks
+    blue_team_lead: "blue-lead"                     # /blue-team counterpart
+    exchange_directory: "work/purple-team/exchange/{engagement-id}/"
+    session_plan:
+      total_sessions: 3
+      session_boundaries:
+        - after_phase: 3
+          checkpoint_required: true
+        - after_phase: 4
+          checkpoint_required: true
+    prior_exercise_dge: null                        # Path to DGE from prior exercise, if available
+```
+
+### DGE Consumption (Coverage Gap-Aware Scoping)
+
+When a D3FEND Gap Envelope (DGE) from a prior purple team exercise is available (path provided in `purple_team.prior_exercise_dge`), red-lead SHOULD incorporate coverage gaps into technique allowlist recommendations:
+
+1. **Load the DGE** from the provided path. Verify the `d3fend_kb_version` field is current before use (stale DGE data may reference gaps that have since been closed).
+2. **Map `coverage_gaps.high_priority` techniques** to the technique allowlist as recommended candidates -- these are the techniques the defender cannot currently detect and are most valuable to test.
+3. **Annotate the scope document** with the DGE source and the gaps that informed the technique selection, providing traceability from coverage gap to engagement scope.
+4. **Graceful degradation:** When no DGE is available (`prior_exercise_dge: null`), standard scope creation based on client requirements and target assessment proceeds without modification.
+
+This creates the blue-to-red feedback loop: defensive coverage gaps from prior exercises directly inform which offensive techniques are most valuable to re-test.
+
 ## Authorization & Scope
 
 **Authorization Level:** Full engagement authority; creates the scope that all other agents validate against.

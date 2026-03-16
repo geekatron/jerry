@@ -1,0 +1,417 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jerry.dev/schemas/emulation-manifest-v1.schema.json",
+  "$comment": "Traceability: ADR-PROJ023-001 (Hybrid B+C), Phase 5 Purple Team Automation (Phase A Emulation, emulation_manifest checkpoint field), Phase 5 Red-Blue Composition (RM-1 Emulation manifest output, RM-2 Technique-tagged artifacts). AC-F-11: validates per EM-01..EM-08 rules. REQ-HND-007: emulation manifest schema definition. Storage: work/purple-team/exchange/{engagement-id}/manifest.yaml",
+  "title": "Emulation Manifest v1",
+  "description": "Schema for purple team emulation plans and Phase A output manifests. Records which ATT&CK techniques were emulated, by which red-team agents, with what artifacts and indicators, and at what emulation status. Used by Sessions 2+ to discover Phase A artifacts without re-reading red-team output. Validates per EM-01 through EM-08 rules: EM-01 techniques array required; EM-02 each technique must have a technique_id; EM-03 technique_id must match ATT&CK format; EM-04 each artifact_path must resolve within work/ and not contain '..'; EM-05 emulation_status must be a valid enum; EM-06 producing_agent must be a valid red-team agent name; EM-07 agent_contributions is derivable from techniques array; EM-08 artifact_count must equal the sum of all artifact_paths arrays.",
+  "type": "object",
+  "required": [
+    "manifest_id",
+    "engagement_id",
+    "techniques",
+    "phases"
+  ],
+  "properties": {
+    "manifest_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^manifest-[a-z0-9-]+-s[0-9]+$",
+      "description": "Unique manifest identifier. Format: manifest-{engagement-id}-s{session-number}. One manifest per emulation session.",
+      "examples": ["manifest-purple-2026-001-s1", "manifest-engagement-alpha-s1"]
+    },
+    "engagement_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z0-9-]+$",
+      "description": "Identifier of the purple team engagement. Matches the engagement_id in RBEE, CFE, and DGE envelopes.",
+      "examples": ["purple-2026-001", "engagement-alpha"]
+    },
+    "session_id": {
+      "type": "string",
+      "pattern": "^purple-[a-z0-9-]+-s[0-9]+$",
+      "description": "Session identifier from which this manifest was produced. Format: purple-{engagement-id}-s{N}.",
+      "examples": ["purple-2026-001-s1"]
+    },
+    "purple_iteration": {
+      "type": ["integer", "null"],
+      "minimum": 1,
+      "maximum": 10,
+      "description": "Purple team loop iteration this manifest covers. 1 for the first emulation session, 2+ for re-emulation in subsequent iterations. Null for standalone (non-looping) emulation plans.",
+      "examples": [1, 2]
+    },
+    "techniques": {
+      "type": "array",
+      "minItems": 0,
+      "description": "EM-01: techniques array is required (may be empty for pre-exercise manifests with no emulated techniques yet). Each entry covers one ATT&CK technique emulated in this session. EM-02: each technique entry must include technique_id.",
+      "items": {
+        "type": "object",
+        "required": ["technique_id", "name", "tactic", "assigned_agent", "zone", "emulation_status"],
+        "description": "Per-technique emulation record. EM-02: technique_id required. EM-03: technique_id must match ATT&CK format. EM-05: emulation_status must be a valid enum. EM-06: assigned_agent must be a valid red-team agent name.",
+        "properties": {
+          "technique_id": {
+            "type": "string",
+            "pattern": "^T\\d{4}(\\.\\d{3})?$",
+            "description": "EM-03: ATT&CK technique or sub-technique ID. Must match ^T\\d{4}(\\.\\d{3})?$. Validated at manifest creation and at session resumption.",
+            "examples": ["T1059.001", "T1053.005", "T1566"]
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "Human-readable ATT&CK technique name.",
+            "examples": ["PowerShell", "Scheduled Task/Job", "Spearphishing Attachment"]
+          },
+          "tactic": {
+            "type": "string",
+            "pattern": "^TA\\d{4}$",
+            "description": "Parent ATT&CK tactic ID.",
+            "examples": ["TA0002", "TA0003", "TA0001"]
+          },
+          "tactic_name": {
+            "type": "string",
+            "maxLength": 128,
+            "description": "Human-readable tactic name.",
+            "examples": ["Execution", "Persistence", "Initial Access"]
+          },
+          "assigned_agent": {
+            "type": "string",
+            "pattern": "^red-[a-z]+(-[a-z]+)*$",
+            "description": "EM-06: Red-team agent responsible for emulating this technique. Must be a valid /red-team agent name in kebab-case with 'red-' prefix.",
+            "examples": ["red-exploit", "red-lateral", "red-privesc", "red-persist", "red-recon"]
+          },
+          "zone": {
+            "type": "string",
+            "enum": ["Zone 1", "Zone 2", "Zone 3"],
+            "description": "Security zone in which this emulation executes. Purple team emulation is Zone 1 (Analysis) only -- red-reporter is read-only when producing purple team output.",
+            "default": "Zone 1"
+          },
+          "emulation_status": {
+            "type": "string",
+            "enum": [
+              "PLANNED",
+              "IN_PROGRESS",
+              "COMPLETE",
+              "EMULATION_SKIPPED",
+              "EMULATION_FAILED",
+              "NOT_IN_SCOPE"
+            ],
+            "description": "EM-05: Emulation status enum. PLANNED: technique selected but not yet attempted. IN_PROGRESS: emulation is under way (single-session only). COMPLETE: emulation produced artifacts. EMULATION_SKIPPED: technique in scope but not emulated (e.g., requires infrastructure outside scope). EMULATION_FAILED: emulation attempted but failed. NOT_IN_SCOPE: technique identified but not selected for this exercise."
+          },
+          "skip_reason": {
+            "type": "string",
+            "maxLength": 2000,
+            "description": "Required when emulation_status is EMULATION_SKIPPED or EMULATION_FAILED. Explains why emulation could not proceed.",
+            "examples": [
+              "EMULATION_SKIPPED: Phishing requires social engineering infrastructure outside scope",
+              "EMULATION_FAILED: Tool dependency unavailable"
+            ]
+          },
+          "artifact_paths": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "description": "EM-04: Path to an emulation artifact. Must resolve within work/ subtree. Must NOT contain '..' path traversal sequences.",
+              "pattern": "^work/[^.].*$",
+              "examples": [
+                "work/red-team/engagements/purple-2026-001/artifacts/t1059-001-payload.ps1",
+                "work/red-team/engagements/purple-2026-001/artifacts/t1059-001-evtx.evtx"
+              ]
+            },
+            "description": "EM-04: Filesystem paths to artifacts produced by emulating this technique. All paths validated at manifest creation and before Session 2+ access (RV-02). May be empty when emulation_status is PLANNED or EMULATION_SKIPPED."
+          },
+          "indicator_paths": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Path to a structured indicator extraction file. Must resolve within work/ subtree. Must NOT contain '..'.",
+              "pattern": "^work/[^.].*$"
+            },
+            "description": "Paths to structured indicator files extracted from this technique's emulation artifacts. Used by blue-ioc for detection rule creation."
+          },
+          "expected_artifacts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["artifact_type", "description"],
+              "properties": {
+                "artifact_type": {
+                  "type": "string",
+                  "enum": ["binary", "script", "config", "log", "pcap", "evtx", "payload", "other"],
+                  "description": "Expected artifact type for this technique."
+                },
+                "description": {
+                  "type": "string",
+                  "maxLength": 512,
+                  "description": "Description of the expected artifact."
+                },
+                "required_for_detection": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Whether this artifact is required for blue-detect to validate detection coverage. When true and artifact is missing, detection is marked UNVALIDATED."
+                }
+              },
+              "additionalProperties": false
+            },
+            "description": "Expected artifacts for this technique. Used in emulation plan phase to document what should be produced before emulation begins."
+          },
+          "indicators_extracted": {
+            "type": "object",
+            "description": "Summary of indicators extracted from emulation artifacts. Populated after COMPLETE status.",
+            "properties": {
+              "file_indicators": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Count of file-based indicators extracted."
+              },
+              "network_indicators": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Count of network-based indicators extracted."
+              },
+              "behavioral_indicators": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Count of behavioral indicators extracted."
+              }
+            },
+            "additionalProperties": false
+          },
+          "rbee_envelope_path": {
+            "type": "string",
+            "description": "Path to the RBEE envelope created from this technique's finding. Set after RBEE creation in the IP-5 pipeline.",
+            "examples": ["work/purple-team/exchange/purple-2026-001/rbee/finding-F-001.yaml"]
+          },
+          "metadata_tags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z0-9-]+$"
+            },
+            "description": "Optional tags for technique categorization (e.g., persistence, low-noise, requires-admin)."
+          }
+        },
+        "if": {
+          "properties": {
+            "emulation_status": {
+              "enum": ["EMULATION_SKIPPED", "EMULATION_FAILED"]
+            }
+          },
+          "required": ["emulation_status"]
+        },
+        "then": {
+          "required": ["skip_reason"]
+        },
+        "additionalProperties": false
+      }
+    },
+    "phases": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Multi-phase emulation sequencing. Each phase groups techniques by emulation order and agent assignment. Enables phased emulation plans (e.g., recon before exploitation before persistence).",
+      "items": {
+        "type": "object",
+        "required": ["phase_id", "phase_name", "technique_ids"],
+        "properties": {
+          "phase_id": {
+            "type": "string",
+            "pattern": "^phase-[0-9]+$",
+            "description": "Phase identifier. Format: phase-{N} where N is the sequential phase number.",
+            "examples": ["phase-1", "phase-2", "phase-3"]
+          },
+          "phase_name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "description": "Human-readable phase name.",
+            "examples": ["Reconnaissance", "Initial Access and Execution", "Persistence and Lateral Movement"]
+          },
+          "technique_ids": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "pattern": "^T\\d{4}(\\.\\d{3})?$",
+              "description": "ATT&CK technique ID. Must correspond to an entry in the techniques array."
+            },
+            "description": "Technique IDs to be emulated in this phase. Each ID must exist in the root techniques array."
+          },
+          "phase_status": {
+            "type": "string",
+            "enum": ["PLANNED", "IN_PROGRESS", "COMPLETE", "PARTIAL", "SKIPPED"],
+            "description": "Aggregate phase completion status."
+          },
+          "entry_criteria": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 512
+            },
+            "description": "Conditions that must be met before this phase begins."
+          },
+          "exit_criteria": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 512
+            },
+            "description": "Conditions that mark this phase as complete."
+          },
+          "depends_on_phases": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^phase-[0-9]+$"
+            },
+            "description": "Phase IDs that must be completed before this phase can begin."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "success_criteria": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "description": "Exercise-level success criteria. Defines when the emulation phase is considered complete. At minimum one criterion required.",
+      "examples": [
+        "At least one technique emulated per ATT&CK tactic in scope",
+        "All emulation artifacts persisted with SHA-256 hashes",
+        "Emulation evidence manifest produced with technique IDs and artifact paths"
+      ]
+    },
+    "termination_conditions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "description": "Conditions that terminate the emulation phase regardless of completion status. At minimum one condition required.",
+      "examples": [
+        "Zero techniques successfully emulated after all in-scope techniques attempted",
+        "User explicitly requests exercise termination",
+        "Context budget limit reached (Session 1 tokens exceed 165K threshold)"
+      ]
+    },
+    "agent_contributions": {
+      "type": "object",
+      "description": "EM-07: Agent-to-technique mapping, derivable from the techniques array (assigned_agent field). Provided here for quick lookup without iterating the full techniques array. MUST be consistent with the techniques array: each key maps to a red-team agent name, each value is the array of technique_ids that agent emulated.",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "pattern": "^T\\d{4}(\\.\\d{3})?$"
+        },
+        "description": "Technique IDs emulated by this agent."
+      },
+      "examples": [
+        {
+          "red-exploit": ["T1059.001", "T1566.001"],
+          "red-lateral": ["T1021.002"],
+          "red-persist": ["T1053.005"]
+        }
+      ]
+    },
+    "artifact_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "EM-08: Total artifact count across all techniques. MUST equal the sum of all artifact_paths array lengths in the techniques entries. Used for manifest integrity verification at session resumption.",
+      "examples": [8, 15, 0]
+    },
+    "scope": {
+      "type": "object",
+      "description": "Exercise scope metadata.",
+      "properties": {
+        "tactics_in_scope": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^TA\\d{4}$"
+          },
+          "description": "ATT&CK tactics selected for emulation in this exercise."
+        },
+        "total_techniques_in_scope": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total number of techniques selected for emulation."
+        },
+        "techniques_attempted": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of techniques for which emulation was attempted (COMPLETE + EMULATION_FAILED)."
+        },
+        "techniques_complete": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of techniques with emulation_status = COMPLETE."
+        },
+        "techniques_skipped": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of techniques with emulation_status = EMULATION_SKIPPED."
+        }
+      },
+      "additionalProperties": false
+    },
+    "trust_classification": {
+      "type": "object",
+      "description": "Trust boundary classification for manifest artifacts. Emulation manifests reference adversary-tainted artifacts.",
+      "properties": {
+        "artifact_taint_level": {
+          "type": "string",
+          "enum": ["adversary-produced", "adversary-controlled", "engagement-generated"],
+          "description": "Default taint level for artifacts referenced in this manifest. Individual artifacts may override via their own taint_level field in RBEE envelopes.",
+          "default": "engagement-generated"
+        },
+        "zone": {
+          "type": "string",
+          "const": "Zone 1 (Analysis)",
+          "description": "Security zone for emulation manifest production. red-reporter is read-only when producing purple team output -- Zone 1 only."
+        }
+      },
+      "additionalProperties": false
+    },
+    "manifest_metadata": {
+      "type": "object",
+      "description": "Administrative metadata for manifest tracking and session resumption.",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp when the manifest was created."
+        },
+        "last_updated_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp of the most recent update to the manifest."
+        },
+        "schema_version": {
+          "type": "string",
+          "const": "1.0.0",
+          "description": "Emulation manifest schema version for forward compatibility."
+        },
+        "prior_exercise_manifest": {
+          "type": ["string", "null"],
+          "description": "Path to the manifest from the prior purple team exercise, if this is a follow-on exercise. Used by red-lead when DGE coverage gaps informed this exercise scope.",
+          "examples": ["work/purple-team/exchange/purple-2025-004/manifest.yaml", null]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "attack_technique_id": {
+      "type": "string",
+      "pattern": "^T\\d{4}(\\.\\d{3})?$",
+      "description": "ATT&CK technique or sub-technique ID. Format: T{NNNN} or T{NNNN}.{NNN}."
+    }
+  }
+}

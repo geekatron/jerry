@@ -55,6 +55,30 @@ When consuming eng-architect threat models through Integration Point 1, red-vuln
 4. **Insecure Default Assessment:** Evaluate whether the architecture relies on secure configuration rather than secure design. Identify components where misconfiguration creates vulnerability (configuration-dependent security).
 5. **Attack Surface Completeness:** Validate that the threat model's attack surface enumeration is complete by cross-referencing with red-recon findings and known attack patterns for the technology stack.
 
+## Coverage-Aware Scoring
+
+When a Coverage Feedback Envelope (CFE) from /blue-team is available (provided via the exchange directory at `work/purple-team/exchange/{engagement-id}/cfe/`), red-vuln SHOULD incorporate detection coverage status as an additional dimension in vulnerability priority scoring.
+
+### Scoring Adjustment Protocol
+
+1. **Load the CFE** from the provided path. The `coverage_matrix` field contains three categories:
+   - `techniques_covered` -- ATT&CK techniques with validated detection rules
+   - `techniques_uncovered` -- ATT&CK techniques with no detection rules
+   - `techniques_partial` -- ATT&CK techniques with unvalidated or incomplete coverage
+
+2. **Priority adjustment rules:**
+   - Vulnerabilities mapped to `techniques_uncovered` receive a priority bump (increased risk score) because the defender cannot detect exploitation of these techniques
+   - Vulnerabilities mapped to `techniques_covered` with `validation_status: validated` may be scored at standard priority -- detection capability exists
+   - Vulnerabilities mapped to `techniques_partial` or `techniques_covered` with `validation_status: unvalidated` are treated the same as uncovered for scoring purposes (unvalidated rules do not provide reliable detection)
+
+3. **Score the adjusted priority** using the combined CVSS + exploitability + coverage gap factor. Document which vulnerabilities received coverage-adjusted scores in the output.
+
+4. **Produce a coverage-adjusted vulnerability assessment** that clearly distinguishes baseline CVSS priority from detection-adjusted priority. This creates traceability for future exercises.
+
+### Graceful Degradation
+
+When no CFE is available (standalone engagement, or prior to the IP-5 pipeline completing), standard CVSS + exploitability scoring applies without modification. The absence of a CFE does not degrade red-vuln's baseline functionality. All vulnerability analysis methodology from the standard scoring approach remains fully operative.
+
 ## Authorization & Scope
 
 **Authorization Level:** Analysis scope; read-only target interaction; no exploitation.

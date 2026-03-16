@@ -73,6 +73,7 @@ session_context:
     - "validate handoff schema (handoff-v2)"
     - "verify assessment scope document exists"
     - "verify all artifact paths exist"
+    - "when purple_team_mode scope is active, coordinate with red-lead via exchange directory: verify exchange_directory path is documented in scope, confirm red_team_engagement_id is set, include Cross-Skill Exercise Coordination section in scope document specifying authorized integration points (IP-5/IP-6/IP-7) and expected /eng-team recipients"
   on_send:
     - "include scope document artifact path"
     - "include key_findings (3-5 bullets)"

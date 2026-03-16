@@ -27,6 +27,7 @@ guardrails:
   - no_secrets_in_output
   - all_claims_must_have_citations
   - scope_compliance_verified
+  - structured_finding_blocks_required
   fallback_behavior: warn_and_retry
 output:
   required: true
@@ -49,6 +50,9 @@ validation:
   - verify_l0_l1_l2_present
   - verify_citations_present
   - verify_scope_compliance
+session_context:
+  on_send:
+  - produce structured finding YAML blocks for IP-5 cross-skill exchange when purple_team_mode is active
 capabilities:
   forbidden_actions:
   - Spawn recursive subagents (P-003)

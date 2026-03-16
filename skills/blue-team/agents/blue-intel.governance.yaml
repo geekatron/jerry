@@ -70,6 +70,12 @@ output:
     - L0
     - L1
     - L2
+  provenance:
+    source_chain:
+      - "blue-intel collects threat intelligence via STIX 2.1 bundles, MISP event queries, and TAXII 2.1 feed consumption"
+      - "validated by Admiralty/NATO source evaluation (source reliability A-F, information credibility 1-6)"
+      - "consumed by blue-d3fend (TTP-to-D3FEND mapping input) and eng-architect via IP-7 (threat-informed architecture)"
+    trust_classification: "Zone 1 analytical output"
 constitution:
   reference: docs/governance/JERRY_CONSTITUTION.md
   principles_applied:

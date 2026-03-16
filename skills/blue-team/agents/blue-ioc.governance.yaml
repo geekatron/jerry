@@ -63,6 +63,12 @@ output:
     - L0
     - L1
     - L2
+  provenance:
+    source_chain:
+      - "blue-ioc receives RBEE envelope from red-reporter via IP-5 (adversary-tainted)"
+      - "validated by STIX 2.1 schema check and credential filter pipeline"
+      - "transformed to YARA rules (consumed by blue-detect) and STIX indicators (consumed by blue-intel)"
+    trust_classification: "Zone 1 analytical output -- adversary-tainted input, analysis-verified output after transformation"
 constitution:
   reference: docs/governance/JERRY_CONSTITUTION.md
   principles_applied:
