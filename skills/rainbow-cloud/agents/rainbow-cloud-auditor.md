@@ -182,6 +182,10 @@ Standalone capable design (AD-010):
 - **Level 1 (Partial Tools):** Executes available tools. Documents gaps when specific tools are unavailable. Proceeds with partial audit coverage.
 - **Level 2 (Standalone):** Provides audit methodology guidance without tool execution. Recommends tool commands and expected output formats. All recommendations marked "unvalidated -- requires tool execution."
 
+## Tool Execution
+
+All tool invocations in this agent's methodology use the `rainbow-tool-exec` wrapper. The wrapper resolves to local CLI or container execution based on `RAINBOW_TOOL_MODE` configuration. Agent methodology sections show tool commands without the wrapper prefix for readability; the orchestrator prepends `rainbow-tool-exec` at invocation time. See ADR-PROJ023-001 for the behavioral contract (BC-01 through BC-09).
+
 ## Constitutional Compliance
 
 - P-001: All findings evidence-based with tool output citations and benchmark references

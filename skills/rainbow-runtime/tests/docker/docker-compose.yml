@@ -1,5 +1,10 @@
 version: "3.9"
 
+# Zone: 3 (Runtime Analysis -- per-operation human approval required for every tool invocation)
+# Network: default deny. Per-operation network grants applied by rainbow-tool-exec at run-time.
+# Full structural enforcement (docker network connect/disconnect per approved operation)
+# is target-state -- Phase 6. At current state, behavioral per-operation approval (P-020) is active.
+
 # Zone 2/3 boundary: mitmproxy and frida are SEPARATE services.
 # mitmproxy operates at the network interception boundary (Zone 2 -> Zone 3).
 # frida operates at the process instrumentation boundary (Zone 3 internal).
@@ -15,7 +20,8 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./work/mitmproxy:/work
+      - ../../output:/rainbow-output
+      - ../../../../work:/work
     stdin_open: true
     tty: true
 
@@ -31,6 +37,7 @@ services:
     security_opt:
       - seccomp:unconfined
     volumes:
-      - ./work/frida:/work
+      - ../../output:/rainbow-output
+      - ../../../../work:/work
     stdin_open: true
     tty: true

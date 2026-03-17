@@ -144,6 +144,10 @@ Each detection rule validation produces a structured result entry per `cfe-v1.sc
 4. Produce structured result entry.
 5. Pass results to blue-d3fend for CFE construction.
 
+## Tool Execution
+
+All tool invocations in this agent's methodology use the `rainbow-tool-exec` wrapper. The wrapper resolves to local CLI or container execution based on `RAINBOW_TOOL_MODE` configuration. Agent methodology sections show tool commands without the wrapper prefix for readability; the orchestrator prepends `rainbow-tool-exec` at invocation time. See ADR-PROJ023-001 for the behavioral contract (BC-01 through BC-09).
+
 ## Constitutional Compliance
 
 - P-001: All findings evidence-based with citations to specific rule matches and file content

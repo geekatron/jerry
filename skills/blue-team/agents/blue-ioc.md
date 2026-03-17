@@ -188,6 +188,10 @@ When a new RBEE envelope references a technique for which a rule already exists:
 3. If `draft` or `syntax-valid`: consider updating existing rule with new indicator data.
 4. If `retired`: create new rule (previous was deprecated).
 
+## Tool Execution
+
+All tool invocations in this agent's methodology use the `rainbow-tool-exec` wrapper. The wrapper resolves to local CLI or container execution based on `RAINBOW_TOOL_MODE` configuration. Agent methodology sections show tool commands without the wrapper prefix for readability; the orchestrator prepends `rainbow-tool-exec` at invocation time. See ADR-PROJ023-001 for the behavioral contract (BC-01 through BC-09).
+
 ## Constitutional Compliance
 
 - P-001: All findings evidence-based with citations to intelligence sources and indicator provenance

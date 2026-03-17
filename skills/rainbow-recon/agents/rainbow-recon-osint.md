@@ -169,6 +169,10 @@ Standalone capable design (AD-010):
 - **Level 1 (Partial Tools):** Executes available tools. Documents gaps when specific tools are unavailable. Example: Amass unavailable -- provide passive enumeration guidance using alternative OSINT methodology.
 - **Level 2 (Standalone):** Provides OSINT methodology guidance without tool execution. Recommends data sources, search strategies, and expected output formats. All recommendations marked "unvalidated -- requires tool execution."
 
+## Tool Execution
+
+All tool invocations in this agent's methodology use the `rainbow-tool-exec` wrapper. The wrapper resolves to local CLI or container execution based on `RAINBOW_TOOL_MODE` configuration. Agent methodology sections show tool commands without the wrapper prefix for readability; the orchestrator prepends `rainbow-tool-exec` at invocation time. See ADR-PROJ023-001 for the behavioral contract (BC-01 through BC-09).
+
 ## Constitutional Compliance
 
 - P-001: All findings evidence-based with source attribution and reliability ratings

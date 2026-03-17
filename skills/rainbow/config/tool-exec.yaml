@@ -1,0 +1,319 @@
+# Rainbow Tool Executor Configuration
+# ADR-PROJ023-001 v1.3.0 -- Configuration Mechanism (L1: Configuration Mechanism)
+#
+# Mode selection hierarchy (highest precedence first):
+#   1. CLI flag:         rainbow-tool-exec --mode container ...
+#   2. Environment var:  RAINBOW_TOOL_MODE=container
+#   3. This file:        default_mode below
+#   4. Hardcoded:        local (safe default for development)
+
+# ---------------------------------------------------------------------------
+# Global defaults
+# ---------------------------------------------------------------------------
+
+default_mode: local        # "local" | "container"
+strict_mode: true          # true = block --no-filter; require explicit mode for Zone 2/3
+
+# ---------------------------------------------------------------------------
+# Per-sub-skill mode overrides (optional)
+# Allows mixed mode: e.g., exploit tools isolated in containers,
+# supply-chain tools run locally for speed.
+# Uncomment and adjust for your environment.
+# ---------------------------------------------------------------------------
+
+overrides: {}
+# overrides:
+#   rainbow-exploit:
+#     tool_mode: container
+#   rainbow-runtime:
+#     tool_mode: container
+#   rainbow-recon:
+#     tool_mode: local
+#   rainbow-supply-chain:
+#     tool_mode: local
+#   rainbow-cloud:
+#     tool_mode: local
+
+# ---------------------------------------------------------------------------
+# Container-mode settings
+# ---------------------------------------------------------------------------
+
+container:
+  compose_project_name: "rainbow"   # Docker Compose project name prefix
+  health_check_timeout: 30          # Seconds to wait for container health
+  exec_flags:
+    - "-T"                          # No TTY allocation (required for non-interactive use)
+
+# ---------------------------------------------------------------------------
+# Evidence settings
+# ---------------------------------------------------------------------------
+
+evidence:
+  hash_algorithm: sha256            # Integrity hash algorithm (SLSA chain of custody)
+  auto_persist: true                # Auto-persist raw tool output as engagement evidence
+  quarantine_dir: "work/.credential-quarantine"
+
+# ---------------------------------------------------------------------------
+# Engagement settings
+# ---------------------------------------------------------------------------
+
+engagement:
+  base_dir: "work/engagements"      # Root for all engagement directories
+  # Structure per engagement:
+  #   work/engagements/<id>/
+  #     evidence/        -- raw tool output + SHA-256 metadata
+  #     reports/         -- final deliverables
+  #     .credential-quarantine/  -- quarantined credential-bearing output
+
+# ---------------------------------------------------------------------------
+# Sub-skill compose file paths (relative to project root)
+# Used when RAINBOW_COMPOSE_DIR is not set.
+# ---------------------------------------------------------------------------
+
+zone_compose_files:
+  rainbow-exploit:     "skills/rainbow-exploit/tests/docker/docker-compose.yml"
+  rainbow-recon:       "skills/rainbow-recon/tests/docker/docker-compose.yml"
+  rainbow-runtime:     "skills/rainbow-runtime/tests/docker/docker-compose.yml"
+  rainbow-cloud:       "skills/rainbow-cloud/tests/docker/docker-compose.yml"
+  rainbow-supply-chain: "skills/rainbow-supply-chain/tests/docker/docker-compose.yml"
+  blue-team:           "skills/blue-team/tests/docker/docker-compose.yml"
+
+# ---------------------------------------------------------------------------
+# Tool resolution table
+#
+# Entries use longest-prefix matching (ADR R-1 mitigation).
+# Wildcard suffix "-*" matches any hyphenated subcommand.
+#
+# Fields:
+#   prefix:       Tool command prefix (exact or wildcard with -*)
+#   service:      Docker Compose service name
+#   compose_file: Relative path from project root to docker-compose.yml
+#   sub_skill:    Sub-skill identifier (for per-sub-skill override lookup)
+#   zone:         Default security zone (1|2|3); agents may escalate per-operation
+#
+# Zone reference:
+#   1 -- Audit/analysis -- no engagement scope required
+#   2 -- Active reconnaissance -- engagement scope required
+#   3 -- Exploitation -- engagement scope + per-operation approval required
+#
+# ADR-PROJ023-001 Phase 1 coverage: 18 prefix entries covering all sub-skills.
+# Phase 3 additions (pending): OWASP Amass, Maigret, Kyverno, Cartography,
+#   BloodHound CE, Mythic, Sigma CLI, Suricata, Zeek, Volatility3, plaso,
+#   Ghidra, JADX, CIS-CAT, OpenSCAP, MISP client, STIX tools.
+# ---------------------------------------------------------------------------
+
+tool_resolution:
+
+  # -----------------------------------------------------------------------
+  # Exploit sub-skill (rainbow-exploit)
+  # Zone 3 -- per-operation approval required
+  # -----------------------------------------------------------------------
+
+  - prefix: "impacket-*"
+    service: "exploit-ops"
+    compose_file: "skills/rainbow-exploit/tests/docker/docker-compose.yml"
+    sub_skill: "rainbow-exploit"
+    zone: "3"
+    # Note: impacket-GetADUsers / impacket-GetNPUsers are Zone 2 operations
+    # per dual-zone escalation protocol. Zone classification is per-operation.
+
+  - prefix: "pwntools"
+    service: "exploit-ops"
+    compose_file: "skills/rainbow-exploit/tests/docker/docker-compose.yml"
+    sub_skill: "rainbow-exploit"
+    zone: "3"
+
+  - prefix: "pwn"
+    service: "exploit-ops"
+    compose_file: "skills/rainbow-exploit/tests/docker/docker-compose.yml"
+    sub_skill: "rainbow-exploit"
+    zone: "3"
+
+  - prefix: "donut"
+    service: "exploit-ops"
+    compose_file: "skills/rainbow-exploit/tests/docker/docker-compose.yml"
+    sub_skill: "rainbow-exploit"
+    zone: "3"
+
+  - prefix: "msfconsole"
+    service: "exploit-msf"
+    compose_file: "skills/rainbow-exploit/tests/docker/docker-compose.yml"
+    sub_skill: "rainbow-exploit"
+    zone: "3"
+
+  - prefix: "msfvenom"
+    service: "exploit-msf"
+    compose_file: "skills/rainbow-exploit/tests/docker/docker-compose.yml"
+    sub_skill: "rainbow-exploit"
+    zone: "3"
+
+  - prefix: "empire"
+    service: "exploit-c2"
+    compose_file: "skills/rainbow-exploit/tests/docker/docker-compose.yml"
+    sub_skill: "rainbow-exploit"
+    zone: "3"
+
+  - prefix: "starkiller"
+    service: "exploit-c2"
+    compose_file: "skills/rainbow-exploit/tests/docker/docker-compose.yml"
+    sub_skill: "rainbow-exploit"
+    zone: "3"
+
+  # -----------------------------------------------------------------------
+  # Recon sub-skill (rainbow-recon)
+  # Zone 2 -- engagement scope required
+  # -----------------------------------------------------------------------
+
+  - prefix: "subfinder"
+    service: "recon-pipeline"
+    compose_file: "skills/rainbow-recon/tests/docker/docker-compose.yml"
+    sub_skill: "rainbow-recon"
+    zone: "2"
+
+  - prefix: "httpx"
+    service: "recon-pipeline"
+    compose_file: "skills/rainbow-recon/tests/docker/docker-compose.yml"
+    sub_skill: "rainbow-recon"
+    zone: "2"
+
+  - prefix: "dnsx"
+    service: "recon-pipeline"
+    compose_file: "skills/rainbow-recon/tests/docker/docker-compose.yml"
+    sub_skill: "rainbow-recon"
+    zone: "2"
+
+  - prefix: "naabu"
+    service: "recon-pipeline"
+    compose_file: "skills/rainbow-recon/tests/docker/docker-compose.yml"
+    sub_skill: "rainbow-recon"
+    zone: "2"
+
+  - prefix: "katana"
+    service: "recon-pipeline"
+    compose_file: "skills/rainbow-recon/tests/docker/docker-compose.yml"
+    sub_skill: "rainbow-recon"
+    zone: "2"
+
+  - prefix: "nuclei"
+    service: "recon-pipeline"
+    compose_file: "skills/rainbow-recon/tests/docker/docker-compose.yml"
+    sub_skill: "rainbow-recon"
+    zone: "2"
+    # Note: Nuclei is a dual-zone tool. Detection templates = Zone 2.
+    # Exploit templates (deny_tags per nuclei-template-allowlist.yaml) = Zone 3.
+    # Zone classification is per-operation per dual-zone escalation protocol.
+
+  # -----------------------------------------------------------------------
+  # Runtime sub-skill (rainbow-runtime)
+  # Zone 2/3 -- dual-zone tools
+  # -----------------------------------------------------------------------
+
+  - prefix: "mitmproxy"
+    service: "mitmproxy"
+    compose_file: "skills/rainbow-runtime/tests/docker/docker-compose.yml"
+    sub_skill: "rainbow-runtime"
+    zone: "2"
+
+  - prefix: "mitmdump"
+    service: "mitmproxy"
+    compose_file: "skills/rainbow-runtime/tests/docker/docker-compose.yml"
+    sub_skill: "rainbow-runtime"
+    zone: "2"
+
+  - prefix: "mitmweb"
+    service: "mitmproxy"
+    compose_file: "skills/rainbow-runtime/tests/docker/docker-compose.yml"
+    sub_skill: "rainbow-runtime"
+    zone: "2"
+
+  - prefix: "frida"
+    service: "frida"
+    compose_file: "skills/rainbow-runtime/tests/docker/docker-compose.yml"
+    sub_skill: "rainbow-runtime"
+    zone: "2"
+
+  - prefix: "frida-trace"
+    service: "frida"
+    compose_file: "skills/rainbow-runtime/tests/docker/docker-compose.yml"
+    sub_skill: "rainbow-runtime"
+    zone: "2"
+
+  - prefix: "frida-ps"
+    service: "frida"
+    compose_file: "skills/rainbow-runtime/tests/docker/docker-compose.yml"
+    sub_skill: "rainbow-runtime"
+    zone: "2"
+
+  # -----------------------------------------------------------------------
+  # Cloud sub-skill (rainbow-cloud)
+  # Zone 1 -- passive audit/analysis
+  # -----------------------------------------------------------------------
+
+  - prefix: "checkov"
+    service: "cloud-auditor"
+    compose_file: "skills/rainbow-cloud/tests/docker/docker-compose.yml"
+    sub_skill: "rainbow-cloud"
+    zone: "1"
+
+  - prefix: "prowler"
+    service: "cloud-auditor"
+    compose_file: "skills/rainbow-cloud/tests/docker/docker-compose.yml"
+    sub_skill: "rainbow-cloud"
+    zone: "1"
+
+  - prefix: "kubescape"
+    service: "cloud-auditor"
+    compose_file: "skills/rainbow-cloud/tests/docker/docker-compose.yml"
+    sub_skill: "rainbow-cloud"
+    zone: "1"
+
+  # -----------------------------------------------------------------------
+  # Blue-team detection (blue-team skill)
+  # Zone 1 -- read-only defensive analysis
+  # -----------------------------------------------------------------------
+
+  - prefix: "yr"
+    service: "detection"
+    compose_file: "skills/blue-team/tests/docker/docker-compose.yml"
+    sub_skill: "blue-team"
+    zone: "1"
+
+  - prefix: "sigma"
+    service: "detection"
+    compose_file: "skills/blue-team/tests/docker/docker-compose.yml"
+    sub_skill: "blue-team"
+    zone: "1"
+
+  - prefix: "trivy"
+    service: "compliance"
+    compose_file: "skills/blue-team/tests/docker/docker-compose.yml"
+    sub_skill: "blue-team"
+    zone: "1"
+
+  # -----------------------------------------------------------------------
+  # Supply-chain sub-skill (rainbow-supply-chain)
+  # Zone 1 -- passive analysis; cosign sign/attest escalate to Zone 3
+  # -----------------------------------------------------------------------
+
+  - prefix: "syft"
+    service: "scanner"
+    compose_file: "skills/rainbow-supply-chain/tests/docker/docker-compose.yml"
+    sub_skill: "rainbow-supply-chain"
+    zone: "1"
+
+  - prefix: "grype"
+    service: "scanner"
+    compose_file: "skills/rainbow-supply-chain/tests/docker/docker-compose.yml"
+    sub_skill: "rainbow-supply-chain"
+    zone: "1"
+
+  - prefix: "cosign"
+    service: "verifier"
+    compose_file: "skills/rainbow-supply-chain/tests/docker/docker-compose.yml"
+    sub_skill: "rainbow-supply-chain"
+    zone: "1"
+    # Note: cosign is a dual-zone tool.
+    # Zone 1: verify, tree
+    # Zone 2: download signature/sbom
+    # Zone 3: sign, attest, attach
+    # Zone classification is per-operation per dual-zone escalation protocol.

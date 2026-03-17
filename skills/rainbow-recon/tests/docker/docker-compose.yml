@@ -16,7 +16,13 @@ services:
     working_dir: /work
     volumes:
       - recon-output:/work/output
-    network_mode: bridge
+      - ../../output:/rainbow-output
+      - ../../../../work:/work
+    # Zone 2: custom bridge network with egress control.
+    # Target-specific ACLs applied at engagement init via rainbow-tool-exec --init-engagement.
+    # Full structural enforcement (iptables egress ACLs) is target-state -- Phase 6.
+    networks:
+      - recon-net
     security_opt:
       - no-new-privileges:true
     read_only: false
@@ -26,3 +32,9 @@ services:
 
 volumes:
   recon-output:
+
+networks:
+  recon-net:
+    driver: bridge
+    # Zone 2 egress control: target ACLs generated from SCOPE.md at engagement init.
+    # Default: bridge allows outbound; ACLs restrict to authorized targets only (Phase 6).

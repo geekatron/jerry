@@ -1,0 +1,745 @@
+#!/usr/bin/env bash
+# rainbow-tool-exec -- Rainbow Series tool execution wrapper
+#
+# ADR-PROJ023-001 v1.3.0 -- Behavioral Contract BC-01 through BC-08
+#
+# Usage:
+#   rainbow-tool-exec [OPTIONS] <tool-command> [tool-args...]
+#
+# Options:
+#   --mode <local|container>   Override RAINBOW_TOOL_MODE for this invocation
+#   --zone <1|2|3>             Security zone (default: inferred from tool-exec.yaml)
+#   --engagement-id <id>       Engagement ID for evidence persistence
+#   --evidence-dir <path>      Override evidence output directory
+#   --no-filter                Skip credential filter (FORBIDDEN when RAINBOW_STRICT_MODE=true)
+#   --init-engagement <id>     Initialize a new engagement directory
+#   --health-check             Verify all container services are running (no tool execution)
+#   --help                     Show this help message
+#
+# Exit codes (ADR-PROJ023-001 Error Handling):
+#   0  -- Success (tool executed and output returned)
+#   1  -- Unknown tool prefix (not in resolution table)
+#   2  -- Tool execution error (tool's own non-zero exit code)
+#   3  -- Container not running and auto-start failed
+#   4  -- Credential detected in output (output quarantined)
+#   5  -- Engagement not initialized
+#   6  -- RAINBOW_TOOL_MODE unset for Zone 2/3 tool (strict mode)
+#
+# Environment variables:
+#   RAINBOW_TOOL_MODE       Execution mode: "local" | "container"
+#   RAINBOW_PROJECT_ROOT    Repository root (default: git root)
+#   RAINBOW_COMPOSE_DIR     Override compose file discovery
+#   RAINBOW_STRICT_MODE     "true" | "false" (default: true)
+#   RAINBOW_CONFIG_FILE     Path to tool-exec.yaml (default: auto-detect)
+
+set -euo pipefail
+
+# ---------------------------------------------------------------------------
+# Constants
+# ---------------------------------------------------------------------------
+
+readonly SCRIPT_NAME="rainbow-tool-exec"
+readonly SCRIPT_VERSION="1.0.0"
+readonly ADR_REF="ADR-PROJ023-001 v1.3.0"
+
+# Exit code constants (BC-01 through BC-08)
+readonly EXIT_SUCCESS=0
+readonly EXIT_UNKNOWN_TOOL=1
+readonly EXIT_TOOL_ERROR=2
+readonly EXIT_CONTAINER_NOT_RUNNING=3
+readonly EXIT_CREDENTIAL_DETECTED=4
+readonly EXIT_ENGAGEMENT_NOT_INIT=5
+readonly EXIT_MODE_UNSET=6
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+log_info()  { echo "[${SCRIPT_NAME}] INFO:  $*" >&2; }
+log_warn()  { echo "[${SCRIPT_NAME}] WARN:  $*" >&2; }
+log_error() { echo "[${SCRIPT_NAME}] ERROR: $*" >&2; }
+log_debug() { [[ "${RAINBOW_DEBUG:-false}" == "true" ]] && echo "[${SCRIPT_NAME}] DEBUG: $*" >&2 || true; }
+
+usage() {
+    sed -n '4,36p' "$0" | sed 's/^# //' | sed 's/^#//'
+    exit 0
+}
+
+# ---------------------------------------------------------------------------
+# Project root detection
+# ---------------------------------------------------------------------------
+
+detect_project_root() {
+    if [[ -n "${RAINBOW_PROJECT_ROOT:-}" ]]; then
+        echo "${RAINBOW_PROJECT_ROOT}"
+        return
+    fi
+    # Walk up until we find a .git directory or pyproject.toml
+    local dir
+    dir="$(pwd)"
+    while [[ "${dir}" != "/" ]]; do
+        if [[ -d "${dir}/.git" ]] || [[ -f "${dir}/pyproject.toml" ]]; then
+            echo "${dir}"
+            return
+        fi
+        dir="$(dirname "${dir}")"
+    done
+    # Fallback: use current directory
+    echo "$(pwd)"
+}
+
+# ---------------------------------------------------------------------------
+# Configuration file parsing
+# (Pure bash YAML parsing -- only reads scalar key: value pairs)
+# ---------------------------------------------------------------------------
+
+CONFIG_TOOL_MODE=""
+CONFIG_STRICT_MODE=""
+
+parse_config_file() {
+    local config_file="$1"
+    [[ -f "${config_file}" ]] || return 0
+
+    log_debug "Parsing config file: ${config_file}"
+
+    # Extract top-level scalar fields only
+    while IFS= read -r line; do
+        # Skip comments and blank lines
+        [[ "${line}" =~ ^[[:space:]]*# ]] && continue
+        [[ -z "${line// /}" ]] && continue
+
+        # Match key: value at top level (no leading spaces = top-level)
+        if [[ "${line}" =~ ^([a-z_]+)[[:space:]]*:[[:space:]]*(.+)$ ]]; then
+            local key="${BASH_REMATCH[1]}"
+            local val="${BASH_REMATCH[2]}"
+            # Strip inline comment
+            val="${val%%#*}"
+            val="${val%"${val##*[![:space:]]}"}"  # rtrim
+
+            case "${key}" in
+                default_mode)   CONFIG_TOOL_MODE="${val}" ;;
+                strict_mode)    CONFIG_STRICT_MODE="${val}" ;;
+            esac
+        fi
+    done < "${config_file}"
+
+    log_debug "Config parsed: default_mode='${CONFIG_TOOL_MODE}' strict_mode='${CONFIG_STRICT_MODE}'"
+}
+
+# ---------------------------------------------------------------------------
+# Tool resolution table lookup
+# Reads tool_resolution section from tool-exec.yaml
+# Returns: "<container_service>|<compose_file>|<sub_skill>|<zone>"
+# ---------------------------------------------------------------------------
+
+TOOL_RESOLUTION_TABLE=()   # populated from config file
+
+load_tool_resolution_table() {
+    local config_file="$1"
+    [[ -f "${config_file}" ]] || return 0
+
+    # Parse tool_resolution section line-by-line
+    # Format (YAML block sequence under tool_resolution:):
+    #   - prefix: "impacket-*"
+    #     service: "exploit-ops"
+    #     compose_file: "..."
+    #     sub_skill: "rainbow-exploit"
+    #     zone: "3"
+    local in_section=false
+    local cur_prefix="" cur_service="" cur_compose="" cur_sub_skill="" cur_zone=""
+
+    while IFS= read -r line; do
+        # Detect section start
+        if [[ "${line}" =~ ^tool_resolution[[:space:]]*: ]]; then
+            in_section=true
+            continue
+        fi
+        # Detect section end (new top-level key)
+        if [[ "${in_section}" == true ]] && [[ "${line}" =~ ^[a-z_]+[[:space:]]*: ]] && ! [[ "${line}" =~ ^[[:space:]] ]]; then
+            in_section=false
+        fi
+
+        [[ "${in_section}" == false ]] && continue
+
+        # New entry begins
+        if [[ "${line}" =~ ^[[:space:]]*-[[:space:]]+prefix:[[:space:]]*[\"\'](.*)[\"\'](.*) ]]; then
+            # Flush previous entry if complete
+            if [[ -n "${cur_prefix}" && -n "${cur_service}" ]]; then
+                TOOL_RESOLUTION_TABLE+=("${cur_prefix}|${cur_service}|${cur_compose}|${cur_sub_skill}|${cur_zone}")
+            fi
+            cur_prefix="${BASH_REMATCH[1]}"
+            cur_service="" cur_compose="" cur_sub_skill="" cur_zone=""
+            continue
+        fi
+
+        # Entry fields (indented)
+        if [[ "${line}" =~ ^[[:space:]]+service:[[:space:]]*[\"\'](.*)[\"\'](.*) ]]; then
+            cur_service="${BASH_REMATCH[1]}"
+        elif [[ "${line}" =~ ^[[:space:]]+compose_file:[[:space:]]*[\"\'](.*)[\"\'](.*) ]]; then
+            cur_compose="${BASH_REMATCH[1]}"
+        elif [[ "${line}" =~ ^[[:space:]]+sub_skill:[[:space:]]*[\"\'](.*)[\"\'](.*) ]]; then
+            cur_sub_skill="${BASH_REMATCH[1]}"
+        elif [[ "${line}" =~ ^[[:space:]]+zone:[[:space:]]*[\"\'](.*)[\"\'](.*) ]]; then
+            cur_zone="${BASH_REMATCH[1]}"
+        fi
+    done < "${config_file}"
+
+    # Flush last entry
+    if [[ -n "${cur_prefix}" && -n "${cur_service}" ]]; then
+        TOOL_RESOLUTION_TABLE+=("${cur_prefix}|${cur_service}|${cur_compose}|${cur_sub_skill}|${cur_zone}")
+    fi
+
+    log_debug "Loaded ${#TOOL_RESOLUTION_TABLE[@]} tool resolution entries"
+}
+
+# Resolve a tool command to its entry.
+# Sets globals: RESOLVED_SERVICE, RESOLVED_COMPOSE, RESOLVED_SUB_SKILL, RESOLVED_ZONE
+# Returns 0 on success, 1 on no match.
+resolve_tool() {
+    local tool_cmd="$1"
+    local project_root="$2"
+
+    RESOLVED_SERVICE=""
+    RESOLVED_COMPOSE=""
+    RESOLVED_SUB_SKILL=""
+    RESOLVED_ZONE=""
+
+    # Longest-prefix matching (ADR R-1 mitigation)
+    local best_match_len=0
+    local best_entry=""
+
+    # Guard: bash 3/4 unbound variable on empty array with set -u
+    local table_size=${#TOOL_RESOLUTION_TABLE[@]}
+    if (( table_size == 0 )); then
+        return 1
+    fi
+
+    for entry in "${TOOL_RESOLUTION_TABLE[@]}"; do
+        local prefix
+        prefix="${entry%%|*}"
+
+        # Wildcard prefix: strip trailing "-*" for matching
+        local match_prefix="${prefix%%-\*}"
+        local is_wildcard=false
+        [[ "${prefix}" == *-\* ]] && is_wildcard=true
+
+        local matched=false
+        if [[ "${is_wildcard}" == true ]]; then
+            # Prefix must be at start of tool_cmd
+            if [[ "${tool_cmd}" == "${match_prefix}"* ]] || [[ "${tool_cmd}" == "${match_prefix}-"* ]]; then
+                matched=true
+            fi
+        else
+            # Exact match or tool_cmd starts with prefix (space or end)
+            if [[ "${tool_cmd}" == "${prefix}" ]] || [[ "${tool_cmd}" == "${prefix} "* ]]; then
+                matched=true
+            fi
+        fi
+
+        if [[ "${matched}" == true ]]; then
+            local len=${#match_prefix}
+            if (( len > best_match_len )); then
+                best_match_len=${len}
+                best_entry="${entry}"
+            fi
+        fi
+    done
+
+    if [[ -z "${best_entry}" ]]; then
+        return 1
+    fi
+
+    IFS='|' read -r _ RESOLVED_SERVICE RESOLVED_COMPOSE RESOLVED_SUB_SKILL RESOLVED_ZONE <<< "${best_entry}"
+
+    # Resolve compose path relative to project root
+    if [[ -n "${RAINBOW_COMPOSE_DIR:-}" ]]; then
+        RESOLVED_COMPOSE="${RAINBOW_COMPOSE_DIR}"
+    else
+        RESOLVED_COMPOSE="${project_root}/${RESOLVED_COMPOSE}"
+    fi
+
+    log_debug "Resolved '${tool_cmd}' -> service='${RESOLVED_SERVICE}' compose='${RESOLVED_COMPOSE}' sub_skill='${RESOLVED_SUB_SKILL}' zone='${RESOLVED_ZONE}'"
+    return 0
+}
+
+# ---------------------------------------------------------------------------
+# Container health check and auto-start
+# ---------------------------------------------------------------------------
+
+check_and_start_container() {
+    local service="$1"
+    local compose_file="$2"
+
+    log_debug "Checking container service: ${service} via ${compose_file}"
+
+    if ! command -v docker &>/dev/null; then
+        log_error "docker is not installed or not in PATH. Cannot use container mode."
+        return ${EXIT_CONTAINER_NOT_RUNNING}
+    fi
+
+    # Check if service is running
+    local status
+    status="$(docker compose -f "${compose_file}" ps --status running --services 2>/dev/null || true)"
+
+    if echo "${status}" | grep -qx "${service}"; then
+        log_debug "Container service '${service}' is running."
+        return 0
+    fi
+
+    # Service not running -- attempt auto-start (BC-06)
+    log_warn "Container service '${service}' is not running. Attempting auto-start..."
+    if docker compose -f "${compose_file}" up -d "${service}" 2>&1 | while IFS= read -r l; do log_debug "  docker: ${l}"; done; then
+        log_info "Auto-start succeeded for service '${service}'."
+        return 0
+    else
+        log_error "Container service '${service}' is not running and auto-start failed."
+        log_error "Run: docker compose -f '${compose_file}' up -d"
+        return ${EXIT_CONTAINER_NOT_RUNNING}
+    fi
+}
+
+# ---------------------------------------------------------------------------
+# Credential filter (W0 placeholder -- BC-07)
+# At W0 this is a minimal regex pass.  W1 will replace with the full
+# three-layer pipeline from rainbow-credential-filter.md.
+# ---------------------------------------------------------------------------
+
+CREDENTIAL_FILTER_PATTERNS=(
+    # AWS access key pattern
+    '(A3T[A-Z0-9]|AKIA|AGPA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}'
+    # AWS secret key (heuristic -- base64-like 40 chars after key=)
+    '(?i)(aws_secret_access_key|aws_secret)[[:space:]]*[=:][[:space:]]*[A-Za-z0-9/+=]{40}'
+    # Generic API token / Bearer patterns
+    '(?i)(api[_-]?key|api[_-]?token|access[_-]?token|bearer)[[:space:]]*[=:][[:space:]]*[A-Za-z0-9_\-\.]{20,}'
+    # SSH private key header
+    '-----BEGIN (RSA|DSA|EC|OPENSSH|PGP) PRIVATE KEY'
+    # NTLM hash (32 hex chars, often prefixed by user:domain:LM:NTLM)
+    ':[0-9a-fA-F]{32}:[0-9a-fA-F]{32}:'
+    # Generic password assignment
+    '(?i)(password|passwd|pwd)[[:space:]]*[=:][[:space:]]*[^\s]{8,}'
+    # Connection strings with credentials
+    '(?i)(mongodb|postgresql|mysql|redis|amqp)(\+srv)?://[^:]+:[^@]+@'
+)
+
+apply_credential_filter() {
+    local raw_output="$1"
+    local quarantine_dir="$2"
+    local engagement_id="${3:-unknown}"
+
+    if [[ "${NO_FILTER}" == "true" ]]; then
+        echo "${raw_output}"
+        return 0
+    fi
+
+    # W0: Line-by-line regex scan (L1 layer only)
+    local detected=false
+    local detected_pattern=""
+    local detected_line_num=0
+    local line_num=0
+
+    while IFS= read -r line; do
+        line_num=$(( line_num + 1 ))
+        for pattern in "${CREDENTIAL_FILTER_PATTERNS[@]}"; do
+            if echo "${line}" | grep -qP "${pattern}" 2>/dev/null; then
+                detected=true
+                detected_pattern="${pattern}"
+                detected_line_num=${line_num}
+                break 2
+            fi
+        done
+    done <<< "${raw_output}"
+
+    if [[ "${detected}" == true ]]; then
+        # Quarantine the raw output (BC-07)
+        local ts
+        ts="$(date -u +%Y%m%dT%H%M%SZ)"
+        local quarantine_file="${quarantine_dir}/quarantine-${engagement_id}-${ts}.txt"
+        local meta_file="${quarantine_dir}/quarantine-${engagement_id}-${ts}.meta.json"
+
+        mkdir -p "${quarantine_dir}"
+        echo "${raw_output}" > "${quarantine_file}"
+
+        local raw_hash
+        raw_hash="$(echo "${raw_output}" | sha256sum | awk '{print $1}')"
+
+        cat > "${meta_file}" <<JSON
+{
+  "timestamp": "${ts}",
+  "engagement_id": "${engagement_id}",
+  "detecting_layer": "L1-regex",
+  "matched_pattern": "${detected_pattern}",
+  "detected_at_line": ${detected_line_num},
+  "sha256_raw": "${raw_hash}",
+  "quarantine_file": "${quarantine_file}"
+}
+JSON
+
+        log_warn "Credential detected in tool output (L1-regex, line ${detected_line_num})."
+        log_warn "Output quarantined to: ${quarantine_file}"
+        log_warn "Review metadata: ${meta_file}"
+
+        # Return placeholder to agent (BC-07)
+        echo "[CREDENTIAL-FILTER] Output quarantined. Detecting layer: L1-regex. Pattern matched at line ${detected_line_num}."
+        echo "[CREDENTIAL-FILTER] Quarantine file: ${quarantine_file}"
+        echo "[CREDENTIAL-FILTER] Do NOT attempt to retrieve quarantined content without operator review."
+        return ${EXIT_CREDENTIAL_DETECTED}
+    fi
+
+    # No credential detected -- return output as-is
+    echo "${raw_output}"
+    return 0
+}
+
+# ---------------------------------------------------------------------------
+# Evidence persistence
+# ---------------------------------------------------------------------------
+
+persist_evidence() {
+    local raw_output="$1"
+    local filtered_output="$2"
+    local tool_cmd="$3"
+    local engagement_id="$4"
+    local evidence_dir="$5"
+
+    mkdir -p "${evidence_dir}"
+
+    local ts
+    ts="$(date -u +%Y%m%dT%H%M%SZ)"
+    # Sanitize tool command for use in filename
+    local safe_cmd
+    safe_cmd="$(echo "${tool_cmd}" | tr ' /' '_-' | tr -cd 'A-Za-z0-9_-' | cut -c1-50)"
+
+    local evidence_file="${evidence_dir}/${ts}-${safe_cmd}.txt"
+    local meta_file="${evidence_dir}/${ts}-${safe_cmd}.meta.json"
+
+    echo "${raw_output}" > "${evidence_file}"
+
+    local raw_hash filtered_hash
+    raw_hash="$(echo "${raw_output}" | sha256sum | awk '{print $1}')"
+    filtered_hash="$(echo "${filtered_output}" | sha256sum | awk '{print $1}')"
+
+    cat > "${meta_file}" <<JSON
+{
+  "timestamp": "${ts}",
+  "engagement_id": "${engagement_id}",
+  "tool_command": "${tool_cmd}",
+  "sha256_raw": "${raw_hash}",
+  "sha256_filtered": "${filtered_hash}",
+  "evidence_file": "${evidence_file}",
+  "rainbow_tool_mode": "${EFFECTIVE_MODE}",
+  "adr_ref": "${ADR_REF}"
+}
+JSON
+
+    log_debug "Evidence persisted: ${evidence_file} (sha256_raw=${raw_hash})"
+}
+
+# ---------------------------------------------------------------------------
+# Engagement initialization
+# ---------------------------------------------------------------------------
+
+init_engagement() {
+    local engagement_id="$1"
+    local project_root="$2"
+    local evidence_base="${project_root}/work/engagements/${engagement_id}"
+
+    if [[ -d "${evidence_base}" ]]; then
+        log_warn "Engagement '${engagement_id}' already initialized at: ${evidence_base}"
+        return 0
+    fi
+
+    mkdir -p "${evidence_base}/evidence" \
+             "${evidence_base}/reports" \
+             "${evidence_base}/.credential-quarantine"
+
+    local ts
+    ts="$(date -u +%Y%m%dT%H%M%SZ)"
+
+    cat > "${evidence_base}/engagement-init.json" <<JSON
+{
+  "engagement_id": "${engagement_id}",
+  "initialized_at": "${ts}",
+  "initialized_by": "${SCRIPT_NAME}",
+  "adr_ref": "${ADR_REF}"
+}
+JSON
+
+    log_info "Engagement '${engagement_id}' initialized at: ${evidence_base}"
+    echo "${evidence_base}"
+}
+
+# ---------------------------------------------------------------------------
+# Health check mode
+# ---------------------------------------------------------------------------
+
+run_health_check() {
+    local project_root="$1"
+
+    log_info "Running health check for all container services..."
+    local any_failed=false
+
+    for entry in "${TOOL_RESOLUTION_TABLE[@]}"; do
+        IFS='|' read -r prefix service compose sub_skill zone <<< "${entry}"
+        local abs_compose="${project_root}/${compose##"${project_root}/"}"
+        [[ "${compose}" == /* ]] && abs_compose="${compose}"
+
+        if [[ ! -f "${abs_compose}" ]]; then
+            log_warn "  [SKIP] ${service} (${sub_skill}): compose file not found: ${abs_compose}"
+            continue
+        fi
+
+        local status
+        status="$(docker compose -f "${abs_compose}" ps --status running --services 2>/dev/null || true)"
+
+        if echo "${status}" | grep -qx "${service}"; then
+            log_info "  [OK]   ${service} (${sub_skill}): running"
+        else
+            log_warn "  [DOWN] ${service} (${sub_skill}): not running"
+            any_failed=true
+        fi
+    done
+
+    if [[ "${any_failed}" == true ]]; then
+        log_warn "One or more container services are not running."
+        return 1
+    fi
+    log_info "All monitored container services are running."
+    return 0
+}
+
+# ---------------------------------------------------------------------------
+# Argument parsing
+# ---------------------------------------------------------------------------
+
+MODE_FLAG=""
+ZONE_FLAG=""
+ENGAGEMENT_ID=""
+EVIDENCE_DIR_FLAG=""
+NO_FILTER="false"
+INIT_ENGAGEMENT_ID=""
+HEALTH_CHECK="false"
+TOOL_ARGS=()
+
+parse_args() {
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --mode)
+                [[ -z "${2:-}" ]] && { log_error "--mode requires an argument (local|container)"; exit 1; }
+                MODE_FLAG="$2"; shift 2 ;;
+            --zone)
+                [[ -z "${2:-}" ]] && { log_error "--zone requires an argument (1|2|3)"; exit 1; }
+                ZONE_FLAG="$2"; shift 2 ;;
+            --engagement-id)
+                [[ -z "${2:-}" ]] && { log_error "--engagement-id requires an argument"; exit 1; }
+                ENGAGEMENT_ID="$2"; shift 2 ;;
+            --evidence-dir)
+                [[ -z "${2:-}" ]] && { log_error "--evidence-dir requires an argument"; exit 1; }
+                EVIDENCE_DIR_FLAG="$2"; shift 2 ;;
+            --no-filter)
+                NO_FILTER="true"; shift ;;
+            --init-engagement)
+                [[ -z "${2:-}" ]] && { log_error "--init-engagement requires an engagement ID"; exit 1; }
+                INIT_ENGAGEMENT_ID="$2"; shift 2 ;;
+            --health-check)
+                HEALTH_CHECK="true"; shift ;;
+            --help|-h)
+                usage ;;
+            --)
+                shift; TOOL_ARGS+=("$@"); break ;;
+            -*)
+                log_error "Unknown option: $1"; exit 1 ;;
+            *)
+                TOOL_ARGS+=("$@"); break ;;
+        esac
+    done
+}
+
+# ---------------------------------------------------------------------------
+# Main
+# ---------------------------------------------------------------------------
+
+main() {
+    parse_args "$@"
+
+    local project_root
+    project_root="$(detect_project_root)"
+    log_debug "Project root: ${project_root}"
+
+    # Locate config file
+    local config_file="${RAINBOW_CONFIG_FILE:-${project_root}/skills/rainbow/config/tool-exec.yaml}"
+    log_debug "Config file: ${config_file}"
+
+    # Parse configuration
+    parse_config_file "${config_file}"
+    load_tool_resolution_table "${config_file}"
+
+    # Handle --init-engagement before any other logic (BC-08 support)
+    if [[ -n "${INIT_ENGAGEMENT_ID}" ]]; then
+        init_engagement "${INIT_ENGAGEMENT_ID}" "${project_root}"
+        exit 0
+    fi
+
+    # Handle --health-check
+    if [[ "${HEALTH_CHECK}" == "true" ]]; then
+        run_health_check "${project_root}"
+        exit $?
+    fi
+
+    # Need at least one argument (the tool command)
+    if [[ ${#TOOL_ARGS[@]} -eq 0 ]]; then
+        log_error "No tool command specified."
+        usage
+    fi
+
+    local tool_cmd="${TOOL_ARGS[0]}"
+    local tool_extra_args=("${TOOL_ARGS[@]:1}")
+
+    # ---------------------------------------------------------------------------
+    # Mode resolution (precedence: CLI > env > config > default)
+    # ---------------------------------------------------------------------------
+
+    # Determine strict mode (precedence: env var > config file > default true)
+    local effective_strict=""
+    if [[ -n "${RAINBOW_STRICT_MODE:-}" ]]; then
+        effective_strict="${RAINBOW_STRICT_MODE}"
+    elif [[ -n "${CONFIG_STRICT_MODE}" ]]; then
+        effective_strict="${CONFIG_STRICT_MODE}"
+    else
+        effective_strict="true"
+    fi
+    # Normalize to lowercase (portable -- bash 3 compatible, avoids ${var,,})
+    effective_strict="$(echo "${effective_strict}" | tr '[:upper:]' '[:lower:]')"
+
+    # Enforce --no-filter restriction in strict mode (BC-09 note: FORBIDDEN in production)
+    if [[ "${NO_FILTER}" == "true" && "${effective_strict}" == "true" ]]; then
+        log_error "--no-filter is FORBIDDEN when RAINBOW_STRICT_MODE=true."
+        log_error "This flag may only be used in development with RAINBOW_STRICT_MODE=false."
+        exit 1
+    fi
+
+    # Resolve tool entry from table
+    if ! resolve_tool "${tool_cmd}" "${project_root}"; then
+        log_error "Unknown tool prefix '${tool_cmd}'."
+        log_error "Add the mapping to: ${config_file} (tool_resolution section)"
+        log_error "Agents MUST NOT bypass the wrapper and invoke the tool directly. (ADR BC-05)"
+        exit ${EXIT_UNKNOWN_TOOL}
+    fi
+
+    # Determine effective zone (flag overrides resolved zone)
+    local effective_zone="${ZONE_FLAG:-${RESOLVED_ZONE:-1}}"
+
+    # Mode resolution
+    EFFECTIVE_MODE="${MODE_FLAG}"
+    if [[ -z "${EFFECTIVE_MODE}" ]]; then
+        EFFECTIVE_MODE="${RAINBOW_TOOL_MODE:-}"
+    fi
+    if [[ -z "${EFFECTIVE_MODE}" ]]; then
+        EFFECTIVE_MODE="${CONFIG_TOOL_MODE}"
+    fi
+    if [[ -z "${EFFECTIVE_MODE}" ]]; then
+        EFFECTIVE_MODE="local"  # hardcoded default (Level 4)
+    fi
+
+    # BC-03: strict mode blocks unset mode for Zone 2/3
+    if [[ -z "${MODE_FLAG}" && -z "${RAINBOW_TOOL_MODE:-}" && -z "${CONFIG_TOOL_MODE}" ]]; then
+        if [[ "${effective_zone}" != "1" && "${effective_strict}" == "true" ]]; then
+            log_error "RAINBOW_TOOL_MODE is not set. Zone 2/3 tools require explicit mode selection."
+            log_error "Set RAINBOW_TOOL_MODE=local or RAINBOW_TOOL_MODE=container."
+            log_error "Tool: ${tool_cmd}  Zone: ${effective_zone}  (ADR BC-03)"
+            exit ${EXIT_MODE_UNSET}
+        fi
+    fi
+
+    log_debug "Effective mode: ${EFFECTIVE_MODE}  Zone: ${effective_zone}  Sub-skill: ${RESOLVED_SUB_SKILL}"
+
+    # ---------------------------------------------------------------------------
+    # Engagement validation (BC-08)
+    # ---------------------------------------------------------------------------
+
+    local evidence_dir=""
+    if [[ -n "${ENGAGEMENT_ID}" ]]; then
+        local engagement_base="${project_root}/work/engagements/${ENGAGEMENT_ID}"
+        if [[ ! -d "${engagement_base}" ]]; then
+            log_error "Engagement '${ENGAGEMENT_ID}' is not initialized."
+            log_error "Run: ${SCRIPT_NAME} --init-engagement '${ENGAGEMENT_ID}'"
+            log_error "(ADR BC-08)"
+            exit ${EXIT_ENGAGEMENT_NOT_INIT}
+        fi
+        evidence_dir="${EVIDENCE_DIR_FLAG:-${engagement_base}/evidence}"
+    fi
+
+    local quarantine_dir="${project_root}/work/.credential-quarantine"
+    [[ -n "${ENGAGEMENT_ID}" ]] && quarantine_dir="${project_root}/work/engagements/${ENGAGEMENT_ID}/.credential-quarantine"
+
+    # ---------------------------------------------------------------------------
+    # Tool execution
+    # ---------------------------------------------------------------------------
+
+    local raw_output=""
+    local tool_exit_code=0
+
+    if [[ "${EFFECTIVE_MODE}" == "local" ]]; then
+        # BC-01: Execute tool directly on host
+        log_debug "Local mode: executing '${tool_cmd} ${tool_extra_args[*]:-}'"
+        raw_output="$(${tool_cmd} "${tool_extra_args[@]}" 2>&1)" || tool_exit_code=$?
+
+    elif [[ "${EFFECTIVE_MODE}" == "container" ]]; then
+        # BC-02: Execute via docker compose exec
+        local compose_file="${RESOLVED_COMPOSE}"
+
+        if [[ ! -f "${compose_file}" ]]; then
+            log_error "Compose file not found: ${compose_file}"
+            log_error "Check skills/${RESOLVED_SUB_SKILL}/tests/docker/ or set RAINBOW_COMPOSE_DIR."
+            exit ${EXIT_CONTAINER_NOT_RUNNING}
+        fi
+
+        # Check / auto-start container (BC-06)
+        check_and_start_container "${RESOLVED_SERVICE}" "${compose_file}" || exit ${EXIT_CONTAINER_NOT_RUNNING}
+
+        log_debug "Container mode: docker compose exec -T ${RESOLVED_SERVICE} ${tool_cmd} ${tool_extra_args[*]:-}"
+        raw_output="$(docker compose -f "${compose_file}" exec -T "${RESOLVED_SERVICE}" \
+            "${tool_cmd}" "${tool_extra_args[@]}" 2>&1)" || tool_exit_code=$?
+
+    else
+        log_error "Invalid RAINBOW_TOOL_MODE: '${EFFECTIVE_MODE}'. Must be 'local' or 'container'."
+        exit 1
+    fi
+
+    # ---------------------------------------------------------------------------
+    # Credential filter application (BC-07)
+    # ---------------------------------------------------------------------------
+
+    local filtered_output=""
+    local filter_exit=0
+    filtered_output="$(apply_credential_filter "${raw_output}" "${quarantine_dir}" "${ENGAGEMENT_ID:-no-engagement}")" || filter_exit=$?
+
+    if [[ "${filter_exit}" == "${EXIT_CREDENTIAL_DETECTED}" ]]; then
+        echo "${filtered_output}"
+        exit ${EXIT_CREDENTIAL_DETECTED}
+    fi
+
+    # ---------------------------------------------------------------------------
+    # Evidence persistence
+    # ---------------------------------------------------------------------------
+
+    if [[ -n "${evidence_dir}" ]]; then
+        persist_evidence "${raw_output}" "${filtered_output}" \
+            "${tool_cmd} ${tool_extra_args[*]:-}" \
+            "${ENGAGEMENT_ID}" "${evidence_dir}"
+    fi
+
+    # ---------------------------------------------------------------------------
+    # Output and exit
+    # ---------------------------------------------------------------------------
+
+    echo "${filtered_output}"
+
+    if (( tool_exit_code != 0 )); then
+        log_debug "Tool exited with code ${tool_exit_code}"
+        exit ${EXIT_TOOL_ERROR}
+    fi
+
+    exit ${EXIT_SUCCESS}
+}
+
+main "$@"

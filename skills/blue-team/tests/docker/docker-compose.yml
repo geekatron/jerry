@@ -16,8 +16,12 @@ services:
     volumes:
       - detection-output:/output
       - detection-fixtures:/fixtures
+      - ../../output:/rainbow-output
+      - ../../../../work:/work
     security_opt:
       - no-new-privileges:true
+    # Zone 1: network_mode: none -- structural enforcement.
+    # Container has zero network access regardless of agent behavior.
     network_mode: none
     entrypoint: ["/bin/bash"]
     stdin_open: true
@@ -33,8 +37,12 @@ services:
     volumes:
       - compliance-output:/output
       - compliance-fixtures:/fixtures
+      - ../../output:/rainbow-output
+      - ../../../../work:/work
     security_opt:
       - no-new-privileges:true
+    # Zone 1: network_mode: none -- structural enforcement.
+    # Container has zero network access regardless of agent behavior.
     network_mode: none
     entrypoint: ["/bin/bash"]
     stdin_open: true
@@ -50,8 +58,12 @@ services:
     volumes:
       - forensics-output:/output
       - forensics-fixtures:/fixtures
+      - ../../output:/rainbow-output
+      - ../../../../work:/work
     security_opt:
       - no-new-privileges:true
+    # Zone 1: network_mode: none -- structural enforcement.
+    # Container has zero network access regardless of agent behavior.
     network_mode: none
     entrypoint: ["/bin/bash"]
     stdin_open: true
@@ -67,8 +79,12 @@ services:
     volumes:
       - intel-output:/output
       - intel-fixtures:/fixtures
+      - ../../output:/rainbow-output
+      - ../../../../work:/work
     security_opt:
       - no-new-privileges:true
+    # Zone 1: network_mode: none -- structural enforcement.
+    # Container has zero network access regardless of agent behavior.
     network_mode: none
     entrypoint: ["/bin/bash"]
     stdin_open: true

@@ -47,6 +47,7 @@ guardrails:
     - zone_enforcement_model: "behavioral -- zone restrictions are LLM-enforced guardrails, not machine-enforced runtime gates. Bash tool access is unconditional; target validation relies on agent compliance with the engagement scope. This is a documented architectural limitation per ADR-PROJ023-001."
     - neo4j_connectivity_check: "verify Neo4j instance is accessible before sync operations; degrade to Level 1/2 if unavailable"
     - bash_subcommand_allowlist_zone_2: "cartography --neo4j-uri <uri> (sync against authorized cloud accounts only)"
+    - tool_execution_wrapper: "All tool commands resolved through rainbow-tool-exec per ADR-PROJ023-001. bash_subcommand_allowlist applies to the tool command portion, not the wrapper invocation."
   output_filtering:
     - no_secrets_in_output
     - no_executable_code_without_context

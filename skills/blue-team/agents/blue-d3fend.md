@@ -323,6 +323,10 @@ All D3FEND mappings record `d3fend_kb_version` for staleness tracking. If the D3
 
 All operations are Zone 1 (Analysis): knowledge base queries and local artifact production. No infrastructure modification, no defensive deployment, no live system interaction.
 
+## Tool Execution
+
+All tool invocations in this agent's methodology use the `rainbow-tool-exec` wrapper. The wrapper resolves to local CLI or container execution based on `RAINBOW_TOOL_MODE` configuration. Agent methodology sections show tool commands without the wrapper prefix for readability; the orchestrator prepends `rainbow-tool-exec` at invocation time. See ADR-PROJ023-001 for the behavioral contract (BC-01 through BC-09).
+
 ## Constitutional Compliance
 
 - P-001: All findings evidence-based with D3FEND KB citations

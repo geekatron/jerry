@@ -1,16 +1,23 @@
 version: "3.9"
 
+# Zone: 1 (Analysis -- SBOM generation and supply chain scanning; no external network required)
+# Network: network_mode: none (Zone 1 structural enforcement -- container has zero network access)
+
 services:
   scanner:
     build:
       context: ./scanner
     volumes:
-      - ./work:/work
+      - ../../output:/rainbow-output
+      - ../../../../work:/work
     working_dir: /work
+    network_mode: none
 
   verifier:
     build:
       context: ./verifier
     volumes:
-      - ./work:/work
+      - ../../output:/rainbow-output
+      - ../../../../work:/work
     working_dir: /work
+    network_mode: none

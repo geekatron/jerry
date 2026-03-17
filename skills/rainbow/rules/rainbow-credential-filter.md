@@ -12,6 +12,7 @@
 | [L1: Regex Pattern Matching](#l1-regex-pattern-matching) | Deterministic pattern detection across 7 categories |
 | [L2: Entropy-Based Detection](#l2-entropy-based-detection) | Shannon entropy analysis for novel credential formats |
 | [L3: Structural Analysis](#l3-structural-analysis) | JSON/YAML key-name semantic matching |
+| [Container Output Mode](#container-output-mode) | Docker CLI noise stripping, buffering, exit codes, container-specific patterns |
 | [Fail-Closed Behavior](#fail-closed-behavior) | What happens when detection triggers or the filter fails |
 | [FMEA Decomposition](#fmea-decomposition) | Failure mode analysis with RPN scores |
 | [Canary Testing Requirements](#canary-testing-requirements) | Per-tool credential fixture validation |
@@ -196,6 +197,117 @@ L3 flags any key-value pair where the key matches a sensitive pattern and the va
 ### Nested Key Handling
 
 For nested structures (e.g., `{"database": {"connection": {"password": "value"}}}`), L3 evaluates BOTH the leaf key name AND the full dot-path. A match at any level triggers detection.
+
+---
+
+## Container Output Mode
+
+> **W1 Implementation Target.** This section is specification for W1 implementation. W0 delivers the specification and pattern definitions; W1 delivers the runtime validation scripts that enforce this behavior programmatically. The behavioral rules in this section apply as agent self-enforcement compensating controls during W0. See the Implementation Mechanism section for the W0/W1 boundary definition.
+
+When `RAINBOW_TOOL_MODE=container`, tool output passes through `docker compose exec` before reaching the credential filter. Container-wrapped output differs from direct CLI output in four ways that the filter must handle. The filter MUST apply Docker output cleanup before executing L1/L2/L3 layers.
+
+### Container Output Processing Pipeline
+
+```
+Container stdout/stderr
+        |
+        v
+  +---------------------------+
+  | DOCKER OUTPUT CLEANUP     |   <-- Strip BEFORE L1/L2/L3 filters
+  | Strip Docker CLI noise:   |
+  |  - Status lines           |
+  |  - Lifecycle messages     |
+  |  - Exit code prefix       |
+  +---------------------------+
+        |
+        v
+  +---------------------------+
+  | BINARY DETECTION          |
+  | Null byte in first 8192   |
+  | bytes? -> Quarantine       |
+  | entire output as binary   |
+  +---------------------------+
+        |
+        v
+  +---------------------------+
+  | CREDENTIAL FILTER         |
+  | L1: Regex patterns        |
+  | L2: Entropy detection     |
+  | L3: Structural analysis   |
+  +---------------------------+
+        |
+        v
+  Sanitized output -> Agent context
+```
+
+**Processing order rationale:** Docker noise MUST be stripped first so that (1) Docker status lines do not trigger false positive L1 pattern matches, and (2) the quarantine record written on detection contains clean tool output, not Docker wrapper text. This order is normative.
+
+### 1. Docker CLI Status Line Stripping
+
+Container output includes Docker status messages that are not tool output. The filter MUST strip these lines before applying L1/L2/L3 filters. A stripped line is discarded; it does not enter the quarantine record, the agent context, or the L1/L2/L3 filter pipeline.
+
+| Pattern | Example | Action |
+|---------|---------|--------|
+| Lines starting with `[+]` | `[+] Running 2/2` | Strip |
+| Lines starting with `Pulling` | `Pulling from library/kali` | Strip |
+| Lines starting with `Building` | `Building exploit-ops` | Strip |
+| Lines starting with `Attaching` | `Attaching to exploit-ops` | Strip |
+| Lines starting with `Container` | `Container exploit-ops Running` | Strip |
+| Lines matching `^(Creating|Starting|Stopping|Removing)` | `Creating exploit-c2` | Strip |
+| Lines matching `^(Started|Running|Healthy|Exited)` (bare status tokens) | `Started` | Strip |
+| Lines matching `^OCI runtime` | `OCI runtime exec failed` | Strip |
+| Empty `\r\n` padding from TTY interaction | (blank lines with carriage returns) | Strip |
+
+**Note on `[+]` prefix:** Docker BuildKit and Docker Compose v2 both use `[+]` prefix for progress output. This prefix is distinct from ANSI escape sequences; stripping is a string-match operation, not an ANSI-strip operation.
+
+### 2. Binary Buffering
+
+Container stdout buffers differently than local CLI execution. Two buffering modes occur in practice:
+
+| Mode | Condition | Impact on Filter |
+|------|-----------|-----------------|
+| **Line-buffered** | `docker compose exec -T` with a well-behaved tool | Output arrives line-by-line; standard sliding window applies |
+| **Block-buffered** | `docker compose exec -T` with a tool that does not flush stdout | Output arrives in large blocks; multi-line patterns that span a block boundary may be split across filter invocations |
+
+**Filter requirement:** The filter MUST handle both modes. When block-buffered output is detected (output arrives as a single large block without intermediate newlines), the filter treats the entire block as one unit for L1 sliding window analysis. The 5-line sliding window defined in L1 Multi-Line Sliding Window applies within a block; across block boundaries, the filter retains a 5-line carry-forward buffer from the end of each block.
+
+**Detection heuristic for block-buffered mode:** If the output received in a single Bash tool call exceeds 4096 bytes and contains no intermediate newlines in the first 4096 bytes, treat as block-buffered.
+
+### 3. Exit Code Mapping
+
+`rainbow-tool-exec` uses a defined exit code namespace. The credential filter produces exit code 4 when any L1/L2/L3 layer triggers. This is the same exit code used for filter crash (fail-closed).
+
+| Exit Code | Meaning | Filter-Produced |
+|-----------|---------|----------------|
+| 0 | Tool completed; output passed all filter layers clean | No |
+| 1 | Unknown tool prefix; tool not in resolution table | No |
+| 3 | Container not running; auto-start failed | No |
+| **4** | **Credential material detected and quarantined (any L1/L2/L3 trigger), OR filter crash/timeout** | **Yes** |
+| 5 | Engagement not initialized | No |
+| 6 | `RAINBOW_TOOL_MODE` unset for Zone 2/3 tool | No |
+
+**Exit code 4 ambiguity:** Both credential detection and filter failure produce exit code 4. The distinction is communicated via the placeholder message in the agent context:
+
+- Detection: `[QUARANTINED: potential credential detected by {layer} -- human review required at work/.credential-quarantine/{filename}]`
+- Crash: `[TOOL OUTPUT REJECTED: credential filter failure -- raw output saved to quarantine]`
+
+Agents MUST treat both as the same behavioral response: report to orchestrator, do not attempt to retrieve quarantined content, do not retry without operator guidance.
+
+### 4. Container-Specific Credential Patterns
+
+Container environments introduce credential material formats not present in direct CLI output. These patterns are added to the L1 regex pattern set in `credential-regex-patterns.yaml` as Category 8 (Container Environment Credentials).
+
+| Pattern Type | Description | Confidence | Container Source |
+|-------------|-------------|-----------|-----------------|
+| Docker auth token | Base64-encoded `{"auths":{"registry": {"auth": "<base64>"}}}` blobs, or the inner `auth` value (base64 of `user:password`) | High | `docker login` output, `~/.docker/config.json` echoed into container |
+| Registry credential | `docker.io`, `ghcr.io`, `registry.example.com` followed by username/password on adjacent lines | High | Docker registry login prompts, credential helper output |
+| Docker secret value | Output from `docker secret inspect --format '{{json .}}'` containing `Spec.Data` field | High | Docker Swarm secret inspection |
+| Docker Compose environment variable secrets | `{SERVICE}_{VAR}=<value>` patterns where VAR matches L1 Category 7 sensitive labels (password, secret, token, key, credential) | Medium | `docker compose config` output, `docker inspect` environment dump |
+| Container registry bearer token | `Bearer <base64-jwt>` patterns in Docker API response headers or `docker manifest inspect` verbose output | High | Registry API interaction output |
+
+**L1 base64 decode-and-rescan applicability:** Docker auth tokens are base64-encoded. The existing L1 base64 decode-and-rescan mechanism (Category 1-7 supplemental) applies to Category 8 patterns. When a base64 string decodes to a JSON structure containing `auths`, `auth`, or `password` keys, L3 structural analysis on the decoded content also fires.
+
+**Pattern YAML location:** All Category 8 regex patterns with canary test values are defined in `skills/rainbow/rules/credential-regex-patterns.yaml` under the `container_environment` category key. Literal examples are excluded from this markdown file to avoid triggering secret-detection hooks; see the YAML file.
 
 ---
 

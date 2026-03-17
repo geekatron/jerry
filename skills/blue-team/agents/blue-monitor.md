@@ -140,6 +140,10 @@ All operations are Zone 1 (Analysis) only. This agent produces detection artifac
 
 When processing artifacts received from cross-skill handoffs (particularly IP-5: Red-to-Blue threat-informed defense), blue-monitor applies the Rainbow credential filter pipeline. Red-team output is classified as `adversary-tainted` and may contain credential material. The credential filter specification is defined in `skills/rainbow/rules/rainbow-credential-filter.md`. All three filter layers (L1 regex, L2 entropy, L3 structural) apply. Fail-closed behavior: if the filter crashes or times out, the artifact is rejected and quarantined.
 
+## Tool Execution
+
+All tool invocations in this agent's methodology use the `rainbow-tool-exec` wrapper. The wrapper resolves to local CLI or container execution based on `RAINBOW_TOOL_MODE` configuration. Agent methodology sections show tool commands without the wrapper prefix for readability; the orchestrator prepends `rainbow-tool-exec` at invocation time. See ADR-PROJ023-001 for the behavioral contract (BC-01 through BC-09).
+
 ## Constitutional Compliance
 
 - P-001: All findings evidence-based with citations to monitoring best practices and ATT&CK references

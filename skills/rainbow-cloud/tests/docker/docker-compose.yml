@@ -2,7 +2,7 @@
 # Docker Compose -- Rainbow Cloud Sub-Skill
 # Tools: Checkov, Prowler, Kubescape
 # Agent: rainbow-cloud-auditor
-# Zone: 1 (Analysis -- IaC and posture scanning)
+# Zone: 2 (Active Cloud Posture -- egress-controlled; Prowler/Kubescape require API access)
 
 version: "3.9"
 
@@ -16,7 +16,14 @@ services:
     working_dir: /work
     volumes:
       - cloud-output:/work/output
-    network_mode: bridge
+      - ../../output:/rainbow-output
+      - ../../../../work:/work
+    # Zone 2: custom bridge network with egress control.
+    # Prowler and Kubescape require outbound API access; Checkov is local-only.
+    # Target-specific ACLs applied at engagement init via rainbow-tool-exec --init-engagement.
+    # Full structural enforcement (iptables egress ACLs) is target-state -- Phase 6.
+    networks:
+      - cloud-net
     security_opt:
       - no-new-privileges:true
     entrypoint: ["/bin/sh"]
@@ -25,3 +32,9 @@ services:
 
 volumes:
   cloud-output:
+
+networks:
+  cloud-net:
+    driver: bridge
+    # Zone 2 egress control: target ACLs generated from SCOPE.md at engagement init.
+    # Default: bridge allows outbound; ACLs restrict to authorized targets only (Phase 6).

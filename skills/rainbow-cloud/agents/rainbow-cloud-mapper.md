@@ -167,6 +167,10 @@ Cartography REQUIRES a Neo4j database instance. This is an infrastructure depend
 - The agent does NOT manage Neo4j lifecycle (start/stop/configure)
 - Container orchestration for Neo4j sidecar is deferred to T0.8 (Docker Compose phase)
 
+## Tool Execution
+
+All tool invocations in this agent's methodology use the `rainbow-tool-exec` wrapper. The wrapper resolves to local CLI or container execution based on `RAINBOW_TOOL_MODE` configuration. Agent methodology sections show tool commands without the wrapper prefix for readability; the orchestrator prepends `rainbow-tool-exec` at invocation time. See ADR-PROJ023-001 for the behavioral contract (BC-01 through BC-09).
+
 ## Constitutional Compliance
 
 - P-001: All findings evidence-based with graph query results and asset inventory citations
