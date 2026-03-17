@@ -2,7 +2,7 @@
 # Docker Compose -- Rainbow Recon Sub-Skill
 # Tools: Subfinder, httpx, dnsx, naabu, katana, Nuclei
 # Agent: rainbow-recon-pipeline
-# Zone: 3 (External -- egress-controlled)
+# Zone: 2 (Active Reconnaissance -- egress-controlled, engagement scope required)
 
 version: "3.9"
 
