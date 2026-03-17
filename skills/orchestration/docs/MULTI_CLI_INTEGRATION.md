@@ -1,13 +1,13 @@
 ---
 title: Multi-CLI Parallel Execution Integration
-version: "1.1.0"
+version: "1.2.0"
 skill: orchestration
 pattern: consensus-panel
 ---
 
 # Multi-CLI Parallel Execution Integration
 
-> **Version:** 1.1.0 (revised from 1.0.0 — C4 adversarial review findings F-001 through F-009)
+> **Version:** 1.2.0 (revised from 1.1.0 — real-world test findings T-001 through T-003)
 > **Skill:** orchestration
 > **Purpose:** Reference guide for invoking Gemini CLI and Codex CLI as parallel peer processes during orchestrated workflows.
 > **Pattern:** Consensus Panel (Pattern 6 in PATTERNS.md)
@@ -46,12 +46,16 @@ Run the full resolution chain **before** launching any parallel work. Never skip
 
 ```bash
 # Detect execution environment
+# Note: MSYS2/MinGW (Git Bash on Windows) reports "msys" or "MINGW*" via $OSTYPE
+# and MINGW*_NT via uname -s. It DOES support bash & background jobs.
 if [ -n "$WSL_DISTRO_NAME" ] || uname -s | grep -qi linux; then
   PLATFORM="linux"
   PARALLEL_SUPPORTED=true
-elif uname -s | grep -qi mingw || uname -s | grep -qi cygwin; then
-  PLATFORM="windows-native"
-  PARALLEL_SUPPORTED=false
+elif echo "$OSTYPE" | grep -qi msys || echo "$OSTYPE" | grep -qi mingw \
+  || uname -s | grep -qi mingw || uname -s | grep -qi cygwin; then
+  # Git Bash / MSYS2 / Cygwin on Windows — bash & is supported
+  PLATFORM="windows-gitbash"
+  PARALLEL_SUPPORTED=true
 else
   PLATFORM="unknown"
   PARALLEL_SUPPORTED=true  # assume linux-like
@@ -59,7 +63,9 @@ fi
 echo "Platform: $PLATFORM | Parallel supported: $PARALLEL_SUPPORTED"
 ```
 
-If `PARALLEL_SUPPORTED=false` (Windows native without WSL), warn the user: bash `&` background execution is unavailable. Offer to run sequentially or switch to WSL.
+> **Finding T-001:** The original detection treated `mingw`/`msys` as `windows-native` and set `PARALLEL_SUPPORTED=false`. Git Bash (MSYS2) on Windows **does** support `bash &` background jobs. Only `cmd.exe` and PowerShell require sequential fallback.
+
+If `PARALLEL_SUPPORTED=false` (Windows native cmd/PowerShell without Git Bash or WSL), warn the user: bash `&` background execution is unavailable. Offer to run sequentially or switch to WSL/Git Bash.
 
 ### Step 0b: CLI Detection
 
@@ -71,37 +77,64 @@ GEMINI_TRANSPORT=""
 command -v claude  >/dev/null 2>&1 && CLAUDE_TRANSPORT="cli"
 command -v codex   >/dev/null 2>&1 && CODEX_TRANSPORT="cli"
 command -v gemini  >/dev/null 2>&1 && GEMINI_TRANSPORT="cli"
+
+# Finding T-002: Detect nested Claude Code session.
+# When running inside Claude Code, CLAUDECODE=1 and CLAUDE_CODE_ENTRYPOINT
+# are set in the environment. A child `claude -p` process inherits these,
+# detects it is inside a running session, and HANGS waiting on IPC
+# coordination via /tmp/claude-*-cwd sockets — it never exits.
+# Downgrade claude transport to "" here; API fallback (Step 0d) takes over
+# if ANTHROPIC_API_KEY is set.
+if [ "$CLAUDE_TRANSPORT" = "cli" ] && [ -n "$CLAUDECODE" ]; then
+  echo "INFO: Running inside Claude Code session (CLAUDECODE=1) — nested claude CLI blocked (T-002)"
+  echo "      claude transport downgraded: cli → unavailable (will attempt API fallback in Step 0d)"
+  CLAUDE_TRANSPORT=""
+fi
 ```
+
+> **Finding T-002:** `claude -p` invoked as a subprocess of Claude Code inherits `CLAUDECODE=1` and `CLAUDE_CODE_ENTRYPOINT=cli`. The child process attempts IPC coordination with the parent session via `/tmp/claude-*-cwd` sockets and hangs indefinitely — even with `--no-session-persistence` or unsetting `CLAUDECODE` before the call. Detection must occur **before** launch. The IPC hang persists because the socket path is resolved from the process tree, not the env var alone.
 
 ### Step 0c: Auth Validation
 
 For each detected CLI, validate that authentication is functional — not just that the binary exists.
 
 ```bash
-# Claude: check API key present (actual validation requires a test call)
+# Claude: Step 0b already handles the nested-session case. If transport is
+# still "cli" here, CLAUDECODE is not set — validate auth without a live call
+# (calling `claude auth status` can itself hang in some environments).
 if [ "$CLAUDE_TRANSPORT" = "cli" ]; then
-  if [ -z "$ANTHROPIC_API_KEY" ] && ! claude auth status >/dev/null 2>&1; then
-    echo "WARNING: claude CLI found but auth may not be configured"
+  # Accept if either OAuth session credentials exist OR API key is set.
+  # Do NOT call `claude auth status` — it may hang if session state is partial.
+  CLAUDE_AUTH_DIR="${HOME}/.claude"
+  if [ -z "$ANTHROPIC_API_KEY" ] && \
+     ! ls "${CLAUDE_AUTH_DIR}"/.credentials* >/dev/null 2>&1 && \
+     ! ls "${CLAUDE_AUTH_DIR}"/auth* >/dev/null 2>&1; then
+    echo "WARNING: claude CLI found but no ANTHROPIC_API_KEY and no credential files detected"
     CLAUDE_TRANSPORT="auth-warning"
   fi
 fi
 
-# Codex: check OpenAI key
+# Codex: check OpenAI key or stored credentials
 if [ "$CODEX_TRANSPORT" = "cli" ]; then
   if [ -z "$OPENAI_API_KEY" ]; then
-    echo "WARNING: codex CLI found but OPENAI_API_KEY not set"
-    CODEX_TRANSPORT="auth-warning"
+    # Codex may have stored credentials via `codex login`
+    echo "INFO: codex CLI found but OPENAI_API_KEY not set — relying on stored credentials"
+    # Do NOT downgrade — codex stores auth independently; test call would be needed to confirm
   fi
 fi
 
-# Gemini: check Google key
+# Gemini: Finding T-003 — gemini CLI exits with code 41 when GEMINI_API_KEY /
+# GOOGLE_API_KEY is absent, even for --version. It does NOT use stored OAuth
+# credentials in the same way Claude Code does. API key is REQUIRED.
 if [ "$GEMINI_TRANSPORT" = "cli" ]; then
   if [ -z "$GEMINI_API_KEY" ] && [ -z "$GOOGLE_API_KEY" ]; then
-    echo "WARNING: gemini CLI found but GEMINI_API_KEY / GOOGLE_API_KEY not set"
+    echo "WARNING: gemini CLI found but GEMINI_API_KEY / GOOGLE_API_KEY not set (exit code 41 expected)"
     GEMINI_TRANSPORT="auth-warning"
   fi
 fi
 ```
+
+> **Finding T-003:** `gemini` CLI (v0.33.x) requires `GEMINI_API_KEY` or `GOOGLE_API_KEY` in the environment for every invocation including non-interactive ones — it exits with code **41** immediately if neither is set. Unlike Claude Code (which uses stored OAuth credentials) and Codex (which has `codex login` stored auth), Gemini CLI does not fall back to any stored session. Set the env var or use API transport.
 
 ### Step 0d: API Fallback Resolution
 
@@ -469,12 +502,13 @@ Apply S-014 (LLM-as-Judge) self-scoring after writing.
 consensus_panel:
   enabled: true
   phase_id: "{phase_id}"
-  platform: "{linux|windows-native|unknown}"
+  platform: "{linux|windows-gitbash|windows-native|unknown}"
   parallel_supported: "{true|false}"
   cli_availability:
-    claude: "{cli|api|unavailable}"
+    claude: "{cli|api|unavailable}"        # "unavailable" when CLAUDECODE=1 (T-002)
     codex:  "{cli|api|unavailable}"
-    gemini: "{cli|api|unavailable}"
+    gemini: "{cli|api|unavailable}"        # "unavailable" when no API key (T-003)
+  nested_session_detected: "{true|false}"  # true when CLAUDECODE=1 at preflight (T-002)
   workers_available: "{0|1|2|3}"
   user_confirmed_degraded: "{true|false|n/a}"  # n/a when full panel
   timeout_seconds: 300
@@ -578,7 +612,8 @@ NOT in P-003 scope (OS processes):
 
 ---
 
-*Document Version: 1.1.0*
+*Document Version: 1.2.0*
 *Skill: orchestration*
 *Pattern: Consensus Panel*
 *Revised: C4 adversarial review — F-001 (user gate), F-002 (auth), F-003 (variable bug), F-004 (timeout), F-005 (exit codes), F-006 (API fallback), F-007 (platform), F-008 (security note), F-009 (path sanitization)*
+*Revised: Real-world test — T-001 (MSYS2/Git Bash parallel support), T-002 (nested CLAUDECODE=1 hang), T-003 (gemini exit 41 without API key)*
