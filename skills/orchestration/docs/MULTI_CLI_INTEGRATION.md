@@ -241,7 +241,7 @@ When the orchestrator uses `AskUserQuestion`, present the panel report (above) a
 | CLI | Invocation Pattern | Transport |
 |-----|--------------------|-----------|
 | **Claude** | `claude --dangerously-skip-permissions --model claude-opus-4-6 --thinking-budget high -p "<prompt>"` | CLI |
-| **Codex** | `codex --yolo --model gpt-5.2 --reasoning-effort high --full-auto exec "<prompt>"` | CLI |
+| **Codex** | `codex exec --full-auto -m gpt-4o "<prompt>"` | CLI |
 | **Gemini** | `gemini --yolo --model gemini-2.5-pro --prompt "<prompt>"` | CLI |
 | **Claude** | `invoke_claude_api prompt_file output_file` | API |
 | **Codex** | `invoke_codex_api prompt_file output_file` | API |
@@ -612,8 +612,38 @@ NOT in P-003 scope (OS processes):
 
 ---
 
-*Document Version: 1.2.0*
+---
+
+## Step 0b Addendum: Codex CLI Flag Compatibility
+
+> **Finding T-004:** `codex` v0.115.0 does **not** have a `--yolo` flag. The documented
+> invocation `codex --yolo --model gpt-5.2 --reasoning-effort high --full-auto exec "<prompt>"`
+> fails with exit code 2: `the argument '--dangerously-bypass-approvals-and-sandbox' cannot be
+> used with '--full-auto'`. These two flags are mutually exclusive in this version.
+>
+> Use `codex exec --full-auto -m <model> "<prompt>"` for sandboxed non-interactive execution.
+> Use `codex exec --dangerously-bypass-approvals-and-sandbox -m <model> "<prompt>"` for
+> fully unsandboxed execution (use with caution).
+>
+> The `--full-auto` flag is the correct choice for the Consensus Panel pattern: it enables
+> low-friction automatic execution with workspace-write sandbox permissions, which is
+> sufficient for reading the intent file and writing the output draft.
+
+```bash
+# Correct (v0.115.0+):
+codex exec --full-auto -m gpt-4o "$(cat "$PROMPT_FILE")" > "$OUTPUT_FILE" 2>&1 &
+
+# Incorrect (will fail with exit code 2 — flag conflict):
+# codex --yolo --model gpt-5.2 --reasoning-effort high --full-auto exec "..."
+```
+
+**Codex model note:** `gpt-5.2` is not available in all environments. Use `gpt-4o` as the
+default; check `codex --help` or your org's model list for current availability.
+
+---
+
+*Document Version: 1.3.0*
 *Skill: orchestration*
 *Pattern: Consensus Panel*
 *Revised: C4 adversarial review — F-001 (user gate), F-002 (auth), F-003 (variable bug), F-004 (timeout), F-005 (exit codes), F-006 (API fallback), F-007 (platform), F-008 (security note), F-009 (path sanitization)*
-*Revised: Real-world test — T-001 (MSYS2/Git Bash parallel support), T-002 (nested CLAUDECODE=1 hang), T-003 (gemini exit 41 without API key)*
+*Revised: Real-world test — T-001 (MSYS2/Git Bash parallel support), T-002 (nested CLAUDECODE=1 hang), T-003 (gemini exit 41 without API key), T-004 (codex --yolo flag absent; --full-auto and --dangerously-bypass-approvals-and-sandbox mutually exclusive)*

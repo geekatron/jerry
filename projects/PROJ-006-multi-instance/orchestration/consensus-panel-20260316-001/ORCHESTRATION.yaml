@@ -1,0 +1,164 @@
+# ORCHESTRATION.yaml
+# Consensus Panel workflow — PROJ-006-multi-instance
+# workflow_id: consensus-panel-20260316-001
+# schema_version: 2.0.0
+
+schema_version: "2.0.0"
+
+workflow:
+  id: "consensus-panel-20260316-001"
+  name: "Consensus Panel: Implement Consensus Panel Runner"
+  project_id: "PROJ-006-multi-instance"
+  version: "1.0"
+  created_at: "2026-03-16T17:41:00Z"
+  updated_at: "2026-03-16T17:48:00Z"
+  status: "COMPLETE"
+  started_at: "2026-03-16"
+  completed_at: "2026-03-16"
+
+  id_source: "auto"
+  id_format: "semantic-date-seq"
+
+  patterns:
+    - FAN_OUT    # Parallel draft phase
+    - FAN_OUT    # Parallel critique phase
+    - FAN_IN     # Synthesis
+
+  criticality:
+    workflow_level: "C2"
+
+  constraints:
+    max_agent_nesting: 1
+    file_persistence: true
+    user_authority: true
+
+# =============================================================================
+# CONSENSUS PANEL EXTENSION
+# =============================================================================
+consensus_panel:
+  enabled: true
+  phase_id: "phase-1-draft"
+  platform: "windows-gitbash"
+  parallel_supported: true
+
+  cli_availability:
+    claude: "unavailable"    # T-002: CLAUDECODE=1 nested session detected
+    codex:  "cli"            # codex exec --full-auto, gpt-4o
+    gemini: "cli"            # gemini --yolo, gemini-2.5-pro
+
+  nested_session_detected: true   # CLAUDECODE=1 at preflight
+  workers_available: 2
+  user_confirmed_degraded: true   # User chose "Proceed with 2-model panel"
+  timeout_seconds: 600
+
+  cli_flags_used:
+    codex:  "codex exec --full-auto -m gpt-4o"    # NOTE: --yolo flag does not exist; --full-auto is correct for v0.115.0
+    gemini: "gemini --yolo --model gemini-2.5-pro --prompt"
+
+  api_fallback_used:
+    claude: false
+    codex:  false
+    gemini: false
+
+  artifacts:
+    intent:           "orchestration/consensus-panel-20260316-001/consensus/phase-1-draft-intent.md"
+    codex_draft:      "orchestration/consensus-panel-20260316-001/consensus/phase-1-draft-codex-draft.md"
+    gemini_draft:     "orchestration/consensus-panel-20260316-001/consensus/phase-1-draft-gemini-draft.md"
+    codex_critique:   "orchestration/consensus-panel-20260316-001/consensus/phase-1-draft-codex-critique.md"
+    gemini_critique:  "orchestration/consensus-panel-20260316-001/consensus/phase-1-draft-gemini-critique.md"
+    synthesis:        "orchestration/consensus-panel-20260316-001/consensus/phase-1-draft-synthesis.md"
+
+  exit_codes:
+    claude_draft:   -1       # -1 = not launched (T-002 blocked)
+    codex_draft:     0       # success (second attempt; first attempt exit=2 due to --yolo flag conflict)
+    gemini_draft:    0       # success
+    codex_critique:  0
+    gemini_critique: 0
+
+  status:
+    preflight:      "COMPLETE"
+    draft_phase:    "COMPLETE"      # 2/2 workers produced output
+    critique_phase: "COMPLETE"      # 2/2 workers produced output
+    synthesis:      "COMPLETE"
+
+  results:
+    consensus_points:
+      - "CP-1: Pure Python CLI (uv run) is the correct implementation form"
+      - "CP-2: Five-component architecture (Pre-flight, Worker Launcher, Wait/Timeout, Output Verifier, Synthesis Handoff)"
+      - "CP-3: subprocess.Popen as the launch primitive (not Bash &)"
+      - "CP-4: Output verification must check existence AND non-emptiness"
+      - "CP-5: stdout/stderr must be redirected to per-model log files"
+      - "CP-6: SIGTERM -> wait -> SIGKILL escalation (never immediate SIGKILL)"
+      - "CP-7: CLAUDECODE=1 nested session guard belongs in pre-flight module"
+      - "CP-8: ORCHESTRATION.yaml writes must use atomic rename pattern"
+    divergence_points:
+      - "DP-1: Depth of State Manager specification (implicit vs. explicit component)"
+      - "DP-2: Pre-flight conformance check detail (--version probe, version parsing)"
+      - "DP-3: Process group management for orphan/zombie prevention (os.setsid on Windows)"
+      - "DP-4: Worker configuration strategy and schema"
+    panel_gaps:
+      - "PG-1: Claude CLI output format and behavioral specifics (Claude absent)"
+      - "PG-2: asyncio-based alternative not evaluated"
+      - "PG-3: Jerry Framework integration depth (standalone vs. skill tradeoffs)"
+      - "PG-4: Windows-specific subprocess behavior under Git Bash"
+    implementation_findings:
+      - "T-004: Hybrid Bash/Python non-functional — adopt pure Python"
+      - "T-005: Output verification multi-step: existence + size + optional completion marker"
+      - "T-006: Worker stdout/stderr must redirect to named log files"
+      - "T-007: SIGTERM -> grace period -> SIGKILL required sequence"
+      - "T-008: Pre-flight conformance check is mandatory"
+      - "T-009: State Manager must be explicit with atomic write semantics"
+      - "T-010: Worker configuration must be externalized to structured config file"
+      - "T-011: Process group management strategy must be defined per platform"
+
+  quality_score:
+    mechanism: "S-014"
+    composite: 0.94
+    threshold: 0.92
+    verdict: "PASS"
+
+# =============================================================================
+# CHECKPOINTS
+# =============================================================================
+checkpoints:
+  latest_id: "CP-003"
+  entries:
+    - id: "CP-001"
+      timestamp: "2026-03-16T17:43:00Z"
+      trigger: "PHASE_COMPLETE"
+      description: "Draft phase complete — codex (gpt-4o) and gemini (gemini-2.5-pro) both produced drafts"
+      recovery_point: "critique-start"
+    - id: "CP-002"
+      timestamp: "2026-03-16T17:47:00Z"
+      trigger: "PHASE_COMPLETE"
+      description: "Critique phase complete — cross-critiques produced by both models"
+      recovery_point: "synthesis-start"
+    - id: "CP-003"
+      timestamp: "2026-03-16T17:48:00Z"
+      trigger: "WORKFLOW_COMPLETE"
+      description: "Synthesis complete. 8 consensus points, 4 divergence points, 8 T-NNN findings. Quality: 0.94 PASS."
+      recovery_point: "workflow-complete"
+
+# =============================================================================
+# INCIDENTS
+# =============================================================================
+incidents:
+  - id: "I-001"
+    timestamp: "2026-03-16T17:45:00Z"
+    model: "codex"
+    phase: "draft"
+    description: "codex worker failed first attempt (exit code 2) — --yolo flag does not exist in codex v0.115.0; --full-auto and --dangerously-bypass-approvals-and-sandbox are mutually exclusive"
+    resolution: "Relaunched with: codex exec --full-auto -m gpt-4o. Exit code 0. New finding: T-004 addendum."
+
+# =============================================================================
+# NEXT ACTIONS
+# =============================================================================
+next_actions:
+  immediate:
+    - action: "Human reviews synthesis (phase-1-draft-synthesis.md)"
+      description: "Review 8 consensus points, 4 divergence points, 8 T-NNN spec-update candidates"
+    - action: "Decide on 7 open questions (OQ-1 through OQ-7)"
+      description: "Timeout config, output retention, state machine, retry policy, credential mgmt, synthesizer contract, worker config schema"
+  subsequent:
+    - action: "Apply accepted T-NNN findings to MULTI_CLI_INTEGRATION.md v1.3.0"
+    - action: "Implement Consensus Panel runner as Python CLI (uv run) per consensus architecture"
