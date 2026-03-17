@@ -22,7 +22,7 @@
 | PROJ-016 | documentation-writing | ACTIVE | Write user-facing Jerry documentation based on PROJ-015 audit findings |
 | PROJ-020 | feature-enhancements | ACTIVE | Feature enhancement filing and tracking for the Jerry Framework |
 | PROJ-022 | user-experience-skill | ACTIVE | /user-experience parent orchestrator skill with 10 pluggable sub-skills across 5 criteria-gated waves |
-| PROJ-023 | exploit-framework | ACTIVE | Rainbow Series — Comprehensive cybersecurity skill suite: 100+ framework research, exploitation/payload/post-exploitation capabilities, /blue-team defensive skill, red/blue/eng integration |
+| PROJ-023 | exploit-framework | COMPLETE | Rainbow Series — /rainbow (13 agents, 5 sub-skills) + /blue-team (12 agents) cybersecurity skills. 25 agents, 56 tools, 4 exchange schemas, 888+ BDD scenarios. PR #211. |
 | PROJ-030 | bugs | ACTIVE | Bug fixes and defect resolution for the Jerry Framework |
 
 ## Project Lookup
