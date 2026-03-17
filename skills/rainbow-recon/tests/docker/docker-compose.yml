@@ -1,0 +1,28 @@
+---
+# Docker Compose -- Rainbow Recon Sub-Skill
+# Tools: Subfinder, httpx, dnsx, naabu, katana, Nuclei
+# Agent: rainbow-recon-pipeline
+# Zone: 3 (External -- egress-controlled)
+
+version: "3.9"
+
+services:
+  recon-pipeline:
+    build:
+      context: ./recon-pipeline
+      dockerfile: Dockerfile
+    image: rainbow-recon-pipeline:latest
+    container_name: recon-pipeline
+    working_dir: /work
+    volumes:
+      - recon-output:/work/output
+    network_mode: bridge
+    security_opt:
+      - no-new-privileges:true
+    read_only: false
+    entrypoint: ["/bin/sh"]
+    stdin_open: true
+    tty: true
+
+volumes:
+  recon-output:

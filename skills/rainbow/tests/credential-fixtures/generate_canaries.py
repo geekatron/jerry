@@ -142,6 +142,113 @@ def _password_label(variant: str) -> str:
     return mapping[variant]
 
 
+# --- GCP Service Account helpers ---
+
+
+def _gcp_project_id() -> str:
+    """Build a fake GCP project ID."""
+    return "canary" + "-fake-project-00000"
+
+
+def _gcp_private_key_id() -> str:
+    """Build a fake GCP private key ID (40 hex zeros)."""
+    return "0" * 40
+
+
+def _gcp_client_email(project: str) -> str:
+    """Build a fake GCP service account email."""
+    return "canary-sa@" + project + ".iam.gserviceaccount.com"
+
+
+def _gcp_client_id() -> str:
+    """Build a fake GCP client ID (21 zeros)."""
+    return "0" * 21
+
+
+def _gcp_creds_env_label() -> str:
+    """Build the GOOGLE_APPLICATION_CREDENTIALS label."""
+    return "GOOGLE_" + "APPLICATION_" + "CREDENTIALS"
+
+
+# --- Azure Service Principal helpers ---
+
+
+def _azure_tenant_id() -> str:
+    """Build a fake Azure tenant ID (UUID format)."""
+    return "00000000-0000-0000-0000-000000000000"
+
+
+def _azure_client_id() -> str:
+    """Build a fake Azure client/app ID (UUID format)."""
+    return "11111111-1111-1111-1111-111111111111"
+
+
+def _azure_client_secret() -> str:
+    """Build a fake Azure client secret (fake ~34-char value)."""
+    # Real Azure client secrets are ~34-40 chars, mixed case + digits + tilde
+    return "CANARY" + "~" + "Fake" + "AzureSecret" + "Value" + "0000" + "CANARY"
+
+
+def _azure_subscription_id() -> str:
+    """Build a fake Azure subscription ID (UUID format)."""
+    return "22222222-2222-2222-2222-222222222222"
+
+
+def _azure_env_label(key: str) -> str:
+    """Build Azure environment variable label from fragments."""
+    mapping = {
+        "tenant": "AZURE_" + "TENANT_ID",
+        "client": "AZURE_" + "CLIENT_ID",
+        "secret": "AZURE_" + "CLIENT_" + "SECRET",
+        "subscription": "AZURE_" + "SUBSCRIPTION_ID",
+    }
+    return mapping[key]
+
+
+# --- GitHub PAT helpers ---
+
+
+def _ghfine_token() -> str:
+    """Build a GitHub fine-grained PAT (github_pat_ prefix + 82 zeros)."""
+    return "github" + "_pat_" + "0" * 82
+
+
+def _ghp_classic_token() -> str:
+    """Build a GitHub classic PAT (ghp_ prefix + 36 zeros, same as _ghp_token)."""
+    return "gh" + "p_" + "0" * 36
+
+
+def _gho_token() -> str:
+    """Build a GitHub OAuth token (gho_ prefix + 36 zeros)."""
+    return "gh" + "o_" + "0" * 36
+
+
+def _ghs_token() -> str:
+    """Build a GitHub server-to-server token (ghs_ prefix + 36 zeros)."""
+    return "gh" + "s_" + "0" * 36
+
+
+# --- JWT helpers ---
+
+
+def _jwt_header_b64() -> str:
+    """Build a base64url-encoded JWT header fragment (no real encoding needed for canary)."""
+    # eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9 is the well-known {"alg":"HS256","typ":"JWT"}
+    # Build from harmless fragments to avoid triggering bearer-token detection on the full JWT
+    return "eyJhbGci" + "OiJIUzI1NiIs" + "InR5cCI6IkpXVCJ9"
+
+
+def _jwt_payload_b64() -> str:
+    """Build a fake base64url-encoded JWT payload fragment."""
+    # Fake payload: {"sub":"canary","iat":0,"exp":9999999999}
+    return "eyJzdWIi" + "OiJjYW5hcnki" + "LCJpYXQiOjAs" + "ImV4cCI6OTk5OTk5OTk5OX0"
+
+
+def _jwt_signature() -> str:
+    """Build a fake JWT signature fragment."""
+    return "CANARY" + "FakeSignature" + "ABCDEF0123456789"
+
+
 # ---------------------------------------------------------------------------
 # Fixture generators
 # ---------------------------------------------------------------------------
@@ -432,6 +539,206 @@ def generate_plaintext_password() -> None:
     _write_fixture("plaintext-password", "\n".join(lines))
 
 
+def generate_gcp_sa() -> None:
+    """Category 10: GCP Service Account Keys."""
+    project = _gcp_project_id()
+    key_id = _gcp_private_key_id()
+    email = _gcp_client_email(project)
+    client_id = _gcp_client_id()
+    creds_label = _gcp_creds_env_label()
+    rsa_h = _pem_header("RSA")
+    rsa_f = _pem_footer("RSA")
+    body = "CANARY" + "A" * 58
+
+    # Build JSON-format SA key from fragments so no single string is a full credential
+    json_type = '"type": "service_account"'
+    json_project = f'"project_id": "{project}"'
+    json_key_id = f'"private_key_id": "{key_id}"'
+    json_key_val = (
+        '"private_key": "' + rsa_h + "\\n" + body + "\\n" + rsa_f + '\\n"'
+    )
+    json_email = f'"client_email": "{email}"'
+    json_client_id = f'"client_id": "{client_id}"'
+    json_auth_uri = '"auth_uri": "https://accounts.google.com/o/oauth2/auth"'
+    json_token_uri = '"token_uri": "https://oauth2.googleapis.com/token"'
+
+    b64_hint = base64.b64encode(
+        ('"type": "service_account"').encode()
+    ).decode()
+
+    lines = [
+        "# CANARY TEST FIXTURE -- Category 10: GCP Service Account Keys",
+        "# FAKE credentials for credential filter testing only.",
+        "",
+        "# --- Test 1: GCP Service Account JSON Key (full structure) ---",
+        "{",
+        f"  {json_type},",
+        f"  {json_project},",
+        f"  {json_key_id},",
+        f"  {json_key_val},",
+        f"  {json_email},",
+        f"  {json_client_id},",
+        f"  {json_auth_uri},",
+        f"  {json_token_uri}",
+        "}",
+        "",
+        "# --- Test 2: GCP credentials env-var label ---",
+        f"{creds_label}=/path/to/canary-sa-key.json",
+        f"GCP_SA_KEY={project}:{email}",
+        "",
+        "# --- Test 3: GCP SA private key PEM block (standalone) ---",
+        rsa_h,
+        body,
+        body,
+        rsa_f,
+        "",
+        "# --- Test 4: Base64-encoded 'service_account' type marker (decode-and-rescan) ---",
+        b64_hint,
+        "",
+        "# --- Test 5: Multi-line GCP SA reference in config (sliding window) ---",
+        "[gcp]",
+        f"  project = {project}",
+        f"  service_account = {email}",
+        f"  private_key_id = {key_id}",
+        f"  private_key =",
+        f"    {rsa_h}",
+        f"    {body}",
+        f"    {rsa_f}",
+        "",
+    ]
+    _write_fixture("gcp-sa", "\n".join(lines))
+
+
+def generate_azure_sp() -> None:
+    """Category 11: Azure Service Principal Credentials."""
+    tenant = _azure_tenant_id()
+    client = _azure_client_id()
+    secret = _azure_client_secret()
+    subscription = _azure_subscription_id()
+    l_tenant = _azure_env_label("tenant")
+    l_client = _azure_env_label("client")
+    l_secret = _azure_env_label("secret")
+    l_sub = _azure_env_label("subscription")
+
+    b64_secret = base64.b64encode(secret.encode()).decode()
+
+    lines = [
+        "# CANARY TEST FIXTURE -- Category 11: Azure Service Principal Credentials",
+        "# FAKE credentials for credential filter testing only.",
+        "",
+        "# --- Test 1: Azure SP environment variables block ---",
+        f"{l_tenant}={tenant}",
+        f"{l_client}={client}",
+        f"{l_secret}={secret}",
+        f"{l_sub}={subscription}",
+        "",
+        "# --- Test 2: Azure SP in az login format ---",
+        f"az login --service-principal -u {client} -p {secret} --tenant {tenant}",
+        "",
+        "# --- Test 3: Azure SP in JSON credentials format ---",
+        "{",
+        f'  "tenantId": "{tenant}",',
+        f'  "clientId": "{client}",',
+        f'  "clientSecret": "{secret}",',
+        f'  "subscriptionId": "{subscription}"',
+        "}",
+        "",
+        "# --- Test 4: Base64-encoded Azure client secret (decode-and-rescan) ---",
+        b64_secret,
+        "",
+        "# --- Test 5: Multi-line Azure SP config block (sliding window) ---",
+        "[azure-credentials]",
+        f"  tenant_id = {tenant}",
+        f"  client_id = {client}",
+        f"  client_secret =",
+        f"    {secret}",
+        f"  subscription_id = {subscription}",
+        "",
+    ]
+    _write_fixture("azure-sp", "\n".join(lines))
+
+
+def generate_github_pat() -> None:
+    """Category 12: GitHub Personal Access Tokens (all formats)."""
+    fine = _ghfine_token()
+    classic = _ghp_classic_token()
+    oauth = _gho_token()
+    server = _ghs_token()
+    b64_fine = base64.b64encode(fine.encode()).decode()
+
+    lines = [
+        "# CANARY TEST FIXTURE -- Category 12: GitHub Personal Access Tokens",
+        "# FAKE tokens for credential filter testing only.",
+        "",
+        "# --- Test 1: GitHub fine-grained PAT (github_pat_ prefix) ---",
+        f"GITHUB_TOKEN={fine}",
+        "",
+        "# --- Test 2: GitHub classic PAT (ghp_ prefix) ---",
+        f"GH_TOKEN={classic}",
+        "",
+        "# --- Test 3: GitHub OAuth token (gho_ prefix) ---",
+        f"Authorization: token {oauth}",
+        "",
+        "# --- Test 4: GitHub server-to-server token (ghs_ prefix) ---",
+        f"x-github-token: {server}",
+        "",
+        "# --- Test 5: Base64-encoded fine-grained PAT (decode-and-rescan) ---",
+        b64_fine,
+        "",
+        "# --- Test 6: Multi-line .netrc format with GitHub PAT (sliding window) ---",
+        "machine github.com",
+        "  login canary-user",
+        f"  password {classic}",
+        "",
+        "# --- Test 7: GitHub Actions secrets reference pattern ---",
+        f"token: {fine}",
+        "",
+    ]
+    _write_fixture("github-pat", "\n".join(lines))
+
+
+def generate_jwt_token() -> None:
+    """Category 13: JWT Tokens (bearer tokens in header.payload.signature format)."""
+    hdr = _jwt_header_b64()
+    pay = _jwt_payload_b64()
+    sig = _jwt_signature()
+    full_jwt = hdr + "." + pay + "." + sig
+
+    b64_jwt = base64.b64encode(full_jwt.encode()).decode()
+
+    lines = [
+        "# CANARY TEST FIXTURE -- Category 13: JWT Tokens",
+        "# FAKE tokens for credential filter testing only.",
+        "",
+        "# --- Test 1: JWT in Authorization header ---",
+        f"Authorization: Bearer {full_jwt}",
+        "",
+        "# --- Test 2: JWT in X-Auth-Token header ---",
+        f"X-Auth-Token: {full_jwt}",
+        "",
+        "# --- Test 3: JWT in config file ---",
+        f"access_token = {full_jwt}",
+        "",
+        "# --- Test 4: JWT with HS256 alg in JSON response ---",
+        '{',
+        f'  "token": "{full_jwt}",',
+        '  "token_type": "Bearer",',
+        '  "expires_in": 3600',
+        '}',
+        "",
+        "# --- Test 5: Base64-encoded full JWT (decode-and-rescan) ---",
+        b64_jwt,
+        "",
+        "# --- Test 6: Multi-line JWT storage (sliding window) ---",
+        "[auth]",
+        "  token_type = bearer",
+        "  jwt =",
+        f"    {full_jwt}",
+        "",
+    ]
+    _write_fixture("jwt-token", "\n".join(lines))
+
+
 def generate_l2_entropy() -> None:
     """Category 8: L2 Entropy Canaries.
 
@@ -510,7 +817,7 @@ def generate_l3_structural() -> None:
 
 
 def main() -> None:
-    """Generate all 9 canary fixture categories."""
+    """Generate all 13 canary fixture categories."""
     print("Generating canary test fixtures for credential filter validation...")
     print(f"Target directory: {_fixture_dir()}")
     print()
@@ -524,13 +831,18 @@ def main() -> None:
     generate_plaintext_password()
     generate_l2_entropy()
     generate_l3_structural()
+    generate_gcp_sa()
+    generate_azure_sp()
+    generate_github_pat()
+    generate_jwt_token()
 
     print()
-    print("All 9 fixture categories generated successfully.")
+    print("All 13 fixture categories generated successfully.")
     print("Run credential filter against fixtures to validate AC-F-05/AC-F-05a.")
-    print("  Categories 1-7: L1 regex detection (AC-F-05a)")
+    print("  Categories 1-7, 10-13: L1 regex detection (AC-F-05a)")
     print("  Category 8: L2 entropy detection only")
     print("  Category 9: L3 structural detection only")
+    print("  Categories added by T9.1: gcp-sa (10), azure-sp (11), github-pat (12), jwt-token (13)")
 
 
 if __name__ == "__main__":

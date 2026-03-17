@@ -1,0 +1,85 @@
+---
+# Docker Compose -- Blue Team Skill
+# Domains: detection, compliance, forensics, intel
+# Zone: 1 (Analysis -- no external network required for tool tests)
+
+version: "3.9"
+
+services:
+  detection:
+    build:
+      context: ./detection
+      dockerfile: Dockerfile
+    image: blue-detection:latest
+    container_name: blue-detection
+    working_dir: /app
+    volumes:
+      - detection-output:/output
+      - detection-fixtures:/fixtures
+    security_opt:
+      - no-new-privileges:true
+    network_mode: none
+    entrypoint: ["/bin/bash"]
+    stdin_open: true
+    tty: true
+
+  compliance:
+    build:
+      context: ./compliance
+      dockerfile: Dockerfile
+    image: blue-compliance:latest
+    container_name: blue-compliance
+    working_dir: /app
+    volumes:
+      - compliance-output:/output
+      - compliance-fixtures:/fixtures
+    security_opt:
+      - no-new-privileges:true
+    network_mode: none
+    entrypoint: ["/bin/bash"]
+    stdin_open: true
+    tty: true
+
+  forensics:
+    build:
+      context: ./forensics
+      dockerfile: Dockerfile
+    image: blue-forensics:latest
+    container_name: blue-forensics
+    working_dir: /app
+    volumes:
+      - forensics-output:/output
+      - forensics-fixtures:/fixtures
+    security_opt:
+      - no-new-privileges:true
+    network_mode: none
+    entrypoint: ["/bin/bash"]
+    stdin_open: true
+    tty: true
+
+  intel:
+    build:
+      context: ./intel
+      dockerfile: Dockerfile
+    image: blue-intel:latest
+    container_name: blue-intel
+    working_dir: /app
+    volumes:
+      - intel-output:/output
+      - intel-fixtures:/fixtures
+    security_opt:
+      - no-new-privileges:true
+    network_mode: none
+    entrypoint: ["/bin/bash"]
+    stdin_open: true
+    tty: true
+
+volumes:
+  detection-output:
+  detection-fixtures:
+  compliance-output:
+  compliance-fixtures:
+  forensics-output:
+  forensics-fixtures:
+  intel-output:
+  intel-fixtures:

@@ -1,87 +1,195 @@
-# PROJ-023 Rainbow Series CI Pipeline (T7.5)
-# Validates agent definitions, schemas, and BDD specifications
+# PROJ-023 Rainbow Series CI Pipeline
+# Real validation: container builds, E2E tests, governance checks, credential filter canaries
 
 name: PROJ-023 Quality Gate
 
 on:
   pull_request:
     paths:
-      - 'skills/rainbow/**'
+      - 'skills/rainbow*/**'
       - 'skills/blue-team/**'
-      - 'docs/schemas/rbee-*.json'
-      - 'docs/schemas/cfe-*.json'
-      - 'docs/schemas/dge-*.json'
-      - 'docs/schemas/emulation-manifest-*.json'
+      - 'docs/schemas/*.json'
+      - '.github/workflows/proj023-ci.yml'
   push:
     branches:
       - 'feat/proj-023-*'
 
 jobs:
   schema-validation:
-    name: JSON Schema Validation
+    name: Exchange Schema Validation
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install ajv-cli
         run: npm install -g ajv-cli ajv-formats
-      - name: Validate RBEE schema
-        run: ajv validate -s docs/schemas/rbee-v1.schema.json --valid -d "docs/schemas/rbee-v1.schema.json" --spec=draft2020 || true
-      - name: Validate CFE schema
-        run: ajv validate -s docs/schemas/cfe-v1.schema.json --valid -d "docs/schemas/cfe-v1.schema.json" --spec=draft2020 || true
-      - name: Validate DGE schema
-        run: ajv validate -s docs/schemas/dge-v1.schema.json --valid -d "docs/schemas/dge-v1.schema.json" --spec=draft2020 || true
-      - name: Validate Emulation Manifest schema
-        run: ajv validate -s docs/schemas/emulation-manifest-v1.schema.json --valid -d "docs/schemas/emulation-manifest-v1.schema.json" --spec=draft2020 || true
+      - name: Validate exchange schemas
+        run: |
+          FAIL=0
+          for schema in rbee-v1 cfe-v1 dge-v1 emulation-manifest-v1; do
+            echo "--- Validating docs/schemas/${schema}.schema.json ---"
+            if ajv compile -s "docs/schemas/${schema}.schema.json" --spec=draft2020 2>&1; then
+              echo "PASS: ${schema}"
+            else
+              echo "FAIL: ${schema}"
+              FAIL=1
+            fi
+          done
+          exit $FAIL
 
-  agent-governance-validation:
+  governance-validation:
     name: Agent Governance YAML Validation
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install ajv-cli
-        run: npm install -g ajv-cli ajv-formats
-      - name: Validate rainbow agent governance files
+      - name: Install tools
         run: |
-          for f in skills/rainbow/*/agents/*.governance.yaml skills/rainbow/agents/*.governance.yaml; do
-            echo "Validating: $f"
-            # YAML to JSON conversion + schema validation would go here
-            # Requires yq + ajv pipeline
-          done
-      - name: Validate blue-team agent governance files
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+      - name: Validate governance YAML required fields
         run: |
-          for f in skills/blue-team/agents/*.governance.yaml; do
-            echo "Validating: $f"
+          FAIL=0
+          for f in skills/rainbow-*/agents/*.governance.yaml skills/rainbow/agents/*.governance.yaml skills/blue-team/agents/*.governance.yaml; do
+            [ -f "$f" ] || continue
+            echo "--- $f ---"
+            # Check required fields
+            VERSION=$(yq '.version' "$f" 2>/dev/null)
+            TIER=$(yq '.tool_tier' "$f" 2>/dev/null)
+            ROLE=$(yq '.identity.role' "$f" 2>/dev/null)
+            MODE=$(yq '.identity.cognitive_mode' "$f" 2>/dev/null)
+            FA_COUNT=$(yq '.capabilities.forbidden_actions | length' "$f" 2>/dev/null)
+            if [ "$VERSION" = "null" ] || [ -z "$VERSION" ]; then echo "FAIL: missing version"; FAIL=1; fi
+            if [ "$TIER" = "null" ] || [ -z "$TIER" ]; then echo "FAIL: missing tool_tier"; FAIL=1; fi
+            if [ "$ROLE" = "null" ] || [ -z "$ROLE" ]; then echo "FAIL: missing identity.role"; FAIL=1; fi
+            if [ "$MODE" = "null" ] || [ -z "$MODE" ]; then echo "FAIL: missing identity.cognitive_mode"; FAIL=1; fi
+            if [ "$FA_COUNT" -lt 3 ] 2>/dev/null; then echo "FAIL: forbidden_actions < 3 (got $FA_COUNT)"; FAIL=1; fi
+            # Check constitutional triplet
+            CONST=$(yq '.constitution.principles_applied[]' "$f" 2>/dev/null)
+            for p in P-003 P-020 P-022; do
+              if ! echo "$CONST" | grep -q "$p"; then
+                echo "WARN: missing $p in constitution.principles_applied"
+              fi
+            done
+            echo "OK: version=$VERSION tier=$TIER mode=$MODE forbidden_actions=$FA_COUNT"
           done
+          exit $FAIL
 
-  bdd-feature-lint:
+  container-build:
+    name: Container Build (${{ matrix.skill }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        skill:
+          - rainbow-supply-chain
+          - rainbow-recon
+          - rainbow-cloud
+          - rainbow-exploit
+          - rainbow-runtime
+          - blue-team
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build containers
+        run: |
+          COMPOSE="skills/${{ matrix.skill }}/tests/docker/docker-compose.yml"
+          if [ -f "$COMPOSE" ]; then
+            docker compose -f "$COMPOSE" build
+          else
+            echo "No docker-compose.yml found at $COMPOSE"
+            exit 1
+          fi
+
+  container-e2e:
+    name: Container E2E (${{ matrix.skill }})
+    runs-on: ubuntu-latest
+    needs: container-build
+    strategy:
+      fail-fast: false
+      matrix:
+        skill:
+          - rainbow-supply-chain
+          - rainbow-recon
+          - rainbow-cloud
+          - rainbow-exploit
+          - rainbow-runtime
+          - blue-team
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and run E2E tests
+        run: |
+          E2E="skills/${{ matrix.skill }}/tests/docker/e2e-test.sh"
+          if [ -f "$E2E" ]; then
+            chmod +x "$E2E"
+            bash "$E2E"
+          else
+            echo "No e2e-test.sh found at $E2E"
+            exit 1
+          fi
+
+  credential-filter-canary:
+    name: Credential Filter Canary Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run canary detection
+        run: |
+          FAIL=0
+          FIXTURE_DIR="skills/rainbow/tests/credential-fixtures"
+          for category in "$FIXTURE_DIR"/*/; do
+            [ -d "$category" ] || continue
+            CANARY="$category/canary.txt"
+            [ -f "$CANARY" ] || continue
+            NAME=$(basename "$category")
+            echo "--- Testing: $NAME ---"
+            # L1 regex patterns that MUST match
+            if grep -qP 'AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}|-----BEGIN.*PRIVATE KEY-----|[a-f0-9]{32}:[a-f0-9]{32}|eyJ[A-Za-z0-9_-]+\.eyJ|password\s*[:=]|Bearer\s+[A-Za-z0-9]|AZURE_CLIENT_SECRET|private_key_id' "$CANARY"; then
+              echo "DETECTED: $NAME (L1 regex match)"
+            else
+              echo "MISSED: $NAME - credential filter would fail to detect this canary"
+              FAIL=1
+            fi
+          done
+          if [ $FAIL -eq 0 ]; then
+            echo "All canary categories detected successfully"
+          else
+            echo "FAIL: Some canary categories were not detected"
+          fi
+          exit $FAIL
+
+  bdd-lint:
     name: BDD Feature File Lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Count BDD scenarios
+      - name: Count and verify BDD scenarios
         run: |
           echo "=== Rainbow BDD Scenarios ==="
-          grep -r "Scenario:" skills/rainbow/*/tests/bdd/*.feature 2>/dev/null | wc -l
+          RAINBOW_COUNT=$(grep -r "Scenario:" skills/rainbow-*/tests/bdd/*.feature 2>/dev/null | wc -l)
+          echo "Rainbow: $RAINBOW_COUNT scenarios"
           echo "=== Blue-team BDD Scenarios ==="
-          grep -r "Scenario:" skills/blue-team/tests/bdd/*.feature 2>/dev/null | wc -l
-      - name: Check AC tag coverage
-        run: |
-          echo "=== AC Tags ==="
-          grep -r "@AC-" skills/rainbow/*/tests/bdd/*.feature skills/blue-team/tests/bdd/*.feature 2>/dev/null | sort -u
-
-  markdown-nav-check:
-    name: Markdown Navigation Table Check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Check SKILL.md navigation tables
-        run: |
-          for f in skills/rainbow/SKILL.md skills/rainbow/*/SKILL.md skills/blue-team/SKILL.md; do
-            if [ -f "$f" ]; then
-              if grep -q "Document Sections" "$f"; then
-                echo "PASS: $f has navigation table"
-              else
-                echo "FAIL: $f missing navigation table"
-              fi
+          BLUE_COUNT=$(grep -r "Scenario:" skills/blue-team/tests/bdd/*.feature 2>/dev/null | wc -l)
+          echo "Blue-team: $BLUE_COUNT scenarios"
+          TOTAL=$((RAINBOW_COUNT + BLUE_COUNT))
+          echo "=== Total: $TOTAL scenarios ==="
+          # Verify minimum scenario count
+          if [ "$TOTAL" -lt 500 ]; then
+            echo "FAIL: Expected >= 500 BDD scenarios, got $TOTAL"
+            exit 1
+          fi
+          # Verify Gherkin structure
+          FAIL=0
+          for f in skills/rainbow-*/tests/bdd/*.feature skills/blue-team/tests/bdd/*.feature; do
+            [ -f "$f" ] || continue
+            if ! grep -q "Feature:" "$f"; then
+              echo "FAIL: $f missing Feature: declaration"
+              FAIL=1
+            fi
+            if ! grep -q "Scenario:" "$f"; then
+              echo "FAIL: $f has no scenarios"
+              FAIL=1
             fi
           done
+          exit $FAIL

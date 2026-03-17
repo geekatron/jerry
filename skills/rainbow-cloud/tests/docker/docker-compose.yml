@@ -1,0 +1,27 @@
+---
+# Docker Compose -- Rainbow Cloud Sub-Skill
+# Tools: Checkov, Prowler, Kubescape
+# Agent: rainbow-cloud-auditor
+# Zone: 1 (Analysis -- IaC and posture scanning)
+
+version: "3.9"
+
+services:
+  cloud-auditor:
+    build:
+      context: ./cloud-auditor
+      dockerfile: Dockerfile
+    image: rainbow-cloud-auditor:latest
+    container_name: cloud-auditor
+    working_dir: /work
+    volumes:
+      - cloud-output:/work/output
+    network_mode: bridge
+    security_opt:
+      - no-new-privileges:true
+    entrypoint: ["/bin/sh"]
+    stdin_open: true
+    tty: true
+
+volumes:
+  cloud-output:

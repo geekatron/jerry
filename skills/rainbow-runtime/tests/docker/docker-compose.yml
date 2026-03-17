@@ -1,0 +1,36 @@
+version: "3.9"
+
+# Zone 2/3 boundary: mitmproxy and frida are SEPARATE services.
+# mitmproxy operates at the network interception boundary (Zone 2 -> Zone 3).
+# frida operates at the process instrumentation boundary (Zone 3 internal).
+# They MUST NOT share a network namespace to preserve zone isolation.
+
+services:
+  mitmproxy:
+    build:
+      context: ./mitmproxy
+      dockerfile: Dockerfile
+    image: rainbow-runtime-mitmproxy:latest
+    container_name: rainbow-runtime-mitmproxy
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./work/mitmproxy:/work
+    stdin_open: true
+    tty: true
+
+  frida:
+    build:
+      context: ./frida
+      dockerfile: Dockerfile
+    image: rainbow-runtime-frida:latest
+    container_name: rainbow-runtime-frida
+    # Frida requires elevated capabilities for process attachment
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+    volumes:
+      - ./work/frida:/work
+    stdin_open: true
+    tty: true
