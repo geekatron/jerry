@@ -50,6 +50,9 @@ readonly EXIT_CONTAINER_NOT_RUNNING=3
 readonly EXIT_CREDENTIAL_DETECTED=4
 readonly EXIT_ENGAGEMENT_NOT_INIT=5
 readonly EXIT_MODE_UNSET=6
+# BC-09: Zone 3 network grant/revoke protocol -- deferred to Phase 6 per ADR-PROJ023-001
+# BC-09 will add per-operation iptables ACL grant before exec and revoke after exec for Zone 3
+# tools.  No exit code is allocated for BC-09 at W0; Phase 6 will extend the exit code table.
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -319,9 +322,16 @@ CREDENTIAL_FILTER_PATTERNS=(
     '(?i)(password|passwd|pwd)[[:space:]]*[=:][[:space:]]*[^\s]{8,}'
     # Connection strings with credentials
     '(?i)(mongodb|postgresql|mysql|redis|amqp)(\+srv)?://[^:]+:[^@]+@'
+    # Kerberos ticket material -- base64-encoded krb5 ticket (YAIB/YII header indicates ASN.1 Kerberos)
+    # Covers Impacket/BloodHound Kerberos credential outputs (ADR FMEA Category 5)
+    'YII[A-Za-z0-9+/]{20,}={0,2}'
 )
 
 apply_credential_filter() {
+    # W0: L1 regex only. L2 entropy and L3 structural not yet implemented.
+    # L2 (Shannon entropy scoring for high-entropy strings) and L3 (structural analysis for
+    # certificates, key files, and token formats) are defined in rainbow-credential-filter.md
+    # but are deferred to W1.  Agents should not assume full three-layer protection is active.
     local raw_output="$1"
     local quarantine_dir="$2"
     local engagement_id="${3:-unknown}"
@@ -439,6 +449,11 @@ JSON
 # ---------------------------------------------------------------------------
 
 init_engagement() {
+    # W1 note: This function creates the engagement directory structure (evidence/, reports/,
+    # .credential-quarantine/).  Container-mode volume customization via a per-engagement
+    # override file (docker-compose.engagement.yml) is a W1 step -- it is NOT generated here.
+    # W1 will add generation of docker-compose.engagement.yml with per-service bind mounts
+    # pointing at this engagement's evidence directory, per ADR-PROJ023-001 Volume Mount Strategy.
     local engagement_id="$1"
     local project_root="$2"
     local evidence_base="${project_root}/work/engagements/${engagement_id}"

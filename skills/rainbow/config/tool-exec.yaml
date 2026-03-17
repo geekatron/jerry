@@ -284,6 +284,18 @@ tool_resolution:
     sub_skill: "blue-team"
     zone: "1"
 
+  - prefix: "hayabusa"
+    service: "detection"
+    compose_file: "skills/blue-team/tests/docker/docker-compose.yml"
+    sub_skill: "blue-team"
+    zone: "1"
+
+  - prefix: "chainsaw"
+    service: "detection"
+    compose_file: "skills/blue-team/tests/docker/docker-compose.yml"
+    sub_skill: "blue-team"
+    zone: "1"
+
   - prefix: "trivy"
     service: "compliance"
     compose_file: "skills/blue-team/tests/docker/docker-compose.yml"
@@ -307,6 +319,12 @@ tool_resolution:
     sub_skill: "rainbow-supply-chain"
     zone: "1"
 
+  - prefix: "osv-scanner"
+    service: "scanner"
+    compose_file: "skills/rainbow-supply-chain/tests/docker/docker-compose.yml"
+    sub_skill: "rainbow-supply-chain"
+    zone: "1"
+
   - prefix: "cosign"
     service: "verifier"
     compose_file: "skills/rainbow-supply-chain/tests/docker/docker-compose.yml"
@@ -317,3 +335,9 @@ tool_resolution:
     # Zone 2: download signature/sbom
     # Zone 3: sign, attest, attach
     # Zone classification is per-operation per dual-zone escalation protocol.
+
+  - prefix: "snyk"
+    service: "verifier"
+    compose_file: "skills/rainbow-supply-chain/tests/docker/docker-compose.yml"
+    sub_skill: "rainbow-supply-chain"
+    zone: "1"

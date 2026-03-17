@@ -15,7 +15,6 @@ services:
     container_name: recon-pipeline
     working_dir: /work
     volumes:
-      - recon-output:/work/output
       - ../../output:/rainbow-output
       - ../../../../work:/work
     # Zone 2: custom bridge network with egress control.
@@ -29,9 +28,6 @@ services:
     entrypoint: ["/bin/sh"]
     stdin_open: true
     tty: true
-
-volumes:
-  recon-output:
 
 networks:
   recon-net:
