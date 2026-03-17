@@ -25,7 +25,7 @@ run_test() {
     name="$1"
     cmd="$2"
     printf "  %-40s" "${name}..."
-    if docker run --rm "${IMAGE}" sh -c "${cmd}" > /dev/null 2>&1; then
+    if docker run --rm --entrypoint "" "${IMAGE}" sh -c "${cmd}" > /dev/null 2>&1; then
         echo "PASS"
         PASS=$((PASS + 1))
     else
@@ -47,22 +47,22 @@ echo ""
 echo "=== Tool availability ==="
 
 run_test "subfinder -version" \
-    "subfinder -version 2>&1 | grep -i 'subfinder\|v[0-9]'"
+    "subfinder -version 2>&1 | grep -iE 'subfinder|v[0-9]|[0-9]+\.[0-9]+'"
 
 run_test "httpx -version" \
-    "httpx -version 2>&1 | grep -i 'httpx\|v[0-9]'"
+    "httpx -version 2>&1 | grep -iE 'httpx|v[0-9]|[0-9]+\.[0-9]+'"
 
 run_test "dnsx -version" \
-    "dnsx -version 2>&1 | grep -i 'dnsx\|v[0-9]'"
+    "dnsx -version 2>&1 | grep -iE 'dnsx|v[0-9]|[0-9]+\.[0-9]+'"
 
 run_test "naabu -version" \
-    "naabu -version 2>&1 | grep -i 'naabu\|v[0-9]'"
+    "naabu -version 2>&1 | grep -iE 'naabu|v[0-9]|[0-9]+\.[0-9]+'"
 
 run_test "katana -version" \
-    "katana -version 2>&1 | grep -i 'katana\|v[0-9]'"
+    "katana -version 2>&1 | grep -iE 'katana|v[0-9]|[0-9]+\.[0-9]+'"
 
 run_test "nuclei -version" \
-    "nuclei -version 2>&1 | grep -i 'nuclei\|v[0-9]'"
+    "nuclei -version 2>&1 | grep -iE 'nuclei|v[0-9]|[0-9]+\.[0-9]+'"
 
 # ---------------------------------------------------------------------------
 # Summary

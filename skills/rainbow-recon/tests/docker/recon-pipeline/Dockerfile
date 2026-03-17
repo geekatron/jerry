@@ -1,5 +1,7 @@
-FROM golang:1.22-alpine AS builder
-RUN go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest && \
+FROM golang:1.24-alpine AS builder
+ENV GOTOOLCHAIN=auto
+RUN apk add --no-cache git build-base libpcap-dev && \
+    go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest && \
     go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest && \
     go install -v github.com/projectdiscovery/dnsx/cmd/dnsx@latest && \
     go install -v github.com/projectdiscovery/naabu/v2/cmd/naabu@latest && \
@@ -8,6 +10,6 @@ RUN go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest 
 
 FROM alpine:3.19
 COPY --from=builder /go/bin/* /usr/local/bin/
-RUN apk add --no-cache ca-certificates
+RUN apk add --no-cache ca-certificates libpcap
 WORKDIR /work
 ENTRYPOINT ["/bin/sh"]
