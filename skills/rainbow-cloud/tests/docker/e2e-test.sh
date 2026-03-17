@@ -25,7 +25,7 @@ run_test() {
     name="$1"
     cmd="$2"
     printf "  %-40s" "${name}..."
-    if docker run --rm "${IMAGE}" sh -c "${cmd}" > /dev/null 2>&1; then
+    if docker run --rm --entrypoint "" "${IMAGE}" sh -c "${cmd}" > /dev/null 2>&1; then
         echo "PASS"
         PASS=$((PASS + 1))
     else

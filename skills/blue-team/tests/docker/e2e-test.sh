@@ -25,7 +25,7 @@ run_test() {
     local name="$2"
     local cmd="$3"
     printf "  %-44s" "${name}..."
-    if docker run --rm --network none "${image}" bash -c "${cmd}" > /dev/null 2>&1; then
+    if docker run --rm --network none --entrypoint "" "${image}" bash -c "${cmd}" > /dev/null 2>&1; then
         echo "PASS"
         PASS=$((PASS + 1))
     else
