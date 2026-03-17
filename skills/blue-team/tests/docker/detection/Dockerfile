@@ -25,13 +25,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 ARG TARGETARCH
 
-# YARA-X >= 0.9.0 (yr CLI)
-# v1.x+ has aarch64-unknown-linux-gnu; asset is a .gz single-binary (not tar.gz)
+# YARA-X yr CLI — the .gz asset contains a 512-byte header + ELF binary
 ARG YARA_X_VERSION=1.14.0
 RUN ARCH=$([ "$TARGETARCH" = "arm64" ] && echo "aarch64" || echo "x86_64") && \
     curl -sSfL -o /tmp/yara-x.gz \
     "https://github.com/VirusTotal/yara-x/releases/download/v${YARA_X_VERSION}/yara-x-v${YARA_X_VERSION}-${ARCH}-unknown-linux-gnu.gz" \
-    && gunzip -c /tmp/yara-x.gz > /usr/local/bin/yr \
+    && gunzip -c /tmp/yara-x.gz | tail -c +513 > /usr/local/bin/yr \
     && chmod +x /usr/local/bin/yr \
     && rm /tmp/yara-x.gz
 
@@ -76,7 +75,7 @@ COPY --from=binaries /usr/local/bin/yr /usr/local/bin/yr
 COPY --from=binaries /usr/local/bin/hayabusa /usr/local/bin/hayabusa
 COPY --from=binaries /usr/local/bin/chainsaw /usr/local/bin/chainsaw
 
-# YARA-X Python binding for blue-ioc rule authoring validation
+# YARA-X yr CLI + Python binding for blue-ioc rule authoring validation
 # sigma-cli for Sigma rule conversion and validation (blue-siem)
 RUN pip install --no-cache-dir yara-x>=1.0.0 sigma-cli>=0.10
 
