@@ -388,7 +388,7 @@ These agents implement composable cybersecurity tool execution through the `/rai
 | Agent | File | Role | Cognitive Mode |
 |-------|------|------|----------------|
 | rainbow-orchestrator | `skills/rainbow/agents/rainbow-orchestrator.md` | T5 Routing Orchestrator | Convergent |
-| rainbow-reporter | `skills/rainbow/agents/rainbow-reporter.md` | Engagement Reporter | Integrative |
+| rainbow-reporter | `skills/rainbow/agents/rainbow-reporter.md` | Engagement Reporter (PLANNED -- not yet implemented) | Integrative |
 | rainbow-sc-scanner | `skills/rainbow-supply-chain/agents/rainbow-sc-scanner.md` | Supply Chain Scanner (Syft, Grype, Trivy, OSV-Scanner, Checkov, Snyk CLI) | Systematic |
 | rainbow-sc-verifier | `skills/rainbow-supply-chain/agents/rainbow-sc-verifier.md` | Supply Chain Verifier (Cosign) | Systematic |
 | rainbow-recon-pipeline | `skills/rainbow-recon/agents/rainbow-recon-pipeline.md` | Reconnaissance Pipeline (Subfinder, httpx, dnsx, Naabu, Katana, Nuclei) | Systematic |
@@ -406,7 +406,7 @@ These agents implement composable cybersecurity tool execution through the `/rai
 | Agent | Primary Use Case | Output Type |
 |-------|------------------|-------------|
 | rainbow-orchestrator | Route requests to sub-skill agents, validate engagement scope, enforce zone gates | Routing decisions, engagement lifecycle |
-| rainbow-reporter | Generate unified findings reports from all sub-skill outputs | Engagement reports |
+| rainbow-reporter | Generate unified findings reports from all sub-skill outputs (PLANNED -- not yet implemented) | Engagement reports |
 | rainbow-sc-scanner | SBOM generation, vulnerability scanning, container/IaC auditing | Scan reports, SBOMs |
 | rainbow-sc-verifier | Container image signature verification, artifact provenance | Verification reports |
 | rainbow-recon-pipeline | Subdomain enumeration, port scanning, HTTP probing, vulnerability detection | Reconnaissance reports |
@@ -518,7 +518,7 @@ Agents with MCP (Model Context Protocol) tool access for external documentation 
 | ux-inclusive-evaluator | user-experience | resolve-library-id, query-docs |
 | ux-ai-design-guide | user-experience | resolve-library-id, query-docs |
 | rainbow-orchestrator | rainbow | resolve-library-id, query-docs |
-| rainbow-reporter | rainbow | resolve-library-id, query-docs |
+| rainbow-reporter | rainbow | resolve-library-id, query-docs (PLANNED -- not yet implemented) |
 | blue-lead | blue-team | resolve-library-id, query-docs |
 
 ### Memory-Keeper (Cross-Session Persistence)
