@@ -20,19 +20,25 @@ FROM debian:bookworm-slim AS binaries
 RUN apt-get update && apt-get install -y --no-install-recommends \
         curl \
         ca-certificates \
+        tar \
     && rm -rf /var/lib/apt/lists/*
 
-ARG TARGETARCH=amd64
+ARG TARGETARCH
 
-# Trivy >= 0.50
-ARG TRIVY_VERSION=0.54.1
-RUN curl -sSfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh \
-    | sh -s -- -b /usr/local/bin v${TRIVY_VERSION}
+# Trivy >= 0.50 (direct tarball download; naming: Linux-ARM64 vs Linux-64bit)
+ARG TRIVY_VERSION=0.69.3
+RUN ARCH=$([ "$TARGETARCH" = "arm64" ] && echo "ARM64" || echo "64bit") && \
+    curl -sSfL -o /tmp/trivy.tar.gz \
+    "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-${ARCH}.tar.gz" \
+    && tar xzf /tmp/trivy.tar.gz -C /usr/local/bin trivy \
+    && chmod +x /usr/local/bin/trivy \
+    && rm /tmp/trivy.tar.gz
 
-# Kubescape >= 3.0
-ARG KUBESCAPE_VERSION=3.0.8
-RUN curl -sSfL -o /usr/local/bin/kubescape \
-    "https://github.com/kubescape/kubescape/releases/download/v${KUBESCAPE_VERSION}/kubescape-ubuntu-latest" \
+# Kubescape >= 3.0 (v4.x uses kubescape_{VERSION}_linux_{ARCH} naming)
+ARG KUBESCAPE_VERSION=4.0.3
+RUN ARCH=$([ "$TARGETARCH" = "arm64" ] && echo "arm64" || echo "amd64") && \
+    curl -sSfL -o /usr/local/bin/kubescape \
+    "https://github.com/kubescape/kubescape/releases/download/v${KUBESCAPE_VERSION}/kubescape_${KUBESCAPE_VERSION}_linux_${ARCH}" \
     && chmod +x /usr/local/bin/kubescape
 
 # kube-bench >= 0.8
@@ -45,8 +51,9 @@ RUN curl -sSfL -o /tmp/kube-bench.tar.gz \
 
 # Cosign >= 2.2 (verify-only)
 ARG COSIGN_VERSION=2.2.4
-RUN curl -sSfL -o /usr/local/bin/cosign \
-    "https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign-linux-amd64" \
+RUN ARCH=$([ "$TARGETARCH" = "arm64" ] && echo "arm64" || echo "amd64") && \
+    curl -sSfL -o /usr/local/bin/cosign \
+    "https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign-linux-${ARCH}" \
     && chmod +x /usr/local/bin/cosign
 
 # ---------------------------------------------------------------------------
@@ -64,7 +71,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         jq \
         git \
         ca-certificates \
-        libopenscap8 \
+        libopenscap33 \
+        openscap-common \
         openscap-utils \
         ssg-base \
         ssg-debderived \
@@ -76,13 +84,10 @@ COPY --from=binaries /usr/local/bin/kubescape /usr/local/bin/kubescape
 COPY --from=binaries /usr/local/bin/kube-bench /usr/local/bin/kube-bench
 COPY --from=binaries /usr/local/bin/cosign /usr/local/bin/cosign
 
-# Python compliance tools -- version-pinned
-ARG CHECKOV_VERSION=3.2.0
-ARG PROWLER_VERSION=4.3.0
-
-RUN pip install --no-cache-dir \
-        checkov==${CHECKOV_VERSION} \
-        prowler==${PROWLER_VERSION}
+# Python compliance tools (checkov and prowler have conflicting transitive deps
+# when pinned to old versions; install separately with minimum version bounds)
+RUN pip install --no-cache-dir checkov>=3.0
+RUN pip install --no-cache-dir prowler>=4.0
 
 # Non-root user
 RUN groupadd --gid 1000 appgroup \

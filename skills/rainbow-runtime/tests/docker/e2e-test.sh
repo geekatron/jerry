@@ -25,9 +25,12 @@ log "Building all images..."
 docker compose -f "${COMPOSE_FILE}" build --pull
 
 # ── mitmproxy: version check ───────────────────────────────────────────────────
+# Capture to variable first: avoids set -o pipefail triggering on docker compose
+# TTY signal exit (255) when stdout is a pipe rather than a terminal.
 log "Checking mitmproxy version..."
-if docker compose -f "${COMPOSE_FILE}" run --rm --no-deps --entrypoint mitmproxy \
-    mitmproxy --version 2>&1 | grep -qi "mitmproxy"; then
+mitmproxy_out=$(docker compose -f "${COMPOSE_FILE}" run --rm --no-deps --entrypoint mitmproxy \
+    mitmproxy --version 2>&1) || true
+if echo "${mitmproxy_out}" | grep -qi "mitmproxy"; then
   pass "mitmproxy --version succeeded"
 else
   fail "mitmproxy --version failed"
@@ -35,8 +38,9 @@ fi
 
 # ── frida: version check ───────────────────────────────────────────────────────
 log "Checking frida version..."
-if docker compose -f "${COMPOSE_FILE}" run --rm --no-deps --entrypoint frida \
-    frida --version 2>&1 | grep -qE "^[0-9]+\.[0-9]+"; then
+frida_out=$(docker compose -f "${COMPOSE_FILE}" run --rm --no-deps --entrypoint frida \
+    frida --version 2>&1) || true
+if echo "${frida_out}" | grep -qE "[0-9]+\.[0-9]+"; then
   pass "frida --version succeeded"
 else
   fail "frida --version failed"

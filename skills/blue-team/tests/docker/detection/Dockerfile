@@ -7,7 +7,9 @@
 # Tier: A (execute directly)
 #
 # Version pins from Phase 4 blue-team-skill-design.md:
-#   YARA-X >= 0.9.0, Hayabusa >= 2.14, Chainsaw >= 2.9
+#   YARA-X >= 0.9.0 (using 1.14.0 — first version with aarch64-linux build)
+#   Hayabusa >= 2.14 (using 3.8.1 — v3 naming: lin-{aarch64-gnu|x64-gnu})
+#   Chainsaw >= 2.9 (using 2.14.1 — first version with aarch64-linux build)
 # =============================================================================
 
 # ---------------------------------------------------------------------------
@@ -21,29 +23,34 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         unzip \
     && rm -rf /var/lib/apt/lists/*
 
-ARG TARGETARCH=amd64
+ARG TARGETARCH
 
 # YARA-X >= 0.9.0 (yr CLI)
-ARG YARA_X_VERSION=0.9.0
-RUN curl -sSfL -o /tmp/yara-x.tar.gz \
-    "https://github.com/VirusTotal/yara-x/releases/download/v${YARA_X_VERSION}/yr-v${YARA_X_VERSION}-x86_64-unknown-linux-gnu.tar.gz" \
-    && tar xzf /tmp/yara-x.tar.gz -C /usr/local/bin \
+# v1.x+ has aarch64-unknown-linux-gnu; asset is a .gz single-binary (not tar.gz)
+ARG YARA_X_VERSION=1.14.0
+RUN ARCH=$([ "$TARGETARCH" = "arm64" ] && echo "aarch64" || echo "x86_64") && \
+    curl -sSfL -o /tmp/yara-x.gz \
+    "https://github.com/VirusTotal/yara-x/releases/download/v${YARA_X_VERSION}/yara-x-v${YARA_X_VERSION}-${ARCH}-unknown-linux-gnu.gz" \
+    && gunzip -c /tmp/yara-x.gz > /usr/local/bin/yr \
     && chmod +x /usr/local/bin/yr \
-    && rm /tmp/yara-x.tar.gz
+    && rm /tmp/yara-x.gz
 
-# Hayabusa >= 2.14
-ARG HAYABUSA_VERSION=2.17.0
-RUN curl -sSfL -o /tmp/hayabusa.zip \
-    "https://github.com/Yamato-Security/hayabusa/releases/download/v${HAYABUSA_VERSION}/hayabusa-${HAYABUSA_VERSION}-linux-x64-gnu.zip" \
-    && unzip -o /tmp/hayabusa.zip -d /tmp/hayabusa_extract \
-    && find /tmp/hayabusa_extract -name 'hayabusa*' -type f -executable -exec mv {} /usr/local/bin/hayabusa \; \
+# Hayabusa >= 2.14 (v3.x naming: lin-{aarch64-gnu|x64-gnu})
+# Binary inside zip: hayabusa-{VER}-lin-{ARCH} (no execute bit until chmod)
+ARG HAYABUSA_VERSION=3.8.1
+RUN ARCH=$([ "$TARGETARCH" = "arm64" ] && echo "aarch64-gnu" || echo "x64-gnu") && \
+    curl -sSfL -o /tmp/hayabusa.zip \
+    "https://github.com/Yamato-Security/hayabusa/releases/download/v${HAYABUSA_VERSION}/hayabusa-${HAYABUSA_VERSION}-lin-${ARCH}.zip" \
+    && unzip -j -o /tmp/hayabusa.zip "hayabusa-${HAYABUSA_VERSION}-lin-${ARCH}" -d /tmp/hayabusa_extract \
+    && mv "/tmp/hayabusa_extract/hayabusa-${HAYABUSA_VERSION}-lin-${ARCH}" /usr/local/bin/hayabusa \
     && chmod +x /usr/local/bin/hayabusa \
     && rm -rf /tmp/hayabusa.zip /tmp/hayabusa_extract
 
-# Chainsaw >= 2.9
-ARG CHAINSAW_VERSION=2.9.2
-RUN curl -sSfL -o /tmp/chainsaw.tar.gz \
-    "https://github.com/WithSecureLabs/chainsaw/releases/download/v${CHAINSAW_VERSION}/chainsaw_x86_64-unknown-linux-gnu.tar.gz" \
+# Chainsaw >= 2.9 (v2.14+ has aarch64-unknown-linux-gnu)
+ARG CHAINSAW_VERSION=2.14.1
+RUN ARCH=$([ "$TARGETARCH" = "arm64" ] && echo "aarch64" || echo "x86_64") && \
+    curl -sSfL -o /tmp/chainsaw.tar.gz \
+    "https://github.com/WithSecureLabs/chainsaw/releases/download/v${CHAINSAW_VERSION}/chainsaw_${ARCH}-unknown-linux-gnu.tar.gz" \
     && tar xzf /tmp/chainsaw.tar.gz -C /tmp \
     && find /tmp -name 'chainsaw' -type f -executable -exec mv {} /usr/local/bin/chainsaw \; \
     && chmod +x /usr/local/bin/chainsaw \
@@ -71,7 +78,7 @@ COPY --from=binaries /usr/local/bin/chainsaw /usr/local/bin/chainsaw
 
 # YARA-X Python binding for blue-ioc rule authoring validation
 # sigma-cli for Sigma rule conversion and validation (blue-siem)
-RUN pip install --no-cache-dir yara-x>=0.9.0 sigma-cli>=0.10
+RUN pip install --no-cache-dir yara-x>=1.0.0 sigma-cli>=0.10
 
 # Non-root user
 RUN groupadd --gid 1000 appgroup \
