@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  scanner:
+    build:
+      context: ./scanner
+    volumes:
+      - ./work:/work
+    working_dir: /work
+
+  verifier:
+    build:
+      context: ./verifier
+    volumes:
+      - ./work:/work
+    working_dir: /work

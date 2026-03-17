@@ -70,7 +70,8 @@ COPY --from=binaries /usr/local/bin/hayabusa /usr/local/bin/hayabusa
 COPY --from=binaries /usr/local/bin/chainsaw /usr/local/bin/chainsaw
 
 # YARA-X Python binding for blue-ioc rule authoring validation
-RUN pip install --no-cache-dir yara-x>=0.9.0
+# sigma-cli for Sigma rule conversion and validation (blue-siem)
+RUN pip install --no-cache-dir yara-x>=0.9.0 sigma-cli>=0.10
 
 # Non-root user
 RUN groupadd --gid 1000 appgroup \
