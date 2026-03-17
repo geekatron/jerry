@@ -307,24 +307,44 @@ check_and_start_container() {
 # three-layer pipeline from rainbow-credential-filter.md.
 # ---------------------------------------------------------------------------
 
-CREDENTIAL_FILTER_PATTERNS=(
-    # AWS access key pattern
+# Credential filter patterns split by case-sensitivity requirement.
+# All patterns use ERE syntax compatible with bash [[ =~ ]] (POSIX ERE).
+# PCRE (?i) flags are replaced by: lowercasing the line before matching
+# patterns listed in CREDENTIAL_FILTER_PATTERNS_CI (case-insensitive group).
+# Patterns in CREDENTIAL_FILTER_PATTERNS_CS are matched against the original
+# line (case-sensitive).
+#
+# ERE portability notes:
+#   - \s is not ERE; use [[:space:]] instead
+#   - (?i) inline flag is not ERE; handled via line lowercasing below
+#   - {m,n} quantifiers are standard ERE (supported in bash 3.2+)
+
+# Case-sensitive patterns (matched against original line)
+CREDENTIAL_FILTER_PATTERNS_CS=(
+    # AWS access key ID (uppercase, fixed prefix families)
     '(A3T[A-Z0-9]|AKIA|AGPA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}'
-    # AWS secret key (heuristic -- base64-like 40 chars after key=)
-    '(?i)(aws_secret_access_key|aws_secret)[[:space:]]*[=:][[:space:]]*[A-Za-z0-9/+=]{40}'
-    # Generic API token / Bearer patterns
-    '(?i)(api[_-]?key|api[_-]?token|access[_-]?token|bearer)[[:space:]]*[=:][[:space:]]*[A-Za-z0-9_\-\.]{20,}'
-    # SSH private key header
+    # SSH / PGP private key header
     '-----BEGIN (RSA|DSA|EC|OPENSSH|PGP) PRIVATE KEY'
-    # NTLM hash (32 hex chars, often prefixed by user:domain:LM:NTLM)
+    # NTLM hash pair (32 hex chars each, colon-delimited)
     ':[0-9a-fA-F]{32}:[0-9a-fA-F]{32}:'
-    # Generic password assignment
-    '(?i)(password|passwd|pwd)[[:space:]]*[=:][[:space:]]*[^\s]{8,}'
-    # Connection strings with credentials
-    '(?i)(mongodb|postgresql|mysql|redis|amqp)(\+srv)?://[^:]+:[^@]+@'
-    # Kerberos ticket material -- base64-encoded krb5 ticket (YAIB/YII header indicates ASN.1 Kerberos)
+    # Kerberos ticket material -- base64-encoded krb5 ASN.1 (YAIB/YII header)
     # Covers Impacket/BloodHound Kerberos credential outputs (ADR FMEA Category 5)
     'YII[A-Za-z0-9+/]{20,}={0,2}'
+)
+
+# Case-insensitive patterns (matched against lowercased copy of line)
+# All keyword literals here MUST be lowercase since the line is lowercased before comparison.
+CREDENTIAL_FILTER_PATTERNS_CI=(
+    # AWS secret key (heuristic -- base64-like 40 chars after key=)
+    '(aws_secret_access_key|aws_secret)[[:space:]]*[=:][[:space:]]*[A-Za-z0-9/+=]{40}'
+    # Generic API token / Bearer patterns.
+    # Separator is [=:] for assignment forms (api_key=...) or a plain space for
+    # HTTP header forms (Authorization: Bearer <token>).  The ERE [=: ] covers both.
+    '(api[_-]?key|api[_-]?token|access[_-]?token|bearer)[[:space:]]*[=: ][[:space:]]*[A-Za-z0-9_.:/-]{20,}'
+    # Generic password assignment
+    '(password|passwd|pwd)[[:space:]]*[=:][[:space:]]*[^[:space:]]{8,}'
+    # Connection strings with embedded credentials
+    '(mongodb|postgresql|mysql|redis|amqp)(\+srv)?://[^:]+:[^@]+@'
 )
 
 apply_credential_filter() {
@@ -341,7 +361,10 @@ apply_credential_filter() {
         return 0
     fi
 
-    # W0: Line-by-line regex scan (L1 layer only)
+    # W0: Line-by-line regex scan (L1 layer only).
+    # Uses bash [[ =~ ]] with ERE patterns -- portable across macOS (BSD) and Linux.
+    # grep -P (PCRE) is intentionally avoided: macOS ships BSD grep without -P support,
+    # and -P failure is silently suppressed via 2>/dev/null, making every pattern a no-op.
     local detected=false
     local detected_pattern=""
     local detected_line_num=0
@@ -349,8 +372,22 @@ apply_credential_filter() {
 
     while IFS= read -r line; do
         line_num=$(( line_num + 1 ))
-        for pattern in "${CREDENTIAL_FILTER_PATTERNS[@]}"; do
-            if echo "${line}" | grep -qP "${pattern}" 2>/dev/null; then
+
+        # Case-sensitive scan (original line)
+        for pattern in "${CREDENTIAL_FILTER_PATTERNS_CS[@]}"; do
+            if [[ "${line}" =~ ${pattern} ]]; then
+                detected=true
+                detected_pattern="${pattern}"
+                detected_line_num=${line_num}
+                break 2
+            fi
+        done
+
+        # Case-insensitive scan (lowercase copy of line)
+        local line_lower
+        line_lower="$(echo "${line}" | tr '[:upper:]' '[:lower:]')"
+        for pattern in "${CREDENTIAL_FILTER_PATTERNS_CI[@]}"; do
+            if [[ "${line_lower}" =~ ${pattern} ]]; then
                 detected=true
                 detected_pattern="${pattern}"
                 detected_line_num=${line_num}
