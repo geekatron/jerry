@@ -142,7 +142,7 @@ The plan MUST include all 5 pre-flight steps from `docs/MULTI_CLI_INTEGRATION.md
 | Model | CLI Command | API Fallback |
 |-------|-------------|--------------|
 | Claude | `claude --dangerously-skip-permissions --model claude-opus-4-6 --thinking-budget high -p` | Anthropic API via `invoke_claude_api` |
-| Codex | `codex --yolo --model gpt-5.2 --reasoning-effort high --full-auto exec` | OpenAI API via `invoke_codex_api` |
+| Codex | `codex exec --full-auto -m gpt-4o "<prompt>"` | OpenAI API via `invoke_codex_api` |
 | Gemini | `gemini --yolo --model gemini-2.5-pro --prompt` | Google API via `invoke_gemini_api` |
 
 #### Step 3: Artifact Path Scheme
