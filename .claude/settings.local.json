@@ -38,7 +38,6 @@
       "Bash(git push:*)",
       "Bash(gh run list:*)",
       "Bash(uv run python:*)",
-      "Bash(FEAT_DIR=\"projects/PROJ-001-oss-release/work/EPIC-001-oss-release/FEAT-001-fix-ci-build-failures\":*)",
       "Bash(git mv:*)",
       "Bash(git ls-tree:*)",
       "Bash(git checkout:*)",
@@ -51,7 +50,6 @@
       "Bash(git log:*)",
       "Bash(ls:*)",
       "Bash(python3:*)",
-      "Bash(python3:*)",
       "Bash(uv run pyright:*)",
       "Bash(uv run:*)",
       "Bash(wc:*)",
@@ -62,7 +60,11 @@
       "Bash(dot:*)",
       "Bash(git:*)",
       "Bash(unlink:*)",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "Bash(for f:*)",
+      "Bash(do echo:*)",
+      "Read(//Users/adam.nowak/workspace/GitHub/geekatron/jerry-wt/feat/proj-023-exploit-framework/**)",
+      "Bash(done)"
     ]
   },
   "hooks": {

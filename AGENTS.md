@@ -389,17 +389,17 @@ These agents implement composable cybersecurity tool execution through the `/rai
 |-------|------|------|----------------|
 | rainbow-orchestrator | `skills/rainbow/agents/rainbow-orchestrator.md` | T5 Routing Orchestrator | Convergent |
 | rainbow-reporter | `skills/rainbow/agents/rainbow-reporter.md` | Engagement Reporter | Integrative |
-| rainbow-sc-scanner | `skills/rainbow/agents/rainbow-sc-scanner.md` | Supply Chain Scanner (Syft, Grype, Trivy, OSV-Scanner, Checkov, Snyk CLI) | Systematic |
-| rainbow-sc-verifier | `skills/rainbow/agents/rainbow-sc-verifier.md` | Supply Chain Verifier (Cosign) | Systematic |
-| rainbow-recon-pipeline | `skills/rainbow/agents/rainbow-recon-pipeline.md` | Reconnaissance Pipeline (Subfinder, httpx, dnsx, Naabu, Katana, Nuclei) | Systematic |
-| rainbow-recon-osint | `skills/rainbow/agents/rainbow-recon-osint.md` | OSINT Specialist (OWASP Amass, Maigret) | Divergent |
-| rainbow-cloud-auditor | `skills/rainbow/agents/rainbow-cloud-auditor.md` | Cloud Security Auditor (Checkov, Prowler, Kubescape, Kyverno) | Systematic |
-| rainbow-cloud-mapper | `skills/rainbow/agents/rainbow-cloud-mapper.md` | Cloud Infrastructure Mapper (Cartography) | Systematic |
-| rainbow-exploit-ops | `skills/rainbow/rainbow-exploit/agents/rainbow-exploit-ops.md` | Binary Exploitation Specialist (pwntools, Impacket, Donut) | Convergent |
-| rainbow-exploit-c2 | `skills/rainbow/rainbow-exploit/agents/rainbow-exploit-c2.md` | C2 Infrastructure Specialist (Empire, Mythic) | Convergent |
-| rainbow-exploit-ad | `skills/rainbow/rainbow-exploit/agents/rainbow-exploit-ad.md` | Active Directory Attack Specialist (Impacket, BloodHound CE) | Forensic |
-| rainbow-exploit-msf | `skills/rainbow/rainbow-exploit/agents/rainbow-exploit-msf.md` | Metasploit Integration Specialist | Convergent |
-| rainbow-runtime-instrument | `skills/rainbow/rainbow-runtime/agents/rainbow-runtime-instrument.md` | Runtime Instrumentation Specialist (mitmproxy, Frida) | Convergent |
+| rainbow-sc-scanner | `skills/rainbow-supply-chain/agents/rainbow-sc-scanner.md` | Supply Chain Scanner (Syft, Grype, Trivy, OSV-Scanner, Checkov, Snyk CLI) | Systematic |
+| rainbow-sc-verifier | `skills/rainbow-supply-chain/agents/rainbow-sc-verifier.md` | Supply Chain Verifier (Cosign) | Systematic |
+| rainbow-recon-pipeline | `skills/rainbow-recon/agents/rainbow-recon-pipeline.md` | Reconnaissance Pipeline (Subfinder, httpx, dnsx, Naabu, Katana, Nuclei) | Systematic |
+| rainbow-recon-osint | `skills/rainbow-recon/agents/rainbow-recon-osint.md` | OSINT Specialist (OWASP Amass, Maigret) | Divergent |
+| rainbow-cloud-auditor | `skills/rainbow-cloud/agents/rainbow-cloud-auditor.md` | Cloud Security Auditor (Checkov, Prowler, Kubescape, Kyverno) | Systematic |
+| rainbow-cloud-mapper | `skills/rainbow-cloud/agents/rainbow-cloud-mapper.md` | Cloud Infrastructure Mapper (Cartography) | Systematic |
+| rainbow-exploit-ops | `skills/rainbow-exploit/agents/rainbow-exploit-ops.md` | Binary Exploitation Specialist (pwntools, Impacket, Donut) | Convergent |
+| rainbow-exploit-c2 | `skills/rainbow-exploit/agents/rainbow-exploit-c2.md` | C2 Infrastructure Specialist (Empire, Mythic) | Convergent |
+| rainbow-exploit-ad | `skills/rainbow-exploit/agents/rainbow-exploit-ad.md` | Active Directory Attack Specialist (Impacket, BloodHound CE) | Forensic |
+| rainbow-exploit-msf | `skills/rainbow-exploit/agents/rainbow-exploit-msf.md` | Metasploit Integration Specialist | Convergent |
+| rainbow-runtime-instrument | `skills/rainbow-runtime/agents/rainbow-runtime-instrument.md` | Runtime Instrumentation Specialist (mitmproxy, Frida) | Convergent |
 
 **Key Capabilities:**
 

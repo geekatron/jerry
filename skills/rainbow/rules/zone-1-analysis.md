@@ -126,7 +126,7 @@ Two tools span security zone boundaries. At Zone 1, only the following restricte
 | `kyverno test <test-dir>` | `kyverno apply --generate` | Zone 3 (per-operation approval) |
 | `kyverno json --payload --policy` | -- | -- |
 
-**Enforcement:** The `rainbow-cloud-auditor` agent MUST verify that `--resource` is present in all Kyverno `apply` invocations at Zone 1. The `--resource` flag forces local-only evaluation (dry-run semantics). Absence of `--resource` triggers zone escalation. See `skills/rainbow/rainbow-cloud/rules/kyverno-escalation-protocol.md` for the full Kyverno dual-zone escalation protocol and `skills/rainbow/rainbow-cloud/rules/kyverno-dryrun-enforcement.yaml` for the enforcement configuration.
+**Enforcement:** The `rainbow-cloud-auditor` agent MUST verify that `--resource` is present in all Kyverno `apply` invocations at Zone 1. The `--resource` flag forces local-only evaluation (dry-run semantics). Absence of `--resource` triggers zone escalation. See `skills/rainbow-cloud/rules/kyverno-escalation-protocol.md` for the full Kyverno dual-zone escalation protocol and `skills/rainbow-cloud/rules/kyverno-dryrun-enforcement.yaml` for the enforcement configuration.
 
 ---
 

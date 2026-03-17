@@ -71,8 +71,8 @@ Each entry in this registry describes one agent using the following fields.
 
 | Name | File path | Role | Cognitive mode | Tool tier | Security zone | Model |
 |------|-----------|------|----------------|-----------|---------------|-------|
-| `rainbow-sc-scanner` | `skills/rainbow/rainbow-supply-chain/agents/rainbow-sc-scanner.md` | Executes SBOM generation and vulnerability scanning against supply chain artifacts. | systematic | T2 | Zone 1 | sonnet |
-| `rainbow-sc-verifier` | `skills/rainbow/rainbow-supply-chain/agents/rainbow-sc-verifier.md` | Verifies signatures and provenance chains for container images and packages. | systematic | T2 | Zone 1 / Zone 2 | sonnet |
+| `rainbow-sc-scanner` | `skills/rainbow-supply-chain/agents/rainbow-sc-scanner.md` | Executes SBOM generation and vulnerability scanning against supply chain artifacts. | systematic | T2 | Zone 1 | sonnet |
+| `rainbow-sc-verifier` | `skills/rainbow-supply-chain/agents/rainbow-sc-verifier.md` | Verifies signatures and provenance chains for container images and packages. | systematic | T2 | Zone 1 / Zone 2 | sonnet |
 
 **Installed tools:** Syft (>=1.0), Grype (>=0.74), Trivy (>=0.50), OSV-Scanner (>=2.0), Checkov (>=3.0), Cosign (>=2.2), Snyk CLI (Latest).
 
@@ -82,8 +82,8 @@ Each entry in this registry describes one agent using the following fields.
 
 | Name | File path | Role | Cognitive mode | Tool tier | Security zone | Model |
 |------|-----------|------|----------------|-----------|---------------|-------|
-| `rainbow-recon-pipeline` | `skills/rainbow/rainbow-recon/agents/rainbow-recon-pipeline.md` | Executes automated reconnaissance pipeline using Tier A tools. | systematic | T2 | Zone 2 | sonnet |
-| `rainbow-recon-osint` | `skills/rainbow/rainbow-recon/agents/rainbow-recon-osint.md` | Performs OSINT collection and passive reconnaissance using Tier B tools. | divergent | T2 | Zone 2 | sonnet |
+| `rainbow-recon-pipeline` | `skills/rainbow-recon/agents/rainbow-recon-pipeline.md` | Executes automated reconnaissance pipeline using Tier A tools. | systematic | T2 | Zone 2 | sonnet |
+| `rainbow-recon-osint` | `skills/rainbow-recon/agents/rainbow-recon-osint.md` | Performs OSINT collection and passive reconnaissance using Tier B tools. | divergent | T2 | Zone 2 | sonnet |
 
 **Installed tools — Tier A:** Subfinder (>=2.6), httpx (>=1.6), dnsx (>=1.2), Naabu (>=2.4), Katana (>=1.0), Nuclei (>=3.0 — detection templates Zone 2, exploit templates Zone 3).
 
@@ -95,8 +95,8 @@ Each entry in this registry describes one agent using the following fields.
 
 | Name | File path | Role | Cognitive mode | Tool tier | Security zone | Model |
 |------|-----------|------|----------------|-----------|---------------|-------|
-| `rainbow-cloud-auditor` | `skills/rainbow/rainbow-cloud/agents/rainbow-cloud-auditor.md` | Audits IaC files and live cloud/Kubernetes configurations for security misconfigurations. | systematic | T2 | Zone 1 (IaC) / Zone 2 (live) | sonnet |
-| `rainbow-cloud-mapper` | `skills/rainbow/rainbow-cloud/agents/rainbow-cloud-mapper.md` | Maps cloud resource relationships and attack paths using graph-based analysis. | divergent | T2 | Zone 2 | sonnet |
+| `rainbow-cloud-auditor` | `skills/rainbow-cloud/agents/rainbow-cloud-auditor.md` | Audits IaC files and live cloud/Kubernetes configurations for security misconfigurations. | systematic | T2 | Zone 1 (IaC) / Zone 2 (live) | sonnet |
+| `rainbow-cloud-mapper` | `skills/rainbow-cloud/agents/rainbow-cloud-mapper.md` | Maps cloud resource relationships and attack paths using graph-based analysis. | divergent | T2 | Zone 2 | sonnet |
 
 **Installed tools:** Checkov (>=3.0), Prowler (>=4.0), Kubescape (>=3.0), Kyverno (>=1.11 — validate=Zone 1, mutate=Zone 2, generate=Zone 3), Cartography (>=0.90).
 
@@ -106,10 +106,10 @@ Each entry in this registry describes one agent using the following fields.
 
 | Name | File path | Role | Cognitive mode | Tool tier | Security zone | Model |
 |------|-----------|------|----------------|-----------|---------------|-------|
-| `rainbow-exploit-ops` | `skills/rainbow/rainbow-exploit/agents/rainbow-exploit-ops.md` | Executes general exploitation operations using pwntools and Impacket. | convergent | T2 | Zone 3 | opus |
-| `rainbow-exploit-c2` | `skills/rainbow/rainbow-exploit/agents/rainbow-exploit-c2.md` | Manages command and control infrastructure using Empire and Mythic. | convergent | T2 | Zone 3 | opus |
-| `rainbow-exploit-ad` | `skills/rainbow/rainbow-exploit/agents/rainbow-exploit-ad.md` | Analyzes Active Directory attack paths and performs AD-specific exploitation. | forensic | T2 | Zone 2 / Zone 3 | opus |
-| `rainbow-exploit-msf` | `skills/rainbow/rainbow-exploit/agents/rainbow-exploit-msf.md` | Executes Metasploit-based exploitation with module selection and post-exploitation. | convergent | T2 | Zone 3 | opus |
+| `rainbow-exploit-ops` | `skills/rainbow-exploit/agents/rainbow-exploit-ops.md` | Executes general exploitation operations using pwntools and Impacket. | convergent | T2 | Zone 3 | opus |
+| `rainbow-exploit-c2` | `skills/rainbow-exploit/agents/rainbow-exploit-c2.md` | Manages command and control infrastructure using Empire and Mythic. | convergent | T2 | Zone 3 | opus |
+| `rainbow-exploit-ad` | `skills/rainbow-exploit/agents/rainbow-exploit-ad.md` | Analyzes Active Directory attack paths and performs AD-specific exploitation. | forensic | T2 | Zone 2 / Zone 3 | opus |
+| `rainbow-exploit-msf` | `skills/rainbow-exploit/agents/rainbow-exploit-msf.md` | Executes Metasploit-based exploitation with module selection and post-exploitation. | convergent | T2 | Zone 3 | opus |
 
 **Installed tools:** pwntools (>=4.12), Impacket (>=0.12), Donut (>=1.0), Empire (>=5.0), Mythic (>=3.3), BloodHound CE (>=5.0 — Zone 2), Metasploit (>=6.4).
 
@@ -121,7 +121,7 @@ Each entry in this registry describes one agent using the following fields.
 
 | Name | File path | Role | Cognitive mode | Tool tier | Security zone | Model |
 |------|-----------|------|----------------|-----------|---------------|-------|
-| `rainbow-runtime-instrument` | `skills/rainbow/rainbow-runtime/agents/rainbow-runtime-instrument.md` | Instruments running processes and network traffic for dynamic analysis and interception. | convergent | T2 | Zone 2 (capture) / Zone 3 (active interception) | opus |
+| `rainbow-runtime-instrument` | `skills/rainbow-runtime/agents/rainbow-runtime-instrument.md` | Instruments running processes and network traffic for dynamic analysis and interception. | convergent | T2 | Zone 2 (capture) / Zone 3 (active interception) | opus |
 
 **Installed tools — mitmproxy suite:** mitmproxy, mitmdump, mitmweb (>=10.0). Passive capture is Zone 2; `-s` script injection is Zone 3.
 
