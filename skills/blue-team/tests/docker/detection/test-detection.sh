@@ -93,8 +93,8 @@ run_test "hayabusa binary exists" \
     "/usr/local/bin/hayabusa"
 
 run_test "hayabusa version >= 2.14" \
-    "hayabusa --version 2>&1 || hayabusa csv-timeline --help 2>&1 | head -3" \
-    "[Hh]ayabusa|2\.[0-9]+"
+    "hayabusa help 2>&1 | head -3" \
+    "[Hh]ayabusa.*v[0-9]|[Vv][0-9]+\.[0-9]+"
 
 run_test "hayabusa csv-timeline command available" \
     "hayabusa csv-timeline --help 2>&1 | head -5" \
