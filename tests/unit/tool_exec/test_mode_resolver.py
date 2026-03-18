@@ -19,21 +19,21 @@ class TestModeResolverPrecedence:
         """Create a fresh resolver and clean env."""
         self.resolver = ModeResolverService()
         # Ensure env var is not set from previous tests
-        os.environ.pop("RAINBOW_TOOL_MODE", None)
+        os.environ.pop("JERRY_TOOL_MODE", None)
 
     def teardown_method(self) -> None:
         """Clean up env var."""
-        os.environ.pop("RAINBOW_TOOL_MODE", None)
+        os.environ.pop("JERRY_TOOL_MODE", None)
 
     def test_level_1_cli_flag_takes_precedence(self) -> None:
         """CLI --mode flag has highest precedence."""
-        os.environ["RAINBOW_TOOL_MODE"] = "container"
+        os.environ["JERRY_TOOL_MODE"] = "container"
         mode = self.resolver.resolve(cli_mode="local", config_mode="container")
         assert mode == "local"
 
     def test_level_2_env_var(self) -> None:
         """Environment variable is used when CLI flag is absent."""
-        os.environ["RAINBOW_TOOL_MODE"] = "container"
+        os.environ["JERRY_TOOL_MODE"] = "container"
         mode = self.resolver.resolve(cli_mode=None, config_mode="local")
         assert mode == "container"
 
@@ -54,11 +54,11 @@ class TestModeResolverValidation:
     def setup_method(self) -> None:
         """Create a fresh resolver."""
         self.resolver = ModeResolverService()
-        os.environ.pop("RAINBOW_TOOL_MODE", None)
+        os.environ.pop("JERRY_TOOL_MODE", None)
 
     def teardown_method(self) -> None:
         """Clean up."""
-        os.environ.pop("RAINBOW_TOOL_MODE", None)
+        os.environ.pop("JERRY_TOOL_MODE", None)
 
     def test_invalid_cli_mode_raises(self) -> None:
         """Invalid CLI mode raises ValueError."""
@@ -67,7 +67,7 @@ class TestModeResolverValidation:
 
     def test_invalid_env_mode_raises(self) -> None:
         """Invalid env var mode raises ValueError."""
-        os.environ["RAINBOW_TOOL_MODE"] = "invalid"
+        os.environ["JERRY_TOOL_MODE"] = "invalid"
         with pytest.raises(ValueError, match="Invalid execution mode"):
             self.resolver.resolve()
 

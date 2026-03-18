@@ -21,6 +21,7 @@ from typing import TYPE_CHECKING
 from src.tool_exec.domain.value_objects.container_execution_result import (
     ContainerExecutionResult,
 )
+from src.tool_exec.domain.value_objects.exit_codes import ExitCode
 
 if TYPE_CHECKING:
     from src.tool_exec.domain.services.credential_filter import (
@@ -37,13 +38,20 @@ class ContainerExecutor:
 
     def __init__(
         self,
-        credential_filter: CredentialFilterService | None = None,
+        credential_filter: CredentialFilterService,
         project_root: str | None = None,
     ) -> None:
         """Initialize the container executor.
 
+        IN-017-R2: credential_filter is now a required parameter. Removing the
+        ``= None`` default closes the bypass path where a caller could
+        instantiate ContainerExecutor without a filter and silently skip all
+        credential detection. The composition root MUST supply a
+        CredentialFilterService instance.
+
         Args:
-            credential_filter: Optional credential filter service.
+            credential_filter: Credential filter service applied to both stdout
+                and stderr. Required -- no default (IN-017-R2).
             project_root: Path to the project root for compose file resolution.
                 If None, compose files are treated as relative to cwd.
         """
@@ -130,36 +138,49 @@ class ContainerExecutor:
         # stderr. Container tools may write sensitive material to stderr. If either
         # stream triggers the filter, both streams are quarantined and exit code 4 is
         # returned. Mirrors the fix applied to LocalExecutor.
-        if self._credential_filter is not None and not no_filter:
-            stdout_filter_result = self._credential_filter.filter_output(raw_stdout)
-            stderr_filter_result = self._credential_filter.filter_output(raw_stderr)
-            detected = stdout_filter_result.detected or stderr_filter_result.detected
-            # FIX-17: Normalize non-zero tool exit codes to TOOL_ERROR (2)
-            # to comply with BC-01/BC-02. Exit code 4 overrides when credential
-            # detected; otherwise tool errors map to exit code 2 (TOOL_ERROR).
-            if detected:
-                exit_code = 4
-            elif result.returncode != 0:
-                exit_code = 2
-            else:
-                exit_code = 0
+        #
+        # IN-017-R2: credential_filter is now required, so no is-None guard needed.
+        # PM-003-R2 / FIX-10: Wrap filter_output() in try/except RuntimeError so
+        # that strict-mode violations surface as STRICT_MODE_VIOLATION (9).
+        try:
+            stdout_filter_result = self._credential_filter.filter_output(
+                raw_stdout, no_filter=no_filter
+            )
+            stderr_filter_result = self._credential_filter.filter_output(
+                raw_stderr, no_filter=no_filter
+            )
+        except RuntimeError:
             return ContainerExecutionResult(
-                exit_code=exit_code,
-                stdout=stdout_filter_result.filtered_output,
-                stderr=stderr_filter_result.filtered_output,
+                exit_code=int(ExitCode.STRICT_MODE_VIOLATION),
+                stdout="",
+                stderr="[CREDENTIAL-FILTER] Strict mode violation: --no-filter forbidden.",
                 raw_stdout=raw_stdout,
                 raw_stderr=raw_stderr,
-                credential_detected=detected,
-                filter_result=stdout_filter_result,
                 container_service=service,
             )
 
+        detected = stdout_filter_result.detected or stderr_filter_result.detected
+        # FIX-17: Normalize non-zero tool exit codes to TOOL_ERROR (2)
+        # to comply with BC-01/BC-02. Exit code 4 overrides when credential
+        # detected; otherwise tool errors map to exit code 2 (TOOL_ERROR).
+        if detected:
+            exit_code = int(ExitCode.CREDENTIAL_DETECTED)
+        elif result.returncode != 0:
+            exit_code = int(ExitCode.TOOL_ERROR)
+        else:
+            exit_code = int(ExitCode.SUCCESS)
+        # RT-R2-004: Use the detecting stream's filter_result for match_info.
+        detecting_filter_result = (
+            stderr_filter_result if stderr_filter_result.detected else stdout_filter_result
+        )
         return ContainerExecutionResult(
-            exit_code=result.returncode,
-            stdout=raw_stdout,
-            stderr=raw_stderr,
+            exit_code=exit_code,
+            stdout=stdout_filter_result.filtered_output,
+            stderr=stderr_filter_result.filtered_output,
             raw_stdout=raw_stdout,
             raw_stderr=raw_stderr,
+            credential_detected=detected,
+            filter_result=detecting_filter_result,
             container_service=service,
         )
 

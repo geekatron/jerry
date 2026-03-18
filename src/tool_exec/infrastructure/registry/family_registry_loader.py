@@ -103,18 +103,39 @@ class FamilyRegistryLoader:
         families.sort(key=lambda fi: fi.priority)
         resolvers: dict[str, ToolFamilyResolverPort] = {}
 
+        attempted = 0
         for family_info in families:
             if not family_info.enabled:
                 logger.info("Skipping disabled family: %s", family_info.name)
                 continue
 
+            attempted += 1
             try:
                 resolver = self._load_resolver(family_info)
                 resolvers[family_info.name] = resolver
                 logger.info("Loaded family resolver: %s", family_info.name)
             except Exception:
-                logger.exception("Failed to load family resolver: %s", family_info.name)
-                raise
+                # NEW-002 (FM-005): Skip a single failing family rather than
+                # halting all loading. A malformed or missing resolver for one
+                # family must not prevent the CLI from using other valid families.
+                # After the loop, if ALL attempted families failed, raise so the
+                # caller can surface a meaningful error. A partial load is acceptable.
+                logger.exception(
+                    "Failed to load family resolver: %s -- skipping this family",
+                    family_info.name,
+                )
+                continue
+
+        # Only raise if at least one enabled family was attempted and ALL failed.
+        # If there are no enabled families (attempted == 0), return empty dict --
+        # the caller (handle_tool_exec) will surface a FAMILY_NOT_FOUND error
+        # when no family can resolve the tool command.
+        if attempted > 0 and not resolvers:
+            msg = (
+                "No family resolvers could be loaded. All enabled families failed "
+                "to initialize. Check the logs above for per-family error details."
+            )
+            raise ValueError(msg)
 
         return resolvers
 

@@ -17,7 +17,6 @@ References:
 
 from __future__ import annotations
 
-import os
 import re
 import sys
 
@@ -142,46 +141,62 @@ class CredentialFilterService:
                 self._ci_patterns.append(compiled)
                 self._ci_raw.append(pattern_str)
 
-    def filter_output(self, raw_output: str, no_filter: bool = False) -> FilterResult:
+    def filter_output(
+        self,
+        raw_output: str,
+        no_filter: bool = False,
+        strict_mode: bool = True,
+        window_size: int = 3,
+    ) -> FilterResult:
         """Apply the credential filter to tool output.
 
-        PM-002 (FIX-13): When JERRY_STRICT_MODE is true (default) and
-        no_filter=True is requested by a programmatic caller, this method
-        raises RuntimeError rather than silently bypassing filtering. This
-        ensures the strict-mode gate cannot be circumvented by callers that
-        do not route through the CLI handler's --no-filter check.
+        PM-002 (FIX-13): When strict_mode=True (the default) and no_filter=True
+        is requested by a programmatic caller, this method raises RuntimeError
+        rather than silently bypassing filtering. This ensures the strict-mode
+        gate cannot be circumvented by callers that do not route through the CLI
+        handler's --no-filter check.
+
+        PM-004-R2: strict_mode is now an explicit parameter injected by the
+        composition root rather than read from os.environ here. This keeps the
+        domain service free of infrastructure coupling (H-07 compliance). The
+        CLI handler reads JERRY_STRICT_MODE from the environment and passes the
+        resolved boolean down.
 
         DA-002/CV-005 (FIX-1): On detection, performs inline per-match
         [CREDENTIAL-REDACTED] substitution on the matching line, preserving
         all other output lines intact. The raw output is preserved in
         FilterResult.raw_output for quarantine purposes.
 
-        Uses a sliding-window approach: scans each line individually, then
-        scans adjacent line pairs to catch credentials split across line
-        boundaries (VF-001 mitigation). On first match, returns a FilterResult
-        with detected=True and the matching details.
+        PM-001-R2: Uses a configurable sliding-window approach with window_size
+        (default 3): scans each line individually, then scans all N-line windows
+        (up to window_size lines joined) to catch credentials split across line
+        boundaries (VF-001 mitigation). The previous implementation hardcoded
+        pairs (window_size=2), missing credentials split across 3 lines.
 
         Args:
             raw_output: The raw tool output to filter.
             no_filter: If True, skip filtering. FORBIDDEN when
-                JERRY_STRICT_MODE=true (PM-002).
+                strict_mode=True (PM-002).
+            strict_mode: Whether strict mode is active. When True and
+                no_filter=True, raises RuntimeError. Injected by composition
+                root; do NOT read os.environ here (PM-004-R2, H-07).
+            window_size: Number of lines to join in the sliding-window pass
+                (PM-001-R2). Default 3 catches credentials split across 3 lines.
+                Minimum 2 (pairs); values < 2 are clamped to 2.
 
         Returns:
             FilterResult with detection status and filtered output.
 
         Raises:
-            RuntimeError: If no_filter=True and JERRY_STRICT_MODE=true (PM-002).
+            RuntimeError: If no_filter=True and strict_mode=True (PM-002).
         """
-        # PM-002 (FIX-13): Domain-level strict mode enforcement.
-        # The CLI handler also checks this, but enforcing it here prevents
-        # programmatic callers from bypassing the filter entirely.
+        # PM-002 (FIX-13) + PM-004-R2: Domain-level strict mode enforcement
+        # using injected strict_mode parameter, not os.environ.
         if no_filter:
-            strict_mode_env = os.environ.get("JERRY_STRICT_MODE", "true").lower()
-            strict = strict_mode_env not in ("false", "0", "no")
-            if strict:
+            if strict_mode:
                 msg = (
-                    "no_filter=True is FORBIDDEN when JERRY_STRICT_MODE=true. "
-                    "Set JERRY_STRICT_MODE=false to allow unfiltered output."
+                    "no_filter=True is FORBIDDEN when strict_mode=True. "
+                    "Pass strict_mode=False to allow unfiltered output."
                 )
                 print(
                     f"[CREDENTIAL-FILTER] {msg}",
@@ -194,6 +209,9 @@ class CredentialFilterService:
                 filtered_output=raw_output,
                 raw_output=raw_output,
             )
+
+        # PM-001-R2: Enforce minimum window size of 2 (pairs).
+        effective_window = max(2, window_size)
 
         lines = raw_output.split("\n")
 
@@ -208,25 +226,26 @@ class CredentialFilterService:
                     raw_output=raw_output,
                 )
 
-        # Pass 2: Sliding-window scan over adjacent line pairs (VF-001 fix).
-        # Catches credentials whose distinctive prefix is split across a line
-        # boundary (e.g., "AK\nIA1234567890ABCDEF"). Joins adjacent lines
-        # with no separator to reconstruct the split credential.
-        for line_idx in range(len(lines) - 1):
-            joined = lines[line_idx] + lines[line_idx + 1]
-            match = self._scan_text(joined, line_idx + 1)
-            if match is not None:
-                # Redact both lines that contributed to the split credential
-                return FilterResult(
-                    detected=True,
-                    match=CredentialMatch(
-                        pattern=match.pattern,
-                        line_number=match.line_number,
-                        case_sensitive=match.case_sensitive,
-                    ),
-                    filtered_output=self._redact_adjacent_lines(lines, line_idx, match),
-                    raw_output=raw_output,
-                )
+        # Pass 2: Sliding-window scan over N-line groups (VF-001 + PM-001-R2).
+        # Catches credentials whose distinctive prefix is split across line
+        # boundaries (e.g., "AK\nIA\n1234567890ABCDEF"). Joins up to
+        # `effective_window` adjacent lines with no separator to reconstruct
+        # the split credential. window_size=3 catches splits spanning 3 lines.
+        for win in range(2, effective_window + 1):
+            for line_idx in range(len(lines) - win + 1):
+                joined = "".join(lines[line_idx : line_idx + win])
+                match = self._scan_text(joined, line_idx + 1)
+                if match is not None:
+                    return FilterResult(
+                        detected=True,
+                        match=CredentialMatch(
+                            pattern=match.pattern,
+                            line_number=match.line_number,
+                            case_sensitive=match.case_sensitive,
+                        ),
+                        filtered_output=self._redact_window_lines(lines, line_idx, win, match),
+                        raw_output=raw_output,
+                    )
 
         # No credential detected
         return FilterResult(
@@ -272,9 +291,7 @@ class CredentialFilterService:
     ) -> str:
         """Redact both adjacent lines that contributed to a split credential.
 
-        For credentials detected via the sliding-window pass (VF-001), both
-        the line at line_idx and line_idx+1 are replaced with the redaction
-        marker since the split credential spans both.
+        Compatibility shim -- delegates to _redact_window_lines with win=2.
 
         Args:
             lines: All output lines split by newline.
@@ -284,10 +301,35 @@ class CredentialFilterService:
         Returns:
             Reassembled output with both contributing lines redacted.
         """
+        return self._redact_window_lines(lines, line_idx, 2, match)
+
+    def _redact_window_lines(
+        self,
+        lines: list[str],
+        line_idx: int,
+        win: int,
+        match: CredentialMatch,
+    ) -> str:
+        """Redact all lines in a sliding window that contributed to a split credential.
+
+        PM-001-R2: Generalises the original pair-only redaction to N-line windows.
+        All lines from line_idx through line_idx+win-1 are replaced with the
+        redaction marker since the split credential spans all of them.
+
+        Args:
+            lines: All output lines split by newline.
+            line_idx: 0-based index of the first line in the window.
+            win: Number of lines in the window (2 = pair, 3 = triplet, etc.).
+            match: The CredentialMatch describing which pattern fired.
+
+        Returns:
+            Reassembled output with all window lines redacted.
+        """
         redacted_lines = list(lines)
-        redacted_lines[line_idx] = self.REDACTION_MARKER
-        if line_idx + 1 < len(redacted_lines):
-            redacted_lines[line_idx + 1] = self.REDACTION_MARKER
+        for offset in range(win):
+            idx = line_idx + offset
+            if idx < len(redacted_lines):
+                redacted_lines[idx] = self.REDACTION_MARKER
         return "\n".join(redacted_lines)
 
     def _scan_text(self, text: str, line_number: int) -> CredentialMatch | None:

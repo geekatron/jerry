@@ -171,7 +171,7 @@ class RainbowToolResolver(ToolFamilyResolverPort):
             family_zone_label=f"Zone {zone_num}",
         )
 
-    def load_config(self, config_path: str) -> dict:
+    def load_config(self, config_path: str) -> dict[str, Any]:
         """Load and parse the rainbow tool-exec.yaml configuration.
 
         Args:

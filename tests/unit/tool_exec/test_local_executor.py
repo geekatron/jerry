@@ -12,7 +12,11 @@ from src.tool_exec.infrastructure.adapters.local_executor import LocalExecutor
 
 
 class TestLocalExecutorBasic:
-    """Tests for basic local execution."""
+    """Tests for basic local execution.
+
+    IN-017-R2: credential_filter is now a required parameter. All tests
+    must pass a CredentialFilterService instance.
+    """
 
     @patch("src.tool_exec.infrastructure.adapters.local_executor.subprocess.run")
     def test_execute_captures_stdout(self, mock_run: MagicMock) -> None:
@@ -23,7 +27,7 @@ class TestLocalExecutorBasic:
             stderr="",
         )
 
-        executor = LocalExecutor()
+        executor = LocalExecutor(credential_filter=CredentialFilterService())
         result = executor.execute("echo", ["hello"])
 
         assert result.exit_code == 0
@@ -39,10 +43,11 @@ class TestLocalExecutorBasic:
             stderr="error message",
         )
 
-        executor = LocalExecutor()
+        executor = LocalExecutor(credential_filter=CredentialFilterService())
         result = executor.execute("bad-command")
 
-        assert result.exit_code == 1
+        # FIX-17: non-zero tool exit is normalised to TOOL_ERROR (2)
+        assert result.exit_code == 2
         assert result.stderr == "error message"
 
     @patch("src.tool_exec.infrastructure.adapters.local_executor.subprocess.run")
@@ -50,7 +55,7 @@ class TestLocalExecutorBasic:
         """Executor passes tool args to subprocess."""
         mock_run.return_value = MagicMock(returncode=0, stdout="", stderr="")
 
-        executor = LocalExecutor()
+        executor = LocalExecutor(credential_filter=CredentialFilterService())
         executor.execute("nuclei", ["-t", "cves/", "-u", "example.com"])
 
         mock_run.assert_called_once()
@@ -62,7 +67,7 @@ class TestLocalExecutorBasic:
         """Missing tool binary returns exit code 1."""
         mock_run.side_effect = FileNotFoundError()
 
-        executor = LocalExecutor()
+        executor = LocalExecutor(credential_filter=CredentialFilterService())
         result = executor.execute("nonexistent-tool")
 
         assert result.exit_code == 1
@@ -75,7 +80,7 @@ class TestLocalExecutorBasic:
 
         mock_run.side_effect = subprocess.TimeoutExpired(cmd="tool", timeout=300)
 
-        executor = LocalExecutor()
+        executor = LocalExecutor(credential_filter=CredentialFilterService())
         result = executor.execute("slow-tool", timeout=300)
 
         assert result.exit_code == 2
@@ -110,7 +115,15 @@ class TestLocalExecutorCredentialFilter:
 
     @patch("src.tool_exec.infrastructure.adapters.local_executor.subprocess.run")
     def test_no_filter_flag_skips_filtering(self, mock_run: MagicMock) -> None:
-        """--no-filter skips credential filtering."""
+        """--no-filter skips credential filtering when strict_mode=False.
+
+        PM-004-R2: strict_mode is now a parameter on filter_output(), not read
+        from os.environ inside the executor. The executor passes no_filter to
+        the filter service, which defaults to strict_mode=True and raises. To
+        test the skip path, we mock the filter service to act as strict_mode=False.
+        """
+        from unittest.mock import patch as _patch
+
         pw = "longpassword1"
         mock_run.return_value = MagicMock(
             returncode=0,
@@ -120,7 +133,18 @@ class TestLocalExecutorCredentialFilter:
 
         cred_filter = CredentialFilterService()
         executor = LocalExecutor(credential_filter=cred_filter)
-        result = executor.execute("tool", no_filter=True)
+
+        # Simulate strict_mode=False: patch filter_output to use strict_mode=False
+        with _patch.object(
+            cred_filter,
+            "filter_output",
+            wraps=lambda raw, no_filter=False, strict_mode=False, window_size=3: (  # type: ignore[misc]
+                CredentialFilterService().filter_output(
+                    raw, no_filter=no_filter, strict_mode=False, window_size=window_size
+                )
+            ),
+        ):
+            result = executor.execute("tool", no_filter=True)
 
         assert result.credential_detected is False
         assert result.exit_code == 0
@@ -239,7 +263,14 @@ class TestLocalExecutorFinding004:
 
     @patch("src.tool_exec.infrastructure.adapters.local_executor.subprocess.run")
     def test_no_filter_skips_stderr_filtering(self, mock_run: MagicMock) -> None:
-        """--no-filter skips filtering on stderr as well as stdout."""
+        """--no-filter skips filtering on stderr as well as stdout (strict_mode=False).
+
+        PM-004-R2: strict_mode is now a parameter on filter_output(). The executor
+        passes no_filter to the filter service which defaults to strict_mode=True.
+        This test verifies the skip path using strict_mode=False.
+        """
+        from unittest.mock import patch as _patch
+
         mock_run.return_value = MagicMock(
             returncode=0,
             stdout="",
@@ -248,7 +279,17 @@ class TestLocalExecutorFinding004:
 
         cred_filter = CredentialFilterService()
         executor = LocalExecutor(credential_filter=cred_filter)
-        result = executor.execute("tool", no_filter=True)
+
+        with _patch.object(
+            cred_filter,
+            "filter_output",
+            wraps=lambda raw, no_filter=False, strict_mode=False, window_size=3: (  # type: ignore[misc]
+                CredentialFilterService().filter_output(
+                    raw, no_filter=no_filter, strict_mode=False, window_size=window_size
+                )
+            ),
+        ):
+            result = executor.execute("tool", no_filter=True)
 
         assert result.credential_detected is False
         assert result.exit_code == 0

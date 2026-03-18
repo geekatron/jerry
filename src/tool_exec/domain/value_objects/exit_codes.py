@@ -21,9 +21,10 @@ from enum import IntEnum
 class ExitCode(IntEnum):
     """Exit codes for the jerry tool exec command.
 
-    Values 0-9 are reserved for the core tool execution framework.
-    Values 10+ are reserved for family-specific extensions. Each family
-    may define its own exit codes in the 10-19 range (rainbow), 20-29
+    Values 0-10 are reserved for the core tool execution framework.
+    Values 11 is the Zone 3 approval denial code.
+    Values 12+ are reserved for family-specific extensions. Each family
+    may define its own exit codes in the 12-19 range (rainbow), 20-29
     range (next family), etc.
 
     Attributes:
@@ -44,6 +45,11 @@ class ExitCode(IntEnum):
             OWASP A01:2021 Broken Access Control.
         ZONE3_CONTAINER_REQUIRED: Zone 3 tool requested with --mode local, which
             violates the container_required policy (FM-002, FIX-3).
+        ZONE3_APPROVAL_DENIED: Zone 3 per-operation approval gate denied --
+            operator declined or non-TTY auto-deny fired (IN-015-R2, NEW-001).
+            Distinct from ENGAGEMENT_NOT_INIT (5): 5 means the engagement was
+            never initialized; 11 means it was initialized but the human approval
+            gate rejected the specific operation.
     """
 
     SUCCESS = 0
@@ -61,6 +67,10 @@ class ExitCode(IntEnum):
     STRICT_MODE_VIOLATION = 9
     # FM-002 (FIX-3): Zone 3 container enforcement -- local mode rejected.
     ZONE3_CONTAINER_REQUIRED = 10
-    # 11+ reserved for family-specific extensions:
-    #   11-19: rainbow family
+    # IN-015-R2 / NEW-001: Zone 3 per-operation approval denied by operator.
+    # Distinct from ENGAGEMENT_NOT_INIT (5): this signals that the approval gate
+    # fired and the operator explicitly declined (or auto-denied in CI).
+    ZONE3_APPROVAL_DENIED = 11
+    # 12+ reserved for family-specific extensions:
+    #   12-19: rainbow family
     #   20-29: reserved for future families

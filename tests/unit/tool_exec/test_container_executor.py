@@ -19,7 +19,7 @@ class TestContainerExecutorCommandBuilding:
         """Builds correct docker compose exec command."""
         mock_run.return_value = MagicMock(returncode=0, stdout="", stderr="")
 
-        executor = ContainerExecutor()
+        executor = ContainerExecutor(credential_filter=CredentialFilterService())
         executor.execute(
             tool_command="nuclei",
             tool_args=["-u", "example.com"],
@@ -45,7 +45,7 @@ class TestContainerExecutorCommandBuilding:
         """Missing docker returns exit code 3."""
         mock_run.side_effect = FileNotFoundError()
 
-        executor = ContainerExecutor()
+        executor = ContainerExecutor(credential_filter=CredentialFilterService())
         result = executor.execute(
             tool_command="nuclei",
             service="recon-pipeline",
@@ -63,7 +63,7 @@ class TestContainerExecutorCommandBuilding:
             stderr="service 'recon-pipeline' is not running",
         )
 
-        executor = ContainerExecutor()
+        executor = ContainerExecutor(credential_filter=CredentialFilterService())
         result = executor.execute(
             tool_command="nuclei",
             service="recon-pipeline",
@@ -78,7 +78,7 @@ class TestContainerExecutorCommandBuilding:
 
         mock_run.side_effect = subprocess.TimeoutExpired(cmd="docker", timeout=300)
 
-        executor = ContainerExecutor()
+        executor = ContainerExecutor(credential_filter=CredentialFilterService())
         result = executor.execute(
             tool_command="nuclei",
             service="recon-pipeline",
@@ -100,7 +100,7 @@ class TestContainerExecutorHealthCheck:
             stderr="",
         )
 
-        executor = ContainerExecutor()
+        executor = ContainerExecutor(credential_filter=CredentialFilterService())
         assert executor.health_check("recon-pipeline") is True
 
     @patch("src.tool_exec.infrastructure.adapters.container_executor.subprocess.run")
@@ -112,7 +112,7 @@ class TestContainerExecutorHealthCheck:
             stderr="",
         )
 
-        executor = ContainerExecutor()
+        executor = ContainerExecutor(credential_filter=CredentialFilterService())
         assert executor.health_check("recon-pipeline") is False
 
     @patch("src.tool_exec.infrastructure.adapters.container_executor.subprocess.run")
@@ -120,7 +120,7 @@ class TestContainerExecutorHealthCheck:
         """Health check returns False when docker is not available."""
         mock_run.side_effect = FileNotFoundError()
 
-        executor = ContainerExecutor()
+        executor = ContainerExecutor(credential_filter=CredentialFilterService())
         assert executor.health_check("recon-pipeline") is False
 
 

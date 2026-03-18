@@ -16,7 +16,7 @@ References:
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from src.tool_exec.domain.value_objects.security_policy import SecurityPolicy
@@ -89,7 +89,7 @@ class ToolFamilyResolverPort(ABC):
         """
 
     @abstractmethod
-    def load_config(self, config_path: str) -> dict:
+    def load_config(self, config_path: str) -> dict[str, Any]:
         """Load and parse the family's tool resolution configuration.
 
         Reads the YAML configuration file and returns the parsed content

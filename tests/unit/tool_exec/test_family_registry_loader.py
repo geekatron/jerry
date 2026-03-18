@@ -189,7 +189,14 @@ class TestFamilyRegistryLoaderModuleAllowlist:
             self.loader._validate_module_path("requests.sessions")
 
     def test_load_with_disallowed_module_raises_on_enabled_family(self, tmp_path: Path) -> None:
-        """load() raises ValueError when an enabled family has a disallowed module path."""
+        """load() raises ValueError when an enabled family has a disallowed module path.
+
+        NEW-002 (FM-005): The per-family error is now caught and the family
+        is skipped. With only one enabled family and it failing, the loader
+        raises 'No family resolvers could be loaded' (the aggregate error).
+        The security invariant is preserved: the disallowed module is never
+        imported.
+        """
         registry = tmp_path / "tool_families.yaml"
         registry.write_text(
             """
@@ -203,7 +210,7 @@ families:
 """
         )
         loader = FamilyRegistryLoader(registry)
-        with pytest.raises(ValueError, match="not in the allowed prefix list"):
+        with pytest.raises(ValueError, match="No family resolvers could be loaded"):
             loader.load()
 
     def test_allowed_module_prefixes_constant_is_correct(self) -> None:
@@ -288,7 +295,13 @@ class TestFamilyRegistryLoaderClassNameValidation:
         assert _CLASS_NAME_PATTERN.match("A") is None
 
     def test_load_with_invalid_class_name_raises(self, tmp_path: Path) -> None:
-        """load() raises ValueError when resolver_class is not a valid CamelCase name."""
+        """load() raises ValueError when resolver_class is not a valid CamelCase name.
+
+        NEW-002 (FM-005): Per-family errors are caught and the family is skipped.
+        With only one enabled family failing, the aggregate 'No family resolvers
+        could be loaded' error is raised. The security invariant (no getattr on
+        invalid names) is preserved.
+        """
         registry = tmp_path / "tool_families.yaml"
         registry.write_text(
             """
@@ -302,11 +315,15 @@ families:
 """
         )
         loader = FamilyRegistryLoader(registry)
-        with pytest.raises(ValueError, match="invalid"):
+        with pytest.raises(ValueError, match="No family resolvers could be loaded"):
             loader.load()
 
     def test_load_with_lowercase_class_name_raises(self, tmp_path: Path) -> None:
-        """load() raises ValueError when resolver_class starts with lowercase."""
+        """load() raises ValueError when resolver_class starts with lowercase.
+
+        NEW-002 (FM-005): Per-family errors are caught and the family is skipped.
+        With only one enabled family failing, the aggregate error is raised.
+        """
         registry = tmp_path / "tool_families.yaml"
         registry.write_text(
             """
@@ -320,5 +337,5 @@ families:
 """
         )
         loader = FamilyRegistryLoader(registry)
-        with pytest.raises(ValueError, match="invalid"):
+        with pytest.raises(ValueError, match="No family resolvers could be loaded"):
             loader.load()

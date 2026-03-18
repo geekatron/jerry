@@ -31,12 +31,22 @@ class ModeResolverService:
     env_var_prefix so that each family provides its own prefix instead of the
     service hardcoding RAINBOW_TOOL_MODE. The FamilyRouterService provides the
     prefix during service construction in the composition root.
+
+    IN-020-R2: The fallback default prefix was changed from "RAINBOW" to
+    "JERRY". When env_var_prefix is None, the service reads JERRY_TOOL_MODE
+    (prefix "JERRY" produces env var "JERRY_TOOL_MODE") -- a neutral
+    framework-level variable -- rather than silently assuming a
+    rainbow-specific variable.
     """
 
     VALID_MODES = frozenset({"local", "container"})
     DEFAULT_MODE = "local"
-    # Legacy default kept for backward compatibility when no prefix is supplied.
-    _DEFAULT_ENV_PREFIX = "RAINBOW"
+    # IN-020-R2: Default changed from "RAINBOW" to "JERRY" to avoid silently
+    # coupling a generic service to a specific family. When no prefix is
+    # supplied, JERRY_TOOL_MODE is read (prefix "JERRY" + "_TOOL_MODE" suffix),
+    # which is a neutral framework-level variable rather than a family-specific
+    # one. Family-specific usage (e.g., prefix="RAINBOW") produces RAINBOW_TOOL_MODE.
+    _DEFAULT_ENV_PREFIX = "JERRY"
 
     def __init__(self, env_var_prefix: str | None = None) -> None:
         """Initialize the mode resolver with an optional env var prefix.
@@ -44,7 +54,9 @@ class ModeResolverService:
         Args:
             env_var_prefix: Family-specific prefix for the mode env var
                 (e.g., 'RAINBOW' reads RAINBOW_TOOL_MODE). If None, falls back
-                to the legacy RAINBOW prefix for backward compatibility.
+                to the JERRY prefix (reads JERRY_TOOL_MODE) -- a neutral
+                framework-level env var rather than a rainbow-specific one
+                (IN-020-R2).
         """
         prefix = env_var_prefix if env_var_prefix is not None else self._DEFAULT_ENV_PREFIX
         self._env_var_name = f"{prefix}_TOOL_MODE"

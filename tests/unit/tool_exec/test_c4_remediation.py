@@ -89,7 +89,11 @@ class TestFix1QuarantineFileWrite:
     0o600 permissions."""
 
     def test_quarantine_writes_file(self, tmp_path: Path) -> None:
-        """_quarantine_output writes raw output to a .txt file in the quarantine dir."""
+        """_quarantine_output writes raw stdout+stderr to quarantine dir.
+
+        RT-R2-001: Both stdout and stderr files are written. Updated to use
+        the new signature (raw_stdout, raw_stderr, project_root).
+        """
         from src.tool_exec.domain.services.engagement_initializer import (
             EngagementInitializer,
         )
@@ -98,19 +102,25 @@ class TestFix1QuarantineFileWrite:
         init.initialize("eng001")
 
         _quarantine_output(
-            raw_output="password=longpassword1",
+            raw_stdout="password=longpassword1",
+            raw_stderr="",
             tool_command="nuclei",
             engagement_id="eng001",
             engagement_init=init,
+            project_root=tmp_path,
             match_info={"pattern": r"(password)\s*[=:]", "line_number": 1},
         )
 
         quarantine_dir = init.quarantine_dir("eng001")
-        quarantine_files = list(quarantine_dir.glob("quarantine-*.txt"))
-        assert len(quarantine_files) == 1
+        # RT-R2-001: stdout file written
+        quarantine_stdout_files = list(quarantine_dir.glob("quarantine-*.stdout.txt"))
+        assert len(quarantine_stdout_files) == 1
 
     def test_quarantine_file_permissions_0o600(self, tmp_path: Path) -> None:
-        """RT-003/SR-003 (FIX-8): quarantine files are chmod 0o600, not world-readable."""
+        """RT-003/SR-003 (FIX-8): quarantine files are chmod 0o600, not world-readable.
+
+        SR-002-20260318: quarantine directory is also chmod 0o700.
+        """
         from src.tool_exec.domain.services.engagement_initializer import (
             EngagementInitializer,
         )
@@ -119,13 +129,19 @@ class TestFix1QuarantineFileWrite:
         init.initialize("eng002")
 
         _quarantine_output(
-            raw_output="password=longpassword1",
+            raw_stdout="password=longpassword1",
+            raw_stderr="",
             tool_command="nuclei",
             engagement_id="eng002",
             engagement_init=init,
+            project_root=tmp_path,
         )
 
         quarantine_dir = init.quarantine_dir("eng002")
+        # Directory must be 0o700
+        dir_mode = oct(quarantine_dir.stat().st_mode & 0o777)
+        assert dir_mode == "0o700", f"Expected 0o700 for quarantine dir, got {dir_mode}"
+        # All files in quarantine dir must be 0o600
         for f in quarantine_dir.iterdir():
             mode = oct(f.stat().st_mode & 0o777)
             assert mode == "0o600", f"Expected 0o600 for {f.name}, got {mode}"
@@ -241,7 +257,11 @@ class TestFix9CompositionRoot:
     """CC-002: Service instantiation moved to create_tool_exec_handler() factory."""
 
     def test_factory_returns_all_services(self, tmp_path: Path) -> None:
-        """create_tool_exec_handler() returns loader, engagement_init, credential_filter."""
+        """create_tool_exec_handler() returns all pipeline services.
+
+        CC-004-20260318: Factory now includes local_executor, container_executor,
+        and mode_resolver in addition to the previous three services.
+        """
         # Create minimal registry so loader doesn't crash on path check
         registry = tmp_path / "tool_families.yaml"
         registry.write_text("families: []\n")
@@ -250,6 +270,9 @@ class TestFix9CompositionRoot:
         assert "loader" in services
         assert "engagement_init" in services
         assert "credential_filter" in services
+        assert "local_executor" in services
+        assert "container_executor" in services
+        assert "mode_resolver" in services
 
     def test_factory_credential_filter_is_service(self, tmp_path: Path) -> None:
         """The credential_filter returned is a CredentialFilterService instance."""
@@ -268,10 +291,14 @@ class TestFix9CompositionRoot:
 class TestFix12ModeResolverEnvVarPrefix:
     """IN-009: ModeResolverService accepts a family-specific env var prefix."""
 
-    def test_default_prefix_is_rainbow(self) -> None:
-        """No-arg constructor defaults to RAINBOW prefix."""
+    def test_default_prefix_is_jerry_tool(self) -> None:
+        """No-arg constructor defaults to JERRY_TOOL prefix (IN-020-R2).
+
+        The default was changed from RAINBOW to JERRY_TOOL to decouple the
+        generic ModeResolverService from the rainbow family (IN-020-R2).
+        """
         resolver = ModeResolverService()
-        assert resolver.env_var_name == "RAINBOW_TOOL_MODE"
+        assert resolver.env_var_name == "JERRY_TOOL_MODE"
 
     def test_custom_prefix_sets_env_var_name(self) -> None:
         """Custom prefix produces correct env var name."""
@@ -302,31 +329,32 @@ class TestFix12ModeResolverEnvVarPrefix:
 
 
 class TestFix13DomainLevelNoFilterEnforcement:
-    """PM-002: CredentialFilterService.filter_output() raises RuntimeError
-    when no_filter=True and JERRY_STRICT_MODE=true."""
+    """PM-002 + PM-004-R2: CredentialFilterService.filter_output() raises RuntimeError
+    when no_filter=True and strict_mode=True (the new parameter-based API).
+
+    PM-004-R2: strict_mode is now an explicit parameter rather than read from
+    os.environ inside the domain service (H-07 compliance). The CLI handler
+    reads JERRY_STRICT_MODE from the environment and passes the resolved boolean.
+    """
 
     def test_no_filter_raises_in_strict_mode(self) -> None:
-        """Calling filter_output(no_filter=True) raises RuntimeError in strict mode."""
+        """Calling filter_output(no_filter=True, strict_mode=True) raises RuntimeError."""
         flt = CredentialFilterService()
-        with patch.dict(os.environ, {"JERRY_STRICT_MODE": "true"}):
-            with pytest.raises(RuntimeError, match="FORBIDDEN"):
-                flt.filter_output("some output", no_filter=True)
+        with pytest.raises(RuntimeError, match="FORBIDDEN"):
+            flt.filter_output("some output", no_filter=True, strict_mode=True)
 
     def test_no_filter_allowed_outside_strict_mode(self) -> None:
-        """Calling filter_output(no_filter=True) succeeds when strict mode is off."""
+        """Calling filter_output(no_filter=True, strict_mode=False) succeeds."""
         flt = CredentialFilterService()
-        with patch.dict(os.environ, {"JERRY_STRICT_MODE": "false"}):
-            result = flt.filter_output("some output", no_filter=True)
+        result = flt.filter_output("some output", no_filter=True, strict_mode=False)
         assert result.detected is False
         assert result.filtered_output == "some output"
 
     def test_no_filter_default_is_strict_mode_on(self) -> None:
-        """Without env var, strict mode is on and no_filter=True raises."""
+        """Default strict_mode=True means no_filter=True raises without an explicit override."""
         flt = CredentialFilterService()
-        env = {k: v for k, v in os.environ.items() if k != "JERRY_STRICT_MODE"}
-        with patch.dict(os.environ, env, clear=True):
-            with pytest.raises(RuntimeError, match="FORBIDDEN"):
-                flt.filter_output("some output", no_filter=True)
+        with pytest.raises(RuntimeError, match="FORBIDDEN"):
+            flt.filter_output("some output", no_filter=True)  # strict_mode defaults to True
 
 
 # =============================================================================

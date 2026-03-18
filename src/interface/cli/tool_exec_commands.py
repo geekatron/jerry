@@ -58,9 +58,18 @@ logger = logging.getLogger(__name__)
 def create_tool_exec_handler(project_root: Path) -> dict[str, Any]:
     """Composition root factory for the tool exec pipeline services.
 
-    Instantiates and wires together all services required for tool execution.
+    Instantiates and wires together ALL services required for tool execution.
     Separates service construction from the CLI handler logic, following the
     Dependency Inversion Principle and the composition root pattern (CC-002).
+
+    CC-004-20260318: LocalExecutor and ContainerExecutor are now instantiated
+    here, NOT inside _execute_local() or _execute_container(). Those helpers
+    violated H-07(c) (composition root exclusivity) by constructing domain
+    service dependencies inline. The factory is the single composition root.
+
+    IN-017-R2: CredentialFilterService is constructed first, then injected into
+    both executors. Both executors now require a filter (no-None default) so the
+    factory MUST supply it.
 
     Args:
         project_root: Resolved project root path used to locate registries
@@ -71,12 +80,23 @@ def create_tool_exec_handler(project_root: Path) -> dict[str, Any]:
             - 'loader': FamilyRegistryLoader
             - 'engagement_init': EngagementInitializer
             - 'credential_filter': CredentialFilterService
+            - 'local_executor': LocalExecutor (with credential_filter wired)
+            - 'container_executor': ContainerExecutor (with credential_filter wired)
+            - 'mode_resolver': ModeResolverService (default prefix; callers may
+              override with a family-specific one after resolution)
     """
     registry_path = project_root / "tool_families.yaml"
+    credential_filter = CredentialFilterService()
     return {
         "loader": FamilyRegistryLoader(registry_path),
         "engagement_init": EngagementInitializer(base_dir=project_root / "work" / "engagements"),
-        "credential_filter": CredentialFilterService(),
+        "credential_filter": credential_filter,
+        "local_executor": LocalExecutor(credential_filter=credential_filter),
+        "container_executor": ContainerExecutor(
+            credential_filter=credential_filter,
+            project_root=str(project_root),
+        ),
+        "mode_resolver": ModeResolverService(),
     }
 
 
@@ -224,11 +244,13 @@ def handle_tool_exec(args: Any) -> int:
     if init_engagement:
         return _handle_init_engagement(init_engagement, project_root)
 
-    # Load family registry (FIX-9: via factory)
+    # Load family registry (FIX-9 / CC-004-20260318: all services via factory)
     services = create_tool_exec_handler(project_root)
     loader: FamilyRegistryLoader = services["loader"]
     engagement_init: EngagementInitializer = services["engagement_init"]
     credential_filter: CredentialFilterService = services["credential_filter"]
+    local_executor: LocalExecutor = services["local_executor"]
+    container_executor: ContainerExecutor = services["container_executor"]
 
     try:
         resolvers = loader.load()
@@ -319,7 +341,11 @@ def handle_tool_exec(args: Any) -> int:
         )
         return ExitCode.ZONE3_CONTAINER_REQUIRED
 
-    # Handle --health-check
+    # RT-R2-004: Handle --health-check BEFORE the Zone 3 approval gate.
+    # Previously the health check came AFTER the approval prompt, meaning
+    # an operator could not check container health without first approving
+    # a Zone 3 execution. Health checks are informational -- they must not
+    # require an exploitation approval.
     if health_check:
         return _handle_health_check(resolution, project_root)
 
@@ -328,13 +354,22 @@ def handle_tool_exec(args: Any) -> int:
     # confirmation before executing. AI agents that do not handle interactive
     # prompts will receive the rejection path (non-tty -> auto-deny).
     if policy.requires_approval:
-        approved = _prompt_zone3_approval(tool_command, resolution.zone)
+        approved = _prompt_zone3_approval(
+            tool_command=tool_command,
+            zone=resolution.zone,
+            engagement_id=engagement_id,
+            engagement_init=engagement_init,
+        )
         if not approved:
             print(
                 f"[SECURITY] Zone 3 execution of '{tool_command}' NOT approved. Aborting.",
                 file=sys.stderr,
             )
-            return ExitCode.ENGAGEMENT_NOT_INIT
+            # IN-015-R2 / NEW-001: Use ZONE3_APPROVAL_DENIED (11), not
+            # ENGAGEMENT_NOT_INIT (5). Conflating approval denial with
+            # engagement-not-initialized produced ambiguous exit codes that
+            # callers could not distinguish. ZONE3_APPROVAL_DENIED is unambiguous.
+            return ExitCode.ZONE3_APPROVAL_DENIED
 
     # Check engagement requirements
     if policy.requires_engagement:
@@ -354,13 +389,13 @@ def handle_tool_exec(args: Any) -> int:
             )
             return ExitCode.ENGAGEMENT_NOT_INIT
 
-    # Execute tool
+    # Execute tool (CC-004-20260318: pass pre-built executors from factory)
     if mode == "container":
         result = _execute_container(
             tool_command=tool_command,
             tool_args=tool_args,
             resolution=resolution,
-            credential_filter=credential_filter,
+            executor=container_executor,
             project_root=project_root,
             no_filter=no_filter,
         )
@@ -368,18 +403,24 @@ def handle_tool_exec(args: Any) -> int:
         result = _execute_local(
             tool_command=tool_command,
             tool_args=tool_args,
-            credential_filter=credential_filter,
+            executor=local_executor,
             no_filter=no_filter,
         )
 
-    # Handle credential quarantine (FIX-1: quarantine always wired on detection)
+    # Handle credential quarantine
+    # RT-R2-002 / PM-006-R2: Quarantine fires unconditionally on credential
+    # detection -- the engagement_id guard is removed. When no engagement is
+    # active, a global fallback quarantine path (work/.credential-quarantine/)
+    # is used so Zone 1 detections are never silently discarded.
     credential_detected = result.get("credential_detected", False)
-    if credential_detected and engagement_id:
+    if credential_detected:
         _quarantine_output(
-            raw_output=result["raw_stdout"],
+            raw_stdout=result["raw_stdout"],
+            raw_stderr=result.get("raw_stderr", ""),
             tool_command=tool_command,
             engagement_id=engagement_id,
             engagement_init=engagement_init,
+            project_root=project_root,
             match_info=result.get("match_info"),
         )
 
@@ -510,7 +551,11 @@ def _handle_init_engagement(engagement_id: str, project_root: Path) -> int:
         return ExitCode.SUCCESS
     except ValueError as e:
         print(f"Error: {e}", file=sys.stderr)
-        return ExitCode.ENGAGEMENT_NOT_INIT
+        # CV-011: Invalid engagement ID should return UNKNOWN_TOOL (1), not
+        # ENGAGEMENT_NOT_INIT (5). Exit code 5 signals that the engagement
+        # directory does not exist for a tool that needs it; a bad ID passed
+        # to --init-engagement is a bad-input error (exit code 1).
+        return ExitCode.UNKNOWN_TOOL
 
 
 def _handle_health_check(resolution: Any, project_root: Path) -> int:
@@ -527,7 +572,12 @@ def _handle_health_check(resolution: Any, project_root: Path) -> int:
         print("No container service configured for this tool.")
         return ExitCode.SUCCESS
 
-    executor = ContainerExecutor(project_root=str(project_root))
+    # Health check only uses docker ps (no credential filtering needed), but
+    # ContainerExecutor now requires a credential_filter argument (IN-017-R2).
+    executor = ContainerExecutor(
+        credential_filter=CredentialFilterService(),
+        project_root=str(project_root),
+    )
     compose_path = str(project_root / resolution.compose_file)
     healthy = executor.health_check(
         service=resolution.container_service,
@@ -550,7 +600,12 @@ def _handle_health_check(resolution: Any, project_root: Path) -> int:
 # ---------------------------------------------------------------------------
 
 
-def _prompt_zone3_approval(tool_command: str, zone: str) -> bool:
+def _prompt_zone3_approval(
+    tool_command: str,
+    zone: str,
+    engagement_id: str | None,
+    engagement_init: EngagementInitializer,
+) -> bool:
     """Prompt the user for explicit Zone 3 per-operation approval.
 
     FM-032 (FIX-2): SecurityPolicy.requires_approval is declared for Zone 3
@@ -561,19 +616,35 @@ def _prompt_zone3_approval(tool_command: str, zone: str) -> bool:
     TTY. In such cases the prompt auto-denies to prevent unattended Zone 3
     execution without human review (OWASP A01:2021 Broken Access Control).
 
+    IN-016-R2: Both approval and denial events are written to a persistent
+    audit trail in the engagement directory (or a global audit trail if no
+    engagement is active). This provides a tamper-evident record of who
+    approved Zone 3 operations and when.
+
     Args:
         tool_command: The tool about to be executed.
         zone: The security zone label (e.g., 'Zone 3').
+        engagement_id: Active engagement identifier (may be None).
+        engagement_init: Engagement initializer used to locate audit directory.
 
     Returns:
         True if the user approves, False otherwise.
     """
-    if not sys.stdin.isatty():
+    auto_deny = not sys.stdin.isatty()
+    if auto_deny:
         logger.warning(
             "[SECURITY] Zone 3 approval gate: non-interactive stdin detected "
             "for '%s' (%s). Auto-denying to prevent unattended execution.",
             tool_command,
             zone,
+        )
+        _write_approval_audit(
+            tool_command=tool_command,
+            zone=zone,
+            approved=False,
+            reason="auto-deny: non-interactive stdin",
+            engagement_id=engagement_id,
+            engagement_init=engagement_init,
         )
         return False
 
@@ -590,8 +661,84 @@ def _prompt_zone3_approval(tool_command: str, zone: str) -> bool:
     try:
         answer = input("  Approve? [yes/NO]: ").strip().lower()
     except (EOFError, KeyboardInterrupt):
+        _write_approval_audit(
+            tool_command=tool_command,
+            zone=zone,
+            approved=False,
+            reason="interrupted: EOFError/KeyboardInterrupt",
+            engagement_id=engagement_id,
+            engagement_init=engagement_init,
+        )
         return False
-    return answer == "yes"
+
+    approved = answer == "yes"
+    _write_approval_audit(
+        tool_command=tool_command,
+        zone=zone,
+        approved=approved,
+        reason="operator input",
+        engagement_id=engagement_id,
+        engagement_init=engagement_init,
+    )
+    return approved
+
+
+def _write_approval_audit(
+    tool_command: str,
+    zone: str,
+    approved: bool,
+    reason: str,
+    engagement_id: str | None,
+    engagement_init: EngagementInitializer,
+) -> None:
+    """Write a Zone 3 approval/denial event to the engagement audit trail.
+
+    IN-016-R2: Provides persistent, tamper-evident record of Zone 3 approval
+    decisions. Each event is written to a separate JSON file in the engagement
+    audit directory. When no engagement is active, events are written to a
+    global audit path (work/.zone3-audit/).
+
+    Args:
+        tool_command: The tool for which approval was sought.
+        zone: The security zone label.
+        approved: True if the operation was approved, False if denied.
+        reason: Human-readable reason for the decision.
+        engagement_id: Active engagement identifier (may be None).
+        engagement_init: Engagement initializer for directory resolution.
+    """
+    try:
+        if engagement_id:
+            audit_dir = engagement_init.evidence_dir(engagement_id).parent / "audit"
+        else:
+            # Fallback: global audit directory when no engagement is active
+            audit_dir = engagement_init._base_dir.parent / ".zone3-audit"
+
+        audit_dir.mkdir(parents=True, exist_ok=True)
+        os.chmod(str(audit_dir), 0o700)
+
+        ts = datetime.now(tz=UTC).strftime("%Y%m%dT%H%M%SZ")
+        label = engagement_id or "no-engagement"
+        audit_file = audit_dir / f"zone3-approval-{label}-{ts}.json"
+
+        event: dict[str, Any] = {
+            "timestamp": ts,
+            "engagement_id": engagement_id,
+            "tool_command": tool_command,
+            "zone": zone,
+            "approved": approved,
+            "reason": reason,
+        }
+        audit_file.write_text(json.dumps(event, indent=2) + "\n", encoding="utf-8")
+        os.chmod(str(audit_file), 0o600)
+
+        logger.info(
+            "[SECURITY] Zone 3 approval audit written: %s (approved=%s)",
+            audit_file,
+            approved,
+        )
+    except Exception:
+        # Audit write failure must never suppress the approval decision itself.
+        logger.exception("[SECURITY] Failed to write Zone 3 approval audit")
 
 
 # ---------------------------------------------------------------------------
@@ -602,21 +749,23 @@ def _prompt_zone3_approval(tool_command: str, zone: str) -> bool:
 def _execute_local(
     tool_command: str,
     tool_args: list[str],
-    credential_filter: CredentialFilterService,
+    executor: LocalExecutor,
     no_filter: bool,
 ) -> dict[str, Any]:
     """Execute a tool locally.
 
+    CC-004-20260318: Receives a pre-built LocalExecutor from the composition
+    root rather than constructing one inline (H-07(c) compliance).
+
     Args:
         tool_command: Tool binary name.
         tool_args: Tool arguments.
-        credential_filter: Credential filter service.
+        executor: Pre-built LocalExecutor from the composition root factory.
         no_filter: Whether to skip filtering.
 
     Returns:
-        Dictionary with execution results.
+        Dictionary with execution results, including raw_stderr (RT-R2-001).
     """
-    executor = LocalExecutor(credential_filter=credential_filter)
     result = executor.execute(
         tool_command=tool_command,
         tool_args=tool_args,
@@ -627,6 +776,9 @@ def _execute_local(
         "stdout": result.stdout,
         "stderr": result.stderr,
         "raw_stdout": result.raw_stdout,
+        # RT-R2-001: Include raw_stderr so _quarantine_output can persist both
+        # streams. Previously raw_stderr was dropped here.
+        "raw_stderr": result.raw_stderr,
         "credential_detected": result.credential_detected,
         "match_info": (
             {
@@ -643,28 +795,26 @@ def _execute_container(
     tool_command: str,
     tool_args: list[str],
     resolution: Any,
-    credential_filter: CredentialFilterService,
+    executor: ContainerExecutor,
     project_root: Path,
     no_filter: bool,
 ) -> dict[str, Any]:
     """Execute a tool in a container.
 
+    CC-004-20260318: Receives a pre-built ContainerExecutor from the
+    composition root rather than constructing one inline (H-07(c) compliance).
+
     Args:
         tool_command: Tool binary name.
         tool_args: Tool arguments.
         resolution: ToolResolutionEntry with container metadata.
-        credential_filter: Credential filter service.
+        executor: Pre-built ContainerExecutor from the composition root factory.
         project_root: Path to the project root.
         no_filter: Whether to skip filtering.
 
     Returns:
-        Dictionary with execution results.
+        Dictionary with execution results, including raw_stderr (RT-R2-001).
     """
-    executor = ContainerExecutor(
-        credential_filter=credential_filter,
-        project_root=str(project_root),
-    )
-
     compose_path = None
     if resolution.compose_file:
         compose_path = str(project_root / resolution.compose_file)
@@ -682,6 +832,9 @@ def _execute_container(
         "stdout": result.stdout,
         "stderr": result.stderr,
         "raw_stdout": result.raw_stdout,
+        # RT-R2-001: Include raw_stderr so _quarantine_output can persist both
+        # streams. Previously raw_stderr was dropped here.
+        "raw_stderr": result.raw_stderr,
         "credential_detected": result.credential_detected,
         "match_info": (
             {
@@ -758,62 +911,99 @@ def _persist_evidence(
 
 
 def _quarantine_output(
-    raw_output: str,
+    raw_stdout: str,
+    raw_stderr: str,
     tool_command: str,
-    engagement_id: str,
+    engagement_id: str | None,
     engagement_init: EngagementInitializer,
+    project_root: Path,
     match_info: dict[str, Any] | None = None,
 ) -> None:
     """Quarantine output that triggered the credential filter.
 
-    FIX-1 (DA-002/CV-005): This function is now always called when
-    credential_detected=True and an engagement is active.
+    PM-006-R2 / RT-R2-002: This function fires unconditionally when
+    credential_detected=True. The previous engagement_id guard meant that
+    Zone 1 credential detections (no active engagement) were silently
+    discarded -- the credential data was logged to the terminal and nothing
+    was persisted. The fix removes the guard and routes to a global fallback
+    quarantine path (work/.credential-quarantine/) when no engagement is active.
+
+    RT-R2-001: Both raw_stdout and raw_stderr are quarantined. The previous
+    implementation passed only raw_stdout, allowing credential-bearing stderr
+    to escape quarantine even after FINDING-004 was fixed in the executors.
 
     FIX-8 (RT-003/SR-003): After writing both the raw output file and the
     meta file, os.chmod(file_path, 0o600) is called on each. The quarantine
-    directory is 0o700 (set in EngagementInitializer.initialize()), but files
-    written inside it inherit the process umask (typically 0o644), making
-    credential-bearing files world-readable. Setting 0o600 (owner read/write
-    only) ensures credentials remain inaccessible to other users on multi-user
-    systems. NIST CSF PR.DS-1 (data-at-rest protection).
+    directory is also chmod'd to 0o700 after mkdir (SR-002-20260318).
+
+    NEW-003: write_text() uses errors="replace" to prevent UnicodeEncodeError
+    when credential-bearing output contains non-UTF-8 sequences.
+
+    FIX-8 (RT-003/SR-003): os.chmod(file, 0o600) after each file write.
+    NIST CSF PR.DS-1 (data-at-rest protection).
 
     Args:
-        raw_output: Original unfiltered output.
+        raw_stdout: Original unfiltered stdout from tool execution.
+        raw_stderr: Original unfiltered stderr from tool execution (RT-R2-001).
         tool_command: Tool command that produced the output.
-        engagement_id: Active engagement identifier.
+        engagement_id: Active engagement identifier. May be None when no
+            engagement is active; in that case a global fallback quarantine
+            path is used (PM-006-R2).
         engagement_init: Engagement initializer service.
+        project_root: Project root path for fallback quarantine location.
         match_info: Details about the credential match.
     """
     hasher = EvidenceHasher()
-    quarantine_dir = engagement_init.quarantine_dir(engagement_id)
+
+    # PM-006-R2: Choose quarantine directory: engagement-scoped when available,
+    # global fallback (work/.credential-quarantine/) when no engagement is active.
+    if engagement_id:
+        quarantine_dir = engagement_init.quarantine_dir(engagement_id)
+    else:
+        quarantine_dir = project_root / "work" / ".credential-quarantine"
+        logger.warning(
+            "[CREDENTIAL-FILTER] Credential detected with no active engagement. "
+            "Quarantining to global fallback: %s",
+            quarantine_dir,
+        )
+
     quarantine_dir.mkdir(parents=True, exist_ok=True)
+    # SR-002-20260318: chmod quarantine directory to 0o700 after creation.
+    # mkdir creates dirs with mode modified by umask; force 0o700 explicitly.
+    os.chmod(str(quarantine_dir), 0o700)
 
+    label = engagement_id or "no-engagement"
     ts = datetime.now(tz=UTC).strftime("%Y%m%dT%H%M%SZ")
-    quarantine_file = quarantine_dir / f"quarantine-{engagement_id}-{ts}.txt"
-    meta_file = quarantine_dir / f"quarantine-{engagement_id}-{ts}.meta.json"
+    quarantine_stdout_file = quarantine_dir / f"quarantine-{label}-{ts}.stdout.txt"
+    quarantine_stderr_file = quarantine_dir / f"quarantine-{label}-{ts}.stderr.txt"
+    meta_file = quarantine_dir / f"quarantine-{label}-{ts}.meta.json"
 
-    quarantine_file.write_text(raw_output, encoding="utf-8")
-    # FIX-8 (RT-003/SR-003): Restrict quarantine file to owner-only read/write.
-    # The directory is 0o700, but files inherit umask (often 0o644). Force 0o600.
-    os.chmod(str(quarantine_file), 0o600)
+    # NEW-003: errors="replace" prevents UnicodeEncodeError on binary/mixed output.
+    quarantine_stdout_file.write_text(raw_stdout, encoding="utf-8", errors="replace")
+    os.chmod(str(quarantine_stdout_file), 0o600)
+
+    quarantine_stderr_file.write_text(raw_stderr, encoding="utf-8", errors="replace")
+    os.chmod(str(quarantine_stderr_file), 0o600)
 
     meta: dict[str, Any] = {
         "timestamp": ts,
         "engagement_id": engagement_id,
         "tool_command": tool_command,
         "detecting_layer": "L1-regex",
-        "sha256_raw": hasher.hash_string(raw_output),
-        "quarantine_file": str(quarantine_file),
+        "sha256_raw_stdout": hasher.hash_string(raw_stdout),
+        "sha256_raw_stderr": hasher.hash_string(raw_stderr),
+        "quarantine_stdout_file": str(quarantine_stdout_file),
+        "quarantine_stderr_file": str(quarantine_stderr_file),
     }
     if match_info:
         meta["matched_pattern"] = match_info.get("pattern", "")
         meta["detected_at_line"] = match_info.get("line_number", 0)
 
-    meta_file.write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8")
+    meta_file.write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8", errors="replace")
     # FIX-8 (RT-003/SR-003): Restrict meta file permissions too.
     os.chmod(str(meta_file), 0o600)
 
     print(
-        f"[CREDENTIAL-FILTER] Output quarantined to: {quarantine_file}",
+        f"[CREDENTIAL-FILTER] Output quarantined to: {quarantine_stdout_file}",
         file=sys.stderr,
     )

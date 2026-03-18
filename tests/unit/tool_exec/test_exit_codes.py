@@ -51,13 +51,18 @@ class TestExitCode:
         assert isinstance(ExitCode.SUCCESS, int)
         assert ExitCode.TOOL_ERROR + 1 == 3
 
-    def test_core_codes_below_eleven(self) -> None:
-        """All core exit codes are below 11 (11+ reserved for families).
+    def test_core_codes_below_twelve(self) -> None:
+        """All core exit codes are below 12 (12+ reserved for families).
 
         CV-008/CV-009 (FIX-6) added FAMILY_NOT_FOUND=7, FAMILY_CONFIG_ERROR=8.
         M-03 renumbered STRICT_MODE_VIOLATION to 9.
         FM-002 (FIX-3) added ZONE3_CONTAINER_REQUIRED=10.
-        Family-specific codes begin at 11.
+        IN-015-R2/NEW-001 added ZONE3_APPROVAL_DENIED=11.
+        Family-specific codes begin at 12.
         """
         for code in ExitCode:
-            assert code.value < 11, f"Unexpected high exit code: {code.name}={code.value}"
+            assert code.value < 12, f"Unexpected high exit code: {code.name}={code.value}"
+
+    def test_zone3_approval_denied_is_eleven(self) -> None:
+        """IN-015-R2/NEW-001: ZONE3_APPROVAL_DENIED is exit code 11."""
+        assert ExitCode.ZONE3_APPROVAL_DENIED == 11
