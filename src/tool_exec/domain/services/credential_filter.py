@@ -169,10 +169,10 @@ class CredentialFilterService:
     def filter_output(self, raw_output: str) -> FilterResult:
         """Apply the credential filter to tool output.
 
-        Scans each line of the output against all patterns. On first match,
-        returns a FilterResult with detected=True and the matching details.
-        The filtered_output contains a redaction notice instead of the
-        original content.
+        Uses a sliding-window approach: scans each line individually, then
+        scans adjacent line pairs to catch credentials split across line
+        boundaries (VF-001 mitigation). On first match, returns a FilterResult
+        with detected=True and the matching details.
 
         Args:
             raw_output: The raw tool output to filter.
@@ -182,36 +182,35 @@ class CredentialFilterService:
         """
         lines = raw_output.split("\n")
 
+        # Pass 1: Single-line scan (fast path for most detections)
         for line_idx, line in enumerate(lines):
-            line_num = line_idx + 1
+            match = self._scan_text(line, line_idx + 1)
+            if match is not None:
+                return FilterResult(
+                    detected=True,
+                    match=match,
+                    filtered_output=self._build_redaction_notice(match.line_number),
+                    raw_output=raw_output,
+                )
 
-            # Case-sensitive scan (original line)
-            for pattern_idx, pattern in enumerate(self._cs_patterns):
-                if pattern.search(line):
-                    return FilterResult(
-                        detected=True,
-                        match=CredentialMatch(
-                            pattern=self._cs_raw[pattern_idx],
-                            line_number=line_num,
-                            case_sensitive=True,
-                        ),
-                        filtered_output=self._build_redaction_notice(line_num),
-                        raw_output=raw_output,
-                    )
-
-            # Case-insensitive scan
-            for pattern_idx, pattern in enumerate(self._ci_patterns):
-                if pattern.search(line):
-                    return FilterResult(
-                        detected=True,
-                        match=CredentialMatch(
-                            pattern=self._ci_raw[pattern_idx],
-                            line_number=line_num,
-                            case_sensitive=False,
-                        ),
-                        filtered_output=self._build_redaction_notice(line_num),
-                        raw_output=raw_output,
-                    )
+        # Pass 2: Sliding-window scan over adjacent line pairs (VF-001 fix).
+        # Catches credentials whose distinctive prefix is split across a line
+        # boundary (e.g., "AK\nIA1234567890ABCDEF"). Joins adjacent lines
+        # with no separator to reconstruct the split credential.
+        for line_idx in range(len(lines) - 1):
+            joined = lines[line_idx] + lines[line_idx + 1]
+            match = self._scan_text(joined, line_idx + 1)
+            if match is not None:
+                return FilterResult(
+                    detected=True,
+                    match=CredentialMatch(
+                        pattern=match.pattern,
+                        line_number=match.line_number,
+                        case_sensitive=match.case_sensitive,
+                    ),
+                    filtered_output=self._build_redaction_notice(match.line_number),
+                    raw_output=raw_output,
+                )
 
         # No credential detected
         return FilterResult(
@@ -220,6 +219,34 @@ class CredentialFilterService:
             filtered_output=raw_output,
             raw_output=raw_output,
         )
+
+    def _scan_text(self, text: str, line_number: int) -> CredentialMatch | None:
+        """Scan a text string against all patterns.
+
+        Args:
+            text: The text to scan (single line or joined adjacent lines).
+            line_number: 1-based line number for reporting.
+
+        Returns:
+            CredentialMatch if a pattern matched, None otherwise.
+        """
+        for pattern_idx, pattern in enumerate(self._cs_patterns):
+            if pattern.search(text):
+                return CredentialMatch(
+                    pattern=self._cs_raw[pattern_idx],
+                    line_number=line_number,
+                    case_sensitive=True,
+                )
+
+        for pattern_idx, pattern in enumerate(self._ci_patterns):
+            if pattern.search(text):
+                return CredentialMatch(
+                    pattern=self._ci_raw[pattern_idx],
+                    line_number=line_number,
+                    case_sensitive=False,
+                )
+
+        return None
 
     def pattern_count(self) -> int:
         """Return the total number of active patterns.

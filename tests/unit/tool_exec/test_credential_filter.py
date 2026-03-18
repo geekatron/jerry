@@ -372,3 +372,66 @@ class TestFilterResult:
         result = filter_svc.filter_output(f"password={pw}")
         assert "[CREDENTIAL-FILTER]" in result.filtered_output
         assert "quarantined" in result.filtered_output
+
+
+class TestCredentialFilterSlidingWindow:
+    """Tests for VF-001 mitigation: sliding-window scan across adjacent lines.
+
+    Validates that credentials split across line boundaries are detected
+    by the adjacent-line-pair scanning pass.
+    """
+
+    def setup_method(self) -> None:
+        """Create a fresh filter for each test."""
+        self.filter = CredentialFilterService()
+
+    def test_aws_key_split_across_lines(self) -> None:
+        """AWS access key split at the prefix boundary is detected."""
+        # AKIA + 16 chars, split after AK
+        key_suffix = "1234567890ABCDEF"
+        output = f"data: AK\nIA{key_suffix}\nmore data"
+        result = self.filter.filter_output(output)
+        assert result.detected is True
+
+    def test_password_split_across_lines(self) -> None:
+        """Password assignment split across a line boundary is detected."""
+        output = "config: pass\nword=mysecretpassword123\nend"
+        result = self.filter.filter_output(output)
+        assert result.detected is True
+
+    def test_bearer_token_split_across_lines(self) -> None:
+        """Bearer token split across a line boundary is detected."""
+        token = "A" * 30
+        output = f"Authorization: Bear\ner {token}\ndata"
+        result = self.filter.filter_output(output)
+        assert result.detected is True
+
+    def test_github_pat_split_across_lines(self) -> None:
+        """GitHub PAT split across a line boundary is detected."""
+        suffix = "A" * 30
+        output = f"token: github_\npat_{suffix}\nend"
+        result = self.filter.filter_output(output)
+        assert result.detected is True
+
+    def test_clean_adjacent_lines_not_false_positive(self) -> None:
+        """Adjacent clean lines do not trigger false positives."""
+        output = "line one is clean\nline two is also clean\nline three too"
+        result = self.filter.filter_output(output)
+        assert result.detected is False
+
+    def test_single_line_still_detected(self) -> None:
+        """Single-line credential is still detected (pass 1 fast path)."""
+        key_id = _build_test_string("AKIA", "1234567890ABCDEF")
+        output = f"key: {key_id}"
+        result = self.filter.filter_output(output)
+        assert result.detected is True
+
+    def test_empty_output_no_crash(self) -> None:
+        """Empty output does not crash the sliding window."""
+        result = self.filter.filter_output("")
+        assert result.detected is False
+
+    def test_single_line_output_no_crash(self) -> None:
+        """Single-line output without newline does not crash sliding window."""
+        result = self.filter.filter_output("just one line")
+        assert result.detected is False

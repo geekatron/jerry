@@ -80,6 +80,11 @@ def _validate_evidence_dir(evidence_dir_override: str, project_root: Path) -> Pa
 def _find_project_root() -> Path:
     """Find the project root by walking up from cwd looking for .git or pyproject.toml.
 
+    VF-002 mitigation: logs a warning when no project marker is found and
+    the function falls back to cwd. This fallback weakens the --evidence-dir
+    containment boundary (FINDING-001) because cwd in a CI ephemeral workspace
+    or global installation may be a world-readable directory.
+
     Returns:
         Path to the project root directory.
     """
@@ -88,6 +93,12 @@ def _find_project_root() -> Path:
         if (current / ".git").exists() or (current / "pyproject.toml").exists():
             return current
         current = current.parent
+    logger.warning(
+        "No .git or pyproject.toml found in parent directories. "
+        "Falling back to cwd as project root: %s. "
+        "Evidence containment boundary may be weaker than expected (VF-002).",
+        Path.cwd(),
+    )
     return Path.cwd()
 
 
