@@ -1,0 +1,29 @@
+# Tool Family Registry
+# STORY-W12-001: Multi-family plugin architecture for jerry tool exec
+#
+# Each family entry registers a ToolFamilyResolverPort implementation
+# that can resolve tool commands within its domain.
+#
+# Fields:
+#   name:            Unique family identifier (used with --family flag)
+#   description:     Human-readable description
+#   resolver_module: Fully qualified Python module path
+#   resolver_class:  Class name implementing ToolFamilyResolverPort
+#   config_path:     Path to the family's tool resolution config (relative to repo root)
+#   enabled:         Whether this family is active (default: true)
+
+families:
+  - name: rainbow
+    description: "Rainbow cybersecurity tool suite (exploit, recon, runtime, cloud, supply-chain)"
+    resolver_module: src.tool_exec.infrastructure.adapters.rainbow_tool_resolver
+    resolver_class: RainbowToolResolver
+    config_path: skills/rainbow/config/tool-exec.yaml
+    enabled: true
+
+  # Future families:
+  # - name: blue-team
+  #   description: "Blue team defensive operations tools"
+  #   resolver_module: src.tool_exec.infrastructure.adapters.blue_team_resolver
+  #   resolver_class: BlueTeamToolResolver
+  #   config_path: skills/blue-team/config/tool-exec.yaml
+  #   enabled: false

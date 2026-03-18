@@ -8,7 +8,6 @@ services:
     build:
       context: ./scanner
     volumes:
-      - ../../output:/rainbow-output
       - ../../../../work:/work
     working_dir: /work
     network_mode: none
@@ -17,7 +16,6 @@ services:
     build:
       context: ./verifier
     volumes:
-      - ../../output:/rainbow-output
       - ../../../../work:/work
     working_dir: /work
     network_mode: none

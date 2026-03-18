@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# test-tool-exec.sh -- Shell mock test for rainbow-tool-exec (no Docker required)
+# test-tool-exec.sh -- Shell mock test for jerry tool exec (no Docker required)
 #
 # ADR-PROJ023-001 v1.3.0 -- Behavioral Contract BC-01, BC-03, BC-05
 #
@@ -13,14 +13,14 @@
 #   1  One or more tests failed (test harness failure, not wrapper failure)
 #
 # Prerequisites:
-#   - rainbow-tool-exec must be on PATH or RAINBOW_TOOL_EXEC_PATH must be set
+#   - uv run jerry tool exec must be available or RAINBOW_TOOL_EXEC_PATH must be set
 #   - skills/rainbow/config/tool-exec.yaml must be present (auto-detected)
 #   - No Docker is required; all tests use RAINBOW_TOOL_MODE=local or test
 #     strict-mode rejection before any execution reaches docker
 #
 # Usage:
 #   RAINBOW_PROJECT_ROOT=/path/to/repo bash test-tool-exec.sh
-#   RAINBOW_TOOL_EXEC_PATH=/path/to/rainbow-tool-exec bash test-tool-exec.sh
+#   RAINBOW_TOOL_EXEC_PATH="uv run jerry tool exec" bash test-tool-exec.sh
 #
 # Design: each test_* function is self-contained; failures are accumulated and
 # reported at the end. The script does not exit on first failure so the full
@@ -41,7 +41,7 @@ if [[ -n "${RAINBOW_TOOL_EXEC_PATH:-}" ]]; then
 else
     # Resolve relative to this script's location: tests/docker/ -> ../../bin/
     SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    readonly WRAPPER="${SCRIPT_DIR}/../../bin/rainbow-tool-exec"
+    readonly WRAPPER="uv run jerry tool exec"
 fi
 
 # ---------------------------------------------------------------------------
@@ -74,7 +74,7 @@ fail() {
 # ---------------------------------------------------------------------------
 
 preflight_check() {
-    echo "--- rainbow-tool-exec shell mock tests (${ADR_REF}) ---"
+    echo "--- jerry tool exec shell mock tests (${ADR_REF}) ---"
     echo ""
 
     if [[ ! -f "${WRAPPER}" ]]; then

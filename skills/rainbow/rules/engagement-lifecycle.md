@@ -57,7 +57,7 @@ Define the engagement boundaries: what targets are authorized, what techniques a
 
 | Action | Owner | Output |
 |--------|-------|--------|
-| Create engagement scope document | rainbow-orchestrator or red-lead | `skills/rainbow/output/{engagement-id}/SCOPE.md` |
+| Create engagement scope document | rainbow-orchestrator or red-lead | `work/engagements/{engagement-id}/SCOPE.md` |
 | Define authorized targets | Operator (human) | `authorized_targets` field populated |
 | Define excluded targets | Operator (human) | `excluded_targets` field populated (may be empty) |
 | Define time window | Operator (human) | `time_window.start` and `time_window.end` set |
@@ -67,7 +67,7 @@ Define the engagement boundaries: what targets are authorized, what techniques a
 
 ### Scope Document Location
 
-`skills/rainbow/output/{engagement-id}/SCOPE.md`
+`work/engagements/{engagement-id}/SCOPE.md`
 
 Engagement ID format: `RBW-NNNN` (e.g., `RBW-0001`).
 
@@ -155,7 +155,7 @@ Aggregate findings from all Zone 2 and Zone 3 operations. Produce a structured e
 | Aggregate findings from all operations | rainbow-reporter (future agent (post-W3)) | All Zone 2/3 tasks complete or time_window expired |
 | Classify findings by severity | rainbow-reporter (future agent (post-W3)) | Every finding has severity rating |
 | Identify Zone 3 escalation candidates | rainbow-reporter (future agent (post-W3)) | Findings requiring deeper exploitation flagged |
-| Produce engagement report | rainbow-reporter (future agent (post-W3)) | Report persisted to `skills/rainbow/output/{engagement-id}/reports/` |
+| Produce engagement report | rainbow-reporter (future agent (post-W3)) | Report persisted to `work/engagements/{engagement-id}/reports/` |
 | Include scope compliance summary | rainbow-reporter (future agent (post-W3)) | Coverage percentage, any scope violations, escalation events |
 
 > **Note:** `rainbow-reporter` is a planned future agent (post-W3 wave). It is listed in the parent SKILL.md agent registry as a cross-cutting agent. Until `rainbow-reporter` is implemented, Phase 4 reporting is performed by `rainbow-orchestrator` or the operator directly.
@@ -184,13 +184,13 @@ Close the engagement. Review scope coverage. Archive all artifacts. Ensure no on
 | Review scope coverage (targets assessed vs. authorized) | Operator + rainbow-orchestrator | Coverage reported |
 | Review escalation events | Operator | All escalations documented |
 | Review credential filter events | Operator | All quarantines documented |
-| Archive engagement artifacts | rainbow-orchestrator | All artifacts in `skills/rainbow/output/{engagement-id}/` |
+| Archive engagement artifacts | rainbow-orchestrator | All artifacts in `work/engagements/{engagement-id}/` |
 | Close engagement | Operator | Explicit operator decision |
 
 ### Artifact Archive Structure
 
 ```
-skills/rainbow/output/{engagement-id}/
+work/engagements/{engagement-id}/
   SCOPE.md                           # Engagement scope document
   reports/                            # Final reports
   recon/                              # Reconnaissance artifacts

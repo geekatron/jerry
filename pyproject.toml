@@ -74,6 +74,7 @@ pythonVersion = "3.11"
 venvPath = "."
 venv = ".venv"
 typeCheckingMode = "standard"
+extraPaths = ["."]
 
 [tool.mypy]
 python_version = "3.11"

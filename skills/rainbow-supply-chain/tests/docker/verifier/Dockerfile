@@ -20,8 +20,10 @@ RUN apt-get update && \
         git \
     && rm -rf /var/lib/apt/lists/*
 
+ARG TARGETARCH=amd64
+
 # Install Cosign (>= 2.2)
-RUN curl -sSfL https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-amd64 -o /usr/local/bin/cosign && \
+RUN curl -sSfL "https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-${TARGETARCH}" -o /usr/local/bin/cosign && \
     chmod +x /usr/local/bin/cosign
 
 # Install Snyk CLI (latest stable)

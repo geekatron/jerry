@@ -19,6 +19,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
+ARG TARGETARCH=amd64
+
 # Syft >= (latest stable, version-pinned)
 ARG SYFT_VERSION=1.9.0
 RUN curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh \
@@ -37,13 +39,13 @@ RUN curl -sSfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib
 # OSV-Scanner
 ARG OSV_SCANNER_VERSION=1.8.3
 RUN curl -sSfL -o /usr/local/bin/osv-scanner \
-    "https://github.com/google/osv-scanner/releases/download/v${OSV_SCANNER_VERSION}/osv-scanner_linux_amd64" \
+    "https://github.com/google/osv-scanner/releases/download/v${OSV_SCANNER_VERSION}/osv-scanner_linux_${TARGETARCH}" \
     && chmod +x /usr/local/bin/osv-scanner
 
 # Cosign >= 2.2 (verify-only usage)
 ARG COSIGN_VERSION=2.2.4
 RUN curl -sSfL -o /usr/local/bin/cosign \
-    "https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign-linux-amd64" \
+    "https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign-linux-${TARGETARCH}" \
     && chmod +x /usr/local/bin/cosign
 
 # ---------------------------------------------------------------------------

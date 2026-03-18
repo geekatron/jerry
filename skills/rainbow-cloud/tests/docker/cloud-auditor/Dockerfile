@@ -1,5 +1,5 @@
 FROM python:3.11-slim
-ARG TARGETARCH=arm64
+ARG TARGETARCH=amd64
 RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 RUN pip install --no-cache-dir checkov>=3.0 prowler>=4.0

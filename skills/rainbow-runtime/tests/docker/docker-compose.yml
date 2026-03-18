@@ -1,7 +1,7 @@
 version: "3.9"
 
 # Zone: 3 (Runtime Analysis -- per-operation human approval required for every tool invocation)
-# Network: default deny. Per-operation network grants applied by rainbow-tool-exec at run-time.
+# Network: default deny. Per-operation network grants applied by jerry tool exec at run-time.
 # Full structural enforcement (docker network connect/disconnect per approved operation)
 # is target-state -- Phase 6. At current state, behavioral per-operation approval (P-020) is active.
 
@@ -20,7 +20,6 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ../../output:/rainbow-output
       - ../../../../work:/work
     stdin_open: true
     tty: true
@@ -37,7 +36,6 @@ services:
     security_opt:
       - seccomp:unconfined
     volumes:
-      - ../../output:/rainbow-output
       - ../../../../work:/work
     stdin_open: true
     tty: true

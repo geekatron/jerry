@@ -43,7 +43,7 @@ Zone 2 operations MUST NOT begin until an engagement scope document exists and h
 
 ### Scope Document Structure
 
-The engagement scope document is a markdown file persisted at `skills/rainbow/output/{engagement-id}/SCOPE.md` within the active project workspace. It MUST contain the following fields.
+The engagement scope document is a markdown file persisted at `work/engagements/{engagement-id}/SCOPE.md` within the active project workspace. It MUST contain the following fields.
 
 | Field | Description | Validation Rule |
 |-------|-------------|-----------------|
@@ -211,7 +211,7 @@ Zone 2 operations follow a structured engagement lifecycle. Each phase has a gat
 | Action | Owner | Gate |
 |--------|-------|------|
 | Aggregate findings from all Zone 2 operations | `rainbow-reporter` (future agent (post-W3)) | All Zone 2 tasks complete or time window expired |
-| Produce reconnaissance/assessment report | `rainbow-reporter` (future agent (post-W3)) | Report persisted to `skills/rainbow/output/{id}/reports/` |
+| Produce reconnaissance/assessment report | `rainbow-reporter` (future agent (post-W3)) | Report persisted to `work/engagements/{id}/reports/` |
 | Identify findings requiring Zone 3 escalation | `rainbow-reporter` (future agent (post-W3)) | Zone 3 candidates flagged in report |
 
 > **Note:** `rainbow-reporter` is a planned future agent (post-W3 wave). Until implemented, Phase 3 reporting is performed by `rainbow-orchestrator` or the operator directly.
@@ -222,7 +222,7 @@ Zone 2 operations follow a structured engagement lifecycle. Each phase has a gat
 |--------|-------|------|
 | Review scope coverage (targets assessed vs. authorized) | Operator + `rainbow-orchestrator` | -- |
 | Review any scope violations or escalation events | Operator | -- |
-| Archive engagement artifacts | `rainbow-orchestrator` | All artifacts in `skills/rainbow/output/{id}/` |
+| Archive engagement artifacts | `rainbow-orchestrator` | All artifacts in `work/engagements/{id}/` |
 | Close engagement if Zone 3 is not needed | Operator | Explicit operator decision |
 
 ---
@@ -273,7 +273,7 @@ Every Zone 2 operation MUST produce a detailed audit log entry. Zone 2 logging i
 
 ### Log Location
 
-Audit logs are persisted to `skills/rainbow/output/{engagement-id}/audit/zone-2/{date}-{agent}-{tool}.log` within the active project workspace.
+Audit logs are persisted to `work/engagements/{engagement-id}/audit/zone-2/{date}-{agent}-{tool}.log` within the active project workspace.
 
 ---
 

@@ -145,7 +145,7 @@ jobs:
             NAME=$(basename "$category")
             echo "--- Testing: $NAME ---"
             # L1 regex patterns that MUST match
-            if grep -qP 'AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}|-----BEGIN.*PRIVATE KEY-----|[a-f0-9]{32}:[a-f0-9]{32}|eyJ[A-Za-z0-9_-]+\.eyJ|password\s*[:=]|Bearer\s+[A-Za-z0-9]|AZURE_CLIENT_SECRET|private_key_id' "$CANARY"; then
+            if grep -qE 'AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}|-----BEGIN.*PRIVATE KEY-----|[a-f0-9]{32}:[a-f0-9]{32}|eyJ[A-Za-z0-9_-]+\.eyJ|password[[:space:]]*[:=]|Bearer[[:space:]]+[A-Za-z0-9]|AZURE_CLIENT_SECRET|private_key_id' "$CANARY"; then
               echo "DETECTED: $NAME (L1 regex match)"
             else
               echo "MISSED: $NAME - credential filter would fail to detect this canary"

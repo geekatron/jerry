@@ -16,7 +16,6 @@ services:
     volumes:
       - detection-output:/output
       - detection-fixtures:/fixtures
-      - ../../output:/rainbow-output
       - ../../../../work:/work
     security_opt:
       - no-new-privileges:true
@@ -37,7 +36,6 @@ services:
     volumes:
       - compliance-output:/output
       - compliance-fixtures:/fixtures
-      - ../../output:/rainbow-output
       - ../../../../work:/work
     security_opt:
       - no-new-privileges:true
@@ -58,7 +56,6 @@ services:
     volumes:
       - forensics-output:/output
       - forensics-fixtures:/fixtures
-      - ../../output:/rainbow-output
       - ../../../../work:/work
     security_opt:
       - no-new-privileges:true
@@ -79,7 +76,6 @@ services:
     volumes:
       - intel-output:/output
       - intel-fixtures:/fixtures
-      - ../../output:/rainbow-output
       - ../../../../work:/work
     security_opt:
       - no-new-privileges:true

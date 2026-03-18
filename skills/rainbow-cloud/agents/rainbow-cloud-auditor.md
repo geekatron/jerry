@@ -73,7 +73,7 @@ This agent provides TOOL-ASSISTED CLOUD SECURITY AUDITING within established com
 2. **Execute scan:** `checkov -d <dir> --output json --framework <framework>`. Always specify `--output json` explicitly (default is `cli` format).
 3. **Zone check:** If `--fix` flag is requested, HALT and escalate to Zone 2 -- auto-remediation modifies files.
 4. **Policy filtering:** Use `--check` and `--skip-check` to scope specific policy families when targeted assessment is needed.
-5. **Persist artifact:** Save results to `skills/rainbow/output/{engagement-id}/cloud/checkov-{target-slug}.json`.
+5. **Persist artifact:** Save results to `work/engagements/{engagement-id}/cloud/checkov-{target-slug}.json`.
 
 ### Cloud Security Audit Workflow (Prowler)
 
@@ -82,7 +82,7 @@ This agent provides TOOL-ASSISTED CLOUD SECURITY AUDITING within established com
 3. **Execute scan:** `prowler <provider> --output-formats json-ocsf`. Use `--compliance <framework>` for specific compliance checks (CIS, PCI-DSS, HIPAA, SOC2, GDPR).
 4. **Severity filtering:** Use `--severity <level>` to filter by finding severity.
 5. **Credential awareness:** Prowler requires cloud provider credentials (AWS CLI profile, Azure CLI, GCP ADC). Agent MUST NOT store, log, or expose credential material.
-6. **Persist artifact:** Save results to `skills/rainbow/output/{engagement-id}/cloud/prowler-{provider}-{framework}.json`.
+6. **Persist artifact:** Save results to `work/engagements/{engagement-id}/cloud/prowler-{provider}-{framework}.json`.
 
 ### Kubernetes Security Posture Workflow (Kubescape)
 
@@ -91,7 +91,7 @@ This agent provides TOOL-ASSISTED CLOUD SECURITY AUDITING within established com
 3. **Execute scan:** `kubescape scan <target> --format json --output results.json`. Always specify `--format json` (default is pretty-printer table).
 4. **Framework selection:** Available frameworks include `nsa`, `cis`, `mitre`, `soc2`. Use `framework <name>` subcommand for specific benchmarks.
 5. **Namespace scoping:** Use `--exclude-namespaces <ns>` to limit scope per engagement authorization.
-6. **Persist artifact:** Save results to `skills/rainbow/output/{engagement-id}/cloud/kubescape-{framework}-{target-slug}.json`.
+6. **Persist artifact:** Save results to `work/engagements/{engagement-id}/cloud/kubescape-{framework}-{target-slug}.json`.
 
 ### Kubernetes Policy Validation Workflow (Kyverno CLI)
 
@@ -105,7 +105,7 @@ Kyverno is a dual-zone tool. See `skills/rainbow-cloud/rules/kyverno-escalation-
    - `generate` mode: Zone 3. NEVER execute. Inform user and return to orchestrator.
 3. **Execute validation:** `kyverno apply <policy.yaml> --resource <resource.yaml>` for local validation.
 4. **Policy report:** Use `--policy-report` flag to generate a policy report for validate policies.
-5. **Persist artifact:** Save results to `skills/rainbow/output/{engagement-id}/cloud/kyverno-{policy-slug}.json`.
+5. **Persist artifact:** Save results to `work/engagements/{engagement-id}/cloud/kyverno-{policy-slug}.json`.
 
 ### Credential Filter Application
 
@@ -184,7 +184,7 @@ Standalone capable design (AD-010):
 
 ## Tool Execution
 
-All tool invocations in this agent's methodology use the `rainbow-tool-exec` wrapper. The wrapper resolves to local CLI or container execution based on `RAINBOW_TOOL_MODE` configuration. Agent methodology sections show tool commands without the wrapper prefix for readability; the orchestrator prepends `rainbow-tool-exec` at invocation time. See ADR-PROJ023-001 for the behavioral contract (BC-01 through BC-09).
+All tool invocations in this agent's methodology use the `jerry tool exec` CLI command. The command resolves to local CLI or container execution based on `RAINBOW_TOOL_MODE` configuration. Agent methodology sections show tool commands without the CLI prefix for readability; the orchestrator prepends `jerry tool exec` at invocation time. See ADR-PROJ023-001 for the behavioral contract (BC-01 through BC-09).
 
 ## Constitutional Compliance
 

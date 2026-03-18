@@ -1,7 +1,7 @@
 # Engagement Scope Template -- /rainbow
 #
 # Use this template to create engagement scope documents for Zone 2 and Zone 3
-# operations. Copy to skills/rainbow/output/{engagement-id}/SCOPE.md and fill
+# operations. Copy to work/engagements/{engagement-id}/SCOPE.md and fill
 # in all required fields before requesting operator approval.
 #
 # Engagement ID format: RBW-NNNN (e.g., RBW-0001)

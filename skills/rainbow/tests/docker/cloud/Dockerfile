@@ -24,8 +24,9 @@ ARG TARGETARCH=amd64
 
 # Kubescape >= 3.0
 ARG KUBESCAPE_VERSION=3.0.8
-RUN curl -sSfL -o /usr/local/bin/kubescape \
-    "https://github.com/kubescape/kubescape/releases/download/v${KUBESCAPE_VERSION}/kubescape-ubuntu-latest" \
+RUN KS_ARCH=$([ "$TARGETARCH" = "arm64" ] && echo "arm64" || echo "amd64") && \
+    curl -sSfL -o /usr/local/bin/kubescape \
+    "https://github.com/kubescape/kubescape/releases/download/v${KUBESCAPE_VERSION}/kubescape-ubuntu-latest-${KS_ARCH}" \
     && chmod +x /usr/local/bin/kubescape
 
 # Kyverno CLI >= 1.11 (validate-only mode)

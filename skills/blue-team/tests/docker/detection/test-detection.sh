@@ -133,7 +133,7 @@ echo ""
 echo "=== YARA-X Python Binding ==="
 
 run_test "yara-x Python module importable" \
-    "python -c 'import yara_x; print(\"yara_x_ok\")'" \
+    "python3 -c 'import yara_x; print(\"yara_x_ok\")'" \
     "yara_x_ok"
 
 # ---------------------------------------------------------------------------

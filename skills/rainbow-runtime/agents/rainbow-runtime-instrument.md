@@ -77,7 +77,7 @@ This agent provides TOOL-ASSISTED RUNTIME INSTRUMENTATION within established met
 
 Before ANY tool invocation, the agent MUST:
 
-1. Verify engagement scope document exists at `skills/rainbow/output/{engagement-id}/SCOPE.md`.
+1. Verify engagement scope document exists at `work/engagements/{engagement-id}/SCOPE.md`.
 2. Verify the `time_window` includes the current time.
 3. Verify the requested target is in `authorized_targets` and NOT in `excluded_targets`.
 4. Verify the requested technique is in `technique_allowlist`.
@@ -138,7 +138,7 @@ Before every operation, classify the operation as Zone 2 or Zone 3.
 4. Apply rate limiting per rules_of_engagement.
 5. Write captured flows: `mitmdump -w capture.flow`.
 6. Apply credential filter to all captured output.
-7. Persist capture artifacts to `skills/rainbow/output/{engagement-id}/runtime/mitmproxy-{target-slug}.flow`.
+7. Persist capture artifacts to `work/engagements/{engagement-id}/runtime/mitmproxy-{target-slug}.flow`.
 
 **Stage 2: Traffic Analysis (Zone 2)**
 
@@ -147,7 +147,7 @@ Before every operation, classify the operation as Zone 2 or Zone 3.
 3. Extract request/response pairs for security analysis.
 4. Identify authentication patterns, token usage, data exposure.
 5. Apply credential filter to analysis output.
-6. Persist analysis to `skills/rainbow/output/{engagement-id}/runtime/mitmproxy-analysis-{target-slug}.md`.
+6. Persist analysis to `work/engagements/{engagement-id}/runtime/mitmproxy-analysis-{target-slug}.md`.
 
 **Stage 3: Traffic Modification (Zone 3 -- requires per-operation approval)**
 
@@ -156,7 +156,7 @@ Before every operation, classify the operation as Zone 2 or Zone 3.
 3. On approval: Execute `mitmdump -s modify-script.py -r capture.flow` or live proxy with script.
 4. Log modification details in Zone 3 audit log.
 5. Apply credential filter to all output.
-6. Persist evidence to `skills/rainbow/output/{engagement-id}/evidence/`.
+6. Persist evidence to `work/engagements/{engagement-id}/evidence/`.
 
 ### Frida Workflow
 
@@ -179,7 +179,7 @@ Before every operation, classify the operation as Zone 2 or Zone 3.
    Where `trace-script.js` uses ONLY `Interceptor.attach` with `send()` in callbacks.
 4. Discover functions: `frida-discover -n <process>`.
 5. Apply credential filter to all trace output.
-6. Persist artifacts to `skills/rainbow/output/{engagement-id}/runtime/frida-trace-{process-slug}.jsonl`.
+6. Persist artifacts to `work/engagements/{engagement-id}/runtime/frida-trace-{process-slug}.jsonl`.
 
 **Stage 3: Active Instrumentation (Zone 3 -- requires per-operation approval)**
 
@@ -188,7 +188,7 @@ Before every operation, classify the operation as Zone 2 or Zone 3.
 3. On approval: Execute `frida -n <process> -l instrument-script.js`.
 4. Log instrumentation details in Zone 3 audit log with SHA-256 hash of script.
 5. Apply credential filter to all output.
-6. Persist evidence to `skills/rainbow/output/{engagement-id}/evidence/`.
+6. Persist evidence to `work/engagements/{engagement-id}/evidence/`.
 
 ### Credential Filter Application
 
@@ -207,7 +207,7 @@ All Zone 3 operations produce evidence artifacts that require chain of custody i
 
 1. **Evidence identifiers:** Each evidence artifact receives an `EVD-YYYYMMDD-NNN` identifier (sequential per engagement).
 2. **SHA-256 integrity:** Compute SHA-256 hash of every evidence artifact at creation. Record in Zone 3 audit log `script_sha256` field and evidence manifest.
-3. **Custody chain:** Maintain `custody.json` per engagement at `skills/rainbow/output/{engagement-id}/evidence/custody.json`. Each entry records: evidence_id, file_path, sha256, created_by (agent), created_at (ISO 8601), operation_id.
+3. **Custody chain:** Maintain `custody.json` per engagement at `work/engagements/{engagement-id}/evidence/custody.json`. Each entry records: evidence_id, file_path, sha256, created_by (agent), created_at (ISO 8601), operation_id.
 4. **Debrief verification:** During engagement close or handoff, verify SHA-256 hashes of all evidence artifacts against custody.json. Report any mismatches.
 5. **Cross-reference:** Evidence IDs referenced in L1 technical detail output and Zone 3 audit log `evidence_ids` field.
 
@@ -325,7 +325,7 @@ Standalone capable design (AD-010):
 
 ## Tool Execution
 
-All tool invocations in this agent's methodology use the `rainbow-tool-exec` wrapper. The wrapper resolves to local CLI or container execution based on `RAINBOW_TOOL_MODE` configuration. Agent methodology sections show tool commands without the wrapper prefix for readability; the orchestrator prepends `rainbow-tool-exec` at invocation time. See ADR-PROJ023-001 for the behavioral contract (BC-01 through BC-09).
+All tool invocations in this agent's methodology use the `jerry tool exec` CLI command. The command resolves to local CLI or container execution based on `RAINBOW_TOOL_MODE` configuration. Agent methodology sections show tool commands without the CLI prefix for readability; the orchestrator prepends `jerry tool exec` at invocation time. See ADR-PROJ023-001 for the behavioral contract (BC-01 through BC-09).
 
 ## Constitutional Compliance
 

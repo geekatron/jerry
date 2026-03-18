@@ -75,7 +75,7 @@ This agent provides TOOL-ASSISTED RECONNAISSANCE within established methodology 
 
 Before ANY tool invocation, the agent MUST:
 
-1. Verify engagement scope document exists at `skills/rainbow/output/{engagement-id}/SCOPE.md`.
+1. Verify engagement scope document exists at `work/engagements/{engagement-id}/SCOPE.md`.
 2. Verify the `time_window` includes the current time.
 3. Verify the requested target is in `authorized_targets` and NOT in `excluded_targets`.
 4. Verify the requested technique is in `technique_allowlist`.
@@ -94,7 +94,7 @@ The pipeline follows a structured order. Each stage feeds into the next.
 4. Include source attribution: Use `-cs` (collect-sources) for provenance tracking.
 5. Validate output: Verify JSONL output contains discovered subdomains.
 6. Apply credential filter to output.
-7. Persist artifact to `skills/rainbow/output/{engagement-id}/recon/subfinder-{domain-slug}.jsonl`.
+7. Persist artifact to `work/engagements/{engagement-id}/recon/subfinder-{domain-slug}.jsonl`.
 
 **Stage 2: DNS Resolution (dnsx)**
 
@@ -103,7 +103,7 @@ The pipeline follows a structured order. Each stage feeds into the next.
 3. For comprehensive enumeration: Use `-recon` flag (queries all record types: A, AAAA, CNAME, NS, TXT, MX, SOA).
 4. Validate output: Verify JSONL output with resolved records.
 5. Apply credential filter to output.
-6. Persist artifact to `skills/rainbow/output/{engagement-id}/recon/dnsx-{domain-slug}.jsonl`.
+6. Persist artifact to `work/engagements/{engagement-id}/recon/dnsx-{domain-slug}.jsonl`.
 
 **Stage 3: HTTP Probing (httpx)**
 
@@ -112,7 +112,7 @@ The pipeline follows a structured order. Each stage feeds into the next.
 3. Flags: `-sc` (status code), `-td` (technology detection), `-title` (page title), `-ip` (show IP).
 4. Validate output: Verify JSONL with HTTP response metadata.
 5. Apply credential filter to output.
-6. Persist artifact to `skills/rainbow/output/{engagement-id}/recon/httpx-{domain-slug}.jsonl`.
+6. Persist artifact to `work/engagements/{engagement-id}/recon/httpx-{domain-slug}.jsonl`.
 
 **Stage 4: Port Scanning (Naabu)**
 
@@ -121,7 +121,7 @@ The pipeline follows a structured order. Each stage feeds into the next.
 3. Rate limiting: Always apply `-rate <n>` per rules_of_engagement constraints.
 4. Validate output: Verify JSONL with ip/port pairs.
 5. Apply credential filter to output.
-6. Persist artifact to `skills/rainbow/output/{engagement-id}/recon/naabu-{domain-slug}.jsonl`.
+6. Persist artifact to `work/engagements/{engagement-id}/recon/naabu-{domain-slug}.jsonl`.
 
 **Stage 5: Web Crawling (Katana)**
 
@@ -131,7 +131,7 @@ The pipeline follows a structured order. Each stage feeds into the next.
 4. Depth limiting: Always honor depth limits from rules_of_engagement.
 5. Validate output: Verify JSONL with endpoint, source, tag, attribute fields.
 6. Apply credential filter to output.
-7. Persist artifact to `skills/rainbow/output/{engagement-id}/recon/katana-{domain-slug}.jsonl`.
+7. Persist artifact to `work/engagements/{engagement-id}/recon/katana-{domain-slug}.jsonl`.
 
 **Stage 6: Vulnerability Detection Scanning (Nuclei)**
 
@@ -143,7 +143,7 @@ The pipeline follows a structured order. Each stage feeds into the next.
 6. Execute detection scan: `nuclei -l targets.txt -t cves/ -t misconfiguration/ -t exposed-panels/ -t technologies/ -t dns/ -t ssl/ -t http/ -t network/ -t file/ -t headless/ -jsonl -o nuclei-results.json -severity info,low,medium,high,critical`. The `-t <dir>` flags restrict template loading to the 10 Zone 2-classified directories from `nuclei-template-allowlist.yaml`. This provides non-behavioral defense-in-depth: even if the classification procedure (Steps 1-5) is bypassed, Nuclei only loads templates from allowed directories.
 7. Validate output: Verify JSONL with template ID, severity, matched-at fields.
 8. Apply credential filter to output.
-9. Persist artifact to `skills/rainbow/output/{engagement-id}/recon/nuclei-{domain-slug}.jsonl`.
+9. Persist artifact to `work/engagements/{engagement-id}/recon/nuclei-{domain-slug}.jsonl`.
 
 ### Credential Filter Application
 
@@ -221,7 +221,7 @@ Standalone capable design (AD-010):
 
 ## Tool Execution
 
-All tool invocations in this agent's methodology use the `rainbow-tool-exec` wrapper. The wrapper resolves to local CLI or container execution based on `RAINBOW_TOOL_MODE` configuration. Agent methodology sections show tool commands without the wrapper prefix for readability; the orchestrator prepends `rainbow-tool-exec` at invocation time. See ADR-PROJ023-001 for the behavioral contract (BC-01 through BC-09).
+All tool invocations in this agent's methodology use the `jerry tool exec` CLI command. The command resolves to local CLI or container execution based on `RAINBOW_TOOL_MODE` configuration. Agent methodology sections show tool commands without the CLI prefix for readability; the orchestrator prepends `jerry tool exec` at invocation time. See ADR-PROJ023-001 for the behavioral contract (BC-01 through BC-09).
 
 ## Constitutional Compliance
 

@@ -22,7 +22,7 @@
 | Field | Value |
 |-------|-------|
 | **Engagement ID** | RBW-NNNN |
-| **Scope Document** | `skills/rainbow/output/RBW-NNNN/SCOPE.md` |
+| **Scope Document** | `work/engagements/RBW-NNNN/SCOPE.md` |
 | **Start Date** | YYYY-MM-DDTHH:MM:SSZ |
 | **End Date** | YYYY-MM-DDTHH:MM:SSZ |
 | **Operator** | [Name] |
@@ -119,7 +119,7 @@
 | Parameter | Value |
 |-----------|-------|
 | Retention period | [90 days / Custom] |
-| Storage location | `skills/rainbow/output/{engagement-id}/` |
+| Storage location | `work/engagements/{engagement-id}/` |
 | Destruction method | [secure-delete / cryptographic-erasure] |
 | Destruction confirmation | Operator signs off on destruction |
 

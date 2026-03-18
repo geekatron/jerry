@@ -322,13 +322,13 @@ scope:
 ### Output Location Convention
 
 ```
-skills/rainbow/output/{engagement-id}/{agent-name}-{topic-slug}.md
+work/engagements/{engagement-id}/{agent-name}-{topic-slug}.md
 ```
 
 Evidence artifacts are stored in:
 
 ```
-skills/rainbow/output/{engagement-id}/evidence/
+work/engagements/{engagement-id}/evidence/
 ```
 
 ---

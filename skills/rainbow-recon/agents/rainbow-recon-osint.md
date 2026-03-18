@@ -71,7 +71,7 @@ This agent provides TOOL-ASSISTED OSINT within established methodology (PTES Int
 
 Before ANY tool invocation, the agent MUST:
 
-1. Verify engagement scope document exists at `skills/rainbow/output/{engagement-id}/SCOPE.md`.
+1. Verify engagement scope document exists at `work/engagements/{engagement-id}/SCOPE.md`.
 2. Verify the `time_window` includes the current time.
 3. Verify the requested target is in `authorized_targets` and NOT in `excluded_targets`.
 4. Verify the requested technique is in `technique_allowlist`.
@@ -87,7 +87,7 @@ Before ANY tool invocation, the agent MUST:
 3. For API key-enhanced coverage: Configure provider keys via `-config <config-file>` (Censys, Shodan, VirusTotal, SecurityTrails, etc.).
 4. Output format: JSON with graph relationships (FQDN, ns_record, a_record, etc.).
 5. Apply credential filter to output.
-6. Persist artifact to `skills/rainbow/output/{engagement-id}/recon/amass-{domain-slug}.json`.
+6. Persist artifact to `work/engagements/{engagement-id}/recon/amass-{domain-slug}.json`.
 
 ### Username OSINT Workflow (Maigret)
 
@@ -97,7 +97,7 @@ Before ANY tool invocation, the agent MUST:
 4. For multiple usernames: Provide space-separated usernames.
 5. Output format: JSON report with site-specific findings, URLs, and confidence.
 6. Apply credential filter to output (heightened sensitivity -- OSINT may surface leaked credentials).
-7. Persist artifact to `skills/rainbow/output/{engagement-id}/recon/maigret-{username-slug}.json`.
+7. Persist artifact to `work/engagements/{engagement-id}/recon/maigret-{username-slug}.json`.
 
 ### OSINT Correlation Methodology
 
@@ -171,7 +171,7 @@ Standalone capable design (AD-010):
 
 ## Tool Execution
 
-All tool invocations in this agent's methodology use the `rainbow-tool-exec` wrapper. The wrapper resolves to local CLI or container execution based on `RAINBOW_TOOL_MODE` configuration. Agent methodology sections show tool commands without the wrapper prefix for readability; the orchestrator prepends `rainbow-tool-exec` at invocation time. See ADR-PROJ023-001 for the behavioral contract (BC-01 through BC-09).
+All tool invocations in this agent's methodology use the `jerry tool exec` CLI command. The command resolves to local CLI or container execution based on `RAINBOW_TOOL_MODE` configuration. Agent methodology sections show tool commands without the CLI prefix for readability; the orchestrator prepends `jerry tool exec` at invocation time. See ADR-PROJ023-001 for the behavioral contract (BC-01 through BC-09).
 
 ## Constitutional Compliance
 

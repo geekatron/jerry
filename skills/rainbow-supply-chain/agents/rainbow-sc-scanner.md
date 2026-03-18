@@ -73,7 +73,7 @@ This agent provides TOOL-ASSISTED SCANNING within established supply chain secur
 2. **Format selection:** Default to CycloneDX JSON for downstream tool compatibility. Use SPDX JSON when compliance requires it.
 3. **Execute scan:** `syft scan <target> -o cyclonedx-json=<output-path>`. Always specify output format explicitly (default is syft-json, not CycloneDX).
 4. **Validate output:** Verify SBOM contains components, metadata timestamp, and serial number.
-5. **Persist artifact:** Save SBOM to `skills/rainbow/output/{engagement-id}/supply-chain/sbom-{target-slug}.json`.
+5. **Persist artifact:** Save SBOM to `work/engagements/{engagement-id}/supply-chain/sbom-{target-slug}.json`.
 
 ### Vulnerability Scanning Workflow (Grype)
 
@@ -170,7 +170,7 @@ Standalone capable design (AD-010):
 
 ## Tool Execution
 
-All tool invocations in this agent's methodology use the `rainbow-tool-exec` wrapper. The wrapper resolves to local CLI or container execution based on `RAINBOW_TOOL_MODE` configuration. Agent methodology sections show tool commands without the wrapper prefix for readability; the orchestrator prepends `rainbow-tool-exec` at invocation time. See ADR-PROJ023-001 for the behavioral contract (BC-01 through BC-09).
+All tool invocations in this agent's methodology use the `jerry tool exec` CLI command. The command resolves to local CLI or container execution based on `RAINBOW_TOOL_MODE` configuration. Agent methodology sections show tool commands without the CLI prefix for readability; the orchestrator prepends `jerry tool exec` at invocation time. See ADR-PROJ023-001 for the behavioral contract (BC-01 through BC-09).
 
 ## Constitutional Compliance
 

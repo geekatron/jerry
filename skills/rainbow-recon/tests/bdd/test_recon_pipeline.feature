@@ -10,7 +10,7 @@ Feature: Rainbow Recon Pipeline Agent
     And the Zone 2 allowlist is loaded from "skills/rainbow/rules/zone-2-active.md"
     And the Nuclei template allowlist is loaded from "skills/rainbow-recon/rules/nuclei-template-allowlist.yaml"
     And the JERRY_PROJECT environment variable is set
-    And a valid engagement scope document exists at "skills/rainbow/output/RBW-0001/SCOPE.md"
+    And a valid engagement scope document exists at "work/engagements/RBW-0001/SCOPE.md"
     And the engagement scope has operator_approval present
     And the engagement scope time_window includes the current time
 

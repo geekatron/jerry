@@ -425,7 +425,7 @@ These agents implement composable cybersecurity tool execution through the `/rai
 
 **Security Zones:** Zone 1 (audit, no scope needed), Zone 2 (recon, engagement scope required), Zone 3 (exploitation, scope + per-operation human approval).
 
-**Artifact Location**: `skills/rainbow/output/{engagement-id}/`
+**Artifact Location**: `work/engagements/{engagement-id}/`
 
 ---
 

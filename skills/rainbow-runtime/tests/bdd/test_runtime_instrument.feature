@@ -11,7 +11,7 @@ Feature: Rainbow Runtime Instrument Agent
     And the Zone 3 profile is loaded from "skills/rainbow/rules/zone-3-exploit.md"
     And the runtime interception protocol is loaded from "skills/rainbow-runtime/rules/runtime-interception-protocol.md"
     And the JERRY_PROJECT environment variable is set
-    And a valid engagement scope document exists at "skills/rainbow/output/RBW-0001/SCOPE.md"
+    And a valid engagement scope document exists at "work/engagements/RBW-0001/SCOPE.md"
     And the engagement scope has operator_approval present
     And the engagement scope time_window includes the current time
     And the engagement scope has escalation_authority naming a human operator

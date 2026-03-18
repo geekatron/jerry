@@ -91,7 +91,7 @@ WORKDIR /app
 
 # Version pre-check per Phase 4 design: Tier A tools SHOULD verify version
 HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
-    CMD yr --version && hayabusa --version && chainsaw --version && sigma version
+    CMD yr --version && hayabusa help >/dev/null 2>&1 && chainsaw --version && sigma version
 
 USER appuser
 

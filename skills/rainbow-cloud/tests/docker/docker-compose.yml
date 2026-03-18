@@ -16,11 +16,10 @@ services:
     working_dir: /work
     volumes:
       - cloud-output:/work/output
-      - ../../output:/rainbow-output
       - ../../../../work:/work
     # Zone 2: custom bridge network with egress control.
     # Prowler and Kubescape require outbound API access; Checkov is local-only.
-    # Target-specific ACLs applied at engagement init via rainbow-tool-exec --init-engagement.
+    # Target-specific ACLs applied at engagement init via jerry tool exec --init-engagement.
     # Full structural enforcement (iptables egress ACLs) is target-state -- Phase 6.
     networks:
       - cloud-net

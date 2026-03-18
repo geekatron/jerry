@@ -117,7 +117,7 @@ Escalate to Zone 2 when ANY of the following conditions are met:
 
 1. **HALT** current execution immediately.
 2. **Analyze** the policy to identify mutate rules and affected resources.
-3. **Check** for engagement scope document at `skills/rainbow/output/{engagement-id}/SCOPE.md`.
+3. **Check** for engagement scope document at `work/engagements/{engagement-id}/SCOPE.md`.
 4. **Validate scope:**
    - Target cluster is in `authorized_targets`.
    - Target cluster is NOT in `excluded_targets`.

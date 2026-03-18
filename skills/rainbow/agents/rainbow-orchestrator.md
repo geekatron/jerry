@@ -56,7 +56,7 @@ When you receive a request, follow this classification sequence:
    - **Zone 3 (Exploitation):** Offensive operations. Engagement scope + per-operation human approval required.
 
 3. **Validate authorization.** Before routing to Zone 2/3 agents:
-   - Check for an active engagement scope document in `skills/rainbow/output/{engagement-id}/`
+   - Check for an active engagement scope document in `work/engagements/{engagement-id}/`
    - Verify the target is within authorized scope
    - For Zone 3: present the operation to the user for explicit per-operation approval
    - For dual-zone tools: classify the specific operation mode to determine zone
@@ -108,7 +108,7 @@ Three tools require operation-mode classification before routing:
 |-------|-------------------|
 | **Scope Establishment** | Create engagement scope document (RBW-NNNN format). Define authorized targets, technique allowlist, time window, zone authorizations. Require user signature. |
 | **Tool Execution** | Route classified requests to sub-skill agents. Enforce zone gates. Track invocation history. |
-| **Evidence Collection** | Verify all agent outputs persisted to `skills/rainbow/output/{engagement-id}/`. Credential filter applied to all tool output. |
+| **Evidence Collection** | Verify all agent outputs persisted to `work/engagements/{engagement-id}/`. Credential filter applied to all tool output. |
 | **Reporting** | Route to `rainbow-reporter` for unified findings report generation from all sub-skill outputs. (future agent (post-W3); currently perform reporting directly -- see Reporting Fallback below) |
 | **Engagement Close** | Archive scope document. Apply evidence retention policy. Generate engagement summary. |
 
@@ -116,10 +116,10 @@ Three tools require operation-mode classification before routing:
 
 `rainbow-reporter` is a planned future agent (post-W3 wave). Until it is implemented, this orchestrator MUST perform reporting directly when report keywords are detected:
 
-1. Collect all sub-skill agent output artifacts from `skills/rainbow/output/{engagement-id}/`.
+1. Collect all sub-skill agent output artifacts from `work/engagements/{engagement-id}/`.
 2. Aggregate findings by severity (Critical, High, Medium, Low, Info).
 3. Produce a unified engagement report following the L0/L1/L2 structure documented in the [Report Structure](../rules/engagement-lifecycle.md#phase-4-report) section.
-4. Persist the report to `skills/rainbow/output/{engagement-id}/reports/engagement-report.md`.
+4. Persist the report to `work/engagements/{engagement-id}/reports/engagement-report.md`.
 5. Include scope compliance summary (coverage percentage, escalation events, credential filter events).
 
 ## Workflow Integration

@@ -275,7 +275,7 @@ Container stdout buffers differently than local CLI execution. Two buffering mod
 
 ### 3. Exit Code Mapping
 
-`rainbow-tool-exec` uses a defined exit code namespace. The credential filter produces exit code 4 when any L1/L2/L3 layer triggers. This is the same exit code used for filter crash (fail-closed).
+`jerry tool exec` uses a defined exit code namespace. The credential filter produces exit code 4 when any L1/L2/L3 layer triggers. This is the same exit code used for filter crash (fail-closed).
 
 | Exit Code | Meaning | Filter-Produced |
 |-----------|---------|----------------|

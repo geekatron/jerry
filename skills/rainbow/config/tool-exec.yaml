@@ -2,7 +2,7 @@
 # ADR-PROJ023-001 v1.3.0 -- Configuration Mechanism (L1: Configuration Mechanism)
 #
 # Mode selection hierarchy (highest precedence first):
-#   1. CLI flag:         rainbow-tool-exec --mode container ...
+#   1. CLI flag:         jerry tool exec --mode container ...
 #   2. Environment var:  RAINBOW_TOOL_MODE=container
 #   3. This file:        default_mode below
 #   4. Hardcoded:        local (safe default for development)

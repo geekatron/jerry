@@ -554,17 +554,13 @@ def generate_gcp_sa() -> None:
     json_type = '"type": "service_account"'
     json_project = f'"project_id": "{project}"'
     json_key_id = f'"private_key_id": "{key_id}"'
-    json_key_val = (
-        '"private_key": "' + rsa_h + "\\n" + body + "\\n" + rsa_f + '\\n"'
-    )
+    json_key_val = '"private_key": "' + rsa_h + "\\n" + body + "\\n" + rsa_f + '\\n"'
     json_email = f'"client_email": "{email}"'
     json_client_id = f'"client_id": "{client_id}"'
     json_auth_uri = '"auth_uri": "https://accounts.google.com/o/oauth2/auth"'
     json_token_uri = '"token_uri": "https://oauth2.googleapis.com/token"'
 
-    b64_hint = base64.b64encode(
-        ('"type": "service_account"').encode()
-    ).decode()
+    b64_hint = base64.b64encode(b'"type": "service_account"').decode()
 
     lines = [
         "# CANARY TEST FIXTURE -- Category 10: GCP Service Account Keys",
@@ -600,7 +596,7 @@ def generate_gcp_sa() -> None:
         f"  project = {project}",
         f"  service_account = {email}",
         f"  private_key_id = {key_id}",
-        f"  private_key =",
+        "  private_key =",
         f"    {rsa_h}",
         f"    {body}",
         f"    {rsa_f}",
@@ -650,7 +646,7 @@ def generate_azure_sp() -> None:
         "[azure-credentials]",
         f"  tenant_id = {tenant}",
         f"  client_id = {client}",
-        f"  client_secret =",
+        "  client_secret =",
         f"    {secret}",
         f"  subscription_id = {subscription}",
         "",
@@ -720,11 +716,11 @@ def generate_jwt_token() -> None:
         f"access_token = {full_jwt}",
         "",
         "# --- Test 4: JWT with HS256 alg in JSON response ---",
-        '{',
+        "{",
         f'  "token": "{full_jwt}",',
         '  "token_type": "Bearer",',
         '  "expires_in": 3600',
-        '}',
+        "}",
         "",
         "# --- Test 5: Base64-encoded full JWT (decode-and-rescan) ---",
         b64_jwt,

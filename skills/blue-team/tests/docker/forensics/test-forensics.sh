@@ -87,27 +87,27 @@ echo ""
 echo "=== Plaso / log2timeline ==="
 
 run_test "plaso Python module importable" \
-    "python -c 'import plaso; print(\"plaso_ok\")'" \
+    "python3 -c 'import plaso; print(\"plaso_ok\")'" \
     "plaso_ok"
 
 run_test "log2timeline.py command exists" \
-    "which log2timeline.py || python -c 'import plaso.cli.log2timeline_tool; print(\"log2timeline_module_ok\")'" \
+    "which log2timeline.py || python3 -c 'import plaso.cli.log2timeline_tool; print(\"log2timeline_module_ok\")'" \
     "log2timeline|log2timeline_module_ok"
 
 run_test "psort.py command exists" \
-    "which psort.py || python -c 'import plaso.cli.psort_tool; print(\"psort_module_ok\")'" \
+    "which psort.py || python3 -c 'import plaso.cli.psort_tool; print(\"psort_module_ok\")'" \
     "psort|psort_module_ok"
 
 run_test "log2timeline.py help available" \
-    "log2timeline.py --help 2>&1 | head -10 || python -m plaso.cli.log2timeline_tool --help 2>&1 | head -10" \
+    "log2timeline.py --help 2>&1 | head -10 || python3 -m plaso.cli.log2timeline_tool --help 2>&1 | head -10" \
     "[Ll]og2timeline|[Uu]sage|plaso"
 
 run_test "psort.py help available" \
-    "psort.py --help 2>&1 | head -10 || python -m plaso.cli.psort_tool --help 2>&1 | head -10" \
+    "psort.py --help 2>&1 | head -10 || python3 -m plaso.cli.psort_tool --help 2>&1 | head -10" \
     "psort|[Uu]sage|plaso"
 
 run_test "plaso parsers list accessible" \
-    "log2timeline.py --parsers list 2>&1 | head -5 || python -c 'from plaso.parsers import manager; print(len(manager.ParsersManager.GetParserNames()), \"parsers\")'" \
+    "log2timeline.py --parsers list 2>&1 | head -5 || python3 -c 'from plaso.parsers import manager; print(len(manager.ParsersManager.GetParserNames()), \"parsers\")'" \
     "[0-9]+.*parsers|[Pp]arser"
 
 # ---------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 @rainbow @tool-exec @ADR-PROJ023-001
-Feature: Rainbow Tool Executor (rainbow-tool-exec)
+Feature: Rainbow Tool Executor (jerry tool exec)
   As a security operator
   I want tool execution to resolve configurably between local and container mode
   So that I can run cybersecurity tools in isolated containers or locally based on environment
@@ -9,7 +9,7 @@ Feature: Rainbow Tool Executor (rainbow-tool-exec)
   # ---------------------------------------------------------------------------
 
   Background:
-    Given the rainbow-tool-exec wrapper is on the PATH
+    Given the jerry tool exec wrapper is on the PATH
     And the tool-exec.yaml config file is present at the auto-detected location
     And no engagement is initialized by default
 
@@ -22,7 +22,7 @@ Feature: Rainbow Tool Executor (rainbow-tool-exec)
   Scenario: BC-01 — local mode executes a known Zone 1 tool directly on the host
     Given RAINBOW_TOOL_MODE is set to "local"
     And the tool command "checkov" is present in the resolution table as Zone 1
-    When rainbow-tool-exec is called with arguments "checkov --version"
+    When jerry tool exec is called with arguments "checkov --version"
     Then the wrapper executes "checkov --version" directly on the host without docker
     And the exit code is 0
     And the credential filter is applied to the captured output
@@ -31,7 +31,7 @@ Feature: Rainbow Tool Executor (rainbow-tool-exec)
   Scenario: BC-01 — local mode executes a known Zone 2 tool directly on the host
     Given RAINBOW_TOOL_MODE is set to "local"
     And the tool command "subfinder" is present in the resolution table as Zone 2
-    When rainbow-tool-exec is called with arguments "subfinder -h"
+    When jerry tool exec is called with arguments "subfinder -h"
     Then the wrapper executes "subfinder -h" directly on the host without docker
     And the exit code is 0
 
@@ -39,7 +39,7 @@ Feature: Rainbow Tool Executor (rainbow-tool-exec)
   Scenario: BC-01 — local mode executes a known Zone 3 tool directly on the host
     Given RAINBOW_TOOL_MODE is set to "local"
     And the tool command "impacket-smbclient" is present in the resolution table as Zone 3
-    When rainbow-tool-exec is called with arguments "impacket-smbclient --help"
+    When jerry tool exec is called with arguments "impacket-smbclient --help"
     Then the wrapper executes "impacket-smbclient --help" directly on the host without docker
     And no docker compose exec is invoked
 
@@ -54,7 +54,7 @@ Feature: Rainbow Tool Executor (rainbow-tool-exec)
     And the tool command "impacket-smbclient" is present in the resolution table with service "exploit-ops"
     And the compose file for "rainbow-exploit" is discoverable
     And the container service "exploit-ops" is running
-    When rainbow-tool-exec is called with arguments "impacket-smbclient --help"
+    When jerry tool exec is called with arguments "impacket-smbclient --help"
     Then the wrapper invokes "docker compose exec -T exploit-ops impacket-smbclient --help"
     And the exit code is 0
     And the credential filter is applied to the captured output
@@ -65,7 +65,7 @@ Feature: Rainbow Tool Executor (rainbow-tool-exec)
     And the tool command "subfinder" is present in the resolution table with service "recon-pipeline"
     And the compose file for "rainbow-recon" is discoverable
     And the container service "recon-pipeline" is running
-    When rainbow-tool-exec is called with arguments "subfinder -h"
+    When jerry tool exec is called with arguments "subfinder -h"
     Then the wrapper invokes "docker compose exec -T recon-pipeline subfinder -h"
     And the -T flag is present in the docker compose exec invocation
     And the exit code is 0
@@ -76,7 +76,7 @@ Feature: Rainbow Tool Executor (rainbow-tool-exec)
     And the tool command "syft" is present in the resolution table with service "scanner"
     And the compose file for "rainbow-supply-chain" is discoverable
     And the container service "scanner" is running
-    When rainbow-tool-exec is called with arguments "syft --version"
+    When jerry tool exec is called with arguments "syft --version"
     Then the wrapper invokes "docker compose exec -T scanner syft --version"
     And the exit code is 0
 
@@ -90,7 +90,7 @@ Feature: Rainbow Tool Executor (rainbow-tool-exec)
     Given RAINBOW_TOOL_MODE is unset
     And RAINBOW_STRICT_MODE is set to "true"
     And the tool command "impacket-smbclient" is present in the resolution table as Zone 3
-    When rainbow-tool-exec is called with arguments "impacket-smbclient --help"
+    When jerry tool exec is called with arguments "impacket-smbclient --help"
     Then the wrapper exits with code 6
     And an error message is emitted containing "RAINBOW_TOOL_MODE is not set"
     And an error message is emitted containing "Zone 2/3"
@@ -101,7 +101,7 @@ Feature: Rainbow Tool Executor (rainbow-tool-exec)
     Given RAINBOW_TOOL_MODE is unset
     And RAINBOW_STRICT_MODE is set to "true"
     And the tool command "subfinder" is present in the resolution table as Zone 2
-    When rainbow-tool-exec is called with arguments "subfinder -h"
+    When jerry tool exec is called with arguments "subfinder -h"
     Then the wrapper exits with code 6
     And an error message is emitted containing "RAINBOW_TOOL_MODE is not set"
 
@@ -111,7 +111,7 @@ Feature: Rainbow Tool Executor (rainbow-tool-exec)
     And RAINBOW_STRICT_MODE is unset
     And the config file specifies "strict_mode: true"
     And the tool command "nuclei" is present in the resolution table as Zone 2
-    When rainbow-tool-exec is called with arguments "nuclei -version"
+    When jerry tool exec is called with arguments "nuclei -version"
     Then the wrapper exits with code 6
 
   # ---------------------------------------------------------------------------
@@ -124,7 +124,7 @@ Feature: Rainbow Tool Executor (rainbow-tool-exec)
     Given RAINBOW_TOOL_MODE is unset
     And RAINBOW_STRICT_MODE is set to "true"
     And the tool command "checkov" is present in the resolution table as Zone 1
-    When rainbow-tool-exec is called with arguments "checkov --version"
+    When jerry tool exec is called with arguments "checkov --version"
     Then the wrapper executes "checkov --version" directly on the host without docker
     And the exit code is 0
     And no error about RAINBOW_TOOL_MODE is emitted
@@ -133,7 +133,7 @@ Feature: Rainbow Tool Executor (rainbow-tool-exec)
   Scenario: BC-04 — Zone 1 tool "trivy" falls back to local safely
     Given RAINBOW_TOOL_MODE is unset
     And the tool command "trivy" is present in the resolution table as Zone 1
-    When rainbow-tool-exec is called with arguments "trivy --version"
+    When jerry tool exec is called with arguments "trivy --version"
     Then the wrapper executes "trivy --version" directly on the host without docker
     And the exit code is 0
 
@@ -146,7 +146,7 @@ Feature: Rainbow Tool Executor (rainbow-tool-exec)
   Scenario: BC-05 — completely unknown tool prefix returns exit code 1
     Given RAINBOW_TOOL_MODE is set to "local"
     And the tool command "notarealtool" is NOT present in the resolution table
-    When rainbow-tool-exec is called with arguments "notarealtool --help"
+    When jerry tool exec is called with arguments "notarealtool --help"
     Then the wrapper exits with code 1
     And an error message is emitted containing "Unknown tool prefix"
     And no tool command is executed on the host or in a container
@@ -156,14 +156,14 @@ Feature: Rainbow Tool Executor (rainbow-tool-exec)
     Given RAINBOW_TOOL_MODE is set to "local"
     And the tool command "impacket" is NOT a complete entry in the resolution table
     And the resolution table contains "impacket-*" as a wildcard entry
-    When rainbow-tool-exec is called with arguments "impacket --help"
+    When jerry tool exec is called with arguments "impacket --help"
     Then the wrapper exits with code 1
     And an error message is emitted containing "Unknown tool prefix"
 
   @BC-05 @unknown-tool
   Scenario: BC-05 — empty tool prefix returns exit code 1
     Given RAINBOW_TOOL_MODE is set to "local"
-    When rainbow-tool-exec is called with no tool arguments
+    When jerry tool exec is called with no tool arguments
     Then the wrapper exits with a non-zero code
     And a usage or error message is emitted
 
@@ -178,7 +178,7 @@ Feature: Rainbow Tool Executor (rainbow-tool-exec)
     And the tool command "impacket-smbclient" is present in the resolution table with service "exploit-ops"
     And the compose file for "rainbow-exploit" exists on disk
     And the container service "exploit-ops" is NOT running
-    When rainbow-tool-exec is called with arguments "impacket-smbclient --help"
+    When jerry tool exec is called with arguments "impacket-smbclient --help"
     Then the wrapper attempts "docker compose up -d exploit-ops"
     And if auto-start succeeds the tool executes and exits with code 0
     And if auto-start fails the wrapper exits with code 3
@@ -190,7 +190,7 @@ Feature: Rainbow Tool Executor (rainbow-tool-exec)
     And the compose file for "rainbow-recon" exists on disk
     And the container service "recon-pipeline" is NOT running
     And docker compose up -d returns a non-zero exit code
-    When rainbow-tool-exec is called with arguments "subfinder -h"
+    When jerry tool exec is called with arguments "subfinder -h"
     Then the wrapper exits with code 3
     And an error message is emitted containing "not running"
     And an error message is emitted containing "docker compose"
@@ -206,7 +206,7 @@ Feature: Rainbow Tool Executor (rainbow-tool-exec)
     Given RAINBOW_TOOL_MODE is set to "local"
     And the tool command "checkov" is present in the resolution table as Zone 1
     And the tool output contains a line matching the AWS access key pattern "AKIA[A-Z0-9]{16}"
-    When rainbow-tool-exec is called with arguments "checkov --version"
+    When jerry tool exec is called with arguments "checkov --version"
     Then the wrapper exits with code 4
     And the raw output is written to the quarantine directory
     And a metadata JSON file is written alongside the quarantine file
@@ -219,7 +219,7 @@ Feature: Rainbow Tool Executor (rainbow-tool-exec)
     Given RAINBOW_TOOL_MODE is set to "local"
     And the tool command "trivy" is present in the resolution table as Zone 1
     And the tool output contains a line matching the API token pattern "api_key: [A-Za-z0-9_-]{20,}"
-    When rainbow-tool-exec is called with arguments "trivy --version"
+    When jerry tool exec is called with arguments "trivy --version"
     Then the wrapper exits with code 4
     And a quarantine file exists in the quarantine directory
     And the agent-facing output contains the text "[CREDENTIAL-FILTER]"
@@ -229,7 +229,7 @@ Feature: Rainbow Tool Executor (rainbow-tool-exec)
     Given RAINBOW_TOOL_MODE is set to "local"
     And the tool command "checkov" is present in the resolution table as Zone 1
     And the tool output contains no credential pattern
-    When rainbow-tool-exec is called with arguments "checkov --version"
+    When jerry tool exec is called with arguments "checkov --version"
     Then the wrapper exits with code 0
     And no quarantine file is created
     And the full tool output is returned to the caller
@@ -239,7 +239,7 @@ Feature: Rainbow Tool Executor (rainbow-tool-exec)
     Given RAINBOW_TOOL_MODE is set to "local"
     And RAINBOW_STRICT_MODE is set to "true"
     And the tool command "checkov" is present in the resolution table as Zone 1
-    When rainbow-tool-exec is called with "--no-filter checkov --version"
+    When jerry tool exec is called with "--no-filter checkov --version"
     Then the wrapper exits with a non-zero code
     And an error message is emitted containing "--no-filter is FORBIDDEN"
     And the tool is NOT executed
@@ -254,7 +254,7 @@ Feature: Rainbow Tool Executor (rainbow-tool-exec)
     Given RAINBOW_TOOL_MODE is set to "local"
     And the tool command "checkov" is present in the resolution table as Zone 1
     And no engagement directory exists for engagement ID "ENG-TEST-001"
-    When rainbow-tool-exec is called with "--engagement ENG-TEST-001 checkov --version"
+    When jerry tool exec is called with "--engagement ENG-TEST-001 checkov --version"
     Then the wrapper exits with code 5
     And an error message is emitted containing "not initialized"
     And an error message is emitted containing "ENG-TEST-001"
@@ -265,7 +265,7 @@ Feature: Rainbow Tool Executor (rainbow-tool-exec)
     Given RAINBOW_TOOL_MODE is set to "local"
     And the tool command "checkov" is present in the resolution table as Zone 1
     And engagement "ENG-TEST-002" has been initialized via --init-engagement
-    When rainbow-tool-exec is called with "--engagement ENG-TEST-002 checkov --version"
+    When jerry tool exec is called with "--engagement ENG-TEST-002 checkov --version"
     Then the wrapper exits with code 0
     And an evidence file is written under the engagement evidence directory
     And a metadata JSON file accompanies the evidence file containing "sha256_raw"
@@ -273,7 +273,7 @@ Feature: Rainbow Tool Executor (rainbow-tool-exec)
   @BC-08 @engagement @init
   Scenario: BC-08 — --init-engagement creates the required directory structure
     Given no engagement directory exists for engagement ID "ENG-INIT-001"
-    When rainbow-tool-exec is called with "--init-engagement ENG-INIT-001"
+    When jerry tool exec is called with "--init-engagement ENG-INIT-001"
     Then the wrapper exits with code 0
     And a directory "work/engagements/ENG-INIT-001/evidence" is created
     And a directory "work/engagements/ENG-INIT-001/reports" is created
@@ -294,7 +294,7 @@ Feature: Rainbow Tool Executor (rainbow-tool-exec)
     And the tool command "impacket-smbclient" is present in the resolution table as Zone 3
     And the container service "exploit-ops" is running with network_mode none
     And per-operation P-020 human approval has been granted
-    When rainbow-tool-exec is called with arguments "impacket-smbclient //10.0.0.1/ADMIN$ -k"
+    When jerry tool exec is called with arguments "impacket-smbclient //10.0.0.1/ADMIN$ -k"
     Then the wrapper grants a temporary network connection to the container before tool execution
     And the tool executes via docker compose exec within the granted network context
     And the wrapper revokes the network connection unconditionally after tool completion
@@ -306,7 +306,7 @@ Feature: Rainbow Tool Executor (rainbow-tool-exec)
     And the tool command "msfconsole" is present in the resolution table as Zone 3
     And the container service "exploit-msf" is running with network_mode none
     And per-operation P-020 human approval has been granted
-    When rainbow-tool-exec is called with arguments "msfconsole -x exit"
+    When jerry tool exec is called with arguments "msfconsole -x exit"
     And the tool exits with a non-zero exit code
     Then the wrapper revokes the network connection unconditionally
     And the exit code surfaced to the caller reflects the tool failure, not the revocation
@@ -321,7 +321,7 @@ Feature: Rainbow Tool Executor (rainbow-tool-exec)
     Given RAINBOW_TOOL_MODE is set to "container"
     And the tool command "checkov" is present in the resolution table as Zone 1
     And the container service "cloud-auditor" is running
-    When rainbow-tool-exec is called with "--mode local checkov --version"
+    When jerry tool exec is called with "--mode local checkov --version"
     Then the wrapper executes "checkov --version" directly on the host without docker
     And the exit code is 0
 
@@ -331,7 +331,7 @@ Feature: Rainbow Tool Executor (rainbow-tool-exec)
     And the config file specifies "default_mode: local"
     And the tool command "syft" is present in the resolution table as Zone 1
     And the container service "scanner" is running
-    When rainbow-tool-exec is called with arguments "syft --version"
+    When jerry tool exec is called with arguments "syft --version"
     Then the effective mode is "container" (environment variable wins over config file)
     And the wrapper invokes "docker compose exec -T scanner syft --version"
 
@@ -341,7 +341,7 @@ Feature: Rainbow Tool Executor (rainbow-tool-exec)
     And the config file specifies "default_mode: container"
     And the tool command "trivy" is present in the resolution table as Zone 1
     And the container service "compliance" is running
-    When rainbow-tool-exec is called with arguments "trivy --version"
+    When jerry tool exec is called with arguments "trivy --version"
     Then the effective mode is "container" (config file wins over hardcoded default of local)
     And the wrapper invokes a docker compose exec command
 
@@ -350,7 +350,7 @@ Feature: Rainbow Tool Executor (rainbow-tool-exec)
     Given RAINBOW_TOOL_MODE is unset
     And no config file is present
     And the tool command "checkov" is present in the resolution table as Zone 1
-    When rainbow-tool-exec is called with arguments "checkov --version"
+    When jerry tool exec is called with arguments "checkov --version"
     Then the effective mode is "local" (hardcoded safe default)
     And the wrapper executes "checkov --version" directly on the host without docker
 
@@ -364,7 +364,7 @@ Feature: Rainbow Tool Executor (rainbow-tool-exec)
     Given RAINBOW_TOOL_MODE is set to "local"
     And RAINBOW_STRICT_MODE is set to "true"
     And the tool command "trivy" is present in the resolution table as Zone 1
-    When rainbow-tool-exec is called with "--no-filter trivy --version"
+    When jerry tool exec is called with "--no-filter trivy --version"
     Then the wrapper exits with a non-zero code
     And an error message is emitted containing "FORBIDDEN"
     And the tool is NOT executed
@@ -374,7 +374,7 @@ Feature: Rainbow Tool Executor (rainbow-tool-exec)
     Given RAINBOW_TOOL_MODE is set to "local"
     And RAINBOW_STRICT_MODE is set to "false"
     And the tool command "checkov" is present in the resolution table as Zone 1
-    When rainbow-tool-exec is called with "--no-filter checkov --version"
+    When jerry tool exec is called with "--no-filter checkov --version"
     Then the wrapper executes "checkov --version" without applying the credential filter
     And the exit code is 0
 
@@ -387,7 +387,7 @@ Feature: Rainbow Tool Executor (rainbow-tool-exec)
   Scenario: Resolution uses longest-prefix match for wildcard tool families
     Given RAINBOW_TOOL_MODE is set to "local"
     And the resolution table contains "impacket-*" mapped to service "exploit-ops"
-    When rainbow-tool-exec is called with arguments "impacket-GetADUsers --help"
+    When jerry tool exec is called with arguments "impacket-GetADUsers --help"
     Then the tool is resolved via the "impacket-*" wildcard entry
     And the resolved service is "exploit-ops"
     And the exit code is not 1
@@ -396,7 +396,7 @@ Feature: Rainbow Tool Executor (rainbow-tool-exec)
   Scenario Outline: Resolution correctly maps each tool family to its container service
     Given RAINBOW_TOOL_MODE is set to "local"
     And the tool command "<tool_prefix>" is present in the resolution table
-    When rainbow-tool-exec is called with arguments "<tool_prefix> --version"
+    When jerry tool exec is called with arguments "<tool_prefix> --version"
     Then the resolved sub_skill is "<sub_skill>"
     And the resolved security zone is "<zone>"
 
@@ -427,7 +427,7 @@ Feature: Rainbow Tool Executor (rainbow-tool-exec)
   Scenario: --health-check reports running services without executing any tool
     Given RAINBOW_TOOL_MODE is set to "container"
     And at least one container service is running
-    When rainbow-tool-exec is called with "--health-check"
+    When jerry tool exec is called with "--health-check"
     Then no tool command is executed
     And the output contains service status for each entry in the resolution table
     And the exit code is 0 when all services are running
@@ -436,6 +436,6 @@ Feature: Rainbow Tool Executor (rainbow-tool-exec)
   Scenario: --health-check exits non-zero when one or more services are down
     Given RAINBOW_TOOL_MODE is set to "container"
     And at least one container service is NOT running
-    When rainbow-tool-exec is called with "--health-check"
+    When jerry tool exec is called with "--health-check"
     Then the exit code is non-zero
     And a [DOWN] status line is emitted for the stopped service

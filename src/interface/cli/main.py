@@ -125,6 +125,8 @@ def main() -> int:
         return _handle_ci(args, json_output)
     elif args.namespace == "hooks":
         return _handle_hooks(adapter, args)
+    elif args.namespace == "tool":
+        return _handle_tool(args)
 
     # Unknown namespace (shouldn't happen with argparse)
     parser.print_help()
@@ -747,6 +749,34 @@ def _handle_why() -> int:
         "That's why."
     )
     return 0
+
+
+def _handle_tool(args: Any) -> int:
+    """Route tool namespace commands.
+
+    Does not require the CLIAdapter; uses the tool_exec bounded context
+    with its own bootstrap wiring.
+
+    Args:
+        args: Parsed arguments with .command.
+
+    Returns:
+        Exit code.
+
+    References:
+        - STORY-W12-001: Jerry tool exec CLI command
+    """
+    if args.command is None:
+        print("No tool command specified. Use 'jerry tool --help'.")
+        return 1
+
+    if args.command == "exec":
+        from src.interface.cli.tool_exec_commands import handle_tool_exec
+
+        return handle_tool_exec(args)
+
+    print(f"Unknown tool command: {args.command}")
+    return 1
 
 
 def _handle_hooks(adapter: CLIAdapter, args: Any) -> int:

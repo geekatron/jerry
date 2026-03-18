@@ -9,9 +9,9 @@ PASS=0
 FAIL=0
 SKIP=0
 
-log_pass() { echo "[PASS] $1"; ((PASS++)); }
-log_fail() { echo "[FAIL] $1"; ((FAIL++)); }
-log_skip() { echo "[SKIP] $1"; ((SKIP++)); }
+log_pass() { echo "[PASS] $1"; PASS=$((PASS + 1)); }
+log_fail() { echo "[FAIL] $1"; FAIL=$((FAIL + 1)); }
+log_skip() { echo "[SKIP] $1"; SKIP=$((SKIP + 1)); }
 
 echo "========================================"
 echo "Blue Team Compliance Container Test Suite"

@@ -117,6 +117,9 @@ Examples:
     # Hooks namespace (EN-006: Context monitoring hook events)
     _add_hooks_namespace(subparsers)
 
+    # Tool namespace (STORY-W12-001: jerry tool exec CLI)
+    _add_tool_namespace(subparsers)
+
     return parser
 
 
@@ -974,4 +977,108 @@ def _add_hooks_namespace(
     hooks_subparsers.add_parser(
         "subagent-stop",
         help="Handle SubagentStop hook event (lifecycle tracking)",
+    )
+
+
+def _add_tool_namespace(
+    subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
+) -> None:
+    """Add tool namespace commands.
+
+    Commands:
+        - exec: Execute a security tool with credential filtering and evidence persistence
+
+    References:
+        - STORY-W12-001: Jerry tool exec CLI command
+        - ADR-PROJ023-001: Rainbow Tool Executor Behavioral Contract
+    """
+    tool_parser = subparsers.add_parser(
+        "tool",
+        help="Security tool execution commands",
+        description="Execute security tools with credential filtering, "
+        "evidence persistence, and engagement management.",
+    )
+
+    tool_subparsers = tool_parser.add_subparsers(
+        title="commands",
+        dest="command",
+        metavar="<command>",
+    )
+
+    # tool exec
+    exec_parser = tool_subparsers.add_parser(
+        "exec",
+        help="Execute a security tool",
+        description="Execute a security tool with multi-family resolution, "
+        "credential filtering, and evidence persistence.",
+    )
+
+    exec_parser.add_argument(
+        "tool_command",
+        help="Tool command to execute (e.g., 'nuclei', 'trivy', 'impacket-GetNPUsers')",
+    )
+
+    exec_parser.add_argument(
+        "tool_args",
+        nargs="*",
+        default=[],
+        help="Arguments to pass to the tool",
+    )
+
+    exec_parser.add_argument(
+        "--mode",
+        choices=["local", "container"],
+        default=None,
+        help="Execution mode override (default: from config hierarchy)",
+    )
+
+    exec_parser.add_argument(
+        "--family",
+        default=None,
+        help="Explicit tool family to use (default: auto-detect via can_resolve())",
+    )
+
+    exec_parser.add_argument(
+        "--engagement-id",
+        dest="engagement_id",
+        default=None,
+        help="Engagement ID for evidence persistence (required for Zone 2/3 tools)",
+    )
+
+    exec_parser.add_argument(
+        "--evidence-dir",
+        dest="evidence_dir",
+        default=None,
+        help="Override evidence output directory",
+    )
+
+    exec_parser.add_argument(
+        "--init-engagement",
+        dest="init_engagement",
+        default=None,
+        metavar="ID",
+        help="Initialize a new engagement directory and exit",
+    )
+
+    exec_parser.add_argument(
+        "--zone",
+        choices=["1", "2", "3"],
+        default=None,
+        help="Security zone override (default: from tool resolution table)",
+    )
+
+    exec_parser.add_argument(
+        "--no-filter",
+        dest="no_filter",
+        action="store_true",
+        default=False,
+        help="Skip credential filter (FORBIDDEN when strict_mode=true)",
+    )
+
+    exec_parser.add_argument(
+        "--health-check",
+        dest="health_check",
+        action="store_true",
+        default=False,
+        help="Verify container service is running (no tool execution)",
     )
