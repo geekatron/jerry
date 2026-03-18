@@ -171,8 +171,23 @@ class RainbowToolResolver(ToolFamilyResolverPort):
             family_zone_label=f"Zone {zone_num}",
         )
 
+    # FM-034: Required keys for each tool_resolution entry.
+    # Missing 'zone' silently defaulted to Zone 1 in _find_entry(), allowing
+    # a misconfigured Zone 3 tool to bypass the approval gate. Validation at
+    # load time ensures the operator sees a clear error before any execution.
+    _REQUIRED_ENTRY_KEYS: tuple[str, ...] = ("prefix", "zone", "service")
+    # FM-034: Allowed zone values for per-entry validation.
+    _VALID_ZONE_VALUES: frozenset[str] = frozenset({"1", "2", "3"})
+
     def load_config(self, config_path: str) -> dict[str, Any]:
         """Load and parse the rainbow tool-exec.yaml configuration.
+
+        FM-034: After parsing the top-level structure, each tool_resolution entry
+        is validated to have all required keys and a recognised zone value. A
+        missing or unknown 'zone' would previously cause _find_entry() to silently
+        default to Zone 1, potentially downgrading a Zone 3 exploitation tool
+        and bypassing the per-operation approval gate. Validation at load time
+        converts silent misconfiguration into an explicit operator error.
 
         Args:
             config_path: Path to the YAML configuration file.
@@ -182,7 +197,8 @@ class RainbowToolResolver(ToolFamilyResolverPort):
 
         Raises:
             FileNotFoundError: If the configuration file does not exist.
-            ValueError: If the YAML is malformed or missing required keys.
+            ValueError: If the YAML is malformed, missing required entry keys,
+                or contains an unrecognised zone value.
         """
         path = Path(config_path)
         if not path.exists():
@@ -195,6 +211,37 @@ class RainbowToolResolver(ToolFamilyResolverPort):
         if not isinstance(config, dict):
             msg = f"Rainbow config must be a YAML mapping, got: {type(config).__name__}"
             raise ValueError(msg)
+
+        # FM-034: Per-entry schema validation for tool_resolution entries.
+        # Reject configurations with missing required keys or unrecognised zone
+        # values rather than silently accepting them with unsafe defaults.
+        entries = config.get("tool_resolution", [])
+        if isinstance(entries, list):
+            for idx, entry in enumerate(entries):
+                if not isinstance(entry, dict):
+                    msg = (
+                        f"tool_resolution entry at index {idx} must be a mapping, "
+                        f"got: {type(entry).__name__}"
+                    )
+                    raise ValueError(msg)
+                for required_key in self._REQUIRED_ENTRY_KEYS:
+                    if required_key not in entry:
+                        prefix_hint = entry.get("prefix", f"<entry #{idx}>")
+                        msg = (
+                            f"tool_resolution entry '{prefix_hint}' (index {idx}) "
+                            f"is missing required key: '{required_key}'. "
+                            f"Required keys: {', '.join(self._REQUIRED_ENTRY_KEYS)}."
+                        )
+                        raise ValueError(msg)
+                zone_val = str(entry.get("zone", ""))
+                if zone_val not in self._VALID_ZONE_VALUES:
+                    prefix_hint = entry.get("prefix", f"<entry #{idx}>")
+                    msg = (
+                        f"tool_resolution entry '{prefix_hint}' (index {idx}) "
+                        f"has unrecognised zone value '{zone_val}'. "
+                        f"Allowed zone values: {', '.join(sorted(self._VALID_ZONE_VALUES))}."
+                    )
+                    raise ValueError(msg)
 
         return config
 

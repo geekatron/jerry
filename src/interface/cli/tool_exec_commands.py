@@ -28,6 +28,7 @@ import dataclasses
 import json
 import logging
 import os
+import shutil
 import sys
 from datetime import UTC, datetime
 from pathlib import Path
@@ -99,6 +100,10 @@ def create_tool_exec_handler(project_root: Path) -> dict[str, Any]:
               when family-specific patterns are present -- see DA-R4-001)
             - 'local_executor': LocalExecutor (with base credential_filter)
             - 'container_executor': ContainerExecutor (with base credential_filter)
+            - 'evidence_hasher': EvidenceHasher (SR-001/SR-002: single instance
+              injected into _persist_evidence and _quarantine_output; removes
+              inline construction in those helpers and completes the CC-004
+              composition-root pattern applied to executors)
 
         DA-R3-002: 'mode_resolver' is intentionally absent. handle_tool_exec
         constructs its own ModeResolverService with a family-specific
@@ -116,6 +121,12 @@ def create_tool_exec_handler(project_root: Path) -> dict[str, Any]:
             credential_filter=credential_filter,
             project_root=str(project_root),
         ),
+        # SR-001/SR-002: EvidenceHasher instantiated here (composition root),
+        # NOT inline in _persist_evidence() or _quarantine_output(). Inline
+        # construction violated H-07(c) (composition root exclusivity) — the
+        # same pattern that CC-004-20260318 fixed for executors. The single
+        # factory instance is injected into both evidence helpers.
+        "evidence_hasher": EvidenceHasher(),
         # DA-R3-002: mode_resolver removed from factory. handle_tool_exec
         # constructs its own ModeResolverService with a family-specific
         # env_var_prefix after resolution (FIX-12/IN-009). Keeping a default
@@ -258,6 +269,8 @@ def handle_tool_exec(args: Any) -> int:
     credential_filter: CredentialFilterService = services["credential_filter"]
     local_executor: LocalExecutor = services["local_executor"]
     container_executor: ContainerExecutor = services["container_executor"]
+    # SR-001/SR-002: EvidenceHasher from composition root (CC-004 pattern).
+    evidence_hasher: EvidenceHasher = services["evidence_hasher"]
 
     # FIX-4 (RT-001): Strict-mode bypass via empty env var closed.
     # Only explicitly "false", "0", or "no" disables strict mode.
@@ -451,10 +464,17 @@ def handle_tool_exec(args: Any) -> int:
     # This gate runs after mode resolution so we have both zone and mode information.
     _zone_label = getattr(resolution, "zone", "") or ""
     _requires_explicit_mode = _zone_label in ("Zone 2", "Zone 3")
+    # RT-002-R4: Check value validity, not mere presence. An invalid value
+    # (e.g., JERRY_TOOL_MODE="garbage") satisfies `is not None` but later
+    # fails in ModeResolverService._validate() with a generic ValueError,
+    # creating a window where the security gate is passed with a non-functional
+    # value. Consistent semantics: the gate accepts a value only when it is in
+    # the valid set. Empty strings and non-mode strings are treated as absent.
+    _global_jerry_mode = os.environ.get("JERRY_TOOL_MODE")
     _explicit_mode_provided = (
         cli_mode is not None
-        or os.environ.get(mode_resolver.env_var_name) is not None
-        or os.environ.get("JERRY_TOOL_MODE") is not None
+        or os.environ.get(mode_resolver.env_var_name) in ModeResolverService.VALID_MODES
+        or _global_jerry_mode in ModeResolverService.VALID_MODES
     )
     if strict and _requires_explicit_mode and not _explicit_mode_provided:
         print(
@@ -562,6 +582,7 @@ def handle_tool_exec(args: Any) -> int:
             engagement_init=engagement_init,
             project_root=project_root,
             match_info=result.get("match_info"),
+            evidence_hasher=evidence_hasher,
         )
 
     # Persist evidence if engagement is active, no credential was detected,
@@ -579,6 +600,7 @@ def handle_tool_exec(args: Any) -> int:
                 engagement_init=engagement_init,
                 evidence_dir_override=evidence_dir_override,
                 project_root=project_root,
+                evidence_hasher=evidence_hasher,
             )
         except ValueError as e:
             print(f"Error: {e}", file=sys.stderr)
@@ -729,16 +751,39 @@ def _handle_health_check(
     inline. Inline construction violated H-07(c) (composition root exclusivity)
     and bypassed the factory's credential_filter wiring.
 
+    CV-014: For local tools (no container_service), check whether the binary
+    exists on PATH via shutil.which(). Returns exit 0 with a status message
+    in both the found and not-found cases -- health checks are informational.
+
+    CV-015: When the container service is not running, return exit 0 (success).
+    UC-006 Extension 2a specifies that a not-running state is informational, not
+    an error. Returning CONTAINER_NOT_RUNNING (exit 3) breaks operator scripts
+    that poll container status and expect error signals only for unexpected
+    failures, not for a valid "service stopped" state.
+
     Args:
         resolution: ToolResolutionEntry with container service info.
         container_executor: Factory-built ContainerExecutor from composition root.
         project_root: Project root used to build the absolute compose file path.
 
     Returns:
-        Exit code.
+        Exit code (always ExitCode.SUCCESS for informational health checks).
     """
+    # CV-014: Local tool health check -- no container service configured.
+    # Use shutil.which() to verify the binary is on PATH before reporting healthy.
     if not resolution.container_service or not resolution.compose_file:
-        print("No container service configured for this tool.")
+        tool_command = getattr(resolution, "tool_name", None) or getattr(
+            resolution, "binary_path", None
+        )
+        if tool_command:
+            binary = Path(tool_command).name  # strip any path prefix for which()
+            found_path = shutil.which(binary)
+            if found_path:
+                print(f"Local tool '{binary}' found at: {found_path}")
+            else:
+                print(f"Local tool '{binary}' NOT found on PATH.")
+        else:
+            print("No container service configured for this tool.")
         return ExitCode.SUCCESS
 
     compose_path = str(project_root / resolution.compose_file)
@@ -749,13 +794,13 @@ def _handle_health_check(
 
     if healthy:
         print(f"Service '{resolution.container_service}' is running.")
-        return ExitCode.SUCCESS
     else:
-        print(
-            f"Service '{resolution.container_service}' is NOT running.",
-            file=sys.stderr,
-        )
-        return ExitCode.CONTAINER_NOT_RUNNING
+        # CV-015: NOT running is informational (UC-006 Extension 2a).
+        # Return exit 0 so that scripted health monitors do not branch on a
+        # valid stopped state. The message is printed to stdout (not stderr)
+        # because this is status output, not an error.
+        print(f"Service '{resolution.container_service}' is NOT running.")
+    return ExitCode.SUCCESS
 
 
 # ---------------------------------------------------------------------------
@@ -905,22 +950,67 @@ def _write_approval_audit(
             audit_dir = engagement_init.global_audit_dir()
 
         audit_dir.mkdir(parents=True, exist_ok=True)
+        # RT-001-R4: Verify audit_dir itself is not a symlink before chmod.
+        # A symlink substitution attack could redirect the mkdir to a different
+        # location and chmod that target instead of the engagement directory.
+        resolved_audit = audit_dir.resolve()
+        if resolved_audit != audit_dir:
+            # Symlink in the audit directory path -- abort to prevent redirected writes.
+            logger.warning(
+                "[SECURITY] Audit directory path contains a symlink: %s -> %s. "
+                "Aborting audit write to prevent tamper-redirect.",
+                audit_dir,
+                resolved_audit,
+            )
+            return False
         os.chmod(str(audit_dir), 0o700)
 
-        ts = datetime.now(tz=UTC).strftime("%Y%m%dT%H%M%SZ")
+        # RT-001-R4: Use microsecond precision to reduce same-second collision
+        # probability. O_CREAT|O_EXCL via open() provides atomic exclusive
+        # creation: if two writes collide at the same microsecond, append -N suffix.
+        dt_now = datetime.now(tz=UTC)
+        ts = dt_now.strftime("%Y%m%dT%H%M%S") + f"{dt_now.microsecond:06d}Z"
         label = engagement_id or "no-engagement"
-        audit_file = audit_dir / f"zone3-approval-{label}-{ts}.json"
+        base_name = f"zone3-approval-{label}-{ts}"
+        audit_file = audit_dir / f"{base_name}.json"
 
         event: dict[str, Any] = {
-            "timestamp": ts,
+            "timestamp": dt_now.isoformat(),
             "engagement_id": engagement_id,
             "tool_command": tool_command,
             "zone": zone,
             "approved": approved,
             "reason": reason,
         }
-        audit_file.write_text(json.dumps(event, indent=2) + "\n", encoding="utf-8")
-        os.chmod(str(audit_file), 0o600)
+        content = json.dumps(event, indent=2) + "\n"
+
+        # Atomic exclusive create: O_CREAT|O_EXCL prevents overwriting an
+        # existing file. On same-microsecond collision (extremely rare), append
+        # -N counter suffix until a free slot is found (max 16 attempts).
+        written = False
+        for attempt in range(16):
+            candidate = (
+                audit_dir / f"{base_name}.json"
+                if attempt == 0
+                else audit_dir / f"{base_name}-{attempt}.json"
+            )
+            try:
+                fd = os.open(str(candidate), os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+                try:
+                    os.write(fd, content.encode("utf-8"))
+                finally:
+                    os.close(fd)
+                audit_file = candidate
+                written = True
+                break
+            except FileExistsError:
+                continue
+        if not written:
+            logger.error(
+                "[SECURITY] Could not create exclusive audit file after 16 attempts: %s",
+                base_name,
+            )
+            return False
 
         logger.info(
             "[SECURITY] Zone 3 approval audit written: %s (approved=%s)",
@@ -1145,8 +1235,15 @@ def _persist_evidence(
     engagement_init: EngagementInitializer,
     evidence_dir_override: str | None = None,
     project_root: Path | None = None,
+    evidence_hasher: EvidenceHasher | None = None,
 ) -> None:
     """Persist tool execution evidence with integrity hash.
+
+    SR-001/SR-002: Accepts an EvidenceHasher instance from the composition root
+    factory (create_tool_exec_handler). When None, falls back to constructing
+    inline for backward-compatibility with direct callers (e.g., tests that call
+    this function without going through handle_tool_exec). Production paths
+    always supply the factory-built instance.
 
     Args:
         raw_output: Original tool output.
@@ -1161,11 +1258,15 @@ def _persist_evidence(
         project_root: Project root path used as the containment boundary for
             evidence_dir_override validation. Required when evidence_dir_override
             is provided; defaults to cwd if not supplied.
+        evidence_hasher: EvidenceHasher from composition root. When None, an
+            inline instance is constructed (backward-compat only).
 
     Raises:
         ValueError: If evidence_dir_override resolves outside project_root.
     """
-    hasher = EvidenceHasher()
+    # SR-001: Use injected hasher; only construct inline when not provided
+    # (backward-compat for direct callers outside the normal pipeline).
+    hasher = evidence_hasher if evidence_hasher is not None else EvidenceHasher()
 
     if evidence_dir_override:
         # FINDING-001 (CWE-22, High): Canonicalize and enforce project-root
@@ -1202,6 +1303,7 @@ def _quarantine_output(
     engagement_init: EngagementInitializer,
     project_root: Path,
     match_info: dict[str, Any] | None = None,
+    evidence_hasher: EvidenceHasher | None = None,
 ) -> None:
     """Quarantine output that triggered the credential filter.
 
@@ -1226,6 +1328,16 @@ def _quarantine_output(
     FIX-8 (RT-003/SR-003): os.chmod(file, 0o600) after each file write.
     NIST CSF PR.DS-1 (data-at-rest protection).
 
+    PM-001-R4: When two invocations produce the same raw output, the SHA-256
+    compound hash produces the same meta filename stem, and a naive write_text()
+    would silently overwrite the first detection event. The fix appends a
+    microsecond-precision timestamp suffix to the meta filename so that
+    each detection event is independently preserved, even when the content
+    is identical (deduplication of output files remains; only meta is unique).
+
+    SR-001/SR-002: Accepts an EvidenceHasher instance from the composition root
+    factory. When None, falls back to constructing inline for backward-compat.
+
     Args:
         raw_stdout: Original unfiltered stdout from tool execution.
         raw_stderr: Original unfiltered stderr from tool execution (RT-R2-001).
@@ -1236,8 +1348,11 @@ def _quarantine_output(
         engagement_init: Engagement initializer service.
         project_root: Project root path for fallback quarantine location.
         match_info: Details about the credential match.
+        evidence_hasher: EvidenceHasher from composition root. When None, an
+            inline instance is constructed (backward-compat only).
     """
-    hasher = EvidenceHasher()
+    # SR-002: Use injected hasher; only construct inline when not provided.
+    hasher = evidence_hasher if evidence_hasher is not None else EvidenceHasher()
 
     # PM-006-R2: Choose quarantine directory: engagement-scoped when available,
     # global fallback (work/.credential-quarantine/) when no engagement is active.
@@ -1273,9 +1388,22 @@ def _quarantine_output(
     sha256_compound = hasher.hash_string(raw_stdout + raw_stderr)
     quarantine_stdout_file = quarantine_dir / f"{sha256_stdout}.stdout.raw"
     quarantine_stderr_file = quarantine_dir / f"{sha256_stderr}.stderr.raw"
-    meta_file = quarantine_dir / f"{sha256_compound}.meta.json"
 
-    ts = datetime.now(tz=UTC).strftime("%Y%m%dT%H%M%SZ")
+    # PM-001-R4: Prevent meta file collision when two invocations produce
+    # identical output. The compound hash stem is the same for identical
+    # (stdout, stderr) pairs. Appending a microsecond timestamp suffix
+    # ensures each detection event gets its own meta file regardless of
+    # content deduplication. The raw output files remain content-addressable
+    # (deduplication is safe for those); only meta records are unique per event.
+    dt_now = datetime.now(tz=UTC)
+    ts = dt_now.strftime("%Y%m%dT%H%M%S") + f"{dt_now.microsecond:06d}Z"
+    meta_base = f"{sha256_compound}-{ts}"
+    meta_file = quarantine_dir / f"{meta_base}.meta.json"
+    # Handle the extremely unlikely same-microsecond collision with a counter suffix.
+    counter = 0
+    while meta_file.exists() and counter < 16:
+        counter += 1
+        meta_file = quarantine_dir / f"{meta_base}-{counter}.meta.json"
 
     # NEW-003: errors="replace" prevents UnicodeEncodeError on binary/mixed output.
     quarantine_stdout_file.write_text(raw_stdout, encoding="utf-8", errors="replace")

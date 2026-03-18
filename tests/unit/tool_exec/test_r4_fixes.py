@@ -380,7 +380,16 @@ class TestPM004R4CompoundHashMetaFilename:
     """
 
     def test_meta_filename_uses_compound_hash(self, tmp_path: Path) -> None:
-        """Meta file stem equals sha256(stdout + stderr), not sha256(stdout)."""
+        """Meta file name starts with sha256(stdout + stderr) hash prefix.
+
+        PM-001-R4: The meta filename now includes a microsecond timestamp suffix
+        after the compound hash stem to prevent collision when two invocations
+        produce identical output. The compound hash prefix must still be present
+        as the first segment of the filename so the detection event is traceable
+        to its content-addressable hash.
+
+        Format: {sha256(stdout+stderr)}-{timestamp}.meta.json
+        """
         import hashlib
 
         init = EngagementInitializer(base_dir=tmp_path / "engagements")
@@ -403,11 +412,16 @@ class TestPM004R4CompoundHashMetaFilename:
         meta_files = list(quarantine_dir.glob("*.meta.json"))
         assert len(meta_files) == 1, f"Expected 1 meta file, found: {meta_files}"
 
-        # Compute the expected compound hash
+        # PM-001-R4: Meta filename starts with the compound hash prefix.
+        # The format is {sha256(stdout+stderr)}-{microsecond-timestamp}.meta.json.
         expected_hash = hashlib.sha256((raw_stdout + raw_stderr).encode("utf-8")).hexdigest()
-        assert meta_files[0].name == f"{expected_hash}.meta.json", (
-            f"Meta filename stem should be sha256(stdout+stderr)={expected_hash!r}, "
-            f"got {meta_files[0].name!r}"
+        meta_name = meta_files[0].name
+        assert meta_name.startswith(expected_hash), (
+            f"Meta filename should start with sha256(stdout+stderr)={expected_hash!r}, "
+            f"got {meta_name!r}"
+        )
+        assert meta_name.endswith(".meta.json"), (
+            f"Meta filename should end with .meta.json, got {meta_name!r}"
         )
 
     def test_stderr_only_detections_get_distinct_meta_files(self, tmp_path: Path) -> None:

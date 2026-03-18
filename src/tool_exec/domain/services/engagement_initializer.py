@@ -105,11 +105,21 @@ class EngagementInitializer:
         # - "id" (was "engagement_id")
         # - "created_at" ISO 8601 UTC timestamp (was "initialized_at")
         # - "created_by" from parameter (CC-001-R4: domain no longer reads os.environ)
-        # DR-010 write-once: if the metadata file already exists, preserve the
-        # original creation timestamp by skipping the write. The idempotent
-        # directory creation above still runs so missing subdirs are recreated.
+        # DR-010 write-once: if the metadata file already exists AND contains
+        # valid JSON, preserve the original creation timestamp by skipping the
+        # write. PM-003-R4: If the file exists but is zero-byte, truncated, or
+        # contains invalid JSON (e.g., from a crashed prior write), overwrite it
+        # with a fresh record rather than silently accepting corrupted metadata.
         meta_path = engagement_dir / ".engagement-meta.json"
-        if not meta_path.exists():
+        _meta_valid = False
+        if meta_path.exists():
+            try:
+                _parsed = json.loads(meta_path.read_text(encoding="utf-8"))
+                # Must be a non-empty mapping to be considered valid.
+                _meta_valid = isinstance(_parsed, dict) and bool(_parsed)
+            except (json.JSONDecodeError, OSError):
+                _meta_valid = False
+        if not _meta_valid:
             meta = {
                 "id": engagement_id,
                 "created_at": datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -138,6 +148,22 @@ class EngagementInitializer:
         """
         self._validate_id(engagement_id)
         engagement_dir = self._base_dir / engagement_id
+        # PM-003-R4: Also verify the engagement meta file exists and contains
+        # valid JSON. An engagement directory populated with subdirs but missing
+        # or corrupted metadata is structurally incomplete; is_initialized()
+        # must not consider it valid. This eliminates the internal inconsistency
+        # where initialize() preserves a valid existing meta file but is_initialized()
+        # only checked subdirectory existence, meaning a corrupted meta file
+        # would be silently accepted as a valid engagement.
+        meta_path = engagement_dir / ".engagement-meta.json"
+        if not meta_path.exists():
+            return False
+        try:
+            _parsed = json.loads(meta_path.read_text(encoding="utf-8"))
+            if not isinstance(_parsed, dict) or not _parsed:
+                return False
+        except (json.JSONDecodeError, OSError):
+            return False
         return (
             (engagement_dir / self.EVIDENCE_DIR).is_dir()
             and (engagement_dir / self.REPORTS_DIR).is_dir()

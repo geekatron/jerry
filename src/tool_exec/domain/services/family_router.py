@@ -140,8 +140,17 @@ class FamilyRouterService:
                 )
                 return resolver.resolve(tool_command)
 
-        families = ", ".join(sorted(self._resolvers.keys()))
+        # FM-007: Do NOT embed the registered family list in the user-visible
+        # NotFoundError message. Enumerating installed families in a user-facing
+        # error constitutes information disclosure (OWASP A01:2021): an operator
+        # or AI agent can infer the installed tool topology without authorization.
+        # The family list is available at debug level for authorised diagnostics.
+        logger.debug(
+            "Tool '%s' not found in any registered family. Searched: %s",
+            tool_command,
+            ", ".join(sorted(self._resolvers.keys())),
+        )
         raise NotFoundError(
             entity_type="Tool",
-            entity_id=f"{tool_command} (searched families: {families})",
+            entity_id=tool_command,
         )

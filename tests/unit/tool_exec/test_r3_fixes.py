@@ -357,10 +357,18 @@ class TestR3Fix3FactoryCompliance:
         mock_executor.health_check.assert_not_called()
         assert result == int(ExitCode.SUCCESS)
 
-    def test_handle_health_check_unhealthy_service_returns_container_not_running(
-        self, tmp_path: Path
+    def test_handle_health_check_unhealthy_service_returns_success(
+        self, tmp_path: Path, capsys: pytest.CaptureFixture[str]
     ) -> None:
-        """When health_check returns False, CONTAINER_NOT_RUNNING is returned."""
+        """CV-015: When health_check returns False (container not running),
+        exit code 0 (SUCCESS) is returned. UC-006 Extension 2a specifies that
+        a not-running state is informational, not an error. Callers scripting
+        around --health-check should not receive an error signal for a valid
+        'stopped' state.
+
+        Previously this asserted CONTAINER_NOT_RUNNING (exit 3). Updated in
+        R5 to reflect the CV-015 behavioral contract change.
+        """
         mock_executor = MagicMock(spec=ContainerExecutor)
         mock_executor.health_check.return_value = False
 
@@ -370,4 +378,7 @@ class TestR3Fix3FactoryCompliance:
 
         result = _handle_health_check(mock_resolution, mock_executor, tmp_path)
 
-        assert result == int(ExitCode.CONTAINER_NOT_RUNNING)
+        # CV-015: NOT running is informational -- exit 0.
+        assert result == int(ExitCode.SUCCESS)
+        captured = capsys.readouterr()
+        assert "NOT running" in captured.out
