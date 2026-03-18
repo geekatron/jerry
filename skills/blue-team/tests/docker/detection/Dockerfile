@@ -124,25 +124,29 @@ RUN mkdir -p /opt/rules/chainsaw && \
     echo "Chainsaw uses built-in sigma mappings + /opt/rules/sigma for rules" \
     > /opt/rules/chainsaw/README.txt
 
-# Pre-warm sigma-cli cache so it works offline (network_mode: none)
-RUN sigma version >/dev/null 2>&1 || true && \
-    sigma list targets >/dev/null 2>&1 || true && \
-    sigma list pipelines >/dev/null 2>&1 || true
+# Pre-download MITRE ATT&CK enterprise data for offline sigma-cli usage.
+# sigma-cli's _load_mitre_attack_data() supports local file paths via
+# sigma.data.mitre_attack.set_mitre_attack_url("/path/to/file.json").
+# We download once during build (network available) and bundle the file.
+# To update: rebuild the image (curl fetches latest from master).
+ARG MITRE_ATTACK_JSON=/opt/rules/mitre/enterprise-attack.json
+RUN mkdir -p /opt/rules/mitre && \
+    curl -sSfL -o ${MITRE_ATTACK_JSON} \
+    "https://github.com/mitre-attack/attack-stix-data/raw/refs/heads/master/enterprise-attack/enterprise-attack.json" && \
+    echo "MITRE ATT&CK enterprise data bundled at build time" > /opt/rules/mitre/README.txt
+
+# Configure sigma to use the bundled MITRE file instead of fetching from GitHub.
+# sigma.data.mitre_attack.set_url() sets the _custom_url module-level variable.
+# We use usercustomize.py so it runs on every Python startup before sigma is imported.
+RUN printf 'try:\n    import sigma.data.mitre_attack\n    sigma.data.mitre_attack.set_url("'${MITRE_ATTACK_JSON}'")\nexcept ImportError:\n    pass\n' \
+    > /usr/local/lib/python3.12/site-packages/usercustomize.py
 
 # Non-root user
 RUN groupadd --gid 1000 appgroup \
     && useradd --uid 1000 --gid appgroup --shell /bin/bash --create-home appuser
 
-# Copy the root sigma cache to appuser home so offline invocations find it
-RUN if [ -d /root/.cache/sigma ]; then \
-        cp -r /root/.cache/sigma /home/appuser/.cache/sigma && \
-        chown -R appuser:appgroup /home/appuser/.cache; \
-    fi; \
-    if [ -d /root/.local/share/sigma ]; then \
-        mkdir -p /home/appuser/.local/share && \
-        cp -r /root/.local/share/sigma /home/appuser/.local/share/sigma && \
-        chown -R appuser:appgroup /home/appuser/.local; \
-    fi
+# Note: sigma MITRE data is served from /opt/rules/mitre/ via usercustomize.py
+# No cache copy needed — the bundled JSON file is read directly at runtime.
 
 RUN mkdir -p /app /fixtures /fixtures/yara-rules /fixtures/evtx-samples /output /tmp/work \
     && chown -R appuser:appgroup /app /output /tmp/work
