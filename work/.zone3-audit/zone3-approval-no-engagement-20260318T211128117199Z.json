@@ -1,8 +1,0 @@
-{
-  "timestamp": "2026-03-18T21:11:28.117199+00:00",
-  "engagement_id": null,
-  "tool_command": "impacket-GetNPUsers",
-  "zone": "Zone 3",
-  "approved": false,
-  "reason": "auto-deny: non-interactive stdin"
-}

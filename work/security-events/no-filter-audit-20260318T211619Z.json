@@ -1,8 +1,0 @@
-{
-  "timestamp": "20260318T211619Z",
-  "event_type": "no_filter_invocation",
-  "tool_command": "syft",
-  "engagement_id": null,
-  "jerry_strict_mode": "false",
-  "warning": "Credential filtering was DISABLED for this invocation."
-}
