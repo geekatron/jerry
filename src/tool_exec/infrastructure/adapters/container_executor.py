@@ -94,6 +94,11 @@ class ContainerExecutor:
                 and no_filter=True, filter_output raises RuntimeError (PM-002).
                 Default True to keep safe behaviour when called without the CLI.
 
+        Note (DA-R4-002): This executor does NOT enforce Zone 3 security policy
+            gates (approval, container requirement, engagement scope). Those gates
+            live in the CLI handler (tool_exec_commands.py). Direct callers of this
+            method are responsible for enforcing security policy before execution.
+
         Returns:
             ContainerExecutionResult with captured output and exit code.
         """

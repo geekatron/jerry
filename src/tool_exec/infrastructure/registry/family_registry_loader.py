@@ -352,4 +352,10 @@ class FamilyRegistryLoader:
             )
             raise ValueError(msg)
 
-        return resolver_cls(config_path=family_info.config_path)  # type: ignore[call-arg]
+        # SR-005: Resolve config_path to absolute using the registry file's parent
+        # directory as the base. Relative paths in tool_families.yaml are relative
+        # to the project root (where the registry lives), not to cwd.
+        config_path = family_info.config_path
+        if not Path(config_path).is_absolute():
+            config_path = str((self._registry_path.parent / config_path).resolve())
+        return resolver_cls(config_path=config_path)  # type: ignore[call-arg]

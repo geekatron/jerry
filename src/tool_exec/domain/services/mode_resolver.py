@@ -24,7 +24,8 @@ class ModeResolverService:
     Mode selection follows a 5-level precedence hierarchy (highest first):
     1. CLI flag (--mode)
     2. Family-specific env var (<ENV_PREFIX>_TOOL_MODE, e.g. RAINBOW_TOOL_MODE)
-    2b. Global JERRY_TOOL_MODE fallback (UC-001 Step 6 / CV-002)
+    2b. Global JERRY_TOOL_MODE override (UC-001 Step 6 / CV-002, IN-003 fix:
+        this is an override, not a fallback — it fires BEFORE the config file Level 3)
     3. Configuration file default (from tool-exec.yaml)
     4. Hardcoded default: 'local'
 

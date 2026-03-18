@@ -192,6 +192,14 @@ def _find_project_root() -> Path:
         if (current / ".git").exists() or (current / "pyproject.toml").exists():
             return current
         current = current.parent
+    # SR-004: Print to stderr (not just logger) so the warning is always visible,
+    # even without a configured log handler (CI, global install, AI agent invocation).
+    print(
+        f"[WARN] No .git or pyproject.toml found. "
+        f"Falling back to cwd as project root: {Path.cwd()}. "
+        f"Evidence containment boundary may be weaker than expected (VF-002).",
+        file=sys.stderr,
+    )
     logger.warning(
         "No .git or pyproject.toml found in parent directories. "
         "Falling back to cwd as project root: %s. "
