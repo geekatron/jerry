@@ -1015,7 +1015,10 @@ def _add_tool_namespace(
 
     exec_parser.add_argument(
         "tool_command",
-        help="Tool command to execute (e.g., 'nuclei', 'trivy', 'impacket-GetNPUsers')",
+        nargs="?",
+        default=None,
+        help="Tool command to execute (e.g., 'nuclei', 'trivy', 'impacket-GetNPUsers'). "
+        "Not required for management commands (--list-families, --list-tools, --init-engagement).",
     )
 
     exec_parser.add_argument(
