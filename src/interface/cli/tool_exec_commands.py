@@ -32,6 +32,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from src.shared_kernel.exceptions import NotFoundError
 from src.tool_exec.domain.services.credential_filter import CredentialFilterService
 from src.tool_exec.domain.services.engagement_initializer import (
     EngagementInitializer,
@@ -249,8 +250,16 @@ def handle_tool_exec(args: Any) -> int:
     router = FamilyRouterService(resolvers)
 
     # Resolve tool command
+    # CV-008 fix: catch NotFoundError separately for explicit --family.
+    # When --family is specified and not in registry, return FAMILY_NOT_FOUND (7).
+    # When tool is not recognized by any family, return UNKNOWN_TOOL (1).
     try:
         resolution = router.resolve(tool_command, family=family)
+    except NotFoundError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        if family:
+            return ExitCode.FAMILY_NOT_FOUND
+        return ExitCode.UNKNOWN_TOOL
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
         return ExitCode.UNKNOWN_TOOL
