@@ -4,8 +4,6 @@
 # Agent: rainbow-cloud-auditor
 # Zone: 2 (Active Cloud Posture -- egress-controlled; Prowler/Kubescape require API access)
 
-version: "3.9"
-
 services:
   cloud-auditor:
     build:

@@ -1,5 +1,3 @@
-version: "3.9"
-
 # Zone: 3 (Runtime Analysis -- per-operation human approval required for every tool invocation)
 # Network: default deny. Per-operation network grants applied by jerry tool exec at run-time.
 # Full structural enforcement (docker network connect/disconnect per approved operation)

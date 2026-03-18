@@ -4,8 +4,6 @@
 # Agent: rainbow-recon-pipeline
 # Zone: 2 (Active Reconnaissance -- egress-controlled, engagement scope required)
 
-version: "3.9"
-
 services:
   recon-pipeline:
     build:

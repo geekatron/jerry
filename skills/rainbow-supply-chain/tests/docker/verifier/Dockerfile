@@ -22,12 +22,16 @@ RUN apt-get update && \
 
 ARG TARGETARCH=amd64
 
-# Install Cosign (>= 2.2)
-RUN curl -sSfL "https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-${TARGETARCH}" -o /usr/local/bin/cosign && \
-    chmod +x /usr/local/bin/cosign
+# Install Cosign >= 2.2 (pinned version -- no latest URL)
+ARG COSIGN_VERSION=2.2.4
+RUN ARCH="$([ "${TARGETARCH}" = "arm64" ] && echo "arm64" || echo "amd64")" && \
+    curl -sSfL -o /usr/local/bin/cosign \
+    "https://github.com/sigstore/cosign/releases/download/v${COSIGN_VERSION}/cosign-linux-${ARCH}" \
+    && chmod +x /usr/local/bin/cosign
 
-# Install Snyk CLI (latest stable)
-RUN npm install -g snyk
+# Install Snyk CLI (pinned version)
+ARG SNYK_VERSION=1.1292.0
+RUN npm install -g snyk@${SNYK_VERSION}
 
 # Create working directories
 RUN mkdir -p /workspace/output /workspace/evidence && \
