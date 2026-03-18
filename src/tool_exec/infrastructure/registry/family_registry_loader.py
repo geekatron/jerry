@@ -226,8 +226,12 @@ class FamilyRegistryLoader:
             msg = f"Family registry not found: {self._registry_path}"
             raise FileNotFoundError(msg)
 
-        with open(self._registry_path, encoding="utf-8") as f:
-            data = yaml.safe_load(f)
+        try:
+            with open(self._registry_path, encoding="utf-8") as f:
+                data = yaml.safe_load(f)
+        except yaml.YAMLError as exc:
+            msg = f"Family registry contains invalid YAML: {exc}"
+            raise ValueError(msg) from exc
 
         if not isinstance(data, dict) or "families" not in data:
             msg = (

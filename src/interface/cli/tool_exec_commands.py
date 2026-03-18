@@ -239,6 +239,16 @@ def handle_tool_exec(args: Any) -> int:
     if list_families or list_tools:
         return _handle_management_command(args)
 
+    # Handle --init-engagement before requiring tool_command (engagement init
+    # does not need a tool to execute -- it only initializes the workspace).
+    # This check is deliberately placed BEFORE the tool_command guard so that
+    # `jerry tool exec --init-engagement <id>` works without --tool-command.
+    _init_engagement_early = getattr(args, "init_engagement", None)
+    if _init_engagement_early:
+        project_root = _find_project_root()
+        services = create_tool_exec_handler(project_root)
+        return _handle_init_engagement(_init_engagement_early, services["engagement_init"])
+
     tool_command = getattr(args, "tool_command", None)
     if tool_command is None:
         print("Error: No tool command specified. Use 'jerry tool exec --help'.")
@@ -676,6 +686,18 @@ def _handle_management_command(args: Any) -> int:
         except (ValueError, Exception) as e:
             print(f"Error loading family registry: {e}", file=sys.stderr)
             return ExitCode.FAMILY_CONFIG_ERROR
+
+        # FIX-13 (CV-007): When a specific --family filter is requested, verify
+        # the family exists in the loaded resolvers before iterating. If not found,
+        # return FAMILY_NOT_FOUND (7) with a clear error message listing available
+        # families (UC-004 Extension 3a).
+        if family_filter and family_filter not in resolvers:
+            available = ", ".join(sorted(resolvers.keys())) or "<none>"
+            print(
+                f"Error: Family '{family_filter}' not found. Available families: {available}",
+                file=sys.stderr,
+            )
+            return ExitCode.FAMILY_NOT_FOUND
 
         for family_name, resolver in resolvers.items():
             if family_filter and family_name != family_filter:
