@@ -52,7 +52,7 @@ class EngagementInitializer:
         """
         self._base_dir = Path(base_dir)
 
-    def initialize(self, engagement_id: str) -> Path:
+    def initialize(self, engagement_id: str, created_by: str = "unknown") -> Path:
         """Create the engagement directory structure.
 
         Creates all required subdirectories and writes an initialization
@@ -61,8 +61,21 @@ class EngagementInitializer:
         file already exists, the original creation timestamp is preserved and
         the metadata file is NOT overwritten.
 
+        CC-001-R4 (H-07): ``created_by`` is now an explicit parameter instead
+        of reading ``os.environ`` inside the domain service. Domain services
+        must not access environment variables (infrastructure concern). The
+        CLI handler reads ``USER``/``USERNAME`` from ``os.environ`` and passes
+        the resolved string here. Default ``"unknown"`` preserves the previous
+        fallback behaviour for callers that do not need attribution.
+
         Args:
             engagement_id: Unique identifier for the engagement.
+            created_by: Identity of the operator initializing the engagement.
+                Defaults to ``"unknown"``. The CLI handler supplies the value
+                resolved from ``os.environ.get("USER", os.environ.get("USERNAME",
+                "unknown"))`` so the domain layer stays free of infrastructure
+                dependencies (OWASP A05:2021 Security Misconfiguration; NIST
+                SSDF PW.5).
 
         Returns:
             Path to the created engagement root directory.
@@ -91,13 +104,12 @@ class EngagementInitializer:
         # CV-010 / UC-003 Step 6: Field names aligned with UC specification.
         # - "id" (was "engagement_id")
         # - "created_at" ISO 8601 UTC timestamp (was "initialized_at")
-        # - "created_by" from environment (os.environ USER / USERNAME / "unknown")
+        # - "created_by" from parameter (CC-001-R4: domain no longer reads os.environ)
         # DR-010 write-once: if the metadata file already exists, preserve the
         # original creation timestamp by skipping the write. The idempotent
         # directory creation above still runs so missing subdirs are recreated.
         meta_path = engagement_dir / ".engagement-meta.json"
         if not meta_path.exists():
-            created_by = os.environ.get("USER") or os.environ.get("USERNAME") or "unknown"
             meta = {
                 "id": engagement_id,
                 "created_at": datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),

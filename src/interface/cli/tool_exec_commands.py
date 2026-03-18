@@ -24,6 +24,7 @@ References:
 
 from __future__ import annotations
 
+import dataclasses
 import json
 import logging
 import os
@@ -65,11 +66,25 @@ def create_tool_exec_handler(project_root: Path) -> dict[str, Any]:
     CC-004-20260318: LocalExecutor and ContainerExecutor are now instantiated
     here, NOT inside _execute_local() or _execute_container(). Those helpers
     violated H-07(c) (composition root exclusivity) by constructing domain
-    service dependencies inline. The factory is the single composition root.
+    service dependencies inline. The factory is the single composition root
+    for base service construction.
 
     IN-017-R2: CredentialFilterService is constructed first, then injected into
     both executors. Both executors now require a filter (no-None default) so the
     factory MUST supply it.
+
+    DA-R4-001 (two-path topology): The factory produces the base composition
+    for most invocations. However, ``handle_tool_exec`` applies a second path
+    for invocations where the resolved family's ``SecurityPolicy`` carries
+    family-specific credential filter patterns (PM-004-R3). In that path, a
+    fresh invocation-scoped ``CredentialFilterService`` is created inline
+    (``credential_filter.with_extra_patterns()``) and the executor references
+    are rebound to new instances that hold this scoped filter. The factory's
+    shared ``credential_filter``, ``local_executor``, and
+    ``container_executor`` instances are NOT mutated. This is intentional:
+    pattern bleed between families or concurrent invocations must be prevented.
+    Callers that require the invocation-scoped filter must use the rebound
+    local variables in ``handle_tool_exec``, not the factory dict values.
 
     Args:
         project_root: Resolved project root path used to locate registries
@@ -79,9 +94,11 @@ def create_tool_exec_handler(project_root: Path) -> dict[str, Any]:
         Mapping of service name to instance:
             - 'loader': FamilyRegistryLoader
             - 'engagement_init': EngagementInitializer
-            - 'credential_filter': CredentialFilterService
-            - 'local_executor': LocalExecutor (with credential_filter wired)
-            - 'container_executor': ContainerExecutor (with credential_filter wired)
+            - 'credential_filter': CredentialFilterService (base; may be
+              superseded by an invocation-scoped instance in handle_tool_exec
+              when family-specific patterns are present -- see DA-R4-001)
+            - 'local_executor': LocalExecutor (with base credential_filter)
+            - 'container_executor': ContainerExecutor (with base credential_filter)
 
         DA-R3-002: 'mode_resolver' is intentionally absent. handle_tool_exec
         constructs its own ModeResolverService with a family-specific
@@ -216,8 +233,31 @@ def handle_tool_exec(args: Any) -> int:
     init_engagement = getattr(args, "init_engagement", None)
     no_filter = getattr(args, "no_filter", False)
     health_check = getattr(args, "health_check", False)
+    # FM-033: Retrieve --zone override so it can be threaded to the security
+    # policy lookup. Previously parsed but never consumed (dead argument).
+    zone_override: str | None = getattr(args, "zone", None)
 
     project_root = _find_project_root()
+
+    # FIX-R3-3 (SR-002/CC-005): Build all services via factory before any
+    # sub-handler is called. Previously _handle_init_engagement constructed its
+    # own EngagementInitializer inline and _handle_health_check constructed its
+    # own ContainerExecutor + CredentialFilterService inline. Both violated
+    # H-07(c) (composition root exclusivity) and created divergent instances that
+    # bypassed the factory's wiring. The factory is lightweight (no I/O until
+    # loader.load() is called) so constructing it here is safe.
+    #
+    # SR-003-R4: Services are now built BEFORE the no_filter audit block so that
+    # engagement_init is available and _write_no_filter_audit() can call
+    # engagement_init.evidence_dir() (which enforces _validate_id()) instead of
+    # building the path manually. The factory has zero I/O at construction time,
+    # so moving it earlier imposes no cost.
+    services = create_tool_exec_handler(project_root)
+    loader: FamilyRegistryLoader = services["loader"]
+    engagement_init: EngagementInitializer = services["engagement_init"]
+    credential_filter: CredentialFilterService = services["credential_filter"]
+    local_executor: LocalExecutor = services["local_executor"]
+    container_executor: ContainerExecutor = services["container_executor"]
 
     # FIX-4 (RT-001): Strict-mode bypass via empty env var closed.
     # Only explicitly "false", "0", or "no" disables strict mode.
@@ -255,31 +295,16 @@ def handle_tool_exec(args: Any) -> int:
             "Tool output may contain credentials.",
             strict_mode_env,
         )
-        # FM-001: Write durable audit record. Uses a best-effort approach: failure
-        # to write the audit does NOT block the --no-filter execution (strict mode
-        # is already off by caller's choice). The audit is written here, before
-        # the engagement/service construction, using a project-root-relative path.
-        # We use project_root from _find_project_root() above.
+        # FM-001 / SR-003-R4: Write durable audit record. engagement_init is now
+        # available (services built before this block) so the audit path is
+        # constructed via evidence_dir() which enforces _validate_id() (CWE-22).
         _write_no_filter_audit(
             tool_command=tool_command if tool_command else "<unknown>",
             engagement_id=getattr(args, "engagement_id", None),
             strict_mode_env=strict_mode_env,
             project_root=project_root,
+            engagement_init=engagement_init,
         )
-
-    # FIX-R3-3 (SR-002/CC-005): Build all services via factory before any
-    # sub-handler is called. Previously _handle_init_engagement constructed its
-    # own EngagementInitializer inline and _handle_health_check constructed its
-    # own ContainerExecutor + CredentialFilterService inline. Both violated
-    # H-07(c) (composition root exclusivity) and created divergent instances that
-    # bypassed the factory's wiring. The factory is lightweight (no I/O until
-    # loader.load() is called) so constructing it here is safe.
-    services = create_tool_exec_handler(project_root)
-    loader: FamilyRegistryLoader = services["loader"]
-    engagement_init: EngagementInitializer = services["engagement_init"]
-    credential_filter: CredentialFilterService = services["credential_filter"]
-    local_executor: LocalExecutor = services["local_executor"]
-    container_executor: ContainerExecutor = services["container_executor"]
 
     # Handle --init-engagement before registry load
     if init_engagement:
@@ -327,6 +352,52 @@ def handle_tool_exec(args: Any) -> int:
         return ExitCode.FAMILY_NOT_FOUND
 
     policy = resolver.security_policy(tool_command)
+
+    # FM-033: Apply --zone override to the security policy when provided.
+    # The --zone flag was parsed but previously never consumed (dead argument).
+    # When an operator explicitly sets --zone, the policy's zone-sensitive fields
+    # are overridden so the correct engagement, approval, container, and network
+    # constraints are enforced for the requested zone.
+    #
+    # Zone mapping mirrors RainbowToolResolver._ZONE_POLICIES:
+    #   Zone 1: no engagement, no approval, no container, network=none
+    #   Zone 2: engagement required, no approval, no container, network=restricted
+    #   Zone 3: engagement required, approval required, container required, network=full
+    #
+    # The credential_filter_enabled field is intentionally not overridden: it is
+    # determined by the family configuration, not by the zone selection.
+    if zone_override is not None:
+        _ZONE_OVERRIDE_FIELDS: dict[str, dict[str, Any]] = {
+            "1": {
+                "requires_engagement": False,
+                "requires_approval": False,
+                "container_required": False,
+                "network_access": "none",
+                "family_zone_label": "Zone 1",
+            },
+            "2": {
+                "requires_engagement": True,
+                "requires_approval": False,
+                "container_required": False,
+                "network_access": "restricted",
+                "family_zone_label": "Zone 2",
+            },
+            "3": {
+                "requires_engagement": True,
+                "requires_approval": True,
+                "container_required": True,
+                "network_access": "full",
+                "family_zone_label": "Zone 3",
+            },
+        }
+        override_fields = _ZONE_OVERRIDE_FIELDS.get(zone_override)
+        if override_fields is not None:
+            policy = dataclasses.replace(policy, **override_fields)
+            logger.info(
+                "[SECURITY] --zone %s override applied to security policy for '%s'.",
+                zone_override,
+                tool_command,
+            )
 
     # PM-004-R3: Create an invocation-scoped filter when family-specific patterns
     # are present, rather than mutating the shared singleton via extend_patterns().
@@ -619,6 +690,10 @@ def _handle_init_engagement(
     rather than constructing its own. Inline construction violated H-07(c)
     (composition root exclusivity) and bypassed the factory's wiring.
 
+    CC-001-R4 (H-07): Reads USER/USERNAME from os.environ here (infrastructure
+    boundary) and passes the resolved string to EngagementInitializer.initialize()
+    so the domain service stays free of environment variable access.
+
     Args:
         engagement_id: The engagement identifier.
         engagement_init: Factory-built EngagementInitializer from composition root.
@@ -626,8 +701,11 @@ def _handle_init_engagement(
     Returns:
         Exit code.
     """
+    # CC-001-R4: Resolve operator identity at the CLI boundary (infrastructure),
+    # not inside the domain service. Pass the resolved string as a parameter.
+    created_by: str = os.environ.get("USER") or os.environ.get("USERNAME") or "unknown"
     try:
-        path = engagement_init.initialize(engagement_id)
+        path = engagement_init.initialize(engagement_id, created_by=created_by)
         print(f"Engagement initialized: {path}")
         return ExitCode.SUCCESS
     except ValueError as e:
@@ -865,6 +943,7 @@ def _write_no_filter_audit(
     engagement_id: str | None,
     strict_mode_env: str,
     project_root: Path,
+    engagement_init: EngagementInitializer | None = None,
 ) -> None:
     """Write a durable audit record for --no-filter invocations.
 
@@ -875,7 +954,10 @@ def _write_no_filter_audit(
     no forensic trail for a post-incident review.
 
     Audit location:
-    - When an engagement is active: work/engagements/{id}/evidence/ directory.
+    - When an engagement is active: evidence_dir(engagement_id) from
+      EngagementInitializer (SR-003-R4: path constructed via the service, not
+      manually; prevents path traversal when engagement_id is validated by
+      _validate_id() inside evidence_dir()).
     - When no engagement is active: work/security-events/ (global fallback).
 
     Best-effort: audit write failures are logged to stderr but NEVER block the
@@ -886,10 +968,19 @@ def _write_no_filter_audit(
         engagement_id: Active engagement identifier, or None.
         strict_mode_env: The raw JERRY_STRICT_MODE env var value for the record.
         project_root: Project root path for locating audit directories.
+        engagement_init: EngagementInitializer for validated path construction.
+            SR-003-R4: Required when engagement_id is set so _validate_id() is
+            called via evidence_dir(). When None, the global fallback path is used.
     """
     try:
-        if engagement_id:
-            audit_dir = project_root / "work" / "engagements" / engagement_id / "evidence"
+        if engagement_id and engagement_init is not None:
+            # SR-003-R4: Use engagement_init.evidence_dir() instead of building
+            # the path manually. evidence_dir() calls _validate_id() internally,
+            # which enforces the allowlist and prevents path traversal via
+            # malformed engagement IDs. Manual construction (project_root /
+            # "work" / "engagements" / engagement_id / "evidence") skipped that
+            # validation gate (CWE-22).
+            audit_dir = engagement_init.evidence_dir(engagement_id)
         else:
             # Global fallback: work/security-events/ when no engagement is active
             audit_dir = project_root / "work" / "security-events"
@@ -1172,9 +1263,17 @@ def _quarantine_output(
     # actual content.
     sha256_stdout = hasher.hash_string(raw_stdout)
     sha256_stderr = hasher.hash_string(raw_stderr)
+    # PM-004-R4: Meta filename uses a compound hash of BOTH streams
+    # (sha256(stdout + stderr)) instead of stdout hash alone. When a credential
+    # appears only in stderr (e.g., a tool that logs secrets on stderr while
+    # stdout is empty), the stdout-only hash is sha256("") for all such events --
+    # a collision that causes successive stderr-only detections to silently
+    # overwrite each other's meta file. The compound hash is distinct per
+    # (stdout, stderr) pair, preserving all detections.
+    sha256_compound = hasher.hash_string(raw_stdout + raw_stderr)
     quarantine_stdout_file = quarantine_dir / f"{sha256_stdout}.stdout.raw"
     quarantine_stderr_file = quarantine_dir / f"{sha256_stderr}.stderr.raw"
-    meta_file = quarantine_dir / f"{sha256_stdout}.meta.json"
+    meta_file = quarantine_dir / f"{sha256_compound}.meta.json"
 
     ts = datetime.now(tz=UTC).strftime("%Y%m%dT%H%M%SZ")
 
@@ -1192,6 +1291,10 @@ def _quarantine_output(
         "detecting_layer": "L1-regex",
         "sha256_raw_stdout": sha256_stdout,
         "sha256_raw_stderr": sha256_stderr,
+        # PM-004-R4: compound hash (sha256(stdout + stderr)) — used as meta
+        # filename stem to prevent collision when only stderr carries the
+        # credential (stdout is empty -> sha256_stdout is always sha256("")).
+        "sha256_compound": sha256_compound,
         "quarantine_stdout_file": str(quarantine_stdout_file),
         "quarantine_stderr_file": str(quarantine_stderr_file),
     }
