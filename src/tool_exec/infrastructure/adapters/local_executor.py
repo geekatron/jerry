@@ -65,6 +65,7 @@ class LocalExecutor:
         tool_args: list[str] | None = None,
         timeout: int | None = 300,
         no_filter: bool = False,
+        strict_mode: bool = True,
     ) -> ExecutionResult:
         """Execute a tool command locally via subprocess.
 
@@ -73,12 +74,22 @@ class LocalExecutor:
         (FINDING-004, CWE-200) and exit code 4 (CREDENTIAL_DETECTED) is
         returned.
 
+        FIX-R3-1 (PM-001-R3): strict_mode is now threaded from the CLI handler
+        so the resolved JERRY_STRICT_MODE value is honoured by the executor.
+        Previously the executor always called filter_output(strict_mode=True)
+        using the hard-coded default, meaning JERRY_STRICT_MODE=false + --no-filter
+        would pass the CLI guard but the executor would still raise RuntimeError.
+
         Args:
             tool_command: The tool binary name or path.
             tool_args: Optional list of arguments to pass to the tool.
             timeout: Maximum execution time in seconds. None for no limit.
             no_filter: If True, skip credential filtering on the output.
-                FORBIDDEN when JERRY_STRICT_MODE=true (PM-002, FIX-13).
+                FORBIDDEN when strict_mode=True (PM-002, FIX-13).
+            strict_mode: Whether strict mode is active. Injected by the CLI
+                handler from the resolved JERRY_STRICT_MODE env var. When True
+                and no_filter=True, filter_output raises RuntimeError (PM-002).
+                Default True to keep safe behaviour when called without the CLI.
 
         Returns:
             ExecutionResult with captured output and exit code.
@@ -126,10 +137,10 @@ class LocalExecutor:
         # than propagating an unhandled exception to the caller.
         try:
             stdout_filter_result = self._credential_filter.filter_output(
-                raw_stdout, no_filter=no_filter
+                raw_stdout, no_filter=no_filter, strict_mode=strict_mode
             )
             stderr_filter_result = self._credential_filter.filter_output(
-                raw_stderr, no_filter=no_filter
+                raw_stderr, no_filter=no_filter, strict_mode=strict_mode
             )
         except RuntimeError:
             # PM-003-R2: no_filter=True with strict_mode=True raises RuntimeError.

@@ -82,8 +82,11 @@ def create_tool_exec_handler(project_root: Path) -> dict[str, Any]:
             - 'credential_filter': CredentialFilterService
             - 'local_executor': LocalExecutor (with credential_filter wired)
             - 'container_executor': ContainerExecutor (with credential_filter wired)
-            - 'mode_resolver': ModeResolverService (default prefix; callers may
-              override with a family-specific one after resolution)
+
+        DA-R3-002: 'mode_resolver' is intentionally absent. handle_tool_exec
+        constructs its own ModeResolverService with a family-specific
+        env_var_prefix (FIX-12/IN-009). A default-prefix instance here was
+        misleading and invited incorrect reuse.
     """
     registry_path = project_root / "tool_families.yaml"
     credential_filter = CredentialFilterService()
@@ -96,7 +99,10 @@ def create_tool_exec_handler(project_root: Path) -> dict[str, Any]:
             credential_filter=credential_filter,
             project_root=str(project_root),
         ),
-        "mode_resolver": ModeResolverService(),
+        # DA-R3-002: mode_resolver removed from factory. handle_tool_exec
+        # constructs its own ModeResolverService with a family-specific
+        # env_var_prefix after resolution (FIX-12/IN-009). Keeping a default
+        # prefix instance here was misleading and invited incorrect reuse.
     }
 
 
@@ -216,14 +222,21 @@ def handle_tool_exec(args: Any) -> int:
     # FIX-4 (RT-001): Strict-mode bypass via empty env var closed.
     # Only explicitly "false", "0", or "no" disables strict mode.
     # Empty string, unset, or any other value keeps strict mode ON.
+    # FIX-R3-1 (PM-001-R3): Resolve strict_mode unconditionally so it can be
+    # threaded to _execute_local() and _execute_container(). Previously the
+    # resolution only happened inside `if no_filter:`, so the executor always
+    # received the hard-coded default strict_mode=True. When JERRY_STRICT_MODE
+    # was false and --no-filter was passed, the CLI guard would pass (strict=False)
+    # but the executor would still call filter_output(strict_mode=True) and raise
+    # RuntimeError. Threading the resolved bool closes this inconsistency.
     # M-03 (T-06, DREAD 34, HIGH): Strict mode enforcement for --no-filter.
     # When JERRY_STRICT_MODE is true, --no-filter is FORBIDDEN. An AI agent
     # invoking `jerry tool exec --no-filter <tool>` would receive unfiltered
     # output including any credentials, bypassing all L1 credential protection.
     # OWASP A01:2021 Broken Access Control; NIST CSF PR.AC-1.
+    strict_mode_env = os.environ.get("JERRY_STRICT_MODE", "true").lower()
+    strict = strict_mode_env not in ("false", "0", "no")
     if no_filter:
-        strict_mode_env = os.environ.get("JERRY_STRICT_MODE", "true").lower()
-        strict = strict_mode_env not in ("false", "0", "no")
         if strict:
             print(
                 "Error: --no-filter is FORBIDDEN when JERRY_STRICT_MODE=true. "
@@ -240,17 +253,23 @@ def handle_tool_exec(args: Any) -> int:
             strict_mode_env,
         )
 
-    # Handle --init-engagement before anything else
-    if init_engagement:
-        return _handle_init_engagement(init_engagement, project_root)
-
-    # Load family registry (FIX-9 / CC-004-20260318: all services via factory)
+    # FIX-R3-3 (SR-002/CC-005): Build all services via factory before any
+    # sub-handler is called. Previously _handle_init_engagement constructed its
+    # own EngagementInitializer inline and _handle_health_check constructed its
+    # own ContainerExecutor + CredentialFilterService inline. Both violated
+    # H-07(c) (composition root exclusivity) and created divergent instances that
+    # bypassed the factory's wiring. The factory is lightweight (no I/O until
+    # loader.load() is called) so constructing it here is safe.
     services = create_tool_exec_handler(project_root)
     loader: FamilyRegistryLoader = services["loader"]
     engagement_init: EngagementInitializer = services["engagement_init"]
     credential_filter: CredentialFilterService = services["credential_filter"]
     local_executor: LocalExecutor = services["local_executor"]
     container_executor: ContainerExecutor = services["container_executor"]
+
+    # Handle --init-engagement before registry load
+    if init_engagement:
+        return _handle_init_engagement(init_engagement, engagement_init)
 
     try:
         resolvers = loader.load()
@@ -347,7 +366,7 @@ def handle_tool_exec(args: Any) -> int:
     # a Zone 3 execution. Health checks are informational -- they must not
     # require an exploitation approval.
     if health_check:
-        return _handle_health_check(resolution, project_root)
+        return _handle_health_check(resolution, container_executor, project_root)
 
     # FIX-2 (FM-032): Zone 3 approval gate.
     # If SecurityPolicy.requires_approval is True, prompt the user for explicit
@@ -398,6 +417,7 @@ def handle_tool_exec(args: Any) -> int:
             executor=container_executor,
             project_root=project_root,
             no_filter=no_filter,
+            strict_mode=strict,
         )
     else:
         result = _execute_local(
@@ -405,6 +425,7 @@ def handle_tool_exec(args: Any) -> int:
             tool_args=tool_args,
             executor=local_executor,
             no_filter=no_filter,
+            strict_mode=strict,
         )
 
     # Handle credential quarantine
@@ -534,19 +555,25 @@ def _handle_management_command(args: Any) -> int:
 # ---------------------------------------------------------------------------
 
 
-def _handle_init_engagement(engagement_id: str, project_root: Path) -> int:
+def _handle_init_engagement(
+    engagement_id: str,
+    engagement_init: EngagementInitializer,
+) -> int:
     """Initialize a new engagement directory.
+
+    FIX-R3-3 (SR-002/CC-005): Receives a factory-built EngagementInitializer
+    rather than constructing its own. Inline construction violated H-07(c)
+    (composition root exclusivity) and bypassed the factory's wiring.
 
     Args:
         engagement_id: The engagement identifier.
-        project_root: Path to the project root.
+        engagement_init: Factory-built EngagementInitializer from composition root.
 
     Returns:
         Exit code.
     """
-    initializer = EngagementInitializer(base_dir=project_root / "work" / "engagements")
     try:
-        path = initializer.initialize(engagement_id)
+        path = engagement_init.initialize(engagement_id)
         print(f"Engagement initialized: {path}")
         return ExitCode.SUCCESS
     except ValueError as e:
@@ -558,12 +585,22 @@ def _handle_init_engagement(engagement_id: str, project_root: Path) -> int:
         return ExitCode.UNKNOWN_TOOL
 
 
-def _handle_health_check(resolution: Any, project_root: Path) -> int:
+def _handle_health_check(
+    resolution: Any,
+    container_executor: ContainerExecutor,
+    project_root: Path,
+) -> int:
     """Check container health for the resolved tool's service.
+
+    FIX-R3-3 (SR-002/CC-005): Receives a factory-built ContainerExecutor
+    rather than constructing its own ContainerExecutor + CredentialFilterService
+    inline. Inline construction violated H-07(c) (composition root exclusivity)
+    and bypassed the factory's credential_filter wiring.
 
     Args:
         resolution: ToolResolutionEntry with container service info.
-        project_root: Path to the project root.
+        container_executor: Factory-built ContainerExecutor from composition root.
+        project_root: Project root used to build the absolute compose file path.
 
     Returns:
         Exit code.
@@ -572,14 +609,8 @@ def _handle_health_check(resolution: Any, project_root: Path) -> int:
         print("No container service configured for this tool.")
         return ExitCode.SUCCESS
 
-    # Health check only uses docker ps (no credential filtering needed), but
-    # ContainerExecutor now requires a credential_filter argument (IN-017-R2).
-    executor = ContainerExecutor(
-        credential_filter=CredentialFilterService(),
-        project_root=str(project_root),
-    )
     compose_path = str(project_root / resolution.compose_file)
-    healthy = executor.health_check(
+    healthy = container_executor.health_check(
         service=resolution.container_service,
         compose_file=compose_path,
     )
@@ -672,7 +703,7 @@ def _prompt_zone3_approval(
         return False
 
     approved = answer == "yes"
-    _write_approval_audit(
+    audit_ok = _write_approval_audit(
         tool_command=tool_command,
         zone=zone,
         approved=approved,
@@ -680,6 +711,19 @@ def _prompt_zone3_approval(
         engagement_id=engagement_id,
         engagement_init=engagement_init,
     )
+    # FIX-R3-2 (PM-002-R3/RT-001/IN-021): If the operator approved but the
+    # audit record could not be written, deny the execution. Zone 3 execution
+    # without a tamper-evident audit trail violates the engagement integrity
+    # guarantee. Denial events do not need to block: a denied execution is
+    # already safe regardless of whether the audit write succeeded.
+    if approved and not audit_ok:
+        print(
+            "[SECURITY] Zone 3 execution DENIED: audit write failed. "
+            "Cannot proceed without a tamper-evident approval record. "
+            "Check file permissions on the audit directory.",
+            file=sys.stderr,
+        )
+        return False
     return approved
 
 
@@ -690,13 +734,22 @@ def _write_approval_audit(
     reason: str,
     engagement_id: str | None,
     engagement_init: EngagementInitializer,
-) -> None:
+) -> bool:
     """Write a Zone 3 approval/denial event to the engagement audit trail.
 
     IN-016-R2: Provides persistent, tamper-evident record of Zone 3 approval
     decisions. Each event is written to a separate JSON file in the engagement
     audit directory. When no engagement is active, events are written to a
     global audit path (work/.zone3-audit/).
+
+    FIX-R3-2 (PM-002-R3/RT-001/IN-021): Returns True on success, False on
+    failure. When the audit write fails for an approved Zone 3 execution the
+    caller MUST deny the execution -- proceeding without an audit record violates
+    the tamper-evidence guarantee (OWASP A09:2021 Security Logging Failures).
+    Denial events are best-effort: a failed denial audit is logged to stderr but
+    never blocks the denial itself (denials are already safe).
+    The except block also prints to stderr so audit failures are always visible
+    in the operator console even when log output is suppressed.
 
     Args:
         tool_command: The tool for which approval was sought.
@@ -705,6 +758,9 @@ def _write_approval_audit(
         reason: Human-readable reason for the decision.
         engagement_id: Active engagement identifier (may be None).
         engagement_init: Engagement initializer for directory resolution.
+
+    Returns:
+        True if the audit record was written successfully, False otherwise.
     """
     try:
         if engagement_id:
@@ -736,9 +792,15 @@ def _write_approval_audit(
             audit_file,
             approved,
         )
+        return True
     except Exception:
-        # Audit write failure must never suppress the approval decision itself.
         logger.exception("[SECURITY] Failed to write Zone 3 approval audit")
+        print(
+            "[SECURITY] CRITICAL: Zone 3 approval audit write FAILED. "
+            "Audit trail cannot be established.",
+            file=sys.stderr,
+        )
+        return False
 
 
 # ---------------------------------------------------------------------------
@@ -751,17 +813,23 @@ def _execute_local(
     tool_args: list[str],
     executor: LocalExecutor,
     no_filter: bool,
+    strict_mode: bool = True,
 ) -> dict[str, Any]:
     """Execute a tool locally.
 
     CC-004-20260318: Receives a pre-built LocalExecutor from the composition
     root rather than constructing one inline (H-07(c) compliance).
 
+    FIX-R3-1 (PM-001-R3): strict_mode threaded through so the executor
+    receives the CLI-resolved JERRY_STRICT_MODE value rather than the
+    hard-coded True default.
+
     Args:
         tool_command: Tool binary name.
         tool_args: Tool arguments.
         executor: Pre-built LocalExecutor from the composition root factory.
         no_filter: Whether to skip filtering.
+        strict_mode: Resolved JERRY_STRICT_MODE boolean from CLI handler.
 
     Returns:
         Dictionary with execution results, including raw_stderr (RT-R2-001).
@@ -770,6 +838,7 @@ def _execute_local(
         tool_command=tool_command,
         tool_args=tool_args,
         no_filter=no_filter,
+        strict_mode=strict_mode,
     )
     return {
         "exit_code": result.exit_code,
@@ -798,11 +867,16 @@ def _execute_container(
     executor: ContainerExecutor,
     project_root: Path,
     no_filter: bool,
+    strict_mode: bool = True,
 ) -> dict[str, Any]:
     """Execute a tool in a container.
 
     CC-004-20260318: Receives a pre-built ContainerExecutor from the
     composition root rather than constructing one inline (H-07(c) compliance).
+
+    FIX-R3-1 (PM-001-R3): strict_mode threaded through so the executor
+    receives the CLI-resolved JERRY_STRICT_MODE value rather than the
+    hard-coded True default.
 
     Args:
         tool_command: Tool binary name.
@@ -811,6 +885,7 @@ def _execute_container(
         executor: Pre-built ContainerExecutor from the composition root factory.
         project_root: Path to the project root.
         no_filter: Whether to skip filtering.
+        strict_mode: Resolved JERRY_STRICT_MODE boolean from CLI handler.
 
     Returns:
         Dictionary with execution results, including raw_stderr (RT-R2-001).
@@ -825,6 +900,7 @@ def _execute_container(
         service=resolution.container_service or "",
         compose_file=compose_path,
         no_filter=no_filter,
+        strict_mode=strict_mode,
     )
 
     return {

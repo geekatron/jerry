@@ -259,8 +259,13 @@ class TestFix9CompositionRoot:
     def test_factory_returns_all_services(self, tmp_path: Path) -> None:
         """create_tool_exec_handler() returns all pipeline services.
 
-        CC-004-20260318: Factory now includes local_executor, container_executor,
-        and mode_resolver in addition to the previous three services.
+        CC-004-20260318: Factory includes local_executor and container_executor
+        in addition to loader, engagement_init, and credential_filter.
+
+        DA-R3-002: mode_resolver is intentionally absent from the factory.
+        handle_tool_exec constructs its own ModeResolverService with a
+        family-specific env_var_prefix (FIX-12/IN-009). Keeping a default-prefix
+        instance in the factory was misleading and invited incorrect reuse.
         """
         # Create minimal registry so loader doesn't crash on path check
         registry = tmp_path / "tool_families.yaml"
@@ -272,7 +277,7 @@ class TestFix9CompositionRoot:
         assert "credential_filter" in services
         assert "local_executor" in services
         assert "container_executor" in services
-        assert "mode_resolver" in services
+        assert "mode_resolver" not in services
 
     def test_factory_credential_filter_is_service(self, tmp_path: Path) -> None:
         """The credential_filter returned is a CredentialFilterService instance."""

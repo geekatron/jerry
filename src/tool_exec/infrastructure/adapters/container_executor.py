@@ -67,11 +67,18 @@ class ContainerExecutor:
         timeout: int | None = 300,
         no_filter: bool = False,
         exec_flags: list[str] | None = None,
+        strict_mode: bool = True,
     ) -> ContainerExecutionResult:
         """Execute a tool command inside a Docker container.
 
         Constructs and runs:
             docker compose -f <compose_file> exec <flags> <service> <tool> <args>
+
+        FIX-R3-1 (PM-001-R3): strict_mode is now threaded from the CLI handler
+        so the resolved JERRY_STRICT_MODE value is honoured by the executor.
+        Previously the executor always called filter_output(strict_mode=True)
+        using the hard-coded default, meaning JERRY_STRICT_MODE=false + --no-filter
+        would pass the CLI guard but the executor would still raise RuntimeError.
 
         Args:
             tool_command: The tool binary to execute inside the container.
@@ -80,8 +87,12 @@ class ContainerExecutor:
             compose_file: Path to docker-compose.yml, relative to project root.
             timeout: Maximum execution time in seconds.
             no_filter: If True, skip credential filtering.
-                FORBIDDEN when JERRY_STRICT_MODE=true (PM-002, FIX-13).
+                FORBIDDEN when strict_mode=True (PM-002, FIX-13).
             exec_flags: Additional docker compose exec flags (e.g., ['-T']).
+            strict_mode: Whether strict mode is active. Injected by the CLI
+                handler from the resolved JERRY_STRICT_MODE env var. When True
+                and no_filter=True, filter_output raises RuntimeError (PM-002).
+                Default True to keep safe behaviour when called without the CLI.
 
         Returns:
             ContainerExecutionResult with captured output and exit code.
@@ -144,10 +155,10 @@ class ContainerExecutor:
         # that strict-mode violations surface as STRICT_MODE_VIOLATION (9).
         try:
             stdout_filter_result = self._credential_filter.filter_output(
-                raw_stdout, no_filter=no_filter
+                raw_stdout, no_filter=no_filter, strict_mode=strict_mode
             )
             stderr_filter_result = self._credential_filter.filter_output(
-                raw_stderr, no_filter=no_filter
+                raw_stderr, no_filter=no_filter, strict_mode=strict_mode
             )
         except RuntimeError:
             return ContainerExecutionResult(
