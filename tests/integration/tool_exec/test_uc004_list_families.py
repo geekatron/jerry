@@ -13,7 +13,7 @@ from typing import Any
 import pytest
 from pytest_bdd import given, parsers, scenarios, then, when
 
-from tests.bdd.tool_exec.conftest import make_exec_args
+from tests.integration.tool_exec.conftest import make_exec_args
 
 # ---------------------------------------------------------------------------
 # Helper: build tool_families.yaml content from ctx["families"]

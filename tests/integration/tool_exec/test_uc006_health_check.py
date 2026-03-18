@@ -19,7 +19,7 @@ from unittest.mock import MagicMock
 import pytest
 from pytest_bdd import given, parsers, scenarios, then, when
 
-from tests.bdd.tool_exec.conftest import make_exec_args
+from tests.integration.tool_exec.conftest import make_exec_args
 
 scenarios("features/test-UC-TOOLEXEC-006.feature")
 

@@ -25,7 +25,7 @@ from pytest_bdd import given, parsers, scenarios, then, when
 
 from src.tool_exec.domain.services.credential_filter import CredentialFilterService
 from src.tool_exec.domain.value_objects.filter_result import FilterResult
-from tests.bdd.tool_exec.conftest import load_canary_line, make_exec_args
+from tests.integration.tool_exec.conftest import load_canary_line, make_exec_args
 
 scenarios("features/test-UC-TOOLEXEC-005.feature")
 

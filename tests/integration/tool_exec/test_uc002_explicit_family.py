@@ -15,7 +15,7 @@ from unittest.mock import MagicMock
 import pytest
 from pytest_bdd import given, scenarios, then, when
 
-from tests.bdd.tool_exec.conftest import (
+from tests.integration.tool_exec.conftest import (
     load_canary_line,
     make_exec_args,
 )
