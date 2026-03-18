@@ -33,6 +33,8 @@ def _make_resolver(
         Mock resolver implementing ToolFamilyResolverPort.
     """
     resolver = MagicMock(spec=ToolFamilyResolverPort)
+    # FM-006: FAMILY_NAME is accessed by FamilyRouterService logger during auto-detect.
+    resolver.FAMILY_NAME = name
 
     def can_resolve(cmd: str) -> bool:
         return cmd in can_resolve_commands

@@ -42,9 +42,10 @@ class TestEngagementInitializer:
         assert meta_path.exists()
 
         meta = json.loads(meta_path.read_text())
-        assert meta["engagement_id"] == "ENG-002"
-        assert "initialized_at" in meta
-        assert "directories" in meta
+        # CV-010: Field names aligned with UC spec (id, created_at, created_by).
+        assert meta["id"] == "ENG-002"
+        assert "created_at" in meta
+        assert "created_by" in meta
 
     def test_initialize_is_idempotent(self, tmp_path: Path) -> None:
         """Calling initialize twice does not fail or destroy content."""

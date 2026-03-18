@@ -139,8 +139,18 @@ class FamilyRegistryLoader:
 
         return resolvers
 
-    def list_families(self) -> list[ToolFamilyInfo]:
+    def list_families(self, project_root: Path | None = None) -> list[ToolFamilyInfo]:
         """List all registered families without loading resolvers.
+
+        CV-013B: When project_root is provided, attempts to load each family's
+        config file and populate tool_count from the tool_resolution entries.
+        If a config file is unreadable or the registry path is not relative to
+        project_root, tool_count is left as None and displayed as '?' in the CLI.
+
+        Args:
+            project_root: Optional project root Path used to resolve relative
+                config_path values and count tool_resolution entries for
+                --list-families display (UC-004 Step 3).
 
         Returns:
             List of ToolFamilyInfo for all families in the registry,
@@ -151,7 +161,51 @@ class FamilyRegistryLoader:
         """
         families = self._parse_registry()
         families.sort(key=lambda fi: fi.priority)
+
+        if project_root is not None:
+            enriched: list[ToolFamilyInfo] = []
+            for fi in families:
+                tool_count = self._count_tools(fi.config_path, project_root)
+                # ToolFamilyInfo is frozen; reconstruct with tool_count populated
+                enriched.append(
+                    ToolFamilyInfo(
+                        name=fi.name,
+                        description=fi.description,
+                        resolver_module=fi.resolver_module,
+                        resolver_class=fi.resolver_class,
+                        config_path=fi.config_path,
+                        enabled=fi.enabled,
+                        priority=fi.priority,
+                        tool_count=tool_count,
+                    )
+                )
+            return enriched
+
         return families
+
+    def _count_tools(self, config_path: str, project_root: Path) -> int | None:
+        """Attempt to count tool_resolution entries in a family config file.
+
+        CV-013B: Called by list_families() to populate ToolFamilyInfo.tool_count
+        for --list-families display (UC-004 Step 3). Returns None when the config
+        file cannot be read (missing, malformed, or not YAML).
+
+        Args:
+            config_path: Family config path, relative to project_root.
+            project_root: Absolute project root for path resolution.
+
+        Returns:
+            Number of tool_resolution entries, or None if unreadable.
+        """
+        try:
+            resolved = project_root / config_path
+            with open(resolved, encoding="utf-8") as f:
+                data = yaml.safe_load(f)
+            if isinstance(data, dict):
+                return len(data.get("tool_resolution", []))
+        except Exception:
+            pass
+        return None
 
     def _parse_registry(self) -> list[ToolFamilyInfo]:
         """Parse tool_families.yaml into ToolFamilyInfo objects.

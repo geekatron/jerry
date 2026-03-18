@@ -14,9 +14,12 @@ References:
 
 from __future__ import annotations
 
+import logging
 from typing import TYPE_CHECKING
 
 from src.shared_kernel.exceptions import NotFoundError
+
+logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from src.tool_exec.domain.ports.tool_family_resolver_port import (
@@ -126,6 +129,15 @@ class FamilyRouterService:
         """
         for resolver in self._resolvers.values():
             if resolver.can_resolve(tool_command):
+                # FM-006: Log auto-detection decision so operators can trace
+                # which family claimed the tool without reading source code.
+                # Traceability requirement: CLI invocation -> family selection
+                # must produce an observable signal (OWASP A09:2021).
+                logger.info(
+                    "Auto-detected '%s' -> family '%s'",
+                    tool_command,
+                    resolver.FAMILY_NAME,
+                )
                 return resolver.resolve(tool_command)
 
         families = ", ".join(sorted(self._resolvers.keys()))

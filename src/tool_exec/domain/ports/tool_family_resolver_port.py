@@ -34,7 +34,14 @@ class ToolFamilyResolverPort(ABC):
 
     The port follows hexagonal architecture: the domain layer defines this
     interface, and infrastructure adapters provide concrete implementations.
+
+    Class Attributes:
+        FAMILY_NAME: Human-readable family identifier (e.g., 'rainbow',
+            'blue-team'). Declared as a class variable on concrete adapters.
+            Used by FamilyRouterService for FM-006 auto-detection logging.
     """
+
+    FAMILY_NAME: str
 
     @abstractmethod
     def can_resolve(self, tool_command: str) -> bool:

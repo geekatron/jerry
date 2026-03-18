@@ -21,9 +21,10 @@ import os
 class ModeResolverService:
     """Resolves the execution mode for a tool command.
 
-    Mode selection follows a 4-level precedence hierarchy (highest first):
+    Mode selection follows a 5-level precedence hierarchy (highest first):
     1. CLI flag (--mode)
-    2. Environment variable (<ENV_PREFIX>_TOOL_MODE, e.g. RAINBOW_TOOL_MODE)
+    2. Family-specific env var (<ENV_PREFIX>_TOOL_MODE, e.g. RAINBOW_TOOL_MODE)
+    2b. Global JERRY_TOOL_MODE fallback (UC-001 Step 6 / CV-002)
     3. Configuration file default (from tool-exec.yaml)
     4. Hardcoded default: 'local'
 
@@ -75,7 +76,7 @@ class ModeResolverService:
         cli_mode: str | None = None,
         config_mode: str | None = None,
     ) -> str:
-        """Determine the execution mode using 4-level precedence.
+        """Determine the execution mode using 5-level precedence.
 
         Args:
             cli_mode: Mode specified via --mode CLI flag, or None.
@@ -92,10 +93,22 @@ class ModeResolverService:
         if cli_mode is not None:
             return self._validate(cli_mode, source="CLI --mode flag")
 
-        # Level 2: Environment variable (family-specific)
+        # Level 2: Family-specific environment variable (e.g. RAINBOW_TOOL_MODE)
         env_mode = os.environ.get(self._env_var_name)
         if env_mode is not None:
             return self._validate(env_mode, source=f"env var {self._env_var_name}")
+
+        # Level 2b: Global JERRY_TOOL_MODE fallback (CV-002 / UC-001 Step 6).
+        # The UC specifies a two-var protocol: check family-specific var first,
+        # then fall back to the universal JERRY_TOOL_MODE. This allows a global
+        # mode policy to be set without overriding per-family configuration.
+        # Only checked when the family-specific var name differs from
+        # JERRY_TOOL_MODE (avoid double-checking when prefix is already JERRY).
+        _GLOBAL_ENV_VAR = "JERRY_TOOL_MODE"
+        if self._env_var_name != _GLOBAL_ENV_VAR:
+            global_mode = os.environ.get(_GLOBAL_ENV_VAR)
+            if global_mode is not None:
+                return self._validate(global_mode, source=f"env var {_GLOBAL_ENV_VAR}")
 
         # Level 3: Configuration file
         if config_mode is not None:

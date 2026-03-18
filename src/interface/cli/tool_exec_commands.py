@@ -246,11 +246,25 @@ def handle_tool_exec(args: Any) -> int:
             )
             return ExitCode.STRICT_MODE_VIOLATION
         # Outside strict mode: log a warning but allow execution.
+        # FM-001: Also write a durable audit record so the --no-filter invocation
+        # leaves a persistent trace. logger.warning() is process-scoped and lost on
+        # exit; the file-based audit survives the process.
         logger.warning(
             "[SECURITY-WARN] --no-filter passed with JERRY_STRICT_MODE=%s. "
             "Credential filtering is DISABLED for this invocation. "
             "Tool output may contain credentials.",
             strict_mode_env,
+        )
+        # FM-001: Write durable audit record. Uses a best-effort approach: failure
+        # to write the audit does NOT block the --no-filter execution (strict mode
+        # is already off by caller's choice). The audit is written here, before
+        # the engagement/service construction, using a project-root-relative path.
+        # We use project_root from _find_project_root() above.
+        _write_no_filter_audit(
+            tool_command=tool_command if tool_command else "<unknown>",
+            engagement_id=getattr(args, "engagement_id", None),
+            strict_mode_env=strict_mode_env,
+            project_root=project_root,
         )
 
     # FIX-R3-3 (SR-002/CC-005): Build all services via factory before any
@@ -314,9 +328,22 @@ def handle_tool_exec(args: Any) -> int:
 
     policy = resolver.security_policy(tool_command)
 
-    # Extend credential filter with family-specific patterns
+    # PM-004-R3: Create an invocation-scoped filter when family-specific patterns
+    # are present, rather than mutating the shared singleton via extend_patterns().
+    # This prevents pattern bleed between families or between multiple invocations
+    # in the same process (e.g., test suite, future server mode).
+    # The shared credential_filter from the factory remains the base; the
+    # invocation_filter is a fresh instance with the extra patterns applied.
     if policy.credential_filter_patterns:
-        credential_filter.extend_patterns(policy.credential_filter_patterns)
+        invocation_filter = credential_filter.with_extra_patterns(policy.credential_filter_patterns)
+        # Re-wire the executors to use the invocation-scoped filter for this request.
+        # Only the executor instances used for this invocation are updated; the
+        # factory's shared instances are not mutated.
+        local_executor = LocalExecutor(credential_filter=invocation_filter)
+        container_executor = ContainerExecutor(
+            credential_filter=invocation_filter,
+            project_root=str(project_root),
+        )
 
     # FIX-11 (SR-001): Resolve config path from registry, not hardcoded.
     # The registry entry's config_path is relative to the project root.
@@ -343,6 +370,27 @@ def handle_tool_exec(args: Any) -> int:
         mode = mode_resolver.resolve(cli_mode=cli_mode, config_mode=config_mode)
     except ValueError as e:
         print(f"Error: {e}", file=sys.stderr)
+        return ExitCode.MODE_UNSET
+
+    # CV-003 (UC-001 Extension 7b): Strict mode + Zone 2/3 + no explicit mode -> exit 6.
+    # When JERRY_STRICT_MODE is active and the tool is Zone 2 or Zone 3, the operator
+    # MUST provide an explicit mode selection (--mode flag or env var). Falling back
+    # to the hardcoded default ('local') is not permitted in strict mode for these
+    # zones because the appropriate execution environment is security-sensitive.
+    # This gate runs after mode resolution so we have both zone and mode information.
+    _zone_label = getattr(resolution, "zone", "") or ""
+    _requires_explicit_mode = _zone_label in ("Zone 2", "Zone 3")
+    _explicit_mode_provided = (
+        cli_mode is not None
+        or os.environ.get(mode_resolver.env_var_name) is not None
+        or os.environ.get("JERRY_TOOL_MODE") is not None
+    )
+    if strict and _requires_explicit_mode and not _explicit_mode_provided:
+        print(
+            f"Error: Strict mode requires explicit mode selection for {_zone_label} tools. "
+            "Use --mode local or --mode container.",
+            file=sys.stderr,
+        )
         return ExitCode.MODE_UNSET
 
     # FIX-3 (FM-002): Zone 3 container enforcement.
@@ -445,8 +493,11 @@ def handle_tool_exec(args: Any) -> int:
             match_info=result.get("match_info"),
         )
 
-    # Persist evidence if engagement is active and no credential was detected
-    if engagement_id and not credential_detected:
+    # Persist evidence if engagement is active, no credential was detected,
+    # and the family's security policy declares evidence_auto_persist=True.
+    # CV-016 / UC-001 Step 10: Families opt in to evidence persistence via
+    # SecurityPolicy.evidence_auto_persist. Default True preserves backward compat.
+    if engagement_id and not credential_detected and policy.evidence_auto_persist:
         try:
             _persist_evidence(
                 raw_output=result["raw_stdout"],
@@ -494,7 +545,9 @@ def _handle_management_command(args: Any) -> int:
 
     if list_families:
         try:
-            families = loader.list_families()
+            # CV-013B: Pass project_root so list_families() can populate
+            # tool_count from each family's config file (UC-004 Step 3).
+            families = loader.list_families(project_root=project_root)
         except FileNotFoundError:
             print(f"Error: Family registry not found: {registry_path}", file=sys.stderr)
             return ExitCode.FAMILY_NOT_FOUND
@@ -505,7 +558,8 @@ def _handle_management_command(args: Any) -> int:
         print("Registered tool families:")
         for fi in families:
             status = "enabled" if fi.enabled else "disabled"
-            print(f"  {fi.name} [{status}] (priority={fi.priority})")
+            tool_count_str = str(fi.tool_count) if fi.tool_count is not None else "?"
+            print(f"  {fi.name} [{status}] (priority={fi.priority}, tools={tool_count_str})")
             print(f"    {fi.description}")
             print(f"    config: {fi.config_path}")
         return ExitCode.SUCCESS
@@ -766,8 +820,11 @@ def _write_approval_audit(
         if engagement_id:
             audit_dir = engagement_init.evidence_dir(engagement_id).parent / "audit"
         else:
-            # Fallback: global audit directory when no engagement is active
-            audit_dir = engagement_init._base_dir.parent / ".zone3-audit"
+            # SR-003/PM-007-R3: Use public global_audit_dir() method instead of
+            # accessing private _base_dir attribute across module boundary.
+            # Eliminates Law of Demeter violation and decouples CLI from
+            # EngagementInitializer internals.
+            audit_dir = engagement_init.global_audit_dir()
 
         audit_dir.mkdir(parents=True, exist_ok=True)
         os.chmod(str(audit_dir), 0o700)
@@ -801,6 +858,66 @@ def _write_approval_audit(
             file=sys.stderr,
         )
         return False
+
+
+def _write_no_filter_audit(
+    tool_command: str,
+    engagement_id: str | None,
+    strict_mode_env: str,
+    project_root: Path,
+) -> None:
+    """Write a durable audit record for --no-filter invocations.
+
+    FM-001 (RPN 280): When --no-filter is used with JERRY_STRICT_MODE=false,
+    a persistent JSON audit file is written so there is a durable record that
+    credential filtering was disabled for this invocation. logger.warning()
+    alone is insufficient -- the log is process-scoped and lost on exit, leaving
+    no forensic trail for a post-incident review.
+
+    Audit location:
+    - When an engagement is active: work/engagements/{id}/evidence/ directory.
+    - When no engagement is active: work/security-events/ (global fallback).
+
+    Best-effort: audit write failures are logged to stderr but NEVER block the
+    execution. Strict mode was already verified to be off before this is called.
+
+    Args:
+        tool_command: The tool command being executed without filtering.
+        engagement_id: Active engagement identifier, or None.
+        strict_mode_env: The raw JERRY_STRICT_MODE env var value for the record.
+        project_root: Project root path for locating audit directories.
+    """
+    try:
+        if engagement_id:
+            audit_dir = project_root / "work" / "engagements" / engagement_id / "evidence"
+        else:
+            # Global fallback: work/security-events/ when no engagement is active
+            audit_dir = project_root / "work" / "security-events"
+
+        audit_dir.mkdir(parents=True, exist_ok=True)
+
+        ts = datetime.now(tz=UTC).strftime("%Y%m%dT%H%M%SZ")
+        audit_file = audit_dir / f"no-filter-audit-{ts}.json"
+
+        event: dict[str, Any] = {
+            "timestamp": ts,
+            "event_type": "no_filter_invocation",
+            "tool_command": tool_command,
+            "engagement_id": engagement_id,
+            "jerry_strict_mode": strict_mode_env,
+            "warning": "Credential filtering was DISABLED for this invocation.",
+        }
+        audit_file.write_text(json.dumps(event, indent=2) + "\n", encoding="utf-8")
+        os.chmod(str(audit_file), 0o600)
+
+        logger.info("[SECURITY] --no-filter audit written: %s", audit_file)
+    except Exception:
+        logger.exception("[SECURITY] Failed to write --no-filter audit record")
+        print(
+            "[SECURITY] WARNING: --no-filter audit write failed. "
+            "The unfiltered execution will proceed but no durable audit record was created.",
+            file=sys.stderr,
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -1048,11 +1165,18 @@ def _quarantine_output(
     # mkdir creates dirs with mode modified by umask; force 0o700 explicitly.
     os.chmod(str(quarantine_dir), 0o700)
 
-    label = engagement_id or "no-engagement"
+    # CV-006 / UC-005 DR-019: Use SHA-256 hash of raw output as filename stem.
+    # Content-addressable naming provides deduplication (identical output produces
+    # the same quarantine file) and removes the timestamp-collision risk (RT-004).
+    # The hash is computed BEFORE writing so the filename reflects the file's
+    # actual content.
+    sha256_stdout = hasher.hash_string(raw_stdout)
+    sha256_stderr = hasher.hash_string(raw_stderr)
+    quarantine_stdout_file = quarantine_dir / f"{sha256_stdout}.stdout.raw"
+    quarantine_stderr_file = quarantine_dir / f"{sha256_stderr}.stderr.raw"
+    meta_file = quarantine_dir / f"{sha256_stdout}.meta.json"
+
     ts = datetime.now(tz=UTC).strftime("%Y%m%dT%H%M%SZ")
-    quarantine_stdout_file = quarantine_dir / f"quarantine-{label}-{ts}.stdout.txt"
-    quarantine_stderr_file = quarantine_dir / f"quarantine-{label}-{ts}.stderr.txt"
-    meta_file = quarantine_dir / f"quarantine-{label}-{ts}.meta.json"
 
     # NEW-003: errors="replace" prevents UnicodeEncodeError on binary/mixed output.
     quarantine_stdout_file.write_text(raw_stdout, encoding="utf-8", errors="replace")
@@ -1066,8 +1190,8 @@ def _quarantine_output(
         "engagement_id": engagement_id,
         "tool_command": tool_command,
         "detecting_layer": "L1-regex",
-        "sha256_raw_stdout": hasher.hash_string(raw_stdout),
-        "sha256_raw_stderr": hasher.hash_string(raw_stderr),
+        "sha256_raw_stdout": sha256_stdout,
+        "sha256_raw_stderr": sha256_stderr,
         "quarantine_stdout_file": str(quarantine_stdout_file),
         "quarantine_stderr_file": str(quarantine_stderr_file),
     }

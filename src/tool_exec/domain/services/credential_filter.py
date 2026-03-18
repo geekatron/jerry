@@ -113,6 +113,36 @@ class CredentialFilterService:
         self._cs_raw: list[str] = list(self._BASE_CS_PATTERNS)
         self._ci_raw: list[str] = list(self._BASE_CI_PATTERNS)
 
+    def with_extra_patterns(
+        self,
+        patterns: list[str],
+        case_sensitive: bool = True,
+    ) -> CredentialFilterService:
+        """Return a NEW CredentialFilterService instance with additional patterns.
+
+        PM-004-R3: Creates a fresh filter instance containing the base patterns
+        plus the provided extras, rather than mutating the shared instance via
+        extend_patterns(). This prevents pattern bleed between invocations in
+        multi-family or multi-invocation deployments.
+
+        The caller should use the returned instance for a single invocation.
+        The original (shared) instance is not modified.
+
+        Args:
+            patterns: Additional regex pattern strings to include.
+            case_sensitive: If True, patterns are added to the case-sensitive
+                group. If False, to the case-insensitive group.
+
+        Returns:
+            A new CredentialFilterService with base patterns plus the extras.
+
+        Raises:
+            re.error: If any pattern in ``patterns`` is not a valid regex.
+        """
+        instance = CredentialFilterService()
+        instance.extend_patterns(patterns, case_sensitive=case_sensitive)
+        return instance
+
     def extend_patterns(
         self,
         patterns: list[str],

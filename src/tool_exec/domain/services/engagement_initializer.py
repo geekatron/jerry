@@ -56,8 +56,10 @@ class EngagementInitializer:
         """Create the engagement directory structure.
 
         Creates all required subdirectories and writes an initialization
-        metadata file. Idempotent: if the directory already exists, the
-        metadata file is updated but existing contents are preserved.
+        metadata file. Idempotent: if the directory already exists, existing
+        subdirectories are preserved. DR-010 (write-once): if the metadata
+        file already exists, the original creation timestamp is preserved and
+        the metadata file is NOT overwritten.
 
         Args:
             engagement_id: Unique identifier for the engagement.
@@ -86,17 +88,22 @@ class EngagementInitializer:
         os.chmod(str(quarantine_dir), 0o700)
 
         # Write initialization metadata
+        # CV-010 / UC-003 Step 6: Field names aligned with UC specification.
+        # - "id" (was "engagement_id")
+        # - "created_at" ISO 8601 UTC timestamp (was "initialized_at")
+        # - "created_by" from environment (os.environ USER / USERNAME / "unknown")
+        # DR-010 write-once: if the metadata file already exists, preserve the
+        # original creation timestamp by skipping the write. The idempotent
+        # directory creation above still runs so missing subdirs are recreated.
         meta_path = engagement_dir / ".engagement-meta.json"
-        meta = {
-            "engagement_id": engagement_id,
-            "initialized_at": datetime.now(tz=UTC).strftime("%Y%m%dT%H%M%SZ"),
-            "directories": {
-                "evidence": str(evidence_dir),
-                "reports": str(reports_dir),
-                "quarantine": str(quarantine_dir),
-            },
-        }
-        meta_path.write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8")
+        if not meta_path.exists():
+            created_by = os.environ.get("USER") or os.environ.get("USERNAME") or "unknown"
+            meta = {
+                "id": engagement_id,
+                "created_at": datetime.now(tz=UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "created_by": created_by,
+            }
+            meta_path.write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8")
 
         return engagement_dir
 
@@ -142,6 +149,23 @@ class EngagementInitializer:
         """
         self._validate_id(engagement_id)
         return self._base_dir / engagement_id / self.EVIDENCE_DIR
+
+    def global_audit_dir(self) -> Path:
+        """Get the global Zone 3 audit directory path.
+
+        SR-003/PM-007-R3: Exposes the global fallback audit directory as a
+        public method so callers do not need to access the private _base_dir
+        attribute. Eliminates the Law of Demeter violation in _write_approval_audit.
+
+        The global audit directory is used when no engagement is active, storing
+        Zone 3 approval events outside any engagement scope. It is positioned
+        one level above the engagements base directory to keep it easily
+        discoverable in the project tree.
+
+        Returns:
+            Path to the global Zone 3 audit directory (work/.zone3-audit/).
+        """
+        return self._base_dir.parent / ".zone3-audit"
 
     def quarantine_dir(self, engagement_id: str) -> Path:
         """Get the credential quarantine directory path for an engagement.

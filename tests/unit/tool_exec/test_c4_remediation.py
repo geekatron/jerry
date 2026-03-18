@@ -112,8 +112,9 @@ class TestFix1QuarantineFileWrite:
         )
 
         quarantine_dir = init.quarantine_dir("eng001")
-        # RT-R2-001: stdout file written
-        quarantine_stdout_files = list(quarantine_dir.glob("quarantine-*.stdout.txt"))
+        # CV-006: stdout file uses SHA-256 hash as filename stem (*.stdout.raw).
+        # RT-R2-001: stdout file is written.
+        quarantine_stdout_files = list(quarantine_dir.glob("*.stdout.raw"))
         assert len(quarantine_stdout_files) == 1
 
     def test_quarantine_file_permissions_0o600(self, tmp_path: Path) -> None:

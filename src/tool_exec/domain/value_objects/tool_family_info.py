@@ -38,6 +38,9 @@ class ToolFamilyInfo:
             means higher priority (checked first during auto-detection).
             Default 100 keeps existing entries at standard priority.
             DA-004/IN-004 (FIX-16): Replaces implicit YAML dict insertion order.
+        tool_count: Number of tools registered for this family, or None if the
+            count could not be determined (config unreadable or not loaded).
+            CV-013B: Required by UC-004 Step 3 for --list-families display.
     """
 
     name: str
@@ -47,3 +50,4 @@ class ToolFamilyInfo:
     config_path: str
     enabled: bool = True
     priority: int = field(default=100)
+    tool_count: int | None = field(default=None)

@@ -36,6 +36,10 @@ class SecurityPolicy:
         redacted_env_vars: Environment variable names to redact from tool context.
         family_zone_label: Security zone label (e.g., 'Zone 1'), or None for
             non-security tool families.
+        evidence_auto_persist: Whether evidence is automatically persisted when an
+            engagement is active and no credential was detected. Defaults to True
+            for backward compatibility. CV-016 / UC-001 Step 10: set to False to
+            opt out of automatic evidence persistence for this family's tools.
     """
 
     requires_engagement: bool
@@ -46,6 +50,9 @@ class SecurityPolicy:
     network_access: str = "none"
     redacted_env_vars: list[str] = field(default_factory=list)
     family_zone_label: str | None = None
+    # CV-016 / UC-001 Step 10: Family declares opt-in evidence auto-persistence.
+    # Default True preserves current behavior for all existing families.
+    evidence_auto_persist: bool = True
 
     def __post_init__(self) -> None:
         """Validate security policy invariants."""
