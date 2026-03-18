@@ -16,6 +16,8 @@ References:
 from __future__ import annotations
 
 import json
+import logging
+import os
 import sys
 from datetime import UTC, datetime
 from pathlib import Path
@@ -34,6 +36,45 @@ from src.tool_exec.infrastructure.adapters.local_executor import LocalExecutor
 from src.tool_exec.infrastructure.registry.family_registry_loader import (
     FamilyRegistryLoader,
 )
+
+logger = logging.getLogger(__name__)
+
+
+def _validate_evidence_dir(evidence_dir_override: str, project_root: Path) -> Path:
+    """Validate and canonicalize the --evidence-dir override path.
+
+    FINDING-001 (CWE-22, High): The CLI --evidence-dir argument is user-supplied and
+    must be canonicalized and contained within the project root before use. Without
+    this check, an operator can pass relative traversal segments (../../tmp/exfil)
+    or absolute out-of-tree paths that redirect evidence writes -- bypassing the
+    engagement isolation model and the 0o700 quarantine permission protection.
+
+    Canonicalization via .resolve() collapses symlinks and relative segments. The
+    relative_to() check enforces project-root containment. Both steps are required:
+    .resolve() alone does not reject an in-tree path; relative_to() alone does not
+    handle symlinks or relative traversal.
+
+    Args:
+        evidence_dir_override: Raw --evidence-dir string from CLI arguments.
+        project_root: Resolved project root path (the containment boundary).
+
+    Returns:
+        Resolved, canonicalized Path confirmed to be within project_root.
+
+    Raises:
+        ValueError: If the resolved path escapes the project root boundary.
+    """
+    resolved = Path(evidence_dir_override).resolve()
+    try:
+        resolved.relative_to(project_root.resolve())
+    except ValueError as err:
+        msg = (
+            f"--evidence-dir '{evidence_dir_override}' resolves to '{resolved}', "
+            f"which is outside the project root. "
+            f"Evidence must be written under: {project_root}"
+        )
+        raise ValueError(msg) from err
+    return resolved
 
 
 def _find_project_root() -> Path:
@@ -83,6 +124,29 @@ def handle_tool_exec(args: Any) -> int:
     health_check = getattr(args, "health_check", False)
 
     project_root = _find_project_root()
+
+    # M-03 (T-06, DREAD 34, HIGH): Strict mode enforcement for --no-filter.
+    # When JERRY_STRICT_MODE=true, --no-filter is FORBIDDEN. An AI agent
+    # invoking `jerry tool exec --no-filter <tool>` would receive unfiltered
+    # output including any credentials, bypassing all L1 credential protection.
+    # OWASP A01:2021 Broken Access Control; NIST CSF PR.AC-1.
+    if no_filter:
+        strict_mode = os.environ.get("JERRY_STRICT_MODE", "true").lower()
+        if strict_mode == "true":
+            print(
+                "Error: --no-filter is FORBIDDEN when JERRY_STRICT_MODE=true. "
+                "Credential filtering cannot be disabled in strict mode. "
+                "To allow --no-filter, set JERRY_STRICT_MODE=false (not recommended).",
+                file=sys.stderr,
+            )
+            return ExitCode.STRICT_MODE_VIOLATION
+        # Outside strict mode: log a warning but allow execution.
+        logger.warning(
+            "[SECURITY-WARN] --no-filter passed with JERRY_STRICT_MODE=%s. "
+            "Credential filtering is DISABLED for this invocation. "
+            "Tool output may contain credentials.",
+            strict_mode,
+        )
 
     # Handle --init-engagement before anything else
     if init_engagement:
@@ -181,15 +245,20 @@ def handle_tool_exec(args: Any) -> int:
 
     # Persist evidence if engagement is active
     if engagement_id and not result.get("credential_detected", False):
-        _persist_evidence(
-            raw_output=result["raw_stdout"],
-            filtered_output=result["stdout"],
-            tool_command=tool_command,
-            tool_args=tool_args,
-            engagement_id=engagement_id,
-            engagement_init=engagement_init,
-            evidence_dir_override=evidence_dir_override,
-        )
+        try:
+            _persist_evidence(
+                raw_output=result["raw_stdout"],
+                filtered_output=result["stdout"],
+                tool_command=tool_command,
+                tool_args=tool_args,
+                engagement_id=engagement_id,
+                engagement_init=engagement_init,
+                evidence_dir_override=evidence_dir_override,
+                project_root=project_root,
+            )
+        except ValueError as e:
+            print(f"Error: {e}", file=sys.stderr)
+            return ExitCode.ENGAGEMENT_NOT_INIT
 
     # Handle credential quarantine
     if result.get("credential_detected", False) and engagement_id:
@@ -365,6 +434,7 @@ def _persist_evidence(
     engagement_id: str,
     engagement_init: EngagementInitializer,
     evidence_dir_override: str | None = None,
+    project_root: Path | None = None,
 ) -> None:
     """Persist tool execution evidence with integrity hash.
 
@@ -376,11 +446,24 @@ def _persist_evidence(
         engagement_id: Active engagement identifier.
         engagement_init: Engagement initializer service.
         evidence_dir_override: Optional override for evidence directory.
+            FINDING-001 (CWE-22): When supplied, the path is canonicalized
+            via .resolve() and verified to be within project_root before use.
+        project_root: Project root path used as the containment boundary for
+            evidence_dir_override validation. Required when evidence_dir_override
+            is provided; defaults to cwd if not supplied.
+
+    Raises:
+        ValueError: If evidence_dir_override resolves outside project_root.
     """
     hasher = EvidenceHasher()
 
     if evidence_dir_override:
-        evidence_dir = Path(evidence_dir_override)
+        # FINDING-001 (CWE-22, High): Canonicalize and enforce project-root
+        # containment before creating or writing to the directory.
+        # _validate_evidence_dir() calls Path.resolve() to collapse symlinks and
+        # relative segments, then asserts relative_to(project_root) containment.
+        effective_root = project_root if project_root is not None else Path.cwd()
+        evidence_dir = _validate_evidence_dir(evidence_dir_override, effective_root)
         evidence_dir.mkdir(parents=True, exist_ok=True)
     else:
         evidence_dir = engagement_init.evidence_dir(engagement_id)

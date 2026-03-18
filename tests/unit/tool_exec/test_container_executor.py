@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
+from src.tool_exec.domain.services.credential_filter import CredentialFilterService
 from src.tool_exec.infrastructure.adapters.container_executor import ContainerExecutor
 
 
@@ -121,3 +122,85 @@ class TestContainerExecutorHealthCheck:
 
         executor = ContainerExecutor()
         assert executor.health_check("recon-pipeline") is False
+
+
+class TestContainerExecutorFinding004:
+    """Tests for FINDING-004 (CWE-200): credential filter applied to stderr.
+
+    Mirrors TestLocalExecutorFinding004 for the container execution path.
+    """
+
+    @patch("src.tool_exec.infrastructure.adapters.container_executor.subprocess.run")
+    def test_credential_in_stderr_triggers_detection(self, mock_run: MagicMock) -> None:
+        """Credential in stderr triggers detection and sets exit code 4 (FINDING-004)."""
+        mock_run.return_value = MagicMock(
+            returncode=0,
+            stdout="clean stdout",
+            stderr="password=longpassword1",
+        )
+
+        cred_filter = CredentialFilterService()
+        executor = ContainerExecutor(credential_filter=cred_filter)
+        result = executor.execute(
+            tool_command="msfconsole",
+            service="exploit-framework",
+        )
+
+        assert result.credential_detected is True
+        assert result.exit_code == 4
+        assert "[CREDENTIAL-FILTER]" in result.stderr
+
+    @patch("src.tool_exec.infrastructure.adapters.container_executor.subprocess.run")
+    def test_credential_in_stderr_filters_stderr_output(self, mock_run: MagicMock) -> None:
+        """Detected credential in stderr is redacted in the returned stderr field."""
+        mock_run.return_value = MagicMock(
+            returncode=0,
+            stdout="",
+            stderr="password=longpassword1",
+        )
+
+        cred_filter = CredentialFilterService()
+        executor = ContainerExecutor(credential_filter=cred_filter)
+        result = executor.execute(
+            tool_command="tool",
+            service="service",
+        )
+
+        assert "longpassword1" not in result.stderr
+
+    @patch("src.tool_exec.infrastructure.adapters.container_executor.subprocess.run")
+    def test_clean_stderr_passes_through(self, mock_run: MagicMock) -> None:
+        """Clean stderr without credentials passes through unchanged."""
+        mock_run.return_value = MagicMock(
+            returncode=0,
+            stdout="stdout data",
+            stderr="info: scan completed",
+        )
+
+        cred_filter = CredentialFilterService()
+        executor = ContainerExecutor(credential_filter=cred_filter)
+        result = executor.execute(
+            tool_command="nuclei",
+            service="recon-pipeline",
+        )
+
+        assert result.credential_detected is False
+        assert result.stderr == "info: scan completed"
+
+    @patch("src.tool_exec.infrastructure.adapters.container_executor.subprocess.run")
+    def test_raw_stderr_preserved(self, mock_run: MagicMock) -> None:
+        """raw_stderr carries original unfiltered stderr (needed for quarantine)."""
+        mock_run.return_value = MagicMock(
+            returncode=0,
+            stdout="",
+            stderr="password=longpassword1",
+        )
+
+        cred_filter = CredentialFilterService()
+        executor = ContainerExecutor(credential_filter=cred_filter)
+        result = executor.execute(
+            tool_command="tool",
+            service="service",
+        )
+
+        assert result.raw_stderr == "password=longpassword1"

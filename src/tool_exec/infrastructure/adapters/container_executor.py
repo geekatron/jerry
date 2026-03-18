@@ -32,10 +32,13 @@ class ContainerExecutionResult:
     Attributes:
         exit_code: The process exit code.
         stdout: Captured standard output (may be filtered).
-        stderr: Captured standard error.
+        stderr: Captured standard error (may be filtered).
         raw_stdout: Original unfiltered stdout.
-        credential_detected: Whether the credential filter triggered.
-        filter_result: Full credential filter result, or None if not applied.
+        raw_stderr: Original unfiltered stderr.
+            FINDING-004 (CWE-200): Introduced so that both streams can be
+            quarantined when a credential is detected in either one.
+        credential_detected: Whether the credential filter triggered on either stream.
+        filter_result: Full credential filter result for stdout, or None if not applied.
         container_service: The Docker Compose service that ran the command.
     """
 
@@ -43,6 +46,7 @@ class ContainerExecutionResult:
     stdout: str
     stderr: str
     raw_stdout: str
+    raw_stderr: str = ""
     credential_detected: bool = False
     filter_result: FilterResult | None = None
     container_service: str = ""
@@ -118,6 +122,7 @@ class ContainerExecutor:
                 stdout="",
                 stderr="docker compose not found. Is Docker installed?",
                 raw_stdout="",
+                raw_stderr="",
                 container_service=service,
             )
         except subprocess.TimeoutExpired:
@@ -126,39 +131,49 @@ class ContainerExecutor:
                 stdout="",
                 stderr=f"Container execution timed out after {timeout}s",
                 raw_stdout="",
+                raw_stderr="",
                 container_service=service,
             )
 
         raw_stdout = result.stdout
+        raw_stderr = result.stderr
 
         # Check if container is not running (common docker compose exec error)
-        if result.returncode != 0 and "is not running" in result.stderr.lower():
+        if result.returncode != 0 and "is not running" in raw_stderr.lower():
             return ContainerExecutionResult(
                 exit_code=3,
                 stdout="",
-                stderr=result.stderr,
+                stderr=raw_stderr,
                 raw_stdout="",
+                raw_stderr=raw_stderr,
                 container_service=service,
             )
 
-        # Apply credential filter
+        # FINDING-004 (CWE-200, Medium): Apply credential filter to BOTH stdout and
+        # stderr. Container tools may write sensitive material to stderr. If either
+        # stream triggers the filter, both streams are quarantined and exit code 4 is
+        # returned. Mirrors the fix applied to LocalExecutor.
         if self._credential_filter is not None and not no_filter:
-            filter_result = self._credential_filter.filter_output(raw_stdout)
+            stdout_filter_result = self._credential_filter.filter_output(raw_stdout)
+            stderr_filter_result = self._credential_filter.filter_output(raw_stderr)
+            detected = stdout_filter_result.detected or stderr_filter_result.detected
             return ContainerExecutionResult(
-                exit_code=4 if filter_result.detected else result.returncode,
-                stdout=filter_result.filtered_output,
-                stderr=result.stderr,
+                exit_code=4 if detected else result.returncode,
+                stdout=stdout_filter_result.filtered_output,
+                stderr=stderr_filter_result.filtered_output,
                 raw_stdout=raw_stdout,
-                credential_detected=filter_result.detected,
-                filter_result=filter_result,
+                raw_stderr=raw_stderr,
+                credential_detected=detected,
+                filter_result=stdout_filter_result,
                 container_service=service,
             )
 
         return ContainerExecutionResult(
             exit_code=result.returncode,
             stdout=raw_stdout,
-            stderr=result.stderr,
+            stderr=raw_stderr,
             raw_stdout=raw_stdout,
+            raw_stderr=raw_stderr,
             container_service=service,
         )
 

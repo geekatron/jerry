@@ -32,16 +32,20 @@ class ExecutionResult:
     Attributes:
         exit_code: The process exit code.
         stdout: Captured standard output (may be filtered).
-        stderr: Captured standard error.
+        stderr: Captured standard error (may be filtered).
         raw_stdout: Original unfiltered stdout.
-        credential_detected: Whether the credential filter triggered.
-        filter_result: Full credential filter result, or None if not applied.
+        raw_stderr: Original unfiltered stderr.
+            FINDING-004 (CWE-200): Introduced so that both streams can be
+            quarantined when a credential is detected in either one.
+        credential_detected: Whether the credential filter triggered on either stream.
+        filter_result: Full credential filter result for stdout, or None if not applied.
     """
 
     exit_code: int
     stdout: str
     stderr: str
     raw_stdout: str
+    raw_stderr: str = ""
     credential_detected: bool = False
     filter_result: FilterResult | None = None
 
@@ -99,6 +103,7 @@ class LocalExecutor:
                 stdout="",
                 stderr=f"Tool not found: {tool_command}",
                 raw_stdout="",
+                raw_stderr="",
             )
         except subprocess.TimeoutExpired:
             return ExecutionResult(
@@ -106,25 +111,37 @@ class LocalExecutor:
                 stdout="",
                 stderr=f"Tool execution timed out after {timeout}s: {tool_command}",
                 raw_stdout="",
+                raw_stderr="",
             )
 
         raw_stdout = result.stdout
+        raw_stderr = result.stderr
 
-        # Apply credential filter
+        # FINDING-004 (CWE-200, Medium): Apply credential filter to BOTH stdout and
+        # stderr. Security tools (Metasploit, Impacket, pwntools) routinely write
+        # credentials, session tokens, and key material to stderr. Filtering only
+        # stdout allowed credential-bearing stderr to bypass the L1 regex filter,
+        # the quarantine pipeline, and the CREDENTIAL_DETECTED (exit code 4) signal.
+        # If either stream triggers the filter, both streams are quarantined and the
+        # exit code is set to 4 (CREDENTIAL_DETECTED).
         if self._credential_filter is not None and not no_filter:
-            filter_result = self._credential_filter.filter_output(raw_stdout)
+            stdout_filter_result = self._credential_filter.filter_output(raw_stdout)
+            stderr_filter_result = self._credential_filter.filter_output(raw_stderr)
+            detected = stdout_filter_result.detected or stderr_filter_result.detected
             return ExecutionResult(
-                exit_code=4 if filter_result.detected else result.returncode,
-                stdout=filter_result.filtered_output,
-                stderr=result.stderr,
+                exit_code=4 if detected else result.returncode,
+                stdout=stdout_filter_result.filtered_output,
+                stderr=stderr_filter_result.filtered_output,
                 raw_stdout=raw_stdout,
-                credential_detected=filter_result.detected,
-                filter_result=filter_result,
+                raw_stderr=raw_stderr,
+                credential_detected=detected,
+                filter_result=stdout_filter_result,
             )
 
         return ExecutionResult(
             exit_code=result.returncode,
             stdout=raw_stdout,
-            stderr=result.stderr,
+            stderr=raw_stderr,
             raw_stdout=raw_stdout,
+            raw_stderr=raw_stderr,
         )

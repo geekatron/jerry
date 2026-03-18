@@ -62,23 +62,34 @@ class CredentialFilterService:
     Patterns are split into case-sensitive and case-insensitive groups,
     matching the bash implementation's ERE patterns.
 
-    The 8 base patterns (4 case-sensitive + 4 case-insensitive) cover:
+    The 15 base patterns (8 case-sensitive + 7 case-insensitive) cover:
     - AWS access key IDs (AKIA/AGPA/AROA/etc.)
     - SSH/PGP private key headers
     - NTLM hash pairs
     - Kerberos ticket material (base64 krb5)
+    - Anthropic API keys (sk-ant-api)
+    - OpenAI project API keys (sk-proj-)
+    - Google AI API keys (AIzaSy)
+    - GitHub fine-grained PATs (github_pat_)
+    - Stripe live secret/restricted keys (sk_live_, rk_live_)
+    - Slack bot tokens (xoxb-)
+    - JWT tokens (eyJ...eyJ...sig)
     - AWS secret keys
     - API tokens and Bearer tokens
     - Password assignments
     - Database connection strings with credentials
 
     Family-specific patterns can be added via extend_patterns().
+
+    Security: M-02 mitigation for T-03 (DREAD 36 -> 24 post-mitigation).
+    The AI CLI family extension requires cloud AI API key coverage.
     """
 
     REDACTION_MARKER = "[CREDENTIAL-REDACTED]"
 
-    # Case-sensitive patterns (matched against original line)
-    # Ported from rainbow-tool-exec CREDENTIAL_FILTER_PATTERNS_CS
+    # Case-sensitive patterns (matched against original line).
+    # Ported from rainbow-tool-exec CREDENTIAL_FILTER_PATTERNS_CS plus
+    # M-02 additions for modern cloud provider and AI API key formats.
     _BASE_CS_PATTERNS: list[str] = [
         # AWS access key ID (uppercase, fixed prefix families)
         r"(A3T[A-Z0-9]|AKIA|AGPA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}",
@@ -88,10 +99,19 @@ class CredentialFilterService:
         r":[0-9a-fA-F]{32}:[0-9a-fA-F]{32}:",
         # Kerberos ticket material -- base64-encoded krb5 ASN.1 (YAIB/YII header)
         r"YII[A-Za-z0-9+/]{20,}={0,2}",
+        # M-02: Anthropic API key (sk-ant-api + 2 digits + base64url 86 chars)
+        r"sk-ant-api[0-9]{2}-[A-Za-z0-9_-]{86}",
+        # M-02: OpenAI project API key (sk-proj- + 20+ alphanumeric/url-safe chars)
+        r"sk-proj-[A-Za-z0-9_-]{20,}",
+        # M-02: Google AI API key (AIzaSy + 33 alphanumeric/url-safe chars)
+        r"AIzaSy[A-Za-z0-9_-]{33}",
+        # M-02: GitHub fine-grained personal access token
+        r"github_pat_[A-Za-z0-9_]{22,}",
     ]
 
-    # Case-insensitive patterns (matched against lowercased line)
-    # Ported from rainbow-tool-exec CREDENTIAL_FILTER_PATTERNS_CI
+    # Case-insensitive patterns (matched against lowercased line).
+    # Ported from rainbow-tool-exec CREDENTIAL_FILTER_PATTERNS_CI plus
+    # M-02 additions for Stripe, Slack, and JWT formats.
     _BASE_CI_PATTERNS: list[str] = [
         # AWS secret key (heuristic -- base64-like 40 chars after key=)
         r"(aws_secret_access_key|aws_secret)\s*[=:]\s*[A-Za-z0-9/+=]{40}",
@@ -101,6 +121,12 @@ class CredentialFilterService:
         r"(password|passwd|pwd)\s*[=:]\s*\S{8,}",
         # Connection strings with embedded credentials
         r"(mongodb|postgresql|mysql|redis|amqp)(\+srv)?://[^:]+:[^@]+@",
+        # M-02: Stripe live secret key and restricted key
+        r"(sk_live_|rk_live_)[A-Za-z0-9]{24,}",
+        # M-02: Slack bot/user/app token (xoxb-, xoxp-, xoxa-)
+        r"xox[bpa]-[0-9]{10,}-[0-9]{10,}-[A-Za-z0-9]{24,}",
+        # M-02: JWT token (base64url header.payload.signature with eyJ prefix)
+        r"eyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}",
     ]
 
     def __init__(self) -> None:
