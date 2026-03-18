@@ -41,14 +41,20 @@ RUN ARCH="$([ "${TARGETARCH}" = "arm64" ] && echo "arm64" || echo "amd64")" && \
     && chmod +x /usr/local/bin/grype \
     && rm /tmp/grype.tar.gz
 
-# Install Trivy >= 0.50 (direct binary -- no piped shell execution; naming: Linux-ARM64 vs Linux-64bit)
-ARG TRIVY_VERSION=0.54.1
-RUN ARCH="$([ "${TARGETARCH}" = "arm64" ] && echo "ARM64" || echo "64bit")" && \
-    curl -sSfL -o /tmp/trivy.tar.gz \
-    "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-${ARCH}.tar.gz" \
-    && tar xzf /tmp/trivy.tar.gz -C /usr/local/bin trivy \
-    && chmod +x /usr/local/bin/trivy \
-    && rm /tmp/trivy.tar.gz
+# Install Trivy (direct binary; ARM64 only has .deb, amd64 has .tar.gz)
+ARG TRIVY_VERSION=0.69.3
+RUN if [ "${TARGETARCH}" = "arm64" ]; then \
+      curl -sSfL -o /tmp/trivy.deb \
+      "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-ARM64.deb" \
+      && dpkg -i /tmp/trivy.deb \
+      && rm /tmp/trivy.deb; \
+    else \
+      curl -sSfL -o /tmp/trivy.tar.gz \
+      "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz" \
+      && tar xzf /tmp/trivy.tar.gz -C /usr/local/bin trivy \
+      && chmod +x /usr/local/bin/trivy \
+      && rm /tmp/trivy.tar.gz; \
+    fi
 
 # Install OSV-Scanner >= 2.0 (pinned version)
 ARG OSV_SCANNER_VERSION=2.0.2

@@ -193,3 +193,46 @@ jobs:
             fi
           done
           exit $FAIL
+
+  e2e-tests:
+    name: Tool Exec E2E Tests
+    runs-on: ubuntu-latest
+    # E2E tests require Docker; ubuntu-latest runners have Docker pre-installed.
+    # container-build is a prerequisite so the scanner image is available.
+    needs: container-build
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+      - name: Install project dependencies
+        run: uv sync --all-extras
+      - name: Build scanner container image
+        # Ensure the supply-chain scanner image is present before running tests.
+        # container-build ran it already but this job may run on a fresh runner.
+        run: |
+          docker compose \
+            -f skills/rainbow-supply-chain/tests/docker/docker-compose.yml \
+            build --quiet
+      - name: Run tool exec E2E tests
+        # JERRY_STRICT_MODE is explicitly set to true to match production defaults.
+        # Tests that need it disabled override the env var in env_override.
+        env:
+          JERRY_STRICT_MODE: "true"
+        run: |
+          uv run pytest tests/e2e/tool_exec/ \
+            -v --tb=short \
+            -m e2e \
+            --timeout=120 \
+            --no-cov
+      - name: Tear down containers
+        if: always()
+        run: |
+          docker compose \
+            -f skills/rainbow-supply-chain/tests/docker/docker-compose.yml \
+            down --volumes --remove-orphans
