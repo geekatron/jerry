@@ -9,6 +9,8 @@ should run locally or inside a container.
 References:
     - ADR-PROJ023-001: Configuration Mechanism (L1: mode selection hierarchy)
     - TASK-003: ModeResolverService
+    - IN-009 (FIX-12): Accept family-specific env var prefix instead of
+      hardcoding RAINBOW_TOOL_MODE
 """
 
 from __future__ import annotations
@@ -21,17 +23,40 @@ class ModeResolverService:
 
     Mode selection follows a 4-level precedence hierarchy (highest first):
     1. CLI flag (--mode)
-    2. Environment variable (RAINBOW_TOOL_MODE)
+    2. Environment variable (<ENV_PREFIX>_TOOL_MODE, e.g. RAINBOW_TOOL_MODE)
     3. Configuration file default (from tool-exec.yaml)
     4. Hardcoded default: 'local'
 
-    The service is stateless and operates purely on the inputs provided
-    to the resolve() method.
+    IN-009 (FIX-12): The environment variable name is now parameterized via
+    env_var_prefix so that each family provides its own prefix instead of the
+    service hardcoding RAINBOW_TOOL_MODE. The FamilyRouterService provides the
+    prefix during service construction in the composition root.
     """
 
     VALID_MODES = frozenset({"local", "container"})
-    ENV_VAR_NAME = "RAINBOW_TOOL_MODE"
     DEFAULT_MODE = "local"
+    # Legacy default kept for backward compatibility when no prefix is supplied.
+    _DEFAULT_ENV_PREFIX = "RAINBOW"
+
+    def __init__(self, env_var_prefix: str | None = None) -> None:
+        """Initialize the mode resolver with an optional env var prefix.
+
+        Args:
+            env_var_prefix: Family-specific prefix for the mode env var
+                (e.g., 'RAINBOW' reads RAINBOW_TOOL_MODE). If None, falls back
+                to the legacy RAINBOW prefix for backward compatibility.
+        """
+        prefix = env_var_prefix if env_var_prefix is not None else self._DEFAULT_ENV_PREFIX
+        self._env_var_name = f"{prefix}_TOOL_MODE"
+
+    @property
+    def env_var_name(self) -> str:
+        """Return the environment variable name used for mode resolution.
+
+        Returns:
+            Fully qualified env var name, e.g. 'RAINBOW_TOOL_MODE'.
+        """
+        return self._env_var_name
 
     def resolve(
         self,
@@ -55,10 +80,10 @@ class ModeResolverService:
         if cli_mode is not None:
             return self._validate(cli_mode, source="CLI --mode flag")
 
-        # Level 2: Environment variable
-        env_mode = os.environ.get(self.ENV_VAR_NAME)
+        # Level 2: Environment variable (family-specific)
+        env_mode = os.environ.get(self._env_var_name)
         if env_mode is not None:
-            return self._validate(env_mode, source=f"env var {self.ENV_VAR_NAME}")
+            return self._validate(env_mode, source=f"env var {self._env_var_name}")
 
         # Level 3: Configuration file
         if config_mode is not None:

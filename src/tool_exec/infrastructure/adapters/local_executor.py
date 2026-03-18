@@ -4,58 +4,39 @@
 """Local executor for running tools via subprocess.
 
 Executes tools directly on the host system using subprocess.run,
-capturing stdout and stderr. Applies credential filtering and
-evidence persistence via the domain services.
+capturing stdout and stderr. Applies credential filtering to both
+stdout and stderr via the domain services.
 
 References:
     - ADR-PROJ023-001: Local Execution Mode
     - TASK-004: LocalExecutor
+    - CC-001: H-10 one-class-per-file (ExecutionResult extracted)
+    - SR-004: FIX-14 -- docstring corrected; stderr IS filtered (FINDING-004)
 """
 
 from __future__ import annotations
 
 import subprocess
-from dataclasses import dataclass
 from typing import TYPE_CHECKING
+
+from src.tool_exec.domain.value_objects.execution_result import ExecutionResult
 
 if TYPE_CHECKING:
     from src.tool_exec.domain.services.credential_filter import (
         CredentialFilterService,
-        FilterResult,
     )
-
-
-@dataclass
-class ExecutionResult:
-    """Result of executing a tool command.
-
-    Attributes:
-        exit_code: The process exit code.
-        stdout: Captured standard output (may be filtered).
-        stderr: Captured standard error (may be filtered).
-        raw_stdout: Original unfiltered stdout.
-        raw_stderr: Original unfiltered stderr.
-            FINDING-004 (CWE-200): Introduced so that both streams can be
-            quarantined when a credential is detected in either one.
-        credential_detected: Whether the credential filter triggered on either stream.
-        filter_result: Full credential filter result for stdout, or None if not applied.
-    """
-
-    exit_code: int
-    stdout: str
-    stderr: str
-    raw_stdout: str
-    raw_stderr: str = ""
-    credential_detected: bool = False
-    filter_result: FilterResult | None = None
 
 
 class LocalExecutor:
     """Executes tools locally via subprocess.
 
     Runs tool commands as child processes, captures their output, and
-    applies the credential filter to stdout before returning results.
-    Stderr is passed through unfiltered for debugging purposes.
+    applies the credential filter to both stdout and stderr before returning
+    results. If either stream contains a credential, both streams are
+    quarantined and exit code 4 (CREDENTIAL_DETECTED) is returned.
+
+    SR-004 (FIX-14): Both stdout and stderr are filtered. The previous
+    docstring incorrectly stated stderr was passed through unfiltered.
     """
 
     def __init__(
@@ -79,11 +60,17 @@ class LocalExecutor:
     ) -> ExecutionResult:
         """Execute a tool command locally via subprocess.
 
+        Both stdout and stderr are filtered through the credential filter.
+        If either stream triggers detection, both streams are redacted
+        (FINDING-004, CWE-200) and exit code 4 (CREDENTIAL_DETECTED) is
+        returned.
+
         Args:
             tool_command: The tool binary name or path.
             tool_args: Optional list of arguments to pass to the tool.
             timeout: Maximum execution time in seconds. None for no limit.
             no_filter: If True, skip credential filtering on the output.
+                FORBIDDEN when JERRY_STRICT_MODE=true (PM-002, FIX-13).
 
         Returns:
             ExecutionResult with captured output and exit code.
@@ -128,8 +115,17 @@ class LocalExecutor:
             stdout_filter_result = self._credential_filter.filter_output(raw_stdout)
             stderr_filter_result = self._credential_filter.filter_output(raw_stderr)
             detected = stdout_filter_result.detected or stderr_filter_result.detected
+            # FIX-17: Normalize non-zero tool exit codes to TOOL_ERROR (2)
+            # to comply with BC-01/BC-02. Exit code 4 overrides when credential
+            # detected; otherwise tool errors map to exit code 2 (TOOL_ERROR).
+            if detected:
+                exit_code = 4
+            elif result.returncode != 0:
+                exit_code = 2
+            else:
+                exit_code = 0
             return ExecutionResult(
-                exit_code=4 if detected else result.returncode,
+                exit_code=exit_code,
                 stdout=stdout_filter_result.filtered_output,
                 stderr=stderr_filter_result.filtered_output,
                 raw_stdout=raw_stdout,

@@ -127,6 +127,12 @@ markers = [
     "regression: marks regression test scenarios",
 ]
 
+[tool.coverage.report]
+# CC-003 (FIX-10): Enforce 90% line coverage minimum on every run.
+# H-20/H-21: BDD test-first, 90% line coverage REQUIRED.
+fail_under = 90
+show_missing = true
+
 # =============================================================================
 # Commitizen Configuration (EN-108)
 # =============================================================================

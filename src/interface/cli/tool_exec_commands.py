@@ -11,6 +11,15 @@ References:
     - ADR-PROJ023-001: Rainbow Tool Executor Behavioral Contract
     - STORY-W12-001: Jerry tool exec CLI command
     - TASK-001: CLI subparser for jerry tool exec
+    - FIX-1 (DA-002/CV-005): quarantine_output wired; inline redaction in filter
+    - FIX-2 (FM-032): Zone 3 approval gate enforced before execution
+    - FIX-3 (FM-002): Zone 3 container enforcement -- local mode rejected
+    - FIX-4 (RT-001): Strict-mode bypass via empty env var closed
+    - FIX-7 (CV-013): --list-families and --list-tools management commands
+    - FIX-8 (RT-003/SR-003): Quarantine file chmod 0o600 after write
+    - FIX-9 (CC-002): Service instantiation via create_tool_exec_handler() factory
+    - FIX-11 (SR-001): Config path from registry, not hardcoded
+    - FIX-12 (IN-009): ModeResolverService receives family env_var_prefix
 """
 
 from __future__ import annotations
@@ -38,6 +47,41 @@ from src.tool_exec.infrastructure.registry.family_registry_loader import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+# ---------------------------------------------------------------------------
+# FIX-9 (CC-002): Composition root factory
+# ---------------------------------------------------------------------------
+
+
+def create_tool_exec_handler(project_root: Path) -> dict[str, Any]:
+    """Composition root factory for the tool exec pipeline services.
+
+    Instantiates and wires together all services required for tool execution.
+    Separates service construction from the CLI handler logic, following the
+    Dependency Inversion Principle and the composition root pattern (CC-002).
+
+    Args:
+        project_root: Resolved project root path used to locate registries
+            and engagement directories.
+
+    Returns:
+        Mapping of service name to instance:
+            - 'loader': FamilyRegistryLoader
+            - 'engagement_init': EngagementInitializer
+            - 'credential_filter': CredentialFilterService
+    """
+    registry_path = project_root / "tool_families.yaml"
+    return {
+        "loader": FamilyRegistryLoader(registry_path),
+        "engagement_init": EngagementInitializer(base_dir=project_root / "work" / "engagements"),
+        "credential_filter": CredentialFilterService(),
+    }
+
+
+# ---------------------------------------------------------------------------
+# Input validation helpers
+# ---------------------------------------------------------------------------
 
 
 def _validate_evidence_dir(evidence_dir_override: str, project_root: Path) -> Path:
@@ -102,17 +146,23 @@ def _find_project_root() -> Path:
     return Path.cwd()
 
 
+# ---------------------------------------------------------------------------
+# Main CLI handler
+# ---------------------------------------------------------------------------
+
+
 def handle_tool_exec(args: Any) -> int:
     """Handle the jerry tool exec command.
 
     Orchestrates the full tool execution pipeline:
     1. Load family registry and resolve tool command
     2. Determine execution mode
-    3. Check engagement requirements
-    4. Execute tool (local or container)
-    5. Apply credential filter
-    6. Persist evidence
-    7. Return exit code
+    3. Check security policy gates (Zone 3 approval, container enforcement)
+    4. Check engagement requirements
+    5. Execute tool (local or container)
+    6. Apply credential filter
+    7. Persist evidence (or quarantine credential-bearing output)
+    8. Return exit code
 
     Args:
         args: Parsed argparse namespace with tool exec arguments.
@@ -120,6 +170,12 @@ def handle_tool_exec(args: Any) -> int:
     Returns:
         Exit code as integer.
     """
+    # Check for management commands first (FIX-7: --list-families, --list-tools)
+    list_families = getattr(args, "list_families", False)
+    list_tools = getattr(args, "list_tools", None)
+    if list_families or list_tools:
+        return _handle_management_command(args)
+
     tool_command = getattr(args, "tool_command", None)
     if tool_command is None:
         print("Error: No tool command specified. Use 'jerry tool exec --help'.")
@@ -136,14 +192,18 @@ def handle_tool_exec(args: Any) -> int:
 
     project_root = _find_project_root()
 
+    # FIX-4 (RT-001): Strict-mode bypass via empty env var closed.
+    # Only explicitly "false", "0", or "no" disables strict mode.
+    # Empty string, unset, or any other value keeps strict mode ON.
     # M-03 (T-06, DREAD 34, HIGH): Strict mode enforcement for --no-filter.
-    # When JERRY_STRICT_MODE=true, --no-filter is FORBIDDEN. An AI agent
+    # When JERRY_STRICT_MODE is true, --no-filter is FORBIDDEN. An AI agent
     # invoking `jerry tool exec --no-filter <tool>` would receive unfiltered
     # output including any credentials, bypassing all L1 credential protection.
     # OWASP A01:2021 Broken Access Control; NIST CSF PR.AC-1.
     if no_filter:
-        strict_mode = os.environ.get("JERRY_STRICT_MODE", "true").lower()
-        if strict_mode == "true":
+        strict_mode_env = os.environ.get("JERRY_STRICT_MODE", "true").lower()
+        strict = strict_mode_env not in ("false", "0", "no")
+        if strict:
             print(
                 "Error: --no-filter is FORBIDDEN when JERRY_STRICT_MODE=true. "
                 "Credential filtering cannot be disabled in strict mode. "
@@ -156,24 +216,34 @@ def handle_tool_exec(args: Any) -> int:
             "[SECURITY-WARN] --no-filter passed with JERRY_STRICT_MODE=%s. "
             "Credential filtering is DISABLED for this invocation. "
             "Tool output may contain credentials.",
-            strict_mode,
+            strict_mode_env,
         )
 
     # Handle --init-engagement before anything else
     if init_engagement:
         return _handle_init_engagement(init_engagement, project_root)
 
-    # Load family registry
-    registry_path = project_root / "tool_families.yaml"
+    # Load family registry (FIX-9: via factory)
+    services = create_tool_exec_handler(project_root)
+    loader: FamilyRegistryLoader = services["loader"]
+    engagement_init: EngagementInitializer = services["engagement_init"]
+    credential_filter: CredentialFilterService = services["credential_filter"]
+
     try:
-        loader = FamilyRegistryLoader(registry_path)
         resolvers = loader.load()
     except FileNotFoundError:
-        print(f"Error: Family registry not found: {registry_path}", file=sys.stderr)
-        return ExitCode.UNKNOWN_TOOL
+        print(
+            f"Error: Family registry not found: {project_root / 'tool_families.yaml'}",
+            file=sys.stderr,
+        )
+        return ExitCode.FAMILY_NOT_FOUND
+    except ValueError as e:
+        # FIX-6 (CV-009): Use FAMILY_CONFIG_ERROR for malformed registry
+        print(f"Error loading family registry: {e}", file=sys.stderr)
+        return ExitCode.FAMILY_CONFIG_ERROR
     except Exception as e:
         print(f"Error loading family registry: {e}", file=sys.stderr)
-        return ExitCode.UNKNOWN_TOOL
+        return ExitCode.FAMILY_CONFIG_ERROR
 
     # Build family router
     router = FamilyRouterService(resolvers)
@@ -185,35 +255,79 @@ def handle_tool_exec(args: Any) -> int:
         print(f"Error: {e}", file=sys.stderr)
         return ExitCode.UNKNOWN_TOOL
 
-    # Get security policy
+    # Get resolver and security policy
     resolver = resolvers.get(resolution.family)
     if resolver is None:
+        # FIX-6 (CV-008): Use FAMILY_NOT_FOUND
         print(f"Error: Family '{resolution.family}' not found.", file=sys.stderr)
-        return ExitCode.UNKNOWN_TOOL
+        return ExitCode.FAMILY_NOT_FOUND
 
     policy = resolver.security_policy(tool_command)
 
-    # Resolve execution mode
-    mode_resolver = ModeResolverService()
+    # Extend credential filter with family-specific patterns
+    if policy.credential_filter_patterns:
+        credential_filter.extend_patterns(policy.credential_filter_patterns)
+
+    # FIX-11 (SR-001): Resolve config path from registry, not hardcoded.
+    # The registry entry's config_path is relative to the project root.
+    family_info_list = loader.list_families()
+    family_config_path: str | None = None
+    for fi in family_info_list:
+        if fi.name == resolution.family:
+            family_config_path = str(project_root / fi.config_path)
+            break
+
+    # FIX-12 (IN-009): ModeResolverService receives family env_var_prefix.
+    # The prefix is derived from the family name (uppercase).
+    env_var_prefix = resolution.family.upper().replace("-", "_")
+    mode_resolver = ModeResolverService(env_var_prefix=env_var_prefix)
+
     try:
-        config = resolver.load_config(
-            str(project_root / "skills" / "rainbow" / "config" / "tool-exec.yaml")
-        )
-    except FileNotFoundError:
-        config = {}
-    config_mode = config.get("default_mode")
-    try:
+        config: dict[str, Any] = {}
+        if family_config_path is not None:
+            try:
+                config = resolver.load_config(family_config_path)
+            except FileNotFoundError:
+                config = {}
+        config_mode = config.get("default_mode")
         mode = mode_resolver.resolve(cli_mode=cli_mode, config_mode=config_mode)
     except ValueError as e:
         print(f"Error: {e}", file=sys.stderr)
         return ExitCode.MODE_UNSET
 
+    # FIX-3 (FM-002): Zone 3 container enforcement.
+    # If SecurityPolicy.container_required is True and the resolved mode is
+    # 'local', reject the execution with a clear error. Zone 3 exploitation tools
+    # MUST run inside a container for process isolation; allowing local mode
+    # would bypass the container isolation guarantee (OWASP A04:2021).
+    if policy.container_required and mode == "local":
+        print(
+            f"Error: Tool '{tool_command}' ({resolution.zone}) requires container "
+            f"execution (container_required=True). "
+            f"--mode local is not permitted for Zone 3 tools. "
+            f"Use --mode container or set {mode_resolver.env_var_name}=container.",
+            file=sys.stderr,
+        )
+        return ExitCode.ZONE3_CONTAINER_REQUIRED
+
     # Handle --health-check
     if health_check:
         return _handle_health_check(resolution, project_root)
 
+    # FIX-2 (FM-032): Zone 3 approval gate.
+    # If SecurityPolicy.requires_approval is True, prompt the user for explicit
+    # confirmation before executing. AI agents that do not handle interactive
+    # prompts will receive the rejection path (non-tty -> auto-deny).
+    if policy.requires_approval:
+        approved = _prompt_zone3_approval(tool_command, resolution.zone)
+        if not approved:
+            print(
+                f"[SECURITY] Zone 3 execution of '{tool_command}' NOT approved. Aborting.",
+                file=sys.stderr,
+            )
+            return ExitCode.ENGAGEMENT_NOT_INIT
+
     # Check engagement requirements
-    engagement_init = EngagementInitializer(base_dir=project_root / "work" / "engagements")
     if policy.requires_engagement:
         if engagement_id is None:
             print(
@@ -230,11 +344,6 @@ def handle_tool_exec(args: Any) -> int:
                 file=sys.stderr,
             )
             return ExitCode.ENGAGEMENT_NOT_INIT
-
-    # Set up credential filter
-    credential_filter = CredentialFilterService()
-    if policy.credential_filter_patterns:
-        credential_filter.extend_patterns(policy.credential_filter_patterns)
 
     # Execute tool
     if mode == "container":
@@ -254,8 +363,19 @@ def handle_tool_exec(args: Any) -> int:
             no_filter=no_filter,
         )
 
-    # Persist evidence if engagement is active
-    if engagement_id and not result.get("credential_detected", False):
+    # Handle credential quarantine (FIX-1: quarantine always wired on detection)
+    credential_detected = result.get("credential_detected", False)
+    if credential_detected and engagement_id:
+        _quarantine_output(
+            raw_output=result["raw_stdout"],
+            tool_command=tool_command,
+            engagement_id=engagement_id,
+            engagement_init=engagement_init,
+            match_info=result.get("match_info"),
+        )
+
+    # Persist evidence if engagement is active and no credential was detected
+    if engagement_id and not credential_detected:
         try:
             _persist_evidence(
                 raw_output=result["raw_stdout"],
@@ -271,16 +391,6 @@ def handle_tool_exec(args: Any) -> int:
             print(f"Error: {e}", file=sys.stderr)
             return ExitCode.ENGAGEMENT_NOT_INIT
 
-    # Handle credential quarantine
-    if result.get("credential_detected", False) and engagement_id:
-        _quarantine_output(
-            raw_output=result["raw_stdout"],
-            tool_command=tool_command,
-            engagement_id=engagement_id,
-            engagement_init=engagement_init,
-            match_info=result.get("match_info"),
-        )
-
     # Print output
     if result["stdout"]:
         print(result["stdout"])
@@ -288,6 +398,90 @@ def handle_tool_exec(args: Any) -> int:
         print(result["stderr"], file=sys.stderr)
 
     return result["exit_code"]
+
+
+# ---------------------------------------------------------------------------
+# Management commands (FIX-7: UC-004)
+# ---------------------------------------------------------------------------
+
+
+def _handle_management_command(args: Any) -> int:
+    """Handle --list-families and --list-tools management commands (UC-004).
+
+    Args:
+        args: Parsed argparse namespace.
+
+    Returns:
+        Exit code.
+    """
+    project_root = _find_project_root()
+    registry_path = project_root / "tool_families.yaml"
+    loader = FamilyRegistryLoader(registry_path)
+
+    list_families = getattr(args, "list_families", False)
+    list_tools = getattr(args, "list_tools", None)
+
+    if list_families:
+        try:
+            families = loader.list_families()
+        except FileNotFoundError:
+            print(f"Error: Family registry not found: {registry_path}", file=sys.stderr)
+            return ExitCode.FAMILY_NOT_FOUND
+        except ValueError as e:
+            print(f"Error parsing family registry: {e}", file=sys.stderr)
+            return ExitCode.FAMILY_CONFIG_ERROR
+
+        print("Registered tool families:")
+        for fi in families:
+            status = "enabled" if fi.enabled else "disabled"
+            print(f"  {fi.name} [{status}] (priority={fi.priority})")
+            print(f"    {fi.description}")
+            print(f"    config: {fi.config_path}")
+        return ExitCode.SUCCESS
+
+    if list_tools is not None:
+        # list_tools may be a family name string or True for all families
+        family_filter = list_tools if isinstance(list_tools, str) and list_tools else None
+        try:
+            resolvers = loader.load()
+        except FileNotFoundError:
+            print(f"Error: Family registry not found: {registry_path}", file=sys.stderr)
+            return ExitCode.FAMILY_NOT_FOUND
+        except (ValueError, Exception) as e:
+            print(f"Error loading family registry: {e}", file=sys.stderr)
+            return ExitCode.FAMILY_CONFIG_ERROR
+
+        for family_name, resolver in resolvers.items():
+            if family_filter and family_name != family_filter:
+                continue
+            print(f"Family: {family_name}")
+            # Load config and show tool resolution table
+            family_info_list = loader.list_families()
+            config_path: str | None = None
+            for fi in family_info_list:
+                if fi.name == family_name:
+                    config_path = str(project_root / fi.config_path)
+                    break
+            if config_path:
+                try:
+                    config = resolver.load_config(config_path)
+                    tools = config.get("tool_resolution", [])
+                    for entry in tools:
+                        prefix = entry.get("prefix", "?")
+                        zone = entry.get("zone", "1")
+                        service = entry.get("service", "local")
+                        print(f"  {prefix}  (Zone {zone}, service={service})")
+                except (FileNotFoundError, ValueError):
+                    print("  (config not available)")
+            print()
+        return ExitCode.SUCCESS
+
+    return ExitCode.SUCCESS
+
+
+# ---------------------------------------------------------------------------
+# Engagement management helpers
+# ---------------------------------------------------------------------------
 
 
 def _handle_init_engagement(engagement_id: str, project_root: Path) -> int:
@@ -340,6 +534,60 @@ def _handle_health_check(resolution: Any, project_root: Path) -> int:
             file=sys.stderr,
         )
         return ExitCode.CONTAINER_NOT_RUNNING
+
+
+# ---------------------------------------------------------------------------
+# Zone 3 approval gate (FIX-2)
+# ---------------------------------------------------------------------------
+
+
+def _prompt_zone3_approval(tool_command: str, zone: str) -> bool:
+    """Prompt the user for explicit Zone 3 per-operation approval.
+
+    FM-032 (FIX-2): SecurityPolicy.requires_approval is declared for Zone 3
+    but was previously never checked. This function enforces the gate by
+    requesting interactive confirmation before any Zone 3 execution.
+
+    Non-interactive environments (CI, AI agents) have stdin that is not a
+    TTY. In such cases the prompt auto-denies to prevent unattended Zone 3
+    execution without human review (OWASP A01:2021 Broken Access Control).
+
+    Args:
+        tool_command: The tool about to be executed.
+        zone: The security zone label (e.g., 'Zone 3').
+
+    Returns:
+        True if the user approves, False otherwise.
+    """
+    if not sys.stdin.isatty():
+        logger.warning(
+            "[SECURITY] Zone 3 approval gate: non-interactive stdin detected "
+            "for '%s' (%s). Auto-denying to prevent unattended execution.",
+            tool_command,
+            zone,
+        )
+        return False
+
+    print(
+        f"\n[SECURITY] {zone} tool execution requires explicit approval.",
+        file=sys.stderr,
+    )
+    print(f"  Tool: {tool_command}", file=sys.stderr)
+    print(
+        "  This tool performs active exploitation operations. "
+        "Confirm only in an authorized engagement.",
+        file=sys.stderr,
+    )
+    try:
+        answer = input("  Approve? [yes/NO]: ").strip().lower()
+    except (EOFError, KeyboardInterrupt):
+        return False
+    return answer == "yes"
+
+
+# ---------------------------------------------------------------------------
+# Execution helpers
+# ---------------------------------------------------------------------------
 
 
 def _execute_local(
@@ -437,6 +685,11 @@ def _execute_container(
     }
 
 
+# ---------------------------------------------------------------------------
+# Evidence persistence and quarantine
+# ---------------------------------------------------------------------------
+
+
 def _persist_evidence(
     raw_output: str,
     filtered_output: str,
@@ -471,8 +724,6 @@ def _persist_evidence(
     if evidence_dir_override:
         # FINDING-001 (CWE-22, High): Canonicalize and enforce project-root
         # containment before creating or writing to the directory.
-        # _validate_evidence_dir() calls Path.resolve() to collapse symlinks and
-        # relative segments, then asserts relative_to(project_root) containment.
         effective_root = project_root if project_root is not None else Path.cwd()
         evidence_dir = _validate_evidence_dir(evidence_dir_override, effective_root)
         evidence_dir.mkdir(parents=True, exist_ok=True)
@@ -506,6 +757,17 @@ def _quarantine_output(
 ) -> None:
     """Quarantine output that triggered the credential filter.
 
+    FIX-1 (DA-002/CV-005): This function is now always called when
+    credential_detected=True and an engagement is active.
+
+    FIX-8 (RT-003/SR-003): After writing both the raw output file and the
+    meta file, os.chmod(file_path, 0o600) is called on each. The quarantine
+    directory is 0o700 (set in EngagementInitializer.initialize()), but files
+    written inside it inherit the process umask (typically 0o644), making
+    credential-bearing files world-readable. Setting 0o600 (owner read/write
+    only) ensures credentials remain inaccessible to other users on multi-user
+    systems. NIST CSF PR.DS-1 (data-at-rest protection).
+
     Args:
         raw_output: Original unfiltered output.
         tool_command: Tool command that produced the output.
@@ -522,6 +784,9 @@ def _quarantine_output(
     meta_file = quarantine_dir / f"quarantine-{engagement_id}-{ts}.meta.json"
 
     quarantine_file.write_text(raw_output, encoding="utf-8")
+    # FIX-8 (RT-003/SR-003): Restrict quarantine file to owner-only read/write.
+    # The directory is 0o700, but files inherit umask (often 0o644). Force 0o600.
+    os.chmod(str(quarantine_file), 0o600)
 
     meta: dict[str, Any] = {
         "timestamp": ts,
@@ -536,6 +801,8 @@ def _quarantine_output(
         meta["detected_at_line"] = match_info.get("line_number", 0)
 
     meta_file.write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8")
+    # FIX-8 (RT-003/SR-003): Restrict meta file permissions too.
+    os.chmod(str(meta_file), 0o600)
 
     print(
         f"[CREDENTIAL-FILTER] Output quarantined to: {quarantine_file}",

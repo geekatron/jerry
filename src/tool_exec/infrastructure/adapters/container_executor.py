@@ -10,46 +10,22 @@ credential filter and evidence pipeline as the local executor.
 References:
     - ADR-PROJ023-001: Container Execution Mode
     - TASK-005: ContainerExecutor
+    - CC-001: H-10 one-class-per-file (ContainerExecutionResult extracted)
 """
 
 from __future__ import annotations
 
 import subprocess
-from dataclasses import dataclass
 from typing import TYPE_CHECKING
+
+from src.tool_exec.domain.value_objects.container_execution_result import (
+    ContainerExecutionResult,
+)
 
 if TYPE_CHECKING:
     from src.tool_exec.domain.services.credential_filter import (
         CredentialFilterService,
-        FilterResult,
     )
-
-
-@dataclass
-class ContainerExecutionResult:
-    """Result of executing a tool command in a container.
-
-    Attributes:
-        exit_code: The process exit code.
-        stdout: Captured standard output (may be filtered).
-        stderr: Captured standard error (may be filtered).
-        raw_stdout: Original unfiltered stdout.
-        raw_stderr: Original unfiltered stderr.
-            FINDING-004 (CWE-200): Introduced so that both streams can be
-            quarantined when a credential is detected in either one.
-        credential_detected: Whether the credential filter triggered on either stream.
-        filter_result: Full credential filter result for stdout, or None if not applied.
-        container_service: The Docker Compose service that ran the command.
-    """
-
-    exit_code: int
-    stdout: str
-    stderr: str
-    raw_stdout: str
-    raw_stderr: str = ""
-    credential_detected: bool = False
-    filter_result: FilterResult | None = None
-    container_service: str = ""
 
 
 class ContainerExecutor:
@@ -96,6 +72,7 @@ class ContainerExecutor:
             compose_file: Path to docker-compose.yml, relative to project root.
             timeout: Maximum execution time in seconds.
             no_filter: If True, skip credential filtering.
+                FORBIDDEN when JERRY_STRICT_MODE=true (PM-002, FIX-13).
             exec_flags: Additional docker compose exec flags (e.g., ['-T']).
 
         Returns:
@@ -157,8 +134,17 @@ class ContainerExecutor:
             stdout_filter_result = self._credential_filter.filter_output(raw_stdout)
             stderr_filter_result = self._credential_filter.filter_output(raw_stderr)
             detected = stdout_filter_result.detected or stderr_filter_result.detected
+            # FIX-17: Normalize non-zero tool exit codes to TOOL_ERROR (2)
+            # to comply with BC-01/BC-02. Exit code 4 overrides when credential
+            # detected; otherwise tool errors map to exit code 2 (TOOL_ERROR).
+            if detected:
+                exit_code = 4
+            elif result.returncode != 0:
+                exit_code = 2
+            else:
+                exit_code = 0
             return ContainerExecutionResult(
-                exit_code=4 if detected else result.returncode,
+                exit_code=exit_code,
                 stdout=stdout_filter_result.filtered_output,
                 stderr=stderr_filter_result.filtered_output,
                 raw_stdout=raw_stdout,

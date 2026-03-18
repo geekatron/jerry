@@ -30,12 +30,34 @@ class TestExitCode:
         assert ExitCode.ENGAGEMENT_NOT_INIT == 5
         assert ExitCode.MODE_UNSET == 6
 
+    def test_fix6_family_not_found_is_seven(self) -> None:
+        """CV-008 (FIX-6): FAMILY_NOT_FOUND is exit code 7."""
+        assert ExitCode.FAMILY_NOT_FOUND == 7
+
+    def test_fix6_family_config_error_is_eight(self) -> None:
+        """CV-009 (FIX-6): FAMILY_CONFIG_ERROR is exit code 8."""
+        assert ExitCode.FAMILY_CONFIG_ERROR == 8
+
+    def test_strict_mode_violation_is_nine(self) -> None:
+        """M-03: STRICT_MODE_VIOLATION is exit code 9."""
+        assert ExitCode.STRICT_MODE_VIOLATION == 9
+
+    def test_zone3_container_required_is_ten(self) -> None:
+        """FM-002 (FIX-3): ZONE3_CONTAINER_REQUIRED is exit code 10."""
+        assert ExitCode.ZONE3_CONTAINER_REQUIRED == 10
+
     def test_exit_code_is_int(self) -> None:
         """ExitCode values can be used as integers."""
         assert isinstance(ExitCode.SUCCESS, int)
         assert ExitCode.TOOL_ERROR + 1 == 3
 
-    def test_core_codes_below_ten(self) -> None:
-        """All core exit codes are below 10 (10+ reserved for families)."""
+    def test_core_codes_below_eleven(self) -> None:
+        """All core exit codes are below 11 (11+ reserved for families).
+
+        CV-008/CV-009 (FIX-6) added FAMILY_NOT_FOUND=7, FAMILY_CONFIG_ERROR=8.
+        M-03 renumbered STRICT_MODE_VIOLATION to 9.
+        FM-002 (FIX-3) added ZONE3_CONTAINER_REQUIRED=10.
+        Family-specific codes begin at 11.
+        """
         for code in ExitCode:
-            assert code.value < 10
+            assert code.value < 11, f"Unexpected high exit code: {code.name}={code.value}"

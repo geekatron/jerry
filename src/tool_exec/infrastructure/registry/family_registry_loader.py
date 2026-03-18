@@ -9,6 +9,8 @@ and validates that each resolver implements the ToolFamilyResolverPort interface
 References:
     - ADR-PROJ023-001: Multi-family plugin architecture
     - TASK-001D: FamilyRegistryLoader
+    - SR-005 (FIX-15): Per-entry key validation with clear error messages
+    - DA-004/IN-004 (FIX-16): Explicit priority field for auto-detection ordering
 """
 
 from __future__ import annotations
@@ -41,6 +43,14 @@ _ALLOWED_MODULE_PREFIXES: tuple[str, ...] = ("src.tool_exec.infrastructure.adapt
 # Pattern: starts with uppercase letter, followed by 1-63 alphanumeric chars.
 _CLASS_NAME_PATTERN: re.Pattern[str] = re.compile(r"^[A-Z][a-zA-Z0-9]{1,63}$")
 
+# SR-005 (FIX-15): Required keys for each family entry in tool_families.yaml.
+_REQUIRED_FAMILY_KEYS: tuple[str, ...] = (
+    "name",
+    "resolver_module",
+    "resolver_class",
+    "config_path",
+)
+
 
 class FamilyRegistryLoader:
     """Loads and instantiates tool family resolver plugins.
@@ -51,6 +61,10 @@ class FamilyRegistryLoader:
 
     The loader is designed for use at CLI startup time. It does not cache
     results; each call to load() produces fresh resolver instances.
+
+    Families are sorted by their explicit priority field (ascending: lower
+    value = higher priority) for deterministic auto-detection ordering
+    (DA-004/IN-004, FIX-16).
 
     Security: Module import paths are validated against _ALLOWED_MODULE_PREFIXES
     before importlib.import_module() is called (M-01, T-01 mitigation).
@@ -71,6 +85,10 @@ class FamilyRegistryLoader:
         instantiates the resolver class, and validates it implements the
         ToolFamilyResolverPort interface.
 
+        Families are sorted by priority (ascending) before loading so that
+        auto-detection ordering is deterministic and does not depend on YAML
+        dict insertion order (DA-004/IN-004, FIX-16).
+
         Returns:
             Mapping of family name to resolver instance, including only
             families marked as enabled.
@@ -81,6 +99,8 @@ class FamilyRegistryLoader:
                 implement ToolFamilyResolverPort.
         """
         families = self._parse_registry()
+        # FIX-16: Sort by priority ascending so lower priority number = checked first.
+        families.sort(key=lambda fi: fi.priority)
         resolvers: dict[str, ToolFamilyResolverPort] = {}
 
         for family_info in families:
@@ -102,22 +122,30 @@ class FamilyRegistryLoader:
         """List all registered families without loading resolvers.
 
         Returns:
-            List of ToolFamilyInfo for all families in the registry.
+            List of ToolFamilyInfo for all families in the registry,
+            sorted by priority ascending.
 
         Raises:
             FileNotFoundError: If tool_families.yaml does not exist.
         """
-        return self._parse_registry()
+        families = self._parse_registry()
+        families.sort(key=lambda fi: fi.priority)
+        return families
 
     def _parse_registry(self) -> list[ToolFamilyInfo]:
         """Parse tool_families.yaml into ToolFamilyInfo objects.
+
+        SR-005 (FIX-15): Validates that each family entry contains all
+        required keys before constructing ToolFamilyInfo. Missing keys
+        produce clear error messages identifying the entry index and the
+        missing key name.
 
         Returns:
             List of ToolFamilyInfo for each entry in the registry.
 
         Raises:
             FileNotFoundError: If the registry file does not exist.
-            ValueError: If the YAML is malformed.
+            ValueError: If the YAML is malformed or a required key is missing.
         """
         if not self._registry_path.exists():
             msg = f"Family registry not found: {self._registry_path}"
@@ -134,7 +162,18 @@ class FamilyRegistryLoader:
             raise ValueError(msg)
 
         families: list[ToolFamilyInfo] = []
-        for entry in data["families"]:
+        for idx, entry in enumerate(data["families"]):
+            # SR-005 (FIX-15): Per-entry validation with clear error messages.
+            for required_key in _REQUIRED_FAMILY_KEYS:
+                if required_key not in entry:
+                    entry_name = entry.get("name", f"<entry #{idx}>")
+                    msg = (
+                        f"Family registry entry '{entry_name}' (index {idx}) "
+                        f"is missing required key: '{required_key}'. "
+                        f"Required keys: {', '.join(_REQUIRED_FAMILY_KEYS)}."
+                    )
+                    raise ValueError(msg)
+
             families.append(
                 ToolFamilyInfo(
                     name=entry["name"],
@@ -143,6 +182,9 @@ class FamilyRegistryLoader:
                     resolver_class=entry["resolver_class"],
                     config_path=entry["config_path"],
                     enabled=entry.get("enabled", True),
+                    # DA-004/IN-004 (FIX-16): Explicit priority for ordering.
+                    # Default 100 keeps existing entries at low priority.
+                    priority=entry.get("priority", 100),
                 )
             )
 

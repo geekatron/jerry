@@ -9,11 +9,12 @@ and class for dynamic loading via importlib.
 References:
     - ADR-PROJ023-001: Multi-family plugin architecture
     - TASK-001C: Value Objects
+    - DA-004/IN-004 (FIX-16): Explicit priority field for auto-detection ordering
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass(frozen=True)
@@ -33,6 +34,10 @@ class ToolFamilyInfo:
         config_path: Path to the family's tool resolution configuration file,
             relative to the project root.
         enabled: Whether this family is active in the current configuration.
+        priority: Explicit priority for auto-detection ordering. Lower value
+            means higher priority (checked first during auto-detection).
+            Default 100 keeps existing entries at standard priority.
+            DA-004/IN-004 (FIX-16): Replaces implicit YAML dict insertion order.
     """
 
     name: str
@@ -41,3 +46,4 @@ class ToolFamilyInfo:
     resolver_class: str
     config_path: str
     enabled: bool = True
+    priority: int = field(default=100)

@@ -365,13 +365,28 @@ class TestFilterResult:
         result = filter_svc.filter_output(raw)
         assert result.raw_output == raw
 
-    def test_filter_result_redaction_notice(self) -> None:
-        """FilterResult contains redaction notice when credential detected."""
+    def test_filter_result_inline_redaction(self) -> None:
+        """DA-002/CV-005 (FIX-1): FilterResult does inline [CREDENTIAL-REDACTED]
+        substitution on the matched line, preserving surrounding output."""
+        filter_svc = CredentialFilterService()
+        pw = "longpassword1"
+        result = filter_svc.filter_output(f"prefix text\npassword={pw}\nsuffix text")
+        assert result.detected is True
+        # Inline substitution: the credential token is replaced, surrounding lines kept
+        assert "[CREDENTIAL-REDACTED]" in result.filtered_output
+        assert "prefix text" in result.filtered_output
+        assert "suffix text" in result.filtered_output
+        # Raw credential must NOT appear in filtered output
+        assert pw not in result.filtered_output
+
+    def test_filter_result_single_line_redaction(self) -> None:
+        """Single-line credential is replaced inline."""
         filter_svc = CredentialFilterService()
         pw = "longpassword1"
         result = filter_svc.filter_output(f"password={pw}")
-        assert "[CREDENTIAL-FILTER]" in result.filtered_output
-        assert "quarantined" in result.filtered_output
+        assert result.detected is True
+        assert "[CREDENTIAL-REDACTED]" in result.filtered_output
+        assert pw not in result.filtered_output
 
 
 class TestCredentialFilterSlidingWindow:

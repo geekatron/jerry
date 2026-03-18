@@ -132,7 +132,11 @@ class TestContainerExecutorFinding004:
 
     @patch("src.tool_exec.infrastructure.adapters.container_executor.subprocess.run")
     def test_credential_in_stderr_triggers_detection(self, mock_run: MagicMock) -> None:
-        """Credential in stderr triggers detection and sets exit code 4 (FINDING-004)."""
+        """Credential in stderr triggers detection and sets exit code 4 (FINDING-004).
+
+        DA-002/CV-005 (FIX-1): Inline redaction -- the credential token is
+        replaced with [CREDENTIAL-REDACTED] in the filtered stderr output.
+        """
         mock_run.return_value = MagicMock(
             returncode=0,
             stdout="clean stdout",
@@ -148,7 +152,7 @@ class TestContainerExecutorFinding004:
 
         assert result.credential_detected is True
         assert result.exit_code == 4
-        assert "[CREDENTIAL-FILTER]" in result.stderr
+        assert "[CREDENTIAL-REDACTED]" in result.stderr
 
     @patch("src.tool_exec.infrastructure.adapters.container_executor.subprocess.run")
     def test_credential_in_stderr_filters_stderr_output(self, mock_run: MagicMock) -> None:

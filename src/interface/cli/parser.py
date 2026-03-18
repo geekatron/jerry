@@ -1082,3 +1082,24 @@ def _add_tool_namespace(
         default=False,
         help="Verify container service is running (no tool execution)",
     )
+
+    # FIX-7 (CV-013): UC-004 management commands
+    exec_parser.add_argument(
+        "--list-families",
+        dest="list_families",
+        action="store_true",
+        default=False,
+        help="List all registered tool families and exit",
+    )
+
+    exec_parser.add_argument(
+        "--list-tools",
+        dest="list_tools",
+        nargs="?",
+        const=True,
+        default=None,
+        metavar="FAMILY",
+        help=(
+            "List all tools in the registry and exit. Optionally filter to a specific FAMILY name."
+        ),
+    )

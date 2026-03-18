@@ -11,48 +11,18 @@ References:
     - ADR-PROJ023-001: Behavioral Contract BC-07 (Credential Filtering)
     - rainbow-tool-exec lines 322-348: Original bash patterns
     - TASK-006: CredentialFilterService
+    - DA-002/CV-005: Inline per-match redaction (FIX-1)
+    - PM-002: Strict-mode enforcement at domain level (FIX-13)
 """
 
 from __future__ import annotations
 
+import os
 import re
-from dataclasses import dataclass
-from typing import TYPE_CHECKING
+import sys
 
-if TYPE_CHECKING:
-    pass
-
-
-@dataclass(frozen=True)
-class CredentialMatch:
-    """Result of a credential detection match.
-
-    Attributes:
-        pattern: The regex pattern that matched.
-        line_number: 1-based line number where the match occurred.
-        case_sensitive: Whether the match was case-sensitive.
-    """
-
-    pattern: str
-    line_number: int
-    case_sensitive: bool
-
-
-@dataclass
-class FilterResult:
-    """Result of applying the credential filter to output.
-
-    Attributes:
-        detected: Whether any credential was detected.
-        match: The first CredentialMatch, or None if no detection.
-        filtered_output: The output after filtering (redacted or original).
-        raw_output: The original unfiltered output.
-    """
-
-    detected: bool
-    match: CredentialMatch | None
-    filtered_output: str
-    raw_output: str
+from src.tool_exec.domain.value_objects.credential_match import CredentialMatch
+from src.tool_exec.domain.value_objects.filter_result import FilterResult
 
 
 class CredentialFilterService:
@@ -83,6 +53,12 @@ class CredentialFilterService:
 
     Security: M-02 mitigation for T-03 (DREAD 36 -> 24 post-mitigation).
     The AI CLI family extension requires cloud AI API key coverage.
+
+    PM-002 (FIX-13): Strict-mode enforcement is applied at the domain level
+    so programmatic callers cannot bypass credential filtering by omitting the
+    strict-mode gate present in the CLI handler. When JERRY_STRICT_MODE is
+    true (the default), filter_output() with no_filter=True raises RuntimeError
+    rather than silently skipping the filter.
     """
 
     REDACTION_MARKER = "[CREDENTIAL-REDACTED]"
@@ -166,8 +142,19 @@ class CredentialFilterService:
                 self._ci_patterns.append(compiled)
                 self._ci_raw.append(pattern_str)
 
-    def filter_output(self, raw_output: str) -> FilterResult:
+    def filter_output(self, raw_output: str, no_filter: bool = False) -> FilterResult:
         """Apply the credential filter to tool output.
+
+        PM-002 (FIX-13): When JERRY_STRICT_MODE is true (default) and
+        no_filter=True is requested by a programmatic caller, this method
+        raises RuntimeError rather than silently bypassing filtering. This
+        ensures the strict-mode gate cannot be circumvented by callers that
+        do not route through the CLI handler's --no-filter check.
+
+        DA-002/CV-005 (FIX-1): On detection, performs inline per-match
+        [CREDENTIAL-REDACTED] substitution on the matching line, preserving
+        all other output lines intact. The raw output is preserved in
+        FilterResult.raw_output for quarantine purposes.
 
         Uses a sliding-window approach: scans each line individually, then
         scans adjacent line pairs to catch credentials split across line
@@ -176,10 +163,38 @@ class CredentialFilterService:
 
         Args:
             raw_output: The raw tool output to filter.
+            no_filter: If True, skip filtering. FORBIDDEN when
+                JERRY_STRICT_MODE=true (PM-002).
 
         Returns:
             FilterResult with detection status and filtered output.
+
+        Raises:
+            RuntimeError: If no_filter=True and JERRY_STRICT_MODE=true (PM-002).
         """
+        # PM-002 (FIX-13): Domain-level strict mode enforcement.
+        # The CLI handler also checks this, but enforcing it here prevents
+        # programmatic callers from bypassing the filter entirely.
+        if no_filter:
+            strict_mode_env = os.environ.get("JERRY_STRICT_MODE", "true").lower()
+            strict = strict_mode_env not in ("false", "0", "no")
+            if strict:
+                msg = (
+                    "no_filter=True is FORBIDDEN when JERRY_STRICT_MODE=true. "
+                    "Set JERRY_STRICT_MODE=false to allow unfiltered output."
+                )
+                print(
+                    f"[CREDENTIAL-FILTER] {msg}",
+                    file=sys.stderr,
+                )
+                raise RuntimeError(msg)
+            return FilterResult(
+                detected=False,
+                match=None,
+                filtered_output=raw_output,
+                raw_output=raw_output,
+            )
+
         lines = raw_output.split("\n")
 
         # Pass 1: Single-line scan (fast path for most detections)
@@ -189,7 +204,7 @@ class CredentialFilterService:
                 return FilterResult(
                     detected=True,
                     match=match,
-                    filtered_output=self._build_redaction_notice(match.line_number),
+                    filtered_output=self._redact_line(lines, line_idx, match),
                     raw_output=raw_output,
                 )
 
@@ -201,6 +216,7 @@ class CredentialFilterService:
             joined = lines[line_idx] + lines[line_idx + 1]
             match = self._scan_text(joined, line_idx + 1)
             if match is not None:
+                # Redact both lines that contributed to the split credential
                 return FilterResult(
                     detected=True,
                     match=CredentialMatch(
@@ -208,7 +224,7 @@ class CredentialFilterService:
                         line_number=match.line_number,
                         case_sensitive=match.case_sensitive,
                     ),
-                    filtered_output=self._build_redaction_notice(match.line_number),
+                    filtered_output=self._redact_adjacent_lines(lines, line_idx, match),
                     raw_output=raw_output,
                 )
 
@@ -219,6 +235,60 @@ class CredentialFilterService:
             filtered_output=raw_output,
             raw_output=raw_output,
         )
+
+    def _redact_line(
+        self,
+        lines: list[str],
+        line_idx: int,
+        match: CredentialMatch,
+    ) -> str:
+        """Perform inline [CREDENTIAL-REDACTED] substitution on the matched line.
+
+        DA-002/CV-005 (FIX-1): Replaces the matched token within the line
+        using the matching compiled pattern. Surrounding lines are preserved.
+
+        Args:
+            lines: All output lines split by newline.
+            line_idx: 0-based index of the line that matched.
+            match: The CredentialMatch describing which pattern fired.
+
+        Returns:
+            Reassembled output with the matched line redacted inline.
+        """
+        pattern = (
+            re.compile(match.pattern)
+            if match.case_sensitive
+            else re.compile(match.pattern, re.IGNORECASE)
+        )
+        redacted_lines = list(lines)
+        redacted_lines[line_idx] = pattern.sub(self.REDACTION_MARKER, lines[line_idx])
+        return "\n".join(redacted_lines)
+
+    def _redact_adjacent_lines(
+        self,
+        lines: list[str],
+        line_idx: int,
+        match: CredentialMatch,
+    ) -> str:
+        """Redact both adjacent lines that contributed to a split credential.
+
+        For credentials detected via the sliding-window pass (VF-001), both
+        the line at line_idx and line_idx+1 are replaced with the redaction
+        marker since the split credential spans both.
+
+        Args:
+            lines: All output lines split by newline.
+            line_idx: 0-based index of the first line in the pair.
+            match: The CredentialMatch describing which pattern fired.
+
+        Returns:
+            Reassembled output with both contributing lines redacted.
+        """
+        redacted_lines = list(lines)
+        redacted_lines[line_idx] = self.REDACTION_MARKER
+        if line_idx + 1 < len(redacted_lines):
+            redacted_lines[line_idx + 1] = self.REDACTION_MARKER
+        return "\n".join(redacted_lines)
 
     def _scan_text(self, text: str, line_number: int) -> CredentialMatch | None:
         """Scan a text string against all patterns.
@@ -255,20 +325,3 @@ class CredentialFilterService:
             Count of case-sensitive plus case-insensitive patterns.
         """
         return len(self._cs_patterns) + len(self._ci_patterns)
-
-    def _build_redaction_notice(self, line_number: int) -> str:
-        """Build the redaction notice for quarantined output.
-
-        Args:
-            line_number: 1-based line number where the credential was detected.
-
-        Returns:
-            Redaction notice string.
-        """
-        return (
-            f"[CREDENTIAL-FILTER] Output quarantined. "
-            f"Detecting layer: L1-regex. "
-            f"Pattern matched at line {line_number}.\n"
-            f"[CREDENTIAL-FILTER] Do NOT attempt to retrieve "
-            f"quarantined content without operator review."
-        )

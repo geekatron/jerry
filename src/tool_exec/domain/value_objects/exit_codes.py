@@ -10,6 +10,7 @@ References:
     - ADR-PROJ023-001: Error Handling (exit codes 0-6)
     - TASK-009: ExitCode enum
     - M-03: STRICT_MODE_VIOLATION added for --no-filter enforcement (T-06)
+    - CV-008/CV-009: FIX-6 -- FAMILY_NOT_FOUND=7 and FAMILY_CONFIG_ERROR=8 added
 """
 
 from __future__ import annotations
@@ -33,7 +34,16 @@ class ExitCode(IntEnum):
         CREDENTIAL_DETECTED: Credential detected in tool output; output quarantined.
         ENGAGEMENT_NOT_INIT: Required engagement directory not initialized.
         MODE_UNSET: Execution mode not set for a Zone 2/3 tool in strict mode.
+        FAMILY_NOT_FOUND: Named family not found in the registry (CV-008, FIX-6).
+        FAMILY_CONFIG_ERROR: Family registry config is malformed or missing required
+            keys (CV-009, FIX-6).
         STRICT_MODE_VIOLATION: Forbidden flag used while JERRY_STRICT_MODE=true.
+            M-03 (T-06, DREAD 34): --no-filter is FORBIDDEN when
+            JERRY_STRICT_MODE=true. Exit code 9 signals that the command was
+            rejected by the strict mode gate before any tool execution occurred.
+            OWASP A01:2021 Broken Access Control.
+        ZONE3_CONTAINER_REQUIRED: Zone 3 tool requested with --mode local, which
+            violates the container_required policy (FM-002, FIX-3).
     """
 
     SUCCESS = 0
@@ -43,10 +53,14 @@ class ExitCode(IntEnum):
     CREDENTIAL_DETECTED = 4
     ENGAGEMENT_NOT_INIT = 5
     MODE_UNSET = 6
-    # M-03 (T-06, DREAD 34): --no-filter is FORBIDDEN when JERRY_STRICT_MODE=true.
-    # Exit code 7 signals that the command was rejected by the strict mode gate
-    # before any tool execution occurred. OWASP A01:2021 Broken Access Control.
-    STRICT_MODE_VIOLATION = 7
-    # 10+ reserved for family-specific extensions:
-    #   10-19: rainbow family
+    # CV-008 (FIX-6): Family not found in registry.
+    FAMILY_NOT_FOUND = 7
+    # CV-009 (FIX-6): Family registry config is malformed.
+    FAMILY_CONFIG_ERROR = 8
+    # M-03 (T-06, DREAD 34): Strict mode violation -- forbidden flag detected.
+    STRICT_MODE_VIOLATION = 9
+    # FM-002 (FIX-3): Zone 3 container enforcement -- local mode rejected.
+    ZONE3_CONTAINER_REQUIRED = 10
+    # 11+ reserved for family-specific extensions:
+    #   11-19: rainbow family
     #   20-29: reserved for future families
