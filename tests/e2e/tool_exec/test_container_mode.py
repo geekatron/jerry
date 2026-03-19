@@ -124,10 +124,11 @@ class TestZone1OfflineContainerMode:
             f"Expected 'chainsaw' in output. stdout={stdout!r} stderr={stderr!r}"
         )
 
-    def test_checkov_container(self, blue_team_cluster: str, cli_run) -> None:  # type: ignore[no-untyped-def]
+    def test_checkov_container(self, cloud_cluster: str, cli_run) -> None:  # type: ignore[no-untyped-def]
         """checkov executes in container mode.
 
-        checkov is a Zone 1 IaC analysis tool -- no proxy, no engagement.
+        checkov is in the cloud-auditor service (rainbow-cloud compose).
+        Zone 1 IaC analysis tool -- no proxy, no engagement.
         """
         exit_code, stdout, stderr = cli_run("--mode", "container", "checkov", "--", "--version")
         assert exit_code in (0, 2), (
@@ -135,8 +136,9 @@ class TestZone1OfflineContainerMode:
             f"Got exit_code={exit_code}. stdout={stdout!r} stderr={stderr!r}"
         )
         combined = stdout + stderr
-        assert "checkov" in combined.lower(), (
-            f"Expected 'checkov' in output. stdout={stdout!r} stderr={stderr!r}"
+        # checkov --version outputs just the version number (e.g., "3.2.445")
+        assert combined.strip(), (
+            f"Expected version output from checkov. stdout={stdout!r} stderr={stderr!r}"
         )
 
 
@@ -181,8 +183,9 @@ class TestZone1UpdateContainerMode:
             f"Got exit_code={exit_code}. stdout={stdout!r} stderr={stderr!r}"
         )
         combined = stdout + stderr
-        assert "trivy" in combined.lower(), (
-            f"Expected 'trivy' in output. stdout={stdout!r} stderr={stderr!r}"
+        # trivy --version outputs "Version: X.Y.Z" without the word "trivy"
+        assert "version" in combined.lower(), (
+            f"Expected 'version' in output. stdout={stdout!r} stderr={stderr!r}"
         )
 
 
@@ -351,8 +354,9 @@ class TestZone2ContainerMode:
             f"Got exit_code={exit_code}. stdout={stdout!r} stderr={stderr!r}"
         )
         combined = stdout + stderr
-        assert "frida" in combined.lower() or "v" in combined.lower(), (
-            f"Expected frida version text. stdout={stdout!r} stderr={stderr!r}"
+        # frida --version outputs just "17.8.2" (no tool name prefix)
+        assert combined.strip(), (
+            f"Expected frida version output. stdout={stdout!r} stderr={stderr!r}"
         )
 
 

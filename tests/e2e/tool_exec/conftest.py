@@ -323,22 +323,33 @@ def runtime_cluster(project_root: Path) -> str:  # type: ignore[misc]
 
 
 @pytest.fixture(scope="session")
-def engagement_init(project_root: Path, cli_run) -> None:  # type: ignore[misc]
+def engagement_init(project_root: Path):  # type: ignore[misc]
     """Initialize E2E-TEST-001 engagement once per session.
 
-    Creates the engagement directory and scope config that Zone 2/3 tools
-    require before execution.  Tears down the engagement directory on session
-    exit.
+    Uses subprocess directly (not cli_run) because this is session-scoped
+    and cli_run is function-scoped. ScopeMismatch fix.
 
-    Tests that invoke Zone 2 or Zone 3 tools MUST request this fixture so the
-    engagement exists before the tool call is made.
+    Creates the engagement directory that Zone 2/3 tools require.
+    Cleans up E2E-TEST-* engagement dirs on session exit (F-003 mitigation).
     """
     eng_id = "E2E-TEST-001"
-    cli_run("--init-engagement", eng_id)
+    eng_dir = project_root / "work" / "engagements" / eng_id
+
+    # F-003: Clean stale engagement dirs from prior crashed sessions
+    engagements_root = project_root / "work" / "engagements"
+    if engagements_root.exists():
+        for stale in engagements_root.glob("E2E-TEST-*"):
+            shutil.rmtree(stale, ignore_errors=True)
+
+    subprocess.run(
+        ["uv", "run", "jerry", "tool", "exec", "_", "--init-engagement", eng_id],
+        capture_output=True,
+        cwd=str(project_root),
+        timeout=30,
+    )
 
     yield
 
-    eng_dir = project_root / "work" / "engagements" / eng_id
     if eng_dir.exists():
         shutil.rmtree(eng_dir, ignore_errors=True)
 
