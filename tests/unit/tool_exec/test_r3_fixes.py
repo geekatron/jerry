@@ -216,13 +216,18 @@ class TestR3Fix2AuditWriteFailure:
         """When operator approves but audit write fails, approval is denied.
 
         FIX-R3-2: Zone 3 MUST NOT execute without a tamper-evident audit record.
+
+        TASK-045 update: The gate now requires the exact phrase
+        "APPROVE: <tool_command>".  The test sends the correct phrase so that
+        approved=True, then the mocked audit write returns False, triggering
+        the fail-closed path and the stderr message.
         """
         init = EngagementInitializer(base_dir=tmp_path / "engagements")
 
         with patch("sys.stdin") as mock_stdin:
             mock_stdin.isatty.return_value = True
-            mock_stdin.readline.return_value = "yes\n"
-            with patch("builtins.input", return_value="yes"):
+            # TASK-045: send the exact confirmation phrase (not legacy "yes")
+            with patch("builtins.input", return_value="APPROVE: msfconsole"):
                 with patch(
                     "src.interface.cli.tool_exec_commands._write_approval_audit",
                     return_value=False,

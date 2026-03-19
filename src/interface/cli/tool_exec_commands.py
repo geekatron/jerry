@@ -974,18 +974,26 @@ def _prompt_zone3_approval(
         )
         return False
 
-    print(
-        f"\n[SECURITY] {zone} tool execution requires explicit approval.",
-        file=sys.stderr,
+    # TASK-045: Confirmation phrase — exact match required (case-sensitive).
+    # The operator must type the precise phrase "APPROVE: <tool_command>" to
+    # authorise execution.  No prefix-match, no lowercase normalisation.
+    # This prevents accidental approval via a casual "yes" or "y" response and
+    # closes the fat-finger / AI-agent coercion attack surface (OWASP A07:2021).
+    expected = f"APPROVE: {tool_command}"
+    prompt = (
+        f"\n[SECURITY] Zone 3 per-operation approval required.\n"
+        f"  Tool: {tool_command}\n"
+        f"  Zone: 3 (Exploitation)\n"
+        f"  Type the exact phrase to authorize: {expected}\n"
+        f"  > "
     )
-    print(f"  Tool: {tool_command}", file=sys.stderr)
-    print(
-        "  This tool performs active exploitation operations. "
-        "Confirm only in an authorized engagement.",
-        file=sys.stderr,
-    )
+    # VULN-W12C-005: Record timing for forensic analysis.
+    # Sub-200ms responses are physiologically impossible for humans.
+    import time as _time
+
+    _prompt_start = _time.monotonic()
     try:
-        answer = input("  Approve? [yes/NO]: ").strip().lower()
+        response = input(prompt)
     except (EOFError, KeyboardInterrupt):
         _write_approval_audit(
             tool_command=tool_command,
@@ -997,7 +1005,15 @@ def _prompt_zone3_approval(
         )
         return False
 
-    approved = answer == "yes"
+    # Exact match only — startswith/lower() are explicitly prohibited (TASK-045).
+    approved = response.strip() == expected
+    # VULN-W12C-005: Compute response elapsed time for forensic audit.
+    _response_elapsed_ms = int((_time.monotonic() - _prompt_start) * 1000)
+
+    # VULN-W12C-003: Cap input length to prevent disk exhaustion via audit trail.
+    _max_input_len = len(expected) + 64
+    _capped_response = response.strip()[:_max_input_len]
+
     audit_ok = _write_approval_audit(
         tool_command=tool_command,
         zone=zone,
@@ -1005,6 +1021,9 @@ def _prompt_zone3_approval(
         reason="operator input",
         engagement_id=engagement_id,
         engagement_init=engagement_init,
+        confirmation_input=_capped_response,
+        expected_phrase=expected,
+        response_elapsed_ms=_response_elapsed_ms,
     )
     # FIX-R3-2 (PM-002-R3/RT-001/IN-021): If the operator approved but the
     # audit record could not be written, deny the execution. Zone 3 execution
@@ -1029,6 +1048,9 @@ def _write_approval_audit(
     reason: str,
     engagement_id: str | None,
     engagement_init: EngagementInitializer,
+    confirmation_input: str | None = None,
+    expected_phrase: str | None = None,
+    response_elapsed_ms: int | None = None,
 ) -> bool:
     """Write a Zone 3 approval/denial event to the engagement audit trail.
 
@@ -1046,6 +1068,15 @@ def _write_approval_audit(
     The except block also prints to stderr so audit failures are always visible
     in the operator console even when log output is suppressed.
 
+    TASK-045: confirmation_input and expected_phrase are recorded when an
+    interactive prompt was presented.  Both fields allow post-incident
+    forensics to verify whether the operator typed the required phrase.
+
+    TASK-046: The ``source`` field identifies the invocation surface.
+    JERRY_ZONE3_AUDIT_SOURCE is read here (infrastructure / CLI boundary),
+    consistent with H-07 (infrastructure adapters read env vars; domain
+    services receive plain values).
+
     Args:
         tool_command: The tool for which approval was sought.
         zone: The security zone label.
@@ -1053,6 +1084,8 @@ def _write_approval_audit(
         reason: Human-readable reason for the decision.
         engagement_id: Active engagement identifier (may be None).
         engagement_init: Engagement initializer for directory resolution.
+        confirmation_input: The exact string the operator typed (TASK-045).
+        expected_phrase: The phrase the operator was asked to type (TASK-045).
 
     Returns:
         True if the audit record was written successfully, False otherwise.
@@ -1092,6 +1125,11 @@ def _write_approval_audit(
         base_name = f"zone3-approval-{label}-{ts}"
         audit_file = audit_dir / f"{base_name}.json"
 
+        # TASK-046 / VULN-W12C-002: Derive source from observable runtime facts,
+        # NOT from env var (env var is caller-controlled and can be spoofed).
+        # sys.stdin.isatty() is the same check the approval gate uses.
+        audit_source = "interactive_tty" if sys.stdin.isatty() else "non_interactive"
+
         event: dict[str, Any] = {
             "timestamp": dt_now.isoformat(),
             "engagement_id": engagement_id,
@@ -1099,7 +1137,17 @@ def _write_approval_audit(
             "zone": zone,
             "approved": approved,
             "reason": reason,
+            "source": audit_source,
         }
+        # TASK-045: Record operator input for forensic verification.
+        # Only present when an interactive prompt was shown (not on auto-deny).
+        if confirmation_input is not None:
+            event["confirmation_input"] = confirmation_input
+        if expected_phrase is not None:
+            event["expected_phrase"] = expected_phrase
+        # VULN-W12C-005: Response timing for forensic analysis.
+        if response_elapsed_ms is not None:
+            event["response_elapsed_ms"] = response_elapsed_ms
         content = json.dumps(event, indent=2) + "\n"
 
         # Atomic exclusive create: O_CREAT|O_EXCL prevents overwriting an
