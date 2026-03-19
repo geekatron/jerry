@@ -1,0 +1,401 @@
+# Quality Score Report — Phase 3 Verification Package (Barrier 3 / QG-B3)
+# SSOT: .context/rules/quality-enforcement.md
+# Scoring strategy: S-014 (LLM-as-Judge), 6-dimension weighted composite
+# Scored: 2026-03-10
+
+---
+
+## l0_executive_summary
+
+score: 0.8555
+verdict: REVISE
+threshold: 0.94
+gate: QG-B3
+barrier: barrier-3
+weakest_dimension: internal_consistency
+weakest_score: 0.82
+one_line_assessment: >
+  The three-report verification package is technically strong with precise code-level citations
+  and 100% test coverage achieved, but falls short of the 0.94 gate threshold due to an
+  unreconciled severity divergence (LOW vs. HIGH) for the Jinja2 version-pin structural risk,
+  absent cross-report traceability, and a missing consolidated gate-disposition verdict.
+
+# ---
+
+## scoring_context
+
+deliverables:
+  - path: projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-3/eng-qa-report.md
+    agent: eng-qa
+    role: Test coverage gap analysis and H-20 verification
+  - path: projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-3/security-review.md
+    agent: eng-architect
+    role: STRIDE mitigation verification and hexagonal compliance audit
+  - path: projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-3/attack-surface-report.md
+    agent: red-vuln
+    role: Independent attack surface analysis (PTES vulnerability phase)
+
+deliverable_type: Combined Verification Package
+criticality_level: C4
+scoring_strategy: S-014 (LLM-as-Judge)
+ssot_reference: .context/rules/quality-enforcement.md
+iteration: 1
+strategy_findings_incorporated: false
+
+runtime_evidence:
+  command: "uv run pytest tests/unit/docs/ --cov=src/docs --cov-report=term-missing"
+  result: 51 passed, 100% coverage, 0.17s
+  module_coverage:
+    generate_docs_command_handler: 100%  # 135 lines (note: report states 112 stmts; orchestrator 135 may include imports)
+    skill_extractor: 100%  # 97 lines
+    ast_frontmatter_reader: 100%  # 32 lines
+    jinja2_renderer: 100%  # 35 lines
+
+# ---
+
+## score_summary
+
+score_summary:
+  weighted_composite: 0.8555
+  threshold: 0.94
+  verdict: REVISE
+  strategy_findings: "No"
+
+# ---
+
+## dimension_scores
+
+dimensions:
+  completeness:
+    weight: 0.20
+    score: 0.87
+    weighted: 0.1740
+    evidence_summary: >
+      All five required verification categories addressed (coverage gap analysis, threat model
+      verification, attack surface analysis, hexagonal compliance, residual risk register).
+      Gap: unresolved MEDIUM/HIGH findings not formally dispositioned for gate passage.
+
+  internal_consistency:
+    weight: 0.20
+    score: 0.82
+    weighted: 0.1640
+    evidence_summary: >
+      eng-architect rates Jinja2 version-pin residual risk as LOW (A06:2021 row);
+      red-vuln rates the same artifact as HIGH (structural constraint risk).
+      No cross-report reconciliation of the divergent ratings.
+
+  methodological_rigor:
+    weight: 0.20
+    score: 0.88
+    weighted: 0.1760
+    evidence_summary: >
+      All three agents apply named, structured methodologies (OWASP/NIST/PTES).
+      Known limitation: line-coverage only (not branch coverage) acknowledged in eng-qa report.
+      Static-only security analysis is in-scope for Phase 3.
+
+  evidence_quality:
+    weight: 0.15
+    score: 0.90
+    weighted: 0.1350
+    evidence_summary: >
+      Exceptional: file:line citations throughout all three reports, literal code snippets
+      for critical controls, spec-to-implementation configuration match tables, CVE with
+      GHSA/NVD/Snyk references, runtime evidence from orchestrator confirming 51 passed.
+
+  actionability:
+    weight: 0.15
+    score: 0.83
+    weighted: 0.1245
+    evidence_summary: >
+      Strong within each report (hardening backlog with effort estimates, Phase 4 recommendations).
+      Gap: no consolidated gate verdict (QG-B3 PASS/FAIL with enumerated deferred items);
+      orchestrator cannot determine gate disposition from the package alone.
+
+  traceability:
+    weight: 0.10
+    score: 0.82
+    weighted: 0.0820
+    evidence_summary: >
+      Within-report traceability is strong (spec line numbers, M-number control references,
+      OWASP categories, ATT&CK IDs). Cross-report traceability is absent — no report
+      references the others; red-vuln F5 (MEDIUM: unsanitized YAML) cannot be traced
+      to a test or eng-architect review finding.
+
+  composite:
+    formula: "(0.87*0.20) + (0.82*0.20) + (0.88*0.20) + (0.90*0.15) + (0.83*0.15) + (0.82*0.10)"
+    calculation: "0.1740 + 0.1640 + 0.1760 + 0.1350 + 0.1245 + 0.0820"
+    total: 0.8555
+
+# ---
+
+## detailed_dimension_analysis
+
+completeness:
+  score: 0.87
+  rubric_band: "0.7-0.89 — Most requirements addressed, minor gaps"
+  evidence: |
+    All five Phase 3 verification categories are present:
+    1. eng-qa: per-module coverage gap analysis (4 modules, 66%→100%), OWASP test category
+       mapping, known-limitation section.
+    2. eng-architect: all 5 STRIDE mitigations (M-1→M-5) verified with file:line citations;
+       all 4 hexagonal constraints (H-07, H-10, H-11, H-33) audited.
+    3. red-vuln: 4 primary vectors + 4 additional findings; bypass feasibility per vector;
+       ATT&CK mappings; hardening backlog with effort estimates.
+    4. Residual risk: documented and disposition stated ("Accepted") for RR-1 and RR-2 in
+       eng-architect; red-vuln L2 residual risk summary table.
+    5. OWASP Top 10 / NIST CSF 2.0 / PTES methodology alignment documented.
+  gaps: |
+    a. The MEDIUM finding (F5: unsanitized static YAML in templates) and the HIGH structural
+       finding (Jinja2 version pin) are each documented as hardening backlog items but are
+       not formally dispositioned as "accepted for Phase 3 passage" or "blocking Phase 3."
+       At C4 criticality a finding above LOW requires an explicit accept/defer decision by
+       an authorized party, not just a recommendation.
+    b. The CI coverage gate (`--cov-fail-under=90`) is acknowledged as missing but not resolved.
+       This is a regression risk not blocked at CI level.
+    c. eng-qa recommends integration tests against a real skills directory — the gap exists
+       and is noted but not addressed.
+  improvement_path: |
+    Add a consolidated gate-disposition section (even a brief YAML block) to one of the
+    reports or as a separate gate-decision artifact: enumerate open findings above LOW,
+    state disposition (accept/defer/block), and name the decision authority.
+
+internal_consistency:
+  score: 0.82
+  rubric_band: "0.7-0.89 — Minor inconsistencies"
+  evidence: |
+    Within each individual report, claims are mutually consistent. The eng-qa before/after
+    coverage tables are arithmetically correct (323 stmts, 111 missed = 66%; 0 missed = 100%).
+    The 51-test count is consistent across the L0 summary and L1 detail sections.
+    eng-architect M-2 configuration match table exactly matches the spec values cited.
+  gaps: |
+    Critical cross-report inconsistency:
+    - eng-architect (security-review.md, L2 OWASP table, A06:2021 row): rates Jinja2 version-pin
+      residual risk as LOW ("Pallets project has strong security track record").
+    - red-vuln (attack-surface-report.md, Vector 2): rates the SAME Jinja2 version constraint
+      as HIGH ("structurally exposes the application to being stranded on a vulnerable version").
+    Both framings are defensible in isolation, but the package presents them without reconciliation.
+    A reviewer reading both reports encounters conflicting severity labels on the same artifact
+    without guidance on which applies for gate disposition.
+    Secondary: eng-architect's M-5 evidence table shows skill name pattern as
+    `^[a-zA-Z][a-zA-Z0-9-]*$` (mixed case), while the threat model spec is cited as requiring
+    `^[a-z][a-z0-9-]*$` (lowercase only) — eng-architect documents the observation but calls it
+    COMPLIANT without explaining how the pattern expansion was authorized. This is minor.
+  improvement_path: |
+    Add a cross-report reconciliation note for the Jinja2 severity divergence. One sentence
+    in either report (or in the consolidated gate-disposition artifact) resolving the
+    LOW-vs-HIGH framing would close this gap: e.g., "eng-architect rates current residual
+    risk LOW (no active CVE); red-vuln rates structural forward risk HIGH (pin blocks future
+    patches). Gate disposition: LOW-risk accepted; HIGH-risk deferred to Priority 1 hardening
+    action before next release."
+
+methodological_rigor:
+  score: 0.88
+  rubric_band: "0.7-0.89 — Sound methodology, minor gaps"
+  evidence: |
+    eng-qa applies a structured gap analysis framework: per-module coverage breakdown,
+    root-cause identification, remediation mapping, OWASP test category mapping.
+    eng-architect applies STRIDE mitigation verification (explicit spec-to-implementation
+    comparison tables), OWASP Top 10 (2021) mapping, and NIST CSF 2.0 function mapping.
+    red-vuln applies PTES vulnerability analysis phase methodology with per-vector structure
+    (scenario → control → bypass feasibility → rating → recommendation), ATT&CK mapping.
+    All three agents cite named methodologies and apply them consistently within their reports.
+    The bypass feasibility analysis in red-vuln engages with actual regex patterns and version
+    strings rather than generic assertions.
+  gaps: |
+    a. Line-coverage-only measurement: eng-qa acknowledges that branch coverage (--cov-branch)
+       is not measured. At C4 criticality, the compound boolean condition in _check_drift
+       has three reachable branches but tests exercise one. This is acknowledged but not
+       addressed. For a C4 verification package, line coverage alone is a methodological
+       shortfall even when the limitation is documented.
+    b. red-vuln performs static analysis only; no dynamic testing (fuzzing, DAST) is
+       attempted. This is appropriate scope for a Phase 3 internal review but is not
+       explicitly stated as a scope boundary in the report.
+  improvement_path: |
+    Add --cov-branch to the coverage measurement and re-run. Document the branch coverage
+    result (even if 100% is not achieved) as a quantified residual. Explicitly state the
+    static-only scope boundary in red-vuln L0 to prevent misinterpretation.
+
+evidence_quality:
+  score: 0.90
+  rubric_band: "0.9+ — All claims with credible citations"
+  evidence: |
+    eng-qa: Every gap-closure test is linked to specific line numbers in the source module.
+    Security control numbers (M-1 through M-5) appear in test docstrings. Before/after
+    coverage tables with exact statement counts. Runtime evidence (51 passed, 0.17s, 100%)
+    from the orchestrator provides external confirmation of the coverage claim.
+    eng-architect: Every compliance verdict has a file:line citation. Literal code snippets
+    for M-1 regex patterns, M-2 constructor arguments, M-3 tempfile pattern, M-5 validation
+    constants. Configuration match table compares threat model spec text side-by-side with
+    implementation. Bidirectional traceability (spec lines cited for each mitigation).
+    red-vuln: CVE-2025-27516 cited with GHSA-cpwx-vrp4-4pq7, NVD, and Snyk identifiers.
+    Version pin cross-referenced against uv.lock (resolved to jinja2==3.1.6). Bypass
+    feasibility analysis references actual regex flags (no re.IGNORECASE) and tests specific
+    crafted payloads against the pattern. File:line citations for all defensive controls.
+  gaps: |
+    The HIGH structural finding for the Jinja2 version constraint is evidence-grounded (correct
+    analysis of what `>=3.1,<3.2` excludes) but does not quantify the probability: no data
+    on historical Jinja2 patch frequency or likelihood of a CVE requiring a version beyond
+    3.1.6. The rating "HIGH" is a structural/severity classification rather than a risk-adjusted
+    probability-weighted assessment. This is a minor evidence gap for the highest-rated finding.
+  improvement_path: |
+    Add a one-sentence probability note to Vector 2's HIGH rating: "Jinja2 has released N
+    security patches in the 3.1.x line since 3.1.0 (source: Pallets changelog); the probability
+    of a future security patch beyond 3.1.6 is assessed as [low/medium]." This converts the
+    structural rating to a risk-adjusted one.
+
+actionability:
+  score: 0.83
+  rubric_band: "0.7-0.89 — Actions present, some vague"
+  evidence: |
+    eng-qa: 4 specific Phase 4+ recommendations with named targets (--cov-branch flag,
+    integration test fixture path, parameterized sanitization tests, pyproject.toml gate).
+    red-vuln: Hardening backlog with 7 items, priority order, file:line targets, and effort
+    estimates (5 min to 1 hr). Literal code diffs for 2 recommendations (newline-collapse,
+    filename-begins-with-dash guard). Key recommendations summarized in L0 for stakeholders.
+    eng-architect: Clean PASS verdict with "no findings require remediation" — appropriate
+    given scope.
+  gaps: |
+    The package lacks a consolidated gate-disposition statement. At C4 criticality, the
+    consuming orchestrator needs to answer: "Is Phase 3 PASSED for QG-B3?" The answer requires
+    knowing whether the MEDIUM/HIGH open findings block the gate or are accepted as deferred.
+    No report provides this. The orchestrator must infer gate passage from the absence of
+    CRITICAL findings, but the gate rules are not stated in the package itself.
+    The hardening backlog Priority 1 (Jinja2 pin change: 5 min effort) is actionable but
+    has not been executed despite the trivial cost — this should be resolved, not deferred.
+  improvement_path: |
+    Produce a one-paragraph gate verdict: "QG-B3 Phase 3 PASS/FAIL. Open findings above LOW:
+    [list]. Disposition: [accept/block]. Priority 1 hardening action [executed/deferred with
+    justification]." This can be added to the orchestrator's phase summary rather than
+    requiring a new artifact.
+
+traceability:
+  score: 0.82
+  rubric_band: "0.7-0.89 — Most items traceable"
+  evidence: |
+    Within eng-qa: tests trace to source line numbers, M-number controls, and OWASP categories.
+    Security notes on each module link tests to the specific defensive property exercised.
+    Within eng-architect: spec line citations bidirectional (e.g., "lines 173-179 of
+    threat-model-doc-module.md" for M-2; "lines 201-206" for M-4). Compliance verdicts
+    traceable to specific file:line implementations.
+    Within red-vuln: CVE references with public IDs (GHSA, NVD, Snyk). ATT&CK technique IDs
+    (T1565.001, T1059.006, T1083, T1059). PTES/OWASP/NIST methodology section references.
+  gaps: |
+    Cross-report traceability is absent. The three reports do not reference each other.
+    Specific gap: red-vuln Finding 5 (MEDIUM: unsanitized static YAML in templates) is
+    identified only by red-vuln. eng-qa has no test for this path (it is not in the M-1
+    coverage scope — static YAML bypasses the sanitization chain). eng-architect does not
+    review it. A reviewer cannot trace F5 from its discovery to a test, a review opinion,
+    or a disposition. For a C4 combined verification package, cross-report traceability
+    is expected.
+    Secondary: the eng-qa report references "Phase 1 tests" and "Phase 1 evidence" without
+    citing the handoff artifact that defined what Phase 1 established. The chain
+    Phase 1 → Phase 3 is implied, not traced.
+  improvement_path: |
+    Add a cross-reference table to the gate-disposition artifact (or to eng-qa): for each
+    finding above INFO in red-vuln, note whether a test exercises the affected code path,
+    and whether eng-architect reviewed the control. A 4-row table closes the traceability
+    gap without requiring report revisions.
+
+# ---
+
+## improvement_recommendations
+
+# Priority ordered by impact on composite score and gate passage
+
+recommendations:
+  - priority: 1
+    dimension: internal_consistency
+    current: 0.82
+    target: 0.90
+    finding: "Jinja2 version-pin severity divergence (LOW in eng-architect, HIGH in red-vuln)"
+    action: >
+      Add a cross-report reconciliation statement to the gate-disposition artifact.
+      Separate the two risk framings explicitly: current-state residual risk (LOW, no active
+      CVE) vs. structural forward risk (HIGH, pin blocks future patches). State which framing
+      drives the gate decision and who accepts the forward risk.
+
+  - priority: 2
+    dimension: actionability
+    current: 0.83
+    target: 0.91
+    finding: "No consolidated gate-disposition verdict for QG-B3"
+    action: >
+      Produce a gate-disposition note (can be in the orchestrator phase summary):
+      enumerate open findings above LOW, state accept/defer/block disposition per finding,
+      and declare QG-B3 Phase 3 PASS or FAIL. Execute the Priority 1 hardening action
+      (Jinja2 pin change to >=3.1.6,<4.0; 5-min effort) before gate passage.
+
+  - priority: 3
+    dimension: traceability
+    current: 0.82
+    target: 0.88
+    finding: "Cross-report traceability absent; red-vuln F5 (MEDIUM) untraced to test or review"
+    action: >
+      Add a cross-reference table in the gate-disposition artifact: for each finding F5-F8,
+      note test coverage status and eng-architect review status. Four rows close the gap.
+
+  - priority: 4
+    dimension: completeness
+    current: 0.87
+    target: 0.92
+    finding: "MEDIUM/HIGH findings undispositioned; CI coverage gate not enforced; branch coverage not measured"
+    action: >
+      (a) Add --cov-fail-under=90 to pyproject.toml [tool.pytest.ini_options] or a pytest.ini
+      coverage gate. (b) Run --cov-branch and report the branch coverage figure as a Phase 3
+      artifact (even if < 100%). (c) Disposition the MEDIUM and HIGH open findings explicitly.
+
+  - priority: 5
+    dimension: methodological_rigor
+    current: 0.88
+    target: 0.92
+    finding: "Branch coverage not measured at C4; static-only scope not declared"
+    action: >
+      Add --cov-branch to the pytest invocation and report branch coverage results.
+      Add a one-sentence scope statement to red-vuln L0: "This review is static analysis only;
+      dynamic testing (DAST, fuzzing) is out of scope for Phase 3."
+
+# ---
+
+## leniency_bias_check
+
+checks:
+  - item: Each dimension scored independently before composite computed
+    status: DONE
+  - item: Evidence documented for each score
+    status: DONE
+  - item: Uncertain scores resolved downward (internal_consistency and traceability both 0.82 not 0.85)
+    status: DONE
+  - item: First-draft calibration considered (iteration 1 of Phase 3; expected 0.80-0.90 range)
+    status: DONE
+  - item: No dimension scored above 0.95 without exceptional evidence
+    status: DONE — evidence_quality is the highest at 0.90
+
+notes: >
+  The evidence quality is genuinely strong (file:line citations throughout, runtime confirmation,
+  CVE cross-references). However, the cross-report consistency gap and missing gate-disposition
+  are real structural defects for a C4 verification package. Scores were not inflated to
+  compensate for strong within-report quality masking package-level gaps.
+  The composite of 0.8555 reflects that the package is good work requiring targeted additions,
+  not a failing package requiring substantial rework.
+
+# ---
+
+## session_context_handoff
+
+# Schema for orchestrator consumption
+
+verdict: REVISE
+composite_score: 0.8555
+threshold: 0.94
+weakest_dimension: internal_consistency
+weakest_score: 0.82
+critical_findings_count: 0
+high_findings_count: 1  # Jinja2 version-pin structural risk (red-vuln Vector 2)
+medium_findings_count: 2  # Path traversal CWD assumption (V3), unsanitized static YAML (F5)
+iteration: 1
+improvement_recommendations:
+  - "Add cross-report reconciliation for Jinja2 severity divergence (LOW vs HIGH)"
+  - "Produce consolidated QG-B3 gate-disposition verdict with open-finding dispositions"
+  - "Add cross-reference traceability table linking red-vuln findings to test and review coverage"
+  - "Execute Jinja2 pin change (>=3.1.6,<4.0) before gate passage — 5-min effort"
+  - "Add --cov-fail-under=90 CI gate and --cov-branch measurement"

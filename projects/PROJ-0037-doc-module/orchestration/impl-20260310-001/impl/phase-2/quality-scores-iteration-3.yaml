@@ -1,0 +1,392 @@
+barrier: barrier-2
+quality_gate: QG-B2
+iteration: 3
+threshold: 0.94
+criticality: C4
+strategies_applied: [S-014, S-003, S-002, S-010, S-004]
+
+# ============================================================
+# GAP CLOSURE VERIFICATION (Iteration 2 -> Iteration 3)
+# ============================================================
+gap_closure_summary:
+  - gap: "CWD-relative template path has no guard (S-004 MOST LIKELY failure mode)"
+    revision: >
+      FOI-1 section added with S-004 MOST LIKELY classification, current mitigation rationale,
+      recommended fix code block (ConfigurationError in create_docs_generator() or
+      Jinja2Renderer.__init__), and formal deferral to Phase 3+ under ST-002. Constraint
+      checklist item #12 added: "TRACKED". This implements S-010 option (c) from iteration 2
+      recommendations.
+    closed: true
+    notes: >
+      Partial closure only. The gap language in iteration 2 was "no fix, guard, or worktracker
+      task." Iteration 3 provides a worktracker task reference (ST-002) and recommended fix code
+      but does not implement the guard or run a test from a non-repo-root directory. The formal
+      deferred tracking is accepted per the S-010 option (c) commitment from iteration 2.
+      The MOST LIKELY failure mode remains unmitigated in the live code.
+
+  - gap: "-> Any return type has no follow-on worktracker item"
+    revision: >
+      FOI-2 section added with recommended fix (TYPE_CHECKING block pattern), low-priority
+      classification, and formal deferral to Phase 3+. Constraint checklist item #13 added:
+      "TRACKED". Matches S-010 recommendation #3 from iteration 1 and revision recommendation
+      #3/priority-4 from iteration 2.
+    closed: true
+
+  - gap: "Informal EXIT_CODE capture (Evidence Quality: 0.90)"
+    revision: >
+      Smoke tests now use explicit $ uv run jerry docs generate 2>&1; echo "Exit: $?"
+      with "Exit: 0" and "Exit: 1" as actual captured shell output, not label annotation.
+      Both smoke tests include the echo $? in the command itself — the output line is
+      verbatim terminal output, not documentation markup. Fully closes the iteration 2
+      evidence quality gap.
+    closed: true
+
+  - gap: "Near-empty functional output not explained (Evidence Quality)"
+    revision: >
+      Skills-skipped behavior explicitly classified as expected behavior: "data/schema
+      alignment issue, not code defect." Explanation includes: FEATURES section renders
+      correctly from features.yaml confirming the rendering pipeline is functional; skills
+      table will populate when SKILL.md frontmatter includes a name field; M-5 validation
+      contract invoked. Closes the iteration 2 concern about undisclosed near-empty output.
+    closed: true
+    notes: >
+      The classification is adequate. However, no controlled-fixture test was added to
+      exercise the happy path (skills with proper name field producing non-empty output).
+      The explanation contextualizes the empty output but does not demonstrate end-to-end
+      functional correctness. Residual evidence limitation acknowledged.
+
+# ============================================================
+# DIMENSION SCORES
+# ============================================================
+dimensions:
+  completeness:
+    score: 0.93
+    weight: 0.20
+    evidence: >
+      All four Phase 2 constraints verified: create_docs_generator() factory pattern (PASS),
+      _handle_docs() dispatch pattern (PASS WITH BUG FIX), _add_docs_namespace presence (PASS),
+      circular import closure (PASS). Bug found and fixed with call-site audit (3 callers, none
+      pass "stdout"). Runtime verification across three modes. 13-item constraint checklist
+      covering all deliverables, fixes, smoke tests, and design debts. FOI-1 and FOI-2 formally
+      document the two design debts with recommended fix code and tracked deferral references.
+      Navigation table updated to include Follow-On Items section. Skills-skipped behavior
+      classified as expected with explanation.
+      Residual gap: No controlled-fixture test demonstrating the skills extraction happy path
+      (skills with proper name field producing non-empty output). The smoke test confirms the
+      bug fix path (exit 0, no crash) but functional correctness for the primary use case
+      (non-empty skills table) is asserted via schema explanation rather than demonstrated.
+      This prevents reaching 0.95+.
+
+  internal_consistency:
+    score: 0.94
+    weight: 0.20
+    evidence: >
+      No contradictions found in iteration 3 additions. FOI-1 consistently classifies the
+      CWD risk as MOST LIKELY (unchanged across iterations 1-3), consistent with prior scoring.
+      Current mitigation ("CLI always invoked via uv run from repo root") is honestly presented
+      alongside the risk — not as a dismissal but as a known boundary condition. FOI-2 -> Any
+      explanation is consistent with Section 1 factory pattern table ("Partial" for return type)
+      and body text explanation.
+      Skills-skipped classification ("data/schema alignment issue, not code defect") is
+      consistent with the smoke test output (exit 0, warnings, FEATURES renders correctly).
+      All 13 constraint checklist items are consistent with the detailed evidence in the report
+      body. The PASS/FIXED/TRACKED designations are accurate.
+      Pre-existing tension noted (Status: PASS WITH BUG FIX alongside unresolved MOST LIKELY
+      failure mode in FOI-1) is unchanged from iteration 2 and was not penalized there. The
+      FOI-1 framing (deferred, not ignored) is a reasonable methodological distinction.
+      Score held at 0.94: rubric 0.9+ = "No contradictions, all claims aligned." This is met.
+      The pre-existing tension is imprecision in framing, not a logical contradiction.
+
+  methodological_rigor:
+    score: 0.92
+    weight: 0.20
+    evidence: >
+      Combined static + runtime verification methodology from iteration 2 is maintained and
+      extended. Static: pattern comparison against named reference implementations with tabular
+      comparison; constructor signatures at file:line; circular import closure traced module
+      by module; OWASP A01/A03/A05/A09 applied to specific code paths. Runtime: three
+      formalized execution traces with explicit exit code capture (echo $?); full pytest
+      verbose output with all 16 test names; call-site grep audit.
+      New in iteration 3: The MOST LIKELY pre-mortem concern (CWD template path) is now
+      formally classified under S-004 with recommended fix code, current mitigation rationale,
+      and deferred tracking under ST-002. This implements S-010 option (c) from iteration 2:
+      "create a worktracker item and reference in the constraint checklist." Constraint #12
+      documents "TRACKED" status. The methodology for handling known risks is now explicit:
+      classify → provide recommended fix → defer formally → track.
+      Residual gap: The verification methodology for the MOST LIKELY failure mode is
+      prospective (recommended fix) rather than demonstrated (guard implemented or subdirectory
+      smoke test run). At C4 criticality, verifying that a known highest-likelihood failure
+      is handled — not just documented — is the stronger methodological standard. This prevents
+      reaching 0.94+. Score increased from 0.90 to 0.92 to reflect the meaningful improvement
+      in formal risk classification and tracking discipline.
+
+  evidence_quality:
+    score: 0.93
+    weight: 0.15
+    evidence: >
+      Significant improvement from 0.90. The exit code capture gap is fully closed:
+      (1) Smoke test 1: $ uv run jerry docs generate 2>&1; echo "Exit: $?" — Exit: 0 as
+          actual shell output captured by the echo $? in the command. Not a label.
+      (2) Smoke test 2: $ uv run jerry docs generate --check 2>&1; echo "Exit: $?" — Exit: 1
+          as actual captured output. Same pattern.
+      (3) Full pytest verbose output: all 16 test names explicitly listed, no abbreviation.
+          test_generate_docs_result_per_mode_semantics is visible — this covers the mode
+          semantics that the bug fix addresses.
+      (4) Call-site grep audit: 3 callers documented with file:line — none pass "stdout".
+      (5) Static evidence chain unchanged and strong: source citations with line numbers,
+          code excerpts for both buggy and fixed states, handler validation at
+          generate_docs_command_handler.py:111.
+      (6) Skills-skipped behavior: 13 warning lines visible in smoke test output; explained
+          as expected behavior in the verdict annotation below the code block.
+      Residual gap: The smoke test demonstrates the bug fix path (exit 0, no crash) and mode
+      routing (exit 1 for --check). The functional output for the primary use case (skills
+      table with real data) is empty because all 13 SKILL.md files lack the name field.
+      The explanation is present and adequate, but the evidence of functional correctness
+      (non-empty rendered output for valid data) remains absent. A controlled-fixture test
+      or a modified SKILL.md with a name field would close this. Score of 0.93 reflects
+      strong evidence coverage that is not quite at 0.95+ due to this limitation.
+
+  actionability:
+    score: 0.93
+    weight: 0.15
+    evidence: >
+      The fix is complete and ready to merge with no blocking TODOs. The report provides
+      concrete commands any developer can reproduce to verify correctness (appendix smoke
+      tests with exact exit codes). Design debts are now actionable:
+      FOI-1 (CWD template path): Recommended fix code block provided (ConfigurationError
+      guard in create_docs_generator() or Jinja2Renderer.__init__), deferred to Phase 3+,
+      tracked under ST-002. A developer can directly implement the provided code.
+      FOI-2 (-> Any return type): Recommended fix code block provided (TYPE_CHECKING block
+      with conditional GenerateDocsCommandHandler import), deferred to Phase 3+ as low
+      priority. A developer can directly implement the provided code.
+      Constraint checklist items #12 and #13 map both debts to their tracking status.
+      Residual imprecision: The FOI deferral tracking reference is "to be tracked as
+      a worktracker follow-on item under ST-002" — prospective rather than resolved
+      (no specific task ID such as ST-002-task-NNN). For C4 rigor, a live worktracker
+      reference is stronger than a prospective one. This prevents reaching 0.95+.
+
+  traceability:
+    score: 0.93
+    weight: 0.10
+    evidence: >
+      Full traceability chain from iteration 2 is maintained and extended with FOI links:
+      Bug diagnosis (mode="stdout" passed to handler) -> Fix in main.py:740-742 ->
+      Dataclass alignment in generate_docs_command.py -> Constraint checklist #5/#8 ->
+      Runtime verification #9/#10/#11 -> Appendix evidence.
+      New traceability chain for design debts:
+      S-004 pre-mortem MOST LIKELY finding -> FOI-1 -> Constraint checklist #12 ->
+      Phase 3+ deferral under ST-002.
+      S-010 recommendation #3 (-> Any) -> FOI-2 -> Constraint checklist #13 ->
+      Phase 3+ deferral.
+      Navigation table updated to include Follow-On Items section anchor. All major document
+      sections are in the nav table with correct anchors.
+      All files reference PROJ-0037 in docstrings. ADR-PROJ0037-001 cited in factory
+      docstring. Constructor signatures traced to file:line. OWASP categories mapped to
+      specific code paths. Iteration-to-iteration revision history traceable via gap
+      closure section.
+      Minor limitation: Worktracker references in FOI sections are prospective ("to be
+      tracked under ST-002") rather than resolved IDs, leaving a small gap in the
+      traceability chain from Phase 2 verification to Phase 3 work items.
+
+# ============================================================
+# ARITHMETIC VERIFICATION
+# ============================================================
+arithmetic_verification:
+  - "completeness:         0.93 × 0.20 = 0.1860"
+  - "internal_consistency: 0.94 × 0.20 = 0.1880"
+  - "methodological_rigor: 0.92 × 0.20 = 0.1840"
+  - "evidence_quality:     0.93 × 0.15 = 0.1395"
+  - "actionability:        0.93 × 0.15 = 0.1395"
+  - "traceability:         0.93 × 0.10 = 0.0930"
+  - "sum: 0.1860 + 0.1880 + 0.1840 + 0.1395 + 0.1395 + 0.0930"
+  - "step-by-step: 0.1860+0.1880=0.3740, +0.1840=0.5580, +0.1395=0.6975, +0.1395=0.8370, +0.0930=0.9300"
+  - "double-check (alt order): 0.1880+0.1840=0.3720, +0.1860=0.5580, +0.1395=0.6975, +0.1395=0.8370, +0.0930=0.9300 CONFIRMED"
+
+composite: 0.9300
+
+# ============================================================
+# VERDICT
+# ============================================================
+verdict: REVISE
+verdict_rationale: >
+  Composite 0.9300 is below the 0.94 threshold by 0.0100. Iteration 3 achieved meaningful
+  improvement from 0.9150 (+0.0150) by closing all four iteration 2 stated gaps. The
+  remaining 0.01 gap reflects a residual limitation that could not be fully closed by
+  formal documentation alone: the verification methodology demonstrates bug-fix correctness
+  (exit 0) but not feature-functional correctness (non-empty skills table with valid data).
+  The MOST LIKELY failure mode (CWD template path) is formally tracked but not mitigated
+  in code. These are the specific areas where the deliverable falls short of the 0.94
+  C4 threshold.
+  All four iteration 2 unclosed gaps are now closed. The path to 0.94 requires closing
+  the single residual limitation: demonstrating that the rendering pipeline produces
+  correct output for valid skill data (not just exit 0 with empty output).
+
+# ============================================================
+# STRATEGY FINDINGS
+# ============================================================
+strategy_findings:
+  S-003_steelman: >
+    Iteration 3 is disciplined, thorough revision work. All four explicitly stated iteration 2
+    gaps were addressed with specific, evidenced changes — not perfunctory additions.
+    The EXIT_CODE formalization (echo $? in the command itself, not a label) demonstrates
+    precise understanding of the evidentiary standard required. The FOI sections are
+    substantive: each includes risk classification, current mitigation rationale, recommended
+    fix code block, and formal deferral tracking — this is more than a checklist entry,
+    it is a complete risk management record. The skills-skipped explanation correctly
+    distinguishes between a code defect and a data/schema alignment issue, which is the
+    right analytical distinction. The 13-item constraint checklist with TRACKED status for
+    design debts provides a complete audit trail. This report is genuinely near-excellent.
+
+  S-002_devils_advocate: >
+    (1) The MOST LIKELY production failure mode (CWD template path) remains unmitigated in
+    live code. The FOI-1 section provides the fix code but does not apply it. At C4
+    criticality, "here is how to fix the most likely failure" is weaker than "we fixed
+    the most likely failure." The recommended fix is a 5-line guard; there is no apparent
+    technical obstacle to implementing it now.
+    (2) The smoke test functional output is empty (all 13 skills skipped). The exit 0
+    confirms the bug fix path is exercised but not that the feature works for its primary
+    use case. A developer who receives this code will observe empty docs generation for
+    all real SKILL.md files. The report explains why this happens, but the verification
+    that the rendering pipeline is "functional" rests entirely on the FEATURES section
+    rendering from features.yaml — the skills extraction pipeline is 0 for 13.
+    (3) The worktracker references (ST-002) are prospective. ST-002 presumably already
+    exists; a specific child task ID for each FOI item would be stronger. "To be tracked"
+    is softer than "tracked as ST-002/FOI-1-task."
+    (4) The FOI-2 recommended fix (TYPE_CHECKING block) is the standard Python pattern
+    for this problem; it is genuinely low-risk to apply now. Deferring type safety
+    improvements to Phase 3 at C4 criticality is a choice that requires justification —
+    the report provides "matches existing pattern" but does not explain why the pattern
+    should be perpetuated rather than improved.
+
+  S-010_self_refine: >
+    Specific improvements to reach 0.94:
+    (1) Apply the FOI-1 guard now. The recommended fix code is already written:
+          template_path = Path(template_dir)
+          if not template_path.is_dir():
+              raise ConfigurationError(
+                  f"Template directory not found: '{template_dir}'. "
+                  f"Ensure you are running from the repository root."
+              )
+        Adding this 5-line guard to Jinja2Renderer.__init__ or create_docs_generator()
+        would close the MOST LIKELY failure mode at the code level, not just the tracking
+        level. This would raise Methodological Rigor from 0.92 to 0.94 and Completeness
+        from 0.93 to 0.94, potentially pushing composite to ~0.9375.
+    (2) Add a minimal controlled-fixture smoke test. Create a temporary SKILL.md with a
+        name field and run jerry docs generate against it (or patch the SKILL.md files
+        during the test). This demonstrates the rendering pipeline produces non-empty
+        output for valid data. Impact: Evidence Quality 0.93 -> 0.94, closing the
+        functional-correctness evidentiary gap.
+    Either (1) alone or (2) alone may be sufficient to cross 0.94.
+
+  S-004_pre_mortem: >
+    Two remaining production failure modes:
+    (1) MOST LIKELY (unchanged across all 3 iterations) — Template directory not found:
+        Jinja2Renderer(".context/templates/docs") uses a CWD-relative path. Any invocation
+        from a non-repo-root directory will fail with TemplateNotFound propagating unhandled.
+        FOI-1 now formally tracks this but the guard is not implemented. The smoke test
+        passing confirms the test was run from the repo root; it does not prove resilience
+        to non-root invocations.
+    (2) Skills schema silent empty output: All 13 SKILL.md files are skipped because the
+        name field is absent. If jerry docs generate is deployed and users run it expecting
+        a populated skills table, exit 0 with an empty table provides no error signal. A
+        user who reads the docs may believe the feature does not work. The explanation is
+        correct (schema alignment issue) but the user experience is confusing. This is a
+        UX/functional correctness concern, not a security concern.
+
+# ============================================================
+# REVISION RECOMMENDATIONS
+# ============================================================
+revision_recommendations:
+  - priority: 1
+    dimension: methodological_rigor + completeness
+    current: 0.92 + 0.93
+    target: 0.94 + 0.94
+    action: >
+      Apply the FOI-1 guard code now. The recommended fix is already written in the report.
+      Adding the ConfigurationError guard in Jinja2Renderer.__init__ or create_docs_generator()
+      takes the MOST LIKELY failure mode from "tracked as deferred" to "mitigated in code."
+      This is the single change most likely to push the composite above 0.94.
+      Expected impact: Methodological Rigor 0.92 -> 0.94, Completeness 0.93 -> 0.94.
+      Projected composite after this change: 0.9300 + (0.02×0.20) + (0.01×0.20) = ~0.9360.
+
+  - priority: 2
+    dimension: evidence_quality
+    current: 0.93
+    target: 0.95
+    action: >
+      Add a controlled-fixture smoke test demonstrating non-empty output. Options:
+      (a) Create a minimal test SKILL.md with a name field (e.g., name: test-skill) and
+          run jerry docs generate against a temporary directory containing it.
+      (b) Add a unit test with a mock SkillExtractor returning one valid skill record and
+          assert the generated table contains the skill name.
+      This closes the functional-correctness evidentiary gap. The current evidence confirms
+      the fix path (exit 0, no crash) but not that the rendering pipeline produces correct
+      output for valid data.
+      Expected impact: Evidence Quality 0.93 -> 0.95.
+      Projected composite after both recommendations: ~0.9400+.
+
+  - priority: 3
+    dimension: traceability + actionability
+    current: 0.93 + 0.93
+    target: 0.94 + 0.94
+    action: >
+      Resolve the prospective worktracker references to concrete IDs. If ST-002 is the
+      parent story, create the child task items (ST-002/FOI-1-task, ST-002/FOI-2-task)
+      and update the FOI sections with the actual task IDs. "Tracked as ST-002-task-NNN"
+      is stronger than "to be tracked under ST-002" for C4 traceability requirements.
+
+# ============================================================
+# LENIENCY BIAS CHECK
+# ============================================================
+leniency_bias_check:
+  each_dimension_scored_independently: true
+  evidence_documented_for_each_score: true
+  uncertain_scores_resolved_downward: true
+  first_draft_calibration_considered: false  # iteration 3 of a C4 deliverable
+  no_dimension_above_0_95_without_exceptional_evidence: true
+  notes: >
+    Anti-leniency scrutiny applied to four decision points:
+    (1) Internal Consistency at 0.94 was challenged. The report says PASS WITH BUG FIX in
+        the header while FOI-1 documents an unresolved MOST LIKELY failure mode. Is this
+        a contradiction that should suppress the score? Re-examined: FOI-1 is not a Phase 2
+        constraint violation — it is a design debt deferred explicitly. The PASS designation
+        covers Phase 2 constraints. This is an imprecision in framing but not a logical
+        contradiction. Score held at 0.94 consistent with iteration 2.
+    (2) Methodological Rigor at 0.92 was challenged. Is 0.92 too generous given the MOST
+        LIKELY failure is still unmitigated? Re-examined: The formal S-004 classification,
+        recommended fix code, and ST-002 tracking represent real methodological improvement
+        over iteration 2 (where it was mentioned in L2 without classification or tracking).
+        The S-010 option (c) commitment from iteration 2 was explicitly honored. 0.92 is
+        appropriate — it reflects improvement without overcrediting an unmitigated risk.
+    (3) Evidence Quality at 0.93 was challenged against the empty functional output. The
+        echo $? fix is complete. The 16 test verbose output is strong. But the skills table
+        is empty in the smoke test. 0.93 is defensible: the evidence for what it covers
+        (exit codes, test pass, call-site audit) is strong; the gap (happy-path fixture) is
+        real but secondary given the explanation is present and adequate. Held at 0.93.
+    (4) Completeness at 0.93 was challenged. The FOI items transform open risks into tracked
+        debts. Is 0.93 too high without a live worktracker ID? The S-010 recommendation from
+        iteration 2 said "create a worktracker task" — the FOI sections with ST-002 reference
+        satisfy this at 0.93 but not 0.95+. Held at 0.93.
+    Delta from iteration 2: +0.0150. This is proportionate to the scope of changes
+    (four gap closures vs. six in iteration 2). The composite of 0.9300 correctly reflects
+    a deliverable that is strong, near-threshold, with one remaining addressable limitation.
+
+# ============================================================
+# SESSION CONTEXT (orchestrator handoff schema)
+# ============================================================
+session_context:
+  verdict: REVISE
+  composite_score: 0.9300
+  threshold: 0.94
+  weakest_dimension: methodological_rigor
+  weakest_score: 0.92
+  critical_findings_count: 0
+  iteration: 3
+  improvement_recommendations:
+    - "Apply FOI-1 guard code now — ConfigurationError in Jinja2Renderer.__init__ or create_docs_generator() (Methodological Rigor + Completeness -> 0.94)"
+    - "Add controlled-fixture smoke test demonstrating non-empty skills output (Evidence Quality -> 0.95)"
+    - "Resolve prospective ST-002 references to concrete task IDs (Traceability + Actionability -> 0.94)"
+  delta_from_iteration_2: +0.0150
+  cumulative_delta: +0.0630  # 0.8670 -> 0.9300
+  iteration_ceiling: 10
+  plateau_detection: false  # delta of 0.0150 is above 0.01 plateau threshold

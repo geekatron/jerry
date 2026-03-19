@@ -107,6 +107,10 @@ class DocumentTypeDetector:
         ("projects/*/reports/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
         ("projects/*/reviews/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
         ("projects/*/reviews/**/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
+        ("projects/*/drafts/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
+        ("projects/*/prompts/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
+        ("projects/*/security/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
+        ("projects/*/specifications/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
         ("projects/*/README.md", DocumentType.FRAMEWORK_CONFIG),
         ("projects/README.md", DocumentType.FRAMEWORK_CONFIG),
         # --- Tier 4: Framework config (root-level files) ---

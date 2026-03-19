@@ -123,6 +123,8 @@ def main() -> int:
         return _handle_agents(args, json_output)
     elif args.namespace == "ci":
         return _handle_ci(args, json_output)
+    elif args.namespace == "docs":
+        return _handle_docs(args)
     elif args.namespace == "hooks":
         return _handle_hooks(adapter, args)
 
@@ -747,6 +749,79 @@ def _handle_why() -> int:
         "That's why."
     )
     return 0
+
+
+def _handle_docs(args: Any) -> int:
+    """Route docs namespace commands.
+
+    Does not require the CLIAdapter; uses its own bootstrap wiring
+    for the docs bounded context.
+
+    Args:
+        args: Parsed arguments with .command.
+
+    Returns:
+        Exit code: 0 (success/no drift), 1 (drift detected or error),
+        2 (validation warning).
+
+    References:
+        - PROJ-0037: Auto-Documentation Module
+    """
+    if args.command is None:
+        print("No docs command specified. Use 'jerry docs --help'.")
+        return 1
+
+    if args.command == "generate":
+        from src.bootstrap import create_docs_generator
+        from src.docs.application.commands.generate_docs_command import (
+            GenerateDocsCommand,
+        )
+
+        handler = create_docs_generator()
+
+        # Determine mode from flags
+        if getattr(args, "check", False):
+            mode = "check"
+        elif getattr(args, "write", False):
+            mode = "write"
+        else:
+            mode = "stdout"
+
+        readme_path = getattr(args, "readme", "README.md")
+        # The handler accepts None for stdout mode; map the local sentinel to None.
+        command_mode: str | None = None if mode == "stdout" else mode
+        command = GenerateDocsCommand(readme_path=readme_path, mode=command_mode)
+        result = handler.handle(command)
+
+        if not result.success:
+            error = result.error or {}
+            print(f"Error: {error.get('message', 'Unknown error')}")
+            return 1
+
+        for warning in result.warnings:
+            print(f"Warning: {warning}")
+
+        if mode == "stdout":
+            for section_name, content in result.sections.items():
+                print(f"\n--- {section_name} ---")
+                print(content)
+        elif mode == "check":
+            if result.drift_detected:
+                print(
+                    "Drift detected: README sections are out of date. "
+                    "Run 'jerry docs generate --write' to update."
+                )
+                return 1
+            print(
+                f"README is current ({result.skills_count} skills, {result.agents_count} agents)."
+            )
+        elif mode == "write":
+            print(f"README updated ({result.skills_count} skills, {result.agents_count} agents).")
+
+        return 2 if result.warnings else 0
+
+    print(f"Unknown docs command: {args.command}")
+    return 1
 
 
 def _handle_hooks(adapter: CLIAdapter, args: Any) -> int:

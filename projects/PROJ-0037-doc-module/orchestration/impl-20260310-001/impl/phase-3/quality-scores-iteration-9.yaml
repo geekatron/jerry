@@ -1,0 +1,396 @@
+# Quality Score Report — Phase 3 Verification Deliverables (PROJ-0037-doc-module)
+# Scoring Strategy: S-014 LLM-as-Judge
+# SSOT: .context/rules/quality-enforcement.md
+# Scored: 2026-03-10
+
+scoring_context:
+  deliverables:
+    - projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-3/eng-qa-report.md
+    - projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-3/security-review.md
+    - projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-3/attack-surface-report.md
+    - projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-3/gate-disposition-b3.md
+  deliverable_type: Analysis/Verification
+  criticality_level: C4
+  threshold: 0.94
+  scoring_strategy: S-014 (LLM-as-Judge)
+  iteration: 9
+  prior_score: 0.9330
+  score_progression:
+    - iteration: 1
+      score: 0.8555
+    - iteration: 2
+      score: 0.9000
+    - iteration: 3
+      score: 0.8860
+    - iteration: 4
+      score: 0.9275
+    - iteration: 5
+      score: 0.9040
+    - iteration: 6
+      score: 0.8970
+    - iteration: 7
+      score: 0.9200
+    - iteration: 8
+      score: 0.9330
+    - iteration: 9
+      score: 0.9120
+
+l0_executive_summary:
+  composite_score: 0.9120
+  threshold: 0.94
+  verdict: REVISE
+  weakest_dimension: Internal Consistency
+  weakest_score: 0.90
+  one_line_assessment: >
+    Deliverables are substantively strong but fall 0.028 below the C4 threshold; the
+    attack-surface-report L0 severity count table undercounts LOW findings (shows "2"
+    but V4 is also rated LOW in per-vector analysis, yielding 3 LOWs from that report),
+    and the path-traversal recommendation defers to three unresolved options rather than
+    naming a preferred approach.
+
+score_summary:
+  weighted_composite: 0.9120
+  threshold: 0.94
+  verdict: REVISE
+  gap_to_threshold: 0.0280
+  strategy_findings_incorporated: "No — scored directly from deliverable content against ground truth"
+  critical_findings_count: 0
+
+dimension_scores:
+  completeness:
+    weight: 0.20
+    score: 0.92
+    weighted: 0.1840
+    evidence_summary: >
+      All four deliverables address their full scope. Gate-disposition has 10-row
+      cross-reference table, "Deferred To" column, 7-item hardening backlog (item 1 DONE),
+      correct finding count (0 CRITICAL, 1 HIGH RESOLVED, 2 MEDIUM ACCEPTED, 5 LOW ACCEPTED,
+      2 INFO). F9/F10 correctly treated as sub-recommendations. L0/L1/L2 structure present
+      in all deliverables.
+
+  internal_consistency:
+    weight: 0.20
+    score: 0.90
+    weighted: 0.1800
+    evidence_summary: >
+      F9/F10 terminology reconciled in Evidence Summary; cross-reference table labels
+      "F9 (V1-rec)" and "F10 (V4-rec)" consistently. pyproject.toml:40 pin cited
+      identically across all three reports. Coverage numbers (100% line, 99% branch)
+      consistent. However: attack-surface-report L0 severity table shows "LOW | 2"
+      (only listing V1 newline bypass and F6 temp file) while V4 subprocess is rated
+      LOW in the per-vector section and in the residual risk summary table — creating
+      a count discrepancy within the attack-surface-report itself.
+
+  methodological_rigor:
+    weight: 0.20
+    score: 0.91
+    weighted: 0.1820
+    evidence_summary: >
+      STRIDE mitigation-by-mitigation verification with file:line evidence tables;
+      OWASP Top 10 and NIST CSF 2.0 mapping; per-vector bypass feasibility assessment;
+      ATT&CK technique mapping; cross-report reconciliation with explicit severity
+      divergence resolution; hardening backlog with effort estimates. Per-module gap
+      analysis with specific line numbers in eng-qa. No formal CVSS scoring; minor
+      L0 count discrepancy slightly reduces rigor score.
+
+  evidence_quality:
+    weight: 0.15
+    score: 0.92
+    weighted: 0.1380
+    evidence_summary: >
+      Every STRIDE mitigation cited with file:line. pyproject.toml:40 pin confirmed
+      against ground truth ("jinja2>=3.1.6,<4.0"). 51 tests / 100% line / 99% branch
+      match ground truth. CVE-2025-27516 cited with GHSA, NVD, and Snyk references.
+      Cross-reference maps each finding to specific test names. Missed branch precisely
+      identified (294→299). eng-qa recommendation #4 now includes specific
+      [tool.pytest.ini_options] reference and addopts example format.
+
+  actionability:
+    weight: 0.15
+    score: 0.90
+    weighted: 0.1350
+    evidence_summary: >
+      Hardening backlog has 7 prioritized items with file locations and effort estimates.
+      Attack-surface report includes Python code snippets for newline-collapse,
+      filename-guard, and os.chmod recommendations. eng-qa recommendation #4 now
+      specific (addopts = "--cov-fail-under=90" in [tool.pytest.ini_options]).
+      Residual gap: path-traversal recommendation (hardening backlog item 4) presents
+      three options without identifying a preferred approach, leaving the implementing
+      developer to make a design decision without guidance.
+
+  traceability:
+    weight: 0.10
+    score: 0.93
+    weighted: 0.0930
+    evidence_summary: >
+      10-row cross-reference table maps V1-V4, F5-F10 to test names and review
+      sections. STRIDE mitigations traced to threat IDs. Hardening backlog items
+      numbered 1-7 with item 1 DONE. F9/F10 now explicitly traced to hardening
+      backlog items 3 and 6 in Evidence Summary. All deliverables reference phase,
+      date, agent. Gate-disposition references source reports by filename.
+
+weighted_composite_derivation:
+  completeness:    "0.92 * 0.20 = 0.1840"
+  internal_consistency: "0.90 * 0.20 = 0.1800"
+  methodological_rigor: "0.91 * 0.20 = 0.1820"
+  evidence_quality: "0.92 * 0.15 = 0.1380"
+  actionability:   "0.90 * 0.15 = 0.1350"
+  traceability:    "0.93 * 0.10 = 0.0930"
+  total:           "0.1840 + 0.1800 + 0.1820 + 0.1380 + 0.1350 + 0.0930 = 0.9120"
+
+detailed_dimension_analysis:
+
+  completeness:
+    score: 0.92
+    evidence: |
+      eng-qa-report.md: L0/L1/L2 sections present. Pre/post coverage table (66%→100%).
+      Per-module analysis for all 4 modules with specific line numbers. OWASP category
+      coverage table (6 categories). Test file location documented.
+      security-review.md: All 5 STRIDE mitigations (M-1 through M-5) verified.
+      All 4 hexagonal constraints (H-07, H-10, H-11, H-33) verified. OWASP Top 10
+      mapping and NIST CSF 2.0 function mapping included.
+      attack-surface-report.md: 4 vectors (V1-V4) plus 4 additional findings (F5-F8).
+      ATT&CK technique mappings. Hardening backlog 7 items.
+      gate-disposition-b3.md: Verdict with rationale. Open findings disposition
+      (5 rows with Deferred To column). Cross-report reconciliation (2 divergences
+      resolved). Cross-reference traceability (10 rows). Evidence summary (all
+      ground-truth metrics present). Hardening actions executed (2 rows).
+    gaps: |
+      None material. The attack-surface report does not include a quantitative
+      CVSS score per finding (only severity labels), but this is within scope for
+      an internal advisory report.
+    improvement_path: |
+      Add CVSS base scores to attack-surface findings for formal C4 rigor.
+
+  internal_consistency:
+    score: 0.90
+    evidence: |
+      CONSISTENT across deliverables:
+      - pyproject.toml:40 pin "jinja2>=3.1.6,<4.0" cited identically in
+        security-review.md (M-4 table, L2 OWASP table), attack-surface-report.md
+        (Vector 2), and gate-disposition-b3.md (Open Findings Disposition, Hardening
+        Actions, Evidence Summary).
+      - Coverage numbers (51 tests, 100% line, 99% branch, 67/68) consistent across
+        eng-qa-report.md and gate-disposition-b3.md.
+      - F9/F10 labeled as "F9 (V1-rec)" and "F10 (V4-rec)" in cross-reference table,
+        reconciled in Evidence Summary with the new language from iteration 9.
+      - Jinja2 severity divergence (eng-architect LOW vs red-vuln HIGH) resolved
+        explicitly in Cross-Report Reconciliation section.
+
+    gaps: |
+      INCONSISTENCY: attack-surface-report.md L0 Executive Summary table shows:
+        | LOW | 2 | Description newline bypass; temp-file race window |
+      However, Vector 4 (subprocess injection) is rated LOW in the per-vector
+      analysis section and appears as LOW in the residual risk summary table at
+      the bottom of L2. The L0 table should show "LOW | 3" (V1, V4, F6), but
+      shows "LOW | 2". This is a count discrepancy within the attack-surface-report
+      itself (not introduced in iteration 9 — carried forward from earlier iterations).
+    improvement_path: |
+      Update the L0 severity count table in attack-surface-report.md to show
+      "LOW | 3" with the three vectors listed: Description newline bypass (V1),
+      Subprocess flag injection (V4), and Temp-file race window (F6).
+
+  methodological_rigor:
+    score: 0.91
+    evidence: |
+      eng-qa: OWASP test category mapping; per-module gap analysis with specific
+      line ranges and test names; branch coverage measurement with single missed
+      branch precisely identified and explained; test isolation discipline documented
+      (unittest.mock, tmp_path).
+      security-review: STRIDE framework systematically applied to all 5 mitigations;
+      hexagonal architecture compliance audit via import dependency matrix; OWASP Top 10
+      (2021) mapping with residual risk per category; NIST CSF 2.0 function mapping.
+      attack-surface: PTES/OWASP methodology; per-vector bypass feasibility
+      assessment with specific attack payloads tested; ATT&CK technique mapping;
+      hardening backlog with priority order and effort estimates.
+      gate-disposition: Cross-report reconciliation is methodologically sound —
+      identifies both framings as correct at different time horizons, then resolves
+      by confirming the structural forward risk is eliminated.
+    gaps: |
+      No formal CVSS scoring. Attack-surface L0 count discrepancy (LOW | 2 vs
+      actual 3) is a methodology gap — the L0 summary table should reconcile with
+      the per-vector and residual risk sections.
+    improvement_path: |
+      Reconcile the L0 severity count table with per-vector ratings. Optionally
+      add CVSS base scores for C4 rigor.
+
+  evidence_quality:
+    score: 0.92
+    evidence: |
+      File:line citations: Every STRIDE mitigation cites specific file and line numbers.
+      M-4 verification: pyproject.toml:40 "jinja2>=3.1.6,<4.0" matches ground truth exactly.
+      CVE reference: GHSA-cpwx-vrp4-4pq7, NVD, and Snyk SNYK-PYTHON-JINJA2-9292516 cited.
+      Code quotes: Actual regex patterns from skill_extractor.py reproduced in
+      security-review.md verification of M-1.
+      Test evidence: 51 tests, 100% line, 99% branch match stated ground truth.
+      Missed branch: Precisely identified as generate_docs_command_handler.py:294→299.
+      Iteration 9 improvement: eng-qa recommendation #4 now specifies
+      [tool.pytest.ini_options] section name and provides addopts example format,
+      making the CI coverage gate recommendation verifiable.
+    gaps: |
+      Minor: attack-surface bypass feasibility for Vector 4 (subprocess injection)
+      includes a theoretical flag-injection edge case ("file named -f or --help")
+      without confirming whether argparse in jerry ast frontmatter uses positional-only
+      parsing. Claim is reasonable but not verified.
+    improvement_path: |
+      Verify jerry ast frontmatter argument parsing to confirm flag-injection is
+      not possible, or add a note that the behavior is unverified.
+
+  actionability:
+    score: 0.90
+    evidence: |
+      Hardening backlog: 7 items, priority ordered, with file locations (e.g.,
+      "generate_docs_command_handler.py:141-158") and effort estimates (5 min to 1 hr).
+      Code examples: attack-surface provides Python snippets for newline-collapse
+      ("sanitized.replace('\n', ' ').replace('\r', ' ')"), filename guard
+      ("if Path(file_path).name.startswith('-')..."), and temp-file chmod
+      ("os.chmod(temp_path, 0o600)").
+      Iteration 9 improvement: eng-qa recommendation #4 now specifies the exact
+      pyproject.toml section ([tool.pytest.ini_options]) and example format
+      (addopts = "--cov-fail-under=90"), making the recommendation directly
+      implementable without further design decisions.
+      Disposition table: "Deferred To" column specifies hardening backlog item
+      number for each accepted finding.
+    gaps: |
+      Path traversal recommendation (hardening backlog item 4) lists three options:
+      (1) walk upward from __file__ for pyproject.toml, (2) --repo-root parameter,
+      (3) hardcode README.md path. No preferred option is identified. The implementing
+      developer must make a design decision without guidance from the report.
+    improvement_path: |
+      Identify a preferred option for the CWD trust anchor replacement, or note
+      why the decision is deferred to the implementing team with explicit criteria
+      for selection.
+
+  traceability:
+    score: 0.93
+    evidence: |
+      Finding IDs: V1-V4, F5-F8 assigned in attack-surface-report. F9/F10 as
+      sub-recommendations with stable IDs, traced to hardening backlog items 3 and 6
+      in Evidence Summary (iteration 9 fix).
+      Cross-reference table: 10 rows mapping V1-V4, F5-F10 to specific test names
+      and eng-architect review sections (F9 (V1-rec) → "Within M-1 scope; deferred
+      to hardening backlog item 3"; F10 (V4-rec) → "Not in scope; deferred to
+      hardening backlog item 6").
+      STRIDE traceability: M-1 → T-1, M-2 → E-1, M-3 → T-3, M-4 → E-2,
+      M-5 → T-1+D-1.
+      Hardening backlog: Numbered 1-7 with item 1 explicitly marked DONE and
+      evidence ("pyproject.toml:40, uv lock resolved successfully").
+      Source references: gate-disposition references deliverables by filename
+      and section. security-review references threat model and specification by
+      full path.
+    gaps: |
+      RR-1 and RR-2 (from security-review.md residual risk register) are not
+      assigned finding IDs in the cross-reference traceability table — they appear
+      only in the Open Findings Disposition table. They are correctly counted in
+      the LOW finding total but lack a traceability row in the cross-reference table.
+    improvement_path: |
+      Add RR-1 and RR-2 rows to the Cross-Reference Traceability table in
+      gate-disposition-b3.md, mapping them to the security-review.md section and
+      noting "No test — accepted by design (PR review workflow / warn-only policy)."
+
+improvement_recommendations:
+  priority_ordered:
+    - priority: 1
+      dimension: Internal Consistency
+      current_score: 0.90
+      target_score: 0.93
+      recommendation: >
+        Fix the L0 severity count table in attack-surface-report.md. Change
+        "| LOW | 2 | Description newline bypass; temp-file race window |" to
+        "| LOW | 3 | V1: Description newline bypass; V4: Subprocess flag injection; F6: Temp-file race window |"
+        This reconciles the L0 table with the per-vector ratings and the residual
+        risk summary table at the bottom of L2. Estimated impact: +0.02 on
+        Internal Consistency.
+
+    - priority: 2
+      dimension: Actionability
+      current_score: 0.90
+      target_score: 0.93
+      recommendation: >
+        In attack-surface-report.md Vector 3 recommendation and in
+        gate-disposition-b3.md hardening backlog item 4, identify a preferred
+        approach for replacing the CWD trust anchor. Recommended: Option 1
+        (walk upward from Path(__file__) looking for pyproject.toml) is the
+        most deterministic and requires no new parameters. Add one sentence:
+        "Recommended: Option 1 (pyproject.toml marker detection) — deterministic,
+        no new CLI parameters required, consistent with existing jerry project
+        resolution patterns." Estimated impact: +0.02 on Actionability.
+
+    - priority: 3
+      dimension: Traceability
+      current_score: 0.93
+      target_score: 0.95
+      recommendation: >
+        Add RR-1 and RR-2 rows to the Cross-Reference Traceability table in
+        gate-disposition-b3.md. These two LOW findings from security-review.md
+        appear in the Open Findings Disposition but have no cross-reference row,
+        creating a minor traceability gap. Estimated impact: +0.01 on Traceability.
+
+    - priority: 4
+      dimension: Methodological Rigor
+      current_score: 0.91
+      target_score: 0.93
+      recommendation: >
+        The L0 severity count fix (priority 1) also closes the methodological gap —
+        the L0 summary table should not require the reader to reconcile with the
+        per-vector section. If CVSS scores are added for the 2 MEDIUM findings (V3,
+        F5), this would further strengthen the C4 rigor case. Estimated impact: +0.01
+        on Methodological Rigor from count fix alone.
+
+projected_composite_after_fixes:
+  completeness: 0.92
+  internal_consistency: 0.93
+  methodological_rigor: 0.92
+  evidence_quality: 0.92
+  actionability: 0.93
+  traceability: 0.95
+  projected_composite: >
+    (0.92*0.20) + (0.93*0.20) + (0.92*0.20) + (0.92*0.15) + (0.93*0.15) + (0.95*0.10)
+    = 0.1840 + 0.1860 + 0.1840 + 0.1380 + 0.1395 + 0.0950
+    = 0.9265
+  note: >
+    Projected 0.9265 after priority 1-4 fixes — still below the 0.94 C4 threshold.
+    Achieving 0.94 requires raising multiple dimensions by 0.03-0.04 above current
+    scores. At iteration 9 of 10 (maximum), the gap to 0.94 is 0.028. The deliverables
+    are substantively complete and correct; the remaining gap is primarily editorial
+    (L0 count table, path traversal recommendation, traceability table completeness)
+    rather than substantive content gaps. See escalation note below.
+
+escalation_note: >
+  Score 0.9120 at iteration 9 of 10 (maximum). Prior 8 iterations: 0.8555, 0.9000,
+  0.8860, 0.9275, 0.9040, 0.8970, 0.9200, 0.9330. The score has not sustained
+  progressive improvement across iterations — it peaked at 0.9275 (iteration 4) and
+  has not exceeded that level since. The 0.94 threshold is 0.028 above current score.
+  The remaining gaps are editorial (L0 count table reconciliation, path traversal
+  recommendation selection, traceability table completeness) rather than substantive
+  verification gaps. Recommend: (1) execute priority 1-3 fixes in iteration 10,
+  (2) if score after iteration 10 fixes does not reach 0.94, escalate to user for
+  threshold reconsideration given the substantive completeness and accuracy of the
+  deliverables.
+
+leniency_bias_check:
+  each_dimension_scored_independently: true
+  evidence_documented_per_score: true
+  uncertain_scores_resolved_downward: true
+  first_draft_calibration_considered: "N/A — iteration 9"
+  no_dimension_above_0_95_without_exceptional_evidence: true
+  notes: >
+    Internal Consistency held at 0.90 (not rounded up to 0.92) due to the L0 count
+    discrepancy in attack-surface-report being a real inconsistency within a single
+    deliverable. Actionability held at 0.90 (not rounded up) due to the three-option
+    path traversal recommendation lacking a preference. Scores were not inflated to
+    reach or approach the threshold.
+
+session_context_handoff:
+  verdict: REVISE
+  composite_score: 0.9120
+  threshold: 0.94
+  weakest_dimension: internal_consistency
+  weakest_score: 0.90
+  critical_findings_count: 0
+  iteration: 9
+  improvement_recommendations:
+    - "Fix attack-surface-report.md L0 LOW count from 2 to 3 (add V4 subprocess LOW)"
+    - "Identify preferred path traversal fix option in hardening backlog item 4"
+    - "Add RR-1 and RR-2 rows to cross-reference traceability table in gate-disposition-b3.md"
+    - "Reconcile L0 methodology gap from count fix (closes methodological rigor gap simultaneously)"

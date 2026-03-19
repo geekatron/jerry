@@ -1,0 +1,327 @@
+# Quality Score Report: Phase 3 Verification Deliverables — QG-B3 Iteration 4
+# S-014 LLM-as-Judge | C4 Criticality | Threshold: 0.94
+# Scored: 2026-03-10
+# Deliverables:
+#   1. eng-qa-report.md
+#   2. security-review.md
+#   3. attack-surface-report.md
+#   4. gate-disposition-b3.md
+
+scoring_context:
+  deliverables:
+    - projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-3/eng-qa-report.md
+    - projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-3/security-review.md
+    - projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-3/attack-surface-report.md
+    - projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-3/gate-disposition-b3.md
+  deliverable_type: Analysis
+  criticality_level: C4
+  scoring_strategy: S-014 (LLM-as-Judge)
+  ssot_reference: .context/rules/quality-enforcement.md
+  threshold: 0.94
+  iteration: 4
+  prior_scores:
+    - iteration: 1
+      score: 0.8555
+    - iteration: 2
+      score: 0.9000
+    - iteration: 3
+      score: 0.8860
+  scored_date: "2026-03-10"
+
+l0_executive_summary:
+  composite_score: 0.9275
+  verdict: REVISE
+  weakest_dimension: Internal Consistency
+  weakest_score: 0.87
+  one_line_assessment: >
+    Strong, well-evidenced verification set that resolved three of the four iteration-3
+    inconsistencies; one residual LOW-finding count discrepancy (gate says 4 LOW, cross-count
+    gives 5) and a finding-number mismatch in the gate cross-reference table prevent passage
+    at the 0.94 threshold.
+
+score_summary:
+  weighted_composite: 0.9275
+  threshold: 0.94
+  verdict: REVISE
+  strategy_findings_incorporated: "No — no separate adv-executor reports; ground truth comparison performed directly"
+
+dimension_scores:
+  completeness:
+    weight: 0.20
+    score: 0.95
+    weighted: 0.190
+    evidence_summary: >
+      All required Phase 3 sub-deliverables present: coverage report (eng-qa), STRIDE mitigation
+      verification (security-review), attack surface analysis (attack-surface-report), gate
+      disposition (gate-disposition-b3). L0/L1/L2 structure met across all four. Coverage
+      progression table, per-module gap analysis, per-vector analysis, OWASP mapping, residual
+      risk register, hardening backlog, cross-reference traceability all present. Nav tables in
+      all four documents. Minor: eng-qa L2 recommendations reference future phases but do not
+      connect back to any open worktracker items — acceptable gap at this criticality level.
+    gaps:
+      - >
+        eng-qa-report.md branch coverage gap (the OSError cleanup catch at line 294→299 —
+        the one missed branch among 68) is documented in L2 but not discussed in the gate's
+        cross-reference traceability section, which focuses on security findings rather than
+        coverage gaps. This creates a completeness gap in the gate document rather than in
+        eng-qa itself.
+    improvement_path: >
+      Add a coverage-gap row in gate-disposition-b3.md cross-reference traceability (linking
+      the missed branch to eng-qa's L2 weakness documentation). Minimal effort; closes the
+      traceability loop on the one non-100% metric.
+
+  internal_consistency:
+    weight: 0.20
+    score: 0.87
+    weighted: 0.174
+    evidence_summary: >
+      Three of four iteration-3 inconsistencies correctly resolved. pyproject.toml:40 confirmed
+      as "jinja2>=3.1.6,<4.0" (ground truth verified). security-review.md M-4 now cites
+      ">=3.1.6,<4.0" throughout (lines 31, 138, 146, 148, 257). attack-surface-report.md
+      Vector 2 no longer presents the pin widening as a pending recommendation — past-tense
+      resolution annotation at lines 143-148. gate-disposition-b3.md INFO count is now 2
+      (line 97). One residual inconsistency remains.
+    gaps:
+      - >
+        LOW findings count discrepancy: gate-disposition-b3.md evidence summary states
+        "LOW findings | 4 (ACCEPTED)" (line 96). Cross-counting: attack-surface-report has
+        V1=LOW, V4=LOW, F6=LOW (3 distinct LOW findings), plus security-review has RR-1=LOW
+        and RR-2=LOW (2 more LOW findings documented in L2 residual risk register and
+        carried into gate Open Findings table). Total = 5 LOW findings. The gate's evidence
+        summary reports 4. One LOW finding is unaccounted for or de-duplicated without
+        stated rationale. The Open Findings disposition table lists RR-1 and RR-2 separately
+        from V1/V4 (V4 and F6 are not individually listed in that table), making the
+        de-duplication logic unclear.
+      - >
+        gate-disposition-b3.md cross-reference traceability table (lines 72-79): The
+        finding labels "F6: Newline in YAML description" and "F7: Filename flag injection"
+        do not match the attack-surface-report's numbered findings. In attack-surface-report,
+        F6=Temp file race (LOW), F7=Mode sentinel inconsistency (INFO), F8=Agent name
+        pattern (INFO). The gate cross-references F6 and F7 as sub-items of Vector 1 and
+        Vector 4 recommendations rather than using the report's own Finding numbering —
+        creating a naming mismatch that makes traceability harder to follow, not impossible
+        to follow, but ambiguous.
+    improvement_path: >
+      (a) Reconcile the LOW finding count in the gate evidence summary: either recount to 5,
+      or document the specific de-duplication rule (e.g., "V1 and RR-1 are the same root
+      finding viewed from two reviews; counted once"). (b) Align gate cross-reference table
+      finding labels (F6, F7) with attack-surface-report's numbered finding identifiers
+      (Finding 6, Finding 7, Finding 8) or add a disambiguation note.
+
+  methodological_rigor:
+    weight: 0.20
+    score: 0.95
+    weighted: 0.190
+    evidence_summary: >
+      eng-qa follows standard coverage gap analysis methodology (pre/post tables, per-module
+      breakdown, OWASP category mapping, security annotation per test). security-review
+      applies STRIDE mitigation verification with exact file:line citations for each control,
+      OWASP Top 10 2021 mapping, NIST CSF 2.0 function mapping. attack-surface-report
+      applies PTES/OWASP vulnerability analysis methodology with per-vector bypass feasibility
+      assessment and ATT&CK technique mapping. gate-disposition uses structured disposition
+      categories (RESOLVED/ACCEPTED) with documented rationale per finding, cross-report
+      reconciliation for diverging severity ratings. All four reports cite established
+      frameworks and apply them systematically rather than impressionistically.
+    gaps:
+      - >
+        eng-qa L2 weakness #1 (branch coverage at 99%) notes the compound boolean in
+        _check_drift but does not enumerate the specific branch combinations, making it
+        harder to verify the claim that only one branch is missed. This is a minor rigor gap.
+      - >
+        attack-surface-report OWASP category coverage table in eng-qa (lines 136-144) uses
+        informal category labels (e.g., "CLNT (Template Injection)") rather than OWASP
+        standard codes. Minor inconsistency in methodology labeling but does not undermine
+        the underlying rigor.
+    improvement_path: >
+      Enumerate the missed branch conditions explicitly in eng-qa L2 (both missing, only
+      begin missing, only end missing — which specific combination is not exercised and why).
+
+  evidence_quality:
+    weight: 0.15
+    score: 0.94
+    weighted: 0.141
+    evidence_summary: >
+      Exceptional citation density. security-review provides file:line citations for every
+      claim — 100% of STRIDE controls have code-level evidence tables with exact line
+      numbers. attack-surface-report includes bypass feasibility assessments with code
+      snippets verifying defensive controls. CVE-2025-27516 cited against three authoritative
+      sources (GitHub Advisory, NVD, Snyk). eng-qa includes pre/post coverage numbers with
+      statement-level precision (323 total, 111 missed pre-addition). pyproject.toml:40
+      ground truth confirmed independently. uv.lock:443 cited for resolved version.
+      NIST CSF 2.0, OWASP Top 10 2021 cited by version and year.
+    gaps:
+      - >
+        eng-qa test weakness #2 ("test_jinja2_renderer_raises_runtime_on_template_syntax_error
+        uses broad except") is self-reported but not independently verified in security-review
+        or gate disposition. The weakness is documented but its security implication (does
+        the weaker assertion meaningfully reduce confidence in M-2?) is not resolved across
+        reports.
+      - >
+        The claim "uv.lock:443 — resolved to jinja2==3.1.6" in attack-surface-report is
+        stated as fact but was not verified by this scorer against the actual uv.lock file.
+        The pyproject.toml constraint is confirmed; the resolved version is asserted.
+        (Minor: lock file contents are generally reliable for this class of claim.)
+    improvement_path: >
+      security-review could add a note confirming the eng-qa test brittleness for M-2 does
+      not reduce M-2 compliance confidence (the SandboxedEnvironment is verified by
+      direct import and instantiation evidence, independent of the test assertion strength).
+
+  actionability:
+    weight: 0.15
+    score: 0.94
+    weighted: 0.141
+    evidence_summary: >
+      All accepted findings have specific, located recommendations with effort estimates
+      (10 min, 30 min, 1 hr). Hardening backlog in attack-surface-report is priority-ordered
+      with file:line targets. eng-qa Phase 4+ recommendations include specific pytest
+      configuration changes ("--cov-branch to pytest.ini"), specific test parameterization
+      targets, specific CI gate command ("--cov-fail-under=90"). Gate disposition provides
+      clear accept/defer/block categorization with decision authority. Remaining inconsistencies
+      identified in this score report have clear correction paths (LOW count reconciliation,
+      finding label alignment) that require only documentation edits.
+    gaps:
+      - >
+        The gate verdict is PASS, but two inconsistencies identified by this scorer
+        (LOW count mismatch, finding label mismatch) were not surfaced in the gate itself —
+        meaning no remediation action is explicitly called out for them within the deliverable
+        set. The gate would need a correction note or errata section to be fully self-correcting.
+    improvement_path: >
+      Add an errata or correction note in gate-disposition-b3.md addressing the LOW count
+      reconciliation and cross-reference label alignment. These are one-line edits but are
+      necessary for the gate document to be self-consistent without external scorer annotation.
+
+  traceability:
+    weight: 0.10
+    score: 0.88
+    weighted: 0.088
+    evidence_summary: >
+      Finding-to-test mapping present in gate cross-reference traceability table. STRIDE
+      mitigations trace back to threat model line references (security-review.md L1 cites
+      "lines 173-179 of threat-model-doc-module.md" for M-2). Hardening action in gate
+      disposition traces to pyproject.toml:40. Test names in eng-qa trace to source lines
+      covered. OWASP categories cross-reference to NIST CSF functions in security-review.
+    gaps:
+      - >
+        The gate cross-reference table finding labels (F6, F7 in gate) do not align with
+        attack-surface-report finding identifiers (Finding 6, Finding 7, Finding 8), reducing
+        traceability fidelity between the two documents. A reader tracing "F7: Filename flag
+        injection" in the gate to attack-surface-report finds it mislabeled (the actual F7
+        in that report is "Mode sentinel inconsistency (INFO)").
+      - >
+        eng-qa test weakness #2 (broad except on template syntax error test) is documented
+        in eng-qa but not cross-referenced in security-review M-2 verification or in the
+        gate traceability table, creating a gap in the traceability chain for M-2 test
+        coverage confidence.
+      - >
+        The gate does not explicitly cite the pyproject.toml line number for the Jinja2 pin
+        in the Hardening Actions table (row 1) — it says "pyproject.toml:40" in the Open
+        Findings disposition but not in the Hardening Actions table row. Minor but
+        inconsistent citation density.
+    improvement_path: >
+      Align gate cross-reference table F-numbers with attack-surface-report finding
+      identifiers. Add a note in gate Hardening Actions row 1 citing pyproject.toml:40.
+
+weighted_composite:
+  completeness:   0.190   # 0.95 * 0.20
+  internal_consistency: 0.174  # 0.87 * 0.20
+  methodological_rigor: 0.190  # 0.95 * 0.20
+  evidence_quality: 0.141      # 0.94 * 0.15
+  actionability:  0.141        # 0.94 * 0.15
+  traceability:   0.088        # 0.88 * 0.10
+  total:          0.9275
+
+verdict: REVISE
+
+verdict_rationale: >
+  Composite 0.9275 falls below the 0.94 threshold by 0.0125. Three of the four
+  iteration-3 inconsistencies were resolved correctly (pyproject.toml pin confirmed,
+  Vector 2 past-tense annotation, INFO count = 2). One factual inconsistency remains:
+  the gate evidence summary states 4 LOW findings while cross-counting yields 5. A
+  secondary labeling mismatch in the gate cross-reference table (F6/F7 labels not
+  matching attack-surface-report's Finding 6/7/8 identifiers) reduces traceability.
+  Neither is a material accuracy error in the security analysis itself — all security
+  controls are correctly assessed and the pin is correctly widened — but at C4 criticality
+  the documentation precision standard is higher. Both issues are one-line corrections.
+
+improvement_recommendations:
+  - priority: 1
+    dimension: Internal Consistency
+    current_score: 0.87
+    target_score: 0.93
+    recommendation: >
+      gate-disposition-b3.md evidence summary (line 96): Change "LOW findings | 4 (ACCEPTED)"
+      to either "LOW findings | 5 (ACCEPTED)" (correct count) or add an explicit note explaining
+      that V1 and RR-1 are the same root finding counted once ("LOW findings | 4 (ACCEPTED;
+      V1/RR-1 de-duplicated as same root finding). This single edit resolves the most material
+      remaining inconsistency.
+  - priority: 2
+    dimension: Traceability / Internal Consistency (shared)
+    current_score: 0.88 / 0.87
+    target_score: 0.93
+    recommendation: >
+      gate-disposition-b3.md cross-reference traceability table (lines 72-79): Align the
+      gate's F6 and F7 row labels with attack-surface-report's actual Finding numbers.
+      "F6: Newline in YAML description" should be labeled to reflect it is a sub-item of
+      Vector 1's recommendation, not a standalone finding (it is listed as a recommendation
+      within V1, not as Finding 6). "F7: Filename flag injection" should be linked to V4's
+      recommendation, not the attack-surface-report's Finding 7 (which is Mode sentinel).
+      Option: rename rows to "V1-rec: Newline injection" and "V4-rec: Flag injection" to
+      avoid the F-number collision with attack-surface-report Finding numbering.
+  - priority: 3
+    dimension: Traceability
+    current_score: 0.88
+    target_score: 0.93
+    recommendation: >
+      security-review.md M-2 section: Add a one-line note confirming that the eng-qa
+      test brittleness for template syntax error (broad except assertion) does not reduce
+      M-2 compliance confidence, citing that M-2 compliance is established by direct
+      import and instantiation evidence independent of test assertion strength.
+
+leniency_bias_check:
+  each_dimension_scored_independently: true
+  evidence_documented_for_each_score: true
+  uncertain_scores_resolved_downward: true
+  note_on_downward_resolution: >
+    Internal consistency scored 0.87 (not 0.90) despite only one factual count discrepancy,
+    because the finding-label mismatch compounds the traceability ambiguity and both
+    issues persist after three prior revision cycles. At C4 criticality, documentation
+    precision warrants strict calibration. Traceability scored 0.88 (not 0.90) for the
+    same compounding reason.
+  first_draft_calibration_considered: >
+    This is iteration 4; calibration anchors for revision cycles are more lenient than
+    first-draft anchors. Scores above 0.90 are appropriate for dimensions where the
+    underlying analysis is genuinely strong. Only dimensions with residual factual errors
+    or structural gaps are held below 0.90.
+  no_dimension_above_0.95_without_exceptional_evidence: true
+  note_on_0.95_scores: >
+    Completeness (0.95) and methodological rigor (0.95) reach this level because: all
+    required sections are present with correct structure, all three Phase 3 sub-deliverables
+    cover their respective domains exhaustively, and all four reports apply their named
+    methodologies (STRIDE, PTES, OWASP, BDD coverage analysis) with systematic rather
+    than impressionistic application. The 0.95 scores are justified by the evidence density
+    and structural completeness; 1.00 is withheld because eng-qa's branch coverage
+    enumeration gap and the informal OWASP label inconsistency are real, if minor, rigor gaps.
+
+session_context_handoff:
+  verdict: REVISE
+  composite_score: 0.9275
+  threshold: 0.94
+  weakest_dimension: internal_consistency
+  weakest_score: 0.87
+  critical_findings_count: 0
+  iteration: 4
+  delta_from_prior: +0.0415
+  note_on_delta: >
+    Iteration 4 recovered from the iteration 3 regression (0.9000 -> 0.8860 -> 0.9275).
+    The three fixes applied were effective. Only two residual documentation-precision
+    issues remain. Both are one-line edits in gate-disposition-b3.md.
+  improvement_recommendations:
+    - >
+      Fix gate-disposition-b3.md evidence summary LOW count: change 4 to 5, or add
+      explicit de-duplication rationale for the V1/RR-1 overlap.
+    - >
+      Realign gate cross-reference table F6/F7 labels to avoid collision with
+      attack-surface-report Finding 6/7 identifiers.
+    - >
+      Add M-2 note in security-review.md confirming test brittleness does not
+      reduce compliance confidence.

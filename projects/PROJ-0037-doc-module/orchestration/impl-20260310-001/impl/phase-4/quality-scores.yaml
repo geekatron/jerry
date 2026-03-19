@@ -1,0 +1,386 @@
+# Quality Score Report: Final Compliance Report -- Phase 4 Gate Review
+# Scored by: adv-scorer (S-014 LLM-as-Judge)
+# Date: 2026-03-10
+# SSOT: .context/rules/quality-enforcement.md
+
+# =============================================================================
+# L0 EXECUTIVE SUMMARY
+# =============================================================================
+# Score: 0.896/1.00 | Verdict: REVISE | Weakest Dimension: Internal Consistency (0.78)
+# One-line assessment: The Phase 4 compliance report is methodologically strong with
+# thorough per-constraint evidence, but two factual inconsistencies in the report's
+# own metadata (C2 vs C4 criticality declaration and 0.92 vs 0.94 threshold reference)
+# prevent PASS; correct both and resubmit.
+
+# =============================================================================
+# SCORING CONTEXT
+# =============================================================================
+deliverable: "projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-4/final-compliance-report.md"
+deliverable_type: "Analysis"
+criticality_level: "C4"
+scoring_strategy: "S-014 (LLM-as-Judge)"
+ssot_reference: ".context/rules/quality-enforcement.md"
+scored: "2026-03-10T00:00:00Z"
+prior_score: "0.940 (self-assessed by eng-reviewer)"
+iteration: 1
+ground_truth_verified:
+  jinja2_pin: "CONFIRMED -- pyproject.toml:40 reads jinja2>=3.1.6,<4.0 exactly as reported"
+  blocking_defect: "CONFIRMED -- frontmatter format mismatch is real and correctly documented"
+  test_counts: "CONFIRMED -- 51 tests, 100% line, 99% branch (67/68) matches gate-disposition-b3.md"
+
+# =============================================================================
+# SCORE SUMMARY
+# =============================================================================
+score_summary:
+  weighted_composite: 0.896
+  threshold: 0.94  # C4 final gate threshold per scoring context
+  default_threshold: 0.92  # H-13 standard threshold (report incorrectly uses this)
+  verdict: "REVISE"
+  strategy_findings_incorporated: "No -- adv-executor reports not provided; scored from deliverable directly"
+
+# =============================================================================
+# DIMENSION SCORES
+# =============================================================================
+dimension_scores:
+  completeness:
+    weight: 0.20
+    score: 0.93
+    weighted: 0.186
+    evidence_summary: "All required sections present with systematic per-constraint verification; all 5 mitigations, all 4 architecture constraints, coverage, CLI smoke test, and Phase 3 reconciliation documented"
+
+  internal_consistency:
+    weight: 0.20
+    score: 0.78
+    weighted: 0.156
+    evidence_summary: "Two factual metadata errors: (1) report header declares C2 but project/gate-disposition-b3 is C4; (2) self-score cites 0.92 threshold but invoking gate uses 0.94 -- all substantive technical claims cross-verify correctly"
+
+  methodological_rigor:
+    weight: 0.20
+    score: 0.93
+    weighted: 0.186
+    evidence_summary: "L0/L1/L2 structure applied correctly; each constraint uses requirement-then-tabular-evidence-then-verdict pattern; CLI smoke test output reproduced verbatim; remediation options are ranked with tradeoff analysis"
+
+  evidence_quality:
+    weight: 0.15
+    score: 0.91
+    weighted: 0.137
+    evidence_summary: "All security control claims cite file:line references; Jinja2 pin confirmed at pyproject.toml:40; BLOCKING defect has three-point evidence chain; one assertion (no regex in src/docs/) made without grep output"
+
+  actionability:
+    weight: 0.15
+    score: 0.93
+    weighted: 0.140
+    evidence_summary: "BLOCKING finding has three ranked remediation options with H-33 impact, effort estimate, and explicit recommendation; 4 priority-ordered recommendations with specific implementation targets; GO/NO-GO release decision table"
+
+  traceability:
+    weight: 0.10
+    score: 0.91
+    weighted: 0.091
+    evidence_summary: "Finding IDs trace to source Phase 3 reports with agent attribution; BLOCKING defect traces to spec line 46; security controls trace to threat model M-IDs; cross-report reconciliation cites both divergent source reports"
+
+  total_weighted: 0.896
+
+# =============================================================================
+# DETAILED DIMENSION ANALYSIS
+# =============================================================================
+detailed_analysis:
+
+  completeness:
+    score: 0.93
+    evidence: |
+      All mandated gate sections are present and substantively complete:
+      - H-07, H-10, H-11, H-33, H-05: Each constraint has its own L1 section with
+        requirement statement, verification method, tabular evidence, and verdict.
+      - M-1 through M-5: Each mitigation has a dedicated table with control, location,
+        and implementation notes.
+      - H-20: Coverage output table reproduced; 51/51 tests confirmed.
+      - CLI smoke test: Full verbatim output for all 13 skill skip messages.
+      - Phase 3 reconciliation: All 4 artifacts (security-review, attack-surface-report,
+        eng-qa-report, gate-disposition-b3) are listed with verdict inherited and open items.
+      - BLOCKING finding: Documented in both L0 summary and L2 strategic assessment.
+      - Remediation options: Three options with ranked recommendation.
+      - Residual risk table: 10 rows covering all open findings from Phase 3.
+    gaps: |
+      Minor gap: H-20 compliance section claims compliant but does not note that
+      pyproject.toml lacks --cov-fail-under=90, which means the threshold is not
+      automatically enforced. This is noted only in the Recommendations section
+      (Priority 3), not in the H-20 verification verdict itself. The distinction
+      between "currently passes" and "enforced going forward" is material for a C4
+      final gate. This is a documentation completeness gap, not a verification gap.
+    improvement_path: |
+      In the H-20 section, add a note: "Note: --cov-fail-under=90 is not configured
+      in pyproject.toml; coverage is verified manually at this gate. See Recommendation 3."
+      This makes the verification state explicit rather than implying automated enforcement.
+
+  internal_consistency:
+    score: 0.78
+    evidence: |
+      INCONSISTENCY 1 (factual metadata error):
+        - Report header line 7: "**Criticality:** C2 (Standard -- reversible in 1 day, 3-10 files)"
+        - gate-disposition-b3.md line 26: "All three Phase 3 deliverables meet verification
+          requirements at C4 criticality."
+        - Scoring context provided to adv-scorer: "C4 criticality, threshold >= 0.94"
+        - The eng-reviewer's own report is a Phase 4 final gate artifact at C4. Labeling it
+          C2 is factually incorrect and inconsistent with the project's stated criticality.
+
+      INCONSISTENCY 2 (threshold reference):
+        - Report lines 385-387 self-score: "Quality gate: PASS (0.940 >= 0.92 threshold)"
+        - The actual gate threshold for this review is 0.94 (C4 final gate).
+        - The H-13 standard threshold of 0.92 applies to C2+ deliverables; C4 gates
+          use elevated thresholds. The report's self-assessment applies the wrong standard.
+        - If the report had applied 0.94, its self-assessed 0.940 would be right at the
+          boundary -- not a comfortable PASS.
+
+      All substantive technical claims are internally consistent:
+        - Jinja2 pin reported as pyproject.toml:40 -- verified correct.
+        - 51 tests, 100%/99% coverage -- matches gate-disposition-b3.md exactly.
+        - BLOCKING defect description is consistent across L0, CLI section, and L2.
+        - Phase 3 finding disposition list matches gate-disposition-b3.md open findings table.
+        - Remediation option rankings are internally logical (Option A preserves hexagonal
+          pattern; Option C correctly identified as pattern violation).
+    gaps: |
+      The C2/C4 mislabeling and 0.92/0.94 threshold error are concentrated in the report
+      metadata and self-score section. They do not propagate into the technical verification
+      content, which is reliable. However, a final compliance report that mislabels its
+      own criticality level and applies the wrong quality threshold undermines confidence
+      in the metadata discipline expected at C4.
+    improvement_path: |
+      1. Change line 7: "**Criticality:** C4 (Critical -- all tiers + tournament review)"
+      2. Change line 385: "Quality gate: CONDITIONAL PASS (0.940 >= 0.94 threshold -- at boundary)"
+         OR if 0.940 does not actually meet the 0.94 threshold: "Quality gate: REVISE
+         (self-assessed 0.940 is at the 0.94 threshold boundary; external scoring required)"
+      3. These corrections also require the document's own self-score section to acknowledge
+         the elevated threshold rather than citing H-13's standard 0.92.
+
+  methodological_rigor:
+    score: 0.93
+    evidence: |
+      L0/L1/L2 structure is applied consistently and correctly:
+        - L0 provides executive verdict, summary scorecard, and Phase 3 reconciliation.
+        - L1 provides systematic per-constraint verification with explicit requirement
+          statements, verification methods, and tabular evidence.
+        - L2 provides BLOCKING finding analysis, architectural quality observations,
+          residual risk assessment, and priority-ordered recommendations.
+
+      Per-constraint methodology is sound:
+        - H-07: "Manual import analysis of all 10 source files in src/docs/" -- appropriate
+          for a bounded codebase; table covers all 10 files.
+        - H-10: Enumeration of all 10 source files with class/protocol count -- complete.
+        - H-11: Per-file table of public methods, type hint status, and docstring status.
+        - H-33: Distinction between source-code compliance and integration behavior is
+          methodologically correct -- the report does not conflate the two.
+        - CLI smoke test: Verbatim output reproduction is appropriate evidence; root cause
+          analysis (3 numbered evidence points) follows from the output.
+
+      Remediation ranking methodology:
+        - Option table with H-33 Impact, Effort, and Recommendation columns.
+        - Options ordered A/B/C with explicit recommendation rationale (4 bullet points
+          for Option A). This is appropriate for a BLOCKING finding at C4.
+    gaps: |
+      The H-07 verification relies solely on "manual import analysis" without a supporting
+      grep or static analysis tool output. For a C4 final gate, this is a methodology gap --
+      manual analysis is prone to oversight. The claim is likely correct (the security-review
+      from Phase 3 also found no violations), but the evidence is asserted rather than shown.
+    improvement_path: |
+      Add a grep result for cross-layer imports:
+        grep -r "from src.docs.infrastructure" src/docs/domain/ src/docs/application/
+        grep -r "from src.docs.application" src/docs/domain/
+      A clean result from these commands would convert the assertion into demonstrated evidence.
+
+  evidence_quality:
+    score: 0.91
+    evidence: |
+      Strong file:line citation practice throughout:
+        - M-1: skill_extractor.py:34,260 (HTML pattern); skill_extractor.py:38-40,262
+          (unsafe link); skill_extractor.py:42,263 (truncation); skill_extractor.py:41,118
+          (name truncation). All four controls cited with dual line references (definition
+          and usage).
+        - M-2: jinja2_renderer.py:19-20 (imports); jinja2_renderer.py:56-60 (instantiation);
+          jinja2_renderer.py:50-55 (directory validation).
+        - M-3: handler.py:281-287 (temp file); handler.py:289 (write); handler.py:290
+          (close); handler.py:291 (replace); handler.py:277 (same-dir); handler.py:293-298
+          (cleanup); handler.py:97-108 (traversal guard). Most granular evidence in the report.
+        - M-4: pyproject.toml:40 confirmed by adv-scorer ground truth read.
+        - BLOCKING defect evidence chain:
+          (1) "skills/adversary/SKILL.md has YAML frontmatter at lines 1-28 containing name: adversary"
+          (2) "uv run jerry ast frontmatter skills/adversary/SKILL.md returns {Version: 1.0.0, Framework: ...}"
+          (3) "The returned dict has no name key, so frontmatter.get(name) returns None, triggering the skip path at skill_extractor.py:111-115"
+          This is a complete causal chain.
+        - Jinja2 pin claim verified correct at pyproject.toml:40.
+    gaps: |
+      Two assertions without shown evidence:
+        1. "No file in src/docs/ contains regex-based YAML frontmatter extraction." -- This is
+           stated without a grep result. The claim is likely true and consistent with Phase 3
+           security review, but for a C4 gate, demonstrated evidence is expected.
+        2. "Private methods also carry type hints and docstrings, exceeding the requirement." --
+           Positive assertion about private methods exceeding H-11, not required but stated
+           as evidence of quality. No examples cited.
+    improvement_path: |
+      Add two grep results:
+        1. grep -r "re\." src/docs/ | grep -i "frontmatter\|yaml" -- to demonstrate no
+           regex-based frontmatter extraction exists.
+        2. For the "private methods" claim, either remove it or cite one example
+           (e.g., "_sanitize_description at skill_extractor.py:XX has type hints and docstring").
+
+  actionability:
+    score: 0.93
+    evidence: |
+      BLOCKING finding remediation is highly actionable:
+        - Three ranked options (A/B/C) with explicit H-33 Impact assessment for each.
+        - Option A recommendation supported by 4 specific rationale points.
+        - "Create a YamlFrontmatterReader adapter that parses ---delimited YAML frontmatter
+          from SKILL.md and agent .md files. Wire it in the composition root." -- specific
+          enough to implement without further clarification.
+        - "Re-run the CLI smoke test to verify all 13 skills are extracted." -- provides
+          the specific verification step.
+
+      Priority-ordered recommendations:
+        1. [BLOCKING] YamlFrontmatterReader -- specific class name, wiring location, verification step.
+        2. [HIGH] Integration test -- "at least one integration test that exercises the real reader
+           adapter against a fixture SKILL.md file containing ---delimited YAML frontmatter."
+           Specific enough to implement.
+        3. [MEDIUM] "Add --cov-fail-under=90 to pytest configuration" in "[tool.pytest.ini_options]" --
+           exact config key and location specified.
+        4. [LOW] "Run _sanitize_description on example and features values" -- specific function
+           name and loading location cited.
+
+      Release decision table provides clear GO/NO-GO per gate category.
+    gaps: |
+      Recommendation 2 (integration test) does not specify where the test should be placed
+      (e.g., tests/integration/ or a new tests/unit/docs/test_real_reader.py). Minor gap
+      for an otherwise specific recommendation.
+    improvement_path: |
+      Add test file path to Recommendation 2:
+      "Add at least one integration test in tests/integration/docs/test_yaml_frontmatter_reader.py
+      that exercises the YamlFrontmatterReader against skills/adversary/SKILL.md and asserts
+      name == 'adversary'."
+
+  traceability:
+    score: 0.91
+    evidence: |
+      Finding-to-source traceability:
+        - Phase 3 reconciliation table maps each artifact to agent, verdict, and open items.
+        - L2 residual risk table maps each finding to source report (red-vuln, eng-architect)
+          and Phase 4 disposition.
+        - All 10 residual findings from gate-disposition-b3.md appear in the Phase 4 table --
+          no findings dropped without disposition.
+
+      Constraint-to-specification traceability:
+        - BLOCKING defect traces to "doc-module-spec.md line 46: jerry ast frontmatter is
+          specified as the extraction mechanism" -- specific enough to verify.
+        - Security controls trace to threat model mitigation IDs (M-1..M-5).
+        - Architecture constraints trace to H-rule IDs (H-07, H-10, H-11, H-33, H-05).
+
+      Phase 3 cross-report reconciliation:
+        - Jinja2 severity divergence between eng-architect (LOW) and red-vuln (HIGH) is
+          documented and resolved with explicit rationale (current vs. forward risk horizons).
+        - M-5 name pattern discrepancy between spec and implementation is documented.
+
+      Document footer attributes all Phase 3 inputs with file paths.
+    gaps: |
+      The Phase 3 reconciliation table shows "2 LOW residual risks accepted" for security-review
+      but does not name them. Cross-referencing requires the reader to check security-review.md
+      separately. The L2 residual risk table provides this information, but the L0 reconciliation
+      table could be tighter.
+
+      No explicit traceability from each H-rule citation to the quality-enforcement.md SSOT.
+      For a C4 gate this is a minor gap -- the H-rule IDs are sufficient for lookup.
+    improvement_path: |
+      In the Phase 3 reconciliation table, expand the "Open Items" column for security-review:
+      "2 LOW residual risks accepted: RR-1 (markdown formatting injection), RR-2 (warn-only
+      keyword count)" -- eliminates need to cross-reference the other report.
+
+# =============================================================================
+# IMPROVEMENT RECOMMENDATIONS (PRIORITY ORDERED)
+# =============================================================================
+improvement_recommendations:
+  - priority: 1
+    dimension: "Internal Consistency"
+    current_score: 0.78
+    target_score: 0.90
+    recommendation: >
+      Correct the criticality declaration in the report header (line 7) from C2 to C4.
+      Update the self-score quality gate reference (line 385) from 0.92 to 0.94, and
+      revise the verdict language accordingly (0.940 is at the 0.94 boundary, not a
+      comfortable pass). These two corrections are the single highest-impact changes.
+
+  - priority: 2
+    dimension: "Methodological Rigor"
+    current_score: 0.93
+    target_score: 0.95
+    recommendation: >
+      Add grep-based evidence for the H-07 cross-layer import verification to replace
+      the asserted "manual import analysis." A clean grep output for cross-layer imports
+      converts the assertion into demonstrated evidence appropriate for C4.
+
+  - priority: 3
+    dimension: "Evidence Quality"
+    current_score: 0.91
+    target_score: 0.94
+    recommendation: >
+      Add grep result demonstrating no regex-based YAML frontmatter extraction exists in
+      src/docs/: `grep -r "re\." src/docs/ | grep -i "frontmatter\|yaml"`. This converts
+      the H-33 negative assertion into demonstrated evidence.
+
+  - priority: 4
+    dimension: "Completeness"
+    current_score: 0.93
+    target_score: 0.95
+    recommendation: >
+      In the H-20 verification section, add a note distinguishing "passes today" from
+      "enforced automatically": note that --cov-fail-under=90 is absent from pyproject.toml
+      and point to Recommendation 3. This prevents a reader from assuming automated enforcement
+      is in place.
+
+  - priority: 5
+    dimension: "Actionability"
+    current_score: 0.93
+    target_score: 0.95
+    recommendation: >
+      Add the specific test file path to Recommendation 2 (integration test):
+      tests/integration/docs/test_yaml_frontmatter_reader.py, with a concrete assertion
+      (name == 'adversary' for skills/adversary/SKILL.md).
+
+# =============================================================================
+# LENIENCY BIAS CHECK
+# =============================================================================
+leniency_bias_check:
+  each_dimension_scored_independently: true
+  evidence_documented_per_score: true
+  uncertain_scores_resolved_downward: true
+  first_draft_calibration_considered: "This is a Phase 4 final gate report, not a first draft; 0.85-0.90 range is appropriate for strong-but-not-perfect gate reports"
+  no_dimension_above_0_95_without_exceptional_evidence: true
+  notes: |
+    The self-assessed score of 0.940 is inflated primarily due to the Internal Consistency
+    dimension. The eng-reviewer scored itself 0.95 on Internal Consistency; the actual
+    score is 0.78 due to the C2/C4 mislabeling and wrong threshold reference. These are
+    not minor formatting issues -- they are factual errors in the report's own metadata
+    at a C4 final gate where metadata precision matters for audit trails.
+
+    The remaining 5 dimensions score in the 0.91-0.93 range, which is appropriate for
+    a methodologically rigorous report with thorough file:line evidence. The overall
+    composite of 0.896 reflects a strong deliverable with two fixable defects.
+
+    Anti-leniency application: The C2/C4 error drove the Internal Consistency score
+    down to 0.78 rather than rounding up to 0.85. The rule "when uncertain between
+    adjacent scores, choose the lower" was applied here -- the mislabeling is a clear
+    factual error, not an ambiguous case.
+
+# =============================================================================
+# SESSION CONTEXT (HANDOFF SCHEMA)
+# =============================================================================
+session_context:
+  verdict: "REVISE"
+  composite_score: 0.896
+  threshold: 0.94
+  weakest_dimension: "Internal Consistency"
+  weakest_score: 0.78
+  critical_findings_count: 0
+  iteration: 1
+  improvement_recommendations:
+    - "Correct criticality declaration from C2 to C4 in report header (line 7)"
+    - "Update self-score threshold reference from 0.92 to 0.94 with appropriate verdict language"
+    - "Add grep evidence for H-07 cross-layer import verification"
+    - "Add grep evidence for H-33 no-regex assertion in src/docs/"
+    - "Add --cov-fail-under note to H-20 compliance section"
+    - "Specify integration test file path in Recommendation 2"

@@ -1,0 +1,631 @@
+barrier: "barrier-1"
+iteration: 9
+strategies_applied: [S-014, S-003, S-002, S-010, S-013]
+scored_at: "2026-03-10T00:00:00Z"
+criticality: "C4"
+threshold: 0.94
+score_bands:
+  pass: ">= 0.94"
+  revise: "0.88 - 0.93"
+  rejected: "< 0.88"
+
+# --- Arithmetic verification (independent, step-by-step) ---
+#
+# Dimension scores and weighted contributions:
+#   completeness:          0.95 * 0.20 = 0.19000
+#   internal_consistency:  0.95 * 0.20 = 0.19000
+#   methodological_rigor:  0.94 * 0.20 = 0.18800
+#   evidence_quality:      0.90 * 0.15 = 0.13500
+#   actionability:         0.94 * 0.15 = 0.14100
+#   traceability:          0.94 * 0.10 = 0.09400
+#
+# Sum (step-by-step):
+#   0.19000 + 0.19000 = 0.38000
+#   0.38000 + 0.18800 = 0.56800
+#   0.56800 + 0.13500 = 0.70300
+#   0.70300 + 0.14100 = 0.84400
+#   0.84400 + 0.09400 = 0.93800
+#
+# Composite: 0.9380
+# Gap to threshold: 0.94 - 0.9380 = 0.0020
+# Score band: 0.9380 is in the range 0.88-0.93 REVISE band.
+# (0.9380 < 0.94 PASS threshold; 0.9380 >= 0.88 REVISE lower bound)
+# Verdict: REVISE.
+
+# --- Strategy execution summary ---
+#
+# S-010 (Self-Refine — Pre-scoring verification):
+#   Three new tests verified present and correctly implemented:
+#   (1) test_ast_reader_raises_on_nonzero_returncode (test 14, line 305):
+#       Patches subprocess.run at the module level returning returncode=1 and
+#       stderr="unexpected error occurred". Also patches Path.exists to return True
+#       (so the file-not-found guard does not short-circuit). Verifies RuntimeError
+#       raised with message matching "jerry ast frontmatter failed".
+#       Production code path confirmed: ast_frontmatter_reader.py lines 72-80.
+#   (2) test_check_drift_inverted_marker_warns (test 15, line 323):
+#       Creates a real tmp_path README with END before BEGIN in the marker order.
+#       Calls handler._check_drift() with {"SKILLS_TABLE": "new content"}.
+#       Asserts drift=True and warnings list contains "Inverted" (case-insensitive).
+#       Production code path confirmed: generate_docs_command_handler.py lines 237-239.
+#   (3) test_generate_docs_result_per_mode_semantics (test 16, line 350):
+#       Directly constructs GenerateDocsResult with drift_detected=None, True, False
+#       and asserts each value. Tests the dataclass three-state contract.
+#       Production code path confirmed: generate_docs_result.py line 44.
+#   Arithmetic verified independently from dimension scores (see above).
+#
+# S-003 (Steelman):
+#   The three new tests are genuine improvements. Tests 14 and 15 are particularly
+#   strong: test 14 uses unittest.mock.patch at the subprocess module level to
+#   inject a non-zero returncode, exercising the production error-handling branch
+#   that was previously inspection-only for 8 iterations. Test 15 uses a real
+#   temporary file with inverted marker order, exercising the _check_drift path
+#   that differs from the write-path ValueError in inject_between_markers. These
+#   are credible, purposeful behavioral tests with real assertions.
+#   Test 16 is structurally simpler but still valuable: it provides a regression
+#   guard for the three-state drift_detected contract documented in the dataclass
+#   docstring. If someone changes the field default or type annotation, test 16
+#   catches it.
+#   The iteration-9 deliverable now has 16 unit tests passing, covering all 9
+#   barrier-1 checklist items, all three security control families (M-1, M-2, M-3),
+#   H-33 compliance, and primary behavioral contracts.
+#
+# S-002 (Devil's Advocate):
+#   (1) Test 16 weakness: test_generate_docs_result_per_mode_semantics directly
+#   constructs GenerateDocsResult objects without exercising the handler's mode
+#   dispatch logic. The claim "per-mode semantics" implies the handler sets
+#   drift_detected correctly for each mode (check/write/stdout), but test 16
+#   only verifies that the dataclass accepts and stores these three values. The
+#   handler's mode dispatch (generate_docs_command_handler.py lines 177-185) is
+#   not exercised in test 16. Test 5 (test_check_drift_detects_content_mismatch)
+#   covers the check-mode True path via _check_drift, but not the full handler
+#   dispatch chain in check, write, and stdout modes.
+#   Impact: the "per-mode construction" claim is now executable but at reduced
+#   confidence compared to an integration test through handle(). This constrains
+#   Evidence Quality advancement to 0.90 (band crossing) rather than 0.92.
+#   (2) Subprocess list-form args claim remains inspection-only: test 14 patches
+#   subprocess.run at the module level. The patch does not verify that the actual
+#   production call uses list-form arguments (it replaces the call entirely). The
+#   "list-form args prevent command injection" claim from the iteration-8 evidence
+#   inventory is still verified by code inspection only (ast_frontmatter_reader.py
+#   line 58). This means one claim from the 16-claim inventory remains
+#   inspection-only after iteration 9 — the total is more precisely 15.5/16
+#   (15 fully executable + 1 partially executable via construction-only test +
+#   1 inspection-only).
+#   (3) Evidence Quality band: crossing from 0.89 to 0.90 is warranted because
+#   tests 14 and 15 cover the two highest-value previously-inspection-only claims
+#   (subprocess error handling and inverted-marker warning path). The remaining
+#   weakness (list-form args inspection, test 16 construction-only) constrains
+#   the score to 0.90 rather than 0.92.
+#   (4) Completeness at 0.95: The argument for advancing Completeness hinges on
+#   the test plan reaching "all claims" territory. Given that one claim (list-form
+#   args) remains inspection-only and test 16 is construction-only, the strictest
+#   reading would hold Completeness at 0.94. However, Completeness measures
+#   requirements coverage, not evidence quality. All 9 barrier-1 checklist items
+#   PASS. The test plan now has 16 tests covering all behavioral contracts
+#   explicitly. Integration tests are Phase 3 scope. The "all requirements
+#   addressed with depth" criterion is met for barrier-1. Completeness advances
+#   to 0.95.
+#
+# S-013 (Inversion):
+#   The remaining gap after iteration 9 is 0.0020 (0.938 vs. 0.94 threshold).
+#   Inversion analysis: what must NOT change for the gap to persist?
+#   - Evidence Quality must stay below 0.92 (currently 0.90 with subprocess
+#     list-form args inspection-only and test 16 construction-only).
+#   - Actionability must stay at 0.94 (no operator runbook or CI exit code doc).
+#   - Traceability must stay at 0.94 (no formal requirements-to-implementation
+#     traceability matrix).
+#   To close the remaining 0.002 gap without Completeness (already at 0.95):
+#     Option A: Evidence Quality 0.90 -> 0.93: delta = 0.03*0.15 = +0.0045 > 0.002.
+#       Requires: (a) add behavioral test verifying list-form subprocess args
+#       (e.g., capture the actual call args via mock), OR accept current level
+#       and advance Evidence Quality to 0.93 based on overall suite quality.
+#     Option B: Actionability 0.94 -> 0.95: delta = 0.01*0.15 = +0.0015 < 0.002.
+#       Alone insufficient. Requires coupling with another advancement.
+#     Option C: Evidence Quality 0.90 -> 0.93 (Option A) achieves PASS alone:
+#       0.9380 + 0.0045 = 0.9425 >= 0.94.
+#   Most tractable path to PASS: add a mock_calls assertion in test 14 that verifies
+#   the subprocess was called with list-form args (check mock_calls[0].args[0] is
+#   a list starting with "uv"). This converts the list-form args claim from
+#   inspection-only to executable, completing 16/16 at high quality, enabling
+#   Evidence Quality to advance to 0.92+. Combined with Completeness already at
+#   0.95, this closes the remaining 0.002 gap.
+#
+# S-014 (LLM-as-Judge — formal dimension scoring):
+#   Applied below with strict rubric and leniency bias counteraction.
+
+dimensions:
+  completeness:
+    score: 0.95
+    weight: 0.20
+    weighted: 0.19000
+    rationale: >
+      Advances from 0.94 to 0.95 in iteration 9. The test plan now has 16 tests
+      covering all behavioral and security claims. The prior ceiling at 0.94 was
+      held because "test plan at 81% (13/16)." With the test plan now at 16 tests
+      and all 9 barrier-1 checklist items still passing, the "all requirements
+      addressed with depth" rubric criterion is satisfied for barrier-1 scope.
+      Barrier-1 checklist items (all 9 PASS, unchanged):
+        - DI constructor (extractor, renderer, reader): PASS
+        - Name regex (^[a-zA-Z][a-zA-Z0-9-]*$): PASS
+        - HTML strip (_sanitize_description): PASS
+        - 1024-char max description: PASS
+        - SandboxedEnvironment + StrictUndefined: PASS
+        - uv run subprocess (list-form, no shell=True): PASS (inspection)
+        - Atomic write (NamedTemporaryFile + os.replace): PASS
+        - No domain-infra imports (H-07): PASS (inspection)
+        - One class per file (H-10): PASS (inspection)
+      Test plan status: 16 tests (tests 1-16), all PASS. Tests cover M-1, M-2, M-3,
+      path traversal guard, mode validation, YAML error boundary, drift detection
+      (positive and negative paths), inverted-marker warning, atomic write cleanup,
+      agent exclusion patterns, H-33 compliance, and three-state result contract.
+      Integration tests and golden-file tests remain Phase 3 scope and are not
+      barrier-1 requirements. The barrier-1 scope is fully addressed with depth.
+      Leniency counteraction: Is 0.95 too generous given test 16's weakness and the
+      list-form args inspection-only claim? Completeness measures requirements
+      coverage, not evidence quality. The requirements (9 checklist items) are all
+      PASS. The test plan addresses all documented behavioral claims. The remaining
+      gaps (list-form args, test 16 scope) are evidence quality concerns, not
+      completeness gaps. 0.95 is the appropriate score for completeness at 16/16
+      test coverage of all barrier-1 requirements. 0.96+ is not warranted (no
+      integration tests in the barrier).
+    delta_from_iteration_8: +0.01
+    evidence_basis: >
+      All 9 barrier-1 checklist items: PASS (unchanged from iteration 8).
+      test_phase1_evidence.py: 16 tests (lines 24-364), all PASS.
+      Tests 14-16 added in iteration 9 confirm returncode error handling,
+      inverted-marker warning path, and three-state result contract.
+      doc-module-spec.md lines 286-335: File Structure and Class Responsibilities
+      (spec reconciliation from iteration 8 intact).
+
+  internal_consistency:
+    score: 0.95
+    weight: 0.20
+    weighted: 0.19000
+    rationale: >
+      Unchanged from iteration 8 at 0.95. No consistency-relevant changes in
+      iteration 9. The sole persistent contradiction from iterations 1-7 (spec
+      layout vs. implementation) was resolved in iteration 8 and remains resolved.
+      Consistency chain after iteration 8 (intact):
+        (a) src/docs/__init__.py deviation note consistent with spec H-07 note
+        (b) Spec Class Responsibilities paths match actual file locations (1:1)
+        (c) Spec File Structure tree matches src/docs/ actual directory contents
+        (d) drift_detected docstring (True/False/None) consistent with handle() dispatch
+        (e) Mode validation guard consistent with spec error handling table
+      Test 15 (iteration 9) further confirms internal consistency: the
+      inverted-marker warning path in _check_drift (lines 237-239) behaves as
+      documented (warnings.append("Inverted markers for section {section_name}")
+      and returns True). No contradictions between test assertions and production
+      code found.
+      Score: 0.95 maintained. 0.96+ is not warranted (no additional consistency
+      improvements; "essentially perfect" territory requires near-1.00 quality).
+    delta_from_iteration_8: 0.00
+    evidence_basis: >
+      doc-module-spec.md lines 286-335: File Structure and Class Responsibilities
+      (from iteration 8, intact).
+      src/docs/__init__.py lines 5-11: deviation note consistent with spec.
+      generate_docs_result.py lines 28-33: three-state docstring matches dispatch.
+      generate_docs_command_handler.py lines 110-122: mode guard consistent with
+      spec error handling table.
+      test 15 confirms _check_drift inverted-marker warning matches code (line 238).
+
+  methodological_rigor:
+    score: 0.94
+    weight: 0.20
+    weighted: 0.18800
+    rationale: >
+      Unchanged from iteration 8 at 0.94. No methodology changes in iteration 9.
+      All primary architectural methodologies remain implemented and validated:
+        - Hexagonal DI with ports/adapters (handler, extractor, renderer, reader)
+        - Input sanitization (M-1: HTML strip, unsafe URL strip, regex validation)
+        - Sandboxed template rendering (M-2: SandboxedEnvironment + StrictUndefined)
+        - Path traversal guard (A01:2021, OWASP)
+        - Mode validation guard (parameter safety)
+        - YAML error boundary (yaml.YAMLError -> ValueError)
+        - Marker order validation (inverted marker detection)
+        - Atomic write (M-3: tempfile + os.replace)
+        - AST-based parsing (H-33: uv run jerry ast frontmatter, no regex)
+      Tests 14-16 provide additional executable confirmation of methodology
+      correctness but do not change the methodology itself. Score unchanged at 0.94.
+      Ceiling constraint: no formal design patterns document or architectural
+      decision record for the hexagonal decomposition within the doc module. The
+      implementation follows established Jerry patterns (H-07) but the doc module
+      itself lacks a standalone ADR. This is a minor methodological note that
+      prevents 0.95.
+    delta_from_iteration_8: 0.00
+    evidence_basis: >
+      generate_docs_command_handler.py: path guard (lines 97-108), mode guard
+      (lines 110-122), atomic write (lines 271-299).
+      skill_extractor.py: HTML strip (line 260), unsafe URL strip (line 262),
+      regex validation (lines 119-126), 1024-char limit (line 263).
+      jinja2_renderer.py: SandboxedEnvironment (line 45), StrictUndefined (line 47).
+      ast_frontmatter_reader.py: subprocess list-form (line 57-62), no shell=True.
+
+  evidence_quality:
+    score: 0.90
+    weight: 0.15
+    weighted: 0.13500
+    rationale: >
+      Advances from 0.89 to 0.90 in iteration 9. The band ceiling argument (0.89
+      maximum within "most claims supported" band) is dissolved by tests 14 and 15,
+      which cover the two highest-value previously-inspection-only claims. The rubric
+      boundary 0.90+: "All claims with credible citations" is now substantially met.
+      New tests in iteration 9:
+        Test 14 (test_ast_reader_raises_on_nonzero_returncode, line 305):
+          Patches subprocess.run to return returncode=1, stderr="unexpected error
+          occurred". Also patches Path.exists to return True to bypass the
+          file-not-found guard. Verifies RuntimeError raised matching
+          "jerry ast frontmatter failed". This is a credible, behavioral test
+          for the previously-inspection-only returncode path. Production code
+          confirmed at ast_frontmatter_reader.py lines 72-80.
+        Test 15 (test_check_drift_inverted_marker_warns, line 323):
+          Creates a real tmp_path README with END before BEGIN marker order.
+          Calls _check_drift() with {"SKILLS_TABLE": "new content"}.
+          Asserts drift=True and warnings contain "Inverted" (case-insensitive).
+          This is a strong behavioral test for the previously-inspection-only
+          warning path. Production code confirmed at handler lines 237-239.
+        Test 16 (test_generate_docs_result_per_mode_semantics, line 350):
+          Directly constructs GenerateDocsResult with drift_detected=None, True,
+          False and asserts each value. Tests the dataclass three-state contract.
+          This is a construction-only test; it does not exercise the handler's
+          mode dispatch. The behavioral claim (handler sets drift_detected per
+          mode) is partially covered by other tests (test 5 covers check-mode True
+          via _check_drift) but not end-to-end.
+      Evidence quality constraints preventing advancement beyond 0.90:
+        (1) Subprocess list-form args claim: test 14 patches subprocess.run at
+            the module level but does not verify the actual call arguments are
+            list-form. The claim "list-form args prevent command injection" remains
+            verified by code inspection only (ast_frontmatter_reader.py line 58).
+            This is the sole remaining inspection-only claim.
+        (2) Test 16 is a construction-only test, not a behavioral integration test.
+            The three-state contract is partially covered by existing tests (test 5)
+            but test 16 adds regression protection at the dataclass level only.
+      Honest evidence fraction: 15/16 claims fully executable by behavioral tests,
+      1 claim (list-form args) inspection-only, 1 test (test 16) construction-only.
+      This is substantively different from "all claims with credible citations" at
+      the 0.92+ level. The band transition to 0.90 is warranted; advancement to
+      0.92 is not justified.
+      Leniency counteraction: uncertain between 0.90 and 0.91, choosing 0.90.
+      Evidence is strong across 15/16 claims, with one genuine inspection-only gap.
+      The calibration anchor at 0.85 is "Strong work with minor refinements needed"
+      and at 0.92 is "Genuinely excellent." This deliverable is between those
+      anchors on evidence quality: excellent in most claims, with one inspection-only
+      gap and one construction-only test. 0.90 correctly places it above "most claims"
+      (0.7-0.89) and below "genuinely excellent" (0.92+).
+    delta_from_iteration_8: +0.01
+    evidence_basis: >
+      test_phase1_evidence.py: 16 tests (tests 1-16), all PASS.
+      Tests 14-16 added in iteration 9 cover returncode RuntimeError path,
+      inverted-marker warning path, and three-state result construction.
+      Inspection-only claim (1): subprocess list-form args at
+      ast_frontmatter_reader.py line 58 (list form visible, not behaviorally tested).
+      Executable fraction: ~15/16 fully behavioral (93.75%), 1 construction-only,
+      1 inspection-only.
+
+  actionability:
+    score: 0.94
+    weight: 0.15
+    weighted: 0.14100
+    rationale: >
+      Unchanged from iteration 8 at 0.94. No actionability changes in iteration 9.
+      Tests 14-16 do not add new operator-facing documentation or CI integration.
+      Existing actionability strengths (unchanged from iteration 8):
+        - Error codes documented in class docstring (PATH_TRAVERSAL, INVALID_MODE,
+          GENERATION_ERROR with triggering conditions)
+        - OWASP path traversal note in handle() docstring
+        - Invalid mode message includes valid mode list
+        - logger.exception call for GENERATION_ERROR (stack trace in CI logs)
+        - Inverted-marker warning with section name in _check_drift
+        - Inverted-marker ValueError with byte positions in inject_between_markers
+        - Keyword author policy comment with warn-only rationale
+        - Repo-root precondition note in handle() docstring
+      Ceiling at 0.94: no standalone operator troubleshooting runbook, no CI
+      workflow exit code documentation linking error codes to exit values for
+      pre-commit hook operators. The class docstring is actionable for developers
+      reading code but not for CI operators who see only exit codes in logs.
+      Score unchanged at 0.94.
+    delta_from_iteration_8: 0.00
+    evidence_basis: >
+      generate_docs_command_handler.py lines 51-55: error code block in class docstring.
+      test_phase1_evidence.py: tests asserting PATH_TRAVERSAL (test 4), INVALID_MODE
+      (test 7) confirm error codes are asserted at runtime.
+      spec doc-module-spec.md Exit Codes table: exit code mapping in spec.
+
+  traceability:
+    score: 0.94
+    weight: 0.10
+    weighted: 0.09400
+    rationale: >
+      Unchanged from iteration 8 at 0.94. No traceability changes in iteration 9.
+      Tests 14-16 add test docstrings citing specific production code paths
+      (ast_frontmatter_reader.py, generate_docs_command_handler.py, and
+      generate_docs_result.py), which marginally strengthen the traceability chain.
+      Existing traceability strengths (unchanged from iteration 8):
+        - All four primary source files: module docstrings cite spec section names
+          and security control IDs (M-1, M-2, M-3, M-5, H-33, H-05, H-07)
+        - 16 test docstrings trace to specific controls and behavior
+        - Spec File Structure tree matches src/docs/ actual structure
+        - Spec Class Responsibilities table matches actual class names and file paths
+        - src/docs/__init__.py deviation note consistent with spec H-07 note
+      Ceiling at 0.94: no formal requirements-to-implementation traceability matrix.
+      The rubric 0.95+: "Full traceability chain" — the absence of a formal matrix
+      and the presence of some inline spec text using generic terms ("the renderer")
+      are minor but real gaps. Score unchanged at 0.94.
+    delta_from_iteration_8: 0.00
+    evidence_basis: >
+      doc-module-spec.md lines 286-335: File Structure and Class Responsibilities
+      (from iteration 8, intact).
+      All four primary source files: module docstrings cite spec sections and
+      control IDs.
+      16 test docstrings (test_phase1_evidence.py): trace to specific controls
+      and production code lines.
+
+# --- Weighted composite calculation (verified) ---
+# completeness:          0.95 * 0.20 = 0.19000
+# internal_consistency:  0.95 * 0.20 = 0.19000
+# methodological_rigor:  0.94 * 0.20 = 0.18800
+# evidence_quality:      0.90 * 0.15 = 0.13500
+# actionability:         0.94 * 0.15 = 0.14100
+# traceability:          0.94 * 0.10 = 0.09400
+#
+# Sum (step-by-step):
+#   0.19000 + 0.19000 = 0.38000
+#   0.38000 + 0.18800 = 0.56800
+#   0.56800 + 0.13500 = 0.70300
+#   0.70300 + 0.14100 = 0.84400
+#   0.84400 + 0.09400 = 0.93800
+
+weighted_composite: 0.9380
+verdict: "REVISE"
+
+# Score band check:
+#   0.9380 >= 0.94 (PASS threshold)? NO. (0.94 - 0.9380 = 0.0020 gap)
+#   0.9380 >= 0.88 (REVISE lower bound)? YES.
+#   Verdict: REVISE.
+#   Gap to threshold: 0.0020.
+
+delta_from_iteration_8:
+  composite_delta: +0.0035
+  composite_old: 0.9345
+  composite_new: 0.9380
+  completeness_delta: +0.01
+  evidence_quality_delta: +0.01
+  internal_consistency_delta: 0.00
+  methodological_rigor_delta: 0.00
+  actionability_delta: 0.00
+  traceability_delta: 0.00
+  arithmetic_verification: >
+    Two dimensions advanced in iteration 9:
+      completeness:     +0.01 * 0.20 = +0.0020
+      evidence_quality: +0.01 * 0.15 = +0.0015
+    Total delta: 0.0020 + 0.0015 = 0.0035
+    Cross-check: 0.9345 + 0.0035 = 0.9380. Confirmed.
+
+delta_from_iteration_1:
+  composite_delta: "+0.1080 (0.830 -> 0.9380)"
+  composite_progression:
+    iter1: 0.830   # REJECTED
+    iter2: 0.887   # REVISE
+    iter3: 0.915   # REVISE
+    iter4_to_6: "~0.928 (arithmetic-corrected)"
+    iter7: 0.930   # REVISE (corrected baseline)
+    iter8: 0.9345  # REVISE
+    iter9: 0.9380  # REVISE
+
+remaining_gap_to_threshold: 0.0020
+
+evidence_quality_analysis: >
+  Tests 14 and 15 crossed the Evidence Quality band boundary from 0.89 to 0.90.
+  The "all claims with credible citations" criterion is substantially met for 15/16
+  claims. The remaining constraint is the subprocess list-form args claim (1 claim
+  inspection-only) and test 16's construction-only scope.
+  The score advanced from 0.89 (band ceiling under "most claims") to 0.90 (entering
+  "all claims" band). Advancement to 0.92 requires either:
+    (a) Converting the list-form args claim to executable (mock_calls assertion in
+        test 14 verifying the actual argument list), OR
+    (b) Demonstrating that the 16 tests as a whole qualify as "genuinely excellent"
+        despite the construction-only test 16.
+  Under strict leniency bias counteraction, 0.90 is the correct score.
+
+path_to_threshold:
+  gap: 0.0020
+  most_tractable_path: >
+    Gap remaining: 0.0020.
+    Evidence Quality 0.90 -> 0.93: delta = 0.03 * 0.15 = +0.0045 > 0.0020. PASS alone.
+      Requires: add mock_calls assertion in test 14 verifying subprocess was called with
+      list-form args (e.g., assert mock.call_args.args[0] == ["uv", "run", "jerry", "ast",
+      "frontmatter", "/some/file.md"]). This converts the sole remaining inspection-only
+      claim to executable. With 16/16 behavioral or high-quality executable tests,
+      Evidence Quality can advance to 0.92-0.93.
+      At evidence_quality=0.93: 0.93*0.15 = 0.1395 vs. current 0.90*0.15 = 0.1350.
+      Delta: +0.0045. Composite: 0.9380 + 0.0045 = 0.9425 >= 0.94. PASS.
+    Alternative shorter path:
+      Evidence Quality 0.90 -> 0.91 (+0.0015) + Actionability 0.94 -> 0.95 (+0.0015):
+      Total: +0.0030 > 0.0020. Composite: 0.9380 + 0.0030 = 0.9410 >= 0.94. PASS.
+      But Actionability requires operator runbook or CI exit code documentation,
+      which is a larger change than a single mock assertion in test 14.
+    Recommended path: Add mock_calls assertion in test 14 to cover list-form args
+    claim, advancing Evidence Quality to 0.92+. Single test modification, closes
+    the 0.002 gap with a 0.0045 contribution.
+
+checklist_results:
+  - item: "GenerateDocsCommandHandler constructor accepts SkillExtractor, ITemplateRenderer, IFrontmatterReader"
+    status: "PASS"
+    evidence: "generate_docs_command_handler.py lines 63-78"
+
+  - item: "SkillExtractor.extract_all() validates name regex ^[a-zA-Z][a-zA-Z0-9-]*$"
+    status: "PASS"
+    evidence: "skill_extractor.py line 31 (_SKILL_NAME_PATTERN), line 119 (applied)"
+
+  - item: "SkillExtractor.extract_all() strips HTML from description"
+    status: "PASS"
+    evidence: >
+      skill_extractor.py line 34 (_HTML_TAG_PATTERN), line 260 (applied in _sanitize_description).
+      EXECUTABLE: test_sanitize_description_strips_html_and_unsafe_links PASSED.
+
+  - item: "SkillExtractor.extract_all() enforces 1024-char max"
+    status: "PASS"
+    evidence: "skill_extractor.py line 42 (_MAX_DESCRIPTION_LENGTH=1024), line 263 ([:1024])"
+
+  - item: "Jinja2Renderer uses SandboxedEnvironment + StrictUndefined"
+    status: "PASS"
+    evidence: >
+      jinja2_renderer.py lines 45-49.
+      EXECUTABLE: test_sandboxed_environment_blocks_unsafe_access PASSED.
+      EXECUTABLE: test_strict_undefined_raises_on_missing_variable PASSED.
+
+  - item: "AstFrontmatterReader calls uv run jerry ast frontmatter (not regex, not raw YAML)"
+    status: "PASS"
+    evidence: >
+      ast_frontmatter_reader.py lines 57-62: subprocess.run(['uv','run','jerry','ast','frontmatter',...]).
+      EXECUTABLE: test_ast_reader_raises_file_not_found PASSED (FileNotFoundError path).
+      EXECUTABLE: test_ast_reader_raises_on_nonzero_returncode PASSED (returncode error path).
+      NOTE: List-form args claim (injection prevention) remains inspection-only.
+
+  - item: "Atomic write uses tempfile.NamedTemporaryFile + os.replace()"
+    status: "PASS"
+    evidence: >
+      generate_docs_command_handler.py lines 271-299.
+      EXECUTABLE: test_atomic_write_produces_correct_content PASSED.
+      EXECUTABLE: test_atomic_write_cleans_up_on_error PASSED.
+
+  - item: "No domain layer file imports from infrastructure (H-07)"
+    status: "PASS"
+    evidence: "Domain ports and value_objects contain only stdlib imports; architectural inspection"
+
+  - item: "One class per file throughout src/docs/ (H-10)"
+    status: "PASS"
+    evidence: "Four primary classes each in own file; __init__.py files contain no class definitions"
+
+  - item: "Mode validation guard rejects unrecognized mode values"
+    status: "PASS"
+    evidence: >
+      generate_docs_command_handler.py lines 110-122: valid_modes = {"check", "write", None}.
+      EXECUTABLE: test_invalid_mode_rejected PASSED.
+
+  - item: "drift_detected attribute docstring documents three-state semantics"
+    status: "PASS"
+    evidence: >
+      generate_docs_result.py lines 28-33: True/False/None with mode context.
+      EXECUTABLE: test_generate_docs_result_per_mode_semantics PASSED (construction-level).
+
+  - item: "Error codes documented at class level (PATH_TRAVERSAL, INVALID_MODE, GENERATION_ERROR)"
+    status: "PASS"
+    evidence: "generate_docs_command_handler.py lines 51-55: error code block in class docstring."
+
+  - item: "Spec File Structure matches src/docs/ hexagonal implementation"
+    status: "PASS"
+    evidence: "doc-module-spec.md lines 286-322: updated layout with H-07 note (from iteration 8)."
+
+  - item: "Spec Class Responsibilities table uses real class names and file paths"
+    status: "PASS"
+    evidence: "doc-module-spec.md lines 324-335: GenerateDocsCommandHandler, Jinja2Renderer, AstFrontmatterReader, etc."
+
+  - item: "_check_drift warns and returns True for inverted markers in check mode"
+    status: "PASS"
+    evidence: >
+      generate_docs_command_handler.py lines 237-239: inverted marker detection.
+      EXECUTABLE: test_check_drift_inverted_marker_warns PASSED (NEW iteration 9).
+
+evidence_quality_inventory:
+  executable_claims:
+    - "M-1: <script> tag stripped from description (test 1)"
+    - "M-1: javascript: URL scheme stripped from description (test 1)"
+    - "M-1: link text preserved after unsafe link stripping (test 1)"
+    - "YAML error boundary: yaml.YAMLError re-raised as ValueError (test 2)"
+    - "Marker order guard: inverted markers raise ValueError in write path (test 3)"
+    - "Path traversal guard: /etc/passwd outside repo root returns PATH_TRAVERSAL (test 4)"
+    - "_check_drift(): content mismatch returns True (test 5)"
+    - "M-3 atomic write: new content written, old content replaced (test 6)"
+    - "Mode validation guard: mode='invalid' returns INVALID_MODE (test 7)"
+    - "M-2: SandboxedEnvironment blocks __class__.__mro__ traversal (test 8)"
+    - "M-2: StrictUndefined raises ValueError on undefined variable (test 9)"
+    - "H-33: AstFrontmatterReader raises FileNotFoundError for missing file (test 10)"
+    - "Agent exclusion: TEMPLATE/EXTENSION patterns present and match correctly (test 11)"
+    - "_check_drift(): returns False when content matches (test 12)"
+    - "M-3: temp file cleaned up when inject_between_markers raises RuntimeError (test 13)"
+    - "AstFrontmatterReader: returncode != 0 raises RuntimeError matching 'jerry ast frontmatter failed' (test 14 — NEW)"
+    - "_check_drift(): inverted-marker warning path warns with 'Inverted' and returns True (test 15 — NEW)"
+  construction_level_claims:
+    - "GenerateDocsResult three-state drift_detected contract: None/True/False accepted (test 16 — construction-only, not end-to-end handler dispatch)"
+  inspection_only_claims:
+    - "AstFrontmatterReader: subprocess list-form args prevent command injection (code inspection: line 58 — test 14 patches the call, does not verify argument form)"
+  executable_fraction: "17 of 19 distinct assertions (15 fully behavioral + 1 construction-level + 1 inspection-only)"
+  rubric_band: "0.90-0.91 (entering 'all claims' territory; constrained by 1 inspection-only claim and 1 construction-only test)"
+
+improvement_recommendations:
+  - priority: 1
+    dimension: "evidence_quality"
+    current: 0.90
+    target: 0.93
+    composite_impact: "+0.0045 (0.03 * 0.15 weight)"
+    closes_gap: true
+    recommendation: >
+      Add a mock_calls assertion to test_ast_reader_raises_on_nonzero_returncode
+      (test 14) to verify the actual subprocess call uses list-form arguments.
+      After the `with pytest.raises(RuntimeError, ...)` block, add a call to
+      AstFrontmatterReader().read_frontmatter() in success-path mode (returncode=0,
+      valid JSON stdout) and assert:
+        assert mock_subprocess.call_args.args[0] == [
+            "uv", "run", "jerry", "ast", "frontmatter", "/some/file.md"
+        ]
+      This converts the sole remaining inspection-only claim to executable,
+      completing 16/16 high-quality behavioral test coverage.
+      At evidence_quality=0.93: composite = 0.9380 + 0.0045 = 0.9425 >= 0.94 (PASS).
+      This is the minimum-change path to close the remaining 0.002 gap.
+
+  - priority: 2
+    dimension: "evidence_quality + actionability"
+    current_evidence_quality: 0.90
+    current_actionability: 0.94
+    composite_impact: "+0.0015 + +0.0015 = +0.0030 > 0.0020 gap"
+    closes_gap: true
+    recommendation: >
+      Alternative path: advance Evidence Quality 0.90->0.91 (via list-form args
+      mock assertion) AND Actionability 0.94->0.95 (via CI exit code documentation
+      or standalone operator runbook). Combined: +0.0015 + +0.0015 = +0.0030 > 0.002.
+      This closes the gap at 0.9380 + 0.0030 = 0.9410 >= 0.94 (PASS).
+      However, the Priority 1 path (single mock assertion) is simpler and sufficient.
+      Priority 2 is the fallback if Priority 1 is blocked.
+
+leniency_bias_check:
+  dimensions_scored_independently: true
+  evidence_documented_for_each_score: true
+  uncertain_scores_resolved_downward: true
+  first_draft_calibration_considered: true
+  no_dimension_above_0_95_without_exceptional_evidence: true
+  arithmetic_independently_verified: true
+  hostile_reviewer_test: >
+    Challenge 1: "Completeness advancing to 0.95 is unwarranted given the
+    subprocess list-form args claim is still inspection-only."
+    Response: Completeness measures requirements coverage, not evidence quality.
+    The barrier-1 requirements (9 checklist items) are ALL PASS. The test plan
+    now has 16 tests covering all documented behavioral claims. The list-form args
+    inspection-only constraint is an evidence quality concern, captured correctly
+    in Evidence Quality (0.90, not 0.92). Completeness and Evidence Quality are
+    independent dimensions; separating them is correct. 0.95 for Completeness is
+    warranted.
+    Challenge 2: "Evidence Quality at 0.90 is too generous — test 16 is barely
+    a test (it just creates a dataclass with three values)."
+    Response: Test 16 is the weakest of the three additions and this is
+    acknowledged in the rationale. It is classified as "construction-level" rather
+    than "fully behavioral." The 0.90 score reflects this nuance: we have crossed
+    the band boundary from 0.89 (ceiling of "most claims") to 0.90 (entry of "all
+    claims") but have NOT advanced to 0.92 ("genuinely excellent") because of
+    test 16's weakness and the inspection-only list-form args claim. 0.90 is the
+    appropriate score applying the uncertain-scores-downward rule.
+    Challenge 3: "The composite at 0.9380 is being scored by a system that has
+    an incentive to get it to PASS (iteration 9 of 10). Aren't you anchoring?"
+    Response: All five strategies (S-010, S-003, S-002, S-013, S-014) were applied
+    independently. S-002 (Devil's Advocate) produced the strongest constraint
+    arguments, particularly around test 16 and the list-form args claim. The score
+    of 0.9380 (REVISE) was reached by honest application of the rubric. Evidence
+    Quality was held at 0.90 (not 0.92) despite the iteration pressure. The
+    REVISE verdict is correct — there is a legitimate remaining gap (list-form args
+    claim) that prevents full "all claims with credible citations" certification.
+  calibration_note: >
+    Iteration-9 composite 0.9380. Delta from iteration 8: +0.0035. Cumulative
+    delta from iteration 1: +0.108. The deliverable is near-threshold quality
+    with one remaining targeted gap (list-form args subprocess claim). The 0.002
+    gap requires a single mock assertion addition in test 14. This is the smallest
+    remaining gap since iteration 1 and the most precisely targeted remaining fix.
+    The REVISE verdict is appropriate and actionable.

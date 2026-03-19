@@ -117,6 +117,9 @@ Examples:
     # Hooks namespace (EN-006: Context monitoring hook events)
     _add_hooks_namespace(subparsers)
 
+    # Docs namespace (PROJ-0037: Auto-documentation module)
+    _add_docs_namespace(subparsers)
+
     return parser
 
 
@@ -974,4 +977,54 @@ def _add_hooks_namespace(
     hooks_subparsers.add_parser(
         "subagent-stop",
         help="Handle SubagentStop hook event (lifecycle tracking)",
+    )
+
+
+def _add_docs_namespace(
+    subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
+) -> None:
+    """Add docs namespace commands.
+
+    Commands:
+        - generate: Generate README documentation sections from skill/agent metadata
+
+    References:
+        - PROJ-0037: Auto-documentation module
+        - ADR-PROJ0037-001: Doc module design
+    """
+    docs_parser = subparsers.add_parser(
+        "docs",
+        help="Documentation generation commands",
+        description="Generate and verify README documentation sections.",
+    )
+
+    docs_subparsers = docs_parser.add_subparsers(
+        title="commands",
+        dest="command",
+        metavar="<command>",
+    )
+
+    # docs generate
+    generate_parser = docs_subparsers.add_parser(
+        "generate",
+        help="Generate README documentation sections",
+        description="Extract skill/agent metadata and generate README sections. "
+        "Default: print generated sections to stdout.",
+    )
+    generate_parser.add_argument(
+        "--check",
+        action="store_true",
+        default=False,
+        help="Check if README matches generated output (exit 1 if drift detected)",
+    )
+    generate_parser.add_argument(
+        "--write",
+        action="store_true",
+        default=False,
+        help="Write generated sections to README.md",
+    )
+    generate_parser.add_argument(
+        "--readme",
+        default="README.md",
+        help="Path to README.md (default: README.md)",
     )

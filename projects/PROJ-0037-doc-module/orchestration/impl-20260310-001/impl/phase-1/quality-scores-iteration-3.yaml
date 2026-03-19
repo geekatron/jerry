@@ -1,0 +1,475 @@
+barrier: "barrier-1"
+iteration: 3
+strategies_applied: [S-014, S-003, S-002, S-010, S-013]
+scored_at: "2026-03-10T00:00:00Z"
+criticality: "C4"
+threshold: 0.94
+score_bands:
+  pass: ">= 0.94"
+  revise: "0.88 - 0.93"
+  rejected: "< 0.88"
+
+# --- Per-strategy analysis summary ---
+#
+# S-003 (Steelman):
+#   Fix 2 (src/docs/__init__.py) is the highest-value change in this iteration.
+#   The module docstring explicitly acknowledges the src/jerry/docs/ -> src/docs/ divergence
+#   and cites H-07 as the governing rationale. This closes the spec-to-file traceability gap
+#   that was cited in both iteration 1 and iteration 2 reports across completeness, consistency,
+#   and traceability dimensions simultaneously.
+#   Fix 3 (_load_yaml() yaml.YAMLError) is a genuine methodological improvement: two separate
+#   try/except blocks with `from e` chaining is the correct Python idiom for distinguishing I/O
+#   errors from parse errors. The Raises docstring is updated to reflect both exception types.
+#   Fix 4 (activation-keywords policy comment + corrected log message) resolves a real correctness
+#   issue: the prior "truncating" log message implied truncation was occurring when it was not.
+#   The policy comment explains the warn-only decision with defensible reasoning: keywords are
+#   routing metadata consumed by the skill router, not the doc module; silent truncation would
+#   alter routing behavior without the skill author's knowledge.
+#   Fix 1 (docstring was already correct): confirms no regression was introduced.
+#
+# S-002 (Devil's Advocate):
+#   (1) Fix 1 is a no-op — the docstring was already correct before this iteration. This consumed
+#   one of the four iteration slots with no deliverable change. It does confirm no regression,
+#   but contributes zero improvement.
+#   (2) The spec pseudocode for drift detection still uses opposite return semantics: spec says
+#   "Return True if README matches, False if drift detected" but implementation returns True when
+#   drift IS detected. The docstring now accurately describes the implementation, not the spec.
+#   This is an improvement (docstring/code alignment is now 100%), but the spec/implementation
+#   semantic inversion persists as a documentation-level inconsistency.
+#   (3) The "stdout" mode gap (drift_detected stays None when neither 'check' nor 'write' mode)
+#   remains undocumented in the implementation code — not in the docstring of handle(), not
+#   in a comment, not in a type annotation. A caller receiving a GenerateDocsResult with
+#   drift_detected=None in stdout mode would have no code-level explanation.
+#   (4) Warn-only activation-keywords policy is now documented, but "remaining risk" table in
+#   the iteration 3 report acknowledges "no L5 gate exists for keyword count" — enforcement
+#   remains runtime-only.
+#   (5) No test files exist — all correctness claims rest on code inspection alone.
+#
+# S-010 (Self-Refine):
+#   _load_yaml() two-block exception handling is correctly implemented:
+#   lines 283-286 catch FileNotFoundError from Path.read_text() and re-raise directly;
+#   lines 287-290 catch yaml.YAMLError from yaml.safe_load() and re-raise as ValueError
+#   with chained cause and descriptive message including file_path.
+#   The Raises docstring at lines 279-283 now correctly documents both exception types.
+#   The src/docs/__init__.py docstring is minimal, accurate, and correctly cites H-07.
+#   The policy comment at skill_extractor.py lines 143-146 is clear and actionable.
+#   The corrected log message "skill author should reduce keyword count" is accurate.
+#   No self-correction required: all four reported fixes are as-described.
+#
+# S-013 (Inversion):
+#   (1) If the spec pseudocode is used as the authoritative contract (True = matches), a
+#   maintainer reading the spec would implement a guard condition as
+#   `if not _check_drift(...)` to detect drift — but the current handle() code uses
+#   `if self._check_drift(...)` to assign drift_detected=True. The docstring now says
+#   "True if drift is detected" (correcting for implementation, not spec) but the spec
+#   remains misaligned. A future developer reading spec-first would write the wrong guard.
+#   (2) _check_drift() uses str.index() twice on readme_content — no bounds check against
+#   inverted marker order (END marker appearing before BEGIN marker). Inverted markers
+#   would produce a negative-length content slice, returning empty string which would
+#   trigger a false drift signal on every check run.
+#   (3) Path.cwd() as repo_root still fails in non-root-directory execution. If jerry is
+#   invoked from a subdirectory (e.g., via a Makefile with `cd src && uv run jerry docs generate`),
+#   Path.cwd() returns the subdirectory, and a root-level README.md path would appear to
+#   escape the "root." No documentation of this execution assumption exists in handle().
+#   (4) activation-keywords policy: if a skill author ignores the warning (no CI enforcement),
+#   the next generation run produces SkillData with 31+ entries, all silently included.
+#   No data model enforcement exists at the SkillData level.
+
+dimensions:
+  completeness:
+    score: 0.93
+    weight: 0.20
+    weighted: 0.186
+    rationale: >
+      All 9 Barrier-1 checklist items continue to PASS: DI constructor (handler lines 58-73),
+      name regex ^[a-zA-Z][a-zA-Z0-9-]*$ (extractor line 31, applied at line 119), HTML strip
+      (extractor line 34 + _sanitize_description() line 260), 1024-char max (extractor line 42
+      + _sanitize_description() line 263), SandboxedEnvironment+StrictUndefined (renderer lines
+      45-49), uv run subprocess (ast_reader lines 57-62), atomic write NamedTemporaryFile+os.replace
+      (handler lines 249-259), no domain-infra imports (verified), one class per file (verified).
+      The two completeness gaps cited in iteration 2 are now resolved: (1) activation-keywords
+      warn-only policy is documented with a 4-line policy comment at extractor lines 143-146 and
+      the misleading "truncating" log message is corrected to "skill author should reduce keyword
+      count"; (2) spec File Structure divergence (src/jerry/docs/ vs src/docs/) is now explicitly
+      acknowledged in src/docs/__init__.py lines 4-11 with H-07 rationale. The score advances to
+      0.93 (from 0.91) because both cited gaps are resolved. Residuals below 0.95: warn-only
+      policy has no enforcement gate (no truncation, no L5 CI check); no test files; no template
+      files (both out of Phase 1 scope). The warn-only approach is now justified by documented
+      design rationale, reducing the completeness penalty to a minor residual.
+
+  internal_consistency:
+    score: 0.91
+    weight: 0.20
+    weighted: 0.182
+    rationale: >
+      The primary internal consistency gap from iteration 2 is partially resolved. Fix 1 confirms
+      the _check_drift() docstring already reads "True if drift is detected, False if content
+      matches" — the docstring correctly describes the implementation behavior. The docstring/code
+      alignment is now 100%: the docstring matches what the code does. However, the spec pseudocode
+      at doc-module-spec.md lines 182-191 still uses the opposite convention ("Return True if README
+      matches, False if drift detected"), creating a spec/implementation inconsistency that would
+      mislead a developer reading the spec before the code. This gap persists unchanged from
+      iteration 2 but is now more visible — the docstring explicitly documents the implementation's
+      convention, making the discrepancy with the spec's stated contract traceable. Second residual:
+      the "stdout" mode behavior (drift_detected=None in GenerateDocsResult when neither 'check'
+      nor 'write' mode is specified) remains undocumented in handle() — no comment, no docstring
+      note, no type alias distinguishing the three possible drift_detected states (True/False/None).
+      Score advances to 0.91 (from 0.88) because the docstring/code alignment gap is closed and
+      the remaining inconsistency, while real, is now visible rather than hidden. Residuals prevent
+      reaching 0.95: spec/implementation semantic inversion at the pseudocode level, undocumented
+      None case in handle().
+
+  methodological_rigor:
+    score: 0.92
+    weight: 0.20
+    weighted: 0.184
+    rationale: >
+      Fix 3 directly resolves the primary methodological rigor gap cited in iterations 1 and 2.
+      _load_yaml() now uses two separate try/except blocks: lines 283-286 catch FileNotFoundError
+      from Path.read_text() and re-raise directly (preserving caller's ability to distinguish
+      file-not-found from parse failure); lines 287-290 catch yaml.YAMLError from yaml.safe_load()
+      and re-raise as ValueError with a descriptive message including file_path and chained cause
+      via `from e`. This is the correct Python idiom for exception type differentiation. The Raises
+      docstring at handler lines 279-283 now documents both exception types. All other methodology
+      elements remain correct and unchanged: hexagonal architecture clean (domain->application->infra
+      dependency direction verified), STRIDE M-1 through M-5 controls implemented, yaml.safe_load
+      exclusively (OWASP A03), subprocess list-form args (no shell=True), TYPE_CHECKING guard,
+      frozen=True dataclasses, explicit exception hierarchies in all adapters. The activation-keywords
+      warn-only policy is now documented as an explicit design decision (not a methodology gap) at
+      extractor lines 143-146. Score advances to 0.92 (from 0.88) because the specifically-cited
+      methodological gap is resolved. Residual preventing 0.95: _check_drift() marker ordering is
+      not validated (inverted markers produce a false drift signal); Path.cwd() execution assumption
+      is undocumented in handle(); no test execution evidence for sandbox and regex correctness.
+
+  evidence_quality:
+    score: 0.88
+    weight: 0.15
+    weighted: 0.132
+    rationale: >
+      Modest improvement from iteration 2 (0.87 -> 0.88). Fix 4 provides new documentary evidence:
+      the policy comment at extractor lines 143-146 explicitly documents the warn-only design
+      decision with its rationale, converting an undocumented behavioral choice into an evidenced
+      design decision. Fix 3 provides new evidence for the exception handling contract: the Raises
+      docstring now documents both FileNotFoundError and ValueError, matching the implementation.
+      Fix 2 provides evidence for the structural divergence decision: the __init__.py docstring
+      documents the intentional departure from the spec's suggested layout and cites H-07 as the
+      governing constraint. These three improvements add documentary evidence for previously
+      undocumented design choices. Residual gaps unchanged from iteration 2: (1) No test files exist
+      in Phase 1 deliverables — claims about sandbox security effectiveness (M-2), regex correctness
+      (M-1 HTML strip, URL allowlist, name pattern), and atomic write integrity cannot be
+      independently verified by test execution; all correctness claims rest on code inspection.
+      (2) Template files (skills-table.md.jinja2, features-section.md.jinja2) are not included as
+      Phase 1 deliverables — claims about template rendering remain unverifiable. These structural
+      test-absence gaps are inherent to Phase 1 scope and are the primary factor preventing this
+      dimension from reaching 0.92+.
+
+  actionability:
+    score: 0.92
+    weight: 0.15
+    weighted: 0.138
+    rationale: >
+      Fix 3 improves actionability of error diagnostics: YAML parse failures in data files
+      (features.yaml, skill-examples.yaml) now produce a ValueError with a message including
+      the file path and the parser's own error string (e.g., "Malformed YAML in
+      .context/templates/docs/features.yaml: mapping values are not allowed here"), giving a
+      developer immediately actionable information. Previously, yaml.YAMLError propagated through
+      the broad except Exception as a generic GENERATION_ERROR with only str(e) — same information
+      content but without the explicit "this is a parse error" signal. Fix 4 improves actionability
+      for skill authors: the corrected log message "skill author should reduce keyword count" names
+      the actor and the action, which is the actionable signal pattern. The path traversal guard
+      PATH_TRAVERSAL error (from iteration 2) was already actionable. The DI wiring remains explicit.
+      The deliverable set is ready for CLI registration and test phases without architectural rework.
+      Score advances to 0.92 (from 0.89) reflecting genuine diagnostic improvement from Fixes 3 and 4.
+      Residual preventing 0.95: Path.cwd() assumption in path traversal guard can produce spurious
+      PATH_TRAVERSAL errors in non-root-directory execution — this is documented in remaining risk
+      but the guard itself provides no diagnostic message explaining the execution context assumption.
+
+  traceability:
+    score: 0.93
+    weight: 0.10
+    weighted: 0.093
+    rationale: >
+      Fix 2 directly closes the primary traceability gap cited in iterations 1 and 2. The
+      src/docs/__init__.py module docstring (lines 4-11) explicitly acknowledges the divergence
+      from the spec's suggested src/jerry/docs/ flat layout and cites H-07 (architecture layer
+      isolation) as the governing constraint. This closes the spec-to-file traceability chain at
+      the structural level: a maintainer reading the spec's File Structure section and then
+      searching for src/jerry/docs/ will find the __init__.py explanation explaining why the layout
+      differs and where to look. All other traceability elements remain strong and unchanged:
+      inline Reference comments in all four primary files trace to doc-module-spec.md section and
+      mitigation ID; SPDX headers present throughout; _UNSAFE_LINK_PATTERN comment block (extractor
+      lines 35-40) accurately describes the M-1 allowlist; path traversal guard comment (handler
+      line 85) names M-3 and the specific threat vector; _MAX_ACTIVATION_KEYWORDS comment (extractor
+      line 143) links to M-5. Forward traceability from spec requirements to implementation is now
+      complete for all four iteration-2 fixes plus Fix 2. Score advances to 0.93 (from 0.89) because
+      the primary structural traceability gap is closed. Residuals preventing 0.95: spec drift
+      detection pseudocode uses opposite return convention from implementation — still unresolved at
+      the spec level; relative-path allowlist interpretation gap (spec says "relative paths" allowed,
+      but the _UNSAFE_LINK_PATTERN lookahead only whitelists paths starting with '/', not '.'); no
+      formal requirements-to-implementation traceability matrix exists.
+
+# --- Weighted composite calculation ---
+# completeness:          0.93 * 0.20 = 0.186
+# internal_consistency:  0.91 * 0.20 = 0.182
+# methodological_rigor:  0.92 * 0.20 = 0.184
+# evidence_quality:      0.88 * 0.15 = 0.132
+# actionability:         0.92 * 0.15 = 0.138
+# traceability:          0.93 * 0.10 = 0.093
+# total: 0.186 + 0.182 + 0.184 + 0.132 + 0.138 + 0.093 = 0.915
+
+weighted_composite: 0.915
+verdict: "REVISE"
+
+# Score band check: 0.915 >= 0.88 (REVISE lower bound) = true; 0.915 < 0.94 (PASS threshold) = true.
+# Falls in the REVISE band (0.88-0.93) per orchestration plan score_bands.
+
+delta_from_iteration_2:
+  composite_delta: +0.028
+  completeness_delta: +0.02
+  internal_consistency_delta: +0.03
+  methodological_rigor_delta: +0.04
+  evidence_quality_delta: +0.01
+  actionability_delta: +0.03
+  traceability_delta: +0.04
+
+delta_from_iteration_1:
+  composite_delta: +0.085
+  completeness_delta: +0.11
+  internal_consistency_delta: +0.08
+  methodological_rigor_delta: +0.07
+  evidence_quality_delta: +0.08
+  actionability_delta: +0.09
+  traceability_delta: +0.06
+
+remaining_gap_to_threshold: 0.025
+
+checklist_results:
+  - item: "GenerateDocsCommandHandler constructor accepts SkillExtractor, ITemplateRenderer, IFrontmatterReader"
+    status: "PASS"
+    evidence: "generate_docs_command_handler.py lines 58-73: __init__(extractor: SkillExtractor, renderer: ITemplateRenderer, reader: IFrontmatterReader) with TYPE_CHECKING guard"
+
+  - item: "SkillExtractor.extract_all() validates name regex ^[a-zA-Z][a-zA-Z0-9-]*$"
+    status: "PASS"
+    evidence: "skill_extractor.py line 31: _SKILL_NAME_PATTERN = re.compile(r'^[a-zA-Z][a-zA-Z0-9-]*$'); applied at line 119 with skip-and-warn on failure"
+
+  - item: "SkillExtractor.extract_all() strips HTML from description"
+    status: "PASS"
+    evidence: "skill_extractor.py line 34: _HTML_TAG_PATTERN = re.compile(r'<[^>]+>'); applied at _sanitize_description() line 260"
+
+  - item: "SkillExtractor.extract_all() enforces 1024-char max"
+    status: "PASS"
+    evidence: "skill_extractor.py line 42: _MAX_DESCRIPTION_LENGTH = 1024; applied at _sanitize_description() line 263 via [:_MAX_DESCRIPTION_LENGTH]"
+
+  - item: "Jinja2Renderer uses SandboxedEnvironment + StrictUndefined"
+    status: "PASS"
+    evidence: "jinja2_renderer.py lines 45-49: SandboxedEnvironment(loader=FileSystemLoader(template_dir), undefined=StrictUndefined, autoescape=False)"
+
+  - item: "AstFrontmatterReader calls uv run jerry ast frontmatter (not regex, not raw YAML)"
+    status: "PASS"
+    evidence: "ast_frontmatter_reader.py lines 57-62: subprocess.run(['uv', 'run', 'jerry', 'ast', 'frontmatter', str(file_path)], capture_output=True, text=True, timeout=30) — list-form args, no shell=True"
+
+  - item: "Atomic write uses tempfile.NamedTemporaryFile + os.replace()"
+    status: "PASS"
+    evidence: "generate_docs_command_handler.py lines 249-259: NamedTemporaryFile(mode='w', dir=dir_name, delete=False, suffix='.tmp') then os.replace(temp_path, str(readme)); cleanup on exception at lines 261-267"
+
+  - item: "No domain layer file imports from infrastructure (H-07)"
+    status: "PASS"
+    evidence: "All domain/ports/ and domain/value_objects/ files contain only stdlib imports; infrastructure adapters import from domain ports only; direction verified clean"
+
+  - item: "One class per file throughout src/docs/ (H-10)"
+    status: "PASS"
+    evidence: "Confirmed: GenerateDocsCommandHandler, SkillExtractor, Jinja2Renderer, AstFrontmatterReader each in own file; __init__.py files contain no class definitions"
+
+iteration_3_fix_verification:
+  - fix: "_check_drift() docstring"
+    status: "ALREADY_CORRECT — NO_CHANGE"
+    evidence: >
+      generate_docs_command_handler.py lines 189-192: docstring Raises section reads
+      "True if drift is detected, False if content matches." This correctly documents the
+      implementation behavior. Fix was already applied in a prior iteration. No regression
+      introduced. Confirms pre-existing correctness; contributes zero score improvement
+      but confirms no regression.
+    residual_concern: >
+      Spec pseudocode at doc-module-spec.md lines 182-191 uses the opposite convention
+      ("Return True if README matches, False if drift detected"). The docstring accurately
+      describes the implementation, not the spec. Spec/implementation semantic inversion
+      persists at the documentation level.
+
+  - fix: "src/docs/__init__.py module docstring"
+    status: "IMPLEMENTED"
+    evidence: >
+      src/docs/__init__.py lines 4-11: module docstring explicitly acknowledges deviation
+      from spec's src/jerry/docs/ flat layout, cites H-07 (architecture layer isolation)
+      as rationale, and marks the divergence as intentional. Closes the spec-to-file
+      traceability gap cited in iterations 1 and 2 across completeness, consistency,
+      and traceability dimensions.
+    dimensions_addressed: ["completeness", "traceability", "internal_consistency"]
+
+  - fix: "Explicit yaml.YAMLError in _load_yaml()"
+    status: "IMPLEMENTED"
+    evidence: >
+      generate_docs_command_handler.py lines 283-290: two separate try/except blocks.
+      Block 1 (lines 283-286): Path.read_text() within try/except FileNotFoundError;
+      raises FileNotFoundError directly. Block 2 (lines 287-290): yaml.safe_load() within
+      try/except yaml.YAMLError; raises ValueError with descriptive message and chained
+      cause via `from e`. Docstring Raises section (lines 279-283) updated to document
+      both exception types.
+    dimensions_addressed: ["methodological_rigor", "actionability", "evidence_quality"]
+
+  - fix: "activation-keywords warn-only policy comment + corrected log message"
+    status: "IMPLEMENTED"
+    evidence: >
+      skill_extractor.py lines 143-146: 4-line policy comment explaining warn-only rationale
+      (keywords are routing metadata; silent truncation would alter routing behavior without
+      skill author's knowledge; warning surfaces problem to author for remediation).
+      Lines 149-155: log message corrected from previous misleading "truncating" suffix
+      to "skill author should reduce keyword count."
+    dimensions_addressed: ["completeness", "actionability", "evidence_quality"]
+    residual_concern: >
+      Warn-only policy is now explicitly documented and justified. No L5 CI enforcement
+      gate exists for keyword count; enforcement remains runtime-warning-only. This is
+      documented in the remaining risk table and is acceptable given keywords are not
+      rendered in README output.
+
+steelman_findings:
+  - "All four reported fixes are implemented correctly. Fix 3 (_load_yaml two-block exception handling)
+    is the most significant: explicit yaml.YAMLError separation with chained cause via `from e` is
+    idiomatic Python and gives callers full exception type information for programmatic handling."
+  - "Fix 2 (src/docs/__init__.py module docstring) resolves a persistent multi-iteration traceability
+    gap with minimal code: a 7-line docstring that directly addresses the spec divergence and cites
+    the governing hard rule (H-07). This is precisely the right granularity of documentation."
+  - "Fix 4 (policy comment + log message correction) converts an undocumented behavioral choice
+    (warn-only) into an evidenced design decision. The corrected log message 'skill author should
+    reduce keyword count' follows the actionable-signal pattern: actor + action."
+  - "The overall deliverable set now has documented rationale for all non-obvious design decisions:
+    the structural layout choice (H-07 in __init__.py), the exception handling approach (Raises
+    docstrings in all adapters), the URL allowlist design (_UNSAFE_LINK_PATTERN comment block),
+    the activation-keywords policy (policy comment), and the path traversal guard (inline comment
+    naming M-3 and the threat vector)."
+
+devils_advocate_findings:
+  - "Fix 1 is a no-op. One of four iteration slots was spent confirming a pre-existing correct state.
+    The remaining gap to threshold (0.025) could have been closed by applying a fourth genuine fix
+    such as documenting the stdout-mode drift_detected=None case in handle()."
+  - "Spec/implementation semantic inversion for _check_drift() persists at the spec level. The
+    docstring now accurately describes the implementation, but the spec pseudocode still says
+    'Return True if README matches.' A developer using the spec as authoritative would write
+    `if not handler._check_drift(...)` as the drift condition — opposite of the current handle() code."
+  - "The stdout-mode gap (drift_detected=None when neither 'check' nor 'write') remains undocumented
+    in the implementation. handle() silently returns a GenerateDocsResult with drift_detected=None —
+    callers cannot distinguish 'check mode: no drift' (drift_detected=False) from 'stdout mode: not
+    checked' (drift_detected=None) without reading the source. The handle() docstring does not mention
+    this."
+  - "No test files exist. All correctness claims — sandbox effectiveness, regex safety, atomic write
+    integrity, exception handling paths — remain unverified by test execution. This is inherent to
+    Phase 1 scope, but it is the primary reason evidence_quality cannot reach 0.92."
+  - "The inverted marker order vulnerability persists: _check_drift() and _write_readme() use
+    str.index() without validating that begin_marker appears before end_marker. Inverted markers
+    (<!-- END --> before <!-- BEGIN -->) would produce readme_content[begin_idx:end_idx] with a
+    negative-length slice, yielding an empty string, which would trigger spurious drift detection
+    on every run."
+
+inversion_findings:
+  - "If the spec pseudocode is authoritative, calling _check_drift() requires the opposite interpretation:
+    spec says True = README matches, implementation says True = drift detected. Any future caller or
+    test reading the spec-first would implement the inverse guard condition."
+  - "If inverted markers exist in README.md (<!-- END --> before <!-- BEGIN -->), the str.index()
+    call returns positive indices for both markers, but begin_idx > end_idx, producing an empty
+    current string. This compares '' against generated.strip() — if generated content is non-empty,
+    every check run reports drift even though no real drift exists."
+  - "If jerry is invoked from a subdirectory (e.g., Makefile: `cd src && uv run jerry docs generate`),
+    Path.cwd().resolve() returns the subdirectory, and a README.md at the project root would appear
+    to escape the 'root', producing a PATH_TRAVERSAL error on a legitimate path. No documentation
+    of the 'must be run from repo root' execution assumption exists in handle()."
+  - "If activation-keywords contains exactly 31 entries, the warning is emitted but SkillData is
+    returned with all 31 entries. The SkillData.agent_count and SkillData.agents fields are unaffected
+    by keyword count, so callers experience no functional breakage — but the data model contains
+    out-of-spec data with no enforcement boundary."
+
+improvement_recommendations:
+  - priority: 1
+    dimension: "internal_consistency"
+    current: 0.91
+    target: 0.94
+    recommendation: >
+      Document the stdout-mode drift_detected=None behavior in handle(). Add a comment or docstring
+      note to GenerateDocsCommandHandler.handle() explaining that when mode is neither 'check' nor
+      'write', drift_detected remains None in the returned GenerateDocsResult. This closes the
+      undocumented None-case gap without any behavioral change. Target: adds 0.02-0.03 to this
+      dimension.
+
+  - priority: 2
+    dimension: "internal_consistency"
+    current: 0.91
+    target: 0.94
+    recommendation: >
+      Update the spec's drift detection pseudocode (doc-module-spec.md lines 182-191) to match the
+      implementation's actual return convention: "Return True if drift is detected (README differs
+      from generated content), False if content matches." This closes the spec/implementation semantic
+      inversion and makes the spec-to-code traceability chain consistent. Alternative: flip the
+      implementation's return semantics and update handle() accordingly. Either approach closes the
+      gap; updating the spec is lower risk.
+
+  - priority: 3
+    dimension: "evidence_quality"
+    current: 0.88
+    target: 0.91
+    recommendation: >
+      Add a basic test file (even a single test module with the most critical cases) for Phase 1:
+      test _sanitize_description() with an HTML-injection input and a javascript: link input,
+      test _check_drift() return semantics with a matching and a diverging README, test
+      _load_yaml() with a malformed YAML file to confirm ValueError is raised. Three to five
+      unit tests would convert unverified code-inspection claims into executable evidence.
+      This is the highest-leverage change for evidence_quality.
+
+  - priority: 4
+    dimension: "methodological_rigor"
+    current: 0.92
+    target: 0.94
+    recommendation: >
+      Add marker order validation to _check_drift() and inject_between_markers(): after finding
+      both begin_marker and end_marker via str.index(), assert that begin_idx < end_idx before
+      slicing. If inverted, raise ValueError with a descriptive message. This closes the
+      inverted-marker vulnerability identified by S-013 inversion analysis without adding
+      significant complexity.
+
+  - priority: 5
+    dimension: "completeness"
+    current: 0.93
+    target: 0.95
+    recommendation: >
+      Document the execution assumption in handle(): add an inline comment (or docstring note)
+      stating that the path traversal guard assumes jerry is invoked from the repository root
+      (Path.cwd() == repo root). This makes the precondition explicit and prevents maintainer
+      confusion when the guard produces unexpected PATH_TRAVERSAL errors in non-root-directory
+      execution contexts.
+
+leniency_bias_check:
+  dimensions_scored_independently: true
+  evidence_documented_for_each_score: true
+  uncertain_scores_resolved_downward: true
+  first_draft_calibration_considered: true
+  no_dimension_above_0_95_without_exceptional_evidence: true
+  hostile_reviewer_test: >
+    A hostile reviewer would push internal_consistency to 0.89 (spec pseudocode inversion
+    unresolved, stdout-mode None undocumented) and evidence_quality to 0.86 (no test files,
+    no template files, all correctness claims rest on code inspection). Current scores are the
+    upper-defensible position: internal_consistency 0.91 is justified because the docstring/code
+    alignment gap IS closed and the remaining inconsistencies are now visible; evidence_quality
+    0.88 is justified because Fix 4 and Fix 2 add genuine documentary evidence for undocumented
+    design decisions. Held at current levels; no inflation applied.
+  calibration_note: >
+    Iteration 3 scores range 0.88-0.93, representing a +0.01 to +0.04 improvement per dimension
+    over iteration 2 (0.87-0.91). This is consistent with targeted-fix iterations that close
+    specific documented gaps while leaving second-order concerns (test absence, spec-level
+    semantic alignment, undocumented edge cases) for subsequent work. The composite 0.915
+    represents genuine 3-iteration progress: 0.830 -> 0.887 -> 0.915. Gap to 0.94 threshold
+    is 0.025. The remaining gap requires 2-3 targeted improvements in internal_consistency
+    (stdout-mode None documentation, spec pseudocode alignment) and evidence_quality (basic
+    test coverage).
+  iteration_calibration: >
+    Three iterations in, this is a mature targeted-fix cycle. Scoring iteration 3 on the same
+    rubric without credit for progress-per-se; each dimension scored against its criteria
+    independently. The +0.028 composite gain from iteration 2 reflects four fixes where three
+    were genuine improvements and one was a no-op confirmation. The gain is proportional to
+    the actual change scope.

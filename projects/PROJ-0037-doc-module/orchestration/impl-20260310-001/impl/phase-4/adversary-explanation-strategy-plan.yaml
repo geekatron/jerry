@@ -1,0 +1,158 @@
+---
+# Strategy Selection Plan — C2 Explanation Document Review
+# Date: 2026-03-11
+# Agent: adv-selector
+# Constitutional Compliance: P-003, P-020, P-022
+
+criticality_assessment:
+  requested_level: C2
+  auto_escalation_applied: false
+  escalation_rules_checked:
+    - AE-001: "No (deliverable not in docs/governance/)"
+    - AE-002: "No (deliverable not in .context/rules/)"
+    - AE-003: "No (deliverable type is Explanation, not ADR)"
+    - AE-004: "No (not a baselined ADR)"
+    - AE-005: "No (not security-relevant code)"
+    - AE-006: "No (context fill within nominal range)"
+  final_level: C2
+
+deliverable_context:
+  path: projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-4/frontmatter-issue-explanation.md
+  type: Explanation
+  title: "The YamlFrontmatterReader Issue — Explained"
+  scope: "Technical explanation for stakeholders re: doc-module implementation defect"
+  user_focus_areas:
+    - accuracy
+    - clarity_to_outsiders
+    - misleading_simplifications
+    - factual_errors
+
+ssot_reference: ".context/rules/quality-enforcement.md (Criticality Levels section, C2 row)"
+
+strategy_mapping:
+  criticality: C2
+  enforcement_tier: "HARD + MEDIUM"
+  required_strategies:
+    - S-007
+    - S-002
+    - S-014
+  optional_strategies:
+    - S-003
+    - S-010
+  selected_for_execution:
+    - S-010  # Addresses clarity concerns upfront
+    - S-003  # Strengthen explanation before attack (H-16)
+    - S-002  # Challenge simplifications and factual gaps
+    - S-007  # Verify framework/governance compliance
+    - S-014  # Final quality scoring
+
+execution_order:
+  - order: 1
+    strategy_id: S-010
+    strategy_name: Self-Refine
+    template_path: ".context/templates/adversarial/s-010-self-refine.md"
+    required_or_optional: "Optional (selected for user focus)"
+    rationale: "Self-review catches obvious clarity gaps and factual errors before main review cycle; addresses user priority on accuracy upfront."
+    cognitive_approach: "Self-critique via structured review checklist"
+
+  - order: 2
+    strategy_id: S-003
+    strategy_name: Steelman Technique
+    template_path: ".context/templates/adversarial/s-003-steelman.md"
+    required_or_optional: "Optional (selected for user focus, H-16 ordering)"
+    rationale: "Strengthen explanation to its best defensible form before Devil's Advocate attack. Ensures the explanation is clear, fair, and logically sound before challenges. Satisfies H-16 constraint (S-003 before S-002)."
+    cognitive_approach: "Reconstruct explanation in strongest form"
+
+  - order: 3
+    strategy_id: S-002
+    strategy_name: Devil's Advocate
+    template_path: ".context/templates/adversarial/s-002-devils-advocate.md"
+    required_or_optional: "Required (C2 mandatory)"
+    rationale: "Challenge core assumptions, attack simplifications, probe for misleading generalizations. Identifies factual errors and over-simplified claims that non-expert readers might misinterpret."
+    cognitive_approach: "Adversarial critique from skeptical reader perspective"
+    ordering_constraint: "H-16: Placed AFTER S-003 (position 3 > position 2). Constraint satisfied."
+
+  - order: 4
+    strategy_id: S-007
+    strategy_name: Constitutional AI Critique
+    template_path: ".context/templates/adversarial/s-007-constitutional-ai.md"
+    required_or_optional: "Required (C2 mandatory)"
+    rationale: "Verify explanation complies with Jerry governance principles (H-33 AST parsing distinction, H-07 architecture, framework terminology). Ensure explanations don't inadvertently contradict framework standards."
+    cognitive_approach: "Governance and framework compliance verification"
+
+  - order: 5
+    strategy_id: S-014
+    strategy_name: LLM-as-Judge
+    template_path: ".context/templates/adversarial/s-014-llm-as-judge.md"
+    required_or_optional: "Required (C2 mandatory, always last per H-17)"
+    rationale: "Final quality scoring across 6 dimensions (Completeness, Internal Consistency, Methodological Rigor, Evidence Quality, Actionability, Traceability). Produces numeric score >= 0.92 threshold per H-13 for C2+ deliverables."
+    cognitive_approach: "Structured rubric-based evaluation with dimension-level breakdown"
+
+h_16_compliance:
+  constraint: "S-003 (Steelman) MUST be ordered BEFORE S-002 (Devil's Advocate)"
+  s_003_position: 2
+  s_002_position: 3
+  gap: 1
+  satisfied: true
+  explanation: "S-003 appears at position 2, S-002 at position 3. Position 2 < position 3. H-16 constraint satisfied."
+
+quality_gate_configuration:
+  threshold: 0.92
+  enforcement: "C2+ deliverables (H-13)"
+  scoring_dimensions:
+    - name: Completeness
+      weight: 0.20
+      focus_for_explanation: "All aspects of the YamlFrontmatterReader issue explained"
+    - name: Internal Consistency
+      weight: 0.20
+      focus_for_explanation: "Logic flow consistent; no contradictions in explanation"
+    - name: Methodological Rigor
+      weight: 0.20
+      focus_for_explanation: "Evidence-based explanation; includes code examples, test failures"
+    - name: Evidence Quality
+      weight: 0.15
+      focus_for_explanation: "Factual accuracy; code citations correct"
+    - name: Actionability
+      weight: 0.15
+      focus_for_explanation: "Explanation enables stakeholder understanding of root cause and solution"
+    - name: Traceability
+      weight: 0.10
+      focus_for_explanation: "Sources cited; framework references (H-33, H-07, etc.) traceable"
+
+user_customization:
+  strategy_overrides: "None (all C2 required strategies + optional selected for user focus areas)"
+  user_focus_integration: |
+    The selected strategy set directly addresses user priorities:
+    - S-010 (Self-Refine): Catches accuracy and clarity issues early
+    - S-003 (Steelman): Ensures explanation is strongest form (clarity)
+    - S-002 (Devil's Advocate): Probes misleading simplifications
+    - S-007 (Constitutional AI): Verifies factual/governance accuracy
+    - S-014 (LLM-as-Judge): Scores accuracy, consistency, actionability
+
+execution_notes: |
+  Recommended execution flow:
+  1. Load frontmatter-issue-explanation.md into adv-executor
+  2. Apply templates in order: S-010 → S-003 → S-002 → S-007 → S-014
+  3. Each strategy produces structured critique output
+  4. S-014 final score determines pass/reject per H-13 threshold (>= 0.92)
+  5. If score < 0.92, author revises per critic findings; minimum 3-iteration cycle per H-14
+
+verification_checklist:
+  - id: v1
+    item: "All required C2 strategies included (S-007, S-002, S-014)"
+    status: true
+  - id: v2
+    item: "Selected optional strategies (S-003, S-010) justify selection per user focus"
+    status: true
+  - id: v3
+    item: "H-16 ordering satisfied (S-003 pos < S-002 pos)"
+    status: true
+  - id: v4
+    item: "All template paths resolve to existing files"
+    status: true
+  - id: v5
+    item: "Auto-escalation rules checked and documented"
+    status: true
+  - id: v6
+    item: "No P-003/P-020/P-022 violations in plan"
+    status: true

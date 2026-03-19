@@ -1,0 +1,212 @@
+# Quality Score Report — Phase 3 Verification Deliverables (PROJ-0037)
+# Iteration 10 of 10 (FINAL)
+
+## L0 Executive Summary
+# Score: 0.919/1.00 | Verdict: REVISE | Weakest Dimension: Completeness (0.90)
+# One-line assessment: The deliverable set is substantively complete and internally
+# consistent across all four documents; the composite score of 0.919 falls below
+# the C4 threshold of 0.94, with Completeness at 0.90 being the limiting factor
+# due to the gate-disposition open findings table covering only HIGH/MEDIUM/selected
+# LOW items rather than providing per-item disposition rationale for all 10 findings.
+# This represents editorial convention, not substantive deficiency. The plateau
+# (scores: 0.8555→0.9000→0.8860→0.9275→0.9040→0.8970→0.9200→0.9330→0.9120→0.919)
+# reflects convergence; no structural gap remains unaddressed.
+
+scoring_context:
+  deliverables:
+    - projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-3/eng-qa-report.md
+    - projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-3/security-review.md
+    - projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-3/attack-surface-report.md
+    - projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-3/gate-disposition-b3.md
+  deliverable_type: Analysis
+  criticality_level: C4
+  scoring_strategy: S-014 (LLM-as-Judge)
+  ssot_reference: .context/rules/quality-enforcement.md
+  iteration: 10
+  final_iteration: true
+  scored: "2026-03-10"
+
+score_summary:
+  weighted_composite: 0.919
+  threshold: 0.94
+  verdict: REVISE
+  strategy_findings_incorporated: "No (standalone adv-scorer invocation)"
+  score_progression:
+    - iteration: 1
+      score: 0.8555
+    - iteration: 2
+      score: 0.9000
+    - iteration: 3
+      score: 0.8860
+    - iteration: 4
+      score: 0.9275
+    - iteration: 5
+      score: 0.9040
+    - iteration: 6
+      score: 0.8970
+    - iteration: 7
+      score: 0.9200
+    - iteration: 8
+      score: 0.9330
+    - iteration: 9
+      score: 0.9120
+    - iteration: 10
+      score: 0.919
+
+dimension_scores:
+  completeness:
+    weight: 0.20
+    score: 0.90
+    weighted: 0.180
+    evidence_summary: >
+      All three iteration-10 fixes verified present and correct: (1) attack-surface-report.md
+      L0 LOW count = 3 with V1/V4/F6 listed (line 28); (2) V3 recommendation explicitly marks
+      option 1 "[RECOMMENDED]" with justification (line 203); (3) gate-disposition
+      cross-reference table = 12 rows covering V1-V4/F5-F10/RR-1/RR-2. All four documents
+      have complete L0/L1/L2 structure. Gate-disposition "Deferred To" column present.
+      Deduction: open findings disposition table intentionally covers only HIGH/MEDIUM/selected
+      LOW items (5 rows), leaving V1/V4/F6/F7/F8 addressed only via cross-reference table
+      without individual rationale rows. Architecturally defensible but marginally below
+      "all requirements addressed with depth" at C4 bar.
+
+  internal_consistency:
+    weight: 0.20
+    score: 0.93
+    weighted: 0.186
+    evidence_summary: >
+      All cross-document numbers align: 51 tests (eng-qa L0 + gate-disposition evidence);
+      100% line coverage (all four documents); 99% branch/67/68 (eng-qa L2 + gate-disposition);
+      5/5 STRIDE COMPLIANT (security-review L0 + gate-disposition); 4/4 hexagonal COMPLIANT;
+      pyproject.toml:40 "jinja2>=3.1.6,<4.0" cited consistently in all three technical
+      reports. LOW count: attack-surface 3 (V1/V4/F6) + security-review 2 (RR-1/RR-2) = 5
+      total; gate-disposition evidence line 100 states exactly this split. Jinja2 severity
+      divergence (HIGH in red-vuln vs. LOW in eng-architect) explicitly reconciled in
+      gate-disposition cross-report reconciliation section. No contradictions found.
+
+  methodological_rigor:
+    weight: 0.20
+    score: 0.93
+    weighted: 0.186
+    evidence_summary: >
+      eng-qa: pre/post coverage tables, per-module gap analysis with line-level citations,
+      OWASP category mapping, branch limitation documented with specificity. security-review:
+      STRIDE per-mitigation verification tables, configuration match tables, import dependency
+      matrix for H-07, OWASP Top 10 (2021) mapping, NIST CSF 2.0 function mapping, residual
+      risk register. attack-surface: PTES methodology, per-vector bypass feasibility
+      assessment with crafted-payload analysis, ATT&CK technique mappings, hardening backlog
+      with priority/effort. gate-disposition: structured gate format with explicit verdict,
+      accept/defer/resolve disposition, cross-report reconciliation, evidence quantification.
+      All three analytical frameworks (STRIDE/OWASP/ATT&CK) applied coherently.
+
+  evidence_quality:
+    weight: 0.15
+    score: 0.91
+    weighted: 0.1365
+    evidence_summary: >
+      pyproject.toml:40 cited with exact content matching ground truth ("jinja2>=3.1.6,<4.0").
+      All source code citations include file:line references. Test names are specific and
+      traceable. Branch coverage count (67/68) with precise missed branch identification
+      (generate_docs_command_handler.py:294->299). CVE-2025-27516 cited with GHSA ID and
+      three external URLs. Verbatim code shown for M-1 regex, M-2 SandboxedEnvironment
+      instantiation, V4 subprocess call, and V3 bypass scenarios. Minor: F9/F10 counting
+      logic (sub-recommendations vs. independent findings) requires the footnote in evidence
+      summary line 100 to resolve; slightly complex chain of reasoning for a tabular claim.
+
+  actionability:
+    weight: 0.15
+    score: 0.92
+    weighted: 0.138
+    evidence_summary: >
+      V3 recommendation now has "[RECOMMENDED]" on option 1 (pyproject.toml marker detection)
+      with explicit justification. attack-surface hardening backlog: 7 items, priority-ordered,
+      each with file:line and effort estimate (5-60 min). eng-qa L2 has 4 specific
+      recommendations including exact config changes (add --cov-branch, add --cov-fail-under=90
+      to pyproject.toml addopts). gate-disposition "Deferred To" column populated for all
+      items with backlog references; N/A for items with no outstanding action. security-review
+      appropriately states no findings require remediation.
+
+  traceability:
+    weight: 0.10
+    score: 0.93
+    weighted: 0.093
+    evidence_summary: >
+      gate-disposition cross-reference table: 12 rows (V1-V4, F5-F10, RR-1, RR-2) covering
+      all findings from both attack-surface and security-review. Each row maps: finding ID,
+      severity, test coverage, eng-architect review with source document citation. Open
+      findings disposition maps finding to source report, severity, disposition, deferred-to
+      backlog item, and rationale. Hardening actions table has evidence column (file:line).
+      All four reports mutually cite each other in gate-disposition. F9/F10 assigned stable
+      IDs for traceability to backlog items 3/6 while noted as sub-recommendations of V1/V4.
+
+totals:
+  completeness_weighted: 0.180
+  internal_consistency_weighted: 0.186
+  methodological_rigor_weighted: 0.186
+  evidence_quality_weighted: 0.1365
+  actionability_weighted: 0.138
+  traceability_weighted: 0.093
+  composite: 0.919  # 0.180 + 0.186 + 0.186 + 0.1365 + 0.138 + 0.093
+
+improvement_recommendations:
+  - priority: 1
+    dimension: Completeness
+    current: 0.90
+    target: 0.93
+    recommendation: >
+      Add explicit disposition rows in gate-disposition open findings table for the 5
+      LOW findings (V1, V4, F6 from attack-surface; F9, F10 as sub-recommendations)
+      with "ACCEPTED" status and one-line rationale for each. The cross-reference table
+      provides coverage but the disposition table's title ("findings requiring rationale")
+      implies that LOWs which were accepted also deserve a rationale row, especially at
+      C4 criticality where the audit trail must be exhaustive.
+  - priority: 2
+    dimension: Evidence Quality
+    current: 0.91
+    target: 0.93
+    recommendation: >
+      Simplify the F9/F10 counting explanation in gate-disposition evidence summary
+      (line 100). The current single-sentence explanation is accurate but requires
+      careful parsing. Replace with: (a) separate row in open findings for F9 and F10
+      with "ACCEPTED (sub-recommendation of V1/V4)" disposition, or (b) a note in the
+      cross-reference table header explaining the sub-recommendation naming convention.
+
+final_iteration_assessment:
+  plateau_detected: true
+  plateau_note: >
+    Score progression over 10 iterations shows oscillation between 0.886 and 0.933
+    with no monotonic convergence. The current score (0.919) is within the band of
+    the last four iterations (0.912-0.933). The remaining gap to 0.94 is not due to
+    substantive deficiency in verification coverage, methodology, or evidence; it
+    reflects an editorial convention (incomplete disposition table row coverage) that
+    is defensible at lower criticality levels but marginally below the exhaustive
+    standard expected at C4. Reaching 0.94 would require either: (a) expanding the
+    open findings disposition table to include all LOW findings with explicit rationale,
+    or (b) accepting that the current deliverable set represents the practical ceiling
+    of quality achievable within the document structure as designed.
+  blocking_finding: false
+  substantive_deficiency: false
+
+leniency_bias_check:
+  each_dimension_scored_independently: true
+  evidence_documented_for_each_score: true
+  uncertain_scores_resolved_downward: true
+  first_draft_calibration_considered: "N/A — iteration 10"
+  no_dimension_above_0.95_without_exceptional_evidence: true
+  notes: >
+    Completeness scored 0.90 (not 0.92+) because the open findings table coverage gap
+    is a real structural observation, not an impression. Internal Consistency, Methodological
+    Rigor, and Traceability all scored 0.93 — below 0.95 ceiling — because no dimension
+    achieves essentially-perfect execution. The composite of 0.919 is honestly below
+    threshold; score not inflated to meet threshold.
+
+session_context_handoff:
+  verdict: REVISE
+  composite_score: 0.919
+  threshold: 0.94
+  weakest_dimension: Completeness
+  weakest_score: 0.90
+  critical_findings_count: 0
+  iteration: 10
+  improvement_recommendations:
+    - "Add explicit disposition rows for all 5 LOW findings (V1, V4, F6, F9, F10) in gate-disposition open findings table with ACCEPTED status and rationale"
+    - "Simplify F9/F10 sub-recommendation counting explanation in gate-disposition evidence summary"
