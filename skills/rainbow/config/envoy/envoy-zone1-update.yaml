@@ -13,7 +13,10 @@
 admin:
   address:
     socket_address:
-      address: 0.0.0.0
+      # V10 mitigation: bind admin to loopback only.
+      # Prevents tool containers on the internal network from
+      # reaching the admin API to reconfigure the proxy.
+      address: 127.0.0.1
       port_value: 9901
 
 static_resources:

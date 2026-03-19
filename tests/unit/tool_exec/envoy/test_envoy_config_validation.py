@@ -61,6 +61,15 @@ class TestEnvoyConfigStructure:
         port = admin["address"]["socket_address"]["port_value"]
         assert port == 9901
 
+    def test_admin_binds_loopback(self, envoy_config: dict) -> None:
+        """Admin must bind to 127.0.0.1 only (V10 mitigation: prevent tool container access)."""
+        admin = envoy_config["admin"]
+        addr = admin["address"]["socket_address"]["address"]
+        assert addr == "127.0.0.1", (
+            f"Admin binds to {addr} -- must be 127.0.0.1 to prevent "
+            "tool containers from reaching the admin API (V10)"
+        )
+
     def test_has_static_resources(self, envoy_config: dict) -> None:
         """Static resources must be present (listeners + clusters)."""
         assert "static_resources" in envoy_config
