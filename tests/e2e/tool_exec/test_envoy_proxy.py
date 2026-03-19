@@ -684,13 +684,14 @@ class TestEnvoyFailClosed:
     """
 
     @pytest.fixture(autouse=True)
-    def _ensure_envoy_z2_restarted(self):  # type: ignore[return]
+    def _ensure_envoy_z2_restarted(self, recon_cluster: str):  # type: ignore[return]
         """Guarantee envoy-z2 is restarted after each test in this class.
 
-        Yields before the test body runs so the stop/restart lifecycle is
-        wrapped symmetrically:  stop happens in the test body; restart
-        happens unconditionally here regardless of whether the test passes,
-        fails, or raises.
+        Receives the recon_cluster fixture (compose file path) so the restart
+        targets the correct compose stack.  Yields before the test body runs
+        so the stop/restart lifecycle is wrapped symmetrically:  stop happens
+        in the test body; restart happens unconditionally here regardless of
+        whether the test passes, fails, or raises.
         """
         yield
         # Unconditional restart — best-effort cleanup so subsequent tests are
@@ -700,7 +701,7 @@ class TestEnvoyFailClosed:
                 "docker",
                 "compose",
                 "-f",
-                _RECON_COMPOSE,
+                recon_cluster,
                 "start",
                 "envoy-z2",
             ],
@@ -710,7 +711,7 @@ class TestEnvoyFailClosed:
         )
 
     @pytest.mark.e2e
-    def test_fail_closed_when_envoy_z2_stopped(self, cli_run) -> None:  # type: ignore[no-untyped-def]
+    def test_fail_closed_when_envoy_z2_stopped(self, recon_cluster: str, cli_run) -> None:  # type: ignore[no-untyped-def]
         """TASK-043: CONTAINER_NOT_RUNNING (3) when envoy-z2 is not running.
 
         Stops envoy-z2 then invokes subfinder in container mode.  The
@@ -718,7 +719,8 @@ class TestEnvoyFailClosed:
         the proxy is absent and return exit code 3 without executing the tool.
 
         The _ensure_envoy_z2_restarted fixture restarts envoy-z2 after this
-        test regardless of outcome.
+        test regardless of outcome.  The recon_cluster fixture ensures the
+        recon compose stack is running before this test stops envoy-z2.
         """
         # Stop envoy-z2 so the fail-closed gate has something to detect.
         stop_result = subprocess.run(
@@ -726,7 +728,7 @@ class TestEnvoyFailClosed:
                 "docker",
                 "compose",
                 "-f",
-                _RECON_COMPOSE,
+                recon_cluster,
                 "stop",
                 "envoy-z2",
             ],

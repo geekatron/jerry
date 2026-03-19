@@ -6,8 +6,10 @@
 Tests that the cloud auditor tools (checkov, prowler, kubescape) resolve
 through the rainbow family and the rainbow-cloud cloud-auditor service.
 
-All three tools are Zone 1 — passive IaC/cloud audit/analysis — and do
-not require an engagement ID.
+Zone classification:
+- checkov: Zone 1 — passive IaC analysis, no engagement required.
+- prowler: Zone 2 — active cloud posture assessment, engagement required.
+- kubescape: Zone 2 — active Kubernetes posture assessment, engagement required.
 
 Execution strategy:
 - checkov may be installed locally via pip in some environments.
@@ -17,21 +19,26 @@ Execution strategy:
   and do not require the binaries on the host PATH.
 - Local execution tests are skipped when the binary is absent from PATH.
 
-Zone 1 policy (OWASP A05:2021):
+Zone 1 policy (checkov only, OWASP A05:2021):
 - No engagement ID required.
 - No per-operation approval gate.
 - Network mode may be restricted at container runtime.
+
+Zone 2 policy (prowler, kubescape — OWASP A01:2021):
+- Engagement must be initialized before tool execution.
+- ENGAGEMENT_NOT_INIT (5) fires when no --engagement-id is provided.
+- --health-check bypasses the engagement requirement (informational).
 
 Exit code reference:
     0  SUCCESS
     1  UNKNOWN_TOOL
     2  TOOL_ERROR    (tool executed but returned non-zero)
-    5  ENGAGEMENT_NOT_INIT  (must NOT fire for Zone 1 tools)
+    5  ENGAGEMENT_NOT_INIT  (must NOT fire for Zone 1 checkov; fires for Zone 2)
 
 References:
     - TASK-037: Cloud auditor E2E tests
-    - ADR-PROJ023-001: UC-001 Zone 1 path
-    - tool-exec.yaml: checkov / prowler / kubescape entries under cloud-auditor service
+    - ADR-PROJ023-001: UC-001 Zone 1 path, UC-002 Zone 2 path
+    - tool-exec.yaml: checkov (zone 1) / prowler / kubescape (zone 2) under cloud-auditor
 """
 
 from __future__ import annotations
@@ -94,17 +101,47 @@ class TestCloudAuditorFamilyResolution:
         )
 
     def test_prowler_resolves_to_rainbow_family(self, cli_run) -> None:  # type: ignore[no-untyped-def]
-        """prowler resolves via auto-detection to rainbow / cloud-auditor service."""
+        """prowler resolves via auto-detection to rainbow / cloud-auditor service.
+
+        --health-check bypasses the Zone 2 engagement requirement (informational).
+        """
         exit_code, stdout, stderr = cli_run("--health-check", "prowler", "version")
         assert exit_code == 0, (
             f"Health check failed for prowler. stdout={stdout!r} stderr={stderr!r}"
         )
 
+    def test_prowler_zone2_requires_engagement(self, cli_run) -> None:  # type: ignore[no-untyped-def]
+        """prowler execution without --engagement-id returns ENGAGEMENT_NOT_INIT (5).
+
+        prowler is Zone 2. Container-mode execution without an initialized
+        engagement must be blocked with exit code 5.
+        """
+        exit_code, stdout, stderr = cli_run("--mode", "container", "prowler", "--", "--version")
+        assert exit_code == 5, (
+            f"Expected ENGAGEMENT_NOT_INIT (5) for Zone 2 prowler without engagement. "
+            f"Got exit_code={exit_code}. stdout={stdout!r} stderr={stderr!r}"
+        )
+
     def test_kubescape_resolves_to_rainbow_family(self, cli_run) -> None:  # type: ignore[no-untyped-def]
-        """kubescape resolves via auto-detection to rainbow / cloud-auditor service."""
+        """kubescape resolves via auto-detection to rainbow / cloud-auditor service.
+
+        --health-check bypasses the Zone 2 engagement requirement (informational).
+        """
         exit_code, stdout, stderr = cli_run("--health-check", "kubescape", "version")
         assert exit_code == 0, (
             f"Health check failed for kubescape. stdout={stdout!r} stderr={stderr!r}"
+        )
+
+    def test_kubescape_zone2_requires_engagement(self, cli_run) -> None:  # type: ignore[no-untyped-def]
+        """kubescape execution without --engagement-id returns ENGAGEMENT_NOT_INIT (5).
+
+        kubescape is Zone 2. Container-mode execution without an initialized
+        engagement must be blocked with exit code 5.
+        """
+        exit_code, stdout, stderr = cli_run("--mode", "container", "kubescape", "--", "version")
+        assert exit_code == 5, (
+            f"Expected ENGAGEMENT_NOT_INIT (5) for Zone 2 kubescape without engagement. "
+            f"Got exit_code={exit_code}. stdout={stdout!r} stderr={stderr!r}"
         )
 
 

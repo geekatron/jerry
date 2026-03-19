@@ -5,11 +5,13 @@
 
 TASK-029: Docker availability guard, project_root fixture, cli_run fixture.
 TASK-030: Docker Compose session-scoped build+up+teardown fixture.
+TASK-047: Extended to cover all 6 compose clusters with explicit opt-in fixtures.
 
 Design constraints:
 - No mocks. All CLI calls go through the real `uv run jerry` subprocess.
 - Docker is required. Tests skip at session scope when Docker is unavailable.
-- Compose containers are built and started once per session, torn down at end.
+- Cluster fixtures are NOT autouse — tests must request the cluster they need.
+  This prevents spinning up all 6 clusters when running a single test file.
 - Engagement directories are created under the real project root and cleaned up
   after each test that creates them.
 
@@ -18,9 +20,18 @@ Security notes:
 - Subprocess calls use timeout=60 to prevent test suite hangs.
 - No shell=True anywhere (CWE-78 mitigation).
 
+Cluster-to-compose mapping:
+    supply_chain_cluster  -> skills/rainbow-supply-chain/tests/docker/docker-compose.yml
+    blue_team_cluster     -> skills/blue-team/tests/docker/docker-compose.yml
+    cloud_cluster         -> skills/rainbow-cloud/tests/docker/docker-compose.yml
+    recon_cluster         -> skills/rainbow-recon/tests/docker/docker-compose.yml
+    exploit_cluster       -> skills/rainbow-exploit/tests/docker/docker-compose.yml
+    runtime_cluster       -> skills/rainbow-runtime/tests/docker/docker-compose.yml
+
 References:
     - TASK-029: conftest.py base structure
     - TASK-030: Docker Compose session fixture
+    - TASK-047: All-cluster conftest extension
     - ADR-PROJ023-001: Behavioral Contract
 """
 
@@ -29,6 +40,7 @@ from __future__ import annotations
 import os
 import shutil
 import subprocess
+import time
 from pathlib import Path
 
 import pytest
@@ -55,6 +67,100 @@ def _docker_available() -> bool:
         return False
 
 
+def _compose_build(compose_path: str, *, cwd: str) -> None:
+    """Build images for a compose file.
+
+    Runs docker compose build --quiet to suppress verbose layer output while
+    still surfacing build errors. Timeout is 600 s to allow for image pulls.
+
+    Args:
+        compose_path: Absolute path to the docker-compose.yml file.
+        cwd: Working directory for the docker compose command.
+    """
+    subprocess.run(
+        ["docker", "compose", "-f", compose_path, "build", "--quiet"],
+        check=True,
+        cwd=cwd,
+        timeout=600,
+    )
+
+
+def _compose_up(compose_path: str, *, cwd: str) -> None:
+    """Start containers for a compose file in detached mode.
+
+    Args:
+        compose_path: Absolute path to the docker-compose.yml file.
+        cwd: Working directory for the docker compose command.
+    """
+    subprocess.run(
+        ["docker", "compose", "-f", compose_path, "up", "--detach"],
+        check=True,
+        cwd=cwd,
+        timeout=120,
+    )
+
+
+def _compose_down(compose_path: str, *, cwd: str) -> None:
+    """Stop and remove containers, volumes, and orphan services.
+
+    Best-effort: does not raise on failure so teardown always runs to
+    completion even if containers were already removed.
+
+    Args:
+        compose_path: Absolute path to the docker-compose.yml file.
+        cwd: Working directory for the docker compose command.
+    """
+    subprocess.run(
+        [
+            "docker",
+            "compose",
+            "-f",
+            compose_path,
+            "down",
+            "--volumes",
+            "--remove-orphans",
+        ],
+        cwd=cwd,
+        timeout=60,
+        # No check=True: best-effort teardown should not fail the session.
+    )
+
+
+def _wait_for_health(
+    compose_path: str,
+    service: str,
+    *,
+    cwd: str,
+    max_wait: int = 30,
+) -> bool:
+    """Poll a compose service until it is healthy or running.
+
+    Uses ``docker compose ps --format json`` to inspect container status.
+    Returns True when the service reaches a healthy or running state.
+    Returns False when max_wait seconds elapse without a healthy state.
+
+    Args:
+        compose_path: Absolute path to the docker-compose.yml file.
+        service: Name of the compose service to wait for.
+        cwd: Working directory for the docker compose command.
+        max_wait: Maximum number of seconds to poll.
+    """
+    for _ in range(max_wait):
+        result = subprocess.run(
+            ["docker", "compose", "-f", compose_path, "ps", service],
+            capture_output=True,
+            text=True,
+            cwd=cwd,
+            timeout=10,
+        )
+        output = result.stdout.lower()
+        # Docker compose ps reports "(healthy)" or "running" in the status column.
+        if "healthy" in output or "running" in output:
+            return True
+        time.sleep(1)
+    return False
+
+
 # ---------------------------------------------------------------------------
 # pytest hooks
 # ---------------------------------------------------------------------------
@@ -69,10 +175,8 @@ def pytest_configure(config: pytest.Config) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Session-scoped fixtures
+# Session-scoped guards and root
 # ---------------------------------------------------------------------------
-
-_COMPOSE_FILE = "skills/rainbow-supply-chain/tests/docker/docker-compose.yml"
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -102,48 +206,141 @@ def project_root() -> Path:
     pytest.fail("Could not locate pyproject.toml -- cannot determine project root")
 
 
-@pytest.fixture(scope="session", autouse=True)
-def docker_compose_up(project_root: Path) -> None:  # type: ignore[misc]
-    """Build and start the supply-chain scanner container once per session.
+# ---------------------------------------------------------------------------
+# Cluster fixtures — NOT autouse. Tests must request the cluster they need.
+# ---------------------------------------------------------------------------
 
-    Yields after the containers are running so all tests in the session
-    benefit from warm containers.  Tears down containers (including volumes
-    and orphan services) on session exit.
 
-    The build step is run with --quiet to suppress verbose layer output in CI
-    while still surfacing build errors.  Timeout is 300 s for the build phase
-    (image pulls can be slow) and 60 s for up/down.
+@pytest.fixture(scope="session")
+def supply_chain_cluster(project_root: Path) -> str:  # type: ignore[misc]
+    """Build and start the supply-chain compose cluster once per session.
+
+    Yields the compose file path so tests can reference it for docker exec
+    operations (e.g., TestEnvoyProxy tests that exec into scanner-net).
+
+    Tears down containers, volumes, and orphan services on session exit.
     """
-    compose_path = str(project_root / _COMPOSE_FILE)
+    compose = str(project_root / "skills/rainbow-supply-chain/tests/docker/docker-compose.yml")
+    cwd = str(project_root)
+    _compose_build(compose, cwd=cwd)
+    _compose_up(compose, cwd=cwd)
+    _wait_for_health(compose, "scanner", cwd=cwd)
 
-    subprocess.run(
-        ["docker", "compose", "-f", compose_path, "build", "--quiet"],
-        check=True,
-        cwd=str(project_root),
-        timeout=300,
-    )
-    subprocess.run(
-        ["docker", "compose", "-f", compose_path, "up", "--detach"],
-        check=True,
-        cwd=str(project_root),
-        timeout=60,
-    )
+    yield compose
+
+    _compose_down(compose, cwd=cwd)
+
+
+@pytest.fixture(scope="session")
+def blue_team_cluster(project_root: Path) -> str:  # type: ignore[misc]
+    """Build and start the blue-team compose cluster once per session.
+
+    Yields the compose file path.
+    """
+    compose = str(project_root / "skills/blue-team/tests/docker/docker-compose.yml")
+    cwd = str(project_root)
+    _compose_build(compose, cwd=cwd)
+    _compose_up(compose, cwd=cwd)
+    _wait_for_health(compose, "detection", cwd=cwd)
+
+    yield compose
+
+    _compose_down(compose, cwd=cwd)
+
+
+@pytest.fixture(scope="session")
+def cloud_cluster(project_root: Path) -> str:  # type: ignore[misc]
+    """Build and start the rainbow-cloud compose cluster once per session.
+
+    Yields the compose file path.
+    """
+    compose = str(project_root / "skills/rainbow-cloud/tests/docker/docker-compose.yml")
+    cwd = str(project_root)
+    _compose_build(compose, cwd=cwd)
+    _compose_up(compose, cwd=cwd)
+    _wait_for_health(compose, "cloud-auditor", cwd=cwd)
+
+    yield compose
+
+    _compose_down(compose, cwd=cwd)
+
+
+@pytest.fixture(scope="session")
+def recon_cluster(project_root: Path) -> str:  # type: ignore[misc]
+    """Build and start the rainbow-recon compose cluster once per session.
+
+    Yields the compose file path so tests can reference it for docker exec
+    operations (e.g., TestEnvoyFailClosed which stops/restarts envoy-z2).
+    """
+    compose = str(project_root / "skills/rainbow-recon/tests/docker/docker-compose.yml")
+    cwd = str(project_root)
+    _compose_build(compose, cwd=cwd)
+    _compose_up(compose, cwd=cwd)
+    _wait_for_health(compose, "recon-pipeline", cwd=cwd)
+
+    yield compose
+
+    _compose_down(compose, cwd=cwd)
+
+
+@pytest.fixture(scope="session")
+def exploit_cluster(project_root: Path) -> str:  # type: ignore[misc]
+    """Build and start the rainbow-exploit compose cluster once per session.
+
+    Yields the compose file path so tests can reference exploit container paths.
+    """
+    compose = str(project_root / "skills/rainbow-exploit/tests/docker/docker-compose.yml")
+    cwd = str(project_root)
+    _compose_build(compose, cwd=cwd)
+    _compose_up(compose, cwd=cwd)
+    _wait_for_health(compose, "exploit-ops", cwd=cwd)
+
+    yield compose
+
+    _compose_down(compose, cwd=cwd)
+
+
+@pytest.fixture(scope="session")
+def runtime_cluster(project_root: Path) -> str:  # type: ignore[misc]
+    """Build and start the rainbow-runtime compose cluster once per session.
+
+    Yields the compose file path.
+    """
+    compose = str(project_root / "skills/rainbow-runtime/tests/docker/docker-compose.yml")
+    cwd = str(project_root)
+    _compose_build(compose, cwd=cwd)
+    _compose_up(compose, cwd=cwd)
+    _wait_for_health(compose, "mitmproxy", cwd=cwd)
+
+    yield compose
+
+    _compose_down(compose, cwd=cwd)
+
+
+# ---------------------------------------------------------------------------
+# Session-scoped engagement init
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="session")
+def engagement_init(project_root: Path, cli_run) -> None:  # type: ignore[misc]
+    """Initialize E2E-TEST-001 engagement once per session.
+
+    Creates the engagement directory and scope config that Zone 2/3 tools
+    require before execution.  Tears down the engagement directory on session
+    exit.
+
+    Tests that invoke Zone 2 or Zone 3 tools MUST request this fixture so the
+    engagement exists before the tool call is made.
+    """
+    eng_id = "E2E-TEST-001"
+    cli_run("--init-engagement", eng_id)
 
     yield
 
-    subprocess.run(
-        [
-            "docker",
-            "compose",
-            "-f",
-            compose_path,
-            "down",
-            "--volumes",
-            "--remove-orphans",
-        ],
-        cwd=str(project_root),
-        timeout=60,
-    )
+    eng_dir = project_root / "work" / "engagements" / eng_id
+    if eng_dir.exists():
+        shutil.rmtree(eng_dir, ignore_errors=True)
 
 
 # ---------------------------------------------------------------------------

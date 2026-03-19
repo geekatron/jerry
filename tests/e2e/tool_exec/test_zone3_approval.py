@@ -215,7 +215,7 @@ class TestZone3ApprovePTY:
     """
 
     @pytest.mark.e2e
-    def test_zone3_approve_with_pty_y(self) -> None:
+    def test_zone3_approve_with_pty_y(self, exploit_cluster: str) -> None:
         """TASK-045: exact confirmation phrase on real PTY passes the gate.
 
         Verifies that:
@@ -225,6 +225,8 @@ class TestZone3ApprovePTY:
 
         The engagement E2E-TEST-001 must be initialized before this test runs
         (it is created during the broader E2E session setup).
+        The exploit_cluster fixture ensures the exploit compose stack is
+        running so the impacket-GetADUsers container is available.
         """
         exit_code, stdout, stderr = _run_with_pty(
             _ZONE3_CMD,
