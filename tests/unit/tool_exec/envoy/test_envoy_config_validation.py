@@ -148,10 +148,10 @@ class TestAccessLogging:
         assert "zone" in json_format
 
     def test_access_log_path(self, envoy_config: dict) -> None:
-        """Access log path must be /var/log/envoy/access.log (volume-mounted)."""
+        """Access log path must be /dev/stdout (Docker log capture)."""
         hcm = _get_hcm(envoy_config)
         log_config = hcm["access_log"][0]["typed_config"]
-        assert log_config["path"] == "/var/log/envoy/access.log"
+        assert log_config["path"] == "/dev/stdout"
 
 
 class TestConnectSupport:

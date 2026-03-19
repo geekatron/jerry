@@ -124,18 +124,29 @@ def translate_scope_to_envoy(
         zone,
     )
 
-    # Build the virtual_host entry
+    # Build the virtual_host entry with both CONNECT and HTTP routes.
+    # CONNECT route must come first for HTTPS tunneling support.
     virtual_host: dict[str, Any] = {
         "name": f"engagement_scope_zone{zone}",
         "domains": unique_domains,
         "routes": [
+            {
+                "match": {"connect_matcher": {}},
+                "route": {
+                    "cluster": "dynamic_forward_proxy_cluster",
+                    "timeout": "60s",
+                    "upgrade_configs": [
+                        {"upgrade_type": "CONNECT", "connect_config": {}},
+                    ],
+                },
+            },
             {
                 "match": {"prefix": "/"},
                 "route": {
                     "cluster": "dynamic_forward_proxy_cluster",
                     "timeout": "60s",
                 },
-            }
+            },
         ],
     }
 
@@ -254,26 +265,35 @@ def _extract_domains(targets: list[dict[str, str]]) -> list[str]:
 
         if target_type == "domain":
             _validate_domain(value)
-            # Add the domain and wildcard subdomain
+            # Add bare domain, :443 (for CONNECT/HTTPS), and wildcard subdomain.
+            # Envoy CONNECT authority includes port suffix per GitHub #13704.
             domains.append(value)
+            domains.append(f"{value}:443")
             if not value.startswith("*."):
                 domains.append(f"*.{value}")
+                domains.append(f"*.{value}:443")
 
         elif target_type == "ip":
             _validate_ipv4(value)
             domains.append(value)
+            domains.append(f"{value}:443")
 
         elif target_type == "url":
             # Extract host from URL
             host = _extract_host_from_url(value)
             _validate_domain(host)
             domains.append(host)
+            domains.append(f"{host}:443")
             if not host.startswith("*."):
                 domains.append(f"*.{host}")
+                domains.append(f"*.{host}:443")
 
         elif target_type == "cloud_account":
             # Map cloud provider to API domains
             cloud_domains = _resolve_cloud_account(value)
+            # Add :443 suffix for each cloud domain (CONNECT support)
+            for cd in list(cloud_domains):
+                cloud_domains.append(f"{cd}:443")
             domains.extend(cloud_domains)
 
         elif target_type == "ip_range":

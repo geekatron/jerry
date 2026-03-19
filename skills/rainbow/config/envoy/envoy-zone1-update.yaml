@@ -38,7 +38,9 @@ static_resources:
                   - name: envoy.access_loggers.file
                     typed_config:
                       "@type": type.googleapis.com/envoy.extensions.access_loggers.file.v3.FileAccessLog
-                      path: /var/log/envoy/access.log
+                      # Log to stdout for Docker log capture.
+                      # Production: mount a writable volume and use /var/log/envoy/access.log
+                      path: /dev/stdout
                       log_format:
                         json_format:
                           ts: "%START_TIME%"
@@ -68,35 +70,63 @@ static_resources:
                     - name: allowed_db_hosts
                       # Allowlisted vulnerability DB and package registry hosts.
                       # Add new hosts here via PR; change requires review.
+                      # IMPORTANT: CONNECT (HTTPS) requests use host:443 authority.
+                      # Both bare hostname and hostname:443 MUST be listed.
+                      # See: https://github.com/envoyproxy/envoy/issues/13704
                       domains:
                         # GitHub (release assets, API, raw content)
                         - "github.com"
+                        - "github.com:443"
                         - "objects.githubusercontent.com"
+                        - "objects.githubusercontent.com:443"
                         - "codeload.github.com"
+                        - "codeload.github.com:443"
                         - "api.github.com"
+                        - "api.github.com:443"
                         # OSV (Google Open Source Vulnerabilities)
                         - "osv.dev"
+                        - "osv.dev:443"
                         - "api.osv.dev"
+                        - "api.osv.dev:443"
                         # NVD (NIST National Vulnerability Database)
                         - "nvd.nist.gov"
+                        - "nvd.nist.gov:443"
                         - "services.nvd.nist.gov"
+                        - "services.nvd.nist.gov:443"
                         # PyPI (Python Package Index)
                         - "pypi.org"
+                        - "pypi.org:443"
                         - "files.pythonhosted.org"
+                        - "files.pythonhosted.org:443"
                         # Grype vulnerability DB (Anchore)
                         - "toolbox-data.anchore.io"
+                        - "toolbox-data.anchore.io:443"
                         # Trivy DB (Aquasecurity via GitHub Container Registry)
                         - "ghcr.io"
+                        - "ghcr.io:443"
                         - "pkg.dev"
+                        - "pkg.dev:443"
                         # Cosign TUF root (Sigstore)
                         - "tuf-repo-cdn.sigstore.dev"
+                        - "tuf-repo-cdn.sigstore.dev:443"
                         - "rekor.sigstore.dev"
+                        - "rekor.sigstore.dev:443"
                         - "fulcio.sigstore.dev"
-                        # Sigma rules (SigmaHQ releases)
+                        - "fulcio.sigstore.dev:443"
+                        # Sigma rules (SigmaHQ releases) + MITRE ATT&CK (enterprise data)
                         - "raw.githubusercontent.com"
-                        # MITRE ATT&CK (enterprise data)
-                        - "raw.githubusercontent.com"
+                        - "raw.githubusercontent.com:443"
                       routes:
+                        # CONNECT (HTTPS tunneling) route
+                        - match:
+                            connect_matcher: {}
+                          route:
+                            cluster: dynamic_forward_proxy_cluster
+                            timeout: 60s
+                            upgrade_configs:
+                              - upgrade_type: CONNECT
+                                connect_config: {}
+                        # Regular HTTP route
                         - match:
                             prefix: "/"
                           route:
@@ -106,6 +136,13 @@ static_resources:
                       domains:
                         - "*"
                       routes:
+                        - match:
+                            connect_matcher: {}
+                          direct_response:
+                            status: 403
+                            body:
+                              inline_string: >
+                                ZONE1-UPDATE DENIED: destination not in allowlist.
                         - match:
                             prefix: "/"
                           direct_response:
