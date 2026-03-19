@@ -1,0 +1,332 @@
+# Quality Score Report — final-compliance-report.md (Iteration 4)
+# S-014 LLM-as-Judge | SSOT: .context/rules/quality-enforcement.md
+# Scored: 2026-03-10T00:00:00Z
+
+---
+
+l0_executive_summary:
+  score: 0.948
+  verdict: PASS
+  threshold: 0.94
+  weakest_dimension: methodological_rigor
+  weakest_score: 0.94
+  one_line_assessment: >
+    The iteration-4 targeted fix (Recommendation 3 citation corrected from fabricated
+    "gate-disposition-b3.md eng-qa Recommendation 4 / hardening backlog item 7" to
+    accurate "eng-qa-report.md Recommendation 4") removes the sole Internal Consistency
+    defect from iteration 3; all five affected dimensions recover to 0.95, Methodological
+    Rigor holds at 0.94 (unchanged H-07 grep notation ambiguity), and the weighted
+    composite reaches 0.948, clearing the 0.94 C4 threshold.
+
+# ---
+
+scoring_context:
+  deliverable: >
+    projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-4/final-compliance-report.md
+  deliverable_type: Analysis (Phase 4 Final Gate -- Architecture Compliance Report)
+  criticality_level: C4
+  scoring_strategy: S-014 (LLM-as-Judge)
+  ssot_reference: .context/rules/quality-enforcement.md
+  iteration: 4
+  prior_composite: 0.929
+  scored: 2026-03-10T00:00:00Z
+  strategy_findings_incorporated: false
+
+# ---
+
+score_summary:
+  weighted_composite: 0.948
+  threshold: 0.94
+  verdict: PASS
+  critical_findings_count: 0
+
+# ---
+
+dimension_scores:
+  completeness:
+    weight: 0.20
+    score: 0.95
+    weighted: 0.190
+    evidence_summary: >
+      All 12 compliance categories addressed with file:line depth; 11 L1 "Source:"
+      citations present; Recommendation 3 citation corrected to "eng-qa-report.md
+      Recommendation 4" (accurate and verifiable). The inaccuracy that held this at
+      0.93 in iteration 3 is removed. Structural completeness unchanged from iteration
+      2; no requirements missed. Score rises from 0.93 to 0.95.
+
+  internal_consistency:
+    weight: 0.20
+    score: 0.95
+    weighted: 0.190
+    evidence_summary: >
+      The fabricated citation ("gate-disposition-b3.md eng-qa Recommendation 4" and
+      "hardening backlog item 7") is removed. Verified: line 411 now reads "(Per
+      eng-qa-report.md Recommendation 4.)" -- correct document, correct recommendation
+      number. All iteration-2/3 consistency attributes carry forward intact: C4
+      criticality label, 0.940 threshold references, scorecard arithmetic
+      (11+1=12). Score restores from 0.90 to 0.95.
+
+  methodological_rigor:
+    weight: 0.20
+    score: 0.94
+    weighted: 0.188
+    evidence_summary: >
+      No methodology changes in iteration 4. The H-07 grep block retains the
+      "$    # exit 1 -- zero matches" notation ambiguity (noted in iteration 3,
+      unchanged). All methodology strengths carry forward: L0/L1/L2 structure,
+      dual-method verification (import table + grep), verbatim pytest output,
+      full coverage table, verbatim CLI smoke test output, ranked remediation
+      options. Score unchanged at 0.94; the minor notational ambiguity prevents
+      0.95 per the downward rule.
+
+  evidence_quality:
+    weight: 0.15
+    score: 0.95
+    weighted: 0.1425
+    evidence_summary: >
+      Fabricated Recommendation 3 citation removed; all 11 L1 "Source:" citations
+      confirmed correct (Fix 2 from iteration 3 intact). The unverifiable
+      "hardening backlog item 7 per gate-disposition-b3.md" is gone. Remaining
+      minor deduction: H-07 grep "$" prefix notation is presentationally non-standard
+      but the zero-match result is unambiguous -- insufficient to hold below 0.95.
+      Score rises from 0.93 to 0.95.
+
+  actionability:
+    weight: 0.15
+    score: 0.95
+    weighted: 0.1425
+    evidence_summary: >
+      Unchanged from iterations 2 and 3. All four recommendations remain specifically
+      implementable: BLOCKING (YamlFrontmatterReader + composition root wiring + CLI
+      smoke test re-run), HIGH (integration test against fixture SKILL.md), MEDIUM
+      (exact pyproject.toml section and parameter name), LOW (specific function and
+      source files). Citation correction does not affect actionability.
+
+  traceability:
+    weight: 0.10
+    score: 0.95
+    weighted: 0.095
+    evidence_summary: >
+      Recommendation 3 traceability chain repaired: "eng-qa-report.md Recommendation 4"
+      is verifiable (lines 190-191 of eng-qa-report.md confirmed). The broken chain
+      (gate-disposition-b3.md -> missing recommendation) is removed. All 11 L1 Source
+      citations intact. Constraint-to-file:line-to-verdict chains for all 12 items
+      carry forward. Score rises from 0.93 to 0.95.
+
+  total:
+    weight: 1.00
+    weighted_composite: 0.948
+
+# ---
+
+weighted_composite_derivation:
+  completeness:       0.95 * 0.20 = 0.1900
+  internal_consistency: 0.95 * 0.20 = 0.1900
+  methodological_rigor: 0.94 * 0.20 = 0.1880
+  evidence_quality:   0.95 * 0.15 = 0.1425
+  actionability:      0.95 * 0.15 = 0.1425
+  traceability:       0.95 * 0.10 = 0.0950
+  sum:                0.1900 + 0.1900 + 0.1880 + 0.1425 + 0.1425 + 0.0950 = 0.948
+
+# ---
+
+fix_verification:
+  fix_citation_correction:
+    description: >
+      Recommendation 3 citation corrected from "gate-disposition-b3.md eng-qa
+      Recommendation 4 / hardening backlog item 7" to "eng-qa-report.md
+      Recommendation 4".
+    verified: true
+    adequacy: complete
+    assessment: >
+      Verified against primary sources:
+      (a) eng-qa-report.md lines 190-191 confirm: "Register a CI coverage gate
+          by adding --cov-fail-under=90 to the [tool.pytest.ini_options] section
+          in pyproject.toml" -- exists, correctly described in Recommendation 3.
+      (b) gate-disposition-b3.md confirmed: no "eng-qa Recommendation" list
+          exists in that document; no "hardening backlog item 7" appears anywhere;
+          backlog items referenced are 2, 3, 4, and 6 only.
+      (c) Iteration-4 deliverable line 411: "(Per eng-qa-report.md Recommendation 4.)"
+          -- correct document, correct recommendation number, no fabricated
+          backlog item reference. Both elements of the iteration-3 fabrication
+          are removed.
+      (d) pyproject.toml:40 ground truth confirmed: "jinja2>=3.1.6,<4.0,"
+      Fix fully closes the Internal Consistency defect that caused the regression
+      from 0.936 to 0.929.
+
+# ---
+
+detailed_dimension_analysis:
+  completeness:
+    score: 0.95
+    evidence: |
+      All iteration-3 completeness items carry forward:
+      - 12 compliance categories with dedicated subsections and depth
+      - H-07: 10-file import table + reformatted grep block
+      - H-10: 10-file class table
+      - H-11: 10-file signature/docstring table
+      - H-33: subprocess evidence + grep output + integration caveat
+      - H-05: 4 evidence points including pyproject.toml:40
+      - M-1 through M-5: each with file:line tables
+      - H-20: verbatim pytest output + full 6-column coverage table
+      - CLI smoke test: verbatim 13-skill output + root cause
+      - Phase 3 reconciliation: 4-artifact table
+      - Residual risk: 10-finding table
+      - Remediation: 3 ranked options with H-33 impact + effort + recommendation
+      - Release gate: 5-row decision table
+      Recommendation 3 citation now accurate: "(Per eng-qa-report.md Recommendation 4.)"
+    gaps: |
+      The --cov-fail-under=90 gate is not yet configured in pyproject.toml (Recommendation
+      3 is a forward action, not a closed finding). This is a known gap, correctly
+      acknowledged in the report -- not a reporting gap.
+    improvement_path: |
+      No structural improvements needed. Score is at 0.95.
+
+  internal_consistency:
+    score: 0.95
+    evidence: |
+      All consistency checks from iteration 3 carry forward:
+      - Line 7: C4 criticality with full tournament qualifier -- CORRECT
+      - Lines 431, 445: "0.940 >= 0.94 C4 threshold" -- CORRECT
+      - Summary scorecard: 11 COMPLIANT + 0 NON-COMPLIANT + 1 BLOCKED = 12 -- CORRECT
+      - Frontmatter defect described consistently across L0, L1, and L2 -- CORRECT
+      - Phase 3 finding IDs stable across cross-reference table and residual risk table -- CORRECT
+      - Self-score sum (0.941 vs stated 0.940) is a rounding artifact, not an error -- CONFIRMED
+      Fabricated citation in Recommendation 3 is removed. No new inconsistencies introduced.
+    gaps: |
+      None material. The rounding artifact in the self-score table (0.941 computed
+      vs. 0.940 stated) is a known artifact from prior iterations, not a factual error.
+    improvement_path: |
+      Score is at 0.95. No improvements needed.
+
+  methodological_rigor:
+    score: 0.94
+    evidence: |
+      No methodology changes in iteration 4. All iteration-3 strengths confirmed:
+      - L0/L1/L2 three-level structure with navigation table
+      - Dual-method verification for H-07 (10-file import table + grep block) and H-33
+        (grep block + integration caveat)
+      - Verbatim pytest output: "51 passed in 0.14s"
+      - Full 6-column coverage table (Stmts, Miss, Branch, BrPart, Cover)
+      - Verbatim CLI smoke test output with all 13 skill skip lines
+      - Ranked remediation options (A/B/C) with H-33 impact + effort + recommendation columns
+      - Explicit distinction between source-level compliance and integration behavior
+    gaps: |
+      H-07 grep notation unchanged: "$    # exit 1 -- zero matches" uses a "$" prefix
+      that visually resembles a second shell command rather than the output of the grep.
+      Standard terminal convention would use a blank line (empty stdout) or output lines
+      without "$". The zero-match result is unambiguous from context, but the format
+      is non-standard. This is a minor presentational issue, not a methodological failure.
+    improvement_path: |
+      Replace "$    # exit 1 -- zero matches" with either:
+      (a) a blank line after the command (representing empty stdout), or
+      (b) a comment without the "$" prefix: "    # (no output -- zero matches)"
+      Either would remove the ambiguity and push Methodological Rigor to 0.95.
+
+  evidence_quality:
+    score: 0.95
+    evidence: |
+      All Fix-2 source citations from iteration 3 intact and verified:
+      H-07, H-10, H-11, H-33, H-05 (quality-enforcement.md + architecture-standards.md /
+      coding-standards.md / python-environment.md + doc-module-spec.md sections),
+      M-1 through M-5 (threat-model-doc-module.md + doc-module-spec.md sections),
+      H-20 (quality-enforcement.md + testing-standards.md).
+      All file:line citations verified correct from prior iterations.
+      Fabricated Recommendation 3 citation removed -- eng-qa-report.md Recommendation 4
+      is verifiable (lines 190-191 confirmed).
+    gaps: |
+      H-07 grep notation presentational ambiguity (minor, non-standard "$" prefix).
+      The zero-match result is unambiguous; this does not constitute an evidentiary gap.
+      With the fabricated citation removed, no material evidentiary gaps remain.
+    improvement_path: |
+      Score is at 0.95. The only remaining presentational issue (H-07 grep notation)
+      is shared with Methodological Rigor and would require the same notation fix.
+
+  actionability:
+    score: 0.95
+    evidence: |
+      Unchanged from iterations 2 and 3. Four prioritized recommendations:
+      1. BLOCKING: "Create a YamlFrontmatterReader adapter that parses ---delimited YAML
+         frontmatter from SKILL.md and agent .md files. Wire it in the composition root.
+         Re-run the CLI smoke test to verify all 13 skills are extracted."
+      2. HIGH: "add at least one integration test that exercises the real reader adapter
+         against a fixture SKILL.md file containing ---delimited YAML frontmatter"
+      3. MEDIUM: "Adding [--cov-fail-under=90] to [tool.pytest.ini_options]" -- exact
+         section and parameter; "(Per eng-qa-report.md Recommendation 4.)"
+      4. LOW: "Run _sanitize_description on example and features values loaded from
+         .context/templates/docs/ YAML files before they enter the template context"
+      Release gate table: one NO-GO gate, one blocking condition, one verification step.
+    gaps: |
+      None. Citation correction in Recommendation 3 does not affect actionability.
+    improvement_path: |
+      Already at 0.95.
+
+  traceability:
+    score: 0.95
+    evidence: |
+      Recommendation 3 traceability chain repaired:
+      Report -> "eng-qa-report.md Recommendation 4" -> lines 190-191 of eng-qa-report.md
+      -> "adding --cov-fail-under=90 to [tool.pytest.ini_options] in pyproject.toml"
+      Chain is now fully traceable. The previously broken link (gate-disposition-b3.md
+      as the cited document) is removed.
+      All iteration-3 traceability strengths carry forward:
+      - 11 L1 subsection Source citations (Fix 2, verified complete)
+      - Constraint -> verification method -> file:line -> verdict for all 12 items
+      - Security mitigation -> implementation location -> test name for M-1 through M-5
+      - Phase 3 finding IDs stable between cross-reference and residual risk tables
+      - Frontmatter defect traced: spec line 46 -> CLI behavior -> skip path at line 111-115
+      - Footer document provenance (spec + threat model paths)
+    gaps: |
+      None material. The previously broken traceability chain in Recommendation 3 is repaired.
+    improvement_path: |
+      Score is at 0.95.
+
+# ---
+
+improvement_recommendations:
+  - priority: 1
+    dimension: methodological_rigor
+    current: 0.94
+    target: 0.95
+    recommendation: >
+      Replace "$    # exit 1 -- zero matches" in the H-07 grep block with either
+      a blank line (representing empty stdout) or "    # (no output -- zero matches)"
+      without the "$" prefix. Removes the ambiguity between notation-as-output vs.
+      notation-as-second-command. This is the only remaining gap preventing a
+      full-dimension 0.95 sweep.
+
+# ---
+
+leniency_bias_check:
+  dimensions_scored_independently: true
+  evidence_documented_for_each_score: true
+  uncertain_scores_resolved_downward: true
+  first_draft_calibration_considered: false  # Iteration 4 of a C4 deliverable
+  no_dimension_above_0_95_without_evidence: true
+  notes: >
+    Downward rule applied at the 0.94/0.95 boundary for Methodological Rigor:
+    the H-07 grep notation ambiguity is unchanged from iteration 3, so the score
+    remains at 0.94. All other dimensions reach 0.95 because the sole remaining
+    gap (fabricated Recommendation 3 citation) was fully resolved in iteration 4.
+    The 0.95 scores are justified: completeness is genuinely complete (12 categories
+    with file:line evidence); internal consistency has no contradictions after the
+    citation fix; evidence quality has all claims with verifiable citations; actionability
+    has four specifically implementable recommendations; traceability has a full chain
+    from constraint through implementation through test. No dimension is scored at
+    0.95 impressionistically -- each has documented specific evidence. The composite
+    of 0.948 exceeds the C4 threshold of 0.94 by 0.008, which represents genuine
+    quality improvement attributable entirely to the citation correction, not score
+    inflation.
+
+# ---
+
+session_context_handoff:
+  verdict: PASS
+  composite_score: 0.948
+  threshold: 0.94
+  weakest_dimension: methodological_rigor
+  weakest_score: 0.94
+  critical_findings_count: 0
+  iteration: 4
+  improvement_recommendations:
+    - "OPTIONAL: Replace H-07 grep notation '$    # exit 1 -- zero matches' with blank line or comment without '$' prefix -- would push Methodological Rigor from 0.94 to 0.95 but is not required for PASS"

@@ -1,12 +1,12 @@
 # BUG-001: AstFrontmatterReader parses blockquote metadata, not YAML frontmatter
 
 > **Type:** bug
-> **Status:** completed
+> **Status:** in_progress
 > **Priority:** critical
 > **Impact:** high
 > **Created:** 2026-03-11T00:00:00Z
 > **Due:**
-> **Completed:** 2026-03-12T00:00:00Z
+> **Completed:**
 > **Parent:** ST-002
 > **Severity:** critical
 > **Owner:**
@@ -135,13 +135,13 @@ Create `YamlFrontmatterReader` adapter using `yaml.safe_load` for `---`-delimite
 
 ## Acceptance Criteria
 
-- [x] `YamlFrontmatterReader` implements `IFrontmatterReader` protocol
-- [x] `yaml.safe_load` extracts `name` from all 30 SKILL.md files
-- [x] `bootstrap.py` wires `YamlFrontmatterReader` (not `AstFrontmatterReader`) in `create_docs_generator()`
-- [x] `uv run jerry docs generate` outputs a populated skills table (30 skills)
-- [x] `uv run jerry docs generate --check` exits 0 after `--write`
-- [x] Integration test verifies `YamlFrontmatterReader` against a real SKILL.md file
-- [x] Existing unit tests still pass (16,062 passed, 0 failed)
+- [ ] `YamlFrontmatterReader` implements `IFrontmatterReader` protocol
+- [ ] `yaml.safe_load` extracts `name` from all 27 SKILL.md files
+- [ ] `bootstrap.py` wires `YamlFrontmatterReader` (not `AstFrontmatterReader`) in `create_docs_generator()`
+- [ ] `uv run jerry docs generate` outputs a populated skills table (27 skills)
+- [ ] `uv run jerry docs generate --check` exits 0 after `--write`
+- [ ] Integration test verifies `YamlFrontmatterReader` against a real SKILL.md file
+- [ ] Existing unit tests still pass (they mock `IFrontmatterReader`, unaffected)
 
 ---
 
@@ -162,4 +162,3 @@ Create `YamlFrontmatterReader` adapter using `yaml.safe_load` for `---`-delimite
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-03-11 | Claude | open | Bug filed. Discovered during Phase 4 CLI smoke test. Verified post-rebase: 27/27 skills skipped. Root cause: research assumed `jerry ast frontmatter` parses YAML; it parses blockquotes only. |
-| 2026-03-12 | Claude | completed | YamlFrontmatterReader created and wired via bugfix-20260312-001 orchestration. 30/30 skills extracted. `jerry docs generate --check` exits 0. 16,062 tests pass. |

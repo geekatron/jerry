@@ -1,0 +1,554 @@
+barrier: "barrier-1"
+iteration: 7
+strategies_applied: [S-014, S-003, S-002, S-010, S-013]
+scored_at: "2026-03-10T00:00:00Z"
+criticality: "C4"
+threshold: 0.94
+score_bands:
+  pass: ">= 0.94"
+  revise: "0.88 - 0.93"
+  rejected: "< 0.88"
+
+# --- Arithmetic correction notice ---
+#
+# The iteration-6 yaml reported composite 0.938 but its own internal arithmetic (reproduced
+# verbatim below) sums to 0.928:
+#   0.1880 + 0.1880 + 0.1860 + 0.1335 + 0.1395 + 0.0930 = 0.9280
+# The 0.938 figure was an inherited value from iteration 5 that was not independently verified
+# when all dimension scores were flat in iteration 6. This is an arithmetic error, not a scoring
+# judgment error. Per P-001 (truth/accuracy), the iteration-7 scorer uses independently computed
+# arithmetic from the stated dimension scores.
+#
+# The dimension-level scores in iterations 5-6 are accepted as correct (they were derived from
+# rigorous per-dimension analysis). Only the composite arithmetic is corrected here.
+#
+# Impact on iteration-7 scoring: Methodological Rigor advances from 0.93 to 0.94 (delta +0.01).
+# Weighted contribution: +0.01 * 0.20 = +0.002. Corrected composite: 0.9280 + 0.0020 = 0.9300.
+# The threshold is 0.94. 0.930 < 0.94: verdict is REVISE.
+
+# --- Strategy execution summary ---
+#
+# S-010 (Self-Refine — Pre-scoring verification):
+#   Three changes verified present in deliverables:
+#   (1) Mode validation guard: generate_docs_command_handler.py lines 105-117.
+#       valid_modes = {"check", "write", None}; command.mode not in valid_modes returns
+#       GenerateDocsResult(success=False, error={"code": "INVALID_MODE", "message": ...}).
+#       Guard position: after path traversal check (lines 92-103), before business logic.
+#       This is architecturally correct — path safety first, then parameter safety.
+#   (2) Enhanced drift_detected docstring: generate_docs_result.py lines 28-33.
+#       Three-state semantics documented in the attribute docstring:
+#         True  = drift detected (check mode)
+#         False = no drift (check mode) or write completed (write mode)
+#         None  = stdout/default mode (no file I/O)
+#       Moves three-state contract from handle() inline comment into the type's contract.
+#   (3) 7th evidence test: test_invalid_mode_rejected (lines 164-185).
+#       Uses monkeypatch.chdir(tmp_path) + creates README.md in tmp_path so path traversal
+#       guard passes first; then mode "invalid" triggers INVALID_MODE error.
+#       Asserts result.success is False and result.error["code"] == "INVALID_MODE".
+#       Test report header still says "Iteration 5" (line 4 of test file) — stale comment,
+#       not a scoring issue.
+#   Arithmetic correction verified: independently computing the composite from stated dimension
+#   scores produces 0.928 for iteration-6 inputs and 0.930 for iteration-7 inputs. The prior
+#   composite of 0.938 does not match the stated dimension scores.
+#
+# S-003 (Steelman):
+#   The mode validation guard is architecturally the correct placement and design:
+#     - {"check", "write", None} correctly includes None (stdout mode) in the valid set
+#     - The error message "Valid modes are 'check', 'write', or None (stdout)" is actionable
+#     - Position after path traversal and before business logic matches the principle of
+#       validating preconditions before performing expensive operations
+#     - test_invalid_mode_rejected exercises both the path traversal bypass (README.md in
+#       tmp_path satisfies relative_to check) and the mode guard in sequence
+#   The drift_detected docstring enhancement is genuinely precise: the iteration-6 scoring
+#   identified "GenerateDocsResult has no docstring documenting the three possible drift_detected
+#   values" as a specific inconsistency. The new docstring uses three bullet points (True/False/None)
+#   with explicit mode context for each state — this is clearer than the inline comment it
+#   supplements (lines 169-171 of the handler).
+#   9/16 executable claims (56%) is meaningful progress within the 0.7-0.89 evidence band.
+#   The test suite now covers all three primary architectural control families: input sanitization
+#   (M-1: tests 1-2), write integrity (M-3: tests 4, 6), drift detection (test 5), error
+#   boundaries (YAML: test 3, mode: test 7), path safety (test 4).
+#
+# S-002 (Devil's Advocate):
+#   (1) The arithmetic correction from 0.938 to 0.928 (iteration 6) means the true gap to
+#   threshold was 0.012, not 0.002. The iteration-6 improvement recommendations were calibrated
+#   against a gap of 0.002 ("most tractable single change"). At a true gap of 0.012, mode
+#   validation alone (+0.002) is insufficient to reach 0.940. The iteration-7 composite of
+#   0.930 still has a gap of 0.010 to threshold.
+#   (2) Internal Consistency cannot advance to 0.95. The spec File Structure section still shows
+#   src/jerry/docs/ flat layout (not src/docs/ hexagonal). The enhanced drift_detected docstring
+#   closes one inconsistency but the spec layout contradiction remains. "No contradictions, all
+#   claims aligned" (0.9+ criterion) is not satisfied with a persistent spec-to-implementation
+#   layout mismatch.
+#   (3) Evidence Quality is bounded at 0.89. 9/16 executable (56%) is an improvement over
+#   iteration 6 (8/16, 50%) but still well below the "all claims" threshold for 0.90+. The
+#   band ceiling analysis from iteration 6 is unchanged in kind (only fraction improved).
+#   (4) Actionability stays at 0.93. The INVALID_MODE error code is a genuine improvement,
+#   but the iteration-6 actionability constraints were broader than this one error code:
+#   no formal CI exit code documentation, no operator troubleshooting guide. The INVALID_MODE
+#   code is incremental; strict downward resolution at the uncertain 0.93->0.94 boundary
+#   keeps this at 0.93.
+#   (5) Completeness stays at 0.94. 10 of 16 planned tests still absent. Spec layout gap
+#   unresolved. The mode validation guard adds one control that was missing (silently-accepted
+#   invalid modes) but the 9 barrier-1 checklist items were already all PASS. This is a
+#   hardening of the implementation beyond the spec checklist, not a completion of a previously
+#   missing checklist item.
+#
+# S-013 (Inversion):
+#   (1) Inversion on composite progress: what must happen to reach 0.940 from 0.930?
+#   The gap is 0.010. Options that contribute >= 0.010:
+#     - Evidence Quality 0.89 -> 0.94 (band crossing to "all claims"): +0.0075
+#       alone insufficient; combined with other changes could reach threshold
+#     - Two dimensions each advancing 0.03: e.g., Actionability 0.93->0.96 AND
+#       Traceability 0.93->0.96 together = +0.0045+0.003 = +0.0075
+#     - Three dimensions each advancing 0.02: +0.020*0.20 + 0.020*0.15 + 0.020*0.10
+#       = 0.004+0.003+0.002 = 0.009 — still insufficient
+#   Most tractable combined path:
+#     (A) Update spec File Structure section to src/docs/ hexagonal layout:
+#         -> Internal Consistency: 0.94->0.95 (+0.002), Traceability: 0.93->0.94 (+0.001)
+#     (B) Add 6+ more evidence tests (M-2 sandbox, M-3 cleanup, AstFrontmatterReader,
+#         agent exclusion, _check_drift inverted-marker warn, GenerateDocsResult per-mode):
+#         -> Evidence Quality: 0.89->0.90+ (band crossing, +0.0015 minimum)
+#     (C) Any other Actionability improvement (CI exit codes, operator guide):
+#         -> Actionability: 0.93->0.94 (+0.0015)
+#     Combined (A)+(B)+(C) = +0.002 + 0.001 + 0.0015 + 0.0015 = +0.0060 insufficient.
+#     Combined (A)+(B) substantially expanding evidence to 14+/16 = +0.002+0.001+0.015 > 0.010.
+#   (2) Inversion: the arithmetic correction is the most significant "finding" in iteration 7.
+#   The true composite was 0.928, not 0.938. The 0.940 threshold is 0.010 away, not 0.002 away.
+#   This means the iteration-6 improvement recommendation ("implement mode validation guard,
+#   3-5 lines, reaches exactly 0.940") was based on a faulty arithmetic foundation.
+#   (3) Inversion on Evidence Quality band: what if the rubric band for "most claims" is
+#   interpreted as "majority" (>50%) rather than "any positive fraction > half"? At 9/16 (56%),
+#   this is a clear majority. But the band ceiling is still 0.89 — the POSITION within the
+#   band (0.89) is already at the ceiling, so the question of interpretation doesn't change
+#   the score. The score was already at 0.89 (the band ceiling for "most claims supported").
+#
+# S-014 (LLM-as-Judge — formal dimension scoring):
+#   Applied below with strict rubric and leniency bias counteraction.
+
+dimensions:
+  completeness:
+    score: 0.94
+    weight: 0.20
+    weighted: 0.1880
+    rationale: >
+      Unchanged from iteration 6. All 9 Barrier-1 checklist items remain PASS: DI constructor
+      (handler lines 58-73), name regex (extractor line 31 + line 119), HTML strip (extractor
+      lines 34+260), 1024-char max (extractor lines 42+263), SandboxedEnvironment+StrictUndefined
+      (renderer lines 45-49), uv run subprocess (ast_reader lines 57-62), atomic write
+      NamedTemporaryFile+os.replace (handler lines 271-286), no domain-infra imports
+      (architectural inspection), one class per file (4 primary classes, each in own file).
+      The mode validation guard adds a control that was previously absent (unrecognized modes
+      silently accepted). This hardens the implementation. However, the 9 checklist items were
+      already PASS — mode validation is beyond-spec hardening, not a missing checklist item.
+      Remaining gaps: (a) spec File Structure section still shows src/jerry/docs/ flat layout
+      (not src/docs/ hexagonal); (b) 10 of 16 planned tests still absent (7/16 = 44% now).
+      These two gaps have been present since iteration 3. Score unchanged at 0.94.
+    delta_from_iteration_6: 0.00
+
+  internal_consistency:
+    score: 0.94
+    weight: 0.20
+    weighted: 0.1880
+    rationale: >
+      Partial improvement in iteration 7. The enhanced drift_detected docstring closes the
+      specific inconsistency cited in iterations 4-6: "GenerateDocsResult has no docstring
+      documenting the three possible drift_detected values (True/False/None)." The new
+      attribute docstring (generate_docs_result.py lines 28-33) precisely documents:
+        True  = drift detected, check mode
+        False = no drift (check mode), or successful write (write mode)
+        None  = stdout/default mode, no file I/O
+      This is consistent with: (a) the handle() inline comment at lines 169-171; (b) the
+      handle() behavior in the check branch (line 175: drift_detected = self._check_drift(...)
+      which returns True/False); (c) the write branch (line 180: drift_detected = False);
+      (d) the default stdout branch (drift_detected stays None, line 172). No new
+      contradictions introduced.
+      Remaining inconsistency: spec File Structure section (doc-module-spec.md) still shows
+      the src/jerry/docs/ flat layout that contradicts the src/docs/ hexagonal implementation.
+      The src/docs/__init__.py documents this intentional deviation, but the spec itself is
+      not updated. One persistent spec-to-implementation contradiction prevents advancing to
+      0.95 (which requires "No contradictions, all claims aligned"). The drift_detected
+      improvement solidifies the existing 0.94 position but cannot move it upward while
+      the spec layout inconsistency persists. Score unchanged at 0.94.
+    delta_from_iteration_6: 0.00
+
+  methodological_rigor:
+    score: 0.94
+    weight: 0.20
+    weighted: 0.1880
+    rationale: >
+      Iteration 7 closes the primary methodological gap cited in iterations 3-6: the silent
+      mode acceptance. Prior to iteration 7, handle() would accept any string as mode — a
+      string like "generate" or "auto" would silently behave as stdout mode with no error
+      indication. This was a methodological gap in input validation completeness.
+      Mode validation guard (handler lines 105-117):
+        valid_modes = {"check", "write", None}
+        if command.mode not in valid_modes:
+            return GenerateDocsResult(success=False, error={"code": "INVALID_MODE", ...})
+      Position is correct: after path traversal (precondition safety) and before business
+      logic (extraction, rendering, mode dispatch). The test (test_invalid_mode_rejected)
+      exercises the guard with mode="invalid", verifying the guard fires before extraction
+      and that the error code is INVALID_MODE.
+      With this addition, all primary architectural methodologies are implemented and validated:
+        - Hexagonal DI with ports/adapters (handler, extractor, renderer, reader)
+        - Input sanitization (M-1: HTML strip, unsafe URL strip, regex validation)
+        - Sandboxed template rendering (M-2: SandboxedEnvironment + StrictUndefined)
+        - Path traversal guard (A01:2021)
+        - Mode validation guard (NEW: parameter safety)
+        - YAML error boundary (yaml.YAMLError -> ValueError)
+        - Marker order validation (inverted marker detection)
+        - Atomic write (M-3: tempfile + os.replace)
+        - AST-based parsing (H-33: uv run jerry ast frontmatter, no regex)
+      Remaining gap: 9 of 16 planned tests still absent (7/16 = 44% executed). Test plan
+      completeness at 44% is a limitation, but methodological rigor assesses the implementation
+      methodology, not the test count. The rubric criterion "rigorous methodology, well-structured"
+      is now satisfied — all documented security controls are present and the implementation
+      follows established patterns throughout. The mode validation closure advances this from
+      0.93 (one methodological gap) to 0.94 (methodology complete, minor test plan gaps remain).
+    delta_from_iteration_6: +0.01
+
+  evidence_quality:
+    score: 0.89
+    weight: 0.15
+    weighted: 0.1335
+    rationale: >
+      One additional passing test in iteration 7: test_invalid_mode_rejected. This makes the
+      mode validation guard executable. Evidence inventory now: 9 executable claims of ~16 (56%).
+      Executable claims (9):
+        1. M-1: <script> tag stripped from description
+        2. M-1: javascript: URL scheme stripped from description
+        3. M-1: link text preserved after unsafe link stripping
+        4. YAML error boundary: yaml.YAMLError re-raised as ValueError
+        5. Marker order guard: inverted markers raise ValueError (write path)
+        6. Path traversal guard: /etc/passwd outside repo root returns PATH_TRAVERSAL
+        7. _check_drift(): content mismatch returns True
+        8. M-3 atomic write: new content written, old content replaced
+        9. Mode validation guard: mode="invalid" returns INVALID_MODE error
+      Inspection-only (7):
+        - M-2: SandboxedEnvironment blocks __import__ and dunder attribute access
+        - M-3: Temp file cleanup on exception (handler lines 287-294)
+        - AstFrontmatterReader: subprocess list-form args prevent command injection
+        - AstFrontmatterReader: returncode != 0 raises RuntimeError
+        - _check_drift(): inverted marker warning path (warn+return-True)
+        - Agent exclusion: TEMPLATE/EXTENSION case-insensitive matching
+        - GenerateDocsResult construction per mode (check/write/stdout)
+      Rubric application (strict):
+        0.9+: "All claims with credible citations." 9/16 is not all. Band not reachable.
+        0.7-0.89: "Most claims supported." 9/16 = 56%, a clear majority.
+      Leniency counteraction: The rubric band ceiling for "most claims supported" is 0.89 (the
+      next band entry at 0.90 requires "all claims"). The score was already at the band ceiling
+      in iteration 5 (5/16, 31%) and has remained there through iterations 6 (8/16, 50%) and
+      now 7 (9/16, 56%). Within-band improvement (56% vs 50%) does not change the ceiling.
+      Score unchanged at 0.89.
+    delta_from_iteration_6: 0.00
+
+  actionability:
+    score: 0.93
+    weight: 0.15
+    weighted: 0.1395
+    rationale: >
+      Partial improvement in iteration 7. The mode validation guard adds a new actionable error
+      code: INVALID_MODE with the message "Unrecognized mode: {command.mode!r}. Valid modes are
+      'check', 'write', or None (stdout)." This is more actionable than the prior behavior
+      (unrecognized mode silently treated as stdout — no error indication). The error message
+      provides the caller with the precise correction action (use one of the listed modes).
+      Existing actionability strengths unchanged: PATH_TRAVERSAL error code (handler lines
+      97-103); GENERATION_ERROR error code (handler lines 191-197); inverted-marker warning
+      "Inverted markers for section {section_name}" in _check_drift (handler lines 232-234);
+      inverted-marker ValueError "BEGIN at {begin_idx}, END at {end_idx}" in inject_between_markers
+      (renderer lines 117-119); keyword author policy comment (extractor lines 143-146);
+      repo-root precondition Note in handle() docstring (lines 85-88).
+      Strict leniency counteraction at 0.93->0.94 boundary: the INVALID_MODE code is a real
+      improvement, but the iteration-6 actionability score of 0.93 was not primarily constrained
+      by the absence of this error code. The cited limitations were broader (no CI exit code
+      documentation, no operator troubleshooting guide). The INVALID_MODE addition is incremental
+      improvement within the existing 0.93 position, not a qualitative advance. Score unchanged
+      at 0.93 per downward resolution at uncertain boundary.
+    delta_from_iteration_6: 0.00
+
+  traceability:
+    score: 0.93
+    weight: 0.10
+    weighted: 0.0930
+    rationale: >
+      Minor improvement in iteration 7. The 7th test docstring adds traceability for mode
+      validation: "Evidence: Mode validation rejects unrecognized mode values." This extends
+      the test docstring -> handler line -> spec control chain for one additional behavior.
+      Existing traceability: all primary files contain module-level docstrings referencing
+      doc-module-spec.md section names and security control IDs (M-1, M-2, M-3, M-5, H-33,
+      H-05). Test docstrings 1-6 reference specific handler lines and OWASP categories.
+      Remaining ceiling constraint: spec File Structure section still shows src/jerry/docs/
+      flat layout (not updated to reflect the src/docs/ hexagonal implementation). This
+      breaks the spec -> implementation traceability chain for the module's directory structure.
+      No formal requirements-to-implementation traceability matrix exists. The mode validation
+      test docstring improvement is minor and does not change position from 0.93, which was
+      already the upper achievable position given the spec layout gap. Score unchanged at 0.93.
+    delta_from_iteration_6: 0.00
+
+# --- Weighted composite calculation ---
+# completeness:          0.94 * 0.20 = 0.18800
+# internal_consistency:  0.94 * 0.20 = 0.18800
+# methodological_rigor:  0.94 * 0.20 = 0.18800
+# evidence_quality:      0.89 * 0.15 = 0.13350
+# actionability:         0.93 * 0.15 = 0.13950
+# traceability:          0.93 * 0.10 = 0.09300
+# total: 0.18800 + 0.18800 + 0.18800 + 0.13350 + 0.13950 + 0.09300
+#      = 0.37600 + 0.18800 + 0.13350 + 0.13950 + 0.09300
+#      = 0.56400 + 0.13350 + 0.13950 + 0.09300
+#      = 0.69750 + 0.13950 + 0.09300
+#      = 0.83700 + 0.09300
+#      = 0.93000
+
+weighted_composite: 0.930
+verdict: "REVISE"
+
+# Score band check: 0.930 >= 0.88 (REVISE lower bound) = true; 0.930 < 0.94 (PASS threshold) = true.
+# Falls in the REVISE band (0.88-0.93) per orchestration plan score_bands.
+# Gap to threshold: 0.94 - 0.930 = 0.010.
+
+# Arithmetic correction from iteration 6:
+# The iteration-6 yaml reported composite 0.938 but the internal arithmetic (0.1880+0.1880+
+# 0.1860+0.1335+0.1395+0.0930) sums to 0.9280, not 0.9380. The 0.938 figure was carried
+# forward without independent verification. The corrected composite for iteration-6's dimension
+# scores is 0.928. The iteration-7 Methodological Rigor advance (+0.01 * 0.20 = +0.002) brings
+# the corrected composite to 0.930. The true gap to threshold was 0.012 (not 0.002 as stated
+# in iteration 6 improvement recommendations).
+
+delta_from_iteration_6:
+  composite_delta: "arithmetic corrected: stated 0.938 corrected to 0.928; iteration-7 = 0.930 (+0.002 from corrected baseline)"
+  methodological_rigor_delta: +0.01
+  all_other_dimensions_delta: 0.00
+  methodological_rigor_old: 0.93
+  methodological_rigor_new: 0.94
+
+delta_from_iteration_1:
+  composite_delta: "+0.100 (0.830 -> 0.930)"
+  composite_progression_stated: [0.830, 0.887, 0.915, 0.937, 0.938, 0.938, "0.930 (corrected arithmetic)"]
+  composite_progression_corrected_note: >
+    Iterations 1-5 composites cannot be independently verified from this scoring context.
+    Iteration 6 composite is corrected from stated 0.938 to computed 0.928 based on its own
+    arithmetic. Iteration 7 composite is 0.930.
+
+remaining_gap_to_threshold: 0.010
+
+arithmetic_correction_analysis:
+  iteration_6_stated_composite: 0.938
+  iteration_6_computed_composite: 0.928
+  discrepancy: 0.010
+  root_cause: >
+    The iteration-6 yaml's internal arithmetic comment states the sum as 0.9380, but the
+    actual sum of the six weighted component values is 0.9280. This is a consistent 0.010
+    overstatement. The likely cause: the composite 0.938 was carried from iteration 5 verbatim
+    when all dimension scores were flat (0.00 delta across all dimensions). Without independent
+    recomputation of the composite from the dimension scores, the arithmetic error persisted.
+  impact_on_improvement_recommendations: >
+    The iteration-6 improvement recommendation "implement mode validation guard, contributes
+    +0.002 to composite, reaching exactly 0.940" was calibrated against a gap of 0.002 (0.938
+    -> 0.940). The actual gap was 0.012 (0.928 -> 0.940). Mode validation contributes +0.002,
+    reaching 0.930, which is still below threshold. The recommendation was directionally correct
+    (mode validation was the right structural change) but the gap estimate was wrong.
+
+path_to_threshold:
+  gap: 0.010
+  evidence_quality_binding_constraint: >
+    Evidence Quality is bounded at 0.89 by the 0.7-0.89 rubric band ceiling. Crossing to 0.90+
+    requires "all claims with credible citations" — approximately 14-15 of 16 claims executable.
+    Currently 9/16 executable (56%). 5-6 more tests needed for band crossing.
+    Evidence Quality band crossing (0.89->0.90): +0.0015 (minimum; higher for 0.91+).
+  combined_paths:
+    path_A: >
+      Spec layout reconciliation (doc-module-spec.md File Structure -> src/docs/ hexagonal):
+      -> Internal Consistency: 0.94->0.95 (+0.002)
+      -> Traceability: 0.93->0.94 (+0.001)
+      Subtotal: +0.003
+    path_B: >
+      Evidence test expansion to ~14-15 of 16 claims executable (6+ more tests):
+      Tests needed: M-2 SandboxedEnvironment (__import__ blocked), M-3 temp cleanup on exception,
+      AstFrontmatterReader returncode != 0 raises RuntimeError, _check_drift inverted-marker warn
+      path, agent exclusion TEMPLATE/EXTENSION, GenerateDocsResult per-mode construction.
+      -> Evidence Quality band crossing: 0.89->0.91 (+0.003 at 0.15 weight)
+      Subtotal: +0.003
+    path_C: >
+      Actionability improvement (CI exit codes, operator troubleshooting guide, or
+      comprehensive error code documentation):
+      -> Actionability: 0.93->0.94 (+0.0015)
+      Subtotal: +0.0015
+    combined_A_plus_B: +0.006 (still insufficient alone)
+    combined_A_plus_B_plus_C: +0.0075 (still insufficient)
+    combined_A_plus_B_substantial: >
+      Path A (+0.003) + Evidence Quality 0.89->0.93 (+0.006): total +0.009, insufficient.
+      Path A (+0.003) + Evidence Quality 0.89->0.95 (+0.009): total +0.012 >= 0.010, sufficient.
+      Requires near-total evidence coverage AND spec reconciliation.
+    most_tractable_combined: >
+      Combination of Path A (spec layout, documentation change) + Path B extended (6+ tests
+      pushing to 15/16 "all claims" territory) + Path C (one actionability enhancement):
+      0.003 + 0.006 + 0.0015 = 0.0105 > 0.010. This requires three parallel changes.
+      Single change paths are insufficient — no single dimension advance of 0.05 exists
+      within the rubric for dimensions already at 0.93-0.94.
+
+checklist_results:
+  - item: "GenerateDocsCommandHandler constructor accepts SkillExtractor, ITemplateRenderer, IFrontmatterReader"
+    status: "PASS"
+    evidence: "generate_docs_command_handler.py lines 58-73: __init__(extractor, renderer, reader) with TYPE_CHECKING guard"
+
+  - item: "SkillExtractor.extract_all() validates name regex ^[a-zA-Z][a-zA-Z0-9-]*$"
+    status: "PASS"
+    evidence: "skill_extractor.py line 31: _SKILL_NAME_PATTERN; applied line 119 with skip-and-warn on failure"
+
+  - item: "SkillExtractor.extract_all() strips HTML from description"
+    status: "PASS"
+    evidence: >
+      skill_extractor.py line 34: _HTML_TAG_PATTERN; line 260: applied in _sanitize_description.
+      EXECUTABLE: test_phase1_evidence.py::test_sanitize_description_strips_html_and_unsafe_links PASSED.
+
+  - item: "SkillExtractor.extract_all() enforces 1024-char max"
+    status: "PASS"
+    evidence: "skill_extractor.py line 42: _MAX_DESCRIPTION_LENGTH = 1024; line 263: [:_MAX_DESCRIPTION_LENGTH]"
+
+  - item: "Jinja2Renderer uses SandboxedEnvironment + StrictUndefined"
+    status: "PASS"
+    evidence: "jinja2_renderer.py lines 45-49: SandboxedEnvironment(loader=..., undefined=StrictUndefined, autoescape=False)"
+
+  - item: "AstFrontmatterReader calls uv run jerry ast frontmatter (not regex, not raw YAML)"
+    status: "PASS"
+    evidence: "ast_frontmatter_reader.py lines 57-62: subprocess.run(['uv','run','jerry','ast','frontmatter',...])"
+
+  - item: "Atomic write uses tempfile.NamedTemporaryFile + os.replace()"
+    status: "PASS"
+    evidence: >
+      generate_docs_command_handler.py lines 271-286+287-294: NamedTemporaryFile+os.replace+cleanup.
+      EXECUTABLE: test_phase1_evidence.py::test_atomic_write_produces_correct_content PASSED
+      (success path verified with real Jinja2Renderer; exception cleanup path inspection-only).
+
+  - item: "No domain layer file imports from infrastructure (H-07)"
+    status: "PASS"
+    evidence: "Domain ports and value_objects contain only stdlib imports; verified by architectural inspection"
+
+  - item: "One class per file throughout src/docs/ (H-10)"
+    status: "PASS"
+    evidence: "Four primary classes each in own file; __init__.py files contain no class definitions"
+
+  - item: "Mode validation guard rejects unrecognized mode values (NEW in iteration 7)"
+    status: "PASS"
+    evidence: >
+      generate_docs_command_handler.py lines 105-117: valid_modes = {"check", "write", None};
+      command.mode not in valid_modes returns GenerateDocsResult(success=False, error={"code":
+      "INVALID_MODE", "message": "Unrecognized mode: ... Valid modes are 'check', 'write', or None"}).
+      EXECUTABLE: test_phase1_evidence.py::test_invalid_mode_rejected PASSED (7 tests in 0.08s).
+
+  - item: "drift_detected attribute docstring documents three-state semantics (NEW in iteration 7)"
+    status: "PASS"
+    evidence: >
+      generate_docs_result.py lines 28-33: attribute docstring documents True (drift detected,
+      check mode), False (no drift, check mode, or write completed), None (stdout/default mode).
+      Consistent with handle() inline comment (lines 169-171) and branch behavior.
+
+evidence_quality_inventory:
+  executable_claims:
+    - "M-1: <script> tag stripped from description (test_sanitize_description_strips_html_and_unsafe_links)"
+    - "M-1: javascript: URL scheme stripped from description (same test)"
+    - "M-1: link text preserved after unsafe link stripping (same test)"
+    - "YAML error boundary: yaml.YAMLError re-raised as ValueError (test_load_yaml_raises_value_error_on_malformed)"
+    - "Marker order guard: inverted markers raise ValueError (test_inject_between_markers_rejects_inverted_markers)"
+    - "Path traversal guard: /etc/passwd outside repo root returns PATH_TRAVERSAL (test_path_traversal_rejected)"
+    - "_check_drift(): content mismatch returns True (test_check_drift_detects_content_mismatch)"
+    - "M-3 atomic write: new content written, old content replaced (test_atomic_write_produces_correct_content)"
+    - "Mode validation guard: mode='invalid' returns INVALID_MODE (test_invalid_mode_rejected)"
+  inspection_only_claims:
+    - "M-2: SandboxedEnvironment blocks __import__ and dunder attribute access"
+    - "M-3: Temp file cleanup on exception (handler lines 287-294)"
+    - "AstFrontmatterReader: subprocess list-form args prevent command injection"
+    - "AstFrontmatterReader: returncode != 0 raises RuntimeError"
+    - "_check_drift(): inverted marker warning path (warn+return-True, distinct from write raise)"
+    - "Agent exclusion: TEMPLATE/EXTENSION case-insensitive matching"
+    - "GenerateDocsResult construction per mode (check/write/stdout)"
+  executable_fraction: "9 of 16 distinct claims (56%)"
+  rubric_band: "0.7-0.89 (band ceiling: 0.89 — crossing to 0.90+ requires 'all claims')"
+
+improvement_recommendations:
+  - priority: 1
+    dimension: "multiple (spec layout)"
+    current_internal_consistency: 0.94
+    current_traceability: 0.93
+    composite_impact: "+0.003 (internal_consistency 0.94->0.95: +0.002; traceability 0.93->0.94: +0.001)"
+    recommendation: >
+      Update doc-module-spec.md File Structure section from src/jerry/docs/ flat layout to
+      src/docs/ hexagonal layout with H-07 cross-reference. This is a documentation-only change
+      to the spec file that resolves the spec-to-implementation contradiction noted in src/docs/__init__.py
+      since iteration 1. This closes the primary constraint preventing Internal Consistency from
+      advancing to 0.95 AND the primary constraint on Traceability. Combined contribution: +0.003.
+
+  - priority: 2
+    dimension: "evidence_quality"
+    current: 0.89
+    target: 0.92+
+    composite_impact: "+0.0045 at evidence_quality=0.92 (0.15 weight)"
+    recommendation: >
+      Add 6 more evidence tests to cross the "all claims" band boundary (0.89->0.90+):
+      (a) M-2 SandboxedEnvironment: craft a template attempting __import__('os') or _dunder
+          access; assert Jinja2Renderer raises RuntimeError (sandbox violation).
+      (b) M-3 temp file cleanup on exception: mock os.replace to raise OSError; verify
+          temp file is cleaned up and exception re-raised.
+      (c) AstFrontmatterReader returncode != 0: mock subprocess.run returning returncode=1;
+          verify raises RuntimeError.
+      (d) _check_drift() inverted marker warn path: README with END before BEGIN; verify
+          warnings list receives message and returns True.
+      (e) Agent exclusion: provide agent dir with TEMPLATE.md and valid agent; verify
+          TEMPLATE is excluded from count.
+      (f) GenerateDocsResult per-mode: verify drift_detected is None (stdout), True (check
+          mismatch), False (write mode) in integration-style tests.
+      Target: 15/16 executable ("all claims" territory), enabling evidence_quality 0.90+.
+
+  - priority: 3
+    dimension: "actionability"
+    current: 0.93
+    target: 0.94
+    composite_impact: "+0.0015"
+    recommendation: >
+      Document CI exit codes and operator troubleshooting guidance. Add a module-level
+      docstring or README section mapping error codes (PATH_TRAVERSAL, INVALID_MODE,
+      GENERATION_ERROR) to operator actions and expected CLI exit codes. This advances
+      actionability from "Actions present, some vague" toward "Clear, specific, implementable
+      actions" for the operator audience.
+
+  - priority: 4
+    dimension: "completeness"
+    current: 0.94
+    target: 0.95
+    composite_impact: "+0.002"
+    recommendation: >
+      Once recommendation 2 (evidence tests) brings planned test completion above 10/16 (62.5%),
+      revisit completeness ceiling. Currently 7/16 tests present (44%). The completeness constraint
+      is the combination of spec layout gap (addressed in priority 1) and test plan coverage (44%).
+
+leniency_bias_check:
+  dimensions_scored_independently: true
+  evidence_documented_for_each_score: true
+  uncertain_scores_resolved_downward: true
+  first_draft_calibration_considered: true
+  no_dimension_above_0_95_without_exceptional_evidence: true
+  arithmetic_independently_verified: true
+  hostile_reviewer_test: >
+    A hostile reviewer has two challenges in iteration 7:
+    (1) "The composite should be 0.940 — you agreed mode validation would close the 0.002 gap."
+    Response: The 0.002 gap estimate was based on the iteration-6 stated composite of 0.938,
+    which was arithmetically incorrect (correct: 0.928). The arithmetic correction reveals the
+    true gap was 0.012, not 0.002. Mode validation contributes +0.002 to the composite (0.01
+    dimension advance * 0.20 weight), reaching 0.930 from the corrected baseline of 0.928.
+    (2) "The arithmetic correction is suspicious — iteration 6 was independently scored and
+    verified. Why change it now?"
+    Response: The iteration-6 yaml's own internal arithmetic comment shows the sum as 0.9380,
+    but the six weighted terms (0.1880+0.1880+0.1860+0.1335+0.1395+0.0930) add to 0.9280.
+    This is an internal contradiction within the iteration-6 document. The H-15 self-review
+    for iteration 7 includes independent arithmetic verification — the earlier iterations did
+    not catch this because the composite was carried forward from iteration 5 without
+    recomputation. Per P-001 (truth/accuracy), the corrected figure is used. The dimension
+    scores (0.94/0.94/0.93/0.89/0.93/0.93) are accepted as correct from the iteration-6
+    judgment; only the arithmetic combining them is corrected.
+  calibration_note: >
+    Iteration-7 dimension scores range 0.89-0.94. Composite 0.930 (corrected from 0.928
+    baseline + 0.002 from Methodological Rigor advance). The threshold of 0.94 requires
+    a further +0.010 — requiring multiple dimension advances across the remaining gaps.
+    The 7-iteration progression (0.830->0.887->0.915->0.937->0.938->0.938->corrected 0.930)
+    shows genuine quality improvement with the correction revealing the true distance to
+    threshold is greater than prior reports indicated.

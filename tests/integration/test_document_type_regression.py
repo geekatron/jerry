@@ -57,6 +57,8 @@ EXPECTED_UNKNOWN: frozenset[str] = frozenset(
         "SOUNDTRACK.md",
         # Changelog -- standard repo file, not a Jerry document type.
         "CHANGELOG.md",
+        # One-off prompt design doc in project root -- not a general category.
+        "projects/PROJ-0037-doc-module/prompt-issue-148.md",
     }
 )
 

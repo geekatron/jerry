@@ -1,0 +1,424 @@
+barrier: "barrier-1"
+iteration: 2
+strategies_applied: [S-014, S-003, S-002, S-010, S-013]
+scored_at: "2026-03-10T00:00:00Z"
+criticality: "C4"
+threshold: 0.94
+score_bands:
+  pass: ">= 0.94"
+  revise: "0.88 - 0.93"
+  rejected: "< 0.88"
+
+# --- Per-strategy analysis summary ---
+#
+# S-003 (Steelman):
+#   All four fixes are correctly implemented. _UNSAFE_LINK_PATTERN at
+#   skill_extractor.py lines 38-40 is technically sound — negative lookahead
+#   correctly identifies dangerous schemes (javascript:, data:, vbscript:)
+#   while allowing http://, https://, mailto:, and absolute-path-relative (/)
+#   links. Dead code removal from jinja2_renderer.py is clean (no _MARKER_PATTERN,
+#   no orphaned import re). _MAX_ACTIVATION_KEYWORDS = 30 check at line 144 is
+#   present. Path traversal guard using Path.resolve() + relative_to() at handler
+#   lines 87-98 is the correct POSIX-portable approach with a structured error result.
+#
+# S-002 (Devil's Advocate):
+#   (1) URL allowlist regex correctly strips dangerous schemes; relative paths
+#   starting with '.' (e.g., '../foo') are stripped as unsafe — spec says relative
+#   paths allowed, so '../' would be over-stripped, but this is defensively correct
+#   and consistent with the allowlist spirit (only '/' relative paths are explicitly
+#   whitelisted by the lookahead '|/').
+#   (2) activation-keywords validation logs a WARNING but does NOT truncate the list.
+#   Spec validation table implies enforcement; warn-only is acceptable since keywords
+#   are not rendered, but is a minor spec fidelity gap.
+#   (3) _check_drift() semantic inversion from spec pseudocode remains (was in iteration 1
+#   findings, not in the iteration 2 fix scope) — spec says "Return True if README matches"
+#   but implementation returns True on drift. Internally consistent usage; minor consistency
+#   gap vs. spec documentation.
+#   (4) _load_yaml() still catches yaml.YAMLError only through the broad except Exception
+#   in handle() — methodologically imprecise but functionally safe.
+#
+# S-010 (Self-Refine):
+#   _UNSAFE_LINK_PATTERN.sub(r"\1", sanitized) correctly replaces [text](dangerous:url)
+#   with the plain link text — exactly the right behavior. Applied at _sanitize_description()
+#   line 257, which is called for both skill descriptions (line 136) and agent descriptions
+#   (line 224). Full coverage. Path traversal guard placement at the very top of handle()
+#   before any file I/O is correct — early return on invalid paths. No self-correction
+#   required for the four claimed fixes.
+#
+# S-013 (Inversion):
+#   (1) Path.cwd() as repo_root is fragile in CI environments that change directories;
+#   if jerry is not run from repo root, legitimate paths would be blocked. Acceptable
+#   for a CLI tool designed for repo-root execution.
+#   (2) activation-keywords: 35 keywords remain in SkillData (warn-only, no truncation).
+#   Not rendered in README, so functionally benign.
+#   (3) _check_drift() semantic inversion still present but does not cause runtime
+#   failures due to internally consistent usage in handle().
+
+dimensions:
+  completeness:
+    score: 0.91
+    weight: 0.20
+    weighted: 0.182
+    rationale: >
+      All 9 Barrier-1 checklist items continue to PASS (DI constructor, name regex,
+      HTML strip, 1024-char truncation, SandboxedEnvironment+StrictUndefined, uv run
+      subprocess, atomic write, no domain-infra imports, one class per file). All four
+      iteration-1 gaps are now addressed: M-1 URL allowlist added via _UNSAFE_LINK_PATTERN
+      at skill_extractor.py lines 38-40 and applied in _sanitize_description() at line 257;
+      dead code _MARKER_PATTERN and stray import re removed from jinja2_renderer.py;
+      activation-keywords max-30 validation added at skill_extractor.py lines 143-150;
+      path traversal guard added at generate_docs_command_handler.py lines 87-98 with
+      PATH_TRAVERSAL error result. Two minor residual gaps hold the score below 0.95:
+      (1) activation-keywords validation warns but does not truncate (spec validation
+      column implies enforcement); (2) spec File Structure section (src/jerry/docs/)
+      still diverges from implementation (src/docs/) without documented acknowledgment
+      in any deliverable. These are sub-0.95-threshold residuals; the requirement coverage
+      is otherwise complete.
+
+  internal_consistency:
+    score: 0.88
+    weight: 0.20
+    weighted: 0.176
+    rationale: >
+      Dead code removal resolves the primary iteration-1 inconsistency: _MARKER_PATTERN
+      and import re are gone from jinja2_renderer.py; inject_between_markers() now
+      consistently uses str.index() with no orphaned unused symbols in the module.
+      The _UNSAFE_LINK_PATTERN is defined at module level (line 38) and used at exactly
+      one site (_sanitize_description() line 257) — clean and consistent. _MAX_ACTIVATION_KEYWORDS
+      constant (line 43) is used at the single validation site (line 144). Path traversal
+      guard returns a GenerateDocsResult(success=False) with a structured error dict —
+      consistent with the existing error-result pattern in handle()'s except branch
+      (line 171-175). Residual inconsistencies from iteration 1 that remain unaddressed:
+      (1) _check_drift() returns True when drift IS detected while spec pseudocode says
+      "Return True if README matches" — semantic inversion; internally consistent usage
+      in handle() prevents runtime failure but creates maintainer confusion against spec.
+      (2) The "stdout" mode gap noted in iteration 1 (drift_detected stays None when
+      neither 'check' nor 'write' mode) remains, undocumented in code comments.
+      Net improvement over iteration 1 (0.83) is meaningful; residuals prevent reaching 0.92+.
+
+  methodological_rigor:
+    score: 0.88
+    weight: 0.20
+    weighted: 0.176
+    rationale: >
+      STRIDE compliance is now materially improved: M-1 URL allowlist (T-1 mitigation) is
+      correctly implemented — the _UNSAFE_LINK_PATTERN regex uses a negative lookahead
+      to identify schemes outside the allowlist (http://, https://, mailto:, /), with the
+      substitution replacing the full link with only the link text, which is the correct
+      sanitization approach. M-2 (SandboxedEnvironment+StrictUndefined) was already present.
+      M-3 (atomic write) was already present. M-4 (pinned Jinja2) is outside Phase 1 scope.
+      M-5 (schema validation) was already present. Path traversal guard follows the
+      Path.resolve() + relative_to() pattern, which is the established Python idiom for
+      containment checks. Dead code elimination reflects clean-code methodology. Hexagonal
+      architecture, subprocess list-form args, yaml.safe_load, TYPE_CHECKING guard, and
+      frozen dataclasses are all unchanged and correct. Residual methodological gap:
+      _load_yaml() still catches yaml.YAMLError only through the broad except Exception
+      at handle() line 169 — methodologically imprecise (does not explicitly distinguish
+      YAML parse errors from other exceptions in the call chain). Warn-only for
+      activation-keywords vs. truncation is a minor methodology gap (validation without
+      enforcement). These residuals hold the score below 0.90.
+
+  evidence_quality:
+    score: 0.87
+    weight: 0.15
+    weighted: 0.1305
+    rationale: >
+      The implementation code itself is the primary evidence artifact, and all four
+      claimed fixes are directly verifiable at specific line numbers with no ambiguity.
+      _UNSAFE_LINK_PATTERN at lines 38-40 is self-evidencing — the regex is readable,
+      the comment block (lines 35-40) accurately describes the allowlist and the schemes
+      that are stripped. _sanitize_description() at line 257 applies the pattern correctly.
+      _MAX_ACTIVATION_KEYWORDS = 30 at line 43 and its use at line 144 are clearly
+      traceable. Path traversal guard at lines 87-98 has a comment (line 85) that explains
+      the M-3/path safety intent. Dead code absence in jinja2_renderer.py is directly
+      verifiable. Inline Reference comments in all four primary files trace to spec sections
+      and mitigation IDs. Residual gaps from iteration 1 that affect evidence quality:
+      (1) No test files exist in Phase 1 deliverables; sandbox effectiveness and regex
+      correctness cannot be independently verified by test execution — claims about M-1
+      and M-2 correctness rest entirely on code inspection. (2) Template files
+      (skills-table.md.jinja2, features-section.md.jinja2) are not included as Phase 1
+      deliverables, so claims about template rendering remain unverifiable. The
+      iteration-1 false-positive "M-1 PASS" claim in the eng-backend report is now
+      remediated by the actual implementation — but the report itself was not corrected
+      (out of scope for iteration 2). Minor improvement from 0.80 to 0.87 reflects the
+      four fixes providing direct code evidence for previously unsubstantiated claims.
+
+  actionability:
+    score: 0.89
+    weight: 0.15
+    weighted: 0.1335
+    rationale: >
+      The four fixes are complete, importable, production-quality code requiring no
+      further action. _UNSAFE_LINK_PATTERN is correctly wired and immediately usable.
+      Path traversal guard returns a structured PATH_TRAVERSAL error that the CLI layer
+      can translate to exit code 2 with a user-readable message. The activation-keywords
+      warning logs a specific message including the count and max threshold (lines 147-150),
+      giving the developer an actionable signal. All __init__.py files are minimal and
+      correct (SPDX headers only). DI wiring remains explicit and clear. The iteration-2
+      deliverable set is ready for the CLI registration and test phases without
+      architectural rework. Residual: activation-keywords warn-only vs. truncate leaves
+      an ambiguous contract for callers (is SkillData.agent_count or SkillData.agents
+      affected by keyword count? No — unrelated; but the SkillData returned contains
+      the full list beyond 30 if keywords are not rendered). Path traversal guard using
+      Path.cwd() is fragile in non-root-directory execution contexts; this is actionable
+      for integration testing but not a blocker for Phase 1. Overall the deliverable set
+      is highly actionable for the next implementation phase.
+
+  traceability:
+    score: 0.89
+    weight: 0.10
+    weighted: 0.089
+    rationale: >
+      Inline Reference comments remain present in all four primary files, tracing each
+      to the spec section and mitigation ID. The new _UNSAFE_LINK_PATTERN has a comment
+      block (lines 35-40) that explicitly names M-1 and describes the allowlist — direct
+      spec-to-code traceability. The path traversal guard comment at line 85 names M-3
+      and the threat vector (--readme ../../etc/passwd). _MAX_ACTIVATION_KEYWORDS has
+      a comment at line 143 (M-5) linking to the spec table. Forward traceability from
+      spec requirements to implementation is now complete for all four iteration-2 fixes.
+      Residual traceability gap from iteration 1 that remains: spec File Structure section
+      documents src/jerry/docs/ flat layout but implementation lives at src/docs/
+      hexagonal hierarchy — no deliverable (spec, implementation comments, or report)
+      acknowledges this divergence, leaving the spec-to-file traceability chain broken
+      at the structural level. This residual holds the score below 0.92.
+
+# --- Weighted composite ---
+# completeness:       0.91 * 0.20 = 0.182
+# internal_consistency: 0.88 * 0.20 = 0.176
+# methodological_rigor: 0.88 * 0.20 = 0.176
+# evidence_quality:   0.87 * 0.15 = 0.1305
+# actionability:      0.89 * 0.15 = 0.1335
+# traceability:       0.89 * 0.10 = 0.089
+# total:              0.182 + 0.176 + 0.176 + 0.1305 + 0.1335 + 0.089 = 0.887
+
+weighted_composite: 0.887
+verdict: "REVISE"
+
+# Score band check: 0.887 >= 0.88 (REVISE lower bound) = true; 0.887 < 0.94 (PASS threshold) = true.
+# Falls in the REVISE band (0.88-0.93) per orchestration plan score_bands.
+
+# Delta from iteration 1: +0.057 (0.83 -> 0.887)
+# All four targeted fixes landed correctly.
+# Remaining gap to threshold: 0.94 - 0.887 = 0.053
+
+delta_from_iteration_1:
+  composite_delta: +0.057
+  completeness_delta: +0.09
+  internal_consistency_delta: +0.05
+  methodological_rigor_delta: +0.03
+  evidence_quality_delta: +0.07
+  actionability_delta: +0.06
+  traceability_delta: +0.02
+
+checklist_results:
+  - item: "GenerateDocsCommandHandler constructor accepts SkillExtractor, ITemplateRenderer, IFrontmatterReader"
+    status: "PASS"
+    evidence: "generate_docs_command_handler.py lines 58-73: __init__(extractor: SkillExtractor, renderer: ITemplateRenderer, reader: IFrontmatterReader) with TYPE_CHECKING guard"
+
+  - item: "SkillExtractor.extract_all() validates name regex ^[a-zA-Z][a-zA-Z0-9-]*$"
+    status: "PASS"
+    evidence: "skill_extractor.py line 31: _SKILL_NAME_PATTERN = re.compile(r'^[a-zA-Z][a-zA-Z0-9-]*$'); applied at line 119 with skip-and-warn on failure"
+
+  - item: "SkillExtractor.extract_all() strips HTML from description"
+    status: "PASS"
+    evidence: "skill_extractor.py line 34: _HTML_TAG_PATTERN = re.compile(r'<[^>]+>'); applied at _sanitize_description() line 255"
+
+  - item: "SkillExtractor.extract_all() enforces 1024-char max"
+    status: "PASS"
+    evidence: "skill_extractor.py line 42: _MAX_DESCRIPTION_LENGTH = 1024; applied at _sanitize_description() line 258 via [:_MAX_DESCRIPTION_LENGTH]"
+
+  - item: "Jinja2Renderer uses SandboxedEnvironment + StrictUndefined"
+    status: "PASS"
+    evidence: "jinja2_renderer.py lines 45-49: SandboxedEnvironment(loader=FileSystemLoader(template_dir), undefined=StrictUndefined, autoescape=False)"
+
+  - item: "AstFrontmatterReader calls uv run jerry ast frontmatter (not regex, not raw YAML)"
+    status: "PASS"
+    evidence: "ast_frontmatter_reader.py line 57-62: subprocess.run(['uv', 'run', 'jerry', 'ast', 'frontmatter', str(file_path)], capture_output=True, text=True, timeout=30) — list-form args, no shell=True"
+
+  - item: "Atomic write uses tempfile.NamedTemporaryFile + os.replace()"
+    status: "PASS"
+    evidence: "generate_docs_command_handler.py lines 249-259: NamedTemporaryFile(mode='w', dir=dir_name, delete=False, suffix='.tmp') then os.replace(temp_path, str(readme)); cleanup on exception at lines 261-267"
+
+  - item: "No domain layer file imports from infrastructure (H-07)"
+    status: "PASS"
+    evidence: "All domain/ports/ and domain/value_objects/ files contain only stdlib imports; infrastructure adapters import from domain ports only; direction verified clean"
+
+  - item: "One class per file throughout src/docs/ (H-10)"
+    status: "PASS"
+    evidence: "Confirmed: GenerateDocsCommandHandler, SkillExtractor, Jinja2Renderer, AstFrontmatterReader each in own file; __init__.py files contain no class definitions"
+
+# --- Iteration-2 specific fix verification ---
+iteration_2_fix_verification:
+  - fix: "M-1 URL allowlist (_UNSAFE_LINK_PATTERN)"
+    status: "IMPLEMENTED"
+    evidence: >
+      skill_extractor.py lines 38-40: _UNSAFE_LINK_PATTERN compiled with negative
+      lookahead (?!https?://|mailto:|/) that matches links with non-allowlisted schemes.
+      Applied at line 257: _UNSAFE_LINK_PATTERN.sub(r'\1', sanitized) replaces
+      [text](dangerous:url) with text only. Called for both skill descriptions (line 136)
+      and agent descriptions (line 224). Comment block lines 35-40 accurately documents
+      the allowlist and excluded schemes (javascript:, data:, vbscript:).
+    residual_concern: >
+      Relative paths starting with '.' (e.g., '../foo') are not in the lookahead
+      allowlist (only '/' is listed). Such paths would be stripped as unsafe.
+      Spec says "relative paths" are allowed — minor over-stripping but defensively
+      correct. Not a bug; acceptable tradeoff.
+
+  - fix: "Dead code _MARKER_PATTERN removed"
+    status: "IMPLEMENTED"
+    evidence: >
+      jinja2_renderer.py: no _MARKER_PATTERN definition, no unused import re.
+      inject_between_markers() uses str.index() consistently throughout.
+      Module is clean of dead symbols.
+
+  - fix: "activation-keywords max-30 validation"
+    status: "IMPLEMENTED_WARN_ONLY"
+    evidence: >
+      skill_extractor.py line 43: _MAX_ACTIVATION_KEYWORDS = 30.
+      Lines 143-150: len(raw_keywords) > _MAX_ACTIVATION_KEYWORDS triggers
+      logger.warning with count and max values. Warning is specific and actionable.
+    residual_concern: >
+      Spec validation table implies enforcement (warn + truncate or reject).
+      Implementation warns but does not truncate the keyword list. Since
+      activation-keywords are not rendered in the README, this is functionally
+      benign. Minor spec fidelity gap.
+
+  - fix: "Path traversal guard in handle()"
+    status: "IMPLEMENTED"
+    evidence: >
+      generate_docs_command_handler.py lines 85-98: Path.cwd().resolve() as
+      repo_root; Path(command.readme_path).resolve() as readme_abs;
+      readme_abs.relative_to(repo_root) raises ValueError on traversal;
+      except ValueError returns GenerateDocsResult(success=False, error={'code':
+      'PATH_TRAVERSAL', 'message': '...'}) before any file I/O.
+    residual_concern: >
+      Path.cwd() assumes process is run from repository root. CI runners that
+      change directories before invoking jerry would see legitimate paths blocked.
+      Acceptable for CLI-tool-at-repo-root execution model.
+
+steelman_findings:
+  - "All four targeted fixes are implemented correctly and completely — not token-planted
+    placeholders but genuine, well-commented, production-quality additions."
+  - "The _UNSAFE_LINK_PATTERN regex is technically sophisticated: the negative lookahead
+    prevents matching safe-scheme links without requiring a positive allowlist enumeration,
+    making it extensible if new safe schemes are added to the lookahead."
+  - "The path traversal guard is placed as the very first operation in handle(), before any
+    file reads or writes — correct placement that short-circuits on invalid input without
+    side effects."
+  - "The _MAX_ACTIVATION_KEYWORDS warning includes both the actual count and the configured
+    maximum (lines 147-150), giving developers immediately actionable information."
+  - "Dead code removal is complete and clean — no orphaned imports, no commented-out code,
+    no TODO markers left behind."
+
+devils_advocate_findings:
+  - "activation-keywords validation is warn-only; spec validation column implies enforcement.
+    The SkillData object returned contains the full keyword list beyond 30 entries. While
+    keywords are not rendered in the README, the warn-only approach sets a precedent that
+    validation warnings may be safely ignored."
+  - "_check_drift() return semantics inversion vs. spec pseudocode remains: spec says 'Return
+    True if README matches', implementation returns True when drift IS detected. This is a
+    pre-existing gap not in iteration 2 scope but unresolved."
+  - "Path.cwd() as repo_root is environment-sensitive. A CI job that runs jerry from a
+    subdirectory would produce spurious PATH_TRAVERSAL errors on legitimate paths like
+    'README.md'. The fix introduces a new failure mode in non-standard execution contexts."
+  - "Relative paths with '..' (e.g., '../docs/README.md') in description fields are stripped
+    by _UNSAFE_LINK_PATTERN even though the spec explicitly lists 'relative paths' as
+    allowlisted. The lookahead only whitelists '/' as the first character of relative paths."
+  - "_load_yaml() does not explicitly catch yaml.YAMLError — malformed YAML data files
+    (features.yaml, skill-examples.yaml) would produce a generic GENERATION_ERROR rather
+    than an actionable parse-error message."
+  - "Spec File Structure (src/jerry/docs/ flat layout) diverges from implementation
+    (src/docs/ hexagonal hierarchy) and this divergence is unacknowledged in any deliverable."
+
+inversion_findings:
+  - "If jerry is not on PATH and uv is not available, every skill file fails with RuntimeError
+    wrapped in GENERATION_ERROR — the path traversal guard passes but the command silently
+    produces no output. This now coexists with the traversal guard: valid-path + missing-uv
+    = misleading GENERATION_ERROR."
+  - "If two skills have the same name (canonical alphabet sort would place them adjacently),
+    both pass name regex validation and both land in the skills list — no deduplication."
+  - "If activation-keywords contains 31 items, a warning is logged but the SkillData is
+    returned with all 31. If that SkillData is later serialized or inspected, the validation
+    contract appears to have been violated (data exceeds spec maximum)."
+
+improvement_recommendations:
+  - priority: 1
+    dimension: "internal_consistency"
+    current: 0.88
+    target: 0.92
+    recommendation: >
+      Correct the _check_drift() docstring and/or implementation to align with the spec's
+      stated return contract. The spec pseudocode says "Return True if README matches,
+      False if drift detected." Either update the docstring to explicitly state the
+      implementation uses the opposite convention (True = drift detected), or flip the
+      return semantics to match the spec. This closes the spec-consistency gap without
+      behavioral change (handle() logic would need to invert the condition).
+
+  - priority: 2
+    dimension: "completeness"
+    current: 0.91
+    target: 0.95
+    recommendation: >
+      Update the spec File Structure section to reflect the actual src/docs/ hexagonal
+      layout, or add an explicit note in the implementation (e.g., in the module docstring
+      of generate_docs_command_handler.py) documenting the departure from the spec's
+      suggested flat layout. This closes the spec-to-file traceability gap and the
+      consistency gap simultaneously.
+
+  - priority: 3
+    dimension: "methodological_rigor"
+    current: 0.88
+    target: 0.92
+    recommendation: >
+      Add explicit yaml.YAMLError handling in _load_yaml() or in handle() before calling
+      _load_yaml(). This makes the error-type contract explicit and distinguishes YAML parse
+      failures from I/O failures, improving debuggability for the developer. Example:
+      wrap the yaml.safe_load() call in a try/except yaml.YAMLError that re-raises as
+      a descriptive ValueError.
+
+  - priority: 4
+    dimension: "completeness"
+    current: 0.91
+    target: 0.94
+    recommendation: >
+      Consider truncating activation-keywords to 30 entries in _extract_skill() in addition
+      to logging the warning, to enforce the spec's maximum at the data model level. If
+      warn-only is the deliberate design decision, document it explicitly in the method
+      docstring to distinguish intentional behavior from an oversight.
+
+  - priority: 5
+    dimension: "traceability"
+    current: 0.89
+    target: 0.93
+    recommendation: >
+      Extend the URL allowlist regex to explicitly include relative paths starting with
+      '.' (e.g., '../', './') in the negative lookahead, or add a comment documenting
+      why '.' relative paths are intentionally excluded. This closes the minor spec
+      fidelity gap around the relative-path allowlist definition and improves traceability
+      between spec intent and regex implementation.
+
+leniency_bias_check:
+  dimensions_scored_independently: true
+  evidence_documented_for_each_score: true
+  uncertain_scores_resolved_downward: true
+  first_draft_calibration_considered: true
+  no_dimension_above_0_95_without_exceptional_evidence: true
+  hostile_reviewer_test: >
+    A hostile reviewer would push internal_consistency to 0.85 (semantic inversion in
+    _check_drift() is a real spec discrepancy), methodological_rigor to 0.86
+    (_load_yaml() yaml.YAMLError gap + warn-only validation pattern), and traceability
+    to 0.87 (spec file structure divergence unresolved). Current scores represent the
+    upper-defensible position given iteration 2 is a targeted fix cycle, not a full
+    rewrite. Held at current levels because all four claimed fixes are verifiably correct
+    at the line-number level.
+  calibration_note: >
+    Iteration 2 scores range 0.87-0.91, a +0.04 to +0.09 lift over iteration 1 (0.80-0.87).
+    This is consistent with targeted-fix iterations that resolve the most critical gaps while
+    leaving second-order consistency issues for subsequent iterations. The composite 0.887
+    falls in the REVISE band — meaningful progress toward the 0.94 threshold, requiring
+    3-4 targeted improvements to cross.
+  iteration_calibration: >
+    Iteration 2 is a targeted-fix cycle (not a full redesign). Scoring iteration 2 on
+    the same rubric as iteration 1 means the remaining gaps are smaller in scope but
+    must still be penalized at their true severity. No bonus points for progress per se;
+    each dimension scored against the rubric criteria independently.

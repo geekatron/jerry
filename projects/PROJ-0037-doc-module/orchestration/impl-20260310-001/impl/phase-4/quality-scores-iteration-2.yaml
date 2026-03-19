@@ -1,0 +1,405 @@
+# Quality Score Report — final-compliance-report.md (Iteration 2)
+# S-014 LLM-as-Judge | SSOT: .context/rules/quality-enforcement.md
+# Scored: 2026-03-10T00:00:00Z
+
+---
+
+## l0_executive_summary
+
+score: 0.936
+verdict: REVISE
+threshold: 0.94
+weakest_dimension: traceability
+weakest_score: 0.92
+one_line_assessment: >
+  The iteration-2 fixes correctly resolved all five flagged items and raised the
+  composite from 0.896 to 0.936, but three dimensions (Completeness, Methodological
+  Rigor, Evidence Quality) each score 0.93 due to minor presentational gaps that
+  collectively keep the composite 0.004 below the 0.94 C4 threshold; targeted
+  refinements to Traceability (explicit spec-to-constraint linkage in L1 headers)
+  and Evidence Quality (H-07 grep output format) are the fastest path to threshold.
+
+# ---
+
+## scoring_context
+
+deliverable: >
+  projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-4/final-compliance-report.md
+deliverable_type: Analysis (Phase 4 Final Gate — Architecture Compliance Report)
+criticality_level: C4
+scoring_strategy: S-014 (LLM-as-Judge)
+ssot_reference: .context/rules/quality-enforcement.md
+iteration: 2
+prior_composite: 0.896
+scored: 2026-03-10T00:00:00Z
+strategy_findings_incorporated: false
+
+# ---
+
+## score_summary
+
+weighted_composite: 0.936
+threshold: 0.94
+verdict: REVISE
+critical_findings_count: 0
+
+# ---
+
+## dimension_scores
+
+completeness:
+  weight: 0.20
+  score: 0.93
+  weighted: 0.186
+  evidence_summary: >
+    All five iteration-2 fixes present and correct; all 12 compliance categories
+    addressed with depth including H-07/H-33 grep evidence; --cov-fail-under note
+    added. Minor gap: Recommendation 3 lacks a ticket/timeline reference.
+
+internal_consistency:
+  weight: 0.20
+  score: 0.95
+  weighted: 0.190
+  evidence_summary: >
+    Criticality corrected to C4 at line 7; quality gate threshold corrected to 0.94
+    at lines 409 and 423; self-score weighted sum (0.941) vs stated (0.940) is a
+    negligible rounding artifact; all 12 scorecard entries internally consistent;
+    frontmatter defect description consistent across L0, L1, and L2 sections.
+
+methodological_rigor:
+  weight: 0.20
+  score: 0.93
+  weighted: 0.186
+  evidence_summary: >
+    L0/L1/L2 structure with navigation table; dual-method verification (manual
+    import analysis + grep) for H-07 and H-33; verbatim pytest and coverage output;
+    verbatim CLI smoke test output; ranked remediation options table with H-33 impact
+    and effort columns. Minor gap: H-07 grep empty output shown as parenthetical
+    comment rather than terminal-style empty output block.
+
+evidence_quality:
+  weight: 0.15
+  score: 0.93
+  weighted: 0.1395
+  evidence_summary: >
+    All claims cite file:line locations; pyproject.toml:40 matches ground truth
+    "jinja2>=3.1.6,<4.0"; H-33 grep output shows all 5 re.compile usages with line
+    numbers; frontmatter defect has three-step evidence chain (SKILL.md content,
+    command output, skip path). Minor gap: H-07 grep block shows commands and
+    parenthetical "(no output -- zero matches)" rather than showing actual empty
+    terminal output after the command.
+
+actionability:
+  weight: 0.15
+  score: 0.95
+  weighted: 0.1425
+  evidence_summary: >
+    Four prioritized recommendations (BLOCKING/HIGH/MEDIUM/LOW) each with specific
+    file, function, or configuration target; three remediation options (A/B/C) with
+    effort estimates; release gate table is unambiguous; blocking condition stated
+    precisely; Recommendation 3 gives exact pyproject.toml section and parameter value.
+
+traceability:
+  weight: 0.10
+  score: 0.92
+  weighted: 0.092
+  evidence_summary: >
+    Constraint-to-implementation-to-test chains exist for all 12 items; finding IDs
+    (V1-V4, F5-F10, RR-1, RR-2) consistent between Phase 3 cross-reference table and
+    Phase 4 residual risk table; spec line 46 cited for frontmatter defect; threat
+    model referenced in footer. Minor gap: L1 constraint subsections do not explicitly
+    state their requirement source (spec section or rule file), relying on the footer
+    reference for spec traceability.
+
+total:
+  weight: 1.00
+  weighted_composite: 0.936
+
+# ---
+
+## detailed_dimension_analysis
+
+completeness:
+  score: 0.93
+  evidence: |
+    All five iteration-2 changes verified present:
+    1. Line 7: "C4 (Critical -- irreversible, architecture/governance, all tiers + tournament)" — CORRECT.
+    2. Lines 409, 423: "0.94 C4 threshold" — CORRECT.
+    3. Lines 83-93: H-07 grep verification block showing both prohibited import directions
+       returning zero matches — PRESENT.
+    4. Lines 147-156: H-33 grep output showing all 5 re.compile usages in skill_extractor.py
+       for M-1/M-5 sanitization/validation purposes — PRESENT.
+    5. Line 282: "--cov-fail-under=90 is not configured in pyproject.toml; coverage compliance
+       is verified manually at this gate. See Recommendation 3 for automated enforcement." — PRESENT.
+
+    All 12 compliance categories have dedicated subsections with depth:
+    H-07 (10-file import table + grep), H-10 (10-file class table), H-11 (10-file
+    signature table), H-33 (subprocess evidence + grep + integration caveat), H-05
+    (4 evidence points), M-1 through M-5 (each with file:line tables), H-20 (verbatim
+    output + 0 missed statements), CLI smoke test (verbatim 13-skill output + root cause),
+    Phase 3 reconciliation (4-artifact table), residual risk (10-finding table),
+    remediation (3 ranked options), release gate (5-row table).
+  gaps: |
+    Recommendation 3 ("Add --cov-fail-under=90 to pytest configuration") is noted and
+    specific, but lacks a ticket reference or timeline. For a C4 deliverable, a
+    cross-reference to a worktracker item or backlog entry would complete the
+    traceability loop for automation gaps.
+  improvement_path: |
+    Add a worktracker or backlog item reference to Recommendation 3, e.g.,
+    "[Backlog item 7]" or a GitHub Issue number. This would push Completeness to 0.95+.
+
+internal_consistency:
+  score: 0.95
+  evidence: |
+    All C2/C4 inconsistencies from iteration 1 are resolved:
+    - Line 7: Criticality correctly states C4 with the full tournament qualifier.
+    - Line 409: "CONDITIONAL PASS (0.940 >= 0.94 C4 threshold -- at boundary)" — correct.
+    - Line 423: "Quality Score | GO | 0.940 >= 0.94 C4 threshold (at boundary)" — correct.
+    - Self-score table: weighted column sums to 0.941 vs stated 0.940; this 0.001
+      difference is a rounding artifact from displaying 3-decimal weights and is not
+      a real inconsistency (0.95 × 0.15 = 0.1425 displayed as 0.143).
+    - Summary scorecard: 11 COMPLIANT + 0 NON-COMPLIANT + 1 BLOCKED = 12 total,
+      consistent with the 12 category rows in the table.
+    - Frontmatter defect described consistently in three places: L0 (line 28),
+      L1 CLI smoke test (lines 311-313), L2 BLOCKED finding (lines 325-344).
+    - Finding IDs and severities in Phase 4 residual risk table match gate-disposition-b3.md.
+  gaps: |
+    None material. The 0.001 rounding artifact in the self-score composite (0.940
+    stated vs 0.941 exact sum) is not an inconsistency.
+  improvement_path: |
+    Already at 0.95. Further improvement would require adding self-referential
+    consistency checks (e.g., cross-linking the frontmatter defect finding ID
+    consistently), which would be marginal.
+
+methodological_rigor:
+  score: 0.93
+  evidence: |
+    Strong methodology throughout:
+    - L0/L1/L2 three-level structure is used correctly: L0 = executive summary with
+      verdict, L1 = per-constraint verification with tables, L2 = strategic assessment.
+    - Navigation table present at lines 12-19.
+    - H-07 and H-33 use two independent verification methods: manual import analysis
+      (per-file tables) PLUS grep confirmation (added in iteration 2).
+    - H-11 goes beyond requirement by documenting that private methods also carry
+      type hints and docstrings.
+    - Pytest output is verbatim (not paraphrased): "51 passed in 0.14s".
+    - Coverage table is reproduced with all columns (Stmts, Miss, Branch, BrPart, Cover).
+    - CLI smoke test output is verbatim including all 13 skip lines.
+    - Remediation options table includes H-33 impact, effort, and recommendation
+      columns, enabling direct comparison without narrative interpretation.
+    - The report explicitly distinguishes source code compliance from integration
+      behavior for H-33, which is methodologically precise.
+  gaps: |
+    H-07 grep verification (lines 83-93) shows the commands in a code block and
+    uses "(no output — zero matches)" as a parenthetical comment on the command line
+    itself, rather than showing the empty output as a separate line after the command.
+    This format is clear but slightly less rigorous than the H-33 section (lines
+    147-156), which explicitly lists each match by file:line, making the "these are
+    all M-1/M-5 usages" claim directly verifiable by inspection.
+  improvement_path: |
+    Reformat the H-07 grep block to show commands and output on separate lines:
+      $ grep -r "from src.docs.infrastructure" src/docs/domain/ src/docs/application/
+      (empty — no output)
+    This would push Methodological Rigor to 0.95.
+
+evidence_quality:
+  score: 0.93
+  evidence: |
+    All key claims have specific, verifiable citations:
+    - pyproject.toml:40 cited as "jinja2>=3.1.6,<4.0" — matches ground truth exactly.
+    - ast_frontmatter_reader.py:57-62 cited for subprocess list-form args.
+    - jinja2_renderer.py:56-60 cited for SandboxedEnvironment instantiation.
+    - handler.py:281-291 cited line-by-line for atomic write sequence.
+    - handler.py:97-108 cited for path traversal guard.
+    - skill_extractor.py:31-43 cited for all M-5 pattern constants.
+    - H-33 grep output (lines 147-156) shows all 5 re.compile occurrences with line
+      numbers, making the "sanitization-only" claim directly verifiable.
+    - Frontmatter defect evidence: three-step chain citing SKILL.md lines 1-28,
+      actual jerry ast frontmatter output, and skill_extractor.py:111-115 skip path.
+    - All 13 skill names in the CLI smoke test output match the actual skills
+      directory (adversary, architecture, ast, bootstrap, eng-team, nasa-se,
+      orchestration, problem-solving, red-team, saucer-boy-framework-voice,
+      saucer-boy, transcript, worktracker).
+  gaps: |
+    H-07 grep verification presents "(no output — zero matches)" as a comment
+    appended to the command on the same line, rather than showing the empty stdout
+    block. This is a presentational gap — the claim is supportable — but a reviewer
+    cannot directly verify the exact terminal output as they can for H-33.
+    Additionally, no explicit reference to the formal specification section that
+    requires each architectural constraint (beyond the footer citation of
+    doc-module-spec.md). The L1 headers state the constraint but do not cite the
+    spec section or requirement ID.
+  improvement_path: |
+    (1) Reformat H-07 grep blocks to show empty output on a separate line after
+    each command. (2) Add spec section references to L1 subsection headers,
+    e.g., "H-07: Architecture Layer Isolation -- COMPLIANT (spec §2.3, quality-
+    enforcement.md H-07)". Either change would push Evidence Quality to 0.95.
+
+actionability:
+  score: 0.95
+  evidence: |
+    All four recommendations are specific and implementable:
+    1. BLOCKING: "Create a YamlFrontmatterReader adapter that parses ---delimited YAML
+       frontmatter from SKILL.md and agent .md files. Wire it in the composition root.
+       Re-run the CLI smoke test to verify all 13 skills are extracted." — No ambiguity.
+    2. HIGH: "add at least one integration test that exercises the real reader adapter
+       against a fixture SKILL.md file containing ---delimited YAML frontmatter" — specific
+       test design and trigger condition stated.
+    3. MEDIUM: "Adding [--cov-fail-under=90] to [tool.pytest.ini_options]" — exact
+       pyproject.toml section and value specified.
+    4. LOW: "Run _sanitize_description on example and features values loaded from
+       .context/templates/docs/ YAML files before they enter the template context." —
+       specific function, specific source files, specific insertion point.
+    The release gate table is unambiguous: exactly one NO-GO gate, exactly one blocking
+    condition. The remediation options table provides effort estimates and H-33 impact
+    for each option, enabling an implementer to choose without further analysis.
+  gaps: |
+    None material. Recommendation 3 lacks a worktracker/backlog item reference
+    (noted under Completeness), but the action itself is completely specified.
+  improvement_path: |
+    Add backlog item cross-references to Recommendations 2, 3, and 4 to close the
+    loop from recommendation to scheduled work. Marginally improves traceability but
+    Actionability is already at 0.95.
+
+traceability:
+  score: 0.92
+  evidence: |
+    Strong traceability chains:
+    - Each constraint traces: requirement (H-NN text) → verification method →
+      file:line evidence → COMPLIANT/BLOCKED verdict.
+    - Each security mitigation traces: threat model specification → source implementation
+      (file:line) → test name exercising the control.
+    - Phase 3 finding IDs (V1, V2, V3, V4, F5, F6, F7, F8, F9, F10, RR-1, RR-2) used
+      consistently across gate-disposition-b3.md cross-reference table (lines 75-88)
+      and Phase 4 residual risk table (lines 370-381). Severity assignments are stable.
+    - The frontmatter defect traces: spec line 46 (extraction mechanism spec) → CLI
+      command behavior → skill_extractor.py:111-115 skip path.
+    - Test names are cited where they directly exercise a security mitigation
+      (test_path_traversal_rejected, test_atomic_write_produces_correct_content,
+      test_atomic_write_cleans_up_on_error).
+    - Footer provides spec and threat model paths, confirming document provenance.
+  gaps: |
+    L1 constraint subsection headers state the constraint requirement inline but do
+    not explicitly cite the requirement source (e.g., "quality-enforcement.md H-07"
+    or "doc-module-spec.md §2.3"). The spec is cited only in the footer and in one
+    BLOCKED finding table row (spec line 46 for H-33). A reviewer following the
+    traceability chain from a failing constraint to its authoritative source must
+    locate the spec independently rather than following an inline link.
+  improvement_path: |
+    Add a "Requirement source:" line to each L1 subsection header, e.g.:
+      "Requirement: {constraint text} | Source: quality-enforcement.md H-07,
+       doc-module-spec.md §2.3"
+    This would push Traceability to 0.95 and close the only remaining gap.
+
+# ---
+
+## improvement_recommendations
+improvement_recommendations:
+  - priority: 1
+    dimension: traceability
+    current: 0.92
+    target: 0.95
+    recommendation: >
+      Add explicit "Source:" citations to each L1 constraint subsection header linking
+      to both the quality-enforcement.md rule ID and the doc-module-spec.md section.
+      This closes the inline traceability gap without requiring new evidence collection.
+
+  - priority: 2
+    dimension: evidence_quality
+    current: 0.93
+    target: 0.95
+    recommendation: >
+      Reformat the H-07 grep verification block so each command is followed by its
+      empty output on a separate line (matching the H-33 grep section's format).
+      Also add spec section references alongside each constraint in L1 headers.
+
+  - priority: 3
+    dimension: methodological_rigor
+    current: 0.93
+    target: 0.95
+    recommendation: >
+      Reformat H-07 grep output block to show empty stdout explicitly (same treatment
+      as H-33 section). This single change addresses both Methodological Rigor and
+      Evidence Quality gaps simultaneously.
+
+  - priority: 4
+    dimension: completeness
+    current: 0.93
+    target: 0.95
+    recommendation: >
+      Add a worktracker or backlog item reference to Recommendation 3
+      (--cov-fail-under=90 automation) to complete the traceability loop for
+      automation gaps in a C4 deliverable.
+
+# ---
+
+## iteration_2_fix_verification
+
+fix_1_criticality_c4:
+  location: "line 7"
+  content: "C4 (Critical -- irreversible, architecture/governance, all tiers + tournament)"
+  verified: true
+
+fix_2_threshold_0_94:
+  location: "lines 409, 423"
+  content_line_409: "CONDITIONAL PASS (0.940 >= 0.94 C4 threshold -- at boundary)"
+  content_line_423: "0.940 >= 0.94 C4 threshold (at boundary)"
+  verified: true
+
+fix_3_h07_grep_evidence:
+  location: "lines 83-93"
+  content: >
+    grep block showing both prohibited import directions returning zero matches;
+    "Both cross-layer import directions return zero matches" confirmation statement
+  verified: true
+
+fix_4_h33_grep_evidence:
+  location: "lines 147-156"
+  content: >
+    grep output showing 5 re.compile usages in skill_extractor.py with line numbers;
+    "All 5 re.compile usages are in skill_extractor.py for M-1 input sanitization
+    and M-5 schema validation" conclusion statement
+  verified: true
+
+fix_5_cov_fail_under_note:
+  location: "line 282"
+  content: >
+    "--cov-fail-under=90 is not configured in pyproject.toml; coverage compliance is
+    verified manually at this gate. See Recommendation 3 for automated enforcement."
+  verified: true
+
+# ---
+
+## leniency_bias_check
+
+dimensions_scored_independently: true
+evidence_documented_for_each_score: true
+uncertain_scores_resolved_downward: true
+first_draft_calibration_considered: false  # This is iteration 2 of a C4 deliverable
+no_dimension_above_0_95_without_evidence: true
+notes: >
+  Internal Consistency and Actionability both score 0.95. Internal Consistency: the
+  five major iteration-2 fixes are all correctly applied with no remaining
+  contradictions. Actionability: all four recommendations have specific file/function/
+  parameter targets with zero vague language. These 0.95 scores are justified by the
+  evidence. The three 0.93 scores (Completeness, Methodological Rigor, Evidence
+  Quality) reflect real but minor presentational gaps — the uncertain-scores-downward
+  rule was applied at the 0.93/0.94 boundary for each. Traceability at 0.92 reflects
+  the genuine inline spec-citation gap. The 0.004 gap to the 0.94 C4 threshold is
+  real and requires targeted fixes, not a blanket re-score.
+
+# ---
+
+## session_context_handoff
+
+verdict: REVISE
+composite_score: 0.936
+threshold: 0.94
+weakest_dimension: traceability
+weakest_score: 0.92
+critical_findings_count: 0
+iteration: 2
+improvement_recommendations:
+  - "Add explicit Source: citations to L1 constraint headers (Traceability gap)"
+  - "Reformat H-07 grep block to show empty stdout explicitly (Evidence Quality + Methodological Rigor)"
+  - "Add backlog/worktracker item reference to Recommendation 3 (Completeness gap)"

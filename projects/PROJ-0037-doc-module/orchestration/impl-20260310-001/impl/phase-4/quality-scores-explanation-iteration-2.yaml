@@ -1,0 +1,284 @@
+---
+# Quality Score Report: The YamlFrontmatterReader Issue — Explained
+# S-014 LLM-as-Judge Rubric Scoring
+# Iteration 2 (revised from iteration 1 score of 0.72)
+
+scoring_context:
+  deliverable: "projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-4/frontmatter-issue-explanation.md"
+  deliverable_type: "Explanation (technical issue explanation for a stakeholder)"
+  criticality: C2
+  scoring_strategy: S-014 (LLM-as-Judge)
+  ssot_reference: ".context/rules/quality-enforcement.md"
+  scored: "2026-03-11T00:00:00Z"
+  iteration: 2
+  prior_score: 0.72
+  strategy_findings_incorporated: true
+  strategy_findings_source: "projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-4/adversary-explanation-devils-advocate.md"
+
+l0_executive_summary:
+  composite_score: 0.879
+  threshold: 0.92
+  verdict: REVISE
+  weakest_dimension: evidence_quality
+  weakest_score: 0.82
+  one_line_assessment: >
+    Strong revision from 0.72 to 0.879 — all 6 DA findings addressed — but the
+    DA-002 fix softens rather than resolves the unsupported causal claim about
+    jerry ast's parser behavior; citing the /ast skill source would close the
+    remaining Evidence Quality and Traceability gap and likely push the score
+    above threshold.
+
+score_summary:
+  weighted_composite: 0.879
+  threshold: 0.92
+  delta_from_prior: +0.159
+  verdict: REVISE
+  critical_findings_resolved: 1
+  major_findings_resolved: 3
+  minor_findings_resolved: 2
+  open_critical_findings: 0
+  open_major_findings: 0
+
+dimension_scores:
+
+  completeness:
+    weight: 0.20
+    score: 0.87
+    weighted: 0.174
+    evidence_summary: >
+      All DA-001 through DA-006 findings addressed. Confusing detail paragraph
+      added (DA-001), evidence-qualified language present (DA-002), semantic
+      ambiguity justification replaces flawed abstraction argument (DA-003),
+      count sourced to skills/*/SKILL.md (DA-004), one-sentence hook corrected
+      (DA-005), port docstring update mentioned (DA-006). Residual minor gap:
+      DA-002 is softened but not fully resolved — "evidence is the output above"
+      is present, but no verification that all 13 SKILL.md files each have a YAML
+      name field is included (the DA-004 recommendation's second clause was not
+      fully implemented).
+    gaps:
+      - >
+        DA-004's full recommendation ("add a note: each of these SKILL.md files
+        has a --- YAML block with a name field, so all 13 would be correctly
+        extracted by a reader that parses Format A") was partially implemented
+        (count sourced) but the confirmatory clause about all 13 files having
+        Format A is absent.
+      - >
+        No explicit statement that the integration test scope (real SKILL.md
+        file) was derived from Phase 4 smoke test experience — minor completeness
+        gap for a stakeholder explanation.
+    improvement_path: >
+      Add one sentence confirming that each of the 13 SKILL.md files has a
+      ---YAML block with a name field — this closes the last residual DA-004
+      gap and moves completeness to ~0.92.
+
+  internal_consistency:
+    weight: 0.20
+    score: 0.91
+    weighted: 0.182
+    evidence_summary: >
+      Docstring contradiction surfaced and labeled a documentation error (DA-001
+      fixed). One-sentence version ("wrong tool for SKILL.md files") consistent
+      with body. Architectural justification now uses semantic ambiguity argument
+      rather than flawed abstraction claim (DA-003 fixed). Evidence-qualified
+      language consistent with not citing parser source. No claims in the document
+      contradict each other. "Currently 13" phrasing is consistent with the
+      one-sentence "zero skills" framing.
+    gaps:
+      - >
+        Slight tension: the H-07 citation in the "why not inline yaml.safe_load"
+        section is correct but the adjacent "doesn't know how frontmatter is
+        parsed" explanation could be read as restating the same point twice
+        (minor redundancy, not a contradiction).
+    improvement_path: >
+      No substantive improvement needed for this dimension. Score reflects near-
+      excellent consistency across all sections.
+
+  methodological_rigor:
+    weight: 0.20
+    score: 0.90
+    weighted: 0.180
+    evidence_summary: >
+      Diagnostic approach: problem setup (two formats shown), actual CLI output
+      evidence, code trace through two files (skill_extractor.py:110-115,
+      ast_frontmatter_reader.py:28), explanation of tool's intended use case,
+      test gap explanation with mock code, fix proposal with alternative rebuttals,
+      H-33 compliance addressed, composition root wiring shown. Evidence
+      qualification (DA-002 fix) strengthens rigor. Three alternative designs
+      considered (fix AstFrontmatterReader, inline in extractor, new adapter).
+      Residual: the DA-002 fix uses output evidence inference rather than
+      source-code verification — appropriate for a stakeholder explanation but
+      below the rigor expected for a C2 technical explanation that should
+      withstand engineering review.
+    gaps:
+      - >
+        The causal mechanism for jerry ast skipping YAML frontmatter relies on
+        output observation rather than parser source inspection. A methodologically
+        rigorous explanation would cite either the AST parser implementation or
+        the /ast skill documentation to confirm the behavior.
+    improvement_path: >
+      Reference the jerry ast parser source or /ast skill documentation to verify
+      that blockquote parsing is the exclusive behavior. This closes the DA-002
+      residual and raises methodological rigor to ~0.93.
+
+  evidence_quality:
+    weight: 0.15
+    score: 0.82
+    weighted: 0.123
+    evidence_summary: >
+      Strong evidence: actual CLI output (lines 40-48), code snippet
+      skill_extractor.py:110-115, reference to ast_frontmatter_reader.py:28
+      (line-level), mock code from tests, bootstrap.py snippet. "13" count now
+      sourced to skills/*/SKILL.md. Evidence-qualified language present for the
+      key causal claim ("The evidence is the output above"). Weakest link: the
+      CLI output supports blockquote-only parsing inference but does not rule out
+      merged/overwrite parsing scenarios. No parser source cited to confirm the
+      mechanism definitively.
+    gaps:
+      - >
+        The output shown (Version, Framework, Constitutional Compliance, SSOT
+        Reference) is consistent with blockquote-only parsing but is also
+        consistent with a merged parse where YAML keys happen to be the same as
+        blockquote keys — without parser source citation, the evidence supports
+        the conclusion but does not confirm it.
+      - >
+        The softened claim "The evidence is the output above" still depends on
+        the reader accepting a single-file observation as sufficient; a skeptical
+        reader with engineering background may ask for parser confirmation.
+    improvement_path: >
+      Cite the jerry ast parser implementation (e.g., skills/ast/SKILL.md or the
+      relevant source file) to confirm that the tool exclusively parses blockquote
+      metadata. This is the single highest-leverage improvement for this dimension.
+
+  actionability:
+    weight: 0.15
+    score: 0.92
+    weighted: 0.138
+    evidence_summary: >
+      Fix is concretely specified: create YamlFrontmatterReader using yaml.safe_load,
+      wire via bootstrap.py (code shown), add integration test. Port docstring
+      update mentioned. H-33 compliance argument removes a potential blocker to
+      implementation. Three alternatives addressed (why not fix in-place, why not
+      inline, H-33 concern). A developer could implement this with no additional
+      information. Integration test scope is specified (real SKILL.md file).
+    gaps:
+      - >
+        No specification of which yaml library to import (yaml from PyYAML,
+        already a dependency or to be added) — minor gap for an explanation-type
+        deliverable, acceptable given stakeholder audience.
+    improvement_path: >
+      Score is at threshold for this dimension. No high-priority improvements.
+
+  traceability:
+    weight: 0.10
+    score: 0.82
+    weighted: 0.082
+    evidence_summary: >
+      Claims trace to: ast_frontmatter_reader.py:28 (line-level), skill_extractor.py
+      :110-115 (line range), CLI output (full JSON shown), mock test code (shown),
+      bootstrap.py (function name), H-07 (cited by ID with rule content), H-33
+      (cited by ID with rule text). "13 skills" count traces to skills/*/SKILL.md
+      directory structure. Traceability gap: the core causal claim that jerry ast
+      reads blockquote and skips YAML does not trace to a source document or code
+      file — it traces only to observed output.
+    gaps:
+      - >
+        No citation to the jerry ast parser source, /ast skill documentation, or
+        any source document that defines what jerry ast frontmatter parses — the
+        most critical claim lacks a traceable source beyond output observation.
+    improvement_path: >
+      Add a citation to the jerry ast parser source or /ast skill documentation
+      alongside the CLI output. This closes the traceability chain for the root
+      cause claim.
+
+weighted_composite_calculation:
+  completeness:   "0.87 × 0.20 = 0.1740"
+  internal_consistency: "0.91 × 0.20 = 0.1820"
+  methodological_rigor: "0.90 × 0.20 = 0.1800"
+  evidence_quality: "0.82 × 0.15 = 0.1230"
+  actionability: "0.92 × 0.15 = 0.1380"
+  traceability: "0.82 × 0.10 = 0.0820"
+  total: "0.1740 + 0.1820 + 0.1800 + 0.1230 + 0.1380 + 0.0820 = 0.8790"
+
+verdict: REVISE
+verdict_rationale: >
+  0.879 is below the 0.92 threshold (H-13). Score falls in the REVISE band
+  (0.85-0.91): near-threshold, targeted revision likely sufficient. The delta
+  from iteration 1 (+0.159) confirms the revision was effective — all 6 DA
+  findings were addressed. The remaining gap is concentrated in Evidence Quality
+  and Traceability (both 0.82), sharing the same root cause: the jerry ast
+  parser behavior is not cited to a source document. A single targeted addition
+  — citing the /ast skill source or parser implementation to confirm blockquote-
+  only behavior — would close both dimensions and likely bring the composite to
+  0.92+.
+
+improvement_recommendations:
+  - priority: 1
+    dimension: evidence_quality
+    current_score: 0.82
+    target_score: 0.90
+    recommendation: >
+      Cite the jerry ast parser source (skills/ast/SKILL.md or the relevant
+      Python source file) to confirm that jerry ast frontmatter exclusively
+      parses blockquote metadata and does not touch ---YAML frontmatter. This
+      converts the inference-from-output into a verified claim. Even a single
+      sentence — "The jerry ast parser source confirms it only parses blockquote
+      metadata (see skills/ast/...)" — is sufficient.
+
+  - priority: 2
+    dimension: traceability
+    current_score: 0.82
+    target_score: 0.90
+    recommendation: >
+      The same citation (jerry ast parser source or /ast skill documentation)
+      closes the traceability gap for the core causal claim. This is the same
+      action as priority 1 — resolving both dimensions with one addition.
+
+  - priority: 3
+    dimension: completeness
+    current_score: 0.87
+    target_score: 0.92
+    recommendation: >
+      Add one sentence confirming that all 13 SKILL.md files contain a ---YAML
+      block with a name field (completing the DA-004 recommendation's second
+      clause). Example: "Each of these 13 files has a ---YAML block containing
+      a name field, so all 13 would be successfully extracted by YamlFrontmatterReader."
+
+  - priority: 4
+    dimension: internal_consistency
+    current_score: 0.91
+    target_score: 0.93
+    recommendation: >
+      No substantive change needed. Score is already strong. Minor: consider
+      removing the slight redundancy in the H-07 explanation paragraph (two
+      sentences making the same point about the extractor not knowing how
+      frontmatter is parsed).
+
+leniency_bias_check:
+  each_dimension_scored_independently: true
+  evidence_documented_for_each_score: true
+  uncertain_scores_resolved_downward: true
+  first_draft_calibration_considered: "N/A — iteration 2 revision, not first draft"
+  no_dimension_above_0_95_without_exceptional_evidence: true
+  notes: >
+    Evidence Quality and Traceability both scored 0.82 rather than 0.85 because
+    the DA-002 "fix" is softening rather than resolution — the output observation
+    is consistent with the claim but does not verify it. Completeness scored 0.87
+    rather than 0.90 because DA-004's second clause was implemented partially.
+    Actionability reached 0.92 because the fix is genuinely implementable with no
+    ambiguity. Internal Consistency scored 0.91 because no contradictions remain
+    after the DA-001 and DA-003 fixes. Scores were not inflated to match the
+    improvement narrative — the delta from 0.72 to 0.879 reflects genuine
+    improvement, not scoring drift.
+
+session_context_handoff:
+  verdict: REVISE
+  composite_score: 0.879
+  threshold: 0.92
+  weakest_dimension: evidence_quality
+  weakest_score: 0.82
+  critical_findings_count: 0
+  iteration: 2
+  improvement_recommendations:
+    - "Cite jerry ast parser source to verify blockquote-only behavior (closes Evidence Quality + Traceability gap)"
+    - "Add sentence confirming all 13 SKILL.md files have YAML name field (closes Completeness residual)"
+    - "Remove minor redundancy in H-07 paragraph (Internal Consistency polish)"

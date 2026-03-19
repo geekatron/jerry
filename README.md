@@ -104,9 +104,9 @@ Your reports directly drive portability improvements.
 
 Jerry provides **skills**—natural language interfaces you invoke with slash commands:
 
+<!-- BEGIN:GENERATED:SKILLS_TABLE -->
 | Skill | Purpose | Example |
 |-------|---------|---------|
-<!-- BEGIN:GENERATED:SKILLS_TABLE -->
 | `/adversary` | On-demand adversarial quality reviews using strategy temp... | "Run adversarial review on this ADR" |
 | `/architecture` | This skill should be used when the user asks to "design s... | "Create ADR for caching strategy" |
 | `/ast` | Markdown AST operations for Jerry documents. Provides str... | "Validate entity frontmatter" |

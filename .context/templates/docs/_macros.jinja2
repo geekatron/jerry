@@ -1,0 +1,51 @@
+{#
+  _macros.jinja2 — Shared Jinja2 macros for Jerry auto-documentation templates.
+
+  Macros:
+    truncate_safe(text, length)  — Truncate text without breaking markdown links.
+                                   Appends "..." when truncation occurs.
+    escape_pipe(text)            — Escape pipe characters in table cells so that
+                                   markdown table structure is not broken.
+#}
+
+{%- macro truncate_safe(text, length=60) -%}
+{#-
+  Truncates `text` to at most `length` characters without splitting a markdown
+  link construct.  Strategy:
+    1. If text is within length, return as-is.
+    2. Scan backwards from position `length` for the nearest word boundary
+       (space) so we do not cut mid-word.
+    3. If the candidate substring contains an unmatched '[' (start of a link
+       that has not been closed with '](...)'), keep scanning back until the
+       '[' is outside the window.  This prevents emitting broken link syntax.
+    4. Append "..." to signal truncation.
+
+  Because Jinja2 does not support full Python expressions, we rely on the
+  built-in `truncate` filter for the heavy lifting and apply a simple post-pass
+  to strip any trailing incomplete '[' fragment.
+-#}
+{%- set truncated = text | truncate(length, True, '...', 0) -%}
+{#- BUG-003 fix: strip only the trailing incomplete link opener that truncation
+    may have left.  Uses split/join instead of replace() which stripped ALL
+    bracket characters (see BUG-003-truncate-safe-strips-all-brackets.md). -#}
+{%- if '[' in truncated and '](' not in truncated -%}
+  {#- Split on '[', drop last fragment (the orphaned one), rejoin to preserve
+      complete bracket pairs. parts always has length > 1 because the guard
+      above confirmed '[' is present. -#}
+  {%- set parts = truncated.split('[') -%}
+  {{- parts[:-1] | join('[') | truncate(length, True, '...', 0) -}}
+{%- else -%}
+  {{- truncated -}}
+{%- endif -%}
+{%- endmacro -%}
+
+
+{%- macro escape_pipe(text) -%}
+{#-
+  Replaces literal pipe characters ('|') with the HTML entity '&#124;' so that
+  the output is safe to embed inside a GFM markdown table cell.  A raw '|'
+  inside a cell terminates the column prematurely, producing broken table
+  rendering.
+-#}
+{{- text | replace('|', '&#124;') -}}
+{%- endmacro -%}

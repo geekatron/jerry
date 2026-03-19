@@ -1,0 +1,472 @@
+# Quality Score Report — final-compliance-report.md (Iteration 3)
+# S-014 LLM-as-Judge | SSOT: .context/rules/quality-enforcement.md
+# Scored: 2026-03-10T00:00:00Z
+
+---
+
+## l0_executive_summary
+
+score: 0.929
+verdict: REVISE
+threshold: 0.94
+weakest_dimension: internal_consistency
+weakest_score: 0.90
+one_line_assessment: >
+  The iteration-3 fixes resolve two of three gaps (Source: citations close Traceability;
+  H-07 grep reformatted improves Methodological Rigor), but Fix 3 introduces a fabricated
+  citation — "hardening backlog item 7 per gate-disposition-b3.md eng-qa Recommendation 4"
+  — that does not exist in any verified Phase 3 artifact, creating an Internal Consistency
+  defect that drags the composite to 0.929, 0.011 below the 0.94 C4 threshold.
+
+# ---
+
+## scoring_context
+
+deliverable: >
+  projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-4/final-compliance-report.md
+deliverable_type: Analysis (Phase 4 Final Gate — Architecture Compliance Report)
+criticality_level: C4
+scoring_strategy: S-014 (LLM-as-Judge)
+ssot_reference: .context/rules/quality-enforcement.md
+iteration: 3
+prior_composite: 0.936
+scored: 2026-03-10T00:00:00Z
+strategy_findings_incorporated: false
+
+# ---
+
+## score_summary
+
+weighted_composite: 0.929
+threshold: 0.94
+verdict: REVISE
+critical_findings_count: 0
+
+# ---
+
+## dimension_scores
+
+completeness:
+  weight: 0.20
+  score: 0.93
+  weighted: 0.186
+  evidence_summary: >
+    All 12 compliance categories addressed with depth; all 11 L1 "Source:" citations
+    present (Fix 2 complete); Recommendation 3 now references a backlog item, partially
+    closing the iteration-2 gap. However, "hardening backlog item 7" does not appear in
+    any verified Phase 3 artifact, and the attribution to gate-disposition-b3.md is
+    incorrect. The structural completeness is unchanged from iteration 2; the citation
+    adds a reference but introduces an inaccuracy. Score held at 0.93.
+
+internal_consistency:
+  weight: 0.20
+  score: 0.90
+  weighted: 0.180
+  evidence_summary: >
+    Fix 3 introduces an inconsistency: Recommendation 3 cites "hardening backlog item 7
+    per gate-disposition-b3.md eng-qa Recommendation 4." Verification confirms:
+    (a) gate-disposition-b3.md contains no eng-qa Recommendation list — it is a gate
+    disposition document; (b) "hardening backlog item 7" does not appear in
+    gate-disposition-b3.md or any other verified Phase 3 artifact; (c) the eng-qa
+    Recommendation 4 (add --cov-fail-under=90) exists in eng-qa-report.md, not
+    gate-disposition-b3.md. All other consistency attributes from iteration 2 are
+    unchanged and sound. Score drops from 0.95 to 0.90 for this introduced factual error.
+
+methodological_rigor:
+  weight: 0.20
+  score: 0.94
+  weighted: 0.188
+  evidence_summary: >
+    H-07 grep block (Fix 1) now shows commands and exit notation on separate lines:
+    "$ grep -rn ..." followed by "$    # exit 1 — zero matches" on its own line. This
+    substantially improves on the iteration-2 parenthetical format. The notation
+    is non-standard (the "$" prefix makes the notation look like a second shell command
+    rather than output), but the zero-matches result is unambiguous. Dual-method
+    verification (per-file import table + grep) remains in place. All other methodology
+    strengths from iteration 2 unchanged. Score improves from 0.93 to 0.94.
+
+evidence_quality:
+  weight: 0.15
+  score: 0.93
+  weighted: 0.1395
+  evidence_summary: >
+    Fix 2 closes the spec-citation gap: all L1 headers now cite the authoritative source
+    (e.g., "quality-enforcement.md H-07; doc-module-spec.md §3.1"). Fix 1 partially
+    improves the H-07 grep presentation. However, Fix 3 introduces an unverifiable
+    citation — "hardening backlog item 7" and attribution to gate-disposition-b3.md for
+    eng-qa Recommendation 4 — that cannot be corroborated. The two closed gaps push
+    upward, the new unverifiable citation pushes back; net effect holds at 0.93.
+
+actionability:
+  weight: 0.15
+  score: 0.95
+  weighted: 0.1425
+  evidence_summary: >
+    All four recommendations have specific targets: BLOCKING (YamlFrontmatterReader
+    adapter + composition root wiring + CLI smoke test re-run), HIGH (integration test
+    against fixture SKILL.md), MEDIUM (exact pyproject.toml section and parameter),
+    LOW (specific function and source files). Recommendation 3 added backlog reference.
+    No change from iteration 2. Score unchanged at 0.95.
+
+traceability:
+  weight: 0.10
+  score: 0.93
+  weighted: 0.093
+  evidence_summary: >
+    Fix 2 closes the primary iteration-2 gap: all 11 L1 subsection headers now carry
+    explicit "Source:" citations linking each constraint to its authoritative rule file
+    and spec section. This enables reviewers to follow the traceability chain without
+    consulting the footer. One deduction: the reference to "hardening backlog item 7 per
+    gate-disposition-b3.md" in Recommendation 3 is unverifiable — backlog item 7 does
+    not exist in the verified artifact set, and gate-disposition-b3.md does not contain
+    the cited recommendation. Score improves from 0.92 to 0.93.
+
+total:
+  weight: 1.00
+  weighted_composite: 0.929
+
+# ---
+
+## detailed_dimension_analysis
+
+completeness:
+  score: 0.93
+  evidence: |
+    All iteration-2 completeness verifications carry forward:
+    - 12 compliance categories with dedicated subsections and depth
+    - H-07: 10-file import table + reformatted grep block
+    - H-10: 10-file class table (complete)
+    - H-11: 10-file signature/docstring table
+    - H-33: subprocess evidence + grep output + integration caveat
+    - H-05: 4 evidence points including pyproject.toml:40
+    - M-1 through M-5: each with file:line tables
+    - H-20: verbatim pytest output + coverage table
+    - CLI smoke test: verbatim 13-skill output + root cause
+    - Phase 3 reconciliation: 4-artifact table
+    - Residual risk: 10-finding table
+    - Remediation: 3 ranked options with H-33 impact column
+    - Release gate: 5-row decision table
+    Fix 3 adds a backlog reference to Recommendation 3.
+  gaps: |
+    The backlog reference "(Deferred to hardening backlog item 7 per
+    gate-disposition-b3.md eng-qa Recommendation 4.)" is inaccurate:
+    gate-disposition-b3.md does not contain this recommendation (it is in
+    eng-qa-report.md Recommendation 4), and "hardening backlog item 7" does not
+    appear in any verified Phase 3 document. The reference is directionally correct
+    (a backlog item exists for this action) but cites the wrong document and an
+    unverifiable item number. Completeness is otherwise unchanged.
+  improvement_path: |
+    Correct the citation to "Deferred per eng-qa-report.md Recommendation 4" and
+    either remove the unverifiable "backlog item 7" reference or establish that
+    item in a verifiable backlog document before citing it.
+
+internal_consistency:
+  score: 0.90
+  evidence: |
+    Iteration-2 consistency fixes all carry forward:
+    - Line 7: Criticality C4 with full tournament qualifier — CORRECT
+    - Lines 431, 445: "0.940 >= 0.94 C4 threshold" — CORRECT
+    - Summary scorecard: 11 COMPLIANT + 0 NON-COMPLIANT + 1 BLOCKED = 12 total — CORRECT
+    - Frontmatter defect described consistently in L0, L1, and L2 — CORRECT
+    - Finding IDs stable between gate-disposition-b3.md cross-reference and Phase 4
+      residual risk table — CORRECT
+    - Self-score table weighted sum (0.941 vs stated 0.940) remains a rounding artifact,
+      not a real inconsistency — CONFIRMED UNCHANGED
+  gaps: |
+    MATERIAL INCONSISTENCY introduced by Fix 3 (line 411):
+    "Deferred to hardening backlog item 7 per gate-disposition-b3.md eng-qa
+    Recommendation 4."
+
+    Verified facts from artifact review:
+    (a) gate-disposition-b3.md does not contain "eng-qa Recommendation 4" — the document
+        has sections Verdict Summary, Open Findings Disposition, Cross-Report
+        Reconciliation, Cross-Reference Traceability, Evidence Summary, and Hardening
+        Actions Executed. No recommendation list.
+    (b) "hardening backlog item 7" appears nowhere in gate-disposition-b3.md.
+        gate-disposition-b3.md references backlog items 4, 2, 3, and 6 only.
+    (c) The eng-qa Recommendation 4 does exist — in eng-qa-report.md, not
+        gate-disposition-b3.md.
+    (d) No verified artifact defines a "hardening backlog item 7."
+
+    This is a fabricated citation: the report asserts a specific document location and
+    backlog item that cannot be verified in the available artifact set. Per P-022 (no
+    deception) and P-011 (evidence-based), unverifiable citations lower the score
+    materially.
+  improvement_path: |
+    Remove the unverifiable "hardening backlog item 7" reference or create a backlog
+    document that defines it. Correct the document attribution from "gate-disposition-b3.md"
+    to "eng-qa-report.md". This would restore Internal Consistency to 0.95.
+
+methodological_rigor:
+  score: 0.94
+  evidence: |
+    H-07 grep block (lines 87-93) reformatted in iteration 3:
+      $ grep -rn "from src.docs.infrastructure" src/docs/domain/ src/docs/application/
+      $    # exit 1 — zero matches
+
+      $ grep -rn "from src.docs.application" src/docs/domain/
+      $    # exit 1 — zero matches
+
+    The commands and exit notation now appear on separate lines. The zero-match result
+    is unambiguous. Dual-method verification (per-file import table PLUS grep) is
+    maintained for H-07 and H-33. All other methodology attributes unchanged:
+    - L0/L1/L2 three-level structure with navigation table
+    - Verbatim pytest output ("51 passed in 0.14s")
+    - Full coverage table with all 6 columns (Stmts, Miss, Branch, BrPart, Cover)
+    - Verbatim CLI smoke test output (all 13 skip lines)
+    - Remediation options table with H-33 impact + effort + recommendation columns
+    - Explicit distinction between source code compliance and integration behavior
+  gaps: |
+    The "$    # exit 1 — zero matches" notation uses a "$" prefix that makes it
+    visually ambiguous — it reads like a second shell command being run, not the output
+    of the first grep. The iteration-2 scorer asked for "empty output on a separate line
+    after the command." The fix improves presentation (separate line) but the "$" prefix
+    creates ambiguity. A reviewer accustomed to standard terminal output conventions
+    would expect either a blank line (true empty stdout) or output lines without "$".
+    This is a minor presentation issue, not a methodological failure.
+  improvement_path: |
+    Replace the "$    # exit 1 — zero matches" notation with either:
+    (a) a blank line after the command (representing empty stdout), or
+    (b) a comment without the "$" prefix: "    # (no output — zero matches)"
+    Either format would eliminate the ambiguity and push Methodological Rigor to 0.95.
+
+evidence_quality:
+  score: 0.93
+  evidence: |
+    Fix 2 closes the spec-citation gap that was the second evidence quality issue
+    in iteration 2. All 11 L1 headers now have explicit "Source:" lines citing both
+    the rule ID and the spec section:
+    - H-07: "quality-enforcement.md H-07; doc-module-spec.md §3.1 (hexagonal architecture)"
+    - H-10: "quality-enforcement.md H-10; architecture-standards.md"
+    - H-11: "quality-enforcement.md H-11; coding-standards.md"
+    - H-33: "quality-enforcement.md H-33; doc-module-spec.md §3.4 (frontmatter extraction)"
+    - H-05: "quality-enforcement.md H-05; python-environment.md"
+    - M-1: "threat-model-doc-module.md M-1; doc-module-spec.md §4.1"
+    - M-2: "threat-model-doc-module.md M-2; doc-module-spec.md §4.2"
+    - M-3: "threat-model-doc-module.md M-3; doc-module-spec.md §4.3"
+    - M-4: "threat-model-doc-module.md M-4; doc-module-spec.md §4.4"
+    - M-5: "threat-model-doc-module.md M-5; doc-module-spec.md §4.5"
+    - H-20: "quality-enforcement.md H-20; testing-standards.md"
+    All other file:line citations confirmed correct from iteration 2.
+    Fix 1 improves the H-07 grep format (separate-line notation vs inline parenthetical).
+  gaps: |
+    (1) The H-07 grep "$    # exit 1 — zero matches" notation is still slightly
+        ambiguous (not standard terminal output) — minor presentational issue.
+    (2) Recommendation 3 cites "hardening backlog item 7 per gate-disposition-b3.md
+        eng-qa Recommendation 4" — this citation cannot be verified. gate-disposition-b3.md
+        does not contain this recommendation, and backlog item 7 does not appear in any
+        verified artifact. This is an unverifiable citation introduced by Fix 3.
+    The closed gaps push Evidence Quality upward; the new unverifiable citation
+    prevents reaching 0.95. Net effect: 0.93.
+  improvement_path: |
+    Correct the Recommendation 3 citation to "per eng-qa-report.md Recommendation 4"
+    and remove or verify the "hardening backlog item 7" reference. This would allow
+    Evidence Quality to reach 0.95. The H-07 grep notation can optionally be refined
+    further, but is not the blocking issue.
+
+actionability:
+  score: 0.95
+  evidence: |
+    Four prioritized recommendations with zero ambiguity:
+    1. BLOCKING: "Create a YamlFrontmatterReader adapter that parses ---delimited YAML
+       frontmatter from SKILL.md and agent .md files. Wire it in the composition root.
+       Re-run the CLI smoke test to verify all 13 skills are extracted." — implementer
+       knows exactly what to build, where to wire it, and how to verify.
+    2. HIGH: "add at least one integration test that exercises the real reader adapter
+       against a fixture SKILL.md file containing ---delimited YAML frontmatter" —
+       specific test design, trigger condition, and regression prevention goal stated.
+    3. MEDIUM: "Adding [--cov-fail-under=90] to [tool.pytest.ini_options]" — exact
+       pyproject.toml section and parameter value, Recommendation 4 backlog tracking.
+    4. LOW: "Run _sanitize_description on example and features values loaded from
+       .context/templates/docs/ YAML files before they enter the template context" —
+       specific function, specific source files, specific insertion point.
+    Release gate table is unambiguous: one NO-GO gate, one blocking condition, one
+    remediation verification step. Three remediation options (A/B/C) with effort and
+    H-33 impact columns. No change from iteration 2.
+  gaps: |
+    None material. The inaccurate citation in Recommendation 3 does not affect
+    actionability — the action itself is completely and correctly specified.
+  improvement_path: |
+    Already at 0.95. No actionability changes needed.
+
+traceability:
+  score: 0.93
+  evidence: |
+    Fix 2 closes the primary iteration-2 Traceability gap. All 11 L1 subsection headers
+    now carry inline "Source:" citations enabling direct traceability from constraint
+    to authoritative rule file and spec section. This is the change the iteration-2
+    scorer specifically requested:
+      "Add a 'Requirement source:' line to each L1 subsection header, e.g.:
+       'Requirement: {constraint text} | Source: quality-enforcement.md H-07,
+       doc-module-spec.md §2.3'"
+    The implementation uses "**Source:**" bold labels, which satisfies the intent.
+    All iteration-2 traceability strengths carry forward:
+    - Constraint → verification method → file:line evidence → verdict chain for all 12 items
+    - Security mitigation → source implementation → test name chains for all M-1 through M-5
+    - Phase 3 finding IDs stable between cross-reference table and residual risk table
+    - Frontmatter defect traced: spec line 46 → CLI behavior → skip path at line 111-115
+    - Footer cites spec and threat model paths for document provenance
+  gaps: |
+    Recommendation 3 cites "hardening backlog item 7 per gate-disposition-b3.md
+    eng-qa Recommendation 4." A reviewer following the traceability chain:
+    - gate-disposition-b3.md: No "eng-qa Recommendation 4" section found
+    - gate-disposition-b3.md: No "hardening backlog item 7" found
+    - eng-qa-report.md: "Recommendation 4" does exist (add --cov-fail-under=90)
+    The chain is partially traceable (via eng-qa-report.md, not the cited document),
+    but the specific document reference is wrong and the backlog item number is
+    unverifiable. Deduction from the 0.92 starting point tempered by the substantial
+    improvement from Fix 2. Net: 0.93.
+  improvement_path: |
+    Correct the Recommendation 3 attribution to "per eng-qa-report.md Recommendation 4"
+    and establish "hardening backlog item 7" in a verifiable document or remove the
+    reference. With this fix, Traceability would reach 0.95.
+
+# ---
+
+## fix_verification
+
+fix_1_h07_grep_format:
+  description: >
+    H-07 grep block reformatted to show exit notation on separate lines using
+    "$    # exit 1 -- zero matches" shell-style notation.
+  verified: true
+  adequacy: partial
+  assessment: >
+    Commands and zero-match notation now appear on separate lines (improvement over
+    iteration-2 parenthetical inline format). However, the "$" prefix on the notation
+    line creates ambiguity -- reads like a second shell command, not output of the
+    grep. The zero-match result is unambiguous from context, but the notation does
+    not match standard terminal output conventions. Partial closure of the
+    Methodological Rigor and Evidence Quality gaps.
+
+fix_2_source_citations:
+  description: >
+    "Source:" citations added to ALL 11 L1 constraint subsection headers with
+    authoritative file references.
+  verified: true
+  adequacy: complete
+  assessment: >
+    All 11 headers confirmed with "Source:" citations:
+    H-07 (quality-enforcement.md H-07; doc-module-spec.md §3.1),
+    H-10 (quality-enforcement.md H-10; architecture-standards.md),
+    H-11 (quality-enforcement.md H-11; coding-standards.md),
+    H-33 (quality-enforcement.md H-33; doc-module-spec.md §3.4),
+    H-05 (quality-enforcement.md H-05; python-environment.md),
+    M-1 (threat-model-doc-module.md M-1; doc-module-spec.md §4.1),
+    M-2 (threat-model-doc-module.md M-2; doc-module-spec.md §4.2),
+    M-3 (threat-model-doc-module.md M-3; doc-module-spec.md §4.3),
+    M-4 (threat-model-doc-module.md M-4; doc-module-spec.md §4.4),
+    M-5 (threat-model-doc-module.md M-5; doc-module-spec.md §4.5),
+    H-20 (quality-enforcement.md H-20; testing-standards.md).
+    This fix fully closes the Traceability gap from iteration 2.
+
+fix_3_backlog_reference:
+  description: >
+    Recommendation 3 updated with hardening backlog item 7 reference:
+    "(Deferred to hardening backlog item 7 per gate-disposition-b3.md eng-qa
+    Recommendation 4.)"
+  verified: true
+  adequacy: defective
+  assessment: >
+    The fix is present but introduces a factual error. Verification of
+    gate-disposition-b3.md confirms: (a) no "eng-qa Recommendation" list exists in
+    that document; (b) no "hardening backlog item 7" appears in gate-disposition-b3.md.
+    The eng-qa Recommendation 4 exists in eng-qa-report.md (correct content, wrong
+    document cited). "Hardening backlog item 7" does not appear in any verified Phase 3
+    artifact. This fix introduces an Internal Consistency defect and an Evidence Quality
+    defect by asserting a citation that cannot be verified.
+
+# ---
+
+## improvement_recommendations
+improvement_recommendations:
+  - priority: 1
+    dimension: internal_consistency
+    current: 0.90
+    target: 0.95
+    recommendation: >
+      Correct Recommendation 3 citation from "gate-disposition-b3.md eng-qa Recommendation 4"
+      to "eng-qa-report.md Recommendation 4". Either verify that "hardening backlog item 7"
+      exists in a documented backlog and add a path to that document, or remove the backlog
+      item number reference entirely. This is the only new defect introduced in iteration 3
+      and fully accounts for the score regression from 0.936 to 0.929.
+
+  - priority: 2
+    dimension: methodological_rigor
+    current: 0.94
+    target: 0.95
+    recommendation: >
+      Replace "$    # exit 1 -- zero matches" notation in the H-07 grep block with either
+      a blank line (representing empty stdout) or a comment without the "$" prefix:
+      "    # (no output -- zero matches)". Removes the ambiguity about whether the
+      notation represents a second command or the output of the first grep.
+
+  - priority: 3
+    dimension: evidence_quality
+    current: 0.93
+    target: 0.95
+    recommendation: >
+      After correcting the Recommendation 3 citation (priority 1), Evidence Quality
+      automatically improves because the unverifiable citation is removed. Optionally
+      refine the H-07 grep notation (priority 2) to reach 0.95.
+
+  - priority: 4
+    dimension: completeness
+    current: 0.93
+    target: 0.95
+    recommendation: >
+      After correcting the Recommendation 3 attribution, Completeness improves because
+      the structural closure of the backlog reference becomes accurate rather than
+      inaccurate. No additional content additions required.
+
+  - priority: 5
+    dimension: traceability
+    current: 0.93
+    target: 0.95
+    recommendation: >
+      After correcting the Recommendation 3 attribution (priority 1), Traceability
+      improves because the broken citation chain is repaired. The Fix 2 source citations
+      already handle the primary traceability improvement.
+
+# ---
+
+## leniency_bias_check
+
+dimensions_scored_independently: true
+evidence_documented_for_each_score: true
+uncertain_scores_resolved_downward: true
+first_draft_calibration_considered: false  # This is iteration 3 of a C4 deliverable
+no_dimension_above_0_95_without_evidence: true
+notes: >
+  Actionability holds at 0.95 (justified -- all four recommendations have specific
+  implementable targets with zero vague language, unchanged from iteration 2).
+  Internal Consistency drops from 0.95 to 0.90 due to the fabricated citation
+  introduced by Fix 3. The downward rule was applied: at the 0.90/0.92 boundary,
+  the fact that the error is in a verifiable external document (gate-disposition-b3.md)
+  that can be independently checked makes this a meaningful inconsistency, not a
+  subjective borderline call. Methodological Rigor at 0.94 is provisionally between
+  0.93 (iteration 2) and 0.95 (target); the partial improvement from Fix 1 warrants
+  the step up, but the notational ambiguity prevents 0.95. Downward rule applied at
+  the 0.94/0.95 boundary: 0.94 is correct. Scores of 0.93 for Completeness, Evidence
+  Quality, and Traceability reflect genuine remaining gaps (fabricated citation in all
+  three) after applying the downward rule at each 0.93/0.94 boundary.
+  The composite regression from 0.936 to 0.929 is entirely attributable to the Internal
+  Consistency defect introduced by Fix 3. The other two fixes made genuine improvements
+  (Methodological Rigor: 0.93 -> 0.94, Traceability: 0.92 -> 0.93) but these do not
+  offset the 0.05-point drop in Internal Consistency.
+
+# ---
+
+## session_context_handoff
+
+verdict: REVISE
+composite_score: 0.929
+threshold: 0.94
+weakest_dimension: internal_consistency
+weakest_score: 0.90
+critical_findings_count: 0
+iteration: 3
+improvement_recommendations:
+  - "PRIORITY 1: Correct Recommendation 3 citation from gate-disposition-b3.md to eng-qa-report.md and remove or verify hardening backlog item 7 reference -- this is the sole cause of the 0.929 composite"
+  - "PRIORITY 2: Replace $    # exit 1 notation in H-07 grep block with non-ambiguous empty output format (blank line or comment without $ prefix)"
+  - "PRIORITY 3 (automatic): After priority 1, Evidence Quality and Completeness and Traceability recover from the fabricated citation defect"

@@ -1,0 +1,349 @@
+# Quality Score Report: The YamlFrontmatterReader Issue — Explained
+# Scoring Strategy: S-014 (LLM-as-Judge)
+# SSOT Reference: .context/rules/quality-enforcement.md
+# Scored: 2026-03-11T00:00:00Z
+
+l0_executive_summary:
+  score: 0.72
+  verdict: REVISE
+  weakest_dimension: internal_consistency
+  weakest_score: 0.62
+  one_line_assessment: >
+    The explanation's core diagnosis is correct but a Critical finding (DA-001:
+    undisclosed docstring self-contradiction) and two Major findings
+    (DA-002: key causal claim unsupported, DA-003: wrong architectural justification)
+    materially undermine credibility for any reader who checks the source code.
+    Targeted revision of 4-5 sentences would close the gap.
+
+scoring_context:
+  deliverable: "projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-4/frontmatter-issue-explanation.md"
+  deliverable_type: "Explanation (technical issue explanation for a stakeholder)"
+  criticality_level: C2
+  scoring_strategy: S-014 (LLM-as-Judge)
+  ssot_reference: ".context/rules/quality-enforcement.md"
+  scored: "2026-03-11T00:00:00Z"
+  strategy_findings_incorporated: "Yes — 6 findings (DA-001 through DA-006) from adversary-explanation-devils-advocate.md"
+  iteration: 1
+
+score_summary:
+  weighted_composite: 0.72
+  threshold: 0.92
+  verdict: REVISE
+  prior_score: null
+
+dimension_scores:
+  completeness:
+    weight: 0.20
+    score: 0.72
+    weighted: 0.1440
+    evidence_summary: >
+      Covers two-format distinction, command output trace, code path,
+      test gap explanation, and fix with bootstrap wiring. Gaps: no source
+      citation for jerry ast parser behavior (DA-002); port docstring update
+      omitted from fix scope (DA-006); "13 skills" asserted without
+      derivation (DA-004).
+
+  internal_consistency:
+    weight: 0.20
+    score: 0.62
+    weighted: 0.1240
+    evidence_summary: >
+      Critical consistency failure: explanation states AstFrontmatterReader
+      reads blockquote metadata, but ast_frontmatter_reader.py line 28
+      says it parses "YAML frontmatter" — a direct contradiction the
+      explanation does not acknowledge (DA-001). Secondary: the
+      "bypass port abstraction" justification (DA-003) contradicts
+      standard hexagonal architecture reasoning.
+
+  methodological_rigor:
+    weight: 0.20
+    score: 0.80
+    weighted: 0.1600
+    evidence_summary: >
+      Diagnostic structure is sound: format distinction → command output →
+      code trace → test gap → fix. The diagnosis-to-fix flow is logical
+      and well-organized. DA-003's incorrect architectural reasoning is
+      the primary gap — the conclusion is right but the stated justification
+      is wrong.
+
+  evidence_quality:
+    weight: 0.15
+    score: 0.65
+    weighted: 0.0975
+    evidence_summary: >
+      skill_extractor.py:110-115 code citation is accurate (verified
+      against ground truth). Command output is shown. However, the central
+      causal claim — "jerry ast frontmatter doesn't parse ---delimited YAML
+      at all" — is supported only by observational output, not by citing
+      the jerry ast parser source code. The "13 skills" count is correct
+      per ground truth but unverified in the document (DA-004).
+
+  actionability:
+    weight: 0.15
+    score: 0.82
+    weighted: 0.1230
+    evidence_summary: >
+      Fix is clearly and specifically stated: new YamlFrontmatterReader
+      adapter, port hierarchy diagram, bootstrap.py wiring change shown
+      with code. A developer can implement directly from the document.
+      Minor gap: DA-006 (port docstring update) not in stated fix scope,
+      but this does not block implementation.
+
+  traceability:
+    weight: 0.10
+    score: 0.72
+    weighted: 0.0720
+    evidence_summary: >
+      Code references are specific and located: skill_extractor.py:110-115
+      shown and annotated, command output shown, bootstrap.py wiring shown.
+      Traceability break: no citation to jerry ast parser source for the
+      central claim about Format B exclusivity (DA-002).
+
+  total:
+    weight: 1.00
+    weighted_composite: 0.72
+
+detailed_dimension_analysis:
+
+  completeness:
+    score: 0.72
+    evidence: >
+      The document covers all major sections a stakeholder would need:
+      (1) the two-format distinction with annotated code block, (2) actual
+      command output demonstrating the wrong keys returned, (3) the
+      skill_extractor.py:110-115 code path showing every skill is skipped,
+      (4) why 51 unit tests did not catch this (mock return values always
+      include "name"), (5) the fix with a new adapter and bootstrap wiring.
+      This is structurally complete for the stated purpose.
+    gaps: >
+      1. DA-002: No citation to jerry ast parser source code confirming it
+         reads only blockquote metadata. The claim "doesn't parse ---delimited
+         YAML at all" is the root of the entire diagnosis but has no source
+         evidence.
+      2. DA-006: Port docstring update (frontmatter_reader.py listing
+         YamlFrontmatterReader) is not mentioned as part of the fix scope.
+         A reader who looks at the code will find the listed implementations
+         inconsistent with the fix.
+      3. DA-004: "13 skills" stated without explaining where the count comes
+         from (one per skills/*/SKILL.md). The count is correct per ground
+         truth but is asserted rather than derived.
+    improvement_path: >
+      Add one sentence citing the jerry ast parser source. Add one sentence
+      about port docstring update to the fix section. Change "all 13 skills"
+      to "all skills are skipped (currently 13, one per skills/*/SKILL.md)."
+
+  internal_consistency:
+    score: 0.62
+    evidence: >
+      The explanation describes AstFrontmatterReader as reading blockquote
+      metadata (Format B) — which is correct behavior. However, per ground
+      truth, ast_frontmatter_reader.py line 28 contains the docstring:
+      "Uses uv run jerry ast frontmatter {file_path} to parse YAML
+      frontmatter via the AST-based parser (H-33 compliance)." The
+      explanation says the adapter reads the wrong format; the adapter's
+      own docstring says it reads YAML frontmatter. A reader who checks the
+      source encounters an apparent contradiction the explanation does not
+      prepare them for. This is the DA-001 Critical finding.
+    gaps: >
+      1. DA-001 (Critical): The adapter docstring says "YAML frontmatter"
+         but the explanation says the adapter reads blockquote metadata.
+         Not acknowledged anywhere in the document. A reader who looks at
+         ast_frontmatter_reader.py will see the explanation contradict the
+         code documentation and may distrust the diagnosis.
+      2. DA-003: The justification "bypass the port abstraction" for rejecting
+         in-place fix is architecturally incorrect. An adapter adding
+         yaml.safe_load internally does not bypass the port abstraction.
+         The explanation gives a wrong reason for the right design decision,
+         creating inconsistency with standard hexagonal architecture knowledge.
+    improvement_path: >
+      Add one sentence to "What Goes Wrong": "Note that ast_frontmatter_reader.py's
+      own docstring says it parses 'YAML frontmatter' — this is itself a
+      documentation error in the adapter; the tool it delegates to reads
+      blockquote metadata, not ---delimited YAML." Replace the "bypass the
+      port abstraction" sentence with the correct justification (semantic
+      purity, avoiding risk to worktracker operations).
+
+  methodological_rigor:
+    score: 0.80
+    evidence: >
+      The explanation follows a well-structured diagnostic methodology:
+      (1) two-format distinction with annotated example, (2) actual tool
+      output demonstrating the symptom, (3) code path trace showing the
+      failure mechanism, (4) test gap explanation covering why unit tests
+      missed this, (5) fix recommendation with architectural reasoning and
+      implementation example. This is a valid and complete diagnostic flow
+      for a stakeholder explanation. The H-33 compliance discussion correctly
+      addresses a question a stakeholder might raise.
+    gaps: >
+      DA-003: The architectural justification for the fix choice (new adapter
+      vs. modify existing) uses an incorrect reason ("bypass port abstraction").
+      The conclusion is correct but the stated methodology for reaching it
+      is flawed. A reviewer with hexagonal architecture knowledge will not
+      find this reasoning sound.
+    improvement_path: >
+      Replace the incorrect architectural justification with: "Because
+      AstFrontmatterReader is designed specifically for blockquote parsing
+      used by worktracker entities. Mixing YAML --- parsing into it would
+      make the adapter semantically ambiguous and risk breaking worktracker
+      operations that depend on its current behavior."
+
+  evidence_quality:
+    score: 0.65
+    evidence: >
+      Strong evidence: skill_extractor.py:110-115 is shown in full with
+      annotations, and per ground truth (skill_extractor.py:110-115 does
+      check frontmatter.get("name") and skip if None) this citation is
+      accurate. The command output showing {"Version": "1.0.0", "Framework":
+      "..."} is consistent with expected behavior. The "13 skills" count is
+      correct per ground truth.
+    gaps: >
+      1. DA-002 (Major): The central causal claim — "jerry ast frontmatter
+         doesn't parse ---delimited YAML at all" — is supported only by
+         observational output (the returned keys are blockquote keys), not
+         by citing the jerry ast parser source. A skeptical reader could
+         argue the output is consistent with merged or overwritten parsing.
+         The diagnosis depends entirely on this claim being accurate, but
+         it is not evidenced from source code.
+      2. DA-004: "13 skills" is correct (per ground truth: 13 skill directories
+         verified by CLI smoke test) but the explanation does not show or
+         explain this derivation. The count is a specific number presented
+         without citation.
+    improvement_path: >
+      Either cite the relevant ast parser source file, or soften the claim:
+      "the output shows only blockquote keys, indicating jerry ast frontmatter
+      does not return ---delimited YAML keys." Change "all 13 skills" to
+      reference the derivation: "one per skills/*/SKILL.md."
+
+  actionability:
+    score: 0.82
+    evidence: >
+      The fix section is specific and implementable: new YamlFrontmatterReader
+      adapter named and located in the adapter hierarchy, bootstrap.py wiring
+      change shown with concrete code example (create_docs_generator function),
+      H-33 compliance question addressed. A developer who has not been in
+      the pipeline can implement the fix from this document alone.
+    gaps: >
+      DA-006 (Minor): Port docstring update (frontmatter_reader.py) is not
+      mentioned as fix scope. A developer implementing the fix will encounter
+      this and may not know to update it, leaving the documentation inconsistent.
+    improvement_path: >
+      Add one sentence: "The port's docstring in frontmatter_reader.py will
+      also need to be updated to document YamlFrontmatterReader as a second
+      implementation."
+
+  traceability:
+    score: 0.72
+    evidence: >
+      Code references are specific with line numbers: skill_extractor.py:110-115
+      shown verbatim with annotations, module paths (AstFrontmatterReader,
+      IFrontmatterReader, bootstrap.py) named explicitly. The failure path
+      is traceable: jerry ast frontmatter → blockquote JSON → frontmatter.get("name")
+      → None → skip → empty table.
+    gaps: >
+      DA-002 creates a traceability break: the central mechanistic claim
+      (jerry ast reads only blockquote, not YAML) is not traceable to any
+      cited source. The failure path is traceable from AstFrontmatterReader
+      outward, but the root cause (parser behavior) is only observable, not
+      traced to parser source code.
+    improvement_path: >
+      Cite the jerry ast parser source file and relevant function to establish
+      full traceability from symptom (wrong keys returned) to root cause
+      (parser implementation reads only blockquote format).
+
+improvement_recommendations:
+  - priority: 1
+    dimension: internal_consistency
+    current: 0.62
+    target: 0.80
+    recommendation: >
+      Add one sentence to "What Goes Wrong" acknowledging that
+      ast_frontmatter_reader.py's own docstring says "YAML frontmatter" —
+      flag it as a documentation error in the adapter. This directly
+      addresses DA-001 (Critical) and prevents a reader from encountering
+      an apparent contradiction when checking the source code.
+
+  - priority: 2
+    dimension: methodological_rigor
+    current: 0.80
+    target: 0.90
+    recommendation: >
+      Replace "Because that would bypass the port abstraction. The hexagonal
+      architecture (H-07) says infrastructure adapters implement domain ports
+      — so we add a new adapter, not modify the extractor." with: "Because
+      AstFrontmatterReader is designed specifically for blockquote parsing
+      used by worktracker entities. Mixing YAML --- parsing into it would
+      make the adapter semantically ambiguous and risk breaking worktracker
+      operations that depend on its current behavior. A second adapter with
+      a single clear responsibility is the safer design." (DA-003)
+
+  - priority: 3
+    dimension: evidence_quality
+    current: 0.65
+    target: 0.80
+    recommendation: >
+      Soften the absolute claim "doesn't parse ---delimited YAML at all"
+      to an evidence-qualified statement, OR cite the jerry ast parser
+      source file that confirms it reads only blockquote metadata. Current
+      assertion is supported only by observational output. (DA-002)
+
+  - priority: 4
+    dimension: completeness
+    current: 0.72
+    target: 0.85
+    recommendation: >
+      (a) Change "all 13 skills are skipped" to "all skills are skipped
+      (currently 13, one per skills/*/SKILL.md)" with a note that each
+      has a YAML name field (DA-004). (b) Add one sentence about port
+      docstring update to the fix scope (DA-006).
+
+  - priority: 5
+    dimension: traceability
+    current: 0.72
+    target: 0.82
+    recommendation: >
+      Cite the jerry ast parser source location to close the traceability
+      gap on the central causal claim. The failure path from AstFrontmatterReader
+      outward is well-traced; the gap is the parser's own implementation
+      not being cited. (DA-002 overlap)
+
+leniency_bias_check:
+  each_dimension_scored_independently: true
+  evidence_documented_for_each_score: true
+  uncertain_scores_resolved_downward: true
+  first_draft_calibration_considered: true
+  no_dimension_above_0_95_without_exceptional_evidence: true
+  notes: >
+    Internal Consistency scored 0.62 (not rounded up to 0.70) because DA-001
+    is a verified Critical finding against ground truth — the docstring
+    contradiction is real and unacknowledged. Evidence Quality scored 0.65
+    because the central causal claim is the load-bearing assertion of the
+    entire explanation and it lacks source evidence. Both scores were held
+    at the lower adjacent value per the leniency bias rule. Methodological
+    Rigor held at 0.80 rather than pulled up to the 0.85 calibration anchor
+    because DA-003 represents a flawed reasoning step in a document that
+    is otherwise well-structured.
+
+critical_findings_from_adv_executor:
+  count: 1
+  critical: ["DA-001: AstFrontmatterReader docstring self-contradiction not surfaced"]
+  major: ["DA-002: Key causal claim unsupported by parser source", "DA-003: Incorrect architectural justification", "DA-004: 13 skills count unverified"]
+  verdict_impact: >
+    Per scoring protocol: any Critical finding from adv-executor reports
+    triggers automatic REVISE regardless of score. DA-001 is Critical.
+    Composite 0.72 is already below threshold; Critical finding confirms
+    REVISE verdict independently.
+
+session_context:
+  verdict: REVISE
+  composite_score: 0.72
+  threshold: 0.92
+  weakest_dimension: internal_consistency
+  weakest_score: 0.62
+  critical_findings_count: 1
+  iteration: 1
+  improvement_recommendations:
+    - "Add sentence acknowledging ast_frontmatter_reader.py docstring says 'YAML frontmatter' (DA-001 Critical)"
+    - "Replace 'bypass port abstraction' justification with correct reasoning about semantic purity (DA-003 Major)"
+    - "Soften or source-cite the 'doesn't parse ---delimited YAML at all' claim (DA-002 Major)"
+    - "Contextualize '13 skills' count with derivation (DA-004 Major)"
+    - "Add port docstring update to fix scope (DA-006 Minor)"

@@ -1,0 +1,374 @@
+barrier: barrier-2
+quality_gate: QG-B2
+iteration: 2
+threshold: 0.94
+criticality: C4
+strategies_applied: [S-014, S-003, S-002, S-010, S-004]
+
+# ============================================================
+# GAP CLOSURE VERIFICATION (Iteration 1 -> Iteration 2)
+# ============================================================
+gap_closure_summary:
+  - gap: "No runtime evidence for bug fix (Evidence Quality: 0.80)"
+    revision: "Appendix added: uv run jerry docs generate (exit 0), --check (exit 1), 16 tests pass"
+    closed: true
+
+  - gap: "Static-only verification (Methodological Rigor: 0.84)"
+    revision: "Runtime verification appendix added with terminal output for 3 execution modes"
+    closed: true
+
+  - gap: "No call-site audit (Completeness: 0.88)"
+    revision: "grep -rn GenerateDocsCommand( shows 3 callers, none pass mode=\"stdout\""
+    closed: true
+
+  - gap: "Dataclass fix not in constraint checklist (Traceability: 0.87)"
+    revision: "Constraint #8 added: GenerateDocsCommand.mode aligned to str | None = None"
+    closed: true
+
+  - gap: "No verification steps (Actionability: 0.88)"
+    revision: "Constraint items 9-11 are verifiable smoke test commands documented in appendix"
+    closed: true
+
+  - gap: "L2 Recommendation framing for applied dataclass fix (Internal Consistency: 0.92)"
+    revision: "L2 now reads Applied fix: GenerateDocsCommand dataclass updated to mode: str | None = None"
+    closed: true
+
+  - gap: "-> Any return type has no follow-on worktracker item (S-010 recommendation)"
+    revision: "Not acted upon. No worktracker entry created."
+    closed: false
+    impact: minor
+
+  - gap: "CWD-relative template path has no guard (S-004 MOST LIKELY failure mode)"
+    revision: "L2 documents the risk but adds no guard, handler, or worktracker entry."
+    closed: false
+    impact: moderate
+
+# ============================================================
+# DIMENSION SCORES
+# ============================================================
+dimensions:
+  completeness:
+    score: 0.91
+    weight: 0.20
+    evidence: >
+      All five deliverables are present and verified: create_docs_generator() in bootstrap.py
+      (lines 735-765), _handle_docs() in main.py (lines 703-776), dispatch routing
+      (main.py:124-125), GenerateDocsCommand dataclass (mode: str | None = None), and parser
+      verification (_add_docs_namespace at parser.py:929). The constraint checklist has grown
+      from 7 to 11 items, with items 8-11 covering the dataclass fix, stdout smoke test,
+      check-mode smoke test, and 16-test pass result. Call-site audit now present in appendix
+      (3 callers confirmed, none pass "stdout"). The wiring chain and constructor signatures
+      are documented with file:line citations.
+      Residual gap: The -> Any return type concern (iteration 1 S-010 recommendation #3:
+      "Create a worktracker task") was not acted upon. No Phase 3 follow-on entry documented.
+      The CWD template path risk identified as MOST LIKELY in pre-mortem also has no
+      follow-on worktracker item. These are design-level recommendations, not
+      verification gaps, so they do not heavily suppress this score — but they prevent
+      reaching 0.93+.
+
+  internal_consistency:
+    score: 0.94
+    weight: 0.20
+    evidence: >
+      The framing tension identified in iteration 1 is resolved. The L2 section now reads
+      "Applied fix: The GenerateDocsCommand dataclass was updated to use mode: str | None = None
+      rather than mode: str = 'stdout'" — no longer framed as a Phase 3+ recommendation.
+      All claims are mutually consistent:
+      (a) Bug described in L1 Section 4, fix applied at main.py:740-742 — consistent.
+      (b) Local mode="stdout" sentinel retained for display branch at line 753 — explained
+          and consistent with the fix (sentinel maps to None before constructing command,
+          retained for if-branch below).
+      (c) Dataclass change in generate_docs_command.py confirmed: mode: str | None = None.
+      (d) Constraint checklist items 1-11 all marked PASS or FIXED — no contradiction
+          between text and checklist.
+      (e) Call-site audit confirms 3 callers, none passing "stdout" — consistent with the
+          claim that the type change is safe.
+      No contradictions found in this iteration. Score of 0.94 is calibrated against the
+      rubric (0.9+ = "No contradictions, all claims aligned") — full alignment achieved.
+
+  methodological_rigor:
+    score: 0.90
+    weight: 0.20
+    evidence: >
+      Iteration 1's critical gap (static-only verification) is substantially closed. The
+      revised report now applies a combined static + runtime verification methodology:
+      STATIC: Pattern comparison against named reference implementations (create_vtt_parser,
+      _handle_context, _handle_ast) with explicit tabular comparison. Constructor signatures
+      confirmed at file:line. Circular import closure traced module by module.
+      RUNTIME: Three execution-based verifications documented in the appendix:
+        (1) uv run jerry docs generate -> exit 0, stdout output present.
+        (2) uv run jerry docs generate --check -> exit 1, drift message shown.
+        (3) uv run pytest tests/unit/docs/test_phase1_evidence.py -v -> 16 passed 0.08s.
+      Plus a call-site grep audit (static but reproducible).
+      OWASP A01/A03/A05/A09 applied to specific code paths with justifications.
+      Residual gap: The iteration 1 S-004 pre-mortem flagged CWD-relative template path
+      as MOST LIKELY production failure mode. The methodology verified the bug fix runtime
+      but did not verify the template path concern — no test from a subdirectory, no guard
+      implementation. For C4 criticality, a known MOST LIKELY failure mode without a
+      verification test or fix is a methodological gap. This prevents reaching 0.93+.
+
+  evidence_quality:
+    score: 0.90
+    weight: 0.15
+    evidence: >
+      Significant improvement from 0.80. The revised report now provides:
+      (1) Terminal output for uv run jerry docs generate showing skills being processed and
+          rendered, with EXIT_CODE: 0. The bug fix claim is now demonstrated, not merely asserted.
+      (2) Terminal output for uv run jerry docs generate --check showing drift detection
+          message and EXIT_CODE: 1.
+      (3) Grep output listing 3 GenerateDocsCommand( call sites with file:line — concrete,
+          reproducible evidence for the call-site audit.
+      (4) pytest output: 16 passed in 0.08s — no regressions from the fix.
+      (5) Static evidence chain unchanged and strong: source citations with line numbers
+          throughout, code excerpts for both buggy and fixed states.
+      Minor concerns preventing 0.93+:
+      (a) EXIT_CODE: 0 and EXIT_CODE: 1 are presented as part of the terminal code block,
+          not as a separate echo $? capture. The format is informal and a reviewer cannot
+          distinguish actual shell output from annotated documentation.
+      (b) The skipped-skills output (13 skills skipped) is noted as a data issue but this
+          behavior means the generated docs table will be empty in practice — the smoke test
+          confirms the bug fix path is exercised, but the functional output is nearly empty.
+          This is disclosed, not hidden, which is appropriate — but it means the smoke test
+          demonstrates the fix without demonstrating useful output.
+
+  actionability:
+    score: 0.92
+    weight: 0.15
+    evidence: >
+      Iteration 1's gap (no verification steps) is closed. The appendix provides concrete
+      commands any developer can reproduce:
+        uv run jerry docs generate  -> expect exit 0, stdout output
+        uv run jerry docs generate --check  -> expect exit 1, drift message
+        uv run pytest tests/unit/docs/test_phase1_evidence.py -v  -> expect 16 passed
+      The fix is complete and ready to merge: all four files modified, no TODOs blocking
+      merge. Exit codes are documented: 0 (success/no drift), 1 (error/drift), 2 (warnings).
+      Constraint checklist items 9-11 map directly to verifiable commands.
+      Minor residual: The -> Any return type follow-on recommendation from iteration 1
+      was not translated into a concrete worktracker item. The template path CWD risk
+      has no remediation action. These are design-level non-blockers but they mean the
+      report does not provide actionable next steps for known risks beyond "it is acceptable."
+
+  traceability:
+    score: 0.92
+    weight: 0.10
+    evidence: >
+      Iteration 1's gap (dataclass fix missing from constraint checklist) is closed. The
+      updated 11-item constraint checklist includes:
+        #8: GenerateDocsCommand.mode type aligned to str | None = None — FIXED
+        #9: uv run jerry docs generate exits 0 — PASS (runtime evidence)
+        #10: uv run jerry docs generate --check detects drift — PASS (runtime evidence)
+        #11: All 16 Phase 1 tests pass after changes — PASS (pytest evidence)
+      Full traceability chain is now established:
+        Bug diagnosis (mode="stdout" passed to handler) -> Fix in main.py:740-742 ->
+        Dataclass alignment in generate_docs_command.py -> Constraint checklist #5/#8 ->
+        Runtime verification #9/#10/#11 -> Appendix evidence.
+      All files reference PROJ-0037 in docstrings. ADR-PROJ0037-001 cited in factory
+      docstring. doc-module-spec.md Section: CLI Integration referenced in command file.
+      Constructor signatures traced to actual file:line. OWASP categories mapped to paths.
+
+# ============================================================
+# ARITHMETIC VERIFICATION
+# ============================================================
+arithmetic_verification:
+  - "completeness:         0.91 × 0.20 = 0.1820"
+  - "internal_consistency: 0.94 × 0.20 = 0.1880"
+  - "methodological_rigor: 0.90 × 0.20 = 0.1800"
+  - "evidence_quality:     0.90 × 0.15 = 0.1350"
+  - "actionability:        0.92 × 0.15 = 0.1380"
+  - "traceability:         0.92 × 0.10 = 0.0920"
+  - "sum: 0.1820 + 0.1880 + 0.1800 + 0.1350 + 0.1380 + 0.0920 = 0.9150"
+  - "step-by-step: 0.1820+0.1880=0.3700, +0.1800=0.5500, +0.1350=0.6850, +0.1380=0.8230, +0.0920=0.9150"
+  - "double-check (alt order): 0.1800+0.1880=0.3680, +0.1820=0.5500, +0.1380=0.6880, +0.1350=0.8230, +0.0920=0.9150 CONFIRMED"
+
+composite: 0.9150
+
+# ============================================================
+# VERDICT
+# ============================================================
+verdict: REVISE
+verdict_rationale: >
+  Composite 0.9150 is below the 0.94 threshold by 0.0250. Iteration 2 achieved substantial
+  improvement from 0.8670 (+0.0480), with all six iteration 1 dimensions improving. The
+  primary remaining blocker is the gap between demonstrated verification completeness and
+  the C4 threshold. Two unclosed issues prevent reaching 0.94:
+  (1) The CWD-relative template path risk (flagged as MOST LIKELY failure in S-004 pre-mortem)
+      has no guard implementation and no verification that it is handled — this suppresses
+      Methodological Rigor and Completeness.
+  (2) Evidence quality cannot reach 0.93+ while EXIT_CODE capture is informal and the
+      functional smoke test output is near-empty (all skills skipped).
+
+# ============================================================
+# STRATEGY FINDINGS
+# ============================================================
+strategy_findings:
+  S-003_steelman: >
+    The iteration 2 revision is genuinely strong work. Six of six iteration 1 gaps were
+    closed with specific, concrete evidence rather than assertions. The appendix runtime
+    verification is reproducible and precise — three distinct test modes are documented.
+    The call-site grep audit (3 callers, none passing "stdout") is exactly the evidence
+    needed to confirm the type change is safe. Moving the dataclass fix from the L2
+    Recommendation section into the constraint checklist correctly closes the traceability
+    gap identified in iteration 1. Internal consistency is now cleanly resolved. The
+    11-item constraint checklist provides a complete, auditable record of the phase 2
+    verification. At C4 criticality this level of evidence improvement is commendable.
+
+  S-002_devils_advocate: >
+    (1) The EXIT_CODE presentation is informal — embedded in a code block as a label, not
+    captured via echo $? or a test assertion. A skeptical reviewer cannot confirm the exit
+    code without re-running the command, which is the point of providing the evidence in
+    the first place. Terminal output should show the actual shell command and result
+    separately for each exit code.
+    (2) The smoke test output shows 13 skills being skipped — every skill. The generated
+    documentation table is empty. The exit 0 confirms the bug is fixed (no crash), but
+    does not confirm the feature works correctly end-to-end for real data. An empty skills
+    table passing as "success" is a functional gap.
+    (3) The MOST LIKELY pre-mortem concern (CWD template path) was described in iteration 1
+    and again in iteration 2's L2 section, but still no fix, guard, or worktracker task
+    is provided. Documenting a MOST LIKELY production failure and doing nothing about it
+    is inconsistent with C4 rigor.
+    (4) The -> Any return type recommendation from iteration 1 S-010 was explicitly listed
+    as improvement #3 ("Create a worktracker task") but was not acted upon. A follow-on
+    design debt item with no owner or ticket is likely to be forgotten.
+
+  S-010_self_refine: >
+    Specific improvements to reach 0.94:
+    (1) EXIT_CODE capture: Replace the informal "EXIT_CODE: 0" label in the code block
+        with explicit shell commands showing the exit code capture:
+          $ uv run jerry docs generate; echo "Exit: $?"
+          [output...]
+          Exit: 0
+        This transforms informal annotation to verifiable evidence. Impact: Evidence
+        Quality 0.90 -> ~0.92.
+    (2) Template path guard: Either add a file existence check in create_docs_generator()
+        or Jinja2Renderer.__init__ that raises a clear ConfigurationError if the template
+        directory does not exist, OR add a smoke test that confirms the error is descriptive
+        (not TemplateNotFound). Document the decision. Impact: Methodological Rigor
+        0.90 -> ~0.92, Completeness 0.91 -> ~0.93.
+    (3) Phase 3 worktracker entries: Create two tasks — one for -> Any return type
+        resolution, one for the CWD template path guard. Even if not implemented now,
+        documenting them as tracked work items closes the traceability and actionability
+        gap for known design debts. Impact: Actionability 0.92 -> ~0.93.
+    (4) Skills-skipped explanation: Clarify whether the empty table in the smoke test
+        is expected behavior (SKILL.md schema mismatch) or a separate bug. If expected,
+        note that the smoke test verifies the fix path, not full functional correctness.
+        Consider a separate test with a controlled SKILL.md fixture that exercises the
+        happy path from extraction through rendering.
+
+  S-004_pre_mortem: >
+    Three most likely failure modes remaining after iteration 2:
+    (1) MOST LIKELY (unchanged from iteration 1) — Template directory not found:
+        Jinja2Renderer(".context/templates/docs") uses a CWD-relative path. Any invocation
+        from a non-repo-root directory will fail with an unhandled TemplateNotFound.
+        This risk was MOST LIKELY in iteration 1 and remains unaddressed in iteration 2.
+        The fact that the smoke test passed means the test was run from the repo root;
+        it does not prove the guard exists.
+    (2) Skills schema mismatch silent expansion: All 13 SKILL.md files are currently
+        skipped because jerry ast does not find a name field. If additional SKILL.md
+        files are added following the same schema pattern (without a name field), the
+        docs table will remain empty indefinitely with no error — only warnings. A user
+        who runs jerry docs generate and gets an empty table with no error has no clear
+        signal that the feature is not working for their data.
+    (3) Mode contract reintroduction (unchanged from iteration 1): The None/stdout
+        sentinel translation at main.py:741 is non-obvious. A future developer may remove
+        it, believing GenerateDocsCommand.mode accepts "stdout". No automated guard
+        (e.g., a test that passes mode="stdout" directly and expects a specific error,
+        confirming the handler rejects it) exists to catch this regression.
+
+# ============================================================
+# REVISION RECOMMENDATIONS
+# ============================================================
+revision_recommendations:
+  - priority: 1
+    dimension: methodological_rigor
+    current: 0.90
+    target: 0.93
+    action: >
+      Address the CWD-relative template path risk. Options (choose one):
+      (a) Add existence check in create_docs_generator() or Jinja2Renderer.__init__:
+          if not Path(template_dir).is_dir(): raise ConfigurationError(...)
+      (b) Add a smoke test from a subdirectory confirming the error is descriptive.
+      (c) If deliberately deferring, create a worktracker item and reference it in the
+          constraint checklist as item 12: "Template path guard — tracked as TASK-NNN."
+      This closes the MOST LIKELY pre-mortem concern at C4 criticality.
+
+  - priority: 2
+    dimension: evidence_quality
+    current: 0.90
+    target: 0.93
+    action: >
+      Replace informal EXIT_CODE label notation with explicit shell output showing
+      exit code capture. Use:
+        $ uv run jerry docs generate; echo "Exit: $?"
+        [output...]
+        Exit: 0
+      Also consider adding a test with a controlled SKILL.md fixture to verify the
+      happy path produces non-empty output, confirming functional correctness beyond
+      the bug fix path.
+
+  - priority: 3
+    dimension: completeness
+    current: 0.91
+    target: 0.93
+    action: >
+      Document two follow-on work items as tracked tasks:
+      (a) -> Any return type resolution (Phase 3)
+      (b) CWD template path guard (Phase 3)
+      Add both to the constraint checklist or a "Follow-On Items" section that maps
+      each known risk to a worktracker ID. This transforms open risks into tracked
+      debt, completing the scope coverage.
+
+  - priority: 4
+    dimension: actionability
+    current: 0.92
+    target: 0.93
+    action: >
+      Add explicit owner or ticket reference for the CWD template path risk and the
+      -> Any typing gap. The current report documents the risks but provides no next-step
+      owner or tracking mechanism, which means they are at risk of being forgotten.
+
+# ============================================================
+# LENIENCY BIAS CHECK
+# ============================================================
+leniency_bias_check:
+  each_dimension_scored_independently: true
+  evidence_documented_for_each_score: true
+  uncertain_scores_resolved_downward: true
+  first_draft_calibration_considered: true
+  no_dimension_above_0_95_without_exceptional_evidence: true
+  notes: >
+    Anti-leniency scrutiny applied to three dimensions:
+    (1) Internal Consistency at 0.94 was challenged — is this too high? Re-checked: the
+        framing tension from iteration 1 is genuinely resolved, no contradictions were
+        found in the revised text, and 0.94 corresponds to "No contradictions, all claims
+        aligned" per rubric. Held at 0.94.
+    (2) Methodological Rigor at 0.90 was challenged — runtime evidence is now present,
+        is 0.90 too conservative? Re-checked: the MOST LIKELY pre-mortem failure mode
+        (CWD template path) is unaddressed, and a known highest-likelihood failure without
+        a guard or verification test is a genuine methodological gap at C4. Held at 0.90.
+    (3) Evidence Quality at 0.90 was challenged — the smoke tests are present, is 0.90
+        appropriate? Re-checked: the EXIT_CODE presentation is informal (not echo $?
+        capture), and the "successful" output is an empty skills table — the test confirms
+        the fix path but not functional correctness. Held at 0.90.
+    The composite of 0.9150 correctly reflects genuine improvement with remaining specific,
+    addressable gaps. It is not inflated — the 0.94 threshold demands near-excellent
+    evidence across all dimensions at C4 criticality.
+
+# ============================================================
+# SESSION CONTEXT (orchestrator handoff schema)
+# ============================================================
+session_context:
+  verdict: REVISE
+  composite_score: 0.9150
+  threshold: 0.94
+  weakest_dimension: completeness
+  weakest_score: 0.91
+  critical_findings_count: 0
+  iteration: 2
+  improvement_recommendations:
+    - "Add template path guard or worktracker item for CWD risk (Methodological Rigor -> 0.93)"
+    - "Replace informal EXIT_CODE label with echo $? capture (Evidence Quality -> 0.93)"
+    - "Document -> Any and CWD risk as tracked Phase 3 worktracker items (Completeness -> 0.93)"
+    - "Add owner/ticket for CWD and -> Any risks (Actionability -> 0.93)"
+  delta_from_iteration_1: +0.0480
+  projected_iteration_3_score: 0.9400
+  iteration_ceiling: 10

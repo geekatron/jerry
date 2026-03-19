@@ -1,12 +1,12 @@
 # ST-001: Update README.md to reflect current skills, agents, and repository state
 
 > **Type:** story
-> **Status:** completed
+> **Status:** in_progress
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-03-08T00:00:00Z
 > **Due:**
-> **Completed:** 2026-03-12T00:00:00Z
+> **Completed:**
 > **Parent:** FEAT-001
 > **Owner:**
 > **Effort:** 5
@@ -48,8 +48,8 @@ The current README.md lists 6 skills and claims "8 specialized agents" when the 
 
 ## Acceptance Criteria
 
-- [x] README skills table lists all 30 skills with SKILL.md files
-- [x] README agent count matches dynamically computed count (89 agents)
+- [ ] README skills table lists all 13 skills with SKILL.md files
+- [ ] README agent count matches AGENTS.md verified count (58 agents)
 - [ ] README documentation table links all discoverable doc files
 - [ ] Known Limitations section reflects current state (stale items removed)
 - [ ] Example session reflects current agent naming conventions
@@ -80,4 +80,3 @@ The current README.md lists 6 skills and claims "8 specialized agents" when the 
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-03-08 | Claude | in_progress | Story created; workstream A |
-| 2026-03-12 | Claude | completed | README updated via `jerry docs generate --write`. 30 skills, 89 agents. Skills table and features section now auto-generated. AC-1 and AC-2 verified. AC-3/4/5 deferred (documentation table, known limitations, example session are out of scope for auto-generation). |

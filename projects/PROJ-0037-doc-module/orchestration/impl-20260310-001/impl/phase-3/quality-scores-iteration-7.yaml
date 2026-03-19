@@ -1,0 +1,510 @@
+# Quality Score Report — QG-B3 Phase 3 Verification (Iteration 7)
+# S-014 LLM-as-Judge | SSOT: .context/rules/quality-enforcement.md
+# Scored: 2026-03-10
+
+## L0 Executive Summary
+
+# Score: 0.9200/1.00 | Verdict: REVISE | Weakest Dimension: Actionability (0.90)
+# One-line assessment: Iteration 7 resolves the four highest-priority gaps (disposition table
+# scope, F5 evidence citation, V2 cross-reference severity, eng-qa branch ambiguity), raising
+# the composite from 0.8970 to 0.9200 — above the general H-13 threshold but still 0.020
+# below the C4 threshold of 0.94; the remaining gap is V1-rec/V4-rec traceability (no finding
+# IDs blocking forward reference to hardening backlog items 3 and 6) and the absence of
+# deferred-to phase tracking for ACCEPTED findings in the disposition table.
+
+---
+
+scoring_context:
+  deliverables:
+    - path: projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-3/eng-qa-report.md
+    - path: projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-3/security-review.md
+    - path: projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-3/attack-surface-report.md
+    - path: projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-3/gate-disposition-b3.md
+  deliverable_type: Analysis
+  criticality_level: C4
+  scoring_strategy: S-014 (LLM-as-Judge)
+  ssot_reference: .context/rules/quality-enforcement.md
+  scored: "2026-03-10"
+  iteration: 7
+  score_progression:
+    - iteration: 1
+      score: 0.8555
+    - iteration: 2
+      score: 0.9000
+    - iteration: 3
+      score: 0.8860
+    - iteration: 4
+      score: 0.9275
+    - iteration: 5
+      score: 0.9040
+    - iteration: 6
+      score: 0.8970
+    - iteration: 7
+      score: 0.9200
+
+# ---
+
+score_summary:
+  weighted_composite: 0.9200
+  threshold: 0.94  # C4 criticality
+  standard_threshold: 0.92  # H-13 general threshold
+  verdict: REVISE
+  strategy_findings_incorporated: "No (no separate adv-executor reports; ground truth supplied by user)"
+
+# ---
+
+dimension_scores:
+
+  completeness:
+    weight: 0.20
+    score: 0.92
+    weighted: 0.1840
+    evidence_summary: >
+      Fix 1 applied: disposition table nav description updated to "Accept/defer/block for all
+      findings requiring rationale (HIGH, MEDIUM, selected LOW)" — the word "selected" now
+      explicitly scopes which LOWs receive disposition rows (RR-1, RR-2 have documented
+      acceptance rationale; F6/V1/V4 are LOW findings adequately covered by the evidence
+      summary note). All deliverables cover required content: 4 modules in eng-qa, 5
+      mitigations + 4 hexagonal in security-review, 8 findings in attack-surface,
+      10-row cross-reference in gate. Remaining gap: V1-rec and V4-rec sub-findings appear
+      in cross-reference table without finding IDs, so they are not catalogued as
+      first-class findings with disposition coverage.
+
+  internal_consistency:
+    weight: 0.20
+    score: 0.93
+    weighted: 0.1860
+    evidence_summary: >
+      Fix 3 applied: V2 cross-reference table row updated from "INFO (current)" to "LOW
+      (RESOLVED — pin widened to >=3.1.6,<4.0)" — now consistent with attack-surface L2
+      residual risk table ("~~HIGH~~ LOW (RESOLVED)") and gate-disposition open findings
+      ("HIGH (structural) → RESOLVED"). All core metrics agree across 4 documents:
+      51 tests, 100% line (323/323), 99% branch (67/68), missed branch 294→299, 5 STRIDE
+      COMPLIANT, 4 hexagonal COMPLIANT, pyproject.toml:40 = "jinja2>=3.1.6,<4.0". No new
+      contradictions introduced by iteration 7. Residual: eng-qa footer still reads
+      "Iteration: 1" — stale metadata, genuine but cosmetic inconsistency.
+
+  methodological_rigor:
+    weight: 0.20
+    score: 0.93
+    weighted: 0.1860
+    evidence_summary: >
+      Fix 4 applied: eng-qa L2 weakness #1 now definitively states the single missed branch
+      is exclusively the OSError catch at generate_docs_command_handler.py:294→299, and that
+      the _check_drift compound boolean is fully covered. Removes the ambiguity from
+      iteration 6 where both the OSError catch and the compound condition were listed as
+      candidates. All methodology strengths intact: STRIDE per-mitigation verification with
+      spec-vs-implementation tables; per-vector bypass feasibility assessment with specific
+      bypass attempts; ATT&CK technique mappings; cross-report reconciliation with explicit
+      conflict resolution for both severity divergence and name pattern discrepancy;
+      per-module gap analysis with before/after line numbers.
+
+  evidence_quality:
+    weight: 0.15
+    score: 0.92
+    weighted: 0.1380
+    evidence_summary: >
+      Fix 2 applied: gate-disposition F5 row now reads "Values from skill-examples.yaml
+      and features.yaml enter template context at generate_docs_command_handler.py:142-150"
+      — the file:line citation matches the evidence density of V3 (cites
+      generate_docs_command_handler.py:97-108) and RR-2 (cites skill_extractor.py:143-146).
+      All primary findings (V1-V4, F5-F8, RR-1, RR-2) now have file:line evidence in at
+      least one source document. Security-review reproduces regex patterns verbatim. Attack-
+      surface reproduces subprocess.run() call block. Residual: V1-rec and V4-rec rows in
+      cross-reference table lack specific evidence citations (they are sub-recommendations,
+      not primary findings, so this is a minor gap).
+
+  actionability:
+    weight: 0.15
+    score: 0.90
+    weighted: 0.1350
+    evidence_summary: >
+      Hardening backlog retains 7 priority-ordered items with effort estimates (5 min to
+      1 hr); item 1 marked DONE; items 2-7 include specific code changes (e.g., exact
+      newline-collapse one-liner for item 3; os.chmod line for item 5). Eng-qa L2 gives 4
+      specific recommendations with target files and test locations. Gate-disposition ACCEPTED
+      rationale cites guard location and test name for each accepted finding. No changes in
+      iteration 7 directly affected actionability. Residual gap unchanged from iteration 6:
+      no "Deferred to phase" column or tracker reference for ACCEPTED findings in the
+      disposition table — a downstream reviewer cannot determine where these items are tracked
+      for follow-up. Eng-qa L2 recommendation #4 (CI coverage gate) still does not cite the
+      specific pyproject.toml stanza.
+
+  traceability:
+    weight: 0.10
+    score: 0.91
+    weighted: 0.0910
+    evidence_summary: >
+      Fix 1 ("selected LOW") and fix 3 (V2 severity correction) both improve traceability.
+      The "selected LOW" language in the nav description now explains why F6/V1/V4 lack
+      disposition rows. V2 severity now consistent across cross-reference table, attack-surface
+      L2, and gate-disposition. Cross-reference table has 10 rows covering all 8 findings
+      plus V1-rec and V4-rec. Security-review footer cites threat model and specification
+      paths. Eng-qa test docstrings cite M-number controls and source lines. Residual gap:
+      V1-rec and V4-rec rows in cross-reference table still lack finding IDs (e.g., F9, F10),
+      preventing forward traceability from hardening backlog items 3 (newline collapse at
+      skill_extractor.py:260) and 6 (filename-begins-with-dash at ast_frontmatter_reader.py:53)
+      to their corresponding cross-reference rows. This was priority 4 in iteration 6 and
+      was not addressed in iteration 7.
+
+  total:
+    weight: 1.00
+    weighted_composite: 0.9200
+
+# ---
+
+detailed_dimension_analysis:
+
+  completeness:
+    score: 0.92
+    evidence: |
+      POSITIVE:
+      - eng-qa-report: complete pre/post coverage breakdown (66% → 100%), per-module gap analysis
+        with specific line number ranges, OWASP test category mapping, L0/L1/L2 structure.
+        Fix 4 clarifies that the compound boolean in _check_drift is fully covered and the
+        single missed branch is only the OSError catch at 294→299.
+      - security-review: all 5 mitigations (M-1 through M-5) verified with file:line citations,
+        all 4 hexagonal constraints (H-07, H-10, H-11, H-33), OWASP mapping, NIST CSF mapping,
+        residual risk register with 2 entries (RR-1, RR-2).
+      - attack-surface-report: all 8 findings present (V1-V4, F5-F8), L0/L1/L2 structure,
+        hardening backlog with 7 priority-ordered items.
+      - gate-disposition: nav description now reads "Accept/defer/block for all findings
+        requiring rationale (HIGH, MEDIUM, selected LOW)" — scopes the 5-row table coherently.
+        Cross-reference table has 10 rows covering all attack-surface findings plus V1-rec
+        and V4-rec sub-findings. Evidence summary correctly states 5 LOW = V1, V4, F6
+        (attack-surface) + RR-1, RR-2 (security-review).
+    gaps: |
+      1. V1-rec and V4-rec sub-findings appear in the cross-reference table without finding
+         IDs (e.g., F9, F10), which means they are not catalogued as first-class findings
+         in the finding registry. The disposition table does not include them either (covered
+         by "selected LOW" scope language). A reader of the hardening backlog items 3 and 6
+         cannot find their corresponding cross-reference rows without manual mapping.
+      2. Eng-qa footer: "Iteration: 1" — stale metadata not updated through revision cycle.
+    improvement_path: |
+      Assign finding IDs to V1-rec (e.g., F9: Newline Collapse Recommendation) and
+      V4-rec (e.g., F10: Filename Flag Injection Guard) in the cross-reference table, enabling
+      forward traceability from hardening backlog items 3 and 6. Update eng-qa footer to
+      reflect current iteration.
+
+  internal_consistency:
+    score: 0.93
+    evidence: |
+      CONSISTENT across all 4 documents (verified against ground truth):
+      - 51 tests, all passing: eng-qa L0 summary + gate-disposition evidence summary.
+      - 100% line coverage (323/323 statements): eng-qa post-addition table + gate-disposition.
+      - 99% branch coverage (67/68): eng-qa L2 weaknesses + gate-disposition evidence summary.
+      - Missed branch: generate_docs_command_handler.py:294→299: eng-qa + gate-disposition agree.
+      - 5 STRIDE mitigations COMPLIANT: security-review L0 + gate-disposition verdict.
+      - 4 hexagonal constraints COMPLIANT: security-review L0 + gate-disposition verdict.
+      - pyproject.toml:40 = "jinja2>=3.1.6,<4.0": security-review M-4 + attack-surface
+        Vector 2 header + gate-disposition open findings + hardening actions — all agree.
+      - Severity counts (0 CRITICAL, 1 HIGH RESOLVED, 2 MEDIUM, 5 LOW, 2 INFO): gate-disposition
+        evidence summary correctly reconciles sources.
+      FIX 3 VERIFIED: V2 cross-reference table now reads "LOW (RESOLVED — pin widened to
+      >=3.1.6,<4.0)" — consistent with attack-surface L2 residual risk table "~~HIGH~~ LOW
+      (RESOLVED)" and gate-disposition open findings V2 row verdict "RESOLVED".
+      The pre-existing severity discrepancy (INFO vs LOW for V2) is fully resolved.
+    gaps: |
+      - Eng-qa footer reads "Iteration: 1" — stale metadata that is inconsistent with
+        the document being a Phase 3 QG-B3 Phase 3 deliverable under iteration 7 scoring.
+        Minor cosmetic issue but a genuine inconsistency detectable by a reader comparing
+        the report to this scoring document.
+    improvement_path: |
+      Update the eng-qa footer to reflect the current phase iteration (e.g., "Iteration: 7"
+      or "Phase 3 final") to match the actual revision history.
+
+  methodological_rigor:
+    score: 0.93
+    evidence: |
+      - eng-qa uses structured per-module gap analysis: each module gets its own before/after
+        table with line numbers, branch descriptions, and test names. Security notes added
+        to explain the defensive rationale for each branch. OWASP category mapping provided.
+        FIX 4 VERIFIED: L2 weakness #1 now definitively states: "The single missed branch
+        is exclusively the OSError catch at generate_docs_command_handler.py:294→299 —
+        the cleanup path where os.unlink() raises OSError during atomic write failure
+        recovery." The compound boolean in _check_drift is explicitly stated as "fully
+        covered — all reachable branches of this compound boolean are exercised by existing
+        tests." No ambiguity remains about which branch is the single missed 1/68.
+      - security-review uses formal STRIDE mitigation verification: each mitigation has a
+        spec-vs-implementation comparison table; M-2 has a 4-row exact-match table. Import
+        dependency matrix for H-07 compliance. H-10 per-file class count table.
+      - attack-surface uses per-vector bypass feasibility assessment with specific bypass
+        attempts (uppercase JAVASCRIPT:, percent-encoded colon, multi-line scalar). ATT&CK
+        technique mappings. Priority-ordered hardening backlog with effort estimates.
+      - gate-disposition provides explicit cross-report reconciliation for both the Jinja2
+        severity divergence and the M-5 name pattern discrepancy. Resolution rationale
+        distinguishes current-state risk (LOW) from structural forward risk (HIGH pre-fix).
+    gaps: |
+      - No remaining methodology gaps of significance after fix 4. The branch ambiguity
+        that was the sole methodology gap in iteration 6 is now resolved.
+    improvement_path: |
+      No further methodology improvements required. Score reflects strong methodology
+      with the sole previous gap now resolved.
+
+  evidence_quality:
+    score: 0.92
+    evidence: |
+      STRONG:
+      - security-review cites specific file:line for every control: skill_extractor.py:34 for
+        _HTML_TAG_PATTERN; lines 38-40 for _UNSAFE_LINK_PATTERN; pyproject.toml:40 for M-4;
+        generate_docs_command_handler.py:281-287 for M-3. Regex patterns reproduced verbatim.
+      - attack-surface reproduces the full subprocess.run() call block and _UNSAFE_LINK_PATTERN
+        regex. Bypass attempts are specific (uppercase JAVASCRIPT:, percent-encoded colon).
+      - eng-qa provides before/after line numbers for each module (e.g., lines 292-299 for
+        cleanup OSError path); branch descriptions in per-module tables.
+      - gate-disposition V3 row cites generate_docs_command_handler.py:97-108 and
+        test_path_traversal_rejected. RR-2 row cites skill_extractor.py:143-146.
+      FIX 2 VERIFIED: gate-disposition F5 row now reads "Values from skill-examples.yaml
+      and features.yaml enter template context at generate_docs_command_handler.py:142-150"
+      — file:line citation matches evidence density of V3 and RR-2 rows. This was the
+      primary evidence gap from iteration 6.
+    gaps: |
+      1. V1-rec and V4-rec rows in the cross-reference table lack specific evidence citations.
+         The V1-rec row notes "Not directly tested (sanitization strips HTML/links but not
+         newlines)" and V4-rec notes "Not tested (theoretical; requires '--' prefix filename)"
+         — these are adequate for sub-recommendations but do not provide the file:line evidence
+         present in primary finding rows.
+      2. Format inconsistency: V2 disposition row cites pyproject.toml:40 inline in the
+         value field; V3 and RR-2 use a more structured citation. Minor presentation gap.
+    improvement_path: |
+      For V1-rec and V4-rec, add a source column note pointing to the hardening backlog item
+      numbers (e.g., "Hardening backlog item 3") to enable lookup of the specific recommendation
+      context. Standardize the pyproject.toml:40 citation format in V2 to match other rows.
+
+  actionability:
+    score: 0.90
+    evidence: |
+      - Hardening backlog: 7 items with priority numbers, target files, and effort estimates
+        ranging from "5 min" to "1 hr". Item 1 marked DONE. Items 2-7 have specific code
+        changes described (sanitized.replace('\n', ' ').replace('\r', ' ') for item 3;
+        os.chmod(temp_path, 0o600) exact call for item 5; Path(file_path).name.startswith('-')
+        check with code block for item 6).
+      - eng-qa L2 recommendations: (1) add --cov-branch to pytest config; (2) add integration
+        tests in tests/integration/docs/ with fixture skills/ directory; (3) parameterize
+        sanitization tests for data: and vbscript: schemes; (4) register --cov-fail-under=90
+        CI gate.
+      - Gate disposition ACCEPTED rationale is revalidatable: V3 acceptance cites guard
+        location (generate_docs_command_handler.py:97-108) and the test exercising it
+        (test_path_traversal_rejected). F5 rationale now cites generate_docs_command_handler.py:142-150.
+    gaps: |
+      1. Disposition table has no "Deferred to" column or tracker reference for ACCEPTED findings.
+         A reader of the disposition table cannot determine whether V3 (MEDIUM: CWD assumption)
+         and F5 (MEDIUM: unsanitized static YAML) are tracked in any backlog or simply accepted
+         with no future remediation planned. For a C4 document, open MEDIUM findings should have
+         an explicit downstream tracking reference.
+      2. Eng-qa L2 recommendation #4 (CI coverage gate) says "Current pyproject.toml does not
+         enforce this automatically" but does not cite the specific stanza in pyproject.toml
+         where --cov-fail-under=90 should be added (e.g., [tool.pytest.ini_options] section).
+    improvement_path: |
+      Add a "Deferred to" or "Tracked in" column to the disposition table for ACCEPTED findings,
+      referencing either a backlog item number or a future phase (e.g., "Hardening backlog item 4"
+      for V3, "Hardening backlog item 2" for F5). This closes the gap between disposition and
+      downstream action tracking for MEDIUM findings at C4 criticality.
+
+  traceability:
+    score: 0.91
+    evidence: |
+      - Cross-reference table: 10 rows covering all attack-surface findings including V1-rec
+        and V4-rec sub-findings. Each row maps finding → test coverage → eng-architect review.
+      - FIX 1 EFFECT: "selected LOW" in nav description explains the scoped inclusion of
+        RR-1 and RR-2 in the disposition table while F6/V1/V4 are covered by the evidence
+        summary note. The disposition table's 5-row scope is now coherent and explained.
+      - FIX 3 EFFECT: V2 severity consistent across cross-reference table, attack-surface L2,
+        and gate-disposition open findings — the traceability chain for V2 from attack-surface
+        report through reconciliation to disposition is now internally consistent.
+      - Open findings disposition: each row cites source report and section.
+      - Security-review footer cites threat model and specification paths.
+      - Eng-qa test docstrings cite M-number security controls and source lines.
+      - Gate-disposition cross-report reconciliation traces Jinja2 severity from attack-surface
+        (HIGH) to security-review (LOW) to resolution rationale (both valid at different
+        time horizons; structural risk eliminated by widening pin).
+    gaps: |
+      1. V1-rec and V4-rec rows in cross-reference table lack finding IDs (e.g., F9, F10).
+         This prevents forward traceability: hardening backlog item 3 (newline collapse at
+         skill_extractor.py:260) and item 6 (filename-begins-with-dash at
+         ast_frontmatter_reader.py:53) correspond to V1-rec and V4-rec respectively, but
+         a reader cannot navigate from the backlog item to the cross-reference row using
+         any documented ID. This gap was priority 4 in iteration 6 and was not addressed
+         in iteration 7.
+    improvement_path: |
+      Assign finding IDs to V1-rec (F9: Newline Collapse Recommendation, corresponding to
+      hardening backlog item 3) and V4-rec (F10: Filename Flag Injection Guard, corresponding
+      to hardening backlog item 6). Update the cross-reference table row headings from the
+      descriptive phrases to the IDs. This closes the sole remaining traceability gap.
+
+# ---
+
+improvement_recommendations:
+
+  - priority: 1
+    dimension: Actionability
+    current: 0.90
+    target: 0.93
+    recommendation: >
+      Add a "Deferred to" column to the gate-disposition Open Findings table for ACCEPTED
+      findings. Map V3 (MEDIUM) to "Hardening backlog item 4" and F5 (MEDIUM) to "Hardening
+      backlog item 2." This provides an explicit downstream tracking reference for the two
+      open MEDIUM findings, appropriate for a C4 criticality document.
+
+  - priority: 2
+    dimension: Traceability
+    current: 0.91
+    target: 0.94
+    recommendation: >
+      Assign finding IDs F9 (Newline Collapse Recommendation) and F10 (Filename Flag Injection
+      Guard) to the V1-rec and V4-rec rows in the cross-reference table. Update cross-reference
+      row headings to use the IDs. This enables forward traceability from hardening backlog
+      items 3 and 6 to their corresponding cross-reference rows, closing the sole remaining
+      traceability gap.
+
+  - priority: 3
+    dimension: Completeness
+    current: 0.92
+    target: 0.95
+    recommendation: >
+      Update the eng-qa footer from "Iteration: 1" to reflect the current revision (e.g.,
+      "Phase 3 final" or "Iteration: 7"). This removes the stale metadata inconsistency.
+      Optionally, add a brief note to the cross-reference table that V1-rec and V4-rec
+      correspond to hardening backlog items 3 and 6 respectively.
+
+  - priority: 4
+    dimension: Internal Consistency
+    current: 0.93
+    target: 0.95
+    recommendation: >
+      Update the eng-qa footer from "Iteration: 1" to the current iteration to eliminate the
+      stale metadata inconsistency visible to readers cross-referencing the deliverable set.
+      (This shares a fix with priority 3 above.)
+
+  - priority: 5
+    dimension: Evidence Quality
+    current: 0.92
+    target: 0.94
+    recommendation: >
+      Add hardening backlog item references to the V1-rec and V4-rec rows in the
+      cross-reference table (e.g., "Hardening backlog item 3" for V1-rec, "item 6" for V4-rec).
+      This provides lookup context for sub-recommendation evidence without requiring full
+      finding IDs in the evidence column.
+
+# ---
+
+ground_truth_verification:
+  pyproject_toml_line_40:
+    expected: '"jinja2>=3.1.6,<4.0",'
+    verified_in:
+      - "security-review.md L1 M-4 evidence table: pyproject.toml | 40 | \"jinja2>=3.1.6,<4.0\","
+      - "attack-surface-report.md Vector 2 header: pyproject.toml:40 — \"jinja2>=3.1.6,<4.0\""
+      - "gate-disposition-b3.md hardening actions: pyproject.toml:40"
+      - "gate-disposition-b3.md open findings V2 row: pyproject.toml:40"
+    status: PASS
+
+  test_counts:
+    expected: "51 tests, 100% line (323/323), 99% branch (67/68)"
+    verified_in:
+      - "eng-qa-report.md L0 summary table: 51/51 tests, 100% coverage"
+      - "eng-qa-report.md post-addition coverage table: TOTAL 323 stmts, 0 missed, 100%"
+      - "eng-qa-report.md L2 weakness #1: 67 of 68 branches covered"
+      - "gate-disposition-b3.md evidence summary: 51 tests, 100% line (323/323), 99% branch (67/68)"
+    status: PASS
+
+  stride_hexagonal:
+    expected: "5 STRIDE COMPLIANT, 4 hexagonal COMPLIANT"
+    verified_in:
+      - "security-review.md L0 Security Control Compliance table: 5 rows all COMPLIANT"
+      - "security-review.md L0 Hexagonal Compliance table: 4 rows all COMPLIANT"
+      - "gate-disposition-b3.md verdict summary: all 5 STRIDE / all hexagonal COMPLIANT"
+    status: PASS
+
+  severity_counts:
+    expected: "0 CRITICAL, 1 HIGH (RESOLVED), 2 MEDIUM (ACCEPTED), 5 LOW (ACCEPTED), 2 INFO"
+    verified_in: "gate-disposition-b3.md evidence summary"
+    breakdown:
+      critical: 0
+      high_resolved: 1  # V2 Jinja2 pin structural risk (now LOW post-hardening)
+      medium_accepted: 2  # V3 CWD assumption, F5 unsanitized static YAML
+      low_accepted: 5  # V1, V4, F6 (attack-surface) + RR-1, RR-2 (security-review)
+      info: 2  # F7 mode sentinel, F8 agent name pattern
+    status: PASS
+
+  attack_surface_findings_coverage:
+    expected_findings: [V1, V2, V3, V4, F5, F6, F7, F8]
+    cross_reference_table_rows: [V1, V2, V3, V4, F5, "V1-rec", "V4-rec", F6, F7, F8]
+    all_primary_findings_present: true
+    sub_findings_present: true
+    sub_findings_lack_ids: true  # V1-rec and V4-rec still lack F9/F10 IDs
+    status: PASS (primary findings) / GAP (sub-finding IDs)
+
+  security_review_findings_coverage:
+    expected_findings: [RR-1, RR-2]
+    disposition_table_rows: [RR-1, RR-2]
+    status: PASS
+
+  v2_cross_reference_severity:
+    expected: "LOW (RESOLVED — pin widened to >=3.1.6,<4.0)"
+    found_in: "gate-disposition-b3.md cross-reference table V2 row"
+    matches_attack_surface_l2: true
+    status: PASS  # Fix 3 verified
+
+  f5_disposition_evidence:
+    expected: "generate_docs_command_handler.py:142-150 citation"
+    found_in: "gate-disposition-b3.md F5 disposition row"
+    status: PASS  # Fix 2 verified
+
+  disposition_table_scope:
+    expected: "Accept/defer/block for all findings requiring rationale (HIGH, MEDIUM, selected LOW)"
+    found_in: "gate-disposition-b3.md Document Sections nav table"
+    previous: "Accept/defer/block per finding above LOW"
+    status: PASS  # Fix 1 verified
+
+  eng_qa_branch_ambiguity:
+    expected: "Single missed branch exclusively OSError catch at 294→299; _check_drift compound boolean fully covered"
+    found_in: "eng-qa-report.md L2 weakness #1"
+    status: PASS  # Fix 4 verified
+
+  new_inconsistencies_from_iteration_7:
+    introduced: false
+    notes: >
+      All 5 iteration 7 fixes are internally consistent with each other and with prior fixes.
+      Fix 3 (V2 severity) resolves a pre-existing inconsistency without introducing new ones.
+      Fix 1 (disposition scope) clarifies rather than changes the table content. Fix 2 (F5
+      evidence) adds a citation consistent with the attack-surface source. Fix 4 (branch
+      ambiguity) resolves rather than changes the coverage claim. No cross-fix contradictions
+      detected.
+
+# ---
+
+leniency_bias_check:
+  each_dimension_scored_independently: true
+  evidence_documented_for_each_score: true
+  uncertain_scores_resolved_downward: true
+  first_draft_calibration_considered: "N/A — iteration 7 of an evolving deliverable set"
+  no_dimension_above_0.95: true
+  notes: >
+    Actionability held at 0.90 despite strong content: the missing "Deferred to" tracking
+    column is a genuine C4-appropriate gap that prevents a higher score. No score was rounded
+    up. Traceability held at 0.91 despite fix 1 and fix 3 improvements: the V1-rec/V4-rec
+    ID gap (priority 4 from iteration 6, unaddressed in iteration 7) is a genuine structural
+    traceability gap. Completeness and Evidence Quality raised to 0.92 on the basis of
+    concrete fixes (fix 1 resolves scope incoherence; fix 2 adds the missing citation).
+    Composite of 0.9200 is mathematically exact; it is not rounded.
+    The 0.020 gap below the C4 threshold of 0.94 is real and traceable to two specific
+    dimension deficits: Actionability (0.90) and Traceability (0.91), both of which have
+    documented, fixable gaps.
+
+# ---
+
+session_context:
+  verdict: REVISE
+  composite_score: 0.9200
+  threshold: 0.94
+  weakest_dimension: actionability
+  weakest_score: 0.90
+  critical_findings_count: 0
+  iteration: 7
+  remaining_gap_to_threshold: 0.0200
+  improvement_recommendations:
+    - "Add 'Deferred to' column to gate-disposition Open Findings table for ACCEPTED findings (V3 → item 4, F5 → item 2)"
+    - "Assign IDs F9/F10 to V1-rec/V4-rec rows in cross-reference table; update row headings"
+    - "Update eng-qa footer from 'Iteration: 1' to current iteration"
+    - "Add hardening backlog item references to V1-rec and V4-rec cross-reference rows"
+    - "Standardize pyproject.toml:40 citation format in V2 disposition row to match V3/RR-2 style"

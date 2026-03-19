@@ -1,0 +1,317 @@
+barrier: "barrier-1"
+iteration: 1
+strategies_applied: [S-014, S-003, S-002, S-010, S-013]
+scored_at: "2026-03-10T00:00:00Z"
+criticality: "C4"
+threshold: 0.94
+score_bands:
+  pass: ">= 0.94"
+  revise: "0.88 - 0.93"
+  rejected: "< 0.88"
+
+dimensions:
+  completeness:
+    score: 0.82
+    weight: 0.20
+    weighted: 0.164
+    rationale: >
+      All 9 Barrier-1 checklist items PASS: constructor DI injection verified (lines 58-63),
+      name regex ^[a-zA-Z][a-zA-Z0-9-]*$ validated (line 31+112), HTML stripping via regex
+      sub (line 232-233), 1024-char truncation (line 233), SandboxedEnvironment+StrictUndefined
+      (lines 51-55), uv run jerry ast frontmatter subprocess call (line 58), atomic write via
+      NamedTemporaryFile+os.replace (lines 234+244), no domain-layer infra imports, one class
+      per file throughout. Two spec-required M-1 controls are unimplemented: (1) URL allowlist
+      validation on description fields ("Validate URLs in description fields against an allowlist"
+      from doc-module-spec.md M-1); (2) activation-keywords max-30-entries validation (spec Input
+      Parsing table). Dead code: _MARKER_PATTERN compiled regex defined in jinja2_renderer.py
+      (line 24) but never used by inject_between_markers(). Spec File Structure section documents
+      src/jerry/docs/ flat layout; implementation uses src/docs/ hexagonal hierarchy without noting
+      the divergence.
+
+  internal_consistency:
+    score: 0.83
+    weight: 0.20
+    weighted: 0.166
+    rationale: >
+      No contradictions cause runtime failures. Three inconsistencies identified: (1) _MARKER_PATTERN
+      module-level regex (jinja2_renderer.py line 24) is defined but inject_between_markers() uses
+      manual str.index() operations — dead code in the module, inconsistent with the "use the tool
+      you define" principle. (2) Drift-detection return semantics: _check_drift() returns True when
+      drift IS detected; the spec pseudocode comment says "Return True if README matches" — semantic
+      inversion. Internally consistent usage in handle() but contradicts spec's stated return contract.
+      (3) eng-backend-1 report documents a "stdout" mode (line 97-101 of report) where drift_detected
+      stays None, but the actual handler has no "stdout" branch — falls through silently to
+      drift_detected=None, which is functionally correct but undocumented in the implementation.
+      SkillData frozen=True with mutable list field: agents: list[AgentData] field is a subtle
+      consistency concern (frozen prevents rebinding but not list mutation). All type annotations
+      are consistent between port interfaces and adapter implementations.
+
+  methodological_rigor:
+    score: 0.85
+    weight: 0.20
+    weighted: 0.170
+    rationale: >
+      Hexagonal architecture correctly applied: domain ports (Protocol-based), application services,
+      infrastructure adapters, clean dependency direction verified. STRIDE threat model followed;
+      M-1 through M-5 controls implemented with specific code evidence. yaml.safe_load used
+      exclusively (OWASP A03). Subprocess list-form args (no shell=True). TYPE_CHECKING guard
+      breaks circular imports correctly. frozen=True dataclasses for value objects. Exception
+      hierarchy well-designed (FileNotFoundError > ValueError > RuntimeError progression). Logging
+      follows Python conventions. Gap: _load_yaml() does not explicitly catch yaml.YAMLError —
+      relies on top-level except Exception, which is safe but methodologically imprecise. M-1
+      URL allowlist is a required STRIDE-derived mitigation that is not implemented — partial STRIDE
+      compliance. Dead code violates clean-code methodology.
+
+  evidence_quality:
+    score: 0.80
+    weight: 0.15
+    weighted: 0.120
+    rationale: >
+      Code serves as strong direct evidence for all structural claims (DI constructor, regex patterns,
+      SandboxedEnvironment, subprocess list form, atomic write pattern). Inline Reference comments
+      trace every file to spec section and mitigation ID. OWASP categories mapped to mitigations in
+      eng-backend report. Gap 1: Claims about sandbox effectiveness ("M-2 sandbox blocks __class__.__mro__
+      traversal" PASS) reference execution-time test results — no test files exist in Phase 1
+      deliverables; cannot independently verify the test was run. Gap 2: "escape_pipe macro works"
+      and "skills-table.md.jinja2 renders OK" reference template files not included as Phase 1
+      deliverables. Gap 3: URL allowlist omission is not identified as a finding in the eng-backend
+      report — the report claims M-1 is fully implemented when it is not. This is an evidence
+      quality failure (false-positive PASS claim).
+
+  actionability:
+    score: 0.83
+    weight: 0.15
+    weighted: 0.1245
+    rationale: >
+      All four implementation files are complete, importable, production code. DI wiring is explicit
+      and clear (GenerateDocsCommandHandler constructor). eng-backend report L2 documents the
+      subprocess-per-file scalability concern with a concrete mitigation path (batch frontmatter
+      extraction). OWASP status table provides clear action signal on each category. Gap: The URL
+      allowlist gap is not identified as a finding in the eng-backend report, so the developer
+      cannot act on it — the gap is invisible. The spec divergence (src/jerry/docs/ vs src/docs/)
+      is also not identified, leaving a future maintainer without orientation. The report's
+      "Remaining risk areas: None identified" is an incorrect claim given the URL allowlist gap.
+
+  traceability:
+    score: 0.87
+    weight: 0.10
+    weighted: 0.087
+    rationale: >
+      Strong inline traceability: every source file has Reference comments linking to doc-module-spec.md
+      section and mitigation ID. SPDX license headers present. eng-backend report maps each
+      verification check to a specific mitigation ID. Orchestration plan maps strategies to barriers.
+      SkillData and AgentData docstrings reference spec section. Gap: Spec File Structure documents
+      src/jerry/docs/ path; implementation files live at src/docs/. Traceability chain broken at
+      structural level — spec's file path references do not resolve to the actual implementation.
+      URL allowlist and activation-keywords validation appear in spec but not in code — forward
+      traceability (spec -> implementation) is incomplete for these two requirements.
+
+weighted_composite: 0.83
+verdict: "REJECTED"
+
+# Note: 0.83 falls in the REJECTED band (< 0.88) per the orchestration plan's custom bands.
+# Per the standard adv-scorer schema, this is REVISE (0.70-0.84). Using orchestration plan bands.
+
+steelman_findings:
+  - "Security controls are correctly implemented end-to-end: SandboxedEnvironment+StrictUndefined
+    is the right Jinja2 combination; subprocess list-form args prevent command injection; yaml.safe_load
+    prevents YAML deserialization attacks — not cargo-cult security, architecturally sound."
+  - "Hexagonal architecture is cleanly enforced: domain layer contains zero infrastructure imports;
+    TYPE_CHECKING guard breaks circular dependency correctly while preserving static-analysis type safety."
+  - "Atomic write is correctly implemented: NamedTemporaryFile(dir=dir_name)+os.replace() places
+    temp file on same filesystem for single inode swap; explicit temp file cleanup on exception is
+    genuine production-quality detail."
+  - "Error handling is well-stratified: each class distinguishes FileNotFoundError, ValueError,
+    RuntimeError; handler swallows all exceptions into GenerateDocsResult(success=False) preventing
+    uncaught exceptions from reaching the CLI."
+  - "H-33 compliance is structurally correct: AstFrontmatterReader uses uv run jerry ast frontmatter
+    via subprocess with no regex and no raw YAML parsing in the adapter."
+  - "Immutable value objects: SkillData and AgentData are frozen=True dataclasses preventing
+    accidental post-validation mutation."
+
+devils_advocate_findings:
+  - "M-1 URL allowlist not implemented: spec explicitly requires 'Validate URLs in description
+    fields against an allowlist'; a description containing [click here](https://evil.com) passes
+    sanitization and renders as a live link in the README. The HTML-tag regex strips tags only,
+    not markdown links. Partial M-1 implementation."
+  - "Dead code: _MARKER_PATTERN compiled regex defined in jinja2_renderer.py line 24 but
+    inject_between_markers() uses str.index() exclusively. Dead code should not exist in production
+    implementation files."
+  - "_check_drift return semantics inverted from spec pseudocode: spec comment says 'Return True
+    if README matches'; implementation returns True when drift IS detected. Internally consistent
+    usage but creates maintainer confusion against the spec."
+  - "eng-backend report claims 'Remaining risk areas: None identified' and 'M-1 PASS' despite
+    URL allowlist being unimplemented. This is a false-positive claim in the verification report."
+  - "activation-keywords max-30-entries validation not implemented despite being a spec requirement
+    in the YAML Fields Extracted table."
+  - "Spec File Structure shows src/jerry/docs/ flat layout; implementation uses src/docs/ hexagonal.
+    Spec is the SSOT; structural divergence is unacknowledged in any deliverable."
+  - "yaml.safe_load() in _load_yaml does not explicitly catch yaml.YAMLError, relying on the
+    top-level except Exception. Methodologically imprecise; breaks the clear error-type contract."
+
+inversion_findings:
+  - "Path traversal via --readme flag: readme_path is passed directly to Path(readme_path).read_text()
+    and NamedTemporaryFile(dir=dir_name) with no path validation. --readme ../../README.md would
+    silently write to an unintended location. No path containment check exists."
+  - "uv not in PATH: every skill file fails with RuntimeError; handler returns success=False with
+    generic GENERATION_ERROR; CI environment without uv in PATH would silently produce empty README
+    with no actionable error for the user."
+  - "First-run missing YAML data files: skills-examples.yaml or features.yaml absent causes
+    FileNotFoundError wrapped in GENERATION_ERROR with no guidance on creating these required files."
+  - "Duplicate markers in README: inject_between_markers() uses str.index() which returns first
+    occurrence only; duplicate marker pairs (copy-paste error) would silently update only the first
+    section, leaving the second stale."
+  - "Windows non-atomicity: os.replace() is atomic on POSIX (inode swap) but NOT atomic on Windows;
+    the docstring claims atomicity but qualifies 'on POSIX systems'; Windows production use carries
+    partial-write risk."
+
+checklist_results:
+  - item: "GenerateDocsCommandHandler constructor accepts SkillExtractor, ITemplateRenderer, IFrontmatterReader"
+    status: "PASS"
+    evidence: "generate_docs_command_handler.py lines 58-73: __init__(extractor: SkillExtractor, renderer: ITemplateRenderer, reader: IFrontmatterReader)"
+
+  - item: "SkillExtractor.extract_all() validates name regex ^[a-zA-Z][a-zA-Z0-9-]*$"
+    status: "PASS"
+    evidence: "skill_extractor.py line 31: _SKILL_NAME_PATTERN = re.compile(r'^[a-zA-Z][a-zA-Z0-9-]*$'); applied at line 112"
+
+  - item: "SkillExtractor.extract_all() strips HTML from description"
+    status: "PASS"
+    evidence: "skill_extractor.py lines 34+232-233: _HTML_TAG_PATTERN.sub('', text) strips all <tag> patterns"
+
+  - item: "SkillExtractor.extract_all() enforces 1024-char max"
+    status: "PASS"
+    evidence: "skill_extractor.py line 233: sanitized.strip()[:_MAX_DESCRIPTION_LENGTH] where _MAX_DESCRIPTION_LENGTH=1024"
+
+  - item: "Jinja2Renderer uses SandboxedEnvironment + StrictUndefined"
+    status: "PASS"
+    evidence: "jinja2_renderer.py lines 51-55: SandboxedEnvironment(loader=..., undefined=StrictUndefined, autoescape=False)"
+
+  - item: "AstFrontmatterReader calls uv run jerry ast frontmatter (not regex, not raw YAML)"
+    status: "PASS"
+    evidence: "ast_frontmatter_reader.py line 58: ['uv', 'run', 'jerry', 'ast', 'frontmatter', str(file_path)] list-form, no shell=True"
+
+  - item: "Atomic write uses tempfile.NamedTemporaryFile + os.replace()"
+    status: "PASS"
+    evidence: "generate_docs_command_handler.py lines 234+244: NamedTemporaryFile(mode='w', dir=dir_name, delete=False) then os.replace(temp_path, str(readme))"
+
+  - item: "No domain layer file imports from infrastructure (H-07)"
+    status: "PASS"
+    evidence: "domain/ports/*.py and domain/value_objects/*.py contain no infrastructure imports; only stdlib typing imports"
+
+  - item: "One class per file throughout src/docs/ (H-10)"
+    status: "PASS"
+    evidence: "Confirmed: each .py file contains exactly one class (GenerateDocsCommandHandler, SkillExtractor, Jinja2Renderer, AstFrontmatterReader, IFrontmatterReader, ITemplateRenderer, SkillData, AgentData)"
+
+additional_findings:
+  - severity: "MEDIUM"
+    finding: "M-1 URL allowlist not implemented"
+    location: "skill_extractor.py _sanitize_description()"
+    spec_reference: "doc-module-spec.md M-1, threat-model-doc-module.md M-1"
+    remediation: "Add URL pattern validation to _sanitize_description() or as a separate validator; implement allowlist check for markdown link URLs in extracted descriptions"
+
+  - severity: "LOW"
+    finding: "Dead code: _MARKER_PATTERN unused"
+    location: "jinja2_renderer.py line 24"
+    spec_reference: "N/A"
+    remediation: "Remove _MARKER_PATTERN or use it in inject_between_markers() instead of manual str.index() calls"
+
+  - severity: "LOW"
+    finding: "activation-keywords max-30 validation not implemented"
+    location: "skill_extractor.py _extract_skill()"
+    spec_reference: "doc-module-spec.md Input Parsing: YAML Fields Extracted table"
+    remediation: "Add validation of activation-keywords length when field is present (warn and truncate if > 30 entries)"
+
+  - severity: "LOW"
+    finding: "Path traversal risk via readme_path with no containment check"
+    location: "generate_docs_command_handler.py _write_readme() and _check_drift()"
+    spec_reference: "threat-model-doc-module.md (unlisted — gap in threat model)"
+    remediation: "Validate readme_path is within the repository root or a configured allowed directory before read/write"
+
+  - severity: "LOW"
+    finding: "Spec file structure diverges from implementation without acknowledgment"
+    location: "doc-module-spec.md File Structure section vs actual src/docs/ layout"
+    spec_reference: "doc-module-spec.md File Structure"
+    remediation: "Update doc-module-spec.md File Structure section to reflect the actual hexagonal src/docs/ layout, or add a note in eng-backend-1 report documenting the deliberate departure"
+
+  - severity: "LOW"
+    finding: "eng-backend-1 report false-positive: claims 'Remaining risk areas: None' and M-1 PASS despite URL allowlist gap"
+    location: "eng-backend-1-report.md L0 Executive Summary and OWASP Self-Verification"
+    spec_reference: "doc-module-spec.md M-1"
+    remediation: "Correct the eng-backend-1 report to flag URL allowlist as a known gap"
+
+improvement_recommendations:
+  - priority: 1
+    dimension: "completeness"
+    current: 0.82
+    target: 0.90
+    recommendation: >
+      Implement M-1 URL allowlist validation in _sanitize_description() or a dedicated validator.
+      The spec requires 'Validate URLs in description fields against an allowlist (e.g., must be
+      relative paths or https:// to known domains).' Add a regex or URL-parse check that strips
+      or rejects markdown link hrefs that do not match the allowlist. This is the highest-priority
+      gap as it is a spec-required security mitigation.
+
+  - priority: 2
+    dimension: "internal_consistency"
+    current: 0.83
+    target: 0.90
+    recommendation: >
+      Remove the unused _MARKER_PATTERN regex from jinja2_renderer.py or refactor inject_between_markers()
+      to use it. Eliminating dead code removes the internal inconsistency. Additionally, add a
+      docstring correction to _check_drift() clarifying that it returns True when drift IS detected
+      (opposite of the spec's pseudocode comment).
+
+  - priority: 3
+    dimension: "evidence_quality"
+    current: 0.80
+    target: 0.88
+    recommendation: >
+      Correct the eng-backend-1 report's false-positive claims: (1) change 'M-1 PASS' to 'M-1 PARTIAL
+      — URL allowlist not yet implemented'; (2) change 'Remaining risk areas: None identified' to
+      acknowledge the URL allowlist gap. This improves evidence quality by ensuring the verification
+      report accurately reflects implementation state.
+
+  - priority: 4
+    dimension: "traceability"
+    current: 0.87
+    target: 0.92
+    recommendation: >
+      Update doc-module-spec.md File Structure section to reflect the actual src/docs/ hexagonal
+      layout, or add a note in the eng-backend-1 report documenting the deliberate structural
+      departure. This closes the spec-to-file traceability break that currently prevents a maintainer
+      from navigating from the spec to the implementation.
+
+  - priority: 5
+    dimension: "completeness"
+    current: 0.82
+    target: 0.90
+    recommendation: >
+      Add activation-keywords max-30-entries validation in _extract_skill(). The spec Input Parsing
+      table requires this validation. A single len() check on frontmatter.get('activation-keywords', [])
+      with a warning log if > 30 satisfies the requirement.
+
+  - priority: 6
+    dimension: "actionability"
+    current: 0.83
+    target: 0.88
+    recommendation: >
+      Add path containment validation for readme_path in GenerateDocsCommandHandler. Validate that
+      the resolved readme_path is within the repository root before performing read or write operations.
+      This surfaces the path traversal risk identified by S-013 inversion analysis.
+
+leniency_bias_check:
+  dimensions_scored_independently: true
+  evidence_documented_for_each_score: true
+  uncertain_scores_resolved_downward: true
+  first_draft_calibration_considered: true
+  no_dimension_above_0_95_without_exceptional_evidence: true
+  hostile_reviewer_test: >
+    A hostile reviewer would likely push completeness to 0.75 (URL allowlist is a spec-required
+    security mitigation), evidence_quality to 0.75 (false-positive PASS claim in verification
+    report), and internal_consistency to 0.78 (dead code in production file). The current scores
+    are the upper end of defensible positions. Held at current levels because the Barrier-1 checklist
+    is fully satisfied and the gaps are spec-level rather than checklist-level.
+  calibration_note: >
+    Phase 1 foundation files scored 0.80-0.87 across dimensions, consistent with first-draft
+    calibration anchor of 0.70-0.80 for first drafts (these are slightly above due to the
+    demonstrated security rigor and hexagonal architecture quality).

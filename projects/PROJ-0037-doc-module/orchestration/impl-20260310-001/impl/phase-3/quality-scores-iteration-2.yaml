@@ -1,0 +1,538 @@
+# Quality Score Report — Phase 3 Verification Package (Barrier 3 / QG-B3)
+# Scoring strategy: S-014 (LLM-as-Judge), 6-dimension weighted composite
+# SSOT: .context/rules/quality-enforcement.md
+# Barrier: barrier-3
+# Iteration: 2
+# Scored: 2026-03-10
+
+---
+
+## l0_executive_summary
+
+score: 0.9000
+verdict: REVISE
+threshold: 0.94
+gate: QG-B3
+barrier: barrier-3
+weakest_dimension: internal_consistency
+weakest_score: 0.89
+one_line_assessment: >
+  Iteration 2 resolves all five primary gaps from iteration 1 (gate verdict, Jinja2 HIGH finding
+  executed, cross-report reconciliation, cross-reference traceability table, branch coverage
+  measured), but two residual artifact-level inconsistencies — a stale M-4 pin citation in
+  security-review.md and an unupdated "Weaknesses" section in eng-qa report — keep the package
+  below the 0.94 C4 threshold; targeted artifact corrections can close the remaining 0.04 gap.
+
+# ---
+
+## scoring_context
+
+deliverables:
+  - path: projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-3/eng-qa-report.md
+    agent: eng-qa
+    role: Test coverage gap analysis and H-20 verification
+    iteration_1_score: 0.87  # completeness contribution
+    revision_applied: none  # report unchanged in iteration 2
+
+  - path: projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-3/security-review.md
+    agent: eng-architect
+    role: STRIDE mitigation verification and hexagonal compliance audit
+    iteration_1_score: included in package
+    revision_applied: none  # report unchanged in iteration 2; contains stale M-4 citation
+
+  - path: projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-3/attack-surface-report.md
+    agent: red-vuln
+    role: Independent attack surface analysis (PTES vulnerability phase)
+    iteration_1_score: included in package
+    revision_applied: none  # report unchanged in iteration 2
+
+  - path: projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-3/gate-disposition-b3.md
+    agent: orchestrator
+    role: "NEW — QG-B3 gate-disposition: cross-report reconciliation, finding dispositions, traceability table"
+    revision_applied: "new artifact added in iteration 2"
+
+deliverable_type: Combined Verification Package (3 original + 1 gate-disposition)
+criticality_level: C4
+scoring_strategy: S-014 (LLM-as-Judge)
+ssot_reference: .context/rules/quality-enforcement.md
+iteration: 2
+prior_iteration_score: 0.8555
+score_delta: +0.0445
+strategy_findings_incorporated: false
+
+runtime_evidence:
+  jinja2_pin_change:
+    file: pyproject.toml
+    line: 40
+    old_value: "jinja2>=3.1,<3.2"
+    new_value: "jinja2>=3.1.6,<4.0"
+    uv_lock_resolved: true
+  branch_coverage:
+    measurement: 99%
+    branches_covered: 67
+    branches_total: 68
+    missed_branch: "generate_docs_command_handler.py:294→299 (OSError cleanup catch)"
+
+# ---
+
+## score_summary
+
+score_summary:
+  weighted_composite: {iteration_1: 0.8555, iteration_2: 0.9000, delta: "+0.045"}
+  threshold: {iteration_1: 0.94, iteration_2: 0.94, delta: "—"}
+  verdict: {iteration_1: REVISE, iteration_2: REVISE, delta: "—"}
+  strategy_findings: {iteration_1: "No", iteration_2: "No", delta: "—"}
+  weakest_dimension: {iteration_1: "internal_consistency (0.82)", iteration_2: "internal_consistency (0.89)", delta: "+0.07"}
+
+# ---
+
+## dimension_scores
+
+dimensions:
+  completeness:
+    weight: 0.20
+    score: 0.90
+    weighted: 0.1800
+    evidence_summary: >
+      Gate-disposition artifact adds explicit QG-B3 PASS verdict, finding-by-finding disposition
+      table (1 HIGH RESOLVED, 2 MEDIUM ACCEPTED, 2 LOW ACCEPTED), and branch coverage metric
+      (99%). Remaining gaps: CI coverage gate (--cov-fail-under=90) still not enforced in
+      pyproject.toml; integration test gap acknowledged but not addressed.
+
+  internal_consistency:
+    weight: 0.20
+    score: 0.89
+    weighted: 0.1780
+    evidence_summary: >
+      Jinja2 LOW vs HIGH divergence reconciled in gate-disposition with "both framings correct
+      at different time horizons" and resolution documented. Residual: security-review.md M-4
+      evidence table still cites old pin value (>=3.1,<3.2) while pyproject.toml now reads
+      >=3.1.6,<4.0 — stale citation creates factual inconsistency within the package.
+
+  methodological_rigor:
+    weight: 0.20
+    score: 0.89
+    weighted: 0.1780
+    evidence_summary: >
+      Branch coverage measured at 99% (67/68) and documented in gate-disposition — closes
+      the primary C4 methodological gap. Residual: eng-qa report "Weaknesses" section still
+      states branch coverage was NOT measured ("--cov-branch would surface this"), contradicting
+      the gate-disposition. Static-only scope boundary still not declared in red-vuln L0.
+
+  evidence_quality:
+    weight: 0.15
+    score: 0.91
+    weighted: 0.1365
+    evidence_summary: >
+      Gate-disposition adds 8-row cross-reference table (finding → test → eng-architect review),
+      quantified finding counts (0 CRITICAL, 1 HIGH RESOLVED, 2 MEDIUM ACCEPTED), branch
+      coverage fraction (67/68), and Hardening Actions execution table with explicit evidence.
+      No evidence gaps at finding-level; the prior probability-quantification gap for Vector 2
+      is rendered moot by resolution of the structural risk.
+
+  actionability:
+    weight: 0.15
+    score: 0.91
+    weighted: 0.1365
+    evidence_summary: >
+      Gate-disposition provides explicit QG-B3 PASS verdict, complete Open Findings Disposition
+      table with per-finding rationale, and Hardening Actions Executed section. Priority 1
+      hardening (Jinja2 pin) executed. Gap: CI coverage gate (--cov-fail-under=90) remains
+      a recommendation without implementation evidence.
+
+  traceability:
+    weight: 0.10
+    score: 0.91
+    weighted: 0.0910
+    evidence_summary: >
+      Cross-Reference Traceability table maps all 8 red-vuln findings to test coverage and
+      eng-architect review status. F5 (unsanitized static YAML) explicitly traced: "No direct
+      test (by design)" and "Not in eng-architect scope." Phase 1 → Phase 3 chain still implied
+      rather than cited, but this is a minor secondary gap.
+
+  composite:
+    formula: "(0.90*0.20) + (0.89*0.20) + (0.89*0.20) + (0.91*0.15) + (0.91*0.15) + (0.91*0.10)"
+    calculation: "0.1800 + 0.1780 + 0.1780 + 0.1365 + 0.1365 + 0.0910"
+    total: 0.9000
+
+# ---
+
+## detailed_dimension_analysis
+
+completeness:
+  score: 0.90
+  prior_score: 0.87
+  delta: +0.03
+  rubric_band: "0.7-0.89 — Most requirements addressed, minor gaps"
+  note: "Score placed at 0.90 boundary; the CI gate omission prevents entry into the 0.9+ band."
+  evidence: |
+    All five original Phase 3 verification categories remain fully addressed (unchanged).
+    Iteration 2 additions close three specific completeness gaps identified in iteration 1:
+
+    1. Finding disposition: gate-disposition-b3.md Open Findings Disposition table explicitly
+       dispositions all findings above LOW — V2 HIGH RESOLVED, V3 MEDIUM ACCEPTED with rationale,
+       F5 MEDIUM ACCEPTED with rationale, RR-1 LOW ACCEPTED, RR-2 LOW ACCEPTED.
+
+    2. Branch coverage: gate-disposition Evidence Summary row "Branch coverage: 99% (67/68 branches),
+       missed branch: generate_docs_command_handler.py:294→299." This is a quantified metric,
+       not a recommendation.
+
+    3. Gate verdict: gate-disposition Verdict Summary provides explicit QG-B3 PASS with 7-item
+       rationale enumeration.
+  gaps: |
+    a. CI coverage gate (--cov-fail-under=90): eng-qa Phase 4 recommendation #4 explicitly
+       stated this should be added to pyproject.toml. No evidence this was executed in iteration 2.
+       The gap is acknowledged in prior iteration scoring and persists.
+
+    b. Integration test gap: still acknowledged in eng-qa L2 recommendation #2. Not addressed.
+       Acceptable for Phase 3 scope but noted.
+
+    c. The eng-qa report itself has not been updated; its "Weaknesses" section (lines 176-180)
+       still describes branch coverage as unmeasured. This creates a completion signal confusion —
+       the package now contains evidence of measurement (gate-disposition) and evidence of
+       non-measurement (eng-qa Weaknesses) simultaneously.
+  improvement_path: |
+    Two targeted corrections close the remaining gap:
+    (a) Add "--cov-fail-under=90" to [tool.pytest.ini_options] in pyproject.toml and commit.
+    (b) Update eng-qa Weaknesses section item 1 to reflect that branch coverage was subsequently
+        measured at 99% in iteration 2; add the branch coverage figure to the L0 summary metrics.
+
+internal_consistency:
+  score: 0.89
+  prior_score: 0.82
+  delta: +0.07
+  rubric_band: "0.7-0.89 — Minor inconsistencies"
+  note: "Downward adjustment applied: stale M-4 citation is a factual inconsistency within the live package."
+  evidence: |
+    Primary resolution: The Jinja2 LOW (eng-architect) vs HIGH (red-vuln) divergence — the
+    sole critical finding in iteration 1 — is resolved in gate-disposition-b3.md Cross-Report
+    Reconciliation section with explicit two-framing analysis: "current-state risk is LOW (no
+    active CVE), structural forward risk was HIGH (pin too narrow). The forward risk has been
+    eliminated by widening the pin." The resolution correctly acknowledges both framings as
+    correct at different time horizons.
+
+    Secondary resolution: M-5 name-pattern discrepancy (^[a-zA-Z] vs ^[a-z]) addressed in
+    Cross-Report Reconciliation section.
+
+    Cross-reference table in gate-disposition is internally consistent: 8 findings listed,
+    each with test coverage and eng-architect review status. Counts add up correctly
+    (0 CRITICAL, 1 HIGH, 2 MEDIUM, 2 LOW dispositioned = 5 of the 8 total, with V4/F6/F7
+    at LOW/INFO also addressed).
+  gaps: |
+    Security-review.md M-4 evidence table (lines 144-148) still reads:
+      "Version pin | pyproject.toml | 40 | "jinja2>=3.1,<3.2","
+    The actual pyproject.toml line 40 now reads "jinja2>=3.1.6,<4.0" following the hardening
+    action. A reviewer reading security-review.md (an unchanged artifact in the package)
+    encounters a factual claim that is no longer true. The gate-disposition's Hardening Actions
+    Executed table acknowledges the change, but the original report still asserts the old value.
+    At C4 criticality, package-level factual consistency matters.
+
+    The INFO finding: the Note on score 0.89 vs 0.90 — applying the downward resolution rule
+    for this specific, verifiable inconsistency.
+  improvement_path: |
+    Update security-review.md M-4 evidence table to reflect the corrected pin value
+    (>=3.1.6,<4.0). One cell change. Alternatively, add a footnote to the M-4 table:
+    "[Updated: pin widened to >=3.1.6,<4.0 per gate-disposition-b3.md hardening action.]"
+
+methodological_rigor:
+  score: 0.89
+  prior_score: 0.88
+  delta: +0.01
+  rubric_band: "0.7-0.89 — Sound methodology, minor gaps"
+  note: "Branch coverage closes the primary gap but creates a new artifact inconsistency; net gain is small."
+  evidence: |
+    The primary methodological gap from iteration 1 — branch coverage not measured at C4
+    criticality — is resolved in substance: gate-disposition-b3.md Evidence Summary row
+    "Branch coverage: 99% (67/68 branches)" with the missed branch specifically identified
+    (generate_docs_command_handler.py:294→299, the OSError cleanup catch). This is precisely
+    the quantified residual the prior score called for.
+
+    The 99% branch coverage with one documented, explained missed branch is strong methodology
+    for a C4 package. The OSError cleanup explanation (it is the secondary catch in an except
+    block where the primary exception is always re-raised) is methodologically sound.
+
+    All three agents continue to apply their named methodologies consistently: eng-qa uses
+    structured gap analysis with OWASP test categories; eng-architect uses STRIDE + OWASP
+    Top 10 + NIST CSF 2.0; red-vuln uses PTES with ATT&CK mapping.
+  gaps: |
+    a. Artifact inconsistency on branch coverage measurement: eng-qa report "Weaknesses" section
+       (lines 176-180) states "Branch coverage vs. line coverage. The 100% line coverage figure
+       is measured by coverage.py with default settings (line coverage). Branch coverage...
+       is not measured." The gate-disposition simultaneously documents that branch coverage WAS
+       measured at 99%. This is a real methodological artifact inconsistency — two deliverables
+       in the same package make contradictory factual claims about the measurement scope.
+       At C4, this is a rigor defect even if the underlying measurement was performed.
+
+    b. Red-vuln static-only scope: the L0 scope section does not declare "static analysis only;
+       DAST/fuzzing out of scope." This was identified in iteration 1 and remains unaddressed.
+       Minor, but the improvement path was explicitly stated.
+
+    c. The compound _check_drift boolean condition (iteration 1 note about three reachable
+       branches from "both missing, only begin missing, only end missing") is the one missed
+       branch (294→299). The gate-disposition claims 99% but the actual context is different:
+       the missed branch is in _write_readme OSError cleanup, not _check_drift. The eng-qa
+       L2 concern about _check_drift remains — it is not the measured gap. This means the
+       _check_drift compound condition may have a second unresolved branch gap not captured
+       in the 99% figure.
+  improvement_path: |
+    (a) Update eng-qa Weaknesses item 1 to: "Branch coverage measured in iteration 2 at
+        99% (67/68 branches). Missed branch: generate_docs_command_handler.py:294→299.
+        The compound boolean in _check_drift was not the missed branch; its coverage
+        status should be verified."
+    (b) Add one sentence to red-vuln L0 Scope section: "This review is static analysis only;
+        dynamic testing (DAST, fuzzing) is out of scope for Phase 3."
+    (c) Verify _check_drift compound condition branch coverage separately.
+
+evidence_quality:
+  score: 0.91
+  prior_score: 0.90
+  delta: +0.01
+  rubric_band: "0.9+ — All claims with credible citations"
+  evidence: |
+    Original three reports retain exceptional within-report citation quality (unchanged).
+
+    Gate-disposition additions strengthen evidence quality:
+    - 8-row Cross-Reference Traceability table: each finding has a test citation (by test name
+      where applicable) and an eng-architect review status with document section reference.
+    - Finding counts are quantified: "0 CRITICAL, 1 HIGH (RESOLVED), 2 MEDIUM (ACCEPTED),
+      4 LOW (ACCEPTED), 1 INFO" with traceability to source findings.
+    - Branch coverage fraction (67/68) with specific missed branch path identified —
+      this is a precise, non-round-number evidence claim.
+    - Hardening Actions table: action, status, evidence fields — the Jinja2 pin change
+      cites "pyproject.toml:40, uv lock resolved successfully" as execution evidence.
+
+    The prior iteration gap (probability quantification for Vector 2 HIGH rating) is rendered
+    moot: the structural risk was eliminated by the pin change, making probability assessment
+    of a forward risk irrelevant when the forward risk is resolved.
+  gaps: |
+    The gate-disposition cross-reference table for F5 (unsanitized static YAML) states
+    "No direct test (by design — static YAML is framework-maintained, not user input)."
+    This is honest but not fully evidenced — no citation to a design decision or documented
+    policy establishing that static YAML is exempt from M-1 sanitization. The claim "by design"
+    asserts intent without tracing to a source (spec section, ADR, threat model decision).
+    Minor gap at the evidence level.
+
+    F6 (newline in YAML description) in the cross-reference table: "Not directly tested
+    (sanitization strips HTML/links but not newlines)." This is an accepted gap but the
+    disposition column does not show a formal ACCEPTED decision in the Open Findings
+    Disposition table (F6 appears to be grouped under the 4 LOW ACCEPTED count but is
+    not named in the disposition table rows).
+  improvement_path: |
+    Add a citation to the F5 "by design" claim: reference the spec section or threat model
+    text that establishes M-1 scope as covering frontmatter fields only. If no such text
+    exists, add a one-sentence clarification to the Cross-Report Reconciliation F5 entry.
+
+actionability:
+  score: 0.91
+  prior_score: 0.83
+  delta: +0.08
+  rubric_band: "0.9+ — Clear, specific, implementable actions"
+  note: "Strong improvement. Remaining gap (CI gate) is minor. Score at lower end of 0.9+ band."
+  evidence: |
+    The primary actionability gap from iteration 1 is fully resolved. The gate-disposition
+    artifact directly and completely answers the orchestrator's gate question:
+    - "QG-B3: PASS" — explicit verdict in Verdict Summary.
+    - Open Findings Disposition table: 5 findings above INFO, each with Disposition (RESOLVED
+      or ACCEPTED) and Rationale. No ambiguity about gate passage or finding status.
+    - Decision Authority identified: "Orchestrator (foreground context)."
+
+    Priority 1 hardening action (Jinja2 pin change: 5 min) was executed before gate passage
+    as recommended in iteration 1. Evidence: "pyproject.toml:40, uv lock resolved successfully"
+    in Hardening Actions table.
+
+    The original three reports continue to provide specific hardening items (red-vuln backlog
+    with effort estimates; eng-qa Phase 4+ recommendations) and the gate-disposition resolves
+    the gate-level ambiguity that prevented actionability from reaching 0.90+ in iteration 1.
+  gaps: |
+    CI coverage gate (--cov-fail-under=90): eng-qa recommendation #4 identified this as a
+    regression prevention measure. Not implemented in iteration 2. The gate-disposition does
+    not acknowledge this as an open item or explicitly defer it. A reviewer cannot determine
+    whether this was considered and deferred, or simply overlooked.
+
+    The MEDIUM finding V3 (Path traversal CWD assumption) and F5 (unsanitized static YAML)
+    are dispositioned as ACCEPTED with rationale, which is clear and actionable for gate
+    purposes. However, the gate-disposition does not carry these forward to a hardening
+    backlog for the next phase — they appear in the red-vuln report's hardening backlog
+    (Priority 2, 4) but the gate-disposition does not explicitly state "deferred to Phase N
+    hardening backlog." Minor.
+  improvement_path: |
+    Add one row to the Hardening Actions table or add an "Accepted Deferral" note for
+    --cov-fail-under=90: either execute (5-10 min effort per eng-qa) or explicitly defer
+    with a Phase target (e.g., "Deferred to Phase 4 CI configuration").
+
+traceability:
+  score: 0.91
+  prior_score: 0.82
+  delta: +0.09
+  rubric_band: "0.9+ — Full traceability chain"
+  note: "Categorical improvement from absent cross-report traceability to complete 8-row table."
+  evidence: |
+    The primary traceability gap from iteration 1 (no cross-report references; red-vuln F5
+    untraced) is fully closed by the Cross-Reference Traceability table in gate-disposition-b3.md:
+
+    All 8 red-vuln findings are mapped:
+    - V1-V4: test names cited, eng-architect section citations provided.
+    - F5: "No direct test (by design)" with eng-architect scope statement.
+    - F6: "Not directly tested" with explanation.
+    - F7: "Not tested (theoretical)" with subprocess design citation.
+    - F8: Test names cited (test_atomic_write_produces_correct_content,
+      test_atomic_write_cleans_up_on_error), eng-architect M-3 section cited.
+
+    This directly resolves the specific gap identified in iteration 1: "A reviewer cannot
+    trace F5 from its discovery to a test, a review opinion, or a disposition." Now traceable.
+
+    Within-report traceability (unchanged and strong): spec line citations, M-number control
+    references, OWASP categories, ATT&CK IDs, CVE public identifiers.
+  gaps: |
+    Phase 1 → Phase 3 chain: eng-qa report continues to reference "Phase 1 tests" and
+    "Phase 1 evidence" without citing the handoff artifact that defined Phase 1's scope and
+    baseline. The chain is implied through context but not explicitly traced.
+
+    The gate-disposition finding count claims "4 LOW (ACCEPTED)" but the Open Findings
+    Disposition table rows show only 2 LOW findings (RR-1, RR-2 from eng-architect). The
+    other LOW findings (V4: subprocess injection, F6: temp file race) are in the cross-reference
+    table but are not present as named rows in the Open Findings Disposition table. The
+    numeric claim in Evidence Summary ("4 LOW ACCEPTED") is consistent with the cross-reference
+    table count but inconsistent with the disposition table row count (2 explicit + 2 implied).
+    Minor counting inconsistency within the gate-disposition artifact itself.
+  improvement_path: |
+    (a) Add V4 and F6 as named rows to the Open Findings Disposition table with their
+        LOW disposition rationale, so the "4 LOW ACCEPTED" claim matches the table rows.
+    (b) Add a brief citation to eng-qa's Phase 1 reference: "Phase 1 tests established in
+        [handoff-barrier-1-to-barrier-2.md or equivalent]."
+
+# ---
+
+## improvement_recommendations
+
+# Priority ordered by impact on remaining gap to 0.94 threshold
+
+recommendations:
+  - priority: 1
+    dimension: internal_consistency
+    current: 0.89
+    target: 0.92
+    finding: "security-review.md M-4 evidence table cites stale pin value (>=3.1,<3.2) while code is >=3.1.6,<4.0"
+    action: >
+      Update security-review.md M-4 evidence table Line 146 to read "jinja2>=3.1.6,<4.0,"
+      matching the actual pyproject.toml. One-cell change closes the factual inconsistency
+      and brings this report into alignment with the executed hardening action.
+
+  - priority: 2
+    dimension: methodological_rigor
+    current: 0.89
+    target: 0.92
+    finding: >
+      eng-qa report Weaknesses section (lines 176-180) still states branch coverage was NOT
+      measured, contradicting gate-disposition which documents 99% branch coverage measurement.
+    action: >
+      Update eng-qa Weaknesses item 1 to: "Branch coverage subsequently measured in iteration 2
+      at 99% (67/68 branches). Missed branch: generate_docs_command_handler.py:294→299.
+      Note: _check_drift compound boolean condition coverage is not confirmed by the 99% figure;
+      verify separately." Also add one sentence to red-vuln L0 Scope declaring static-analysis-only scope.
+
+  - priority: 3
+    dimension: completeness
+    current: 0.90
+    target: 0.93
+    finding: "CI coverage gate (--cov-fail-under=90) not enforced in pyproject.toml"
+    action: >
+      Add "--cov-fail-under=90" to [tool.pytest.ini_options] in pyproject.toml. Effort: 5 min.
+      Also explicitly acknowledge the _check_drift compound branch condition coverage status.
+
+  - priority: 4
+    dimension: traceability
+    current: 0.91
+    target: 0.93
+    finding: "Open Findings Disposition table shows 2 LOW rows but Evidence Summary claims 4 LOW ACCEPTED"
+    action: >
+      Add V4 (subprocess flag injection, LOW) and F6 (temp file race window, LOW) as named
+      rows to the Open Findings Disposition table with disposition ACCEPTED and one-line rationale.
+      This aligns the table with the quantitative claim in Evidence Summary.
+
+  - priority: 5
+    dimension: actionability
+    current: 0.91
+    target: 0.93
+    finding: "CI gate deferral not explicitly documented; MEDIUM findings not forward-carried to next-phase backlog"
+    action: >
+      Add one row to gate-disposition Hardening Actions: "--cov-fail-under=90 | DEFERRED to
+      Phase 4 | [pyproject.toml tool.pytest.ini_options]" or execute. Explicitly name V3 and
+      F5 as Phase 4 hardening items.
+
+# ---
+
+## leniency_bias_check
+
+checks:
+  - item: Each dimension scored independently before composite computed
+    status: DONE
+
+  - item: Evidence documented for each score
+    status: DONE
+
+  - item: Uncertain scores resolved downward
+    status: DONE
+    notes: >
+      Internal_consistency: uncertain between 0.89 and 0.90 due to stale M-4 citation —
+      resolved to 0.89 (downward).
+      Methodological_rigor: uncertain between 0.88 and 0.90 due to artifact inconsistency
+      on branch coverage claim — resolved to 0.89 (downward, below prior iteration's 0.88
+      plus delta would suggest 0.90; held at 0.89 due to new inconsistency introduced).
+
+  - item: First-draft calibration considered (iteration 2 of Phase 3)
+    status: DONE
+    notes: >
+      Iteration 2 of a Phase 3 package. Prior score was 0.8555. A +0.045 gain to 0.900
+      is consistent with resolving 5 of 6 targeted gaps while leaving 2 new artifact
+      inconsistencies. The package remains genuinely below the 0.94 C4 threshold.
+
+  - item: No dimension scored above 0.95 without exceptional evidence
+    status: DONE — highest dimension is 0.91 (evidence_quality, actionability, traceability)
+
+  - item: Calibration anchors applied
+    status: DONE
+    notes: >
+      0.89 = strong work approaching 0.90, with specific verifiable defects.
+      0.91 = genuinely strong in dimension with minor gaps.
+      0.90 composite = excellent progress from iteration 1 (0.8555) but real defects remain.
+      The 0.94 C4 threshold is demanding; the 0.04 gap maps to 2-3 targeted file corrections.
+
+notes: >
+  The iteration 2 package demonstrates focused, effective remediation: all five gaps named
+  in iteration 1 priority recommendations were addressed. The composite improvement (+0.045)
+  is calibrated to the actual closure rate. Two new residual defects were introduced in the
+  remediation process — the stale M-4 citation (security-review.md) and the eng-qa Weaknesses
+  contradiction — because the original three reports were not updated to reflect executed changes.
+  A pattern of adding a new artifact (gate-disposition) without updating the original reports
+  creates internal inconsistencies that accumulate. Iteration 3 should focus on synchronizing
+  the three original reports with the executed changes rather than producing additional artifacts.
+
+# ---
+
+## session_context_handoff
+
+# Schema for orchestrator consumption
+
+verdict: REVISE
+composite_score: 0.9000
+threshold: 0.94
+weakest_dimension: internal_consistency
+weakest_score: 0.89
+critical_findings_count: 0
+high_findings_count: 0  # V2 HIGH finding RESOLVED in iteration 2
+medium_findings_count: 2  # V3 (ACCEPTED), F5 (ACCEPTED) — dispositioned, not blocking
+iteration: 2
+prior_composite: 0.8555
+score_delta: +0.0445
+gap_to_threshold: 0.0400
+improvement_recommendations:
+  - "Update security-review.md M-4 table to reflect pin change (>=3.1.6,<4.0) — one cell"
+  - "Update eng-qa Weaknesses section item 1 to reflect branch coverage measured at 99%"
+  - "Add --cov-fail-under=90 to pyproject.toml [tool.pytest.ini_options]"
+  - "Add V4 and F6 as named rows to gate-disposition Open Findings Disposition table"
+  - "Declare CI gate deferral explicitly in gate-disposition or execute the change"
+iteration_3_guidance: >
+  The remaining 0.04 gap maps to corrections in the three original reports (not new artifacts).
+  Synchronize security-review.md and eng-qa-report.md with the changes executed in iteration 2.
+  The gate-disposition infrastructure is complete; no new artifact is needed.

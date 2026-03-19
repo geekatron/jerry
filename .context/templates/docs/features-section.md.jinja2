@@ -1,0 +1,5 @@
+{%- from '_macros.jinja2' import escape_pipe -%}
+- **{{ total_agents }} Specialized Agents** across {{ total_skills }} skills — from research and analysis to security testing and infrastructure hardening. See [AGENTS.md](AGENTS.md) for the full registry.
+{% for feature in features -%}
+- **{{ escape_pipe(feature.title) }}**: {{ escape_pipe(feature.description) }}
+{% endfor %}

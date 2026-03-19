@@ -1,0 +1,433 @@
+barrier: barrier-2
+quality_gate: QG-B2
+iteration: 5
+threshold: 0.94
+criticality: C4
+strategies_applied: [S-014, S-003, S-002, S-010, S-004]
+
+# ============================================================
+# GAP CLOSURE VERIFICATION (Iteration 4 -> Iteration 5)
+# ============================================================
+gap_closure_summary:
+  - gap: "No controlled-fixture test demonstrating happy-path non-empty skills output (Evidence Quality: 0.93, binding constraint)"
+    revision: >
+      test_happy_path_produces_non_empty_skills_output (test #18) implemented and passing.
+      Uses real Jinja2Renderer with actual .context/templates/docs/ templates (not mocked).
+      Uses mock SkillExtractor returning one valid SkillData(name="test-skill", purpose="Test purpose").
+      Exercises GenerateDocsCommandHandler.handle() in stdout mode (mode=None).
+      Asserts: result.success is True, result.skills_count == 1, "test-skill" in result.sections["SKILLS_TABLE"].
+      Constraint checklist item #14 added: "Happy-path pipeline produces non-empty skills output — PASS".
+      Full verbose pytest output shows test_happy_path_produces_non_empty_skills_output PASSED [100%].
+      18/18 tests pass; Exit: 0.
+    closed: true
+    impact: binding
+    notes: >
+      This was the single constraint holding Evidence Quality at 0.93 and composite at 0.9385.
+      The test directly demonstrates the extraction-rendering pipeline produces non-empty output
+      for valid skill data, addressing the gap explicitly identified in iteration 4 S-010 analysis
+      and revision_recommendations priority 1. The test uses real template rendering (not mocked),
+      which is the stronger evidence form — it confirms the Jinja2 template correctly renders
+      a non-empty SKILLS_TABLE when given valid SkillData input.
+
+  - gap: "FOI-2 -> Any return type has no concrete worktracker task ID (Traceability, Actionability: 0.94)"
+    revision: >
+      Not acted upon. FOI-2 section unchanged: still "Deferred to Phase 3+." No concrete task ID added.
+    closed: false
+    impact: minor
+    notes: >
+      FOI-2 is a type annotation improvement (low priority, no runtime effect). The prospective
+      traceability reference persists. This is a minor limitation preventing Traceability and
+      Actionability from advancing beyond 0.94. Does not block the quality gate.
+
+  - gap: "Guard unit test (test #17) exercises /nonexistent path not CWD-mismatch scenario"
+    revision: >
+      Not acted upon. test_jinja2_renderer_rejects_missing_template_dir unchanged.
+      Still uses a fully absent path rather than chdir() into a subdirectory with relative path.
+    closed: false
+    impact: minor
+    notes: >
+      This was a secondary evidence quality gap identified in iteration 4 S-004 pre-mortem.
+      The guard mechanism is correctly tested; only the exact production scenario is not exercised.
+      Does not block the quality gate.
+
+  - gap: "Stale 'Test #17 of 17' reference in FOI-1 section (introduced by iteration 5 test #18 addition)"
+    revision: >
+      FOI-1 body retains the phrase "Test #17 of 17, all passing" which was correct at iteration 4
+      but is no longer accurate now that 18 tests exist. This is a minor internal inconsistency
+      introduced by the iteration 5 revision: the FOI-1 section was not updated to reflect the
+      new total test count.
+    closed: false
+    impact: minor
+    notes: >
+      This is the only new defect introduced in iteration 5. It is a stale count reference,
+      not a contradiction in evidence or methodology. The overall test count in the pytest
+      output (18/18), the section heading, and checklist item #11 are all correct. The FOI-1
+      body frozen count is a cosmetic imprecision. Limits Internal Consistency to 0.94.
+
+# ============================================================
+# DIMENSION SCORES
+# ============================================================
+dimensions:
+  completeness:
+    score: 0.95
+    weight: 0.20
+    weighted: 0.1900
+    evidence: >
+      Advancement from 0.94 to 0.95 justified by closure of the happy-path gap.
+      All 14 constraint checklist items are now PASS, FIXED, or TRACKED (only FOI-2).
+      Item #14 ("Happy-path pipeline produces non-empty skills output") is PASS, backed
+      by test #18 with full verbose pytest output.
+      The four original Phase 2 constraints remain PASS (factory pattern, dispatch pattern,
+      parser verification, circular import closure).
+      The two bug fixes remain FIXED (#5, #8: mode mapping and dataclass alignment).
+      FOI-1 guard remains FIXED (#12) with code and test evidence.
+      FOI-2 remains TRACKED (#13) — this is the sole non-PASS/FIXED item, and it is
+      explicitly characterized as low priority design debt outside Phase 2 scope.
+      Anti-leniency challenge: Does FOI-2 prevent 0.95? FOI-2 is not a Phase 2 requirement;
+      it is tracked design debt. The iteration 4 scorer held Completeness at 0.94 due to
+      the happy-path gap, not FOI-2. Removing the happy-path gap as the binding constraint
+      leaves only FOI-2, which is deferred by deliberate design decision. 0.95 is warranted.
+      Not advancing to 1.00: FOI-2 prospective tracking is a real (if minor) gap.
+
+  internal_consistency:
+    score: 0.94
+    weight: 0.20
+    weighted: 0.1880
+    evidence: >
+      Score held at 0.94. No contradictions found in the core evidence chain.
+      New test #18 addition is internally consistent: section heading "All 18 Evidence Tests Pass
+      (16 Phase 1 + 1 Guard + 1 Happy-Path)" matches the pytest output (18/18), the
+      constraint checklist (#11: "All 18 tests pass"), and the appendix description.
+      Mode mapping claims are consistent: constraint #5/#8 match the code excerpt
+      at main.py:740-742, which matches the call-site audit (none pass "stdout").
+      FOI-1 section: IMPLEMENTED designation, guard code excerpt, test reference — all
+      mutually consistent and consistent with iteration 4 evidence.
+      Defect preventing 0.95: The FOI-1 body at the end of the section reads
+      "Test #17 of 17, all passing" — a frozen reference from iteration 4. With test #18
+      added, the total is now 18. This is a stale count embedded in a section that was
+      not updated when test #18 was added. It does not contradict the pytest output
+      (which correctly shows 18/18), but it is an inconsistency between the FOI-1 section
+      body and the actual test count. Anti-leniency: 0.95 requires "No contradictions,
+      all claims aligned." The stale count is a minor misalignment. Held at 0.94.
+
+  methodological_rigor:
+    score: 0.94
+    weight: 0.20
+    weighted: 0.1880
+    evidence: >
+      Score held at 0.94. Iteration 5 closes the happy-path methodological gap:
+      the extraction-rendering pipeline is now exercised end-to-end with real templates,
+      mock extractor, and real handler orchestration. This is a genuine methodological
+      improvement — the pipeline's functional correctness is now demonstrated, not just
+      asserted.
+      Combined verification methodology from prior iterations is fully maintained and
+      strengthened: static pattern comparison, constructor signatures at file:line, circular
+      import closure, OWASP coverage, runtime smoke tests with echo $? capture,
+      18-test verbose pytest output, call-site audit.
+      The methodology arc is complete: identify risk (S-004) -> implement fix -> confirm
+      fix with test -> run smoke test -> verify via happy-path unit test -> update checklist.
+      Residual limitation preventing 0.95: The guard unit test (test #17) still uses
+      /nonexistent/templates/dir rather than the production CWD-mismatch scenario
+      (chdir() into subdirectory with relative path). This was identified in iteration 4
+      S-004 pre-mortem as the remaining methodological gap. Iteration 5 did not close it.
+      Anti-leniency: 0.95 would require closing this gap or demonstrating equivalence.
+      The gap is real and documented. Held at 0.94.
+
+  evidence_quality:
+    score: 0.95
+    weight: 0.15
+    weighted: 0.1425
+    evidence: >
+      Advancement from 0.93 to 0.95 justified. This was the binding dimension across
+      iterations 3 and 4. The binding constraint was explicit: "functional correctness
+      of the skills extraction pipeline (non-empty rendered output for valid data) remains
+      asserted via schema explanation rather than demonstrated by test." This constraint is
+      now closed.
+      Test #18 (test_happy_path_produces_non_empty_skills_output) provides the required
+      controlled-fixture demonstration:
+        - Real Jinja2Renderer with actual .context/templates/docs/ templates (not mocked).
+          This is significant: it confirms the template itself correctly renders a SKILLS_TABLE
+          row for valid SkillData input, not merely that the Python rendering logic executes.
+        - Mock SkillExtractor returning one SkillData(name="test-skill", purpose="Test purpose").
+        - Real GenerateDocsCommandHandler.handle() exercised in stdout mode.
+        - Assertions: result.success is True; result.skills_count == 1;
+          "test-skill" in result.sections["SKILLS_TABLE"].
+      This directly demonstrates what was missing: the extraction-to-render pipeline
+      produces non-empty, correct output when given valid skill data.
+      The pre-existing base evidence remains strong and unchanged:
+        (1) Exit code capture: echo $? with "Exit: 0" and "Exit: 1" as shell output.
+        (2) Full 18-test verbose pytest output with every test name individually listed.
+        (3) Call-site audit: 3 callers at file:line, none passing "stdout".
+        (4) Static evidence chain: line-number citations, code excerpts, handler validation path.
+        (5) Guard implementation evidence (FOI-1): code excerpt + test #17.
+      Anti-leniency challenge: Does 0.95 overstate quality? The iteration 4 projection
+      was explicitly "Evidence Quality 0.93 -> 0.95" upon adding this specific test.
+      The test matches option (b) from iteration 4 S-010 analysis exactly. The evidence
+      is direct, controlled, and traceable. 0.95 is the correct advancement.
+      Residual limiting factors (prevents 1.00):
+        (a) CWD-mismatch scenario unexercised (test #17 uses absent path, not chdir scenario).
+        (b) Smoke test still shows empty table in production (expected, documented, explained).
+      These are documented and acknowledged. 0.95 is not 1.00.
+
+  actionability:
+    score: 0.94
+    weight: 0.15
+    weighted: 0.1410
+    evidence: >
+      Score held at 0.94. Iteration 5 closes the single remaining actionable recommendation
+      from iteration 4 (the happy-path test), so the report is now fully actioned on
+      Priority 1. This is a strong positive signal.
+      Actionability is high: 18/18 tests pass; smoke tests are reproducible with exact
+      commands and echo $? capture; all bug fixes are implemented and documented; the
+      checklist provides a clear merge-readiness signal.
+      Residual gap preventing 0.95: FOI-2 remains "Deferred to Phase 3+" without a
+      concrete worktracker task ID. This was the only remaining actionability gap after
+      iteration 4, and it is unchanged in iteration 5. A developer receiving this report
+      cannot create or find the FOI-2 tracking artifact without additional lookup.
+      Anti-leniency: 0.95 requires "Clear, specific, implementable actions" with fully
+      resolved tracking. The prospective FOI-2 reference is a real (if minor) gap.
+      Held at 0.94.
+
+  traceability:
+    score: 0.94
+    weight: 0.10
+    weighted: 0.0940
+    evidence: >
+      Score held at 0.94. Test #18 adds a complete traceability chain:
+        iteration 4 gap (Evidence Quality 0.93, happy-path missing) ->
+        S-010 recommendation (priority 1: controlled-fixture unit test) ->
+        test_happy_path_produces_non_empty_skills_output (test #18) ->
+        constraint checklist #14 (PASS) ->
+        pytest output (PASSED [100%]).
+      This is a clean, closed traceability loop for the major new addition.
+      The FOI-1 chain remains fully closed from iteration 4 (S-004 -> jinja2_renderer.py:46-50
+      -> test #17 -> checklist #12 FIXED).
+      The mode mapping chain remains fully closed (bug diagnosis -> main.py:740-742 ->
+      dataclass alignment -> call-site audit -> smoke tests -> checklist #5/#8).
+      Navigation table covers all sections with anchor links. OWASP categories mapped to code.
+      Constructor signatures traced to file:line throughout.
+      Residual gap preventing 0.95: FOI-2 traceability chain remains open.
+      "Deferred to Phase 3+" without a concrete task ID. The chain from FOI-2 risk ->
+      tracked work item -> assignable task cannot be followed without additional lookup.
+      This is unchanged from iteration 4. Anti-leniency: 0.95 requires "Full traceability
+      chain." One chain (FOI-2) remains prospective. Held at 0.94.
+
+# ============================================================
+# ARITHMETIC VERIFICATION
+# ============================================================
+arithmetic_verification:
+  - "completeness:         0.95 × 0.20 = 0.1900"
+  - "internal_consistency: 0.94 × 0.20 = 0.1880"
+  - "methodological_rigor: 0.94 × 0.20 = 0.1880"
+  - "evidence_quality:     0.95 × 0.15 = 0.1425"
+  - "actionability:        0.94 × 0.15 = 0.1410"
+  - "traceability:         0.94 × 0.10 = 0.0940"
+  - "sum: 0.1900 + 0.1880 + 0.1880 + 0.1425 + 0.1410 + 0.0940"
+  - "step-by-step: 0.1900+0.1880=0.3780, +0.1880=0.5660, +0.1425=0.7085, +0.1410=0.8495, +0.0940=0.9435"
+  - "double-check (alt order): 0.1900+0.1425=0.3325, +0.1880=0.5205, +0.1880=0.7085, +0.1410=0.8495, +0.0940=0.9435 CONFIRMED"
+  - "gap to threshold: 0.9435 - 0.94 = +0.0035 (above threshold)"
+
+composite: 0.9435
+
+# ============================================================
+# VERDICT
+# ============================================================
+verdict: PASS
+verdict_rationale: >
+  Composite 0.9435 exceeds the 0.94 threshold by 0.0035. Quality gate met (H-13).
+  The single binding constraint from iteration 4 — the happy-path skills extraction
+  gap in Evidence Quality (0.93) — is now closed by test #18, which uses real
+  Jinja2Renderer with actual templates and demonstrates non-empty SKILLS_TABLE output
+  for valid SkillData input. This advances Evidence Quality from 0.93 to 0.95 and
+  Completeness from 0.94 to 0.95, adding 0.0050 to the composite (0.9385 -> 0.9435).
+  All other dimensions hold at their iteration 4 scores (0.94 each):
+    - Internal Consistency: 0.94 (minor stale "Test #17 of 17" reference in FOI-1 body
+      prevents 0.95 advancement)
+    - Methodological Rigor: 0.94 (CWD-mismatch scenario unexercised prevents 0.95)
+    - Actionability: 0.94 (FOI-2 no concrete task ID prevents 0.95)
+    - Traceability: 0.94 (FOI-2 prospective traceability chain prevents 0.95)
+  No critical findings from adv-executor reports. No blocking issues.
+  Remaining open items are all minor and explicitly deferred (FOI-2, CWD-mismatch test,
+  stale count reference). None are Phase 2 blocking constraints.
+  Delta from iteration 4: +0.0050. Cumulative delta: +0.0765 (0.8670 -> 0.9435).
+
+# ============================================================
+# STRATEGY FINDINGS
+# ============================================================
+strategy_findings:
+  S-003_steelman: >
+    Iteration 5 is a precisely targeted, minimal revision that closes exactly the gap
+    identified by the iteration 4 scorer. The test design is strong: using the real
+    Jinja2Renderer with actual templates (not mocked) rather than a pure unit test
+    means the evidence reaches deeper into the stack — it confirms the template itself
+    correctly handles a SkillData record, not merely that the Python rendering
+    infrastructure executes. The mock extractor is appropriate: it isolates the
+    extraction failure from the rendering proof, making the test deterministic and
+    non-flaky. The assertion chain (success, skills_count, "test-skill" in SKILLS_TABLE)
+    is well-chosen — it confirms the full pipeline data flow, not just that no exception
+    was raised. Constraint checklist item #14 is correctly added and cross-referenced.
+    The iteration 5 revision is the most efficient in the series: one test, one checklist
+    entry, closes the binding gap.
+
+  S-002_devils_advocate: >
+    (1) The "Test #17 of 17" stale reference in the FOI-1 section is a minor documentation
+    defect introduced by iteration 5. When test #18 was added to the report, the FOI-1
+    body was not updated to reflect the new total. This is not an evidence error, but
+    it is an internal inconsistency that a careful reviewer will notice. It keeps
+    Internal Consistency at 0.94 rather than allowing advancement.
+    (2) FOI-2 (-> Any return type) remains deferred to Phase 3+ with no concrete task ID
+    across five iterations. The devil's advocate assessment from iteration 3 — "deferring
+    type safety improvements at C4 criticality without explaining why the pattern should
+    be perpetuated" — still applies. While the risk is genuinely low (no runtime effect),
+    the absence of a live worktracker reference means this debt is not formally tracked.
+    (3) The CWD-mismatch scenario (chdir into subdirectory) remains unexercised across
+    five iterations. The guard mechanism is tested via /nonexistent path, which is
+    functionally equivalent but not scenarically identical. A future CI run from a
+    subdirectory would be the first time the exact failure mode is exercised in practice.
+    (4) The happy-path test uses a mock extractor. This is appropriate and intentional,
+    but it means the extraction logic (AstFrontmatterReader -> SkillExtractor) is not
+    exercised in the happy-path test. The test proves the rendering pipeline works; it
+    does not prove the full end-to-end CLI pipeline from real SKILL.md files produces
+    expected output. This is a known and documented limitation.
+
+  S-010_self_refine: >
+    With the quality gate now met, no binding gap remains for this iteration cycle.
+    Minor residual improvements for future maintenance iterations:
+    (1) Update the FOI-1 body from "Test #17 of 17, all passing" to "Test #17 of 18"
+        (or more precisely, reference the test name rather than an ordinal count).
+        Low effort, eliminates the stale count reference. Impact: Internal Consistency
+        0.94 -> 0.95, adds 0.0020 to composite.
+    (2) Add a concrete worktracker task ID for FOI-2 resolution. Impact: Traceability
+        and Actionability 0.94 -> 0.95 each, adds 0.0025 to composite.
+    (3) Strengthen guard unit test with chdir() CWD-mismatch scenario. Impact:
+        Methodological Rigor 0.94 -> 0.95, adds 0.0020 to composite.
+    Combined impact of all three: +0.0065, composite would reach approximately 0.9500.
+    None of these are required for the quality gate — they are polish items.
+
+  S-004_pre_mortem: >
+    Post-gate pre-mortem assessment of remaining production risk:
+    (1) MITIGATED — Template directory not found. Guard implemented at
+        jinja2_renderer.py:46-50. Fail-fast at construction time. Test #17 confirms.
+    (2) MOST LIKELY REMAINING — Skills schema silent empty output. All 13 SKILL.md
+        files in the current codebase lack a name field. A user running jerry docs generate
+        receives exit 0 with an empty skills table and 13 warnings. Exit 0 with empty table
+        is technically correct behavior (no code error), but may be interpreted as a
+        product defect. This is a data/schema alignment issue, not a code defect, but
+        it creates a confusing first-run experience. Addressed by data fix (adding name
+        fields to SKILL.md files), not code fix.
+    (3) MINOR — Mode contract sentinel. The None/stdout mapping at main.py:741 is
+        non-obvious. A future developer may remove it. test_invalid_mode_rejected
+        protects against arbitrary invalid modes but not specifically against
+        mode="stdout" being passed directly. Regression risk is low but present.
+    (4) MINOR — CWD-relative template path. Guard is implemented and tested, but
+        the test uses /nonexistent not the CWD-mismatch scenario. The guard will fire
+        correctly in the CWD-mismatch case (is_dir() returns False), but this is
+        not confirmed by test. CI runs always from repo root, so this risk is low.
+
+# ============================================================
+# IMPROVEMENT RECOMMENDATIONS (post-PASS, optional polish)
+# ============================================================
+revision_recommendations:
+  - priority: 1
+    dimension: internal_consistency
+    current: 0.94
+    target: 0.95
+    action: >
+      Update the FOI-1 body reference "Test #17 of 17, all passing" to reflect the
+      correct total (18 tests). The phrase was accurate at iteration 4 but was not
+      updated when test #18 was added in iteration 5. A simple fix: change
+      "Test #17 of 17" to "test_jinja2_renderer_rejects_missing_template_dir (see
+      full pytest output above)" or update the count to "Test #17 of 18."
+      This is a cosmetic fix requiring no code changes.
+
+  - priority: 2
+    dimension: traceability + actionability
+    current: 0.94 + 0.94
+    target: 0.95 + 0.95
+    action: >
+      Resolve FOI-2 prospective tracking to a concrete worktracker task ID. Create
+      or reference the child task under ST-002 for -> Any return type resolution
+      in create_docs_generator(). Update FOI-2 tracking line to "Tracked as
+      ST-002/task-NNN." This closes the one remaining prospective reference and
+      makes the traceability and actionability chains fully concrete.
+
+  - priority: 3
+    dimension: methodological_rigor
+    current: 0.94
+    target: 0.95
+    action: >
+      Strengthen the guard unit test (test #17) to exercise the actual production
+      failure scenario. Use tempfile and os.chdir() to navigate into a subdirectory,
+      then construct Jinja2Renderer with the relative path ".context/templates/docs".
+      Assert FileNotFoundError is raised. This confirms the guard fires on the exact
+      CWD-mismatch scenario identified by S-004 pre-mortem, not merely on a fully
+      absent path. Restore original directory with os.chdir() in teardown.
+
+# ============================================================
+# LENIENCY BIAS CHECK
+# ============================================================
+leniency_bias_check:
+  each_dimension_scored_independently: true
+  evidence_documented_for_each_score: true
+  uncertain_scores_resolved_downward: true
+  first_draft_calibration_considered: false  # iteration 5 of a C4 deliverable
+  no_dimension_above_0_95_without_exceptional_evidence: true
+  notes: >
+    Anti-leniency scrutiny applied to six decision points:
+    (1) Completeness 0.94 -> 0.95 challenged: Is the advancement from 0.94 warranted?
+        The iteration 4 scorer explicitly stated the happy-path gap was the binding
+        constraint for Completeness. The gap is now closed. FOI-2 remains, but was
+        not the binding constraint (it is design debt outside Phase 2 scope, deferred
+        by deliberate decision). 0.95 is directly supported by the scoring logic that
+        produced 0.94: close the binding gap, the score advances. Justified.
+    (2) Evidence Quality 0.93 -> 0.95 challenged: Is 0.95 too aggressive (should it be 0.94)?
+        The iteration 4 projection was explicitly "0.93 -> 0.95" for this exact test.
+        The test matches the recommended design (option b from S-010) precisely. The
+        use of real Jinja2Renderer with actual templates goes beyond the minimum — it
+        provides integration-level evidence, not just unit-level. 0.95 not 0.94 is
+        warranted because the evidence addresses the full claim (pipeline produces
+        non-empty output) with stronger evidence than a pure mock-only test would.
+        Anti-leniency: if uncertain between 0.94 and 0.95, choose lower. Am I uncertain?
+        The iteration 4 projection was 0.95. The test matches the projection. The
+        evidence is direct and credible. Not uncertain — 0.95 is justified.
+    (3) Internal Consistency held at 0.94 not 0.95: The stale "Test #17 of 17" reference
+        is a real, findable inconsistency in the document. It was introduced by the
+        iteration 5 revision (adding test #18 without updating all references). Anti-leniency:
+        0.95 requires no misalignments. There is a misalignment. Held at 0.94.
+    (4) Methodological Rigor held at 0.94 not 0.95: The CWD-mismatch test gap is
+        unchanged. The happy-path test closure does not address this gap. Anti-leniency:
+        two residual gaps (CWD scenario and the note about happy-path rendering being
+        mock-only) prevent 0.95. Held at 0.94.
+    (5) Actionability and Traceability held at 0.94: FOI-2 prospective tracking is
+        unchanged across all five iterations. This is a persistent minor limitation.
+        Anti-leniency: 0.95 requires no prospective references. Held at 0.94.
+    (6) Composite 0.9435 calibration check: Delta from iteration 4 is +0.0050. This
+        is proportionate to the scope of change (one test closing one gap, advancing
+        two dimensions). Prior deltas: +0.0715 total across iterations 1-4. The
+        0.0050 delta is the smallest single-iteration advance, which is correct for
+        a change that closed one narrow gap. No inflation detected. Composite is
+        mathematically correct and properly calibrated.
+
+# ============================================================
+# SESSION CONTEXT (orchestrator handoff schema)
+# ============================================================
+session_context:
+  verdict: PASS
+  composite_score: 0.9435
+  threshold: 0.94
+  weakest_dimension: internal_consistency  # tied with methodological_rigor, actionability, traceability at 0.94; listing internal_consistency as it has a new defect introduced in iter 5
+  weakest_score: 0.94
+  critical_findings_count: 0
+  iteration: 5
+  improvement_recommendations:
+    - "Update FOI-1 body stale count reference 'Test #17 of 17' to reflect 18 total tests (Internal Consistency 0.94 -> 0.95, adds 0.0020)"
+    - "Add concrete worktracker task ID for FOI-2 (Traceability + Actionability 0.94 -> 0.95 each, adds 0.0025)"
+    - "Strengthen guard test with chdir() CWD-mismatch scenario (Methodological Rigor 0.94 -> 0.95, adds 0.0020)"
+  delta_from_iteration_4: +0.0050
+  cumulative_delta: +0.0765  # 0.8670 -> 0.9435
+  iteration_ceiling: 10
+  plateau_detection: false  # delta 0.0050 is above 0.01 only marginally — note for future tracking
+  gap_to_threshold: +0.0035  # above threshold
+  dimensions_at_0_95: [completeness, evidence_quality]
+  dimensions_at_0_94: [internal_consistency, methodological_rigor, actionability, traceability]
+  quality_gate_met: true

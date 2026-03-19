@@ -784,7 +784,6 @@ def create_ci_detect_bump_type_handler(
     )
 
 
-
 # =============================================================================
 # Documentation Generation Factories (PROJ-0037)
 # =============================================================================
@@ -796,6 +795,11 @@ def create_docs_generator() -> Any:
     Wires YamlFrontmatterReader -> SkillExtractor -> Jinja2Renderer ->
     GenerateDocsCommandHandler following the composition root pattern.
 
+    Resolves the repo root by walking up from this file until pyproject.toml
+    is found, then constructs absolute paths for all path-sensitive dependencies.
+    This ensures correct resolution regardless of the CWD at invocation time
+    (BUG-002 fix).
+
     Returns:
         GenerateDocsCommandHandler ready to handle GenerateDocsCommand.
 
@@ -803,7 +807,14 @@ def create_docs_generator() -> Any:
         - PROJ-0037: Auto-Documentation Module
         - ADR-PROJ0037-001: Doc Module Design
         - BUG-001: Replaced AstFrontmatterReader with YamlFrontmatterReader
+        - BUG-002: Template path anchored to repo root, not CWD
     """
+    # Discover the repo root by walking up from this file until pyproject.toml
+    # is found.  This anchors all path resolution to the repo root regardless
+    # of the CWD at invocation time (BUG-002).
+    import logging as _logging
+    from pathlib import Path as _Path
+
     from src.docs.application.handlers.commands.generate_docs_command_handler import (
         GenerateDocsCommandHandler,
     )
@@ -813,14 +824,38 @@ def create_docs_generator() -> Any:
         YamlFrontmatterReader,
     )
 
+    _logger = _logging.getLogger(__name__)
+    _here = _Path(__file__).resolve().parent
+    _candidate = _here
+    while True:
+        if (_candidate / "pyproject.toml").exists():
+            _repo_root = _candidate
+            break
+        _parent = _candidate.parent
+        if _parent == _candidate:
+            # Reached filesystem root without finding pyproject.toml.
+            # Fall back to CWD and warn — template resolution may fail.
+            _repo_root = _Path.cwd().resolve()
+            _logger.warning(
+                "Could not locate pyproject.toml walking up from %s; "
+                "falling back to CWD for repo root: %s",
+                _here,
+                _repo_root,
+            )
+            break
+        _candidate = _parent
+
+    template_dir = str(_repo_root / ".context" / "templates" / "docs")
+
     reader = YamlFrontmatterReader()
     extractor = SkillExtractor(reader=reader)
-    renderer = Jinja2Renderer(template_dir=".context/templates/docs")
+    renderer = Jinja2Renderer(template_dir=template_dir)
 
     return GenerateDocsCommandHandler(
         extractor=extractor,
         renderer=renderer,
         reader=reader,
+        repo_root=_repo_root,
     )
 
 

@@ -1,0 +1,425 @@
+barrier: barrier-2
+quality_gate: QG-B2
+iteration: 4
+threshold: 0.94
+criticality: C4
+strategies_applied: [S-014, S-003, S-002, S-010, S-004]
+
+# ============================================================
+# GAP CLOSURE VERIFICATION (Iteration 3 -> Iteration 4)
+# ============================================================
+gap_closure_summary:
+  - gap: "MOST LIKELY failure mode (CWD template path) unmitigated in live code (Methodological Rigor: 0.92)"
+    revision: >
+      Guard implemented in Jinja2Renderer.__init__ at jinja2_renderer.py:46-50.
+      Checks Path(template_dir).is_dir() before constructing SandboxedEnvironment.
+      Raises FileNotFoundError with literal path and repo-root hint.
+      Fail-fast at object construction time, not deferred to render time.
+      Test #17 (test_jinja2_renderer_rejects_missing_template_dir) added and passing:
+      asserts FileNotFoundError with message "Template directory not found" on
+      Jinja2Renderer(template_dir="/nonexistent/templates/dir").
+      FOI-1 section updated from "TRACKED" to "IMPLEMENTED" with code excerpt and test reference.
+      Constraint checklist #12 updated from "TRACKED" to "FIXED" with evidence citation.
+      SOURCE VERIFIED: jinja2_renderer.py lines 50-55 confirmed. Test file line 372-377 confirmed.
+    closed: true
+    notes: >
+      Full closure. The MOST LIKELY pre-mortem concern (across all 3 prior iterations) is now
+      mitigated in code with a unit test confirming the guard. The evidence chain is complete:
+      S-004 risk -> guard implemented -> test confirms -> constraint checklist FIXED.
+      Residual minor limitation: the unit test uses /nonexistent/templates/dir (fully absent
+      path) rather than a relative path evaluated from a non-repo-root CWD. This tests the
+      same guard but not the exact production failure scenario. Acceptable for barrier gate.
+
+  - gap: "-> Any return type has no concrete task ID (Traceability, Actionability: 0.93)"
+    revision: >
+      FOI-2 section unchanged. Still "Deferred to Phase 3+". No concrete worktracker task ID
+      added. The prospective reference to "to be tracked under ST-002" remains prospective.
+    closed: false
+    impact: minor
+    notes: >
+      FOI-2 is a type annotation improvement (low priority per report), not a functional or
+      security gap. Deferred status is reasonable. Missing concrete task ID is a minor
+      traceability limitation only.
+
+  - gap: "No controlled-fixture test demonstrating happy-path non-empty skills output (Evidence Quality: 0.93)"
+    revision: >
+      Not acted upon. Smoke test still shows empty skills table (13 SKILL.md files skipped due
+      to missing name field). No controlled fixture test added to exercise the extraction
+      pipeline with valid skill data.
+    closed: false
+    impact: moderate
+    notes: >
+      This gap persists from iteration 3. The functional correctness of the skills extraction
+      pipeline (non-empty rendered output for valid data) remains asserted via schema
+      explanation rather than demonstrated by test or controlled smoke run. Evidence Quality
+      cannot advance beyond 0.93 until this is closed.
+
+# ============================================================
+# DIMENSION SCORES
+# ============================================================
+dimensions:
+  completeness:
+    score: 0.94
+    weight: 0.20
+    evidence: >
+      All Phase 2 constraints verified across a 13-item constraint checklist. 12 items are
+      PASS or FIXED; 1 is TRACKED (FOI-2: -> Any return type).
+      Critical improvement over iteration 3: FOI-1 (CWD template path guard) is now
+      IMPLEMENTED in code and confirmed by test #17. Constraint checklist #12 moved from
+      TRACKED to FIXED. The evidence chain is complete: risk identified (S-004) -> guard
+      implemented (jinja2_renderer.py:46-50) -> test confirms (test #17) -> checklist FIXED.
+      Guard code verified in source: Path(template_dir).is_dir() checked before
+      SandboxedEnvironment construction at lines 50-55. Test verified at lines 372-377
+      of test_phase1_evidence.py.
+      All four Phase 2 original constraints remain PASS: create_docs_generator() factory
+      pattern, _handle_docs() dispatch pattern, _add_docs_namespace presence, circular
+      import closure. Mode mapping bug fix and dataclass alignment remain FIXED. 17 tests pass.
+      Residual gap: No controlled-fixture test demonstrating the happy-path skills extraction
+      pipeline (non-empty skills table for valid data). Prevents 0.95+. This is a Phase 3
+      verification gap, not a Phase 2 constraint violation, but it limits the completeness
+      of functional evidence.
+      Scored 0.94 per iteration 3 projection: "Apply FOI-1 guard — Completeness 0.93 -> 0.94."
+      Evidence fully supports this advancement.
+
+  internal_consistency:
+    score: 0.94
+    weight: 0.20
+    evidence: >
+      No contradictions found. Internal consistency is improved from iteration 3.
+      The pre-existing tension identified in iteration 3 (Status: PASS WITH BUG FIX while
+      MOST LIKELY failure mode unmitigated) is now fully resolved: FOI-1 section reads
+      "IMPLEMENTED" and constraint checklist #12 reads "FIXED." The header status
+      "PASS WITH BUG FIX APPLIED" accurately describes the Phase 2 scope (mode mapping
+      bug). The FOI-1 framing no longer carries any tension between the status designation
+      and the risk state.
+      All remaining claims are mutually consistent:
+      (a) Guard code excerpt in FOI-1 matches jinja2_renderer.py:46-50 — confirmed in source.
+      (b) Test #17 in pytest output matches test at lines 372-377 of test file — confirmed.
+      (c) Constraint checklist FIXED designation for #12 consistent with FOI-1 IMPLEMENTED.
+      (d) FOI-2 TRACKED designation consistent with "Deferred to Phase 3+" in FOI-2 body.
+      (e) 17 tests passing in pytest output consistent with 16 original + 1 guard test.
+      Score held at 0.94. Rubric 0.9+: "No contradictions, all claims aligned" — fully met.
+      Anti-leniency check: could this reach 0.95? That would require essentially perfect
+      consistency with no imprecision. FOI-2 still has prospective tracking ("to be tracked
+      under ST-002") and no concrete task ID. This is a minor imprecision, not a contradiction,
+      but prevents 0.95. Held at 0.94.
+
+  methodological_rigor:
+    score: 0.94
+    weight: 0.20
+    evidence: >
+      Critical improvement over iteration 3 (0.92 -> 0.94). The single most important
+      methodological gap across all three prior iterations — the MOST LIKELY pre-mortem
+      production failure mode (CWD-relative template path) being unmitigated in live code
+      — is now closed.
+      The methodology is now complete for this risk:
+        S-004 pre-mortem classification (MOST LIKELY) ->
+        Guard implemented (jinja2_renderer.py:46-50, fail-fast at construction time) ->
+        Unit test confirms guard fires (test_jinja2_renderer_rejects_missing_template_dir) ->
+        FOI-1 section updated with code excerpt and test evidence ->
+        Constraint checklist #12 FIXED.
+      This implements the strongest methodological response: the risk is mitigated in code,
+      not just documented. Fail-fast at object construction time means misconfiguration is
+      surfaced before any document generation work begins — better than deferred detection.
+      Combined static + runtime verification methodology from iterations 2-3 is fully
+      maintained: static pattern comparison, constructor signature verification at file:line,
+      circular import closure, OWASP A01/A03/A05/A09 coverage, runtime smoke tests with
+      explicit echo $? exit code capture, full verbose pytest output (17 tests), call-site
+      grep audit.
+      Scored 0.94 per iteration 3 projection: "Apply FOI-1 guard — Methodological Rigor
+      0.92 -> 0.94." Evidence fully supports this advancement.
+      Residual limitation (prevents 0.95+): The unit test uses /nonexistent/templates/dir
+      (fully absent path) rather than a relative path evaluated from a non-repo-root CWD.
+      This tests the guard mechanism correctly but not the exact production failure scenario.
+      No subdirectory smoke test exists. The happy-path rendering pipeline also remains
+      unexercised by any test. Anti-leniency: 0.94 not 0.95.
+
+  evidence_quality:
+    score: 0.93
+    weight: 0.15
+    evidence: >
+      Score held at 0.93. Iteration 4 adds genuine new evidence for the guard (code excerpt
+      in FOI-1 body matching jinja2_renderer.py:46-50 verified in source; test #17 visible
+      in full pytest output with explicit test name). The guard evidence is strong and
+      directly addresses the FOI-1 risk that was the MOST LIKELY failure mode.
+      The base evidence from iteration 3 is fully maintained and remains strong:
+      (1) Exit code capture: explicit echo $? commands with "Exit: 0" and "Exit: 1" as
+          actual shell output — not annotation.
+      (2) Full 17-test verbose pytest output: all test names individually listed. Test #17
+          (test_jinja2_renderer_rejects_missing_template_dir) visible at [100%], confirming
+          guard coverage.
+      (3) Call-site grep audit: 3 callers documented at file:line, none passing "stdout".
+      (4) Static evidence chain: source citations with line numbers throughout, code excerpts
+          for both buggy and fixed states, handler validation at generate_docs_command_handler.py:111.
+      (5) FOI-1 code excerpt: guard implementation in Jinja2Renderer.__init__ at lines 50-55
+          is present in the report and verified in source.
+      Residual gap preventing 0.94+ (unchanged from iteration 3): The smoke test demonstrates
+      the bug fix path (exit 0, no crash) and check-mode routing (exit 1 for --check), but
+      the functional output for the primary use case (skills table with non-empty content)
+      remains empty in both smoke tests. All 13 SKILL.md files are skipped. The explanation
+      is adequate and present ("data/schema alignment issue, not code defect") but the
+      evidence of functional correctness for valid skill data is absent. A controlled-fixture
+      test or modified SKILL.md with a name field would close this.
+      Anti-leniency: the iteration 3 scorer explicitly held Evidence Quality at 0.93 with
+      this gap open. Iteration 4 did not close the gap. Score must remain 0.93.
+
+  actionability:
+    score: 0.94
+    weight: 0.15
+    evidence: >
+      Improved from 0.93 to 0.94. The primary actionability gap from iteration 3 was
+      "prospective rather than resolved" FOI deferral tracking — specifically, FOI-1 being
+      deferred to Phase 3+ with a recommended fix code block but no implementation.
+      Iteration 4 resolves this: FOI-1 is no longer a prospective deferral — the guard is
+      IMPLEMENTED in code and confirmed by test. A developer receiving this report can merge
+      immediately with no blocking TODOs, and the primary design risk is mitigated in the
+      codebase, not just documented.
+      The report provides:
+      (1) All Phase 2 constraints verified with concrete evidence — merge-ready.
+      (2) Mode mapping fix: complete and documented; command any developer can reproduce.
+      (3) FOI-1: guard implemented at jinja2_renderer.py:46-50; test confirms; checklist FIXED.
+          Zero action required from the reviewer — it is done.
+      (4) FOI-2: recommended fix code block (TYPE_CHECKING pattern) provided; classified as
+          low priority; deferred to Phase 3+. A developer can directly implement the code.
+      (5) Smoke test commands reproducible: explicit shell commands with echo $?.
+      Residual gap preventing 0.95+: FOI-2 tracking reference remains prospective ("Deferred
+      to Phase 3+") with no concrete task ID (no ST-002-task-NNN). For C4 rigor, a live
+      worktracker reference is stronger than a prospective one. This is a minor gap given
+      FOI-2 is low priority (type annotation, not functional or security). Anti-leniency:
+      0.94 warranted, not 0.95.
+
+  traceability:
+    score: 0.94
+    weight: 0.10
+    evidence: >
+      Improved from 0.93 to 0.94. The FOI-1 traceability chain is now fully closed:
+        S-004 pre-mortem MOST LIKELY finding ->
+        FOI-1 section (IMPLEMENTED, with code excerpt and test reference) ->
+        jinja2_renderer.py:46-50 (guard implementation — source verified) ->
+        test_jinja2_renderer_rejects_missing_template_dir (test #17 — source verified) ->
+        Constraint checklist #12 FIXED.
+      This eliminates the prospective link that suppressed iteration 3 traceability.
+      Full traceability chain for the mode mapping fix is unchanged and strong:
+        Bug diagnosis (mode="stdout") -> Fix at main.py:740-742 ->
+        Dataclass alignment in generate_docs_command.py ->
+        Constraint checklist #5/#8 -> Smoke tests #9/#10/#11 -> Appendix evidence.
+      Navigation table includes all sections with correct anchors. All files reference
+      PROJ-0037 in docstrings. ADR-PROJ0037-001 cited in factory docstring. Constructor
+      signatures traced to file:line. OWASP categories mapped to specific code paths.
+      Iteration-to-iteration revision history traceable via gap closure section.
+      Residual gap preventing 0.95+: FOI-2 traceability chain remains partially open.
+      "Deferred to Phase 3+" without a concrete task ID (no ST-002-task-NNN). One
+      traceability chain — from FOI-2 risk -> tracked work item -> assignable task — is
+      prospective rather than resolved. Given FOI-2 is low priority (type annotation),
+      this is a minor limitation. Anti-leniency: 0.94 not 0.95.
+
+# ============================================================
+# ARITHMETIC VERIFICATION
+# ============================================================
+arithmetic_verification:
+  - "completeness:         0.94 × 0.20 = 0.1880"
+  - "internal_consistency: 0.94 × 0.20 = 0.1880"
+  - "methodological_rigor: 0.94 × 0.20 = 0.1880"
+  - "evidence_quality:     0.93 × 0.15 = 0.1395"
+  - "actionability:        0.94 × 0.15 = 0.1410"
+  - "traceability:         0.94 × 0.10 = 0.0940"
+  - "sum: 0.1880 + 0.1880 + 0.1880 + 0.1395 + 0.1410 + 0.0940"
+  - "step-by-step: 0.1880+0.1880=0.3760, +0.1880=0.5640, +0.1395=0.7035, +0.1410=0.8445, +0.0940=0.9385"
+  - "double-check (alt order): 0.1880+0.1880=0.3760, +0.1395=0.5155, +0.1410=0.6565, +0.1880=0.8445, +0.0940=0.9385 CONFIRMED"
+  - "gap to threshold: 0.94 - 0.9385 = 0.0015"
+
+composite: 0.9385
+
+# ============================================================
+# VERDICT
+# ============================================================
+verdict: REVISE
+verdict_rationale: >
+  Composite 0.9385 is below the 0.94 threshold by 0.0015. Iteration 4 achieved the
+  single most impactful improvement available — the FOI-1 guard implementation — which
+  advanced Completeness, Methodological Rigor, Actionability, and Traceability each
+  from their iteration 3 baselines. Five of six dimensions now score 0.94.
+  The deliverable is blocked at 0.9385 by Evidence Quality (0.93), which cannot advance
+  beyond 0.93 because the primary use case functional correctness (non-empty skills table
+  for valid skill data) remains undemonstrated. All other dimension gaps from prior
+  iterations are resolved.
+  The 0.0015 gap is the smallest distance-to-threshold across all four iterations.
+  Delta from iteration 3: +0.0085. Cumulative delta: +0.0715 (0.8670 -> 0.9385).
+  The remaining path to 0.94 is narrow and specific: demonstrate that the skills
+  extraction pipeline produces non-empty output for valid skill data. One controlled
+  test or modified SKILL.md with a name field would close this.
+
+# ============================================================
+# STRATEGY FINDINGS
+# ============================================================
+strategy_findings:
+  S-003_steelman: >
+    Iteration 4 is precisely targeted, high-quality revision work. The single most
+    important risk identified across three prior iterations — the CWD-relative template
+    path guard — is now mitigated with a clean, idiomatic implementation:
+    fail-fast at construction time via Path.is_dir() check before SandboxedEnvironment
+    instantiation. The error message is clear and actionable: it includes the literal
+    path and a hint to run from the repository root. The test (test_jinja2_renderer_rejects_missing_template_dir)
+    directly validates the guard fires on a nonexistent path and produces the expected
+    message. The constraint checklist and FOI-1 section are updated with surgical precision:
+    exactly the items that changed are updated, nothing else is disturbed. The report is
+    now genuinely close-to-excellent — 5 of 6 dimensions at 0.94, composite at 0.9385,
+    0.0015 from the threshold. This is the most efficient iteration of the four.
+
+  S-002_devils_advocate: >
+    (1) Evidence Quality remains at 0.93 because the happy-path functional correctness gap
+    is unresolved. The smoke test still exits 0 with an empty skills table. A developer
+    who receives this codebase and runs jerry docs generate will see 13 warnings and an
+    empty skills table. The report explains this correctly, but the explanation is not a
+    demonstration. At C4 criticality, "the pipeline is functional because FEATURES renders"
+    is not equivalent to "the pipeline produces correct output for valid skill data."
+    (2) FOI-2 (-> Any return type) remains deferred with no concrete task ID. The iteration 3
+    devil's advocate flagged this as "deferring type safety improvements at C4 criticality
+    without explaining why the pattern should be perpetuated." This critique applies equally
+    in iteration 4. The recommended fix is a TYPE_CHECKING block — a low-risk, well-understood
+    Python pattern. Deferring it has a cost: the factory's return type is undiscoverable
+    without reading the code.
+    (3) The unit test for the guard (test #17) uses /nonexistent/templates/dir. This is not
+    the production failure scenario — the production failure is a relative path (.context/templates/docs)
+    that resolves correctly from the repo root but fails from a subdirectory. The guard
+    works in both cases (is_dir() returns False in both), but the test does not confirm
+    the guard is exercised in the actual CWD-mismatch scenario. A test that creates a
+    temp directory, chdir()s into a subdirectory, and then constructs Jinja2Renderer with
+    the relative path would be a stronger evidence chain.
+
+  S-010_self_refine: >
+    The single remaining improvement needed to cross 0.94:
+    Add a controlled-fixture test demonstrating non-empty skills output. Options:
+    (a) Create a minimal test SKILL.md with a name field in a temp directory. Run
+        jerry docs generate against it (or patch SkillExtractor to return one valid
+        record). Assert the generated skills table is non-empty.
+    (b) Add a unit test: mock SkillExtractor to return one valid SkillRecord with
+        name="test-skill", assert the rendered output includes "test-skill".
+    Option (b) is the most targeted: it directly exercises the extraction-to-render
+    pipeline without requiring a live subprocess run. Expected impact:
+    Evidence Quality 0.93 -> 0.95. Projected composite: 0.9385 + (0.02 × 0.15) = 0.9415.
+    This would cross the 0.94 threshold.
+    A secondary option: resolve FOI-2 prospective tracking to a concrete task ID.
+    This would advance Traceability and Actionability from 0.94 to 0.95 each, adding
+    (0.01 × 0.10) + (0.01 × 0.15) = 0.0025 to composite. Insufficient alone.
+
+  S-004_pre_mortem: >
+    Remaining production failure modes after iteration 4:
+    (1) MITIGATED — Template directory not found. Guard implemented at
+        jinja2_renderer.py:46-50. FileNotFoundError with repo-root hint. This failure
+        mode is no longer a pre-mortem concern.
+    (2) MOST LIKELY REMAINING — Skills schema silent empty output. All 13 SKILL.md files
+        are skipped because the name field is absent. A user running jerry docs generate
+        expecting a populated skills table receives exit 0 with an empty table and 13 warnings.
+        The warnings provide signal that something is wrong, but exit 0 with empty table is
+        not a clear error state. A user reading the docs may conclude the feature does not
+        work. This is now the primary pre-mortem concern for production use.
+    (3) Mode contract reintroduction. The None/stdout sentinel translation at main.py:741
+        is non-obvious. No regression guard test exists that would catch a future developer
+        removing the mapping. test_invalid_mode_rejected catches the "invalid" case but not
+        the "stdout passed directly" regression specifically.
+
+# ============================================================
+# IMPROVEMENT RECOMMENDATIONS
+# ============================================================
+revision_recommendations:
+  - priority: 1
+    dimension: evidence_quality
+    current: 0.93
+    target: 0.95
+    action: >
+      Add a controlled-fixture unit test demonstrating non-empty skills output. Recommended:
+        def test_skills_extraction_pipeline_produces_non_empty_table(tmp_path):
+            # mock SkillExtractor to return one valid SkillRecord with name="test-skill"
+            # exercise handler with a README stub containing SKILLS_TABLE markers
+            # assert "test-skill" appears in the generated output
+      This demonstrates the skills extraction pipeline produces correct output for valid
+      data, not just that it exits 0 with empty output when all data is invalid.
+      Expected composite impact: Evidence Quality 0.93 -> 0.95 -> composite 0.9385 -> 0.9415.
+      This is the single change that crosses the 0.94 threshold.
+
+  - priority: 2
+    dimension: traceability + actionability
+    current: 0.94 + 0.94
+    target: 0.95 + 0.95
+    action: >
+      Resolve FOI-2 prospective tracking to a concrete worktracker task ID. Create or
+      reference the existing child task for -> Any return type resolution under ST-002.
+      Update FOI-2 section: "Tracked as ST-002/task-NNN." This closes the one remaining
+      prospective reference in the document. Impact: Traceability + Actionability 0.94 -> 0.95
+      each, adding 0.0025 to composite. Insufficient alone to cross threshold but strengthens
+      the deliverable independently of recommendation #1.
+
+  - priority: 3
+    dimension: evidence_quality (secondary)
+    current: 0.93
+    target: 0.94
+    action: >
+      Strengthen the guard unit test (test #17) to exercise the actual production failure
+      scenario: chdir() into a subdirectory and construct Jinja2Renderer with the
+      relative path ".context/templates/docs". Current test uses /nonexistent/templates/dir
+      which tests the guard mechanism but not the CWD-mismatch scenario. This would provide
+      higher-fidelity evidence that the guard mitigates the exact production failure mode
+      identified by S-004 pre-mortem. Lower priority than recommendation #1.
+
+# ============================================================
+# LENIENCY BIAS CHECK
+# ============================================================
+leniency_bias_check:
+  each_dimension_scored_independently: true
+  evidence_documented_for_each_score: true
+  uncertain_scores_resolved_downward: true
+  first_draft_calibration_considered: false  # iteration 4 of a C4 deliverable
+  no_dimension_above_0_95_without_exceptional_evidence: true
+  notes: >
+    Anti-leniency scrutiny applied to four decision points:
+    (1) Evidence Quality at 0.93 challenged: should it advance to 0.94 given the new guard
+        test evidence? Re-examined: the happy-path gap (empty skills table) is the binding
+        constraint. The iteration 3 scorer explicitly held at 0.93 with this gap open.
+        Iteration 4 adds guard evidence but does not close the happy-path gap.
+        Anti-leniency rule: "When uncertain between adjacent scores, choose the LOWER one."
+        The gap is documented and real. Held at 0.93. This is the single score preventing
+        the composite from reaching 0.94.
+    (2) Methodological Rigor at 0.94 challenged: should it be 0.95 given guard is implemented?
+        Re-examined: The unit test uses /nonexistent/templates/dir, not the CWD-mismatch
+        scenario. No subdirectory smoke test exists. Happy-path rendering unexercised.
+        These residual limitations are documented. 0.95 would require no residual limitations
+        per rubric calibration anchors (0.92 = Strong work with minor refinements needed;
+        0.95 requires genuinely excellent with minimal gaps). Held at 0.94.
+    (3) Internal Consistency at 0.94 challenged: could it advance to 0.95? FOI-2 still has
+        prospective framing ("to be tracked under ST-002") which is a minor imprecision.
+        Anti-leniency: 0.95 requires "essentially perfect" alignment. The FOI-2 prospective
+        reference is an imprecision. Held at 0.94.
+    (4) Composite progression check: +0.0085 from iteration 3 (+0.0150 from iter 2, +0.0480
+        from iter 1). The 0.0085 delta is proportionate to the scope of changes (one major
+        fix vs. four gap closures in iteration 3). Plateau detection threshold is delta < 0.01
+        for 3 consecutive iterations. This iteration: 0.0085. Iteration 3: 0.0150. No plateau
+        (both above threshold, and only 2 consecutive iterations). Anti-leniency: the composite
+        of 0.9385 correctly reflects a deliverable that has resolved the primary methodological
+        gap with one narrow evidence gap remaining.
+    Source verification performed: jinja2_renderer.py lines 50-55 confirmed present in
+    source file. test_phase1_evidence.py lines 372-377 confirmed present. This goes beyond
+    normal scoring practice and provides high confidence in the evidence claims.
+
+# ============================================================
+# SESSION CONTEXT (orchestrator handoff schema)
+# ============================================================
+session_context:
+  verdict: REVISE
+  composite_score: 0.9385
+  threshold: 0.94
+  weakest_dimension: evidence_quality
+  weakest_score: 0.93
+  critical_findings_count: 0
+  iteration: 4
+  improvement_recommendations:
+    - "Add controlled-fixture unit test: mock SkillExtractor returning valid SkillRecord, assert non-empty skills table output (Evidence Quality 0.93 -> 0.95; composite -> 0.9415, crosses threshold)"
+    - "Resolve FOI-2 prospective ST-002 reference to concrete task ID (Traceability + Actionability 0.94 -> 0.95, adds 0.0025 — insufficient alone but strengthens deliverable)"
+    - "Strengthen guard unit test to exercise CWD-mismatch scenario via chdir() (Evidence Quality secondary improvement)"
+  delta_from_iteration_3: +0.0085
+  cumulative_delta: +0.0715  # 0.8670 -> 0.9385
+  iteration_ceiling: 10
+  plateau_detection: false  # delta 0.0085 is above 0.01 threshold but close; watch for plateau if iteration 5 delta < 0.01
+  gap_to_threshold: 0.0015
+  dimensions_at_threshold: [completeness, internal_consistency, methodological_rigor, actionability, traceability]
+  dimensions_below_threshold: [evidence_quality]

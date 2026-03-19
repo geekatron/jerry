@@ -1,0 +1,6 @@
+{%- from '_macros.jinja2' import escape_pipe, truncate_safe -%}
+| Skill | Purpose | Example |
+|-------|---------|---------|
+{% for skill in skills -%}
+| `/{{ skill.name }}` | {{ truncate_safe(skill.description, 60) }} | {{ escape_pipe(skill.example) }} |
+{% endfor %}

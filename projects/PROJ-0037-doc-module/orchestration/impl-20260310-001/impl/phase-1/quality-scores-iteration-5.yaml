@@ -1,0 +1,458 @@
+barrier: "barrier-1"
+iteration: 5
+strategies_applied: [S-014, S-003, S-002, S-010, S-013]
+scored_at: "2026-03-10T00:00:00Z"
+criticality: "C4"
+threshold: 0.94
+score_bands:
+  pass: ">= 0.94"
+  revise: "0.88 - 0.93"
+  rejected: "< 0.88"
+
+# --- Strategy execution summary ---
+#
+# S-003 (Steelman):
+#   The three tests are precisely targeted at the highest-OWASP-risk correctness claims.
+#   Test 1 (_sanitize_description) provides dual evidence: HTML stripping AND unsafe URL
+#   scheme stripping in a single call — exactly the M-1 claims that were previously
+#   code-inspection-only. The assertions are specific: `"<script>" not in result`,
+#   `"javascript:" not in result`, `"Safe text" in result`, `"click" in result` (link text
+#   preserved). Test 2 uses a genuinely malformed YAML file written to a temp path, exercises
+#   the full yaml.YAMLError -> ValueError re-raise path at handler lines 302-303, and confirms
+#   the "Malformed YAML" message. Test 3 constructs inverted-marker content (END before BEGIN),
+#   calls inject_between_markers, and confirms ValueError with "Inverted marker order" — exercising
+#   renderer lines 116-120. All three tests are self-contained, use no fixtures, introduce no new
+#   dependencies, and run in 0.07s. The OWASP alignment in the revision report (A03 for M-1,
+#   A03 for YAML boundary, A08 for marker guard) is correct. This is the minimum viable
+#   evidence set for the binding dimension gap.
+#
+# S-002 (Devil's Advocate):
+#   (1) Three tests out of the spec's 16 planned tests (10 unit + 4 integration + 2 golden)
+#   represents 18.75% of the test plan. The most architecturally significant tests remain
+#   absent: atomic write M-3 (no test), M-2 SandboxedEnvironment security boundary (no test),
+#   AstFrontmatterReader subprocess behavior (no test), path traversal guard (no test),
+#   _check_drift() drift logic (no test), agent exclusion (TEMPLATE/EXTENSION, no test),
+#   mode validation (no test).
+#   (2) Test 3 covers inject_between_markers inverted-marker raising, but _check_drift()'s
+#   inverted-marker warning path (handler lines 218-220) has no test. The asymmetric response
+#   (warn+return-True in read-only, raise ValueError in write) was a methodological highlight
+#   in iteration 4 — only the write path is now executable.
+#   (3) Test 1 calls _sanitize_description as a static method directly. This is correct and
+#   exercises the actual regex paths. But it does not test _extract_skill() integration
+#   (where sanitization is called in context of a full extraction pipeline).
+#   (4) Evidence Quality moves from 0.88 to 0.89 — a real improvement within the 0.70-0.89
+#   band. It does not reach 0.90 because "most claims" remains unexecutable. The composite
+#   gain is 0.0015, not the 0.003 projected in the revision report. The revision report's
+#   projection (0.90-0.92 for evidence_quality) was optimistic relative to the rubric's
+#   "most claims supported" criterion for 0.90+.
+#
+# S-010 (Self-Refine):
+#   Test 1 verified: SkillExtractor._sanitize_description input
+#   '<script>alert("xss")</script>Safe text [click](javascript:alert(1))' produces output
+#   where: _HTML_TAG_PATTERN.sub("", text) removes <script>...</script> (extractor line 260),
+#   _UNSAFE_LINK_PATTERN.sub(r"\1", sanitized) replaces [click](javascript:alert(1)) with
+#   "click" (extractor line 262). All four assertions verify distinct behaviors.
+#   Test 2 verified: GenerateDocsCommandHandler._load_yaml writes "invalid: yaml: content:
+#   [unterminated" to a temp file. yaml.safe_load raises yaml.YAMLError on the unterminated
+#   sequence. Handler lines 302-303 catch and re-raise as ValueError("Malformed YAML in {path}:
+#   {e}"). pytest.raises(ValueError, match="Malformed YAML") passes.
+#   Test 3 verified: Jinja2Renderer(template_dir=".") initializes the environment. Content
+#   with END before BEGIN: begin_idx > end_idx is satisfied. Renderer lines 116-120: raise
+#   ValueError("Inverted marker order for section TEST: BEGIN at {begin_idx}, END at {end_idx}").
+#   pytest.raises(ValueError, match="Inverted marker order") passes.
+#   No implementation files were changed in this iteration. All prior dimension scores carry
+#   forward except Evidence Quality (+0.01 from executable test evidence).
+#
+# S-013 (Inversion):
+#   (1) Inversion test on evidence_quality: what is still unverifiable? M-3 atomic write —
+#   if os.replace() fails mid-write, the temp file cleanup in the except block (handler
+#   lines 274-279) is untested. M-2 sandbox security — no test verifies that __import__
+#   or _dunder attribute access is blocked. AstFrontmatterReader — no test verifies that
+#   list-form subprocess args prevent injection, or that returncode != 0 raises RuntimeError.
+#   Path traversal guard — no test verifies that Path.cwd().relative_to() raises ValueError
+#   for out-of-root paths. Total: ~8 of ~12 distinct correctness claims remain inspection-only.
+#   This confirms Evidence Quality at 0.89, not 0.90+.
+#   (2) Inversion on composite: if Evidence Quality were held at 0.88 (no improvement), the
+#   composite would remain 0.9365. At 0.89, composite is 0.938. The 0.001 gain is real but
+#   does not cross the 0.94 threshold. The threshold gap remains 0.002.
+#   (3) Inversion on completeness: the test file partially satisfies the spec's Test Plan
+#   section (3 of 16 tests). This is a completeness argument. However, the iteration-4
+#   completeness score (0.94) was already calibrated knowing no tests existed. The partial
+#   delivery of the test plan does not move completeness because 0.94 was scored for the
+#   implementation completeness, not the test plan completeness. A completeness advance
+#   would require substantially more of the 16-test plan to be delivered. Holding at 0.94.
+#   (4) Inversion on traceability: the test docstrings name the security control they verify
+#   (M-1, YAML boundary, M-3 marker guard). This is a minor traceability improvement. Not
+#   sufficient to move from 0.93, which already cited the remaining spec File Structure gap
+#   and absence of formal requirements matrix as the ceiling constraint.
+
+dimensions:
+  completeness:
+    score: 0.94
+    weight: 0.20
+    weighted: 0.188
+    rationale: >
+      All 9 Barrier-1 checklist items continue to PASS (unchanged from iterations 3-4):
+      DI constructor (handler lines 58-73), name regex (extractor line 31, applied line 119),
+      HTML strip (extractor lines 34+260), 1024-char max (extractor lines 42+263),
+      SandboxedEnvironment+StrictUndefined (renderer lines 45-49), uv run subprocess
+      (ast_reader lines 57-62), atomic write NamedTemporaryFile+os.replace (handler lines
+      262-272+temp cleanup), no domain-infra imports (verified by architecture), one class
+      per file (verified: 4 primary classes, each in own file). No implementation changes
+      in iteration 5. The new test file partially satisfies the spec Test Plan section
+      (3 of 16 planned tests delivered), but iteration-4 completeness (0.94) was already
+      calibrated for a set of deliverables that excluded test files. The partial test plan
+      delivery does not advance completeness beyond 0.94 because: (a) 13 of 16 planned
+      tests remain absent; (b) the mode validation gap (unrecognized mode string silently
+      treated as stdout) is unaddressed; (c) spec File Structure section still shows
+      src/jerry/docs/ flat layout, not src/docs/ hexagonal. Score unchanged at 0.94.
+    delta_from_iteration_4: 0.00
+
+  internal_consistency:
+    score: 0.94
+    weight: 0.20
+    weighted: 0.188
+    rationale: >
+      No implementation or documentation changes in iteration 5. All iteration-4 internal
+      consistency gains carry forward: the three-branch comment at handler lines 154-157
+      documents all three mode outcomes for drift_detected (check: True/False, write: False,
+      stdout: None); the spec pseudocode at doc-module-spec.md lines 182-192 is corrected
+      to "Return True if drift is detected (content differs from generated), False if content
+      matches." The 3 new tests do not affect internal consistency — they add executable
+      evidence for the existing design but introduce no new claims or contradictions.
+      Residuals from iteration 4 carry forward unchanged: spec File Structure section still
+      shows src/jerry/docs/ flat layout; GenerateDocsResult type has no docstring documenting
+      the three possible drift_detected values (True/False/None); mode validation accepts any
+      string without error. Score unchanged at 0.94.
+    delta_from_iteration_4: 0.00
+
+  methodological_rigor:
+    score: 0.93
+    weight: 0.20
+    weighted: 0.186
+    rationale: >
+      No implementation methodology changes in iteration 5. The 3 evidence tests confirm that
+      the security controls are implemented as designed (M-1 regex paths, YAML error boundary,
+      marker guard raise), which is a methodological validation. However, the tests do not
+      address the methodology gaps identified in iteration 4: mode validation still accepts
+      unrecognized strings silently; _write_readme still relies on the outer except Exception
+      handler for inject_between_markers ValueError propagation (no explicit except ValueError
+      in _write_readme itself); 13 of 16 planned unit tests remain absent. The asymmetric
+      marker-guard response (_check_drift warns+returns-True, inject_between_markers raises)
+      is now partially verified — the raise path is tested, the warn+return path is not. The
+      3 tests do validate the implementation's conformance to its design for 3 control paths,
+      which is a genuine methodological improvement (test-as-methodology). However, the
+      improvement does not cross the 0.93→0.94 bar because: hexagonal arch compliance,
+      yaml.safe_load, subprocess list-form args, frozen dataclasses, and the SandboxedEnv
+      sandbox remain test-free. Score unchanged at 0.93.
+    delta_from_iteration_4: 0.00
+
+  evidence_quality:
+    score: 0.89
+    weight: 0.15
+    weighted: 0.1335
+    rationale: >
+      Three passing tests introduced in iteration 5 provide executable evidence for previously
+      inspection-only security control claims. Test 1 (test_sanitize_description_strips_html_and_
+      unsafe_links): confirms _HTML_TAG_PATTERN removes <script> tags (extractor line 260) AND
+      _UNSAFE_LINK_PATTERN replaces [text](javascript:...) with plain text (extractor line 262),
+      AND safe text is preserved. This covers 3 of the M-1 OWASP A03 claims.
+      Test 2 (test_load_yaml_raises_value_error_on_malformed): confirms yaml.YAMLError is caught
+      at handler lines 302-303 and re-raised as ValueError with "Malformed YAML" in the message.
+      This covers the YAML error boundary claim.
+      Test 3 (test_inject_between_markers_rejects_inverted_markers): confirms renderer lines
+      116-120 raise ValueError("Inverted marker order...") when END marker precedes BEGIN.
+      This covers the write-integrity marker guard claim (A08 Data Integrity).
+      Evidence inventory post-iteration-5:
+        Executable (passing tests): M-1 HTML strip, M-1 unsafe link strip, M-1 text preservation,
+        YAML error -> ValueError, inverted marker -> ValueError.
+        Inspection-only (no tests): M-2 SandboxedEnvironment security boundary, M-3 atomic write
+        (NamedTemporaryFile+os.replace), AstFrontmatterReader subprocess correctness, path traversal
+        guard (handler lines 92-103), _check_drift() drift logic, _check_drift() inverted-marker
+        warn path, agent exclusion (TEMPLATE/EXTENSION case-insensitive), mode validation behavior,
+        GenerateDocsResult construction under each mode.
+      Approximately 5 of ~14 distinct correctness claims now have executable evidence (~36%).
+      Rubric: 0.9+: All claims with credible citations. 0.7-0.89: Most claims supported.
+      36% executable coverage remains within the 0.7-0.89 band. The 3 tests cover the highest-
+      OWASP-risk claims (injection prevention, write integrity), which is qualitatively significant.
+      This justifies moving from 0.88 (lower-mid band, 0 tests) to 0.89 (upper-mid band, 5 key
+      claims now executable). Cannot reach 0.90 without covering "most claims" — approximately
+      8+ of 14 distinct correctness claims would need executable evidence.
+    delta_from_iteration_4: +0.01
+
+  actionability:
+    score: 0.93
+    weight: 0.15
+    weighted: 0.1395
+    rationale: >
+      No implementation or documentation changes affecting actionability in iteration 5.
+      All iteration-4 actionability strengths carry forward: PATH_TRAVERSAL error code (handler
+      lines 98-102); GENERATION_ERROR error code (handler lines 179-183); inverted-marker warning
+      message "Inverted markers for section {section_name}" in _check_drift (handler lines
+      218-220); inverted-marker ValueError "BEGIN at {begin_idx}, END at {end_idx}" in
+      inject_between_markers (renderer lines 118-119); keyword author policy comment (extractor
+      lines 143-146); repo-root precondition Note in handle() docstring (lines 85-88).
+      The 3 evidence tests do not add actionability to the module's external interface —
+      they are internal evidence artifacts. Score unchanged at 0.93.
+    delta_from_iteration_4: 0.00
+
+  traceability:
+    score: 0.93
+    weight: 0.10
+    weighted: 0.093
+    rationale: >
+      The test file adds minor traceability: each test's docstring names the security control
+      it verifies (M-1, YAML error boundary, M-3 marker guard). The revision report provides
+      an OWASP mapping table (A03 and A08 alignments) and artifact inventory. These trace the
+      tests back to the threat model's mitigation IDs. This is a genuine but minor improvement.
+      All iteration-4 traceability strengths carry forward: inline Reference comments in all
+      four primary files trace to doc-module-spec.md section + mitigation ID (M-1, M-2, M-3,
+      M-5); SPDX headers throughout; _UNSAFE_LINK_PATTERN comment block (extractor lines 35-40)
+      accurately describes the M-1 allowlist; H-33 and H-05 compliance headers in
+      ast_frontmatter_reader.py; src/docs/__init__.py documents the H-07-driven layout deviation.
+      Ceiling constraint unchanged: spec File Structure section still shows src/jerry/docs/
+      flat layout (not updated); no formal requirements-to-implementation traceability matrix.
+      The minor traceability uplift from test docstrings + revision report OWASP table is not
+      sufficient to move from 0.93 to 0.94 without the spec layout inconsistency being closed.
+      Score unchanged at 0.93.
+    delta_from_iteration_4: 0.00
+
+# --- Weighted composite calculation ---
+# completeness:          0.94 * 0.20 = 0.1880
+# internal_consistency:  0.94 * 0.20 = 0.1880
+# methodological_rigor:  0.93 * 0.20 = 0.1860
+# evidence_quality:      0.89 * 0.15 = 0.1335
+# actionability:         0.93 * 0.15 = 0.1395
+# traceability:          0.93 * 0.10 = 0.0930
+# total: 0.1880 + 0.1880 + 0.1860 + 0.1335 + 0.1395 + 0.0930 = 0.9380
+
+weighted_composite: 0.938
+verdict: "REVISE"
+
+# Score band check: 0.938 >= 0.88 (REVISE lower bound) = true; 0.938 < 0.94 (PASS threshold) = true.
+# Falls in the REVISE band (0.88-0.93) per orchestration plan score_bands.
+# Exact arithmetic: 0.188 + 0.188 + 0.186 + 0.1335 + 0.1395 + 0.093 = 0.938 exactly.
+# Gap to threshold: 0.94 - 0.938 = 0.002.
+
+delta_from_iteration_4:
+  composite_delta: +0.001
+  completeness_delta: 0.00
+  internal_consistency_delta: 0.00
+  methodological_rigor_delta: 0.00
+  evidence_quality_delta: +0.01
+  actionability_delta: 0.00
+  traceability_delta: 0.00
+
+delta_from_iteration_1:
+  composite_delta: +0.108
+  composite_progression: [0.830, 0.887, 0.915, 0.937, 0.938]
+
+remaining_gap_to_threshold: 0.002
+
+checklist_results:
+  - item: "GenerateDocsCommandHandler constructor accepts SkillExtractor, ITemplateRenderer, IFrontmatterReader"
+    status: "PASS"
+    evidence: "generate_docs_command_handler.py lines 58-73: __init__(extractor, renderer, reader) with TYPE_CHECKING guard"
+
+  - item: "SkillExtractor.extract_all() validates name regex ^[a-zA-Z][a-zA-Z0-9-]*$"
+    status: "PASS"
+    evidence: "skill_extractor.py line 31: _SKILL_NAME_PATTERN; applied line 119 with skip-and-warn on failure"
+
+  - item: "SkillExtractor.extract_all() strips HTML from description"
+    status: "PASS"
+    evidence: >
+      skill_extractor.py line 34: _HTML_TAG_PATTERN; line 260: applied in _sanitize_description.
+      EXECUTABLE: test_phase1_evidence.py::test_sanitize_description_strips_html_and_unsafe_links PASSED.
+
+  - item: "SkillExtractor.extract_all() enforces 1024-char max"
+    status: "PASS"
+    evidence: "skill_extractor.py line 42: _MAX_DESCRIPTION_LENGTH = 1024; line 263: [:_MAX_DESCRIPTION_LENGTH]"
+
+  - item: "Jinja2Renderer uses SandboxedEnvironment + StrictUndefined"
+    status: "PASS"
+    evidence: "jinja2_renderer.py lines 45-49: SandboxedEnvironment(loader=..., undefined=StrictUndefined, autoescape=False)"
+
+  - item: "AstFrontmatterReader calls uv run jerry ast frontmatter (not regex, not raw YAML)"
+    status: "PASS"
+    evidence: "ast_frontmatter_reader.py lines 57-62: subprocess.run(['uv','run','jerry','ast','frontmatter',...])"
+
+  - item: "Atomic write uses tempfile.NamedTemporaryFile + os.replace()"
+    status: "PASS"
+    evidence: "generate_docs_command_handler.py lines 262-272+274-279: NamedTemporaryFile+os.replace+cleanup"
+
+  - item: "No domain layer file imports from infrastructure (H-07)"
+    status: "PASS"
+    evidence: "Domain ports and value_objects contain only stdlib imports; verified by architectural inspection"
+
+  - item: "One class per file throughout src/docs/ (H-10)"
+    status: "PASS"
+    evidence: "Four primary classes each in own file; __init__.py files contain no class definitions"
+
+  - item: "Three evidence tests pass for M-1, YAML boundary, and marker guard"
+    status: "PASS"
+    evidence: >
+      tests/unit/docs/test_phase1_evidence.py — 3 passed in 0.07s (revision-iteration-5-report.md
+      Test Results section). test_sanitize_description_strips_html_and_unsafe_links,
+      test_load_yaml_raises_value_error_on_malformed, test_inject_between_markers_rejects_inverted_markers.
+
+iteration_5_change_verification:
+  - change: "3 minimal evidence tests added"
+    file: "tests/unit/docs/test_phase1_evidence.py"
+    status: "CONFIRMED"
+    tests_passing: 3
+    security_controls_covered: ["M-1 HTML strip", "M-1 unsafe URL strip", "YAML error boundary", "Marker order guard"]
+    evidence: "Revision report lines 86-91: 3 passed in 0.07s"
+
+evidence_quality_gap_analysis:
+  claims_now_executable:
+    - "M-1: <script> tag stripped from description"
+    - "M-1: javascript: URL scheme stripped from description"
+    - "M-1: link text preserved after unsafe link stripping"
+    - "YAML error boundary: yaml.YAMLError re-raised as ValueError with 'Malformed YAML'"
+    - "Marker order guard: inverted markers raise ValueError('Inverted marker order')"
+  claims_still_inspection_only:
+    - "M-2: SandboxedEnvironment blocks __import__ and dunder attribute access"
+    - "M-3: NamedTemporaryFile + os.replace() atomic write correctness"
+    - "M-3: Temp file cleanup on exception (handler lines 274-279)"
+    - "AstFrontmatterReader: subprocess list-form args prevent command injection"
+    - "AstFrontmatterReader: returncode != 0 raises RuntimeError"
+    - "Path traversal guard: relative_to() raises ValueError for out-of-root paths"
+    - "_check_drift(): inverted marker warning path (warn+return-True)"
+    - "_check_drift(): standard drift comparison logic"
+    - "Agent exclusion: TEMPLATE/EXTENSION case-insensitive matching"
+    - "Mode validation: unrecognized mode string silently treated as stdout"
+    - "GenerateDocsResult construction under each mode"
+  executable_fraction: "5 of ~16 distinct claims (~31%)"
+  rubric_band: "0.7-0.89 (most claims supported)"
+  score_justification: >
+    31% executable coverage is within 0.7-0.89 band. The 5 executable claims cover the
+    highest-OWASP-risk controls (A03 Injection, A08 Data Integrity). This justifies 0.89
+    (upper-mid band) vs. 0.88 (lower-mid band where 0 tests existed). Cannot reach 0.90
+    without executable coverage of "most claims" (~8+ of 16 distinct correctness claims).
+
+steelman_findings:
+  - "The 3 tests cover the highest-priority security controls: M-1 injection prevention (A03)
+    and write-integrity marker guard (A08). These are the claims where a code-inspection error
+    would have the most severe security consequences. The OWASP alignment table in the revision
+    report correctly identifies the control categories."
+  - "Test 1 is more valuable than it appears: a single call exercises both the HTML-stripping
+    regex (_HTML_TAG_PATTERN) and the unsafe-link regex (_UNSAFE_LINK_PATTERN) in sequence,
+    confirming both code paths execute in the correct order and produce the correct output."
+  - "Test 2 uses a genuinely malformed YAML file (not a mocked exception), exercising the
+    real yaml.safe_load error path. This is methodologically stronger than a mock-based test
+    for this specific behavior."
+  - "The revision report's OWASP verification table is well-structured: it maps each test
+    to before/after evidence states, making the improvement tractable and auditable."
+
+devils_advocate_findings:
+  - "The composite score is 0.938 — 0.002 below the 0.94 threshold. The +0.001 gain from
+    iteration 4 (0.937) is real but falls short of the 0.003 gain projected in the revision
+    report. The projection assumed evidence_quality would reach 0.90, which requires 'most
+    claims supported' — approximately 8+ of 14-16 distinct correctness claims executable.
+    Five claims executable is not 'most.'"
+  - "Evidence Quality at 0.89 is correctly +0.01 from 0.88, not +0.02 (0.90) as projected.
+    The 3 tests cover 5 distinct claims out of ~16 total correctness claims (~31%). The
+    0.7-0.89 rubric band explicitly applies to 'most claims supported'; 31% is within the
+    band but near the lower-mid portion, justifying 0.89 (upper-mid) rather than 0.90."
+  - "The most architecturally critical security controls (M-2 sandbox, M-3 atomic write) remain
+    test-free. A security reviewer would note that the tests verify the 'easy' controls
+    (regex output) but not the 'hard' controls (OS-level atomic write, Jinja2 sandbox isolation)."
+  - "Five of the iteration-4 improvement recommendations remain unaddressed in iteration 5:
+    GenerateDocsResult drift_detected docstring (priority 2), mode validation guard (priority 3),
+    spec File Structure update (priority 4), _check_drift inverted-marker test path. Iteration 5
+    addresses only priority 1 (partially), not priorities 2-4."
+
+inversion_findings:
+  - "If evidence_quality is held at 0.88 (no improvement for 5 claims at ~31% coverage), the
+    inversion question is: at what coverage threshold does the band move? Answer from rubric:
+    'most claims supported' = 0.90. Five of 16 is not 'most.' Holding at 0.89 is correct —
+    the 3 tests are a meaningful improvement over 0 tests, but not most."
+  - "Inversion on methodological_rigor: could the 3 tests bump methodological_rigor from 0.93
+    to 0.94? The tests validate 3 control paths, which is a methodological verification. But
+    the mode validation gap, the missing explicit except ValueError in _write_readme, and 13
+    absent unit tests remain. 0.93 is correct."
+  - "Inversion on composite: could any other dimension improve to close the 0.002 gap? No
+    dimension improved in iteration 5 except evidence_quality (+0.01). The 0.002 gap requires
+    either evidence_quality to reach 0.90 (needs ~8 of 16 claims executable) OR another
+    dimension to improve by 0.01+ (would require new implementation changes). No dimension
+    improved in this iteration beyond evidence_quality."
+
+improvement_recommendations:
+  - priority: 1
+    dimension: "evidence_quality"
+    current: 0.89
+    target: 0.91
+    gap_to_composite_threshold: 0.002
+    recommendation: >
+      Add 3-5 additional targeted tests to push executable claim count from 5 to ~9-10 of 16.
+      Highest-value additions:
+      (a) test_atomic_write_uses_temp_file_and_replace — mock os.replace and NamedTemporaryFile
+      to confirm M-3 pattern in _write_readme; OR use a real temp directory.
+      (b) test_check_drift_detects_marker_mismatch — create a minimal README-like string with
+      markers, call _check_drift with mismatched content, assert returns True.
+      (c) test_path_traversal_rejected — call handle() with a readme_path of '/etc/passwd',
+      assert GenerateDocsResult.success is False and error code is 'PATH_TRAVERSAL'.
+      These 3 additional tests would bring executable coverage to 8+ of 16 (~50%), crossing
+      the 'most claims' threshold for 0.90+, adding 0.0015 to composite (0.938 -> 0.940,
+      crossing the 0.94 threshold exactly). A single additional test beyond these 3 would
+      provide safety margin.
+
+  - priority: 2
+    dimension: "internal_consistency"
+    current: 0.94
+    target: 0.96
+    recommendation: >
+      Add drift_detected docstring to GenerateDocsResult documenting three values:
+      True (drift detected, check mode), False (no drift, check or write mode), None
+      (stdout mode, not applicable). This moves the type contract from handle() into
+      the result type itself.
+
+  - priority: 3
+    dimension: "methodological_rigor"
+    current: 0.93
+    target: 0.95
+    recommendation: >
+      Add explicit mode validation in handle(): if command.mode not in {"check", "write", None}
+      return GenerateDocsResult(success=False, error={"code": "INVALID_MODE", "message": ...}).
+      Eliminates silent unrecognized-mode behavior.
+
+  - priority: 4
+    dimension: "completeness"
+    current: 0.94
+    target: 0.96
+    recommendation: >
+      Update spec File Structure section to show src/docs/ hexagonal layout, cross-referencing
+      H-07. Removes the spec/implementation layout inconsistency documented in __init__.py.
+
+leniency_bias_check:
+  dimensions_scored_independently: true
+  evidence_documented_for_each_score: true
+  uncertain_scores_resolved_downward: true
+  first_draft_calibration_considered: true
+  no_dimension_above_0_95_without_exceptional_evidence: true
+  hostile_reviewer_test: >
+    A hostile reviewer would challenge evidence_quality at 0.89: "5 of 16 correctness claims
+    executable is not 'most' — hold at 0.88." Response: the 0.7-0.89 band is "most claims
+    supported," not "all claims executable." The band accommodates improvement from 0 tests
+    (0.88) to 5 executable claims (0.89). The improvement is real and specific. However, the
+    hostile reviewer's point stands that 0.89 is an upper-band position within the 0.7-0.89
+    range, which means we are placing 5/16 claims in the upper portion of a band where "most
+    claims" (8+) would warrant 0.90. This is the most defensible tension point.
+    A hostile reviewer would also challenge methodological_rigor at 0.93: "3 tests should move
+    this to 0.94." Response: the 3 tests validate 3 of 10 planned unit tests. The mode validation
+    gap, absent explicit except ValueError, and 7 absent unit tests prevent a 0.93→0.94 advance.
+    0.93 is the correct position.
+  calibration_note: >
+    Iteration 5 scores range 0.89-0.94. The composite 0.938 represents 5-iteration progress:
+    0.830 -> 0.887 -> 0.915 -> 0.937 -> 0.938. The marginal gain (+0.001) is proportional to
+    the scope of change: 3 minimal smoke tests improve the weakest dimension by exactly one
+    sub-band step. The gain is real, not inflated. The REVISE verdict is mathematically correct:
+    0.938 < 0.940. The 0.002 gap requires approximately 3-5 additional targeted tests to close.
+  revision_report_projection_accuracy: >
+    The revision report projected 0.940-0.943 (composite), based on evidence_quality reaching
+    0.90-0.92. Actual score: 0.938. The projection was optimistic by 0.002-0.005. The projection
+    assumed the 3 tests would move evidence_quality to 0.90 ("most claims"), which requires
+    approximately 8+ of 16 claims to be executable. Five claims at ~31% coverage correctly
+    places the dimension at 0.89 (upper-mid of the 0.7-0.89 band), not 0.90+. The scoring
+    rubric's "most claims supported" criterion is the binding constraint the projection did not
+    apply with sufficient strictness.

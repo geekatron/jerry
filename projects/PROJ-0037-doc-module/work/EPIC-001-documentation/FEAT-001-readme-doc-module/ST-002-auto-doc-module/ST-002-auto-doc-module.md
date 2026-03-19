@@ -1,12 +1,12 @@
 # ST-002: Design and implement auto-documentation module for skills and agents
 
 > **Type:** story
-> **Status:** completed
+> **Status:** in_progress
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-03-08T00:00:00Z
 > **Due:**
-> **Completed:** 2026-03-12T00:00:00Z
+> **Completed:**
 > **Parent:** FEAT-001
 > **Owner:**
 > **Effort:** 8
@@ -50,10 +50,10 @@ Research auto-documentation patterns, produce an ADR selecting the design approa
 
 ## Acceptance Criteria
 
-- [x] ADR documents design decision for auto-documentation approach
-- [x] Implementation spec covers input parsing, output rendering, and drift detection
-- [x] Threat model addresses STRIDE analysis on doc generation pipeline
-- [x] Design satisfies H-05 (uv-only) and H-33 (scope clarified: SKILL.md uses YAML, not blockquote)
+- [ ] ADR documents design decision for auto-documentation approach
+- [ ] Implementation spec covers input parsing, output rendering, and drift detection
+- [ ] Threat model addresses STRIDE analysis on doc generation pipeline
+- [ ] Design satisfies H-05 (uv-only) and H-33 (AST-based parsing)
 
 ---
 
@@ -64,7 +64,7 @@ Research auto-documentation patterns, produce an ADR selecting the design approa
 | **Orchestration** | impl-20260310-001 (C4) |
 | **Tasks** | 6 (TASK-001 through TASK-006) |
 | **Completed** | 6/6 tasks |
-| **Completion %** | 100% |
+| **Completion %** | 100% (tasks); BLOCKED by BUG-001 |
 
 ### Children (Tasks)
 
@@ -76,7 +76,7 @@ Research auto-documentation patterns, produce an ADR selecting the design approa
 | [TASK-004](TASK-004-security-verification.md) | Security control verification M-1 through M-5 | completed | eng-architect |
 | [TASK-005](TASK-005-attack-surface-analysis.md) | Attack surface analysis | completed | red-vuln |
 | [TASK-006](TASK-006-final-compliance-gate.md) | Final architecture compliance and coverage gate | completed | eng-reviewer |
-| [BUG-001](BUG-001-frontmatter-reader-mismatch.md) | AstFrontmatterReader parses blockquote, not YAML frontmatter | completed | — |
+| [BUG-001](BUG-001-frontmatter-reader-mismatch.md) | AstFrontmatterReader parses blockquote, not YAML frontmatter | open | — |
 
 ---
 
@@ -96,4 +96,3 @@ Research auto-documentation patterns, produce an ADR selecting the design approa
 | 2026-03-08 | Claude | pending | Story created; workstream B |
 | 2026-03-10 | Claude | in_progress | Implementation pipeline started (impl-20260310-001) |
 | 2026-03-11 | Claude | blocked | All 6 tasks complete. Pipeline barriers 1-4 PASS. BLOCKED by BUG-001: AstFrontmatterReader reads blockquote metadata (Format B) instead of YAML frontmatter (Format A). All 27 skills skipped. `jerry docs generate --check` exits 1. |
-| 2026-03-12 | Claude | completed | BUG-001 resolved. YamlFrontmatterReader created. All ACs verified. 30 skills, 89 agents. `jerry docs generate --check` exits 0. |

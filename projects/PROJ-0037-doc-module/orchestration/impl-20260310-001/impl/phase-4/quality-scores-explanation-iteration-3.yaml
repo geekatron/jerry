@@ -1,0 +1,249 @@
+---
+# Quality Score Report: The YamlFrontmatterReader Issue — Explained
+# S-014 LLM-as-Judge Rubric Scoring
+# Iteration 3 (revised from iteration 2 score of 0.879)
+
+scoring_context:
+  deliverable: "projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-4/frontmatter-issue-explanation.md"
+  deliverable_type: "Explanation (technical issue explanation for a stakeholder)"
+  criticality: C2
+  scoring_strategy: S-014 (LLM-as-Judge)
+  ssot_reference: ".context/rules/quality-enforcement.md"
+  scored: "2026-03-11T00:00:00Z"
+  iteration: 3
+  prior_score: 0.879
+  strategy_findings_incorporated: true
+  strategy_findings_source: "projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-4/adversary-explanation-devils-advocate.md"
+
+l0_executive_summary:
+  composite_score: 0.916
+  threshold: 0.92
+  verdict: REVISE
+  weakest_dimension: completeness
+  weakest_score: 0.90
+  one_line_assessment: >
+    Three source-level citations verified correct against ground truth close the
+    DA-002 evidence gap — Evidence Quality, Traceability, and Methodological Rigor
+    all cross threshold — but the DA-004 confirmatory clause (all 13 SKILL.md files
+    have a YAML name field) is still absent, holding Completeness at 0.90 and the
+    composite at 0.916, 0.004 below the 0.92 gate.
+
+score_summary:
+  weighted_composite: 0.916
+  threshold: 0.92
+  delta_from_prior: +0.037
+  verdict: REVISE
+  open_critical_findings: 0
+  open_major_findings: 0
+  remaining_gap_to_threshold: 0.004
+
+dimension_scores:
+
+  completeness:
+    weight: 0.20
+    score: 0.90
+    weighted: 0.180
+    evidence_summary: >
+      All 6 DA findings addressed across iterations 2-3. The DA-002 resolution
+      is now complete (three parser source citations added). One residual minor
+      gap remains: DA-004's confirmatory clause. The deliverable sources the "13"
+      count to "one per skills/*/SKILL.md directory" but does not confirm that
+      each of those files carries a YAML name field. A stakeholder could ask:
+      "what if some SKILL.md files lack the name field even in Format A?"
+    gaps:
+      - >
+        DA-004 residual: the count is sourced but "each of these 13 SKILL.md files
+        has a ---YAML block with a name field, so all 13 would succeed with the
+        correct reader" is absent. The confirmatory clause was recommended in
+        iteration 2 and was not added in iteration 3.
+    improvement_path: >
+      Add one sentence: "Each of these 13 files has a ---YAML block containing
+      a name field, so all 13 would be successfully extracted by
+      YamlFrontmatterReader." This closes the last completeness gap.
+
+  internal_consistency:
+    weight: 0.20
+    score: 0.91
+    weighted: 0.182
+    evidence_summary: >
+      All claims remain internally consistent. The docstring contradiction
+      (DA-001) is surfaced and labeled a documentation error. The three new
+      parser citations are mutually reinforcing — the function docstring, the
+      sole extraction regex, and the module name all converge on the same
+      conclusion. The one-sentence version, command output, code trace, and
+      fix rationale are coherent. No claim contradicts another.
+    gaps:
+      - >
+        Minor: the H-07 explanation paragraph still contains the slight redundancy
+        noted in iteration 2 — two adjacent sentences making the same port-isolation
+        point. Not a contradiction; not addressed in iteration 3.
+    improvement_path: >
+      No substantive improvement needed. Score reflects near-excellent consistency.
+
+  methodological_rigor:
+    weight: 0.20
+    score: 0.93
+    weighted: 0.186
+    evidence_summary: >
+      The diagnostic methodology now completes the evidence chain that previously
+      rested on output observation alone. The "Confusing detail" paragraph adds
+      three source-code verifications: (1) the function docstring names blockquote
+      extraction explicitly, (2) the sole extraction regex matches only
+      "> **Key:** Value" patterns with no --- delimiter in the pattern, (3) the
+      module is named BlockquoteFrontmatter. The conclusion "there is no code path
+      in the parser for ---delimited YAML" is warranted directly from these
+      citations, not inferred from output. Overall structure: problem setup, CLI
+      output, application-layer code trace, parser source verification, test gap
+      analysis, fix with three alternative rebuttals, H-33 compliance resolved,
+      composition root shown. Rigorous for a C2 stakeholder explanation.
+    gaps:
+      - >
+        Minor: the integration test recommendation names "a real SKILL.md file"
+        without specifying which one — acceptable for a stakeholder explanation.
+    improvement_path: >
+      Score is above threshold. No substantive change needed.
+
+  evidence_quality:
+    weight: 0.15
+    score: 0.92
+    weighted: 0.138
+    evidence_summary: >
+      The iteration 3 revision resolves the single root cause from iteration 2.
+      The core causal claim now rests on three source-level citations, all
+      verified correct against ground truth: ast_commands.py:454 docstring reads
+      "Extract blockquote frontmatter fields" (the word blockquote is explicit);
+      frontmatter.py:46 shows the sole extraction regex exclusively matches
+      "^>\\s*\\*\\*(?P<key>[^*:]+):\\*\\*" with no --- delimiter appearing
+      anywhere in the pattern; frontmatter.py:5 names the module
+      BlockquoteFrontmatter. The "no code path for ---YAML" conclusion is now a
+      direct reading of the source. All prior evidence (CLI output,
+      skill_extractor.py:110-115, mock test code, bootstrap.py snippet) remains.
+    gaps:
+      - >
+        The CLI output is asserted as "actual output" but presented as a display
+        string rather than a recorded session artifact — standard documentation
+        convention, not an evidence defect.
+    improvement_path: >
+      Score is at threshold. No high-priority improvements.
+
+  actionability:
+    weight: 0.15
+    score: 0.92
+    weighted: 0.138
+    evidence_summary: >
+      Fix is concretely specified: create YamlFrontmatterReader using
+      yaml.safe_load, wire via bootstrap.py (code shown), add integration test
+      against a real SKILL.md file. Port docstring update mentioned. Three
+      alternative designs addressed (why not fix in-place, why not inline in
+      extractor, H-33 concern resolved). A developer could implement this without
+      additional information. The new evidence paragraph strengthens actionability:
+      a reviewer implementing the fix now has source citations to confirm the
+      diagnosis before proceeding. Unchanged from iteration 2 — no actionability
+      gaps were identified then or now.
+    gaps:
+      - >
+        No specification of which yaml library to import (PyYAML already a
+        dependency vs. to be added). Acceptable for a stakeholder explanation.
+    improvement_path: >
+      No high-priority improvements.
+
+  traceability:
+    weight: 0.10
+    score: 0.92
+    weighted: 0.092
+    evidence_summary: >
+      The traceability chain for the core causal claim is now complete. Previously
+      the claim traced only to observed CLI output. Now it traces to
+      ast_commands.py:454 (function docstring, line-level, quoted), frontmatter.py
+      :46 (the sole extraction regex, line-level, quoted), and frontmatter.py:5
+      (module-level name, line-level, quoted). The conclusion "no code path for
+      ---YAML" is fully traceable. Other traceability unchanged: ast_frontmatter_
+      reader.py:28, skill_extractor.py:110-115, H-07, H-33, skills/*/SKILL.md,
+      bootstrap.py.
+    gaps:
+      - >
+        The port docstring update (DA-006) references frontmatter_reader.py in
+        prose without a line number citation — minor; location is adequately
+        described for a stakeholder explanation.
+    improvement_path: >
+      Score is at threshold. Minor polish only.
+
+weighted_composite_calculation:
+  completeness:        "0.90 × 0.20 = 0.1800"
+  internal_consistency: "0.91 × 0.20 = 0.1820"
+  methodological_rigor: "0.93 × 0.20 = 0.1860"
+  evidence_quality:    "0.92 × 0.15 = 0.1380"
+  actionability:       "0.92 × 0.15 = 0.1380"
+  traceability:        "0.92 × 0.10 = 0.0920"
+  total: "0.1800 + 0.1820 + 0.1860 + 0.1380 + 0.1380 + 0.0920 = 0.9160"
+
+verdict: REVISE
+verdict_rationale: >
+  0.916 is below the 0.92 threshold (H-13). Score falls above the REVISE band
+  floor (0.85) and above 0.91 but below 0.92. Delta from iteration 2 (+0.037)
+  confirms the evidence-citation revision was effective — four dimensions improved
+  (Evidence Quality 0.82->0.92, Traceability 0.82->0.92, Methodological Rigor
+  0.90->0.93, Completeness 0.87->0.90). Two dimensions held steady (Internal
+  Consistency 0.91, Actionability 0.92). The remaining gap of 0.004 is fully
+  attributable to a single missing sentence: the DA-004 confirmatory clause about
+  all 13 SKILL.md files having a YAML name field. This is a targeted, specific
+  addition. If Completeness rises from 0.90 to 0.93, the composite reaches
+  0.916 + (0.03 × 0.20) = 0.922, clearing the threshold.
+
+improvement_recommendations:
+  - priority: 1
+    dimension: completeness
+    current_score: 0.90
+    target_score: 0.93
+    delta_impact_on_composite: +0.006
+    projected_composite_after: 0.922
+    recommendation: >
+      Add one sentence to the "What Goes Wrong" section after "Result: all skills
+      are skipped (currently 13 — one per skills/*/SKILL.md directory)." Suggested
+      text: "Each of these 13 files has a ---YAML block containing a name field,
+      so all 13 would be successfully extracted by YamlFrontmatterReader." This
+      closes the DA-004 residual from iteration 2 and is the only change needed
+      to clear the 0.92 threshold.
+
+  - priority: 2
+    dimension: internal_consistency
+    current_score: 0.91
+    target_score: 0.92
+    delta_impact_on_composite: +0.002
+    recommendation: >
+      Optional editorial: remove minor redundancy in the H-07 paragraph (two
+      adjacent sentences making the same point about the extractor not knowing
+      how frontmatter is parsed). Not a blocking issue; negligible scoring impact.
+
+leniency_bias_check:
+  each_dimension_scored_independently: true
+  evidence_documented_for_each_score: true
+  uncertain_scores_resolved_downward: true
+  first_draft_calibration_considered: "N/A — iteration 3 revision"
+  no_dimension_above_0_95_without_exceptional_evidence: true
+  notes: >
+    Evidence Quality, Traceability, Methodological Rigor, and Actionability
+    reached 0.92-0.93 because the three parser source citations were verified
+    against ground truth and they definitively confirm the causal claim — this
+    is genuine resolution, not softening. Completeness was scored 0.90 (not
+    higher) because the DA-004 confirmatory clause is a specific, verifiable
+    gap that was identified in iteration 2 and was not addressed in iteration 3.
+    Internal Consistency scored 0.91 (unchanged) because iteration 3 made no
+    changes to the H-07 paragraph where the minor redundancy resides. The
+    composite of 0.916 correctly reflects that the primary gap was resolved
+    (evidence citations) while the secondary gap (DA-004 confirmatory clause)
+    was not. The delta of +0.037 from iteration 2 is consistent with targeted
+    evidence improvements across four dimensions. No scores were inflated to
+    reach or approach 0.92.
+
+session_context_handoff:
+  verdict: REVISE
+  composite_score: 0.916
+  threshold: 0.92
+  weakest_dimension: completeness
+  weakest_score: 0.90
+  critical_findings_count: 0
+  iteration: 3
+  improvement_recommendations:
+    - "Add one sentence confirming all 13 SKILL.md files have a ---YAML block with a name field (closes DA-004 residual; +0.006 composite; projected composite 0.922)"
+    - "Optional: remove minor H-07 paragraph redundancy (editorial polish, +0.002 composite)"

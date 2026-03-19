@@ -1,0 +1,258 @@
+---
+# Quality Score Report: The YamlFrontmatterReader Issue — Explained
+# S-014 LLM-as-Judge Rubric Scoring
+# Iteration 4 (revised from iteration 3 score of 0.916)
+
+scoring_context:
+  deliverable: "projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-4/frontmatter-issue-explanation.md"
+  deliverable_type: "Explanation (technical issue explanation for a stakeholder)"
+  criticality: C2
+  scoring_strategy: S-014 (LLM-as-Judge)
+  ssot_reference: ".context/rules/quality-enforcement.md"
+  scored: "2026-03-11T00:00:00Z"
+  iteration: 4
+  prior_score: 0.916
+  strategy_findings_incorporated: false
+  ground_truth_verified: true
+  ground_truth_verification: >
+    grep -n "^name:" skills/*/SKILL.md returns 13 matches, all at line 2.
+    The new sentence ("Each of these 13 files has a --- YAML block containing
+    a name field at line 2, so all 13 would be successfully extracted by a
+    reader that parses Format A.") is factually accurate. The "at line 2"
+    detail is more specific than the iteration 3 recommendation and is
+    confirmed correct.
+
+l0_executive_summary:
+  composite_score: 0.922
+  threshold: 0.92
+  verdict: PASS
+  weakest_dimension: internal_consistency
+  weakest_score: 0.91
+  one_line_assessment: >
+    The single-sentence DA-004 addition is factually verified, closes the last
+    completeness gap (0.90 -> 0.93), and lifts the composite to 0.922 — clearing
+    the 0.92 threshold with a margin of 0.002; verdict PASS.
+
+score_summary:
+  weighted_composite: 0.922
+  threshold: 0.92
+  delta_from_prior: +0.006
+  verdict: PASS
+  open_critical_findings: 0
+  open_major_findings: 0
+  margin_above_threshold: 0.002
+
+dimension_scores:
+
+  completeness:
+    weight: 0.20
+    score: 0.93
+    weighted: 0.1860
+    evidence_summary: >
+      The DA-004 confirmatory clause — the sole gap identified in iterations 2
+      and 3 — is now present and verified correct. The new sentence confirms
+      (1) each of the 13 SKILL.md files has a --- YAML block, (2) it contains
+      a name field, and (3) the name field appears at line 2 (more specific than
+      the iteration 3 recommendation). The consequence ("all 13 would be
+      successfully extracted by a reader that parses Format A") is stated
+      directly. All six DA findings are now addressed. The document provides:
+      one-sentence summary, dual-format code excerpt from a real file, actual CLI
+      output, application-layer code trace (skill_extractor.py:110-115), three
+      parser source-level citations, test gap analysis with mock code, fix
+      prescription with three alternative-design rebuttals, H-33 compliance
+      resolution, and composition root code snippet. No material completeness gap
+      remains for a C2 stakeholder explanation.
+    gaps:
+      - >
+        No substantive gaps remain. The minor H-07 paragraph redundancy
+        (two adjacent sentences making the same port-isolation point) is an
+        editorial issue, not a completeness gap.
+    improvement_path: >
+      Score is above threshold. No completeness improvements needed.
+
+  internal_consistency:
+    weight: 0.20
+    score: 0.91
+    weighted: 0.1820
+    evidence_summary: >
+      All claims remain internally consistent. The new sentence ("Each of these
+      13 files has a --- YAML block containing a name field at line 2") introduces
+      no contradiction — it is consistent with the Format A code excerpt shown
+      earlier (which displays "name: adversary" at line 2 of the YAML block) and
+      with the stated consequence ("result: all skills are skipped"). The phrase
+      "a reader that parses Format A" is consistent with Format A's established
+      definition in the document. The one-sentence summary, command output, code
+      trace, source citations, and fix rationale remain coherent. Iteration 4
+      made no changes to the H-07 paragraph, so the minor redundancy (two
+      adjacent sentences making the same port-isolation point) persists unchanged
+      from iteration 3. Not a contradiction; an editorial refinement.
+    gaps:
+      - >
+        Minor: the H-07 explanation paragraph contains a slight redundancy
+        (two adjacent sentences making the same port-isolation point about the
+        extractor not knowing how frontmatter is parsed). This was noted in
+        iteration 2, not addressed in iterations 3 or 4.
+    improvement_path: >
+      Remove or merge the redundant H-07 sentence. Score would reach ~0.92.
+      Optional editorial polish — not a blocking issue.
+
+  methodological_rigor:
+    weight: 0.20
+    score: 0.93
+    weighted: 0.1860
+    evidence_summary: >
+      Unchanged from iteration 3. The diagnostic methodology is complete:
+      problem setup with Format A/B distinction, CLI output observation,
+      application-layer code trace (skill_extractor.py:110-115), three
+      parser source-level citations (ast_commands.py:454 docstring,
+      frontmatter.py:46 sole extraction regex, frontmatter.py:5 module name),
+      test gap analysis with mock code, fix prescription with three
+      alternative-design rebuttals (why not fix in-place, why not inline in
+      extractor, H-33 applicability), and composition root wiring. The conclusion
+      "there is no code path in the parser for ---delimited YAML" is warranted
+      directly from source citations, not inferred from output alone.
+      Iteration 4 adds one confirmatory fact; it does not change the
+      methodology structure.
+    gaps:
+      - >
+        Minor: the integration test recommendation names "a real SKILL.md file"
+        without specifying which one. Acceptable scope for a C2 stakeholder
+        explanation.
+    improvement_path: >
+      Score is above threshold. No substantive methodology improvements needed.
+
+  evidence_quality:
+    weight: 0.15
+    score: 0.92
+    weighted: 0.1380
+    evidence_summary: >
+      Unchanged from iteration 3. The core causal claim rests on three
+      source-level citations verified against ground truth: ast_commands.py:454
+      docstring says "Extract blockquote frontmatter fields" (blockquote explicit);
+      frontmatter.py:46 is the sole extraction regex and exclusively matches
+      "> **Key:** Value" with no --- delimiter in the pattern; frontmatter.py:5
+      names the module BlockquoteFrontmatter. The new sentence's factual claim
+      ("name field at line 2") is ground-truth verified by grep confirming 13
+      matches all at line 2, adding one more verifiable assertion. However, the
+      grep command is not shown in the document — the claim is stated as fact
+      without inline citation. This is standard documentation convention for a
+      stakeholder explanation and does not constitute an evidence defect, but
+      it does not rise to the level that would move an already-at-threshold
+      dimension.
+    gaps:
+      - >
+        The CLI output is presented as "actual output" without a recorded session
+        artifact. The new sentence's "at line 2" claim is stated as fact without
+        showing the grep that confirms it. Both are standard stakeholder
+        documentation conventions.
+    improvement_path: >
+      Score is at threshold. No high-priority improvements.
+
+  actionability:
+    weight: 0.15
+    score: 0.92
+    weighted: 0.1380
+    evidence_summary: >
+      Unchanged from iteration 3. Fix is concretely specified: create
+      YamlFrontmatterReader using yaml.safe_load, wire via bootstrap.py
+      (code shown), add an integration test against a real SKILL.md file.
+      Port docstring update mentioned. Three alternative designs addressed.
+      A developer could implement this without additional information.
+      The new sentence confirms the scope of the fix (all 13 would succeed)
+      but does not change the fix prescription itself.
+    gaps:
+      - >
+        No specification of which yaml library to import (PyYAML already a
+        dependency vs. to be added). Acceptable for a stakeholder explanation.
+    improvement_path: >
+      No high-priority improvements.
+
+  traceability:
+    weight: 0.10
+    score: 0.92
+    weighted: 0.0920
+    evidence_summary: >
+      Unchanged from iteration 3. The traceability chain for the core causal
+      claim is complete: traced to ast_commands.py:454 (quoted docstring),
+      frontmatter.py:46 (quoted extraction regex), frontmatter.py:5 (module
+      name). Other traceable items: ast_frontmatter_reader.py:28,
+      skill_extractor.py:110-115, H-07, H-33, skills/*/SKILL.md,
+      bootstrap.py. The new sentence's "at line 2" claim is verifiable via
+      grep but the grep command is not cited inline. Marginal traceability
+      improvement from iteration 3 does not move an already-at-threshold
+      dimension.
+    gaps:
+      - >
+        The port docstring update references frontmatter_reader.py in prose
+        without a line number. Minor; adequate for stakeholder explanation scope.
+      - >
+        The "at line 2" claim in the new sentence is stated without showing the
+        grep that verifies it. Verifiable but not cited inline.
+    improvement_path: >
+      Score is at threshold. Minor polish only.
+
+weighted_composite_calculation:
+  completeness:         "0.93 × 0.20 = 0.1860"
+  internal_consistency: "0.91 × 0.20 = 0.1820"
+  methodological_rigor: "0.93 × 0.20 = 0.1860"
+  evidence_quality:     "0.92 × 0.15 = 0.1380"
+  actionability:        "0.92 × 0.15 = 0.1380"
+  traceability:         "0.92 × 0.10 = 0.0920"
+  total: "0.1860 + 0.1820 + 0.1860 + 0.1380 + 0.1380 + 0.0920 = 0.9220"
+
+verdict: PASS
+verdict_rationale: >
+  0.922 meets the 0.92 threshold (H-13) by a margin of 0.002. The only dimension
+  change from iteration 3 is Completeness (0.90 -> 0.93), driven entirely by
+  the single-sentence DA-004 addition that was ground-truth verified. The
+  +0.006 composite delta is consistent with the iteration 3 projection
+  (0.916 + 0.03 × 0.20 = 0.922). All other five dimensions are unchanged from
+  iteration 3, which is appropriate: iteration 4 made only one targeted addition
+  and no other changes. Internal Consistency remains at 0.91 because the H-07
+  paragraph redundancy was not addressed; this is the only dimension below 0.92
+  and it is a minor editorial issue, not a substantive defect. The deliverable
+  meets the quality gate for a C2 Standard criticality level.
+
+improvement_recommendations:
+  - priority: 1
+    dimension: internal_consistency
+    current_score: 0.91
+    target_score: 0.92
+    delta_impact_on_composite: +0.002
+    projected_composite_after: 0.924
+    recommendation: >
+      Optional editorial: remove or merge the redundant sentence in the H-07
+      paragraph (two adjacent sentences making the same port-isolation point
+      about the extractor not knowing how frontmatter is parsed). Not a
+      blocking issue; the deliverable already passes the quality gate.
+
+leniency_bias_check:
+  each_dimension_scored_independently: true
+  evidence_documented_for_each_score: true
+  uncertain_scores_resolved_downward: true
+  first_draft_calibration_considered: "N/A — iteration 4 revision"
+  no_dimension_above_0_95_without_exceptional_evidence: true
+  notes: >
+    Completeness moved from 0.90 to 0.93 because the specific, verifiable gap
+    (DA-004 confirmatory clause) was addressed with a factually accurate sentence
+    verified against ground truth. This is genuine resolution, not softening.
+    The 0.93 (not 0.95+) reflects that the document is very strong but not
+    essentially perfect — the minor H-07 redundancy and the unstated grep citation
+    for the "at line 2" claim are real, if minor, limitations. Five dimensions
+    are unchanged from iteration 3 because iteration 4 made only one targeted
+    addition; holding them steady is correct. Internal Consistency at 0.91
+    (below threshold) is retained because the H-07 redundancy was not fixed.
+    The composite of 0.922 correctly reflects that one targeted gap was closed
+    and one minor editorial issue persists. No scores were inflated to produce
+    a more comfortable margin above 0.92.
+
+session_context_handoff:
+  verdict: PASS
+  composite_score: 0.922
+  threshold: 0.92
+  weakest_dimension: internal_consistency
+  weakest_score: 0.91
+  critical_findings_count: 0
+  iteration: 4
+  improvement_recommendations:
+    - "Optional editorial: remove H-07 paragraph redundancy (two adjacent sentences making the same port-isolation point); +0.002 composite; non-blocking"

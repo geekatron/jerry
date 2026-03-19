@@ -1,0 +1,551 @@
+# Quality Score Report — QG-B3 Phase 3 Verification (Iteration 8)
+# S-014 LLM-as-Judge | SSOT: .context/rules/quality-enforcement.md
+# Scored: 2026-03-10
+
+## L0 Executive Summary
+
+# Score: 0.9330/1.00 | Verdict: REVISE | Weakest Dimension: Actionability (0.93)
+# One-line assessment: Iteration 8 closes three targeted gaps — Deferred-To column
+# (Actionability), F9/F10 stable IDs (Traceability), and eng-qa footer (Internal
+# Consistency) — raising the composite from 0.9200 to 0.9330 (delta: +0.0130); the
+# remaining 0.0070 gap to the C4 threshold of 0.94 is traceable to: (1) a new minor
+# Internal Consistency tension introduced by assigning F9/F10 stable IDs while the
+# Evidence Summary note still calls them "sub-findings not counted separately," and
+# (2) Methodological Rigor unchanged at 0.93 (no iteration 8 changes), and (3) the
+# eng-qa L2 recommendation #4 still lacking the specific pyproject.toml stanza target.
+
+---
+
+scoring_context:
+  deliverables:
+    - path: projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-3/eng-qa-report.md
+    - path: projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-3/security-review.md
+    - path: projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-3/attack-surface-report.md
+    - path: projects/PROJ-0037-doc-module/orchestration/impl-20260310-001/impl/phase-3/gate-disposition-b3.md
+  deliverable_type: Analysis
+  criticality_level: C4
+  scoring_strategy: S-014 (LLM-as-Judge)
+  ssot_reference: .context/rules/quality-enforcement.md
+  scored: "2026-03-10"
+  iteration: 8
+  score_progression:
+    - iteration: 1
+      score: 0.8555
+    - iteration: 2
+      score: 0.9000
+    - iteration: 3
+      score: 0.8860
+    - iteration: 4
+      score: 0.9275
+    - iteration: 5
+      score: 0.9040
+    - iteration: 6
+      score: 0.8970
+    - iteration: 7
+      score: 0.9200
+    - iteration: 8
+      score: 0.9330
+
+# ---
+
+score_summary:
+  weighted_composite: 0.9330
+  threshold: 0.94  # C4 criticality
+  standard_threshold: 0.92  # H-13 general threshold
+  verdict: REVISE
+  strategy_findings_incorporated: "No (no separate adv-executor reports; ground truth supplied by user)"
+  remaining_gap_to_threshold: 0.0070
+
+# ---
+
+dimension_scores:
+
+  completeness:
+    weight: 0.20
+    score: 0.94
+    weighted: 0.1880
+    evidence_summary: >
+      Fix 2 (F9/F10 IDs) and fix 3 (eng-qa footer) jointly close both listed iteration-7
+      completeness gaps. Cross-reference table now has 10 rows with stable IDs (V1-V4,
+      F5-F10) per ground truth. Eng-qa footer reads "Last updated: Iteration 7 (branch
+      coverage clarification)" — accurate metadata replacing the stale "Iteration: 1."
+      All required deliverable content present: 4 modules in eng-qa, 5 mitigations +
+      4 hexagonal in security-review, 8 primary findings in attack-surface, 10-row
+      cross-reference in gate. Residual: Evidence Summary parenthetical ("V1-rec and
+      V4-rec are sub-findings within V1/V4, not counted separately") is mildly awkward
+      now that F9/F10 stable IDs are assigned, but the explanation is present and
+      the 5 LOW count is correct per ground truth.
+
+  internal_consistency:
+    weight: 0.20
+    score: 0.93
+    weighted: 0.1860
+    evidence_summary: >
+      Fix 3 (eng-qa footer) closes the sole iteration-7 Internal Consistency gap:
+      "Iteration: 1" stale metadata is replaced with "Last updated: Iteration 7
+      (branch coverage clarification)." All core metrics remain consistent across
+      4 documents: 51 tests, 100% line (323/323), 99% branch (67/68), missed branch
+      294→299, 5 STRIDE COMPLIANT, 4 hexagonal COMPLIANT, pyproject.toml:40 =
+      "jinja2>=3.1.6,<4.0." Residual new tension (introduced by fix 2): the Evidence
+      Summary note says "V1-rec and V4-rec are sub-findings...not counted separately"
+      but the cross-reference table now labels them F9 and F10 with severity LOW —
+      a reader could reasonably expect 7 LOW from the table but the count is 5 LOW.
+      The parenthetical explanation is present but the tension is genuine. Score held
+      at 0.93 rather than 0.94 on this basis.
+
+  methodological_rigor:
+    weight: 0.20
+    score: 0.93
+    weighted: 0.1860
+    evidence_summary: >
+      No methodology changes in iteration 8. Score unchanged from iteration 7.
+      All methodology strengths intact: STRIDE per-mitigation verification with
+      spec-vs-implementation tables; per-vector bypass feasibility assessment with
+      specific bypass attempts (uppercase JAVASCRIPT:, percent-encoded colon, multi-line
+      scalar); ATT&CK technique mappings; cross-report reconciliation with explicit
+      conflict resolution for Jinja2 severity divergence and M-5 name pattern discrepancy;
+      per-module gap analysis with before/after line numbers; eng-qa L2 weakness #1
+      definitively identifies the single missed branch as exclusively the OSError catch
+      at 294→299 with the _check_drift compound boolean explicitly stated as fully covered.
+      No remaining methodology gaps of significance.
+
+  evidence_quality:
+    weight: 0.15
+    score: 0.93
+    weighted: 0.1395
+    evidence_summary: >
+      Fix 2 (F9/F10 IDs) adds navigational evidence: the cross-reference table rows
+      now read "F9 (V1-rec): Newline bypass in YAML description — deferred to hardening
+      backlog item 3" and "F10 (V4-rec): Filename flag injection — deferred to hardening
+      backlog item 6." This enables lookup from cross-reference to backlog item. All
+      primary findings (V1-V4, F5-F8, RR-1, RR-2) retain strong file:line citations.
+      Security-review reproduces regex patterns verbatim. Attack-surface reproduces
+      subprocess.run() call block. Gate-disposition F5 row cites
+      generate_docs_command_handler.py:142-150 (fix from iteration 7, persists).
+      Residual: F9/F10 rows have backlog item references but no file:line evidence
+      citations — appropriate for sub-recommendations but lower evidence density than
+      primary finding rows.
+
+  actionability:
+    weight: 0.15
+    score: 0.93
+    weighted: 0.1395
+    evidence_summary: >
+      Fix 1 (Deferred To column) closes the priority-1 actionability gap from iteration 7:
+      gate-disposition Open Findings table now has "Deferred To" column with V3→Hardening
+      backlog item 4, F5→Hardening backlog item 2, V2/RR-1/RR-2→N/A. A downstream
+      reviewer can now determine where each ACCEPTED MEDIUM finding is tracked for
+      follow-up — the explicit "Hardening backlog item N" references link directly to the
+      attack-surface-report hardening backlog table. Hardening backlog retains 7
+      priority-ordered items with effort estimates. Eng-qa L2 recommendations remain
+      specific: --cov-branch, integration test layer, parameterized sanitization tests,
+      CI coverage gate. Gate-disposition accepted rationale is revalidatable with
+      file:line and test citations. Residual gap: eng-qa L2 recommendation #4 (CI
+      coverage gate) still does not cite the specific pyproject.toml stanza
+      ([tool.pytest.ini_options]) where --cov-fail-under=90 should be added. This is
+      a minor gap; the recommendation is otherwise actionable.
+
+  traceability:
+    weight: 0.10
+    score: 0.94
+    weighted: 0.0940
+    evidence_summary: >
+      Fix 2 (F9/F10 IDs) closes the sole iteration-7 traceability gap: V1-rec and V4-rec
+      now have stable finding IDs F9 and F10 in the cross-reference table, with explicit
+      backlog item references (F9→item 3, F10→item 6). The forward traceability chain is
+      now complete: hardening backlog item 3 (newline collapse at skill_extractor.py:260)
+      → F9 → cross-reference row → V1 (YAML injection) recommendation. Hardening backlog
+      item 6 (filename-begins-with-dash at ast_frontmatter_reader.py:53) → F10 →
+      cross-reference row → V4 (subprocess injection) recommendation. All other traceability
+      chains intact: open findings disposition cites source report and section; security-review
+      footer cites threat model and specification paths; eng-qa test docstrings cite M-number
+      controls and source lines; cross-report reconciliation traces Jinja2 severity from
+      attack-surface (HIGH structural) through resolution (pin widened) to gate disposition
+      (RESOLVED, current-state LOW). No remaining traceability gaps.
+
+  total:
+    weight: 1.00
+    weighted_composite: 0.9330
+
+# ---
+
+detailed_dimension_analysis:
+
+  completeness:
+    score: 0.94
+    evidence: |
+      POSITIVE:
+      - eng-qa-report: complete pre/post coverage breakdown (66% → 100%), per-module gap
+        analysis with specific line number ranges, OWASP test category mapping, L0/L1/L2
+        structure. Footer now reads "Last updated: Iteration 7 (branch coverage
+        clarification)" — stale "Iteration: 1" resolved by fix 3.
+      - security-review: all 5 mitigations (M-1 through M-5) verified with file:line
+        citations, all 4 hexagonal constraints (H-07, H-10, H-11, H-33), OWASP mapping,
+        NIST CSF mapping, residual risk register with 2 entries (RR-1, RR-2). No changes
+        in iteration 8; content complete.
+      - attack-surface-report: all 8 primary findings present (V1-V4, F5-F8), L0/L1/L2
+        structure, hardening backlog with 7 priority-ordered items (item 1 DONE, 2-7 open).
+        No changes in iteration 8.
+      - gate-disposition: cross-reference table now has 10 rows with stable IDs (V1-V4,
+        F5-F10) per fix 2. Disposition table has "Deferred To" column per fix 1. Evidence
+        Summary correctly states 5 LOW = V1, V4, F6 (attack-surface) + RR-1, RR-2
+        (security-review) with parenthetical noting F9/F10 are sub-findings not counted
+        separately.
+    gaps: |
+      1. Evidence Summary parenthetical ("V1-rec and V4-rec are sub-findings within V1/V4,
+         not counted separately") is mildly awkward now that F9/F10 stable IDs are assigned.
+         A reader seeing F9 (LOW) and F10 (LOW) in the table might expect 7 LOW, not 5.
+         The explanation is present but creates mild cognitive dissonance. Not a content
+         completeness gap — all findings are catalogued — but a presentational clarity
+         residual.
+      2. The Evidence Summary note says F9/F10 are "sub-findings within V1/V4" but does
+         not clarify that they represent the hardening recommendations (not the primary
+         vulnerabilities) within V1/V4. A brief clarification (e.g., "remediation
+         sub-recommendations derived from V1 and V4") would remove all ambiguity.
+    improvement_path: |
+      Update the Evidence Summary LOW count parenthetical from "V1-rec and V4-rec are
+      sub-findings within V1/V4, not counted separately" to "F9 and F10 are remediation
+      sub-recommendations derived from V1/V4 respectively; they are not counted as
+      independent LOW findings." This eliminates the terminological tension introduced
+      by assigning stable IDs while maintaining the correct count of 5 LOW.
+
+  internal_consistency:
+    score: 0.93
+    evidence: |
+      CONSISTENT across all 4 documents (verified against ground truth):
+      - 51 tests, all passing: eng-qa L0 summary + gate-disposition evidence summary.
+      - 100% line coverage (323/323 statements): eng-qa post-addition table + gate-disposition.
+      - 99% branch coverage (67/68): eng-qa L2 weakness #1 + gate-disposition evidence summary.
+      - Missed branch: generate_docs_command_handler.py:294→299: eng-qa + gate-disposition agree.
+      - 5 STRIDE mitigations COMPLIANT: security-review L0 + gate-disposition verdict.
+      - 4 hexagonal constraints COMPLIANT: security-review L0 + gate-disposition verdict.
+      - pyproject.toml:40 = "jinja2>=3.1.6,<4.0": security-review M-4 + attack-surface
+        Vector 2 + gate-disposition open findings + hardening actions — all agree.
+      FIX 3 VERIFIED: eng-qa footer now reads "Last updated: Iteration 7 (branch coverage
+      clarification)" — the "Iteration: 1" stale metadata from prior iterations is resolved.
+      Handoff target reads "eng-reviewer (Phase 4 final compliance)" — consistent with
+      ORCHESTRATION.yaml Phase 4 agent per ground truth.
+    gaps: |
+      NEW RESIDUAL TENSION (introduced by fix 2): The Evidence Summary in gate-disposition
+      says "5 LOW (ACCEPTED) — V1, V4, F6 from attack-surface + RR-1, RR-2 from
+      security-review. V1-rec and V4-rec are sub-findings within V1/V4, not counted
+      separately." The cross-reference table now labels these rows "F9 (V1-rec)" and
+      "F10 (V4-rec)" with severity LOW. A careful reader will notice F9 and F10 are
+      LOW severity but excluded from the 5 LOW count. The explanation exists but the
+      terminology creates an inconsistency: items with stable F-IDs and severity ratings
+      are treated as non-findings for count purposes. Score held at 0.93 rather than 0.94
+      on this basis (applying uncertain-scores-resolved-downward rule).
+    improvement_path: |
+      Update the Evidence Summary LOW count parenthetical to reconcile the stable F-ID
+      assignment with the sub-finding status: replace "V1-rec and V4-rec are sub-findings
+      within V1/V4, not counted separately" with "F9 and F10 are remediation
+      sub-recommendations (not independent vulnerabilities); they are cross-referenced
+      for traceability but excluded from the severity tally." This eliminates the
+      tension without changing the count.
+
+  methodological_rigor:
+    score: 0.93
+    evidence: |
+      - eng-qa uses structured per-module gap analysis: each module gets its own before/after
+        table with line numbers, branch descriptions, and test names. Security notes explain
+        defensive rationale. OWASP category mapping provided. L2 weakness #1 definitively
+        states the single missed branch is exclusively the OSError catch at
+        generate_docs_command_handler.py:294→299, and the _check_drift compound boolean is
+        explicitly stated as fully covered.
+      - security-review uses formal STRIDE mitigation verification: each mitigation has a
+        spec-vs-implementation comparison table; M-2 has a 4-row exact-match table (confirmed
+        parameter-by-parameter). Import dependency matrix for H-07 compliance. H-10 per-file
+        class count table. H-11 per-file public function annotation table.
+      - attack-surface uses per-vector bypass feasibility assessment with specific bypass
+        attempts (uppercase JAVASCRIPT:, percent-encoded colon, multi-line scalar). ATT&CK
+        technique mappings cover all primary vectors. Priority-ordered hardening backlog
+        with effort estimates and specific code changes.
+      - gate-disposition provides explicit cross-report reconciliation for both the Jinja2
+        severity divergence (distinguishes current-state LOW from structural forward HIGH)
+        and the M-5 name pattern discrepancy (mixed-case skill names vs. lowercase agent
+        names). Both reconciliation rationales are complete.
+    gaps: |
+      No new methodology gaps introduced in iteration 8. No changes to methodology.
+      Score unchanged from iteration 7. The 0.93 reflects excellent methodology across
+      all four documents with no remaining significant gaps. The minor gap preventing
+      0.95+ is the absence of any formal traceability coverage metric (e.g., percentage
+      of findings with test coverage) in the cross-reference table — all rows have test
+      coverage noted but no aggregate metric is computed.
+    improvement_path: |
+      No critical methodology improvements required. To reach 0.95+: add a coverage
+      percentage row to the cross-reference table summarizing what fraction of findings
+      have corresponding tests vs. those deferred to hardening backlog.
+
+  evidence_quality:
+    score: 0.93
+    evidence: |
+      STRONG (unchanged from iteration 7 + modest improvement from fix 2):
+      - security-review cites specific file:line for every control: skill_extractor.py:34
+        for _HTML_TAG_PATTERN; lines 38-40 for _UNSAFE_LINK_PATTERN; pyproject.toml:40 for
+        M-4; generate_docs_command_handler.py:281-287 for M-3. Regex patterns reproduced
+        verbatim.
+      - attack-surface reproduces the full subprocess.run() call block and _UNSAFE_LINK_PATTERN
+        regex. Bypass attempts are specific and documented (uppercase JAVASCRIPT:,
+        percent-encoded colon, multi-line scalar with newline injection example).
+      - eng-qa provides before/after line numbers for each module; branch descriptions in
+        per-module tables; security notes citing M-number controls.
+      - gate-disposition: V3 row cites generate_docs_command_handler.py:97-108 and test name
+        test_path_traversal_rejected. RR-2 row cites skill_extractor.py:143-146. F5 row
+        cites generate_docs_command_handler.py:142-150 (fix from iteration 7, persists).
+        F9 row notes "Not directly tested (sanitization strips HTML/links but not newlines),
+        deferred to hardening backlog item 3." F10 row notes "Not tested (theoretical;
+        requires '--' prefix filename), deferred to hardening backlog item 6." The backlog
+        item references are the evidence improvement from fix 2.
+    gaps: |
+      1. F9 and F10 cross-reference rows have backlog item references but no file:line
+         evidence citations. This is appropriate for sub-recommendations (they point to
+         the primary finding's evidence) but the evidence density is lower than primary
+         finding rows. Minor gap.
+      2. Evidence Summary count note ("V1-rec and V4-rec are sub-findings...not counted
+         separately") could be improved to clarify that F9/F10 are recommendation-class
+         entries, distinguishing them from vulnerability-class findings V1-F8.
+    improvement_path: |
+      For F9/F10, add a parenthetical in the Test Coverage column pointing to the primary
+      finding's test (e.g., "Inherits from V1: test_sanitize_description_strips_html_and_unsafe_links")
+      to provide evidence continuity from the sub-recommendation back to the verified control.
+
+  actionability:
+    score: 0.93
+    evidence: |
+      FIX 1 VERIFIED: gate-disposition Open Findings table now has "Deferred To" column:
+        - V3 (MEDIUM: CWD path traversal) → Hardening backlog item 4
+        - F5 (MEDIUM: unsanitized static YAML) → Hardening backlog item 2
+        - V2 (HIGH: Jinja2 pin, RESOLVED) → N/A
+        - RR-1 (LOW: markdown formatting injection) → N/A
+        - RR-2 (LOW: warn-only keyword count) → N/A
+      The "Deferred To" references link directly to specific numbered items in the
+      attack-surface-report hardening backlog table, closing the "downstream tracking
+      reference" gap for C4 criticality.
+      Hardening backlog retains 7 priority-ordered items with effort estimates
+      (5 min to 1 hr); item 1 DONE; items 2-7 include specific code changes:
+      - Item 2: apply _sanitize_description to YAML-loaded strings at
+        generate_docs_command_handler.py:141-158
+      - Item 3: add sanitized.replace('\n', ' ').replace('\r', ' ') to skill_extractor.py:260
+      - Item 4: replace CWD trust anchor with repo-root marker detection at
+        generate_docs_command_handler.py:98
+      - Item 5: os.chmod(temp_path, 0o600) before os.replace() at
+        generate_docs_command_handler.py:290
+      - Item 6: Path(file_path).name.startswith('-') guard at ast_frontmatter_reader.py:53
+      - Item 7: eliminate "stdout" sentinel; use None directly at main.py:737-741
+      Eng-qa L2 recommendations: (1) add --cov-branch to pytest config; (2) integration
+      tests in tests/integration/docs/; (3) parameterize sanitization tests for data: and
+      vbscript:; (4) register --cov-fail-under=90 CI gate.
+    gaps: |
+      Eng-qa L2 recommendation #4 (CI coverage gate) states "Current pyproject.toml does
+      not enforce this automatically" but does not cite the specific stanza
+      ([tool.pytest.ini_options] section) where --cov-fail-under=90 should be added.
+      A developer following this recommendation must independently locate the correct
+      stanza. Minor gap; the file is cited, the setting is named, only the section header
+      is absent.
+    improvement_path: |
+      Update eng-qa L2 recommendation #4 to: "Register a CI coverage gate in
+      pyproject.toml under [tool.pytest.ini_options]: addopts = '--cov-fail-under=90'
+      to prevent future regressions below the H-20 threshold." This makes the
+      recommendation fully self-contained.
+
+  traceability:
+    score: 0.94
+    evidence: |
+      FIX 2 VERIFIED: Cross-reference table rows previously labeled "V1-rec" and "V4-rec"
+      now read "F9 (V1-rec): Newline bypass in YAML description" and "F10 (V4-rec):
+      Filename flag injection" with explicit "deferred to hardening backlog item 3" and
+      "deferred to hardening backlog item 6" references respectively. The forward
+      traceability chain is complete:
+        Hardening backlog item 3 → F9 → cross-reference row → V1 (YAML injection)
+        Hardening backlog item 6 → F10 → cross-reference row → V4 (subprocess injection)
+      All other traceability chains intact (unchanged from iteration 7):
+      - Open findings disposition: each row cites source report and section.
+      - Security-review footer cites threat model (security/threat-model-doc-module.md)
+        and specification (specifications/doc-module-spec.md) paths.
+      - Eng-qa test docstrings cite M-number security controls and source lines.
+      - Cross-report reconciliation traces Jinja2 severity from attack-surface (HIGH
+        structural) through resolution (pin widened to >=3.1.6,<4.0) to gate disposition
+        (RESOLVED, current-state LOW).
+      - Deferred-To column (fix 1) adds a traceability link from disposition table
+        ACCEPTED findings back to hardening backlog items: V3→item 4, F5→item 2.
+    gaps: |
+      No remaining structural traceability gaps after fix 2. The sole gap identified in
+      iteration 7 (V1-rec/V4-rec without finding IDs preventing forward traceability)
+      is fully resolved. Minor residual: the Evidence Summary note's language ("sub-findings
+      within V1/V4, not counted separately") slightly obscures the F9/F10 traceability
+      by suggesting they are informal sub-findings rather than formal cross-reference
+      entries — but this affects terminology clarity, not the completeness of the
+      traceability chain.
+    improvement_path: |
+      No critical traceability improvements required. To reach 0.95: update the Evidence
+      Summary parenthetical as described in the Internal Consistency improvement path
+      to fully reconcile the F9/F10 ID assignment with their sub-finding status.
+
+# ---
+
+improvement_recommendations:
+
+  - priority: 1
+    dimension: Internal Consistency + Completeness
+    current: 0.93 / 0.94
+    target: 0.95 / 0.95
+    recommendation: >
+      Update the Evidence Summary LOW count parenthetical in gate-disposition-b3.md from
+      "V1-rec and V4-rec are sub-findings within V1/V4, not counted separately" to
+      "F9 and F10 are remediation sub-recommendations derived from V1/V4 respectively;
+      they are cross-referenced for traceability but are not independent vulnerability
+      findings and are excluded from the severity tally." This single text change closes
+      both the Internal Consistency tension (F9/F10 have IDs but are excluded from the
+      5 LOW count) and the Completeness clarity gap (the explanation is present but
+      ambiguous). Effort: 2 minutes.
+
+  - priority: 2
+    dimension: Methodological Rigor + Evidence Quality
+    current: 0.93 / 0.93
+    target: 0.94 / 0.94
+    recommendation: >
+      No critical fixes required for these dimensions. Both are solid. If a further
+      increment is desired: (1) for Evidence Quality, add an inheriting evidence note to
+      F9/F10 cross-reference rows (e.g., "Inherits from V1: test_sanitize_description_strips_html_and_unsafe_links");
+      (2) for Methodological Rigor, add a summary row to the cross-reference table showing
+      the fraction of findings with test coverage (8/10 findings tested; 2 deferred to
+      hardening backlog). These are polish-level improvements, not gap closures.
+
+  - priority: 3
+    dimension: Actionability
+    current: 0.93
+    target: 0.94
+    recommendation: >
+      Update eng-qa L2 recommendation #4 to specify the exact pyproject.toml stanza:
+      "Register a CI coverage gate in pyproject.toml under [tool.pytest.ini_options]:
+      addopts = '--cov-fail-under=90' to prevent future regressions below the H-20
+      threshold." This makes the recommendation fully self-contained without requiring
+      the developer to locate the section independently. Effort: 2 minutes.
+
+# ---
+
+ground_truth_verification:
+  pyproject_toml_line_40:
+    expected: '"jinja2>=3.1.6,<4.0",'
+    verified_in:
+      - "security-review.md L1 M-4 evidence table: pyproject.toml | 40 | \"jinja2>=3.1.6,<4.0\","
+      - "attack-surface-report.md Vector 2 header: pyproject.toml:40 — \"jinja2>=3.1.6,<4.0\""
+      - "gate-disposition-b3.md hardening actions: pyproject.toml:40"
+      - "gate-disposition-b3.md open findings V2 row: pyproject.toml:40"
+    status: PASS
+
+  test_counts:
+    expected: "51 tests, 100% line (323/323), 99% branch (67/68)"
+    verified_in:
+      - "eng-qa-report.md L0 summary table: 51/51 tests, 100% coverage"
+      - "eng-qa-report.md post-addition coverage table: TOTAL 323 stmts, 0 missed, 100%"
+      - "eng-qa-report.md L2 weakness #1: 67 of 68 branches covered"
+      - "gate-disposition-b3.md evidence summary: 51 tests, 100% line (323/323), 99% branch (67/68)"
+    status: PASS
+
+  stride_hexagonal:
+    expected: "5 STRIDE COMPLIANT, 4 hexagonal COMPLIANT"
+    verified_in:
+      - "security-review.md L0 Security Control Compliance table: 5 rows all COMPLIANT"
+      - "security-review.md L0 Hexagonal Compliance table: 4 rows all COMPLIANT"
+      - "gate-disposition-b3.md verdict summary: all 5 STRIDE / all hexagonal COMPLIANT"
+    status: PASS
+
+  severity_counts:
+    expected: "0 CRITICAL, 1 HIGH (RESOLVED), 2 MEDIUM (ACCEPTED), 5 LOW (ACCEPTED), 2 INFO"
+    verified_in: "gate-disposition-b3.md evidence summary"
+    breakdown:
+      critical: 0
+      high_resolved: 1  # V2 Jinja2 pin structural risk (now LOW post-hardening)
+      medium_accepted: 2  # V3 CWD assumption, F5 unsanitized static YAML
+      low_accepted: 5  # V1, V4, F6 (attack-surface) + RR-1, RR-2 (security-review)
+      info: 2  # F7 mode sentinel, F8 agent name pattern
+    status: PASS
+    note: >
+      Ground truth confirms 5 LOW. F9 and F10 are sub-recommendations with stable IDs
+      but are excluded from the LOW count per the Evidence Summary note. The Evidence
+      Summary parenthetical correctly explains the exclusion but the terminology creates
+      mild internal tension (see Internal Consistency gap).
+
+  cross_reference_table:
+    expected_rows: 10
+    expected_ids: [V1, V2, V3, V4, F5, F9, F10, F6, F7, F8]
+    verified_in: "gate-disposition-b3.md Cross-Reference Traceability section"
+    f9_row_present: true
+    f10_row_present: true
+    f9_backlog_reference: "hardening backlog item 3"
+    f10_backlog_reference: "hardening backlog item 6"
+    status: PASS
+
+  hardening_backlog:
+    expected_items: 7
+    expected_item_1_status: DONE
+    expected_items_2_7_status: open
+    verified_in: "attack-surface-report.md L2 Hardening Backlog table"
+    status: PASS
+
+  deferred_to_column:
+    expected:
+      V3: "Hardening backlog item 4"
+      F5: "Hardening backlog item 2"
+      V2: "N/A"
+      RR_1: "N/A"
+      RR_2: "N/A"
+    verified_in: "gate-disposition-b3.md Open Findings Disposition table"
+    status: PASS
+
+  eng_qa_footer:
+    expected_iteration: "Last updated: Iteration 7 (branch coverage clarification)"
+    expected_handoff: "eng-reviewer (Phase 4 final compliance)"
+    found_iteration: "Last updated: Iteration 7 (branch coverage clarification)"
+    found_handoff: "eng-reviewer (Phase 4 final compliance)"
+    status: PASS
+
+  new_inconsistencies_from_iteration_8:
+    introduced: true
+    description: >
+      Fix 2 introduces a minor new inconsistency: F9 and F10 are assigned stable finding
+      IDs and appear in the cross-reference table with severity LOW, but the Evidence
+      Summary note excludes them from the 5 LOW count with the explanation "V1-rec and
+      V4-rec are sub-findings within V1/V4, not counted separately." The terminology
+      "sub-findings" is not reconciled with the stable ID assignment. This is a
+      presentational/terminological inconsistency, not a factual error (the 5 LOW count
+      is correct per ground truth).
+
+# ---
+
+leniency_bias_check:
+  each_dimension_scored_independently: true
+  evidence_documented_for_each_score: true
+  uncertain_scores_resolved_downward: true
+  no_dimension_above_0.95: true
+  notes: >
+    Internal Consistency held at 0.93 rather than 0.94 despite the eng-qa footer fix:
+    fix 2 introduced a new minor inconsistency (F9/F10 IDs vs. Evidence Summary count
+    note) that partially offsets the footer improvement. The uncertain-scores-resolved-
+    downward rule applied here. Actionability scored 0.93 not 0.94+: the pyproject.toml
+    stanza gap is minor but real. Traceability raised to 0.94 from 0.91: the sole
+    structural gap (F9/F10 IDs) is fully closed — this 3-point gain is well-evidenced.
+    Completeness raised to 0.94 from 0.92: both listed gaps are closed; residual is
+    presentational not structural. Composite of 0.9330 is mathematically exact (verified
+    below). No dimension inflated to compensate for another.
+  composite_verification: >
+    (0.94 × 0.20) + (0.93 × 0.20) + (0.93 × 0.20) + (0.93 × 0.15) + (0.93 × 0.15) + (0.94 × 0.10)
+    = 0.1880 + 0.1860 + 0.1860 + 0.1395 + 0.1395 + 0.0940
+    = 0.9330
+
+# ---
+
+session_context:
+  verdict: REVISE
+  composite_score: 0.9330
+  threshold: 0.94
+  weakest_dimension: actionability
+  weakest_score: 0.93
+  critical_findings_count: 0
+  iteration: 8
+  remaining_gap_to_threshold: 0.0070
+  improvement_recommendations:
+    - "Update Evidence Summary parenthetical in gate-disposition: replace 'V1-rec and V4-rec are sub-findings within V1/V4, not counted separately' with 'F9 and F10 are remediation sub-recommendations derived from V1/V4 respectively; excluded from severity tally' (closes Internal Consistency + Completeness residual)"
+    - "Update eng-qa L2 recommendation #4 to specify [tool.pytest.ini_options] stanza in pyproject.toml (closes Actionability residual)"
+    - "Optional: add inheriting evidence note to F9/F10 cross-reference rows pointing back to primary finding tests (Evidence Quality polish)"

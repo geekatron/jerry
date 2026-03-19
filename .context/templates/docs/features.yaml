@@ -1,0 +1,45 @@
+# features.yaml
+#
+# Curated features list for the README.md features section, rendered by
+# features-section.md.jinja2.
+#
+# Each entry:
+#   title:       Bold label displayed as "**<title>**"
+#   description: Plain text that follows the colon after the title
+#
+# Source: README.md features section (seeded from A2 README-draft.md via
+#         cross-workstream synthesis 2026-03-08).
+#
+# Maintenance: Update this file when skills are added or removed.
+# The agent count headline ("58 Specialized Agents") is rendered dynamically
+# from `total_agents` (computed at generation time); this file does not need
+# updating for agent count changes.
+#
+# Count: 9 features
+
+- title: "Structured Problem-Solving"
+  description: "9 agents (researcher, analyst, architect, validator, synthesizer, reviewer, critic, investigator, reporter) with adversarial quality gates"
+
+- title: "Work Tracking"
+  description: "Local task management with status, priorities, dependencies, and template-enforced consistency"
+
+- title: "Knowledge Accrual"
+  description: "Persistent artifacts in `projects/` that survive session boundaries"
+
+- title: "NASA Systems Engineering"
+  description: "10 agents implementing NPR 7123.1D processes for mission-grade rigor"
+
+- title: "Multi-Agent Orchestration"
+  description: "Coordinate complex workflows with parallel pipelines, sync barriers, and checkpointing"
+
+- title: "Adversarial Quality Reviews"
+  description: "10 adversarial strategies (Red Team, Devil's Advocate, Pre-Mortem, FMEA, and more) with LLM-as-Judge scoring"
+
+- title: "Secure Engineering"
+  description: "10 agents covering threat modeling (STRIDE), secure code review (OWASP ASVS), DevSecOps pipelines, and incident response"
+
+- title: "Offensive Security"
+  description: "11 agents covering the full MITRE ATT&CK kill chain — reconnaissance through reporting — with mandatory scope authorization"
+
+- title: "AST-Based Parsing"
+  description: "Structured markdown frontmatter extraction for worktracker entities and validation"
