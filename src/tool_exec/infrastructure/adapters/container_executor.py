@@ -68,6 +68,7 @@ class ContainerExecutor:
         no_filter: bool = False,
         exec_flags: list[str] | None = None,
         strict_mode: bool = True,
+        proxy_env: dict[str, str] | None = None,
     ) -> ContainerExecutionResult:
         """Execute a tool command inside a Docker container.
 
@@ -93,6 +94,11 @@ class ContainerExecutor:
                 handler from the resolved JERRY_STRICT_MODE env var. When True
                 and no_filter=True, filter_output raises RuntimeError (PM-002).
                 Default True to keep safe behaviour when called without the CLI.
+            proxy_env: Optional dict of proxy environment variables to inject
+                into the container via ``docker compose exec -e``. T13-022:
+                Used to pass Envoy proxy config (HTTP_PROXY, HTTPS_PROXY,
+                NO_PROXY) dynamically per engagement scope. When None, the
+                container uses whatever proxy env is defined in the compose file.
 
         Note (DA-R4-002): This executor does NOT enforce Zone 3 security policy
             gates (approval, container requirement, engagement scope). Those gates
@@ -108,6 +114,7 @@ class ContainerExecutor:
             service=service,
             compose_file=compose_file,
             exec_flags=exec_flags or ["-T"],
+            proxy_env=proxy_env,
         )
 
         try:
@@ -237,8 +244,17 @@ class ContainerExecutor:
         service: str,
         compose_file: str | None,
         exec_flags: list[str],
+        proxy_env: dict[str, str] | None = None,
     ) -> list[str]:
         """Build the docker compose exec command.
+
+        T13-022: When proxy_env is provided, injects ``-e KEY=VALUE`` flags
+        into the ``docker compose exec`` command. These override the container's
+        environment variables for that execution only, allowing per-engagement
+        Envoy proxy configuration without modifying the compose file.
+
+        The ``-e`` flags are placed AFTER exec_flags but BEFORE the service
+        name, matching docker compose exec's option parsing order.
 
         Args:
             tool_command: Tool binary name.
@@ -246,6 +262,7 @@ class ContainerExecutor:
             service: Docker Compose service name.
             compose_file: Path to compose file.
             exec_flags: Flags for docker compose exec.
+            proxy_env: Optional proxy env vars to inject via ``-e``.
 
         Returns:
             Complete command as a list of strings.
@@ -257,6 +274,13 @@ class ContainerExecutor:
 
         cmd.append("exec")
         cmd.extend(exec_flags)
+
+        # T13-022: Inject proxy environment variables via -e flags.
+        # These override the compose-file-defined env vars for this execution.
+        if proxy_env:
+            for key, value in sorted(proxy_env.items()):
+                cmd.extend(["-e", f"{key}={value}"])
+
         cmd.append(service)
         cmd.append(tool_command)
         cmd.extend(tool_args)

@@ -578,6 +578,8 @@ def handle_tool_exec(args: Any) -> int:
             return ExitCode.ENGAGEMENT_NOT_INIT
 
     # Execute tool (CC-004-20260318: pass pre-built executors from factory)
+    # T13-021: Pass zone for Envoy proxy env var injection in container mode.
+    effective_zone = getattr(args, "zone", None) or getattr(resolution, "zone", None)
     if mode == "container":
         result = _execute_container(
             tool_command=tool_command,
@@ -587,6 +589,7 @@ def handle_tool_exec(args: Any) -> int:
             project_root=project_root,
             no_filter=no_filter,
             strict_mode=strict,
+            zone=effective_zone,
         )
     else:
         result = _execute_local(
@@ -1261,6 +1264,7 @@ def _execute_container(
     project_root: Path,
     no_filter: bool,
     strict_mode: bool = True,
+    zone: str | None = None,
 ) -> dict[str, Any]:
     """Execute a tool in a container.
 
@@ -1271,6 +1275,11 @@ def _execute_container(
     receives the CLI-resolved JERRY_STRICT_MODE value rather than the
     hard-coded True default.
 
+    T13-021: Builds proxy_env from the zone to inject HTTP_PROXY/HTTPS_PROXY
+    env vars into ``docker compose exec``. Zone 1 offline gets no proxy.
+    Zone 1 update, Zone 2, Zone 3 get their respective Envoy proxy URLs.
+    This enables per-engagement Envoy config without modifying compose files.
+
     Args:
         tool_command: Tool binary name.
         tool_args: Tool arguments.
@@ -1279,6 +1288,7 @@ def _execute_container(
         project_root: Path to the project root.
         no_filter: Whether to skip filtering.
         strict_mode: Resolved JERRY_STRICT_MODE boolean from CLI handler.
+        zone: Security zone ("1", "2", "3") from tool resolution or CLI override.
 
     Returns:
         Dictionary with execution results, including raw_stderr (RT-R2-001).
@@ -1287,6 +1297,13 @@ def _execute_container(
     if resolution.compose_file:
         compose_path = str(project_root / resolution.compose_file)
 
+    # T13-021: Build proxy env based on zone.
+    # Zone 1 offline: no proxy (no network at all).
+    # Zone 1 update: envoy-z1-update proxy for DB downloads.
+    # Zone 2: envoy-z2 proxy for engagement-scope targets.
+    # Zone 3: envoy-z3 proxy for engagement-scope + C2 targets.
+    proxy_env = _build_proxy_env(zone, resolution)
+
     result = executor.execute(
         tool_command=tool_command,
         tool_args=tool_args,
@@ -1294,6 +1311,7 @@ def _execute_container(
         compose_file=compose_path,
         no_filter=no_filter,
         strict_mode=strict_mode,
+        proxy_env=proxy_env,
     )
 
     return {
@@ -1314,6 +1332,80 @@ def _execute_container(
             else None
         ),
     }
+
+
+# ---------------------------------------------------------------------------
+# T13-021: Envoy proxy environment variable builder
+# ---------------------------------------------------------------------------
+
+# Envoy proxy service names per zone (match compose file service names).
+_ZONE_PROXY_MAP: dict[str, str] = {
+    "1-update": "envoy-z1-update",
+    "2": "envoy-z2",
+    "3": "envoy-z3",
+}
+
+# Services on the offline network (no proxy, no network at all).
+_ZONE1_OFFLINE_SERVICES: frozenset[str] = frozenset(
+    {
+        "scanner",
+        "detection",
+        "compliance",
+        "forensics",
+        "intel",
+    }
+)
+
+
+def _build_proxy_env(
+    zone: str | None,
+    resolution: Any,
+) -> dict[str, str] | None:
+    """Build HTTP_PROXY/HTTPS_PROXY env vars for the Envoy proxy.
+
+    T13-021: Determines the correct Envoy proxy URL based on the tool's zone
+    and service. Zone 1 offline services get no proxy. Zone 1 update, Zone 2,
+    and Zone 3 services get their respective Envoy proxy URLs.
+
+    Args:
+        zone: Security zone from tool resolution or CLI override.
+        resolution: ToolResolutionEntry with service and sub_skill info.
+
+    Returns:
+        Dict with HTTP_PROXY, HTTPS_PROXY, NO_PROXY keys, or None for
+        Zone 1 offline services (no network access).
+    """
+    if not zone:
+        return None
+
+    service = getattr(resolution, "container_service", "") or ""
+
+    # Zone 1 offline: no proxy, no network
+    if zone == "1" and service in _ZONE1_OFFLINE_SERVICES:
+        return None
+
+    # Zone 1 update: services that need DB downloads via proxy
+    if zone == "1":
+        proxy_host = _ZONE_PROXY_MAP.get("1-update")
+    else:
+        proxy_host = _ZONE_PROXY_MAP.get(zone)
+
+    if not proxy_host:
+        return None
+
+    proxy_url = f"http://{proxy_host}:3128"
+
+    env: dict[str, str] = {
+        "HTTP_PROXY": proxy_url,
+        "HTTPS_PROXY": proxy_url,
+        "NO_PROXY": "localhost,127.0.0.1",
+    }
+
+    # Metasploit needs postgres in NO_PROXY (separate internal network)
+    if service == "exploit-msf":
+        env["NO_PROXY"] = "localhost,127.0.0.1,postgres"
+
+    return env
 
 
 # ---------------------------------------------------------------------------
