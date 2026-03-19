@@ -580,6 +580,26 @@ def handle_tool_exec(args: Any) -> int:
     # Execute tool (CC-004-20260318: pass pre-built executors from factory)
     # T13-021: Pass zone for Envoy proxy env var injection in container mode.
     effective_zone = getattr(args, "zone", None) or getattr(resolution, "zone", None)
+
+    # VULN-003 mitigation: Fail-closed for Zone 2/3 in container mode.
+    # If Envoy proxy is required but not healthy, refuse to execute.
+    # Zone 1 offline is exempt (no proxy needed). Zone 1 update fails closed.
+    if mode == "container" and effective_zone in ("2", "3"):
+        proxy_env = _build_proxy_env(effective_zone, resolution)
+        if proxy_env:
+            proxy_host = proxy_env["HTTP_PROXY"].replace("http://", "").split(":")[0]
+            compose_path = (
+                str(project_root / resolution.compose_file) if resolution.compose_file else None
+            )
+            if not container_executor.health_check(proxy_host, compose_path):
+                print(
+                    f"Error: Envoy proxy '{proxy_host}' is not running. "
+                    f"Zone {effective_zone} requires proxy for deny-by-default egress. "
+                    f"Start the containers: docker compose -f {resolution.compose_file} up -d",
+                    file=sys.stderr,
+                )
+                return ExitCode.CONTAINER_NOT_RUNNING
+
     if mode == "container":
         result = _execute_container(
             tool_command=tool_command,

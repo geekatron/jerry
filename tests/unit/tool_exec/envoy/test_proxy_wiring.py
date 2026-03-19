@@ -160,3 +160,36 @@ class TestContainerExecutorProxyEnv:
         assert e_values[0].startswith("HTTPS_PROXY=")
         assert e_values[1].startswith("HTTP_PROXY=")
         assert e_values[2].startswith("NO_PROXY=")
+
+    def test_exec_flags_e_injection_blocked(self, executor: ContainerExecutor) -> None:
+        """VULN-002: exec_flags containing -e must be rejected."""
+        with pytest.raises(ValueError, match="exec_flags cannot contain environment"):
+            executor._build_command(
+                tool_command="nuclei",
+                tool_args=[],
+                service="recon-pipeline",
+                compose_file=None,
+                exec_flags=["-T", "-e", "MALICIOUS=true"],
+            )
+
+    def test_exec_flags_env_injection_blocked(self, executor: ContainerExecutor) -> None:
+        """VULN-002: exec_flags containing --env must be rejected."""
+        with pytest.raises(ValueError, match="exec_flags cannot contain environment"):
+            executor._build_command(
+                tool_command="nuclei",
+                tool_args=[],
+                service="recon-pipeline",
+                compose_file=None,
+                exec_flags=["-T", "--env=MALICIOUS=true"],
+            )
+
+    def test_exec_flags_e_equals_injection_blocked(self, executor: ContainerExecutor) -> None:
+        """VULN-002: exec_flags containing -e= must be rejected."""
+        with pytest.raises(ValueError, match="exec_flags cannot contain environment"):
+            executor._build_command(
+                tool_command="nuclei",
+                tool_args=[],
+                service="recon-pipeline",
+                compose_file=None,
+                exec_flags=["-e=HTTP_PROXY=http://evil:3128"],
+            )

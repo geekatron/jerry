@@ -273,10 +273,23 @@ class ContainerExecutor:
             cmd.extend(["-f", compose_file])
 
         cmd.append("exec")
+
+        # VULN-002 mitigation: Reject caller-supplied exec_flags that contain
+        # -e or --env, which could override proxy settings or inject arbitrary
+        # environment variables into the container execution context.
+        for flag in exec_flags:
+            if flag in ("-e", "--env") or flag.startswith("-e=") or flag.startswith("--env="):
+                msg = (
+                    f"exec_flags cannot contain environment variable flags ({flag}). "
+                    f"Use proxy_env parameter instead."
+                )
+                raise ValueError(msg)
         cmd.extend(exec_flags)
 
         # T13-022: Inject proxy environment variables via -e flags.
         # These override the compose-file-defined env vars for this execution.
+        # Proxy env values are derived from _ZONE_PROXY_MAP constants in the
+        # CLI handler (VULN-001 mitigation: never from user input).
         if proxy_env:
             for key, value in sorted(proxy_env.items()):
                 cmd.extend(["-e", f"{key}={value}"])
