@@ -1,0 +1,26 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.0.2, pluggy-1.6.0 -- /Users/evorun/workspace/jerry/.worktrees/main/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/evorun/workspace/jerry/.worktrees/main
+configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
+plugins: cov-7.0.0
+collecting ... collected 16 items
+
+tests/integration/configuration/test_output_resolver_e2e.py::TestGovernanceYamlTokenPresence::test_governance_yaml_contains_output_base_token[skills/use-case/agents/uc-author.governance.yaml] PASSED [  6%]
+tests/integration/configuration/test_output_resolver_e2e.py::TestGovernanceYamlTokenPresence::test_governance_yaml_contains_output_base_token[skills/use-case/agents/uc-slicer.governance.yaml] PASSED [ 12%]
+tests/integration/configuration/test_output_resolver_e2e.py::TestGovernanceYamlTokenPresence::test_governance_yaml_contains_output_base_token[skills/test-spec/agents/tspec-generator.governance.yaml] PASSED [ 18%]
+tests/integration/configuration/test_output_resolver_e2e.py::TestGovernanceYamlTokenPresence::test_governance_yaml_contains_output_base_token[skills/test-spec/agents/tspec-analyst.governance.yaml] PASSED [ 25%]
+tests/integration/configuration/test_output_resolver_e2e.py::TestGovernanceYamlTokenPresence::test_governance_yaml_contains_output_base_token[skills/contract-design/agents/cd-generator.governance.yaml] PASSED [ 31%]
+tests/integration/configuration/test_output_resolver_e2e.py::TestGovernanceYamlTokenPresence::test_governance_yaml_contains_output_base_token[skills/contract-design/agents/cd-validator.governance.yaml] PASSED [ 37%]
+tests/integration/configuration/test_output_resolver_e2e.py::TestGovernanceYamlTokenPresence::test_governance_yaml_no_fallback_location[skills/use-case/agents/uc-author.governance.yaml] PASSED [ 43%]
+tests/integration/configuration/test_output_resolver_e2e.py::TestGovernanceYamlTokenPresence::test_governance_yaml_no_fallback_location[skills/use-case/agents/uc-slicer.governance.yaml] PASSED [ 50%]
+tests/integration/configuration/test_output_resolver_e2e.py::TestGovernanceYamlTokenPresence::test_governance_yaml_no_fallback_location[skills/test-spec/agents/tspec-generator.governance.yaml] PASSED [ 56%]
+tests/integration/configuration/test_output_resolver_e2e.py::TestGovernanceYamlTokenPresence::test_governance_yaml_no_fallback_location[skills/test-spec/agents/tspec-analyst.governance.yaml] PASSED [ 62%]
+tests/integration/configuration/test_output_resolver_e2e.py::TestGovernanceYamlTokenPresence::test_governance_yaml_no_fallback_location[skills/contract-design/agents/cd-generator.governance.yaml] PASSED [ 68%]
+tests/integration/configuration/test_output_resolver_e2e.py::TestGovernanceYamlTokenPresence::test_governance_yaml_no_fallback_location[skills/contract-design/agents/cd-validator.governance.yaml] PASSED [ 75%]
+tests/integration/configuration/test_output_resolver_e2e.py::TestOutputResolverWithLayeredConfig::test_resolver_with_real_adapter_config_priority PASSED [ 81%]
+tests/integration/configuration/test_output_resolver_e2e.py::TestOutputResolverWithLayeredConfig::test_resolver_with_real_adapter_project_fallback PASSED [ 87%]
+tests/integration/configuration/test_output_resolver_e2e.py::TestOutputResolverWithLayeredConfig::test_resolver_with_real_adapter_terminal_fallback PASSED [ 93%]
+tests/integration/configuration/test_output_resolver_e2e.py::TestOutputResolverWithLayeredConfig::test_resolver_with_real_adapter_env_var_override PASSED [100%]
+
+============================== 16 passed in 0.06s ==============================

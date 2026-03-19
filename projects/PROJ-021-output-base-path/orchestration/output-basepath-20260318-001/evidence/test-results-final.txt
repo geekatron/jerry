@@ -1,0 +1,19 @@
+# Evidence Gate 6: Final Full Regression Test
+# Date: 2026-03-18
+# Result: PASS
+#
+# Summary: 16,102 passed, 245 skipped, 0 failed, 88% coverage
+# Baseline (Gate 1): 16,017 passed, 216 skipped, 88% coverage
+# Delta: +85 tests (57 new for GH #192), +29 skipped, 0 new failures
+# Coverage: 88% (matches baseline)
+#
+# New test files:
+#   tests/unit/configuration/domain/value_objects/test_output_base_path.py (20 tests)
+#   tests/unit/configuration/application/services/test_output_resolver.py (21 tests)
+#   tests/integration/configuration/test_output_resolver_e2e.py (16 tests)
+#
+# New module coverage:
+#   src/configuration/domain/value_objects/output_base_path.py: 100%
+#   src/configuration/application/services/output_resolver.py: 100%
+#
+# Regression check: PASS (0 new failures, 0 regressions)

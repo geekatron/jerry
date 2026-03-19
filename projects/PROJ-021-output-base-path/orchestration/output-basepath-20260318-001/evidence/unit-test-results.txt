@@ -1,0 +1,60 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.0.2, pluggy-1.6.0 -- /Users/evorun/workspace/jerry/.worktrees/main/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/evorun/workspace/jerry/.worktrees/main
+configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
+plugins: cov-7.0.0
+collecting ... collected 41 items
+
+tests/unit/configuration/domain/value_objects/test_output_base_path.py::TestOutputBasePathCreation::test_create_with_relative_path PASSED [  2%]
+tests/unit/configuration/domain/value_objects/test_output_base_path.py::TestOutputBasePathCreation::test_create_with_relative_path_no_trailing_slash PASSED [  4%]
+tests/unit/configuration/domain/value_objects/test_output_base_path.py::TestOutputBasePathCreation::test_create_with_absolute_path PASSED [  7%]
+tests/unit/configuration/domain/value_objects/test_output_base_path.py::TestOutputBasePathCreation::test_create_with_nested_path PASSED [  9%]
+tests/unit/configuration/domain/value_objects/test_output_base_path.py::TestOutputBasePathCreation::test_create_with_empty_string PASSED [ 12%]
+tests/unit/configuration/domain/value_objects/test_output_base_path.py::TestOutputBasePathCreation::test_create_with_whitespace_only PASSED [ 14%]
+tests/unit/configuration/domain/value_objects/test_output_base_path.py::TestOutputBasePathCreation::test_create_with_dot_path PASSED [ 17%]
+tests/unit/configuration/domain/value_objects/test_output_base_path.py::TestOutputBasePathCreation::test_create_with_parent_reference PASSED [ 19%]
+tests/unit/configuration/domain/value_objects/test_output_base_path.py::TestOutputBasePathNullByteRejection::test_rejects_null_byte_at_start PASSED [ 21%]
+tests/unit/configuration/domain/value_objects/test_output_base_path.py::TestOutputBasePathNullByteRejection::test_rejects_null_byte_in_middle PASSED [ 24%]
+tests/unit/configuration/domain/value_objects/test_output_base_path.py::TestOutputBasePathNullByteRejection::test_rejects_null_byte_at_end PASSED [ 26%]
+tests/unit/configuration/domain/value_objects/test_output_base_path.py::TestOutputBasePathNullByteRejection::test_rejects_only_null_byte PASSED [ 29%]
+tests/unit/configuration/domain/value_objects/test_output_base_path.py::TestOutputBasePathNullByteRejection::test_rejects_multiple_null_bytes PASSED [ 31%]
+tests/unit/configuration/domain/value_objects/test_output_base_path.py::TestOutputBasePathImmutability::test_cannot_modify_value PASSED [ 34%]
+tests/unit/configuration/domain/value_objects/test_output_base_path.py::TestOutputBasePathStringConversion::test_str_returns_value PASSED [ 36%]
+tests/unit/configuration/domain/value_objects/test_output_base_path.py::TestOutputBasePathStringConversion::test_str_returns_empty_for_empty PASSED [ 39%]
+tests/unit/configuration/domain/value_objects/test_output_base_path.py::TestOutputBasePathStringConversion::test_str_returns_absolute_path PASSED [ 41%]
+tests/unit/configuration/domain/value_objects/test_output_base_path.py::TestOutputBasePathEquality::test_equal_paths_are_equal PASSED [ 43%]
+tests/unit/configuration/domain/value_objects/test_output_base_path.py::TestOutputBasePathEquality::test_different_paths_are_not_equal PASSED [ 46%]
+tests/unit/configuration/domain/value_objects/test_output_base_path.py::TestOutputBasePathEquality::test_hashable PASSED [ 48%]
+tests/unit/configuration/application/services/test_output_resolver.py::TestOutputResolverConfigPriority::test_config_value_takes_priority PASSED [ 51%]
+tests/unit/configuration/application/services/test_output_resolver.py::TestOutputResolverConfigPriority::test_config_value_with_trailing_slash PASSED [ 53%]
+tests/unit/configuration/application/services/test_output_resolver.py::TestOutputResolverConfigPriority::test_config_value_absolute_path PASSED [ 56%]
+tests/unit/configuration/application/services/test_output_resolver.py::TestOutputResolverConfigPriority::test_config_value_single_directory PASSED [ 58%]
+tests/unit/configuration/application/services/test_output_resolver.py::TestOutputResolverJerryProjectFallback::test_jerry_project_fallback_when_config_is_none PASSED [ 60%]
+tests/unit/configuration/application/services/test_output_resolver.py::TestOutputResolverJerryProjectFallback::test_jerry_project_fallback_when_config_is_empty PASSED [ 63%]
+tests/unit/configuration/application/services/test_output_resolver.py::TestOutputResolverJerryProjectFallback::test_jerry_project_with_slug PASSED [ 65%]
+tests/unit/configuration/application/services/test_output_resolver.py::TestOutputResolverTerminalFallback::test_terminal_fallback_when_no_config_no_project PASSED [ 68%]
+tests/unit/configuration/application/services/test_output_resolver.py::TestOutputResolverTerminalFallback::test_terminal_fallback_when_config_none_and_project_empty PASSED [ 70%]
+tests/unit/configuration/application/services/test_output_resolver.py::TestOutputResolverTerminalFallback::test_terminal_fallback_when_config_empty_and_no_project PASSED [ 73%]
+tests/unit/configuration/application/services/test_output_resolver.py::TestOutputResolverTrailingSlash::test_adds_trailing_slash_to_config_value PASSED [ 75%]
+tests/unit/configuration/application/services/test_output_resolver.py::TestOutputResolverTrailingSlash::test_preserves_existing_trailing_slash PASSED [ 78%]
+tests/unit/configuration/application/services/test_output_resolver.py::TestOutputResolverTrailingSlash::test_jerry_project_path_has_trailing_slash PASSED [ 80%]
+tests/unit/configuration/application/services/test_output_resolver.py::TestOutputResolverTrailingSlash::test_terminal_fallback_has_trailing_slash PASSED [ 82%]
+tests/unit/configuration/application/services/test_output_resolver.py::TestOutputResolverValueErrorPropagation::test_null_byte_in_config_raises_value_error PASSED [ 85%]
+tests/unit/configuration/application/services/test_output_resolver.py::TestOutputResolverValueErrorPropagation::test_only_null_byte_in_config_raises_value_error PASSED [ 87%]
+tests/unit/configuration/application/services/test_output_resolver.py::TestOutputResolverEdgeCases::test_whitespace_only_config_treated_as_set PASSED [ 90%]
+tests/unit/configuration/application/services/test_output_resolver.py::TestOutputResolverEdgeCases::test_config_value_with_spaces_in_path PASSED [ 92%]
+tests/unit/configuration/application/services/test_output_resolver.py::TestOutputResolverEdgeCases::test_config_value_integer_coerced_to_string PASSED [ 95%]
+tests/unit/configuration/application/services/test_output_resolver.py::TestOutputResolverEdgeCases::test_resolve_is_idempotent PASSED [ 97%]
+tests/unit/configuration/application/services/test_output_resolver.py::TestOutputResolverEdgeCases::test_resolver_does_not_create_directories PASSED [100%]
+
+================================ tests coverage ================================
+_______________ coverage: platform darwin, python 3.14.3-final-0 _______________
+
+Name                                                         Stmts   Miss  Cover   Missing
+------------------------------------------------------------------------------------------
+src/configuration/application/services/output_resolver.py       23      0   100%
+src/configuration/domain/value_objects/output_base_path.py      10      0   100%
+------------------------------------------------------------------------------------------
+TOTAL                                                           33      0   100%
+============================== 41 passed in 0.07s ==============================

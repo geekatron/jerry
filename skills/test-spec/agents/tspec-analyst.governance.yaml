@@ -61,8 +61,7 @@ guardrails:
 
 output:
   required: true
-  location: "projects/${JERRY_PROJECT}/test-specs/UC-{DOMAIN}-{NNN}-{slug}-coverage.md"
-  fallback_location: "work/test-specs/UC-{DOMAIN}-{NNN}-{slug}-coverage.md"
+  location: "${JERRY_OUTPUT_BASE}test-specs/UC-{DOMAIN}-{NNN}-{slug}-coverage.md"
   levels:
     - "L0"
     - "L1"

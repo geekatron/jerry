@@ -1,0 +1,19 @@
+Evidence Gate 2: fallback_location Audit
+Date: 2026-03-18
+Command: grep -r "fallback_location" src/ --include="*.py"
+Result: No matches found (exit code 1)
+
+VERDICT: PASS — No Python source code reads or references the fallback_location field.
+Safe to remove fallback_location from governance YAML files.
+
+Additional verification:
+Command: grep -r "fallback_location" . --include="*.py" (full repo)
+Result: No matches (only governance YAML files contain this field)
+
+Governance YAML files containing fallback_location (to be removed):
+  skills/use-case/agents/uc-author.governance.yaml:52
+  skills/use-case/agents/uc-slicer.governance.yaml:53
+  skills/test-spec/agents/tspec-generator.governance.yaml:62
+  skills/test-spec/agents/tspec-analyst.governance.yaml:65
+  skills/contract-design/agents/cd-generator.governance.yaml:76
+  skills/contract-design/agents/cd-validator.governance.yaml:63

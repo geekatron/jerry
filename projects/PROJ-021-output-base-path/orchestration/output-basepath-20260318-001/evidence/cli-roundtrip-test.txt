@@ -1,0 +1,23 @@
+# Evidence Gate 3: CLI Round-Trip Test
+# Date: 2026-03-18
+# Command: jerry config set/get output.base_path
+# Result: PASS
+
+## Test 1: Set output.base_path
+$ uv run jerry config set output.base_path "custom/output"
+Set output.base_path = custom/output
+Scope: project
+Path: /Users/evorun/workspace/jerry/.worktrees/main/projects/PROJ-0036/.jerry/config.toml
+
+## Test 2: Get output.base_path
+$ uv run jerry config get output.base_path
+custom/output
+
+## Verification:
+- AC-1: jerry config set output.base_path stores value persistently: PASS
+- AC-2: jerry config get output.base_path retrieves current value: PASS
+- REQ-OBP-001c: Output includes key, coerced value, scope, path: PASS
+
+## Cleanup:
+$ uv run jerry config set output.base_path ""
+(Reset to prevent test pollution)

@@ -59,8 +59,7 @@ guardrails:
 
 output:
   required: true
-  location: "projects/${JERRY_PROJECT}/contracts/UC-{DOMAIN}-{NNN}-{slug}-validation.md"
-  fallback_location: "work/contracts/UC-{DOMAIN}-{NNN}-{slug}-validation.md"
+  location: "${JERRY_OUTPUT_BASE}contracts/UC-{DOMAIN}-{NNN}-{slug}-validation.md"
   levels:
     - "L0"
     - "L1"

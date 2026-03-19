@@ -1,0 +1,834 @@
+Using CPython 3.14.3 interpreter at: /opt/homebrew/opt/python@3.14/bin/python3.14
+Creating virtual environment at: .venv
+   Building jerry @ file:///Users/evorun/workspace/jerry/.worktrees/main
+      Built jerry @ file:///Users/evorun/workspace/jerry/.worktrees/main
+Installed 77 packages in 671ms
+============================= test session starts ==============================
+platform darwin -- Python 3.14.3, pytest-9.0.2, pluggy-1.6.0
+rootdir: /Users/evorun/workspace/jerry/.worktrees/main
+configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
+plugins: cov-7.0.0
+collected 16230 items / 3 skipped
+
+tests/architecture/test_adversarial_templates.py ....................... [  0%]
+..............................................                           [  0%]
+tests/architecture/test_ast_enforcement.py ............................. [  0%]
+................................                                         [  0%]
+tests/architecture/test_check_architecture_boundaries.py ............... [  0%]
+....................................                                     [  1%]
+tests/architecture/test_composition_root.py .......                      [  1%]
+tests/architecture/test_config_boundaries.py ..............              [  1%]
+tests/architecture/test_context_monitoring_boundaries.py ............... [  1%]
+.                                                                        [  1%]
+tests/architecture/test_session_hook_architecture.py s.......s           [  1%]
+tests/architecture/version/test_version_boundaries.py ............       [  1%]
+tests/bootstrap/test_transcript_wiring.py ..........                     [  1%]
+tests/contract/test_context_monitoring_contracts.py .................... [  1%]
+......                                                                   [  1%]
+tests/contract/test_hook_output_contract.py ........                     [  1%]
+tests/contract/test_plugin_manifest_validation.py ...........            [  1%]
+tests/contract/transcript/test_chunk_schemas.py ........................ [  1%]
+......                                                                   [  1%]
+tests/contract/version/test_commit_log_reader_contract.py ........       [  2%]
+tests/e2e/test_adversary_templates_e2e.py .............................. [  2%]
+........................................................................ [  2%]
+.s...................................................................... [  3%]
+.............                                                            [  3%]
+tests/e2e/test_bootstrap_guides_exclusion.py ..                          [  3%]
+tests/e2e/test_config_commands.py ..........                             [  3%]
+tests/e2e/test_context_monitoring_e2e.py .............                   [  3%]
+tests/e2e/test_mkdocs_research_validation.py ...                         [  3%]
+tests/e2e/test_progressive_disclosure_crossrefs.py ...................   [  3%]
+tests/e2e/test_quality_framework_e2e.py ................................ [  3%]
+....................                                                     [  3%]
+tests/e2e/test_transcript_model_selection.py .............               [  3%]
+tests/e2e/version/test_version_bump_e2e.py ...                           [  3%]
+tests/hooks/test_hook_schema_compliance.py ............................. [  4%]
+..                                                                       [  4%]
+tests/hooks/test_pre_tool_use.py ...........................             [  4%]
+tests/hooks/test_subagent_stop.py ................................       [  4%]
+tests/infrastructure/adapters/test_file_repository.py .................. [  4%]
+.....                                                                    [  4%]
+tests/infrastructure/internal/test_file_store.py ....................... [  4%]
+.........                                                                [  4%]
+tests/infrastructure/internal/test_serializer.py ....................... [  4%]
+.........                                                                [  4%]
+tests/integration/cli/test_ast_subprocess.py ..................          [  5%]
+tests/integration/cli/test_cli_dispatcher_integration.py ......          [  5%]
+tests/integration/cli/test_cli_local_context_integration.py ......       [  5%]
+tests/integration/cli/test_jerry_cli_subprocess.py ..................... [  5%]
+......                                                                   [  5%]
+tests/integration/test_adversary_skill.py .............................. [  5%]
+..........                                                               [  5%]
+tests/integration/test_atomic_file_adapter.py ............               [  5%]
+tests/integration/test_bootstrap.py ......                               [  5%]
+tests/integration/test_bootstrap_context.py ............................ [  5%]
+...................                                                      [  5%]
+tests/integration/test_context_exhaustion_e2e.py ......                  [  6%]
+tests/integration/test_context_monitoring_integration.py ............... [  6%]
+.................                                                        [  6%]
+tests/integration/test_document_type_regression.py ..................... [  6%]
+........................................................................ [  6%]
+........................................................................ [  7%]
+........................................................................ [  7%]
+........................................................................ [  8%]
+........................................................................ [  8%]
+........................................................................ [  9%]
+........................................................................ [  9%]
+........................................................................ [  9%]
+........................................................................ [ 10%]
+........................................................................ [ 10%]
+........................................................................ [ 11%]
+........................................................................ [ 11%]
+........................................................................ [ 12%]
+........................................................................ [ 12%]
+........................................................................ [ 13%]
+........................................................................ [ 13%]
+........................................................................ [ 13%]
+........................................................................ [ 14%]
+........................................................................ [ 14%]
+........................................................................ [ 15%]
+........................................................................ [ 15%]
+........................................................................ [ 16%]
+........................................................................ [ 16%]
+........................................................................ [ 17%]
+........................................................................ [ 17%]
+........................................................................ [ 17%]
+........................................................................ [ 18%]
+........................................................................ [ 18%]
+........................................................................ [ 19%]
+........................................................................ [ 19%]
+........................................................................ [ 20%]
+........................................................................ [ 20%]
+........................................................................ [ 20%]
+........................................................................ [ 21%]
+........................................................................ [ 21%]
+........................................................................ [ 22%]
+........................................................................ [ 22%]
+........................................................................ [ 23%]
+........................................................................ [ 23%]
+........................................................................ [ 24%]
+........................................................................ [ 24%]
+........................................................................ [ 24%]
+........................................................................ [ 25%]
+........................................................................ [ 25%]
+........................................................................ [ 26%]
+........................................................................ [ 26%]
+........................................................................ [ 27%]
+........................................................................ [ 27%]
+........................................................................ [ 28%]
+........................................................................ [ 28%]
+........................................................................ [ 28%]
+........................................................................ [ 29%]
+........................................................................ [ 29%]
+........................................................................ [ 30%]
+........................................................................ [ 30%]
+........................................................................ [ 31%]
+........................................................................ [ 31%]
+........................................................................ [ 32%]
+........................................................................ [ 32%]
+........................................................................ [ 32%]
+........................................................................ [ 33%]
+........................................................................ [ 33%]
+........................................................................ [ 34%]
+........................................................................ [ 34%]
+........................................................................ [ 35%]
+........................................................................ [ 35%]
+........................................................................ [ 36%]
+........................................................................ [ 36%]
+........................................................................ [ 36%]
+........................................................................ [ 37%]
+........................................................................ [ 37%]
+........................................................................ [ 38%]
+........................................................................ [ 38%]
+........................................................................ [ 39%]
+........................................................................ [ 39%]
+........................................................................ [ 40%]
+........................................................................ [ 40%]
+........................................................................ [ 40%]
+........................................................................ [ 41%]
+........................................................................ [ 41%]
+........................................................................ [ 42%]
+........................................................................ [ 42%]
+........................................................................ [ 43%]
+........................................................................ [ 43%]
+........................................................................ [ 44%]
+........................................................................ [ 44%]
+........................................................................ [ 44%]
+........................................................................ [ 45%]
+........................................................................ [ 45%]
+........................................................................ [ 46%]
+........................................................................ [ 46%]
+........................................................................ [ 47%]
+........................................................................ [ 47%]
+........................................................................ [ 48%]
+........................................................................ [ 48%]
+........................................................................ [ 48%]
+........................................................................ [ 49%]
+........................................................................ [ 49%]
+........................................................................ [ 50%]
+........................................................................ [ 50%]
+........................................................................ [ 51%]
+........................................................................ [ 51%]
+........................................................................ [ 52%]
+........................................................................ [ 52%]
+........................................................................ [ 52%]
+........................................................................ [ 53%]
+........................................................................ [ 53%]
+........................................................................ [ 54%]
+........................................................................ [ 54%]
+........................................................................ [ 55%]
+........................................................................ [ 55%]
+........................................................................ [ 56%]
+........................................................................ [ 56%]
+........................................................................ [ 56%]
+........................................................................ [ 57%]
+........................................................................ [ 57%]
+........................................................................ [ 58%]
+........................................................................ [ 58%]
+........................................................................ [ 59%]
+........................................................................ [ 59%]
+........................................................................ [ 60%]
+........................................................................ [ 60%]
+........................................................................ [ 60%]
+........................................................................ [ 61%]
+........................................................................ [ 61%]
+........................................................................ [ 62%]
+........................................................................ [ 62%]
+........................................................................ [ 63%]
+........................................................................ [ 63%]
+........................................................................ [ 64%]
+........................................................................ [ 64%]
+........................................................................ [ 64%]
+........................................................................ [ 65%]
+........................................................................ [ 65%]
+........................................................................ [ 66%]
+........................................................................ [ 66%]
+........................................................................ [ 67%]
+........................................................................ [ 67%]
+.............................................                            [ 67%]
+tests/integration/test_event_sourcing_wiring.py ............             [ 67%]
+tests/integration/test_filesystem_local_context_adapter.py ............. [ 68%]
+..                                                                       [ 68%]
+tests/integration/test_items_commands.py ...................             [ 68%]
+tests/integration/test_multi_pattern_orchestration.py ...............    [ 68%]
+tests/integration/test_pm_pmm_routing_integration.py ................... [ 68%]
+........................                                                 [ 68%]
+tests/integration/test_pm_pmm_security_review.py ....................... [ 68%]
+.......................................                                  [ 68%]
+tests/integration/test_pretool_hook_integration.py ......                [ 68%]
+tests/integration/test_session_start_hook_integration.py ....            [ 68%]
+tests/integration/test_userpromptsubmit_hook_integration.py ....         [ 68%]
+tests/integration/transcript/test_parser_chunker.py .................... [ 69%]
+.......................                                                  [ 69%]
+tests/integration/transcript/test_pipeline.py .............              [ 69%]
+tests/integration/version/test_cli_detect_bump_type.py ......            [ 69%]
+tests/integration/version/test_git_commit_log_reader.py ........         [ 69%]
+tests/interface/cli/integration/test_cli_e2e.py ......................   [ 69%]
+tests/interface/cli/integration/test_model_profile_cli.py .......        [ 69%]
+tests/interface/cli/integration/test_model_selection_integration.py .... [ 69%]
+......................                                                   [ 69%]
+tests/interface/cli/unit/test_adapter_transcript.py ..............       [ 69%]
+tests/interface/cli/unit/test_main.py ..............                     [ 69%]
+tests/interface/cli/unit/test_main_v2.py ................                [ 70%]
+tests/interface/cli/unit/test_model_parameters.py ...................... [ 70%]
+.......                                                                  [ 70%]
+tests/interface/cli/unit/test_model_profiles.py ........................ [ 70%]
+.....                                                                    [ 70%]
+tests/interface/cli/unit/test_parser.py ................................ [ 70%]
+.....................                                                    [ 70%]
+tests/llm/transcript/test_e2e_pipeline.py ssssssss                       [ 70%]
+tests/llm/transcript/test_extractor_chunked.py ssssssssss                [ 70%]
+tests/llm/transcript/test_quality_gate.py ssssssssss                     [ 70%]
+tests/project_validation/architecture/test_path_conventions.py s........ [ 70%]
+........s.ss..ss................s.ss..ss................s.ss..sssss..... [ 71%]
+...........................................................ssss....sssss [ 71%]
+sss........sssss................s.ss..ss................s.ss..ss........ [ 72%]
+........s.ss..ss................s.ss..ss................s.ss..ss........ [ 72%]
+........s.ss..ss................s.ss..s..                                [ 72%]
+tests/project_validation/integration/test_file_resolution.py s.......... [ 73%]
+......s.ss..ss................s.ss..ss................s.ss..ss.......... [ 73%]
+......s.ss..ss......sssss...sssssss.ss......ssssssssssssssssss......ssss [ 73%]
+sssssssssssss........................................................... [ 74%]
+.....................................                                    [ 74%]
+tests/project_validation/system/test_grep_validation.py s............... [ 74%]
+.s.ss..ss................s.ss..ss................s.ss..ss............... [ 75%]
+.s.ss..ss................s.ss..ss................s.ss..ss............... [ 75%]
+.s.ss..ss................s.ss..s                                         [ 75%]
+tests/project_validation/unit/test_path_validation.py .................. [ 75%]
+..................                                                       [ 75%]
+tests/regression/test_golden_files.py ss..                               [ 76%]
+tests/security/test_adversarial_parsers.py .................             [ 76%]
+tests/security/test_redos_patterns.py ........                           [ 76%]
+tests/session_management/architecture/test_architecture.py ............. [ 76%]
+                                                                         [ 76%]
+tests/session_management/integration/test_infrastructure.py ............ [ 76%]
+..........                                                               [ 76%]
+tests/session_management/unit/application/test_queries.py .............. [ 76%]
+..............                                                           [ 76%]
+tests/session_management/unit/application/test_session_handlers.py ..... [ 76%]
+.............                                                            [ 76%]
+tests/session_management/unit/domain/test_project_id.py ................ [ 76%]
+....................                                                     [ 76%]
+tests/session_management/unit/domain/test_project_info.py .............. [ 76%]
+...........................                                              [ 77%]
+tests/session_management/unit/domain/test_session.py ................... [ 77%]
+.................                                                        [ 77%]
+tests/session_management/unit/domain/test_session_id.py ................ [ 77%]
+....                                                                     [ 77%]
+tests/session_management/unit/infrastructure/adapters/test_filesystem_project_adapter.py . [ 77%]
+...........................                                              [ 77%]
+tests/shared_kernel/test_domain_event.py ............................... [ 77%]
+........                                                                 [ 77%]
+tests/shared_kernel/test_entity_base.py ...........                      [ 77%]
+tests/shared_kernel/test_exceptions.py .........                         [ 78%]
+tests/shared_kernel/test_jerry_uri.py ..........                         [ 78%]
+tests/shared_kernel/test_snowflake_id.py ............................... [ 78%]
+..                                                                       [ 78%]
+tests/shared_kernel/test_vertex_id.py ............................       [ 78%]
+tests/system/test_context_monitoring_system.py ...........               [ 78%]
+tests/unit/agents/application/handlers/commands/test_build_agents_command_handler.py . [ 78%]
+..........                                                               [ 78%]
+tests/unit/agents/application/handlers/queries/test_list_agents_query_handler.py . [ 78%]
+...........                                                              [ 78%]
+tests/unit/agents/application/handlers/queries/test_validate_agents_query_handler.py . [ 78%]
+..............                                                           [ 78%]
+tests/unit/agents/domain/entities/test_canonical_agent.py .............. [ 78%]
+......................................                                   [ 79%]
+tests/unit/agents/domain/services/test_prompt_transformer.py ........... [ 79%]
+..................................................                       [ 79%]
+tests/unit/agents/domain/services/test_tool_mapper.py .................. [ 79%]
+..................................                                       [ 79%]
+tests/unit/agents/domain/value_objects/test_body_format.py ............. [ 79%]
+.........                                                                [ 79%]
+tests/unit/agents/domain/value_objects/test_model_tier.py .............. [ 79%]
+..............                                                           [ 80%]
+tests/unit/agents/domain/value_objects/test_tool_tier.py ............... [ 80%]
+.........................                                                [ 80%]
+tests/unit/agents/domain/value_objects/test_vendor_target.py ........... [ 80%]
+..............                                                           [ 80%]
+tests/unit/agents/infrastructure/adapters/test_claude_code_adapter.py .. [ 80%]
+............................................                             [ 80%]
+tests/unit/agents/infrastructure/persistence/test_filesystem_agent_repository.py . [ 80%]
+.......................                                                  [ 80%]
+tests/unit/application/dispatchers/test_command_dispatcher.py .......... [ 80%]
+......                                                                   [ 81%]
+tests/unit/application/dispatchers/test_query_dispatcher.py ...........  [ 81%]
+tests/unit/application/handlers/test_get_project_context_handler.py .... [ 81%]
+...                                                                      [ 81%]
+tests/unit/application/handlers/test_project_context_with_local.py ..... [ 81%]
+........                                                                 [ 81%]
+tests/unit/application/handlers/test_scan_projects_handler.py .......    [ 81%]
+tests/unit/application/handlers/test_validate_project_handler.py ....... [ 81%]
+                                                                         [ 81%]
+tests/unit/application/ports/test_dispatcher_protocol.py ............    [ 81%]
+tests/unit/application/ports/test_read_model_store_protocol.py ......    [ 81%]
+tests/unit/configuration/domain/aggregates/test_configuration.py ....... [ 81%]
+...................................................................      [ 81%]
+tests/unit/configuration/domain/events/test_configuration_events.py .... [ 81%]
+....................................                                     [ 82%]
+tests/unit/configuration/domain/value_objects/test_config_key.py ....... [ 82%]
+..................................................                       [ 82%]
+tests/unit/configuration/domain/value_objects/test_config_path.py ...... [ 82%]
+.....................................                                    [ 82%]
+tests/unit/configuration/domain/value_objects/test_config_source.py .... [ 82%]
+.......................................                                  [ 82%]
+tests/unit/configuration/domain/value_objects/test_config_value.py ..... [ 83%]
+........................................................................ [ 83%]
+.                                                                        [ 83%]
+tests/unit/context_monitoring/application/ports/test_sub_agent_reader.py . [ 83%]
+                                                                         [ 83%]
+tests/unit/context_monitoring/application/services/test_context_estimate_service.py . [ 83%]
+......                                                                   [ 83%]
+tests/unit/context_monitoring/application/test_checkpoint_service.py ... [ 83%]
+......................                                                   [ 83%]
+tests/unit/context_monitoring/application/test_context_fill_estimator.py . [ 83%]
+...............................................                          [ 83%]
+tests/unit/context_monitoring/application/test_resumption_context_generator.py . [ 83%]
+.....................                                                    [ 84%]
+tests/unit/context_monitoring/application/test_staleness_detector.py ... [ 84%]
+.....................                                                    [ 84%]
+tests/unit/context_monitoring/domain/services/test_context_estimate_computer.py . [ 84%]
+....................................................                     [ 84%]
+tests/unit/context_monitoring/domain/test_checkpoint_data.py ........    [ 84%]
+tests/unit/context_monitoring/domain/test_compaction_result.py ....      [ 84%]
+tests/unit/context_monitoring/domain/test_context_estimate.py ...        [ 84%]
+tests/unit/context_monitoring/domain/test_context_state.py .......       [ 84%]
+tests/unit/context_monitoring/domain/test_context_usage_input.py ......  [ 84%]
+tests/unit/context_monitoring/domain/test_domain_events.py ............. [ 84%]
+.....                                                                    [ 84%]
+tests/unit/context_monitoring/domain/test_fill_estimate.py ...........   [ 84%]
+tests/unit/context_monitoring/domain/test_threshold_tier.py .......      [ 84%]
+tests/unit/context_monitoring/infrastructure/adapters/test_transcript_sub_agent_reader.py . [ 84%]
+................                                                         [ 85%]
+tests/unit/context_monitoring/infrastructure/test_filesystem_checkpoint_repository.py . [ 85%]
+............                                                             [ 85%]
+tests/unit/context_monitoring/infrastructure/test_filesystem_context_state_store.py . [ 85%]
+...........                                                              [ 85%]
+tests/unit/context_monitoring/infrastructure/test_jsonl_transcript_reader.py . [ 85%]
+.............                                                            [ 85%]
+tests/unit/context_monitoring/test_config_threshold_adapter.py ......... [ 85%]
+..................................................                       [ 85%]
+tests/unit/domain/markdown_ast/test_document_type.py ................... [ 85%]
+...........................................                              [ 86%]
+tests/unit/domain/markdown_ast/test_frontmatter.py ..................... [ 86%]
+......................................................                   [ 86%]
+tests/unit/domain/markdown_ast/test_html_comment.py .................... [ 86%]
+.....                                                                    [ 86%]
+tests/unit/domain/markdown_ast/test_jerry_document.py .................. [ 86%]
+...........................                                              [ 86%]
+tests/unit/domain/markdown_ast/test_nav_table.py ....................... [ 87%]
+........................                                                 [ 87%]
+tests/unit/domain/markdown_ast/test_reinject.py ........................ [ 87%]
+................                                                         [ 87%]
+tests/unit/domain/markdown_ast/test_schema.py .......................... [ 87%]
+.........................................................                [ 87%]
+tests/unit/domain/markdown_ast/test_schema_registry.py ................. [ 88%]
+................                                                         [ 88%]
+tests/unit/domain/markdown_ast/test_universal_document.py .............. [ 88%]
+...........                                                              [ 88%]
+tests/unit/domain/markdown_ast/test_xml_section.py ............          [ 88%]
+tests/unit/domain/markdown_ast/test_yaml_frontmatter.py ................ [ 88%]
+.................                                                        [ 88%]
+tests/unit/enforcement/test_hard_rule_ceiling.py ............            [ 88%]
+tests/unit/enforcement/test_pattern_library_adapter.py ......            [ 88%]
+tests/unit/enforcement/test_pre_tool_enforcement_engine.py ............. [ 88%]
+......................................                                   [ 89%]
+tests/unit/enforcement/test_prompt_reinforcement_engine.py ............. [ 89%]
+........................................................                 [ 89%]
+tests/unit/enforcement/test_security_enforcement_engine.py ............. [ 89%]
+................................................................         [ 89%]
+tests/unit/enforcement/test_session_quality_context_generator.py ....... [ 89%]
+....................                                                     [ 90%]
+tests/unit/infrastructure/adapters/configuration/test_env_config_adapter.py . [ 90%]
+.......................                                                  [ 90%]
+tests/unit/infrastructure/adapters/configuration/test_layered_config_adapter.py . [ 90%]
+..........................                                               [ 90%]
+tests/unit/infrastructure/adapters/configuration/test_lifecycle_dir_resolver.py . [ 90%]
+........                                                                 [ 90%]
+tests/unit/infrastructure/adapters/persistence/test_atomic_file_adapter.py . [ 90%]
+....................                                                     [ 90%]
+tests/unit/infrastructure/adapters/serialization/test_toon_serializer.py . [ 90%]
+..............................................                           [ 90%]
+tests/unit/infrastructure/read_models/test_in_memory_read_model_store.py . [ 90%]
+............                                                             [ 90%]
+tests/unit/interface/cli/context/test_context_estimate_handler.py ...... [ 91%]
+......                                                                   [ 91%]
+tests/unit/interface/cli/hooks/test_hooks_cli_integration.py .........   [ 91%]
+tests/unit/interface/cli/hooks/test_hooks_pre_compact_handler.py ....... [ 91%]
+......                                                                   [ 91%]
+tests/unit/interface/cli/hooks/test_hooks_pre_tool_use_handler.py ...... [ 91%]
+..........                                                               [ 91%]
+tests/unit/interface/cli/hooks/test_hooks_prompt_submit_handler.py ..... [ 91%]
+.................                                                        [ 91%]
+tests/unit/interface/cli/hooks/test_hooks_session_start_handler.py ..... [ 91%]
+.................                                                        [ 91%]
+tests/unit/interface/cli/hooks/test_hooks_stop_gate_handler.py ......... [ 91%]
+.                                                                        [ 91%]
+tests/unit/interface/cli/hooks/test_hooks_subagent_stop_handler.py ..... [ 91%]
+......                                                                   [ 91%]
+tests/unit/interface/cli/test_ast_commands.py .......................... [ 91%]
+...........................................................              [ 92%]
+tests/unit/interface/hooks/test_hook_wrappers.py ....................... [ 92%]
+.........................                                                [ 92%]
+tests/unit/orchestration/test_resumption_schema.py ..................... [ 92%]
+................                                                         [ 92%]
+tests/unit/rules/test_ae006_graduated_rules.py .................         [ 92%]
+tests/unit/scripts/test_check_markdown_schemas.py ...................... [ 92%]
+......................                                                   [ 93%]
+tests/unit/scripts/test_st007_migration.py ............................. [ 93%]
+.......                                                                  [ 93%]
+tests/unit/scripts/test_st010_remaining_migrations.py .................. [ 93%]
+.........                                                                [ 93%]
+tests/unit/session_management/infrastructure/test_event_sourced_session_repository.py . [ 93%]
+.................                                                        [ 93%]
+tests/unit/transcript/application/services/test_token_counter.py ....... [ 93%]
+.............                                                            [ 93%]
+tests/unit/transcript/domain/value_objects/test_model_config.py ........ [ 93%]
+.......                                                                  [ 93%]
+tests/unit/transcript/test_chunker.py .................................  [ 94%]
+tests/unit/transcript/test_vtt_parser.py .......................         [ 94%]
+tests/unit/version/application/handlers/queries/test_detect_bump_type_query_handler.py . [ 94%]
+.........                                                                [ 94%]
+tests/unit/version/application/queries/test_detect_bump_type_query.py .. [ 94%]
+...                                                                      [ 94%]
+tests/unit/version/domain/services/test_bump_type_detector.py .......... [ 94%]
+......................                                                   [ 94%]
+tests/unit/version/domain/value_objects/test_bump_type.py .............. [ 94%]
+......                                                                   [ 94%]
+tests/unit/version/domain/value_objects/test_conventional_commit.py .... [ 94%]
+....................................                                     [ 94%]
+tests/work_tracking/unit/application/commands/test_work_item_commands.py . [ 94%]
+..............                                                           [ 94%]
+tests/work_tracking/unit/application/handlers/commands/test_work_item_command_handlers.py . [ 94%]
+...............                                                          [ 95%]
+tests/work_tracking/unit/application/test_items_query_handlers.py ...... [ 95%]
+......                                                                   [ 95%]
+tests/work_tracking/unit/domain/aggregates/test_aggregate_root.py ...... [ 95%]
+......................................                                   [ 95%]
+tests/work_tracking/unit/domain/aggregates/test_work_item.py ........... [ 95%]
+..................................................                       [ 95%]
+tests/work_tracking/unit/domain/events/test_quality_gate_events.py ..... [ 95%]
+.........................                                                [ 95%]
+tests/work_tracking/unit/domain/events/test_work_item_events.py ........ [ 95%]
+..........................                                               [ 96%]
+tests/work_tracking/unit/domain/ports/test_event_store.py .............. [ 96%]
+..............                                                           [ 96%]
+tests/work_tracking/unit/domain/ports/test_repository.py ............... [ 96%]
+........................                                                 [ 96%]
+tests/work_tracking/unit/domain/ports/test_snapshot_store.py ........... [ 96%]
+.......................                                                  [ 96%]
+tests/work_tracking/unit/domain/services/test_id_generator.py .......... [ 96%]
+..........                                                               [ 96%]
+tests/work_tracking/unit/domain/services/test_quality_validator.py ..... [ 96%]
+....................                                                     [ 97%]
+tests/work_tracking/unit/domain/test_coverage.py ....................... [ 97%]
+................                                                         [ 97%]
+tests/work_tracking/unit/domain/test_type_ratio.py ..................... [ 97%]
+...................                                                      [ 97%]
+tests/work_tracking/unit/domain/test_work_item_id.py ................... [ 97%]
+......                                                                   [ 97%]
+tests/work_tracking/unit/domain/test_work_item_status.py ............... [ 97%]
+......................................                                   [ 98%]
+tests/work_tracking/unit/domain/value_objects/test_priority.py ......... [ 98%]
+................................                                         [ 98%]
+tests/work_tracking/unit/domain/value_objects/test_quality_gate.py ..... [ 98%]
+........................................................................ [ 98%]
+...............................                                          [ 98%]
+tests/work_tracking/unit/domain/value_objects/test_work_type.py ........ [ 98%]
+.....................................................                    [ 99%]
+tests/work_tracking/unit/infrastructure/adapters/test_event_sourced_work_item_repository.py . [ 99%]
+............................                                             [ 99%]
+tests/work_tracking/unit/infrastructure/persistence/test_filesystem_event_store.py . [ 99%]
+..............................................                           [ 99%]
+tests/work_tracking/unit/infrastructure/persistence/test_in_memory_event_store.py . [ 99%]
+....................................                                     [100%]
+
+================================ tests coverage ================================
+_______________ coverage: platform darwin, python 3.14.3-final-0 _______________
+
+Name                                                                                      Stmts   Miss  Cover   Missing
+-----------------------------------------------------------------------------------------------------------------------
+src/__init__.py                                                                               6      2    67%   38-39
+src/agents/__init__.py                                                                        0      0   100%
+src/agents/application/__init__.py                                                            0      0   100%
+src/agents/application/commands/__init__.py                                                   3      0   100%
+src/agents/application/commands/build_agents_command.py                                       7      0   100%
+src/agents/application/commands/extract_canonical_command.py                                  6      0   100%
+src/agents/application/handlers/__init__.py                                                   0      0   100%
+src/agents/application/handlers/commands/__init__.py                                          0      0   100%
+src/agents/application/handlers/commands/build_agents_command_handler.py                     33      0   100%
+src/agents/application/handlers/commands/build_result.py                                     10      0   100%
+src/agents/application/handlers/commands/extract_canonical_command_handler.py                80     80     0%   11-215
+src/agents/application/handlers/commands/extract_result.py                                    7      7     0%   11-28
+src/agents/application/handlers/queries/__init__.py                                           0      0   100%
+src/agents/application/handlers/queries/list_agents_query_handler.py                         26      0   100%
+src/agents/application/handlers/queries/validate_agents_query_handler.py                     55      0   100%
+src/agents/application/ports/__init__.py                                                      0      0   100%
+src/agents/application/ports/agent_repository.py                                             13      0   100%
+src/agents/application/ports/vendor_adapter.py                                               13      0   100%
+src/agents/application/queries/__init__.py                                                    3      0   100%
+src/agents/application/queries/list_agents_query.py                                           5      0   100%
+src/agents/application/queries/validate_agents_query.py                                       5      0   100%
+src/agents/domain/__init__.py                                                                 0      0   100%
+src/agents/domain/entities/__init__.py                                                        3      0   100%
+src/agents/domain/entities/canonical_agent.py                                                46      0   100%
+src/agents/domain/entities/generated_artifact.py                                             14      0   100%
+src/agents/domain/services/__init__.py                                                        0      0   100%
+src/agents/domain/services/prompt_transformer.py                                            141      4    97%   79, 93-94, 198
+src/agents/domain/services/tool_mapper.py                                                    61      0   100%
+src/agents/domain/value_objects/__init__.py                                                   5      0   100%
+src/agents/domain/value_objects/body_format.py                                               14      0   100%
+src/agents/domain/value_objects/model_tier.py                                                22      0   100%
+src/agents/domain/value_objects/tool_tier.py                                                 34      0   100%
+src/agents/domain/value_objects/vendor_target.py                                             15      0   100%
+src/agents/infrastructure/__init__.py                                                         0      0   100%
+src/agents/infrastructure/adapters/__init__.py                                                0      0   100%
+src/agents/infrastructure/adapters/claude_code_adapter.py                                   222     51    77%   173, 320, 327-329, 339, 342, 345, 348, 355, 414, 514-519, 528-535, 544-547, 556-559, 572-583, 595-602, 614-625, 637-647
+src/agents/infrastructure/persistence/__init__.py                                             0      0   100%
+src/agents/infrastructure/persistence/filesystem_agent_repository.py                         78      3    96%   73, 106, 133
+src/application/__init__.py                                                                   0      0   100%
+src/application/dispatchers/__init__.py                                                       3      0   100%
+src/application/dispatchers/command_dispatcher.py                                            25      0   100%
+src/application/dispatchers/query_dispatcher.py                                              21      0   100%
+src/application/handlers/__init__.py                                                          9      0   100%
+src/application/handlers/queries/__init__.py                                                  4      0   100%
+src/application/handlers/queries/retrieve_project_context_query_handler.py                   30      0   100%
+src/application/handlers/queries/scan_projects_query_handler.py                               9      0   100%
+src/application/handlers/queries/validate_project_query_handler.py                           14      0   100%
+src/application/ports/__init__.py                                                             2      0   100%
+src/application/ports/primary/__init__.py                                                     3      0   100%
+src/application/ports/primary/icommanddispatcher.py                                          17      0   100%
+src/application/ports/primary/iquerydispatcher.py                                            11      0   100%
+src/application/ports/secondary/__init__.py                                                   5      0   100%
+src/application/ports/secondary/illm_context_serializer.py                                   13      0   100%
+src/application/ports/secondary/ilocal_context_reader.py                                      6      0   100%
+src/application/ports/secondary/iread_model_store.py                                          9      0   100%
+src/application/projections/__init__.py                                                       2      2     0%   29-34
+src/application/queries/__init__.py                                                           4      0   100%
+src/application/queries/retrieve_project_context_query.py                                     5      0   100%
+src/application/queries/scan_projects_query.py                                                5      0   100%
+src/application/queries/validate_project_query.py                                             6      0   100%
+src/bootstrap.py                                                                            214     26    88%   169, 289, 302-304, 715-743, 760-781
+src/configuration/__init__.py                                                                 1      0   100%
+src/configuration/domain/__init__.py                                                          1      0   100%
+src/configuration/domain/aggregates/__init__.py                                               3      0   100%
+src/configuration/domain/aggregates/configuration.py                                        188     14    93%   231, 488-492, 566-575, 608, 635
+src/configuration/domain/events/__init__.py                                                   3      0   100%
+src/configuration/domain/events/configuration_events.py                                      80      0   100%
+src/configuration/domain/value_objects/__init__.py                                            6      0   100%
+src/configuration/domain/value_objects/config_key.py                                         71      0   100%
+src/configuration/domain/value_objects/config_path.py                                        70      2    97%   240-241
+src/configuration/domain/value_objects/config_source.py                                      38      0   100%
+src/configuration/domain/value_objects/config_value.py                                       89      1    99%   163
+src/context_monitoring/__init__.py                                                            0      0   100%
+src/context_monitoring/application/__init__.py                                                0      0   100%
+src/context_monitoring/application/ports/__init__.py                                          0      0   100%
+src/context_monitoring/application/ports/checkpoint_repository.py                            10      0   100%
+src/context_monitoring/application/ports/context_state.py                                     8      0   100%
+src/context_monitoring/application/ports/context_state_store.py                               7      0   100%
+src/context_monitoring/application/ports/sub_agent_reader.py                                  6      0   100%
+src/context_monitoring/application/ports/threshold_configuration.py                          10      0   100%
+src/context_monitoring/application/ports/transcript_reader.py                                 5      0   100%
+src/context_monitoring/application/services/__init__.py                                       0      0   100%
+src/context_monitoring/application/services/checkpoint_service.py                           115      7    94%   152-158, 194, 202, 273, 276
+src/context_monitoring/application/services/context_estimate_service.py                      36      0   100%
+src/context_monitoring/application/services/context_fill_estimator.py                        50      0   100%
+src/context_monitoring/application/services/estimate_result.py                               11      0   100%
+src/context_monitoring/application/services/resumption_context_generator.py                  35      0   100%
+src/context_monitoring/domain/__init__.py                                                     0      0   100%
+src/context_monitoring/domain/events/__init__.py                                              0      0   100%
+src/context_monitoring/domain/events/checkpoint_created.py                                   16      0   100%
+src/context_monitoring/domain/events/compaction_detected.py                                  17      0   100%
+src/context_monitoring/domain/events/context_threshold_reached.py                            16      0   100%
+src/context_monitoring/domain/services/__init__.py                                            0      0   100%
+src/context_monitoring/domain/services/context_estimate_computer.py                          54      0   100%
+src/context_monitoring/domain/value_objects/__init__.py                                       0      0   100%
+src/context_monitoring/domain/value_objects/checkpoint_data.py                                9      0   100%
+src/context_monitoring/domain/value_objects/compaction_result.py                             14      0   100%
+src/context_monitoring/domain/value_objects/context_estimate.py                              13      0   100%
+src/context_monitoring/domain/value_objects/context_state.py                                  8      0   100%
+src/context_monitoring/domain/value_objects/context_usage_input.py                           14      0   100%
+src/context_monitoring/domain/value_objects/fill_estimate.py                                 11      0   100%
+src/context_monitoring/domain/value_objects/rotation_action.py                               11      0   100%
+src/context_monitoring/domain/value_objects/staleness_result.py                               8      0   100%
+src/context_monitoring/domain/value_objects/sub_agent_info.py                                11      0   100%
+src/context_monitoring/domain/value_objects/threshold_tier.py                                12      1    92%   59
+src/context_monitoring/infrastructure/__init__.py                                             0      0   100%
+src/context_monitoring/infrastructure/adapters/__init__.py                                    0      0   100%
+src/context_monitoring/infrastructure/adapters/config_threshold_adapter.py                   60      0   100%
+src/context_monitoring/infrastructure/adapters/filesystem_checkpoint_repository.py           72      0   100%
+src/context_monitoring/infrastructure/adapters/filesystem_context_state_store.py             28      0   100%
+src/context_monitoring/infrastructure/adapters/jsonl_transcript_reader.py                    78      4    95%   130, 142, 213-214
+src/context_monitoring/infrastructure/adapters/staleness_detector.py                         62      2    97%   171, 251
+src/context_monitoring/infrastructure/adapters/transcript_sub_agent_reader.py                85      6    93%   182, 188-190, 209, 220
+src/domain/__init__.py                                                                        0      0   100%
+src/domain/markdown_ast/__init__.py                                                          13      0   100%
+src/domain/markdown_ast/document_type.py                                                     96      4    96%   401, 406, 409, 412
+src/domain/markdown_ast/frontmatter.py                                                       93      1    99%   145
+src/domain/markdown_ast/html_comment.py                                                      68      0   100%
+src/domain/markdown_ast/input_bounds.py                                                      17      0   100%
+src/domain/markdown_ast/jerry_document.py                                                    70      0   100%
+src/domain/markdown_ast/nav_table.py                                                         69      0   100%
+src/domain/markdown_ast/reinject.py                                                          51      2    96%   269, 279
+src/domain/markdown_ast/schema.py                                                            92      0   100%
+src/domain/markdown_ast/schema_definitions.py                                                33      0   100%
+src/domain/markdown_ast/schema_registry.py                                                   29      0   100%
+src/domain/markdown_ast/universal_document.py                                                69      2    97%   184, 190
+src/domain/markdown_ast/universal_parse_result.py                                            22      0   100%
+src/domain/markdown_ast/xml_section.py                                                       63      0   100%
+src/domain/markdown_ast/yaml_frontmatter.py                                                 113      2    98%   309-310
+src/infrastructure/__init__.py                                                                0      0   100%
+src/infrastructure/adapters/__init__.py                                                       5      0   100%
+src/infrastructure/adapters/configuration/__init__.py                                         4      0   100%
+src/infrastructure/adapters/configuration/env_config_adapter.py                              84     10    88%   96, 117, 142-143, 192-194, 211-212, 229
+src/infrastructure/adapters/configuration/layered_config_adapter.py                         122      8    93%   244-246, 263-264, 281-282, 299
+src/infrastructure/adapters/configuration/lifecycle_dir_resolver.py                          18      0   100%
+src/infrastructure/adapters/file_repository.py                                               58      3    95%   129-130, 187
+src/infrastructure/adapters/persistence/__init__.py                                           3      0   100%
+src/infrastructure/adapters/persistence/atomic_file_adapter.py                               59     12    80%   143-150, 153-157
+src/infrastructure/adapters/persistence/filesystem_local_context_adapter.py                  27      0   100%
+src/infrastructure/adapters/serialization/__init__.py                                         3      0   100%
+src/infrastructure/adapters/serialization/toon_serializer.py                                273     42    85%   37-38, 109-111, 139, 198, 218, 228, 242, 254, 296-300, 307, 319-324, 368, 377, 414, 417, 422-431, 453-456, 481, 502-503, 517, 521
+src/infrastructure/internal/__init__.py                                                       4      0   100%
+src/infrastructure/internal/enforcement/__init__.py                                           8      0   100%
+src/infrastructure/internal/enforcement/enforcement_decision.py                               8      0   100%
+src/infrastructure/internal/enforcement/enforcement_rules.py                                  9      0   100%
+src/infrastructure/internal/enforcement/pattern_library_adapter.py                           48      7    85%   77-78, 97, 115, 135-137
+src/infrastructure/internal/enforcement/pre_tool_enforcement_engine.py                      202     25    88%   116, 124-126, 174-176, 201-204, 208, 272, 287, 362, 391-393, 402, 435, 583-585, 624-629
+src/infrastructure/internal/enforcement/prompt_reinforcement_engine.py                       90      0   100%
+src/infrastructure/internal/enforcement/quality_context.py                                    7      0   100%
+src/infrastructure/internal/enforcement/reinforcement_content.py                              8      0   100%
+src/infrastructure/internal/enforcement/security_enforcement_engine.py                      120     15    88%   81-82, 130-132, 348-366
+src/infrastructure/internal/enforcement/security_rules.py                                    13      0   100%
+src/infrastructure/internal/enforcement/session_quality_context_generator.py                 13      0   100%
+src/infrastructure/internal/file_store.py                                                   119     14    88%   31-34, 56-58, 216-220, 248-252
+src/infrastructure/internal/serializer.py                                                    80      9    89%   190-196, 201, 216
+src/infrastructure/read_models/__init__.py                                                    3      0   100%
+src/infrastructure/read_models/in_memory_read_model_store.py                                 24      0   100%
+src/interface/__init__.py                                                                     0      0   100%
+src/interface/cli/__init__.py                                                                 2      0   100%
+src/interface/cli/__main__.py                                                                 3      3     0%   22-25
+src/interface/cli/adapter.py                                                                616    426    31%   169-179, 247-251, 297-342, 358-400, 411-438, 454-496, 521-554, 562-567, 585-633, 661, 693-706, 725-729, 758, 761-774, 792-842, 861-865, 887-888, 892-912, 931-935, 956, 960-980, 992-995, 1005-1016, 1053-1094, 1113-1137, 1160-1280, 1294-1323, 1390, 1461, 1478
+src/interface/cli/ast_commands.py                                                           232     76    67%   173, 195-196, 206-223, 247, 513-516, 534-536, 540-543, 546-549, 611-633, 649-676, 691-719, 733-735
+src/interface/cli/context/__init__.py                                                         0      0   100%
+src/interface/cli/context/context_estimate_handler.py                                        79     16    80%   110-112, 159, 193-195, 248-257, 278
+src/interface/cli/hooks/__init__.py                                                           0      0   100%
+src/interface/cli/hooks/hooks_pre_compact_handler.py                                         65      0   100%
+src/interface/cli/hooks/hooks_pre_tool_use_handler.py                                        82      5    94%   159, 161-164
+src/interface/cli/hooks/hooks_prompt_submit_handler.py                                       91      2    98%   244, 307
+src/interface/cli/hooks/hooks_session_start_handler.py                                      112      5    96%   159, 178-179, 196-197
+src/interface/cli/hooks/hooks_stop_gate_handler.py                                           30      0   100%
+src/interface/cli/hooks/hooks_subagent_stop_handler.py                                       46      0   100%
+src/interface/cli/main.py                                                                   280    191    32%   102, 109, 111, 115, 119, 122-131, 145-169, 183-229, 275-300, 327, 373-390, 445, 447, 449, 471-677, 696-726, 735-749, 767-777, 781
+src/interface/cli/model_profiles.py                                                          30      0   100%
+src/interface/cli/parser.py                                                                 160      2    99%   25-26
+src/session_management/__init__.py                                                            2      0   100%
+src/session_management/application/__init__.py                                                3      0   100%
+src/session_management/application/commands/__init__.py                                       4      0   100%
+src/session_management/application/commands/abandon_session_command.py                        5      0   100%
+src/session_management/application/commands/create_session_command.py                         7      0   100%
+src/session_management/application/commands/end_session_command.py                            5      0   100%
+src/session_management/application/handlers/__init__.py                                       3      0   100%
+src/session_management/application/handlers/commands/__init__.py                              4      0   100%
+src/session_management/application/handlers/commands/abandon_session_command_handler.py      17      1    94%   33
+src/session_management/application/handlers/commands/create_session_command_handler.py       33      0   100%
+src/session_management/application/handlers/commands/end_session_command_handler.py          19      1    95%   35
+src/session_management/application/handlers/queries/__init__.py                               2      0   100%
+src/session_management/application/handlers/queries/get_session_status_query_handler.py      21      0   100%
+src/session_management/application/ports/__init__.py                                          5      0   100%
+src/session_management/application/ports/environment.py                                       5      0   100%
+src/session_management/application/ports/exceptions.py                                        6      0   100%
+src/session_management/application/ports/project_repository.py                                8      0   100%
+src/session_management/application/ports/session_repository.py                               10      0   100%
+src/session_management/application/queries/__init__.py                                        6      0   100%
+src/session_management/application/queries/get_next_number.py                                15      0   100%
+src/session_management/application/queries/get_project_context.py                            28      0   100%
+src/session_management/application/queries/get_session_status_query.py                        5      0   100%
+src/session_management/application/queries/scan_projects.py                                  10      0   100%
+src/session_management/application/queries/validate_project.py                               16      0   100%
+src/session_management/domain/__init__.py                                                     6      0   100%
+src/session_management/domain/aggregates/__init__.py                                          3      0   100%
+src/session_management/domain/aggregates/session.py                                          98      3    97%   182, 202, 225
+src/session_management/domain/entities/__init__.py                                            2      0   100%
+src/session_management/domain/entities/project_info.py                                       66      2    97%   171, 177
+src/session_management/domain/events/__init__.py                                              3      0   100%
+src/session_management/domain/events/session_events.py                                       55      0   100%
+src/session_management/domain/exceptions.py                                                  24     10    58%   46-51, 58-61
+src/session_management/domain/value_objects/__init__.py                                       5      0   100%
+src/session_management/domain/value_objects/project_id.py                                    70      6    91%   86, 100, 180, 184, 210, 223
+src/session_management/domain/value_objects/project_status.py                                17      2    88%   45-46
+src/session_management/domain/value_objects/session_id.py                                    21      1    95%   89
+src/session_management/domain/value_objects/validation_result.py                             31      8    74%   54, 65, 74, 78-82
+src/session_management/infrastructure/__init__.py                                             2      0   100%
+src/session_management/infrastructure/adapters/__init__.py                                    4      0   100%
+src/session_management/infrastructure/adapters/event_sourced_session_repository.py           87     12    86%   106, 134-138, 224-225, 228, 328-337
+src/session_management/infrastructure/adapters/filesystem_project_adapter.py                 84     26    69%   77-78, 84-89, 122-148, 160-161, 214
+src/session_management/infrastructure/adapters/in_memory_session_repository.py               29      6    79%   61-62, 99-100, 104-105
+src/session_management/infrastructure/adapters/os_environment_adapter.py                     11      0   100%
+src/shared_kernel/__init__.py                                                                10      0   100%
+src/shared_kernel/auditable.py                                                               13      0   100%
+src/shared_kernel/domain_event.py                                                            62      2    97%   159, 258
+src/shared_kernel/entity_base.py                                                             39      0   100%
+src/shared_kernel/exceptions.py                                                              35      0   100%
+src/shared_kernel/jerry_uri.py                                                               50      1    98%   49
+src/shared_kernel/snowflake_id.py                                                            82     11    87%   108-115, 123, 145-149
+src/shared_kernel/versioned.py                                                                7      0   100%
+src/shared_kernel/vertex_id.py                                                              131      2    98%   73, 192
+src/transcript/__init__.py                                                                    5      2    60%   22-23
+src/transcript/application/__init__.py                                                        0      0   100%
+src/transcript/application/commands/__init__.py                                               3      0   100%
+src/transcript/application/commands/parse_transcript_command.py                              12      0   100%
+src/transcript/application/handlers/__init__.py                                               3      0   100%
+src/transcript/application/handlers/commands/__init__.py                                      3      0   100%
+src/transcript/application/handlers/commands/parse_transcript_command_handler.py             50     10    80%   74, 95, 148, 150, 170-171, 193-202
+src/transcript/application/results/__init__.py                                                3      0   100%
+src/transcript/application/results/parse_transcript_result.py                                12      0   100%
+src/transcript/application/services/__init__.py                                               3      0   100%
+src/transcript/application/services/chunker.py                                               97      1    99%   115
+src/transcript/application/services/token_counter.py                                         19      0   100%
+src/transcript/domain/__init__.py                                                             0      0   100%
+src/transcript/domain/ports/__init__.py                                                       2      2     0%   13-15
+src/transcript/domain/ports/transcript_parser.py                                              5      5     0%   13-45
+src/transcript/domain/value_objects/__init__.py                                               3      0   100%
+src/transcript/domain/value_objects/model_config.py                                          17      0   100%
+src/transcript/domain/value_objects/parse_result.py                                          28      2    93%   100, 105
+src/transcript/domain/value_objects/parsed_segment.py                                        16      5    69%   47, 49, 51, 56, 61
+src/transcript/infrastructure/__init__.py                                                     0      0   100%
+src/transcript/infrastructure/adapters/__init__.py                                            2      0   100%
+src/transcript/infrastructure/adapters/vtt_parser.py                                         72     14    81%   89-90, 173-186, 223-225, 253
+src/version/__init__.py                                                                       1      0   100%
+src/version/application/__init__.py                                                           4      0   100%
+src/version/application/handlers/__init__.py                                                  3      0   100%
+src/version/application/handlers/queries/__init__.py                                          3      0   100%
+src/version/application/handlers/queries/detect_bump_type_query_handler.py                   13      0   100%
+src/version/application/ports/__init__.py                                                     3      0   100%
+src/version/application/ports/commit_log_reader.py                                           10      0   100%
+src/version/application/queries/__init__.py                                                   3      0   100%
+src/version/application/queries/detect_bump_type_query.py                                     7      0   100%
+src/version/domain/__init__.py                                                                4      0   100%
+src/version/domain/exceptions.py                                                              7      0   100%
+src/version/domain/services/__init__.py                                                       3      0   100%
+src/version/domain/services/bump_type_detector.py                                            24      0   100%
+src/version/domain/value_objects/__init__.py                                                  4      0   100%
+src/version/domain/value_objects/bump_type.py                                                26      0   100%
+src/version/domain/value_objects/conventional_commit.py                                      32      0   100%
+src/version/infrastructure/__init__.py                                                        4      0   100%
+src/version/infrastructure/adapters/__init__.py                                               4      0   100%
+src/version/infrastructure/adapters/git_commit_log_reader.py                                 55      6    89%   67, 74, 90, 100, 121-122
+src/version/infrastructure/adapters/stdin_commit_reader.py                                   14      0   100%
+src/work_tracking/__init__.py                                                                 1      0   100%
+src/work_tracking/application/__init__.py                                                     5      0   100%
+src/work_tracking/application/commands/__init__.py                                            6      0   100%
+src/work_tracking/application/commands/block_work_item_command.py                             6      0   100%
+src/work_tracking/application/commands/cancel_work_item_command.py                            6      0   100%
+src/work_tracking/application/commands/complete_work_item_command.py                          6      0   100%
+src/work_tracking/application/commands/create_work_item_command.py                            9      0   100%
+src/work_tracking/application/commands/start_work_item_command.py                             6      0   100%
+src/work_tracking/application/handlers/__init__.py                                            3      0   100%
+src/work_tracking/application/handlers/commands/__init__.py                                   6      0   100%
+src/work_tracking/application/handlers/commands/block_work_item_command_handler.py           13      0   100%
+src/work_tracking/application/handlers/commands/cancel_work_item_command_handler.py          13      0   100%
+src/work_tracking/application/handlers/commands/complete_work_item_command_handler.py        13      0   100%
+src/work_tracking/application/handlers/commands/create_work_item_command_handler.py          23      0   100%
+src/work_tracking/application/handlers/commands/start_work_item_command_handler.py           13      0   100%
+src/work_tracking/application/handlers/queries/__init__.py                                    3      0   100%
+src/work_tracking/application/handlers/queries/get_work_item_query_handler.py                31      0   100%
+src/work_tracking/application/handlers/queries/list_work_items_query_handler.py              33      0   100%
+src/work_tracking/application/ports/__init__.py                                               2      0   100%
+src/work_tracking/application/ports/work_item_repository.py                                  11      0   100%
+src/work_tracking/application/queries/__init__.py                                             3      0   100%
+src/work_tracking/application/queries/get_work_item_query.py                                  5      0   100%
+src/work_tracking/application/queries/list_work_items_query.py                                6      0   100%
+src/work_tracking/domain/__init__.py                                                          3      0   100%
+src/work_tracking/domain/aggregates/__init__.py                                               4      0   100%
+src/work_tracking/domain/aggregates/base.py                                                  85      0   100%
+src/work_tracking/domain/aggregates/work_item.py                                            207      2    99%   669, 678
+src/work_tracking/domain/events/__init__.py                                                   4      0   100%
+src/work_tracking/domain/events/quality_gate_events.py                                       94      0   100%
+src/work_tracking/domain/events/work_item_events.py                                         106      0   100%
+src/work_tracking/domain/ports/__init__.py                                                    6      0   100%
+src/work_tracking/domain/ports/event_store.py                                                57      0   100%
+src/work_tracking/domain/ports/repository.py                                                 27      3    89%   253-255
+src/work_tracking/domain/ports/snapshot_store.py                                             72      4    94%   143-144, 149-150
+src/work_tracking/domain/services/__init__.py                                                 4      0   100%
+src/work_tracking/domain/services/id_generator.py                                            37      1    97%   194
+src/work_tracking/domain/services/quality_validator.py                                       66      2    97%   250, 312
+src/work_tracking/domain/value_objects/__init__.py                                            9      0   100%
+src/work_tracking/domain/value_objects/coverage.py                                           50      0   100%
+src/work_tracking/domain/value_objects/priority.py                                           30      0   100%
+src/work_tracking/domain/value_objects/quality_gate.py                                      134      1    99%   326
+src/work_tracking/domain/value_objects/type_ratio.py                                         62      1    98%   147
+src/work_tracking/domain/value_objects/work_item_id.py                                       52      4    92%   63, 65, 73, 182
+src/work_tracking/domain/value_objects/work_item_status.py                                   42      0   100%
+src/work_tracking/domain/value_objects/work_type.py                                          39      0   100%
+src/work_tracking/infrastructure/__init__.py                                                  2      0   100%
+src/work_tracking/infrastructure/adapters/__init__.py                                         2      0   100%
+src/work_tracking/infrastructure/adapters/event_sourced_work_item_repository.py             117     14    88%   98, 127-131, 224-225, 228, 279, 364, 421-430
+src/work_tracking/infrastructure/adapters/in_memory_work_item_repository.py                  48     33    31%   46-47, 59-60, 75-79, 91-95, 107-111, 123-124, 141-152, 164-168, 172-173
+src/work_tracking/infrastructure/persistence/__init__.py                                      3      0   100%
+src/work_tracking/infrastructure/persistence/filesystem_event_store.py                      130      7    95%   123, 144, 238, 302-303, 367-368
+src/work_tracking/infrastructure/persistence/in_memory_event_store.py                        63      2    97%   243-244
+-----------------------------------------------------------------------------------------------------------------------
+TOTAL                                                                                     10567   1309    88%
+================ 16017 passed, 216 skipped in 66.35s (0:01:06) =================
