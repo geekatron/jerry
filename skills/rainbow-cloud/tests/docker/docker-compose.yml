@@ -1,10 +1,14 @@
----
-# Docker Compose -- Rainbow Cloud Sub-Skill
-# Tools: Checkov, Prowler, Kubescape
-# Agent: rainbow-cloud-auditor
-# Zone: 2 (Active Cloud Posture -- egress-controlled; Prowler/Kubescape require API access)
+# SPDX-License-Identifier: MIT
+# Zone 2: Cloud security posture assessment
+# Tools: Checkov (IaC), Prowler (AWS/Azure/GCP), Kubescape (Kubernetes)
+# Engagement scope required for Prowler/Kubescape (cloud account is the target).
+# Checkov in IaC mode is offline; proxy does not restrict it.
+#
+# Architecture: ADR-PROJ023-003 v2 (Envoy Forward Proxy)
+# Task: T13-007
 
 services:
+
   cloud-auditor:
     build:
       context: ./cloud-auditor
@@ -15,23 +19,49 @@ services:
     volumes:
       - cloud-output:/work/output
       - ../../../../work:/work
-    # Zone 2: custom bridge network with egress control.
-    # Prowler and Kubescape require outbound API access; Checkov is local-only.
-    # Target-specific ACLs applied at engagement init via jerry tool exec --init-engagement.
-    # Full structural enforcement (iptables egress ACLs) is target-state -- Phase 6.
     networks:
-      - cloud-net
+      - zone2-active
+    environment:
+      HTTP_PROXY: "http://envoy-z2:3128"
+      HTTPS_PROXY: "http://envoy-z2:3128"
+      NO_PROXY: "localhost,127.0.0.1"
     security_opt:
       - no-new-privileges:true
     entrypoint: ["/bin/sh"]
     stdin_open: true
     tty: true
+    depends_on:
+      envoy-z2:
+        condition: service_started
+
+  envoy-z2:
+    # Zone 2 deny-by-default proxy for cloud API access.
+    # Engagement scope must include cloud_account targets.
+    # Cloud API endpoints (AWS STS, GCP IAM, Azure ARM) are added
+    # to the generated Zone 2 Envoy config at --init-engagement time.
+    image: envoyproxy/envoy:v1.31-latest
+    volumes:
+      - ../../../../skills/rainbow/config/envoy/envoy-zone2-active.yaml:/etc/envoy/envoy.yaml:ro
+      - envoy-z2-logs:/var/log/envoy
+      - ../../../../work:/work:ro
+    networks:
+      - zone2-active
+      - zone2-egress
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:9901/ready || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+networks:
+  zone2-active:
+    driver: bridge
+    internal: true
+  zone2-egress:
+    driver: bridge
 
 volumes:
   cloud-output:
-
-networks:
-  cloud-net:
-    driver: bridge
-    # Zone 2 egress control: target ACLs generated from SCOPE.md at engagement init.
-    # Default: bridge allows outbound; ACLs restrict to authorized targets only (Phase 6).
+  envoy-z2-logs:

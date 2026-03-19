@@ -247,7 +247,13 @@ def handle_tool_exec(args: Any) -> int:
     if _init_engagement_early:
         project_root = _find_project_root()
         services = create_tool_exec_handler(project_root)
-        return _handle_init_engagement(_init_engagement_early, services["engagement_init"])
+        _scope_file = getattr(args, "scope_file", None)
+        return _handle_init_engagement(
+            _init_engagement_early,
+            services["engagement_init"],
+            scope_file=_scope_file,
+            project_root=project_root,
+        )
 
     tool_command = getattr(args, "tool_command", None)
     if tool_command is None:
@@ -339,7 +345,13 @@ def handle_tool_exec(args: Any) -> int:
 
     # Handle --init-engagement before registry load
     if init_engagement:
-        return _handle_init_engagement(init_engagement, engagement_init)
+        _scope_file = getattr(args, "scope_file", None)
+        return _handle_init_engagement(
+            init_engagement,
+            engagement_init,
+            scope_file=_scope_file,
+            project_root=project_root,
+        )
 
     try:
         resolvers = loader.load()
@@ -735,6 +747,8 @@ def _handle_management_command(args: Any) -> int:
 def _handle_init_engagement(
     engagement_id: str,
     engagement_init: EngagementInitializer,
+    scope_file: str | None = None,
+    project_root: Path | None = None,
 ) -> int:
     """Initialize a new engagement directory.
 
@@ -746,9 +760,14 @@ def _handle_init_engagement(
     boundary) and passes the resolved string to EngagementInitializer.initialize()
     so the domain service stays free of environment variable access.
 
+    T13-014: When --scope-file is provided, generates Envoy proxy configs
+    from engagement scope authorized_targets for Zone 2 and Zone 3.
+
     Args:
         engagement_id: The engagement identifier.
         engagement_init: Factory-built EngagementInitializer from composition root.
+        scope_file: Optional path to engagement scope YAML for Envoy config generation.
+        project_root: Project root for resolving Envoy config paths.
 
     Returns:
         Exit code.
@@ -759,6 +778,11 @@ def _handle_init_engagement(
     try:
         path = engagement_init.initialize(engagement_id, created_by=created_by)
         print(f"Engagement initialized: {path}")
+
+        # T13-014: Generate Envoy configs from scope file if provided
+        if scope_file:
+            _generate_envoy_configs(scope_file, project_root or Path.cwd())
+
         return ExitCode.SUCCESS
     except ValueError as e:
         print(f"Error: {e}", file=sys.stderr)
@@ -767,6 +791,47 @@ def _handle_init_engagement(
         # directory does not exist for a tool that needs it; a bad ID passed
         # to --init-engagement is a bad-input error (exit code 1).
         return ExitCode.UNKNOWN_TOOL
+
+
+def _generate_envoy_configs(scope_file: str, project_root: Path) -> None:
+    """Generate Envoy proxy configs from engagement scope file.
+
+    T13-014: Called during --init-engagement when --scope-file is provided.
+    Generates Zone 2 and Zone 3 Envoy configs from the engagement scope
+    authorized_targets. Zone 1 uses static allowlists and is not affected.
+
+    Args:
+        scope_file: Path to the engagement scope YAML.
+        project_root: Project root for resolving config paths.
+    """
+    from src.tool_exec.infrastructure.envoy.scope_translator import (
+        ScopeTranslationError,
+        generate_envoy_config,
+    )
+
+    scope_path = Path(scope_file)
+    if not scope_path.is_absolute():
+        scope_path = project_root / scope_path
+
+    envoy_config_dir = project_root / "skills" / "rainbow" / "config" / "envoy"
+
+    # Generate Zone 2 config
+    zone2_base = envoy_config_dir / "envoy-zone2-active.yaml"
+    zone2_output = envoy_config_dir / "envoy-zone2-active.yaml"
+    try:
+        generate_envoy_config(zone2_base, scope_path, zone2_output, zone=2)
+        print(f"  Envoy Zone 2 config generated: {zone2_output}")
+    except (ScopeTranslationError, FileNotFoundError) as e:
+        print(f"  Warning: Zone 2 Envoy config generation failed: {e}", file=sys.stderr)
+
+    # Generate Zone 3 config (includes C2 infrastructure)
+    zone3_base = envoy_config_dir / "envoy-zone3-exploit.yaml"
+    zone3_output = envoy_config_dir / "envoy-zone3-exploit.yaml"
+    try:
+        generate_envoy_config(zone3_base, scope_path, zone3_output, zone=3, include_c2=True)
+        print(f"  Envoy Zone 3 config generated: {zone3_output}")
+    except (ScopeTranslationError, FileNotFoundError) as e:
+        print(f"  Warning: Zone 3 Envoy config generation failed: {e}", file=sys.stderr)
 
 
 def _handle_health_check(

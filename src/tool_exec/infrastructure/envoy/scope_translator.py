@@ -1,0 +1,353 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+"""Translate engagement scope YAML to Envoy virtual_host configuration.
+
+Reads authorized_targets from an engagement scope document and generates
+Envoy route_config virtual_hosts entries that enforce the engagement-scope
+allowlist. The deny-all catch-all in the base Envoy config blocks anything
+not explicitly allowed.
+
+Architecture: ADR-PROJ023-003 v2 (Envoy Forward Proxy)
+Task: T13-012
+"""
+
+from __future__ import annotations
+
+import copy
+import logging
+import re
+from pathlib import Path
+from typing import Any
+
+import yaml
+
+logger = logging.getLogger(__name__)
+
+# Cloud provider endpoint mappings for cloud_account target type.
+# When the engagement scope includes a cloud_account target, the translator
+# adds the provider's API endpoints to the allowlist so that tools like
+# Prowler and Kubescape can reach the cloud APIs.
+_CLOUD_PROVIDER_DOMAINS: dict[str, list[str]] = {
+    "aws": [
+        "*.amazonaws.com",
+        "*.aws.amazon.com",
+        "sts.amazonaws.com",
+    ],
+    "azure": [
+        "*.azure.com",
+        "*.microsoftonline.com",
+        "management.azure.com",
+        "login.microsoftonline.com",
+    ],
+    "gcp": [
+        "*.googleapis.com",
+        "*.google.com",
+        "accounts.google.com",
+        "cloudresourcemanager.googleapis.com",
+    ],
+}
+
+# Validation: domain must be a valid hostname (no protocol, no path)
+_DOMAIN_PATTERN = re.compile(
+    r"^(\*\.)?[a-zA-Z0-9]([a-zA-Z0-9\-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9\-]*[a-zA-Z0-9])?)*$"
+)
+
+# Validation: IP address (v4 only for now)
+_IPV4_PATTERN = re.compile(r"^(\d{1,3}\.){3}\d{1,3}$")
+
+
+class ScopeTranslationError(Exception):
+    """Raised when scope translation fails due to invalid input."""
+
+
+def translate_scope_to_envoy(
+    scope_path: Path,
+    zone: int,
+    *,
+    include_c2: bool = False,
+) -> list[dict[str, Any]]:
+    """Convert engagement scope authorized_targets to Envoy virtual_host entries.
+
+    Args:
+        scope_path: Path to the engagement scope YAML file.
+        zone: Target zone (2 or 3). Zone 1 uses static allowlists.
+        include_c2: If True, include c2_infrastructure targets (Zone 3 only).
+
+    Returns:
+        List of Envoy virtual_host dictionaries ready for injection
+        into the route_config.virtual_hosts array.
+
+    Raises:
+        ScopeTranslationError: If scope file is invalid or contains
+            unsupported target types.
+        FileNotFoundError: If scope_path does not exist.
+    """
+    if zone not in (2, 3):
+        msg = f"Envoy scope translation only supports zones 2 and 3, got {zone}"
+        raise ScopeTranslationError(msg)
+
+    scope_data = _load_scope(scope_path)
+    engagement = scope_data.get("engagement", {})
+
+    authorized_targets = engagement.get("authorized_targets", [])
+    if not authorized_targets:
+        msg = f"No authorized_targets in scope file: {scope_path}"
+        raise ScopeTranslationError(msg)
+
+    # Collect all domains from authorized_targets
+    domains = _extract_domains(authorized_targets)
+
+    # Add C2 infrastructure domains for Zone 3
+    if include_c2 and zone == 3:
+        c2_targets = engagement.get("c2_infrastructure", [])
+        if c2_targets:
+            c2_domains = _extract_domains(c2_targets)
+            domains.extend(c2_domains)
+            logger.info("Added %d C2 infrastructure domains for Zone 3", len(c2_domains))
+
+    if not domains:
+        msg = f"No resolvable domains extracted from scope targets: {scope_path}"
+        raise ScopeTranslationError(msg)
+
+    # Deduplicate while preserving order
+    seen: set[str] = set()
+    unique_domains: list[str] = []
+    for d in domains:
+        if d not in seen:
+            seen.add(d)
+            unique_domains.append(d)
+
+    logger.info(
+        "Translated %d scope targets to %d unique domains for Zone %d",
+        len(authorized_targets),
+        len(unique_domains),
+        zone,
+    )
+
+    # Build the virtual_host entry
+    virtual_host: dict[str, Any] = {
+        "name": f"engagement_scope_zone{zone}",
+        "domains": unique_domains,
+        "routes": [
+            {
+                "match": {"prefix": "/"},
+                "route": {
+                    "cluster": "dynamic_forward_proxy_cluster",
+                    "timeout": "60s",
+                },
+            }
+        ],
+    }
+
+    return [virtual_host]
+
+
+def generate_envoy_config(
+    base_config_path: Path,
+    scope_path: Path,
+    output_path: Path,
+    zone: int,
+    *,
+    include_c2: bool = False,
+) -> Path:
+    """Generate a complete Envoy config by injecting scope-derived virtual_hosts.
+
+    Reads the base Envoy config template, injects engagement-scope-derived
+    virtual_host entries before the deny_all catch-all, and writes the
+    result to output_path.
+
+    Args:
+        base_config_path: Path to the base Envoy config template.
+        scope_path: Path to the engagement scope YAML.
+        output_path: Path to write the generated Envoy config.
+        zone: Target zone (2 or 3).
+        include_c2: If True, include c2_infrastructure targets.
+
+    Returns:
+        Path to the generated config file.
+
+    Raises:
+        ScopeTranslationError: If translation or config generation fails.
+        FileNotFoundError: If base config or scope file does not exist.
+    """
+    # Load base config
+    with base_config_path.open() as f:
+        base_config = yaml.safe_load(f)
+
+    if not base_config:
+        msg = f"Empty or invalid base config: {base_config_path}"
+        raise ScopeTranslationError(msg)
+
+    # Generate virtual_hosts from scope
+    scope_vhosts = translate_scope_to_envoy(scope_path, zone, include_c2=include_c2)
+
+    # Deep copy to avoid mutating the original
+    config = copy.deepcopy(base_config)
+
+    # Navigate to route_config.virtual_hosts
+    try:
+        listeners = config["static_resources"]["listeners"]
+        hcm_filter = listeners[0]["filter_chains"][0]["filters"][0]
+        hcm_config = hcm_filter["typed_config"]
+        route_config = hcm_config["route_config"]
+        virtual_hosts = route_config["virtual_hosts"]
+    except (KeyError, IndexError, TypeError) as e:
+        msg = f"Invalid Envoy config structure in {base_config_path}: {e}"
+        raise ScopeTranslationError(msg) from e
+
+    # Insert scope virtual_hosts BEFORE the deny_all catch-all
+    # The deny_all entry has domains: ["*"] and must be last
+    deny_all_idx = _find_deny_all_index(virtual_hosts)
+    for i, vhost in enumerate(scope_vhosts):
+        virtual_hosts.insert(deny_all_idx + i, vhost)
+
+    # Write generated config
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with output_path.open("w") as f:
+        f.write(f"# GENERATED by scope_translator.py from: {scope_path.name}\n")
+        f.write(f"# Zone: {zone}\n")
+        f.write("# DO NOT EDIT MANUALLY during an engagement.\n\n")
+        yaml.dump(config, f, default_flow_style=False, sort_keys=False)
+
+    logger.info("Generated Envoy config: %s", output_path)
+    return output_path
+
+
+def _load_scope(scope_path: Path) -> dict[str, Any]:
+    """Load and validate an engagement scope YAML file."""
+    if not scope_path.exists():
+        msg = f"Scope file not found: {scope_path}"
+        raise FileNotFoundError(msg)
+
+    with scope_path.open() as f:
+        data = yaml.safe_load(f)
+
+    if not isinstance(data, dict):
+        msg = f"Scope file must contain a YAML mapping: {scope_path}"
+        raise ScopeTranslationError(msg)
+
+    if "engagement" not in data:
+        msg = f"Scope file missing 'engagement' key: {scope_path}"
+        raise ScopeTranslationError(msg)
+
+    return data
+
+
+def _extract_domains(targets: list[dict[str, str]]) -> list[str]:
+    """Extract domain names from authorized_targets entries.
+
+    Supports: domain, ip, url, cloud_account target types.
+    Rejects: ip_range (requires RBAC filter, not supported in Phase 1).
+
+    Returns:
+        List of domain strings suitable for Envoy virtual_host domains.
+    """
+    domains: list[str] = []
+
+    for target in targets:
+        target_type = target.get("type", "")
+        value = target.get("value", "").strip()
+
+        if not value:
+            logger.warning("Skipping empty target value: %s", target)
+            continue
+
+        if target_type == "domain":
+            _validate_domain(value)
+            # Add the domain and wildcard subdomain
+            domains.append(value)
+            if not value.startswith("*."):
+                domains.append(f"*.{value}")
+
+        elif target_type == "ip":
+            _validate_ipv4(value)
+            domains.append(value)
+
+        elif target_type == "url":
+            # Extract host from URL
+            host = _extract_host_from_url(value)
+            _validate_domain(host)
+            domains.append(host)
+            if not host.startswith("*."):
+                domains.append(f"*.{host}")
+
+        elif target_type == "cloud_account":
+            # Map cloud provider to API domains
+            cloud_domains = _resolve_cloud_account(value)
+            domains.extend(cloud_domains)
+
+        elif target_type == "ip_range":
+            msg = (
+                f"ip_range targets are not supported in Phase 1 scope translation. "
+                f"Use type: ip for individual IPs or type: domain. Got: {value}"
+            )
+            raise ScopeTranslationError(msg)
+
+        else:
+            logger.warning("Unknown target type '%s', skipping: %s", target_type, target)
+
+    return domains
+
+
+def _validate_domain(domain: str) -> None:
+    """Validate a domain string."""
+    if not _DOMAIN_PATTERN.match(domain):
+        msg = f"Invalid domain format: {domain}"
+        raise ScopeTranslationError(msg)
+
+
+def _validate_ipv4(ip: str) -> None:
+    """Validate an IPv4 address."""
+    if not _IPV4_PATTERN.match(ip):
+        msg = f"Invalid IPv4 address: {ip}"
+        raise ScopeTranslationError(msg)
+    # Check octet ranges
+    octets = ip.split(".")
+    for octet in octets:
+        if int(octet) > 255:
+            msg = f"Invalid IPv4 octet value in: {ip}"
+            raise ScopeTranslationError(msg)
+
+
+def _extract_host_from_url(url: str) -> str:
+    """Extract the hostname from a URL."""
+    # Remove protocol
+    if "://" in url:
+        url = url.split("://", 1)[1]
+    # Remove path
+    host = url.split("/", 1)[0]
+    # Remove port
+    host = host.split(":", 1)[0]
+    return host
+
+
+def _resolve_cloud_account(value: str) -> list[str]:
+    """Resolve a cloud_account target to API endpoint domains.
+
+    Expected format: "provider:account_id" (e.g., "aws:123456789012")
+    """
+    if ":" not in value:
+        msg = f"cloud_account must be 'provider:account_id', got: {value}"
+        raise ScopeTranslationError(msg)
+
+    provider = value.split(":", 1)[0].lower()
+    if provider not in _CLOUD_PROVIDER_DOMAINS:
+        msg = (
+            f"Unknown cloud provider '{provider}' in cloud_account target. "
+            f"Supported: {', '.join(_CLOUD_PROVIDER_DOMAINS.keys())}"
+        )
+        raise ScopeTranslationError(msg)
+
+    return list(_CLOUD_PROVIDER_DOMAINS[provider])
+
+
+def _find_deny_all_index(virtual_hosts: list[dict[str, Any]]) -> int:
+    """Find the index of the deny_all virtual_host (must be last)."""
+    for i, vhost in enumerate(virtual_hosts):
+        if vhost.get("name") == "deny_all":
+            return i
+        domains = vhost.get("domains", [])
+        if "*" in domains and len(domains) == 1:
+            return i
+    # If no deny_all found, append at the end
+    return len(virtual_hosts)

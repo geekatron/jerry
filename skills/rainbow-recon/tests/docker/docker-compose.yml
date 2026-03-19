@@ -1,10 +1,14 @@
----
-# Docker Compose -- Rainbow Recon Sub-Skill
+# SPDX-License-Identifier: MIT
+# Zone 2: Active reconnaissance
 # Tools: Subfinder, httpx, dnsx, naabu, katana, Nuclei
-# Agent: rainbow-recon-pipeline
-# Zone: 2 (Active Reconnaissance -- egress-controlled, engagement scope required)
+# Engagement scope required before execution (validated by CLI).
+# Envoy enforces scope-derived allowlist at network level.
+#
+# Architecture: ADR-PROJ023-003 v2 (Envoy Forward Proxy)
+# Task: T13-009
 
 services:
+
   recon-pipeline:
     build:
       context: ./recon-pipeline
@@ -14,20 +18,55 @@ services:
     working_dir: /work
     volumes:
       - ../../../../work:/work
-    # Zone 2: custom bridge network with egress control.
-    # Target-specific ACLs applied at engagement init via jerry tool exec --init-engagement.
-    # Full structural enforcement (iptables egress ACLs) is target-state -- Phase 6.
     networks:
-      - recon-net
+      - zone2-active
+    environment:
+      HTTP_PROXY: "http://envoy-z2:3128"
+      HTTPS_PROXY: "http://envoy-z2:3128"
+      # Exclude internal DNS resolution from proxy to avoid breaking dnsx
+      # which uses raw DNS sockets (not HTTP). dnsx is NOT proxy-aware.
+      NO_PROXY: "localhost,127.0.0.1"
     security_opt:
       - no-new-privileges:true
     read_only: false
     entrypoint: ["/bin/sh"]
     stdin_open: true
     tty: true
+    depends_on:
+      envoy-z2:
+        condition: service_started
+
+  envoy-z2:
+    # Zone 2 deny-by-default proxy.
+    # Config generated from engagement scope YAML by:
+    #   jerry tool exec --init-engagement <scope.yaml>
+    # Config location: skills/rainbow/config/envoy/envoy-zone2-active.yaml
+    # Access log: /var/log/envoy/access.log -> evidence volume.
+    image: envoyproxy/envoy:v1.31-latest
+    volumes:
+      - ../../../../skills/rainbow/config/envoy/envoy-zone2-active.yaml:/etc/envoy/envoy.yaml:ro
+      - envoy-z2-logs:/var/log/envoy
+      - ../../../../work:/work:ro
+    networks:
+      - zone2-active
+      - zone2-egress
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:9901/ready || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
 networks:
-  recon-net:
+  zone2-active:
     driver: bridge
-    # Zone 2 egress control: target ACLs generated from SCOPE.md at engagement init.
-    # Default: bridge allows outbound; ACLs restrict to authorized targets only (Phase 6).
+    internal: true
+    # Internal network: recon-pipeline cannot reach internet directly.
+    # All HTTP/HTTPS egress routes through envoy-z2.
+  zone2-egress:
+    driver: bridge
+    # External route. Only envoy-z2 is attached to this network.
+
+volumes:
+  envoy-z2-logs:

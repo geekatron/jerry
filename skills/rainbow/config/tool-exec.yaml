@@ -297,10 +297,11 @@ tool_resolution:
     zone: "1"
 
   - prefix: "trivy"
-    service: "compliance"
+    service: "compliance-net"
     compose_file: "skills/blue-team/tests/docker/docker-compose.yml"
     sub_skill: "blue-team"
     zone: "1"
+    # Requires network: vulnerability DB download via Envoy Zone 1 proxy.
 
   # -----------------------------------------------------------------------
   # Supply-chain sub-skill (rainbow-supply-chain)
@@ -314,16 +315,18 @@ tool_resolution:
     zone: "1"
 
   - prefix: "grype"
-    service: "scanner"
+    service: "scanner-net"
     compose_file: "skills/rainbow-supply-chain/tests/docker/docker-compose.yml"
     sub_skill: "rainbow-supply-chain"
     zone: "1"
+    # Requires network: vulnerability DB download via Envoy Zone 1 proxy.
 
   - prefix: "osv-scanner"
-    service: "scanner"
+    service: "scanner-net"
     compose_file: "skills/rainbow-supply-chain/tests/docker/docker-compose.yml"
     sub_skill: "rainbow-supply-chain"
     zone: "1"
+    # Requires network: OSV API access via Envoy Zone 1 proxy.
 
   - prefix: "cosign"
     service: "verifier"

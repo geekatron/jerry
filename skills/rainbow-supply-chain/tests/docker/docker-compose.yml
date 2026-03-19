@@ -1,19 +1,97 @@
-# Zone: 1 (Analysis -- SBOM generation and supply chain scanning; no external network required)
-# Network: network_mode: none (Zone 1 structural enforcement -- container has zero network access)
+# SPDX-License-Identifier: MIT
+# Zone 1: Supply chain scanning
+# Zone 1 Offline: syft (SBOM generation, no network)
+# Zone 1 DB-Update: grype, osv-scanner, cosign, snyk (vulnerability DBs + registries via proxy)
+#
+# Architecture: ADR-PROJ023-003 v2 (Envoy Forward Proxy)
+# Task: T13-006
 
 services:
+
   scanner:
+    # syft: local SBOM generation from images and directories.
+    # No network required. Reads from /work volume only.
     build:
       context: ./scanner
     volumes:
       - ../../../../work:/work
     working_dir: /work
-    network_mode: none
+    networks:
+      - zone1-offline
+    security_opt:
+      - no-new-privileges:true
+
+  scanner-net:
+    # grype, osv-scanner: vulnerability DB download from osv.dev, nvd.nist.gov.
+    # Routes all egress through envoy-z1-update (allowlisted DB hosts only).
+    build:
+      context: ./scanner
+    volumes:
+      - ../../../../work:/work
+    working_dir: /work
+    networks:
+      - zone1-update
+    environment:
+      HTTP_PROXY: "http://envoy-z1-update:3128"
+      HTTPS_PROXY: "http://envoy-z1-update:3128"
+      NO_PROXY: "localhost,127.0.0.1"
+    security_opt:
+      - no-new-privileges:true
+    depends_on:
+      envoy-z1-update:
+        condition: service_started
 
   verifier:
+    # cosign verify, snyk: signature + advisory lookup.
+    # Routes egress through envoy-z1-update (allowlisted hosts only).
     build:
       context: ./verifier
     volumes:
       - ../../../../work:/work
     working_dir: /work
-    network_mode: none
+    networks:
+      - zone1-update
+    environment:
+      HTTP_PROXY: "http://envoy-z1-update:3128"
+      HTTPS_PROXY: "http://envoy-z1-update:3128"
+      NO_PROXY: "localhost,127.0.0.1"
+    security_opt:
+      - no-new-privileges:true
+    depends_on:
+      envoy-z1-update:
+        condition: service_started
+
+  envoy-z1-update:
+    # Deny-by-default egress proxy for Zone 1 DB-Update.
+    # Allowlist: github.com, osv.dev, nvd.nist.gov, pypi.org,
+    #            toolbox-data.anchore.io, ghcr.io, sigstore.dev.
+    image: envoyproxy/envoy:v1.31-latest
+    volumes:
+      - ../../../../skills/rainbow/config/envoy/envoy-zone1-update.yaml:/etc/envoy/envoy.yaml:ro
+      - envoy-z1-logs:/var/log/envoy
+    networks:
+      - zone1-update
+      - zone1-egress
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:9901/ready || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+networks:
+  zone1-offline:
+    driver: bridge
+    internal: true
+    # Zone 1 Offline: zero external connectivity. No proxy. syft only.
+  zone1-update:
+    driver: bridge
+    internal: true
+    # Zone 1 DB-Update: internal only. External access via envoy-z1-update proxy.
+  zone1-egress:
+    driver: bridge
+    # External route. Only envoy-z1-update is attached to this network.
+
+volumes:
+  envoy-z1-logs:

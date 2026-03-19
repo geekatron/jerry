@@ -1,10 +1,16 @@
----
-# Docker Compose -- Blue Team Skill
-# Domains: detection, compliance, forensics, intel
-# Zone: 1 (Analysis -- no external network required for tool tests)
+# SPDX-License-Identifier: MIT
+# Zone 1: Blue team defensive analysis
+# Zone 1 Offline: YARA-X, Sigma CLI, Hayabusa, Chainsaw, Checkov (IaC), forensics, intel
+# Zone 1 DB-Update: Trivy (vulnerability DB download)
+#
+# Architecture: ADR-PROJ023-003 v2 (Envoy Forward Proxy)
+# Task: T13-008
 
 services:
+
   detection:
+    # YARA-X, Sigma CLI, Hayabusa, Chainsaw: local artifact analysis.
+    # No network required.
     build:
       context: ./detection
       dockerfile: Dockerfile
@@ -17,14 +23,15 @@ services:
       - ../../../../work:/work
     security_opt:
       - no-new-privileges:true
-    # Zone 1: network_mode: none -- structural enforcement.
-    # Container has zero network access regardless of agent behavior.
-    network_mode: none
+    networks:
+      - zone1-offline
     entrypoint: ["/bin/bash"]
     stdin_open: true
     tty: true
 
   compliance:
+    # Checkov: IaC scanning against local files.
+    # No network required for IaC-only mode.
     build:
       context: ./compliance
       dockerfile: Dockerfile
@@ -37,14 +44,45 @@ services:
       - ../../../../work:/work
     security_opt:
       - no-new-privileges:true
-    # Zone 1: network_mode: none -- structural enforcement.
-    # Container has zero network access regardless of agent behavior.
-    network_mode: none
+    networks:
+      - zone1-offline
     entrypoint: ["/bin/bash"]
     stdin_open: true
     tty: true
 
+  compliance-net:
+    # Trivy: vulnerability DB download from GitHub releases and NVD.
+    # Requires proxy-gated network access.
+    # Separate service from compliance to preserve Zone 1 Offline isolation
+    # for Checkov while enabling Trivy DB updates.
+    build:
+      context: ./compliance
+      dockerfile: Dockerfile
+    image: blue-compliance:latest
+    container_name: blue-compliance-net
+    working_dir: /app
+    volumes:
+      - compliance-output:/output
+      - compliance-fixtures:/fixtures
+      - ../../../../work:/work
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - zone1-update
+    environment:
+      HTTP_PROXY: "http://envoy-z1-update:3128"
+      HTTPS_PROXY: "http://envoy-z1-update:3128"
+      NO_PROXY: "localhost,127.0.0.1"
+    entrypoint: ["/bin/bash"]
+    stdin_open: true
+    tty: true
+    depends_on:
+      envoy-z1-update:
+        condition: service_started
+
   forensics:
+    # Ghidra, Volatility3, plaso: local binary/memory analysis.
+    # No network required.
     build:
       context: ./forensics
       dockerfile: Dockerfile
@@ -57,14 +95,16 @@ services:
       - ../../../../work:/work
     security_opt:
       - no-new-privileges:true
-    # Zone 1: network_mode: none -- structural enforcement.
-    # Container has zero network access regardless of agent behavior.
-    network_mode: none
+    networks:
+      - zone1-offline
     entrypoint: ["/bin/bash"]
     stdin_open: true
     tty: true
 
   intel:
+    # MISP client, STIX tools: test fixtures only (offline).
+    # If live MISP feed lookup required in future, move to zone1-update
+    # and add MISP API endpoint to the Zone 1 allowlist.
     build:
       context: ./intel
       dockerfile: Dockerfile
@@ -77,12 +117,38 @@ services:
       - ../../../../work:/work
     security_opt:
       - no-new-privileges:true
-    # Zone 1: network_mode: none -- structural enforcement.
-    # Container has zero network access regardless of agent behavior.
-    network_mode: none
+    networks:
+      - zone1-offline
     entrypoint: ["/bin/bash"]
     stdin_open: true
     tty: true
+
+  envoy-z1-update:
+    # Deny-by-default egress proxy for Zone 1 DB-Update (Trivy).
+    image: envoyproxy/envoy:v1.31-latest
+    volumes:
+      - ../../../../skills/rainbow/config/envoy/envoy-zone1-update.yaml:/etc/envoy/envoy.yaml:ro
+      - envoy-z1-logs:/var/log/envoy
+    networks:
+      - zone1-update
+      - zone1-egress
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:9901/ready || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+networks:
+  zone1-offline:
+    driver: bridge
+    internal: true
+  zone1-update:
+    driver: bridge
+    internal: true
+  zone1-egress:
+    driver: bridge
 
 volumes:
   detection-output:
@@ -93,3 +159,4 @@ volumes:
   forensics-fixtures:
   intel-output:
   intel-fixtures:
+  envoy-z1-logs:

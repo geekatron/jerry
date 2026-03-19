@@ -1064,6 +1064,18 @@ def _add_tool_namespace(
     )
 
     exec_parser.add_argument(
+        "--scope-file",
+        dest="scope_file",
+        default=None,
+        metavar="PATH",
+        help=(
+            "Engagement scope YAML file for Envoy config generation. "
+            "Used with --init-engagement to generate deny-by-default "
+            "egress proxy configs from engagement-scope targets."
+        ),
+    )
+
+    exec_parser.add_argument(
         "--zone",
         choices=["1", "2", "3"],
         default=None,

@@ -1,15 +1,19 @@
-# Zone: 3 (Runtime Analysis -- per-operation human approval required for every tool invocation)
-# Network: default deny. Per-operation network grants applied by jerry tool exec at run-time.
-# Full structural enforcement (docker network connect/disconnect per approved operation)
-# is target-state -- Phase 6. At current state, behavioral per-operation approval (P-020) is active.
-
-# Zone 2/3 boundary: mitmproxy and frida are SEPARATE services.
-# mitmproxy operates at the network interception boundary (Zone 2 -> Zone 3).
-# frida operates at the process instrumentation boundary (Zone 3 internal).
-# They MUST NOT share a network namespace to preserve zone isolation.
+# SPDX-License-Identifier: MIT
+# Zone 2/3 boundary: runtime analysis and process instrumentation.
+# mitmproxy: Zone 2 (network interception boundary -- captures traffic to/from targets).
+# frida: Zone 3 (process attachment -- requires elevated capabilities).
+# These services MUST NOT share a network namespace (zone isolation preserved).
+#
+# Architecture: ADR-PROJ023-003 v2 (Envoy Forward Proxy)
+# Task: T13-010
 
 services:
+
   mitmproxy:
+    # mitmproxy, mitmdump, mitmweb: TLS-intercepting proxy for traffic analysis.
+    # Zone 2: engagement scope required. Targets must be in allowlist.
+    # Note: mitmproxy acts as a MITM proxy for tool traffic -- its OWN outbound
+    # traffic (to targets it is proxying for) routes through envoy-z2.
     build:
       context: ./mitmproxy
       dockerfile: Dockerfile
@@ -19,21 +23,91 @@ services:
       - "8080:8080"
     volumes:
       - ../../../../work:/work
+    networks:
+      - zone2-active
+    environment:
+      HTTP_PROXY: "http://envoy-z2:3128"
+      HTTPS_PROXY: "http://envoy-z2:3128"
+      NO_PROXY: "localhost,127.0.0.1"
     stdin_open: true
     tty: true
+    depends_on:
+      envoy-z2:
+        condition: service_started
 
   frida:
+    # frida, frida-trace, frida-ps: dynamic instrumentation.
+    # Zone 3: per-operation approval required.
+    # SYS_PTRACE capability required for process attachment.
     build:
       context: ./frida
       dockerfile: Dockerfile
     image: rainbow-runtime-frida:latest
     container_name: rainbow-runtime-frida
-    # Frida requires elevated capabilities for process attachment
     cap_add:
       - SYS_PTRACE
     security_opt:
       - seccomp:unconfined
     volumes:
       - ../../../../work:/work
+    networks:
+      - zone3-exploit
+    environment:
+      HTTP_PROXY: "http://envoy-z3:3128"
+      HTTPS_PROXY: "http://envoy-z3:3128"
+      NO_PROXY: "localhost,127.0.0.1"
     stdin_open: true
     tty: true
+    depends_on:
+      envoy-z3:
+        condition: service_started
+
+  envoy-z2:
+    image: envoyproxy/envoy:v1.31-latest
+    volumes:
+      - ../../../../skills/rainbow/config/envoy/envoy-zone2-active.yaml:/etc/envoy/envoy.yaml:ro
+      - envoy-z2-logs:/var/log/envoy
+      - ../../../../work:/work:ro
+    networks:
+      - zone2-active
+      - zone2-egress
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:9901/ready || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  envoy-z3:
+    image: envoyproxy/envoy:v1.31-latest
+    volumes:
+      - ../../../../skills/rainbow/config/envoy/envoy-zone3-exploit.yaml:/etc/envoy/envoy.yaml:ro
+      - envoy-z3-logs:/var/log/envoy
+      - ../../../../work:/work:ro
+    networks:
+      - zone3-exploit
+      - zone3-egress
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:9901/ready || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+networks:
+  zone2-active:
+    driver: bridge
+    internal: true
+  zone2-egress:
+    driver: bridge
+  zone3-exploit:
+    driver: bridge
+    internal: true
+  zone3-egress:
+    driver: bridge
+
+volumes:
+  envoy-z2-logs:
+  envoy-z3-logs:
