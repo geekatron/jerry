@@ -15,6 +15,7 @@ Tasks:
     T13-018: Zone 2 — CAN reach engagement-scope targets, CANNOT reach non-scope
     T13-019: Zone 3 — Envoy logs all connections for forensic evidence
     T13-020: Bypass detection — container without proxy env vars is still blocked
+    TASK-043: Fail-closed gate — CONTAINER_NOT_RUNNING (3) when envoy-z2 is down
 """
 
 from __future__ import annotations
@@ -650,3 +651,109 @@ class TestEnvoyAccessLogLive:
                 continue
 
         assert len(denied_entries) >= 1, "No 403 entries found in Envoy access logs"
+
+
+# ---------------------------------------------------------------------------
+# TASK-043: Fail-Closed Gate — CONTAINER_NOT_RUNNING (3) when envoy-z2 down
+# ---------------------------------------------------------------------------
+
+_RECON_COMPOSE = str(_PROJECT_ROOT / "skills/rainbow-recon/tests/docker/docker-compose.yml")
+
+
+class TestEnvoyFailClosed:
+    """TASK-043: VULN-003 fail-closed gate fires when the Zone 2 Envoy proxy
+    is stopped.
+
+    Security control: CONTAINER_NOT_RUNNING (exit code 3).
+
+    When the envoy-z2 container is not running, any Zone 2 tool execution in
+    container mode must refuse to proceed rather than executing without the
+    proxy.  Running without the proxy would bypass deny-by-default egress
+    enforcement (OWASP A01:2021 Broken Access Control).
+
+    Test sequence:
+        1. Stop envoy-z2 via docker compose stop.
+        2. Invoke subfinder (Zone 2) via the jerry CLI.
+        3. Assert exit code 3 (CONTAINER_NOT_RUNNING) and expected message.
+        4. Restart envoy-z2 unconditionally in teardown.
+
+    The recon compose file is used because subfinder is a Zone 2 tool routed
+    through envoy-z2.  The engagement E2E-TEST-001 is assumed to exist (it is
+    created during the broader E2E run; tests that need it must ensure it is
+    initialized before this class runs).
+    """
+
+    @pytest.fixture(autouse=True)
+    def _ensure_envoy_z2_restarted(self):  # type: ignore[return]
+        """Guarantee envoy-z2 is restarted after each test in this class.
+
+        Yields before the test body runs so the stop/restart lifecycle is
+        wrapped symmetrically:  stop happens in the test body; restart
+        happens unconditionally here regardless of whether the test passes,
+        fails, or raises.
+        """
+        yield
+        # Unconditional restart — best-effort cleanup so subsequent tests are
+        # not broken by a stopped envoy-z2.
+        subprocess.run(
+            [
+                "docker",
+                "compose",
+                "-f",
+                _RECON_COMPOSE,
+                "start",
+                "envoy-z2",
+            ],
+            capture_output=True,
+            cwd=str(_PROJECT_ROOT),
+            timeout=30,
+        )
+
+    @pytest.mark.e2e
+    def test_fail_closed_when_envoy_z2_stopped(self, cli_run) -> None:  # type: ignore[no-untyped-def]
+        """TASK-043: CONTAINER_NOT_RUNNING (3) when envoy-z2 is not running.
+
+        Stops envoy-z2 then invokes subfinder in container mode.  The
+        VULN-003 fail-closed gate in tool_exec_commands.py must detect that
+        the proxy is absent and return exit code 3 without executing the tool.
+
+        The _ensure_envoy_z2_restarted fixture restarts envoy-z2 after this
+        test regardless of outcome.
+        """
+        # Stop envoy-z2 so the fail-closed gate has something to detect.
+        stop_result = subprocess.run(
+            [
+                "docker",
+                "compose",
+                "-f",
+                _RECON_COMPOSE,
+                "stop",
+                "envoy-z2",
+            ],
+            capture_output=True,
+            cwd=str(_PROJECT_ROOT),
+            timeout=30,
+        )
+        assert stop_result.returncode == 0, (
+            f"Failed to stop envoy-z2 for test setup. stderr={stop_result.stderr.decode()!r}"
+        )
+
+        # Small sleep to let Docker register the stopped state.
+        time.sleep(2)
+
+        exit_code, stdout, stderr = cli_run(
+            "--mode",
+            "container",
+            "--engagement-id",
+            "E2E-TEST-001",
+            "subfinder",
+            "--",
+            "-version",
+        )
+
+        assert exit_code == 3, (  # CONTAINER_NOT_RUNNING
+            f"Expected CONTAINER_NOT_RUNNING (3) when envoy-z2 is stopped. "
+            f"Got exit_code={exit_code}. stdout={stdout!r} stderr={stderr!r}"
+        )
+        assert "Envoy proxy" in stderr, f"Expected 'Envoy proxy' in stderr. Got stderr={stderr!r}"
+        assert "not running" in stderr, f"Expected 'not running' in stderr. Got stderr={stderr!r}"

@@ -259,13 +259,13 @@ tool_resolution:
     service: "cloud-auditor"
     compose_file: "skills/rainbow-cloud/tests/docker/docker-compose.yml"
     sub_skill: "rainbow-cloud"
-    zone: "1"
+    zone: "2"
 
   - prefix: "kubescape"
     service: "cloud-auditor"
     compose_file: "skills/rainbow-cloud/tests/docker/docker-compose.yml"
     sub_skill: "rainbow-cloud"
-    zone: "1"
+    zone: "2"
 
   # -----------------------------------------------------------------------
   # Blue-team detection (blue-team skill)
