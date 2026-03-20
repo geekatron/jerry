@@ -89,6 +89,16 @@ COPY --from=binaries /usr/local/bin/cosign /usr/local/bin/cosign
 RUN pip install --no-cache-dir checkov>=3.0
 RUN pip install --no-cache-dir prowler>=4.0
 
+# Pre-download Trivy vulnerability DB and checks bundle during build.
+# At runtime compliance-net routes through envoy-z1-update which blocks
+# the Trivy OCI registry (mirror.gcr.io). Pre-cache avoids the 403.
+RUN trivy image --download-db-only --cache-dir /home/appuser/.cache/trivy 2>/dev/null || true && \
+    trivy image --download-java-db-only --cache-dir /home/appuser/.cache/trivy 2>/dev/null || true
+
+# Pre-download Kubescape security frameworks (NSA, MITRE, etc.) during build.
+# At runtime Zone 1 has no network for framework downloads.
+RUN kubescape download artifacts --output /home/appuser/.kubescape 2>/dev/null || true
+
 # Non-root user
 RUN groupadd --gid 1000 appgroup \
     && useradd --uid 1000 --gid appgroup --shell /bin/bash --create-home appuser

@@ -1,0 +1,477 @@
+# ORCHESTRATION.yaml
+# Machine-readable orchestration state for multi-agent workflows
+# Document ID: PROJ-023-ORCH-STATE
+# Version: 2.0
+# Last Updated: 2026-03-20T00:00:00Z
+# Schema Evolution: See docs/schemas/SCHEMA_VERSIONING.md
+
+schema_version: "2.0.0"
+
+# =============================================================================
+# WORKFLOW METADATA
+# =============================================================================
+workflow:
+  id: "e2e-tool-tests-20260320-001"
+  name: "E2E Tool Tests, Dockerfile Fixes, and Context Window Research"
+  project_id: "PROJ-023"
+  version: "2.0"
+  created_at: "2026-03-20T00:00:00Z"
+  updated_at: "2026-03-20T00:00:00Z"
+  status: "ACTIVE"  # ACTIVE | PAUSED | COMPLETE | FAILED | CANCELLED
+
+  id_source: "user"
+  id_format: "semantic-date-seq"
+
+  patterns:
+    - SEQUENTIAL  # Phases execute in order within the single pipeline
+
+  constraints:
+    max_agent_nesting: 1
+    file_persistence: true
+    user_authority: true
+    max_concurrent_agents: 1
+    max_barrier_retries: 2
+    checkpoint_frequency: "PHASE"
+
+# =============================================================================
+# PATH CONFIGURATION
+# =============================================================================
+paths:
+  base: "orchestration/e2e-tool-tests-20260320-001/"
+  pipeline: "{base}{pipeline_alias}/{phase_id}/{agent_id}/"
+  barrier: "{base}cross-pollination/{barrier_id}/{direction}/"
+
+# =============================================================================
+# PIPELINE DEFINITIONS
+# =============================================================================
+pipelines:
+  pipeline_main:
+    id: "pipeline-main"
+    name: "E2E Tool Tests and Infrastructure"
+    description: >
+      Single sequential pipeline covering: E2E test implementation for 37 tool
+      tests, Dockerfile fixes to pre-install tool databases and templates, and
+      context window detection research culminating in ADR-PROJ023-006.
+    short_alias: "main"
+    skill_source: "rainbow"
+
+    status: "PHASE_3_COMPLETE"
+    current_phase: 3
+    total_phases: 3
+    progress_percent: 100
+
+    phases:
+      - id: 1
+        name: "E2E Test Implementation"
+        path_id: "phase-1"
+        status: "COMPLETE"
+        started_at: "2026-03-20T00:00:00Z"
+        completed_at: "2026-03-20T00:00:00Z"
+        agents:
+          - id: "main-p1-001"
+            name: "E2E Test Author"
+            status: "COMPLETE"
+            artifact: "tests/e2e/tool_exec/test_tools_through_envoy.py"
+            inputs: []
+        artifacts:
+          - path: "tests/e2e/tool_exec/test_tools_through_envoy.py"
+            description: "37 E2E tests covering all registered tool prefixes across 6 skill families"
+            status: "COMPLETE"
+          - path: "tests/e2e/tool_exec/fixtures/test-engagement-scope.yaml"
+            description: "Zone 2 engagement scope fixture: example.com, httpbin.org, scanme.nmap.org"
+            status: "COMPLETE"
+        outcome: "37 passed, 0 failed, 0 skipped, 0 xfailed in 327.38s"
+
+      - id: 2
+        name: "Dockerfile Fixes"
+        path_id: "phase-2"
+        status: "COMPLETE"
+        started_at: "2026-03-20T00:00:00Z"
+        completed_at: "2026-03-20T00:00:00Z"
+        agents:
+          - id: "main-p2-001"
+            name: "Infrastructure Engineer"
+            status: "COMPLETE"
+            artifact: null
+            inputs:
+              - "tests/e2e/tool_exec/test_tools_through_envoy.py"
+        artifacts:
+          - path: "skills/rainbow-exploit/tests/docker/exploit-ops/Dockerfile"
+            description: "Added donut-shellcode, --platform=linux/amd64, libc6-dev"
+            status: "COMPLETE"
+          - path: "skills/rainbow-exploit/tests/docker/exploit-c2/Dockerfile"
+            description: "Pre-clone Starkiller v3.3.0 from GitHub during build"
+            status: "COMPLETE"
+          - path: "skills/rainbow-exploit/tests/docker/exploit-msf/Dockerfile"
+            description: "Added /root/.msf4/database.yml for postgres auto-connect"
+            status: "COMPLETE"
+          - path: "skills/rainbow-recon/tests/docker/recon-pipeline/Dockerfile"
+            description: "nuclei -update-templates during build (12,763 templates)"
+            status: "COMPLETE"
+          - path: "skills/blue-team/tests/docker/detection/Dockerfile"
+            description: "sigma plugin install splunk elasticsearch during build"
+            status: "COMPLETE"
+          - path: "skills/blue-team/tests/docker/compliance/Dockerfile"
+            description: "trivy DB + kubescape frameworks pre-downloaded during build"
+            status: "COMPLETE"
+          - path: "skills/rainbow-supply-chain/tests/docker/scanner/Dockerfile"
+            description: "grype DB pre-downloaded as scanner user; GRYPE_DB_MAX_ALLOWED_BUILT_AGE=720h; GRYPE_DB_AUTO_UPDATE=false; trivy DB pre-downloaded"
+            status: "COMPLETE"
+          - path: "skills/rainbow/config/envoy/envoy-zone1-update.yaml"
+            description: "Added grype.anchore.io and grype.anchore.io:443 to Zone 1 allowlist"
+            status: "COMPLETE"
+        outcome: "All 7 Dockerfiles and 1 Envoy config updated; all tools functional in containers"
+
+      - id: 3
+        name: "Context Window Detection Research and ADR"
+        path_id: "phase-3"
+        status: "COMPLETE"
+        started_at: "2026-03-20T00:00:00Z"
+        completed_at: "2026-03-20T00:00:00Z"
+        agents:
+          - id: "main-p3-001"
+            name: "ps-researcher (hook events)"
+            status: "COMPLETE"
+            artifact: "projects/PROJ-023-exploit-framework/work/research/claude-code-hook-events-research.md"
+            inputs: []
+          - id: "main-p3-002"
+            name: "ps-researcher (model command)"
+            status: "COMPLETE"
+            artifact: "projects/PROJ-023-exploit-framework/work/research/model-command-tool-execution-research.md"
+            inputs: []
+          - id: "main-p3-003"
+            name: "ps-analyst (FMEA)"
+            status: "COMPLETE"
+            artifact: "projects/PROJ-023-exploit-framework/work/analysis/context-window-detection-analysis.md"
+            inputs:
+              - "projects/PROJ-023-exploit-framework/work/research/claude-code-hook-events-research.md"
+              - "projects/PROJ-023-exploit-framework/work/research/model-command-tool-execution-research.md"
+          - id: "main-p3-004"
+            name: "ps-analyst (pre-mortem)"
+            status: "COMPLETE"
+            artifact: "projects/PROJ-023-exploit-framework/work/analysis/context-window-premortem.md"
+            inputs:
+              - "projects/PROJ-023-exploit-framework/work/analysis/context-window-detection-analysis.md"
+          - id: "main-p3-005"
+            name: "ps-architect (ADR)"
+            status: "COMPLETE"
+            artifact: "projects/PROJ-023-exploit-framework/work/design/ADR-PROJ023-006-context-window-detection.md"
+            inputs:
+              - "projects/PROJ-023-exploit-framework/work/analysis/context-window-detection-analysis.md"
+              - "projects/PROJ-023-exploit-framework/work/analysis/context-window-premortem.md"
+        artifacts:
+          - path: "projects/PROJ-023-exploit-framework/work/research/claude-code-hook-events-research.md"
+            description: "22 hook events cataloged with JSON schemas and sources"
+            status: "COMPLETE"
+          - path: "projects/PROJ-023-exploit-framework/work/research/model-command-tool-execution-research.md"
+            description: "/model is a built-in command; fires NO hooks; does NOT write to settings.json"
+            status: "COMPLETE"
+          - path: "projects/PROJ-023-exploit-framework/work/analysis/context-window-detection-analysis.md"
+            description: "FMEA with 9 failure modes (NOTE: Constraint 4 in FMEA is WRONG -- /model does NOT fire SessionStart)"
+            status: "COMPLETE"
+          - path: "projects/PROJ-023-exploit-framework/work/analysis/context-window-premortem.md"
+            description: "Pre-mortem: 3 Critical, 8 Major, 2 Minor findings"
+            status: "COMPLETE"
+          - path: "projects/PROJ-023-exploit-framework/work/design/ADR-PROJ023-006-context-window-detection.md"
+            description: "Decision: Option E -- SessionStart-only + user override; approx 73 lines across 5 files"
+            status: "COMPLETE"
+        outcome: "Research and ADR complete; implementation DEFERRED per user decision; workaround active"
+        implementation_status: "DEFERRED"
+        workaround: "export JERRY_CONTEXT_MONITOR__CONTEXT_WINDOW_TOKENS=1000000 in ~/.zshrc"
+
+# =============================================================================
+# SYNC BARRIERS
+# =============================================================================
+barriers: []
+# No cross-pollination barriers: this workflow is a single sequential pipeline.
+# If the workflow expands to multi-pipeline (e.g., adding a parallel NSE review
+# pipeline), barriers should be added here.
+
+# =============================================================================
+# EXECUTION QUEUE
+# =============================================================================
+execution_queue:
+  current_group: 4
+  groups:
+    - id: 1
+      name: "Phase 1: E2E Test Implementation"
+      execution_mode: "SEQUENTIAL"
+      status: "COMPLETE"
+      agents:
+        - "main-p1-001"
+
+    - id: 2
+      name: "Phase 2: Dockerfile Fixes"
+      execution_mode: "SEQUENTIAL"
+      status: "COMPLETE"
+      agents:
+        - "main-p2-001"
+
+    - id: 3
+      name: "Phase 3: Context Window Research and ADR"
+      execution_mode: "SEQUENTIAL"
+      status: "COMPLETE"
+      agents:
+        - "main-p3-001"
+        - "main-p3-002"
+        - "main-p3-003"
+        - "main-p3-004"
+        - "main-p3-005"
+
+    - id: 4
+      name: "Remaining Work"
+      execution_mode: "SEQUENTIAL"
+      status: "READY"
+      tasks:
+        - "agent-scenario"
+        - "commit"
+        - "unit-test-verify"
+        - "context-window-impl"
+
+# =============================================================================
+# CHECKPOINTS
+# =============================================================================
+checkpoints:
+  latest_id: "CP-003"
+  entries:
+    - id: "CP-001"
+      timestamp: "2026-03-20T00:00:00Z"
+      trigger: "PHASE_COMPLETE"
+      description: "Phase 1 complete: 37 E2E tests passing, fixture created"
+      recovery_point: "phase-2-start"
+
+    - id: "CP-002"
+      timestamp: "2026-03-20T00:00:00Z"
+      trigger: "PHASE_COMPLETE"
+      description: "Phase 2 complete: 7 Dockerfiles and 1 Envoy config updated; all tools functional"
+      recovery_point: "phase-3-start"
+
+    - id: "CP-003"
+      timestamp: "2026-03-20T00:00:00Z"
+      trigger: "PHASE_COMPLETE"
+      description: "Phase 3 complete: 2 research artifacts, 1 FMEA, 1 pre-mortem, 1 ADR; implementation deferred"
+      recovery_point: "remaining-work-start"
+
+# =============================================================================
+# METRICS
+# =============================================================================
+metrics:
+  execution:
+    phases_complete: 3
+    phases_total: 3
+    phases_percent: 100
+    barriers_complete: 0
+    barriers_total: 0
+    barriers_percent: 100
+    agents_executed: 7
+    agents_total: 7
+    agents_percent: 100
+    artifacts_created: 15
+    artifacts_total: 15
+    artifacts_percent: 100
+
+  quality:
+    agent_success_rate: 100
+    barrier_validation_pass_rate: 100
+    checkpoint_recovery_tested: false
+
+  timing:
+    workflow_started: "2026-03-20T00:00:00Z"
+    last_activity: "2026-03-20T00:00:00Z"
+    estimated_completion: null  # Depends on remaining work completion
+
+# =============================================================================
+# BLOCKERS AND ISSUES
+# =============================================================================
+blockers:
+  active:
+    - id: "BLK-001"
+      description: >
+        envoy-zone2-active.yaml must be in deny-all state before running tests.
+        If left in generated state from manual testing, the zone2_scoped_envoy
+        fixture generates on top of it and corrupts the file.
+      fix: "git checkout skills/rainbow/config/envoy/envoy-zone2-active.yaml"
+      blocking: ["agent-scenario", "future-e2e-runs"]
+      severity: "MEDIUM"
+      created_at: "2026-03-20T00:00:00Z"
+
+    - id: "BLK-002"
+      description: >
+        Context window detection not implemented. ADR-PROJ023-006 Option E
+        selected but deferred. JERRY_CONTEXT_MONITOR__CONTEXT_WINDOW_TOKENS=1000000
+        is set in ~/.zshrc as a workaround.
+      fix: "Implement ADR-PROJ023-006 Option E (~73 lines across 5 files)"
+      blocking: ["context-window-impl"]
+      severity: "LOW"
+      created_at: "2026-03-20T00:00:00Z"
+
+issues:
+  resolved:
+    - id: "ISS-001"
+      description: "grype.anchore.io not in Zone 1 allowlist; grype DB pre-caching failed during image build"
+      resolution: "Added grype.anchore.io and grype.anchore.io:443 to envoy-zone1-update.yaml allowlist"
+      resolved_at: "2026-03-20T00:00:00Z"
+
+    - id: "ISS-002"
+      description: "Donut-shellcode not installed in exploit-ops Dockerfile; E2E test was failing"
+      resolution: "Added donut-shellcode install and libc6-dev dependency to exploit-ops Dockerfile"
+      resolved_at: "2026-03-20T00:00:00Z"
+
+    - id: "ISS-003"
+      description: "FMEA Constraint 4 incorrectly stated /model fires SessionStart hook"
+      resolution: "Corrected in knowledge artifacts: /model fires ZERO hooks (architecturally permanent blind spot)"
+      resolved_at: "2026-03-20T00:00:00Z"
+
+# =============================================================================
+# NEXT ACTIONS
+# =============================================================================
+next_actions:
+  immediate:
+    - action: "Implement agent-level integration scenario"
+      description: >
+        Reproducible scenario exercising /rainbow and /blue-team skills
+        dispatching tools through the CLI. Current tests prove container
+        binaries work but do not exercise the agent dispatch pipeline.
+      priority: 1
+      id: "agent-scenario"
+
+  subsequent:
+    - action: "Commit all changes"
+      description: >
+        Commit 2 new files, 8 modified Dockerfiles/configs, and 5 research/ADR
+        artifacts with a semantic commit message.
+      priority: 2
+      id: "commit"
+
+    - action: "Verify unit tests"
+      description: "Confirm 449 unit tests still pass after all changes (uv run pytest tests/unit/)."
+      priority: 3
+      id: "unit-test-verify"
+
+    - action: "Implement ADR-PROJ023-006 Option E"
+      description: >
+        SessionStart-only + user override context window detection.
+        Approx 73 lines across 5 files. DEFERRED until user is ready.
+      priority: 4
+      id: "context-window-impl"
+
+# =============================================================================
+# RESUMPTION CONTEXT
+# =============================================================================
+resumption:
+  recovery_state:
+    last_checkpoint: "CP-003"
+    current_phase: 3
+    current_phase_name: "Phase 3 complete; awaiting remaining work"
+    workflow_status: "ACTIVE"
+    current_activity: "idle"
+    next_step: "Implement agent-level integration scenario (agent-scenario)"
+    context_fill_at_update: null
+    updated_at: "2026-03-20T00:00:00Z"
+    cross_session_portable: true
+    ephemeral_references: false
+
+  files_to_read:
+    - path: "work/ORCHESTRATION.yaml"
+      priority: 1
+      purpose: "Machine-readable workflow state. Read resumption section first."
+    - path: "tests/e2e/tool_exec/test_tools_through_envoy.py"
+      priority: 2
+      purpose: "37 E2E tests -- all green. Context for the agent-scenario remaining work."
+    - path: "projects/PROJ-023-exploit-framework/work/design/ADR-PROJ023-006-context-window-detection.md"
+      priority: 3
+      purpose: "ADR for context window detection -- Option E selected, implementation deferred."
+    - path: "projects/PROJ-023-exploit-framework/work/analysis/context-window-detection-analysis.md"
+      priority: 4
+      purpose: "FMEA. NOTE: Constraint 4 is WRONG -- /model does NOT fire SessionStart."
+
+  quality_trajectory:
+    gates_completed: []
+    gates_remaining: []
+    current_gate: null
+    current_gate_iteration: null
+    score_history: {}
+    lowest_dimension: null
+    total_iterations_used: 0
+
+  defect_summary:
+    total_defects_found: 1
+    total_defects_resolved: 1
+    unresolved_defects: []
+    recurring_patterns: []
+    last_gate_primary_defect: "FMEA Constraint 4 incorrectly claimed /model fires SessionStart (ISS-003, corrected)"
+
+  decision_log:
+    - id: "DEC-001"
+      timestamp: "2026-03-20T00:00:00Z"
+      decision: "Context window implementation deferred"
+      rationale: >
+        User decided to use JERRY_CONTEXT_MONITOR__CONTEXT_WINDOW_TOKENS=1000000
+        env var workaround and resume exploit skill work rather than implement
+        ADR-PROJ023-006 Option E immediately.
+      outcome: "ADR-PROJ023-006 produced; implementation queued as priority 4 remaining work"
+
+  agent_summaries:
+    "main-p1-001":
+      role: "E2E Test Author"
+      output: "37 tests, 0 failures; fixture for Zone 2 scope"
+      key_finding: "All 33 registered tool prefixes exercised across 6 skill families"
+
+    "main-p2-001":
+      role: "Infrastructure Engineer"
+      output: "7 Dockerfiles patched, 1 Envoy config updated"
+      key_finding: "Grype DB staleness is a recurring operational concern (expires every 30 days)"
+
+    "main-p3-001":
+      role: "ps-researcher (hook events)"
+      output: "claude-code-hook-events-research.md"
+      key_finding: "SessionStart JSON includes model field -- only hook that does"
+
+    "main-p3-002":
+      role: "ps-researcher (model command)"
+      output: "model-command-tool-execution-research.md"
+      key_finding: "/model fires ZERO hooks -- architecturally permanent blind spot"
+
+    "main-p3-003":
+      role: "ps-analyst (FMEA)"
+      output: "context-window-detection-analysis.md"
+      key_finding: "9 failure modes identified; Constraint 4 error corrected post-analysis"
+
+    "main-p3-004":
+      role: "ps-analyst (pre-mortem)"
+      output: "context-window-premortem.md"
+      key_finding: "3 Critical, 8 Major, 2 Minor failure scenarios identified"
+
+    "main-p3-005":
+      role: "ps-architect (ADR)"
+      output: "ADR-PROJ023-006-context-window-detection.md"
+      key_finding: "Option E selected: SessionStart-only + user override; ~73 lines across 5 files"
+
+  compaction_events:
+    count: 0
+    events: []
+
+# =============================================================================
+# KNOWN ISSUES (operational notes for next session)
+# =============================================================================
+known_issues:
+  - id: "envoy-config-state"
+    description: >
+      If envoy-zone2-active.yaml is left in generated state from manual testing,
+      the zone2_scoped_envoy fixture generates on top of it and corrupts it.
+    fix: "git checkout skills/rainbow/config/envoy/envoy-zone2-active.yaml before running tests"
+    severity: "MEDIUM"
+
+  - id: "grype-db-staleness"
+    description: >
+      Grype DB pre-cached during image build expires after 30 days
+      (GRYPE_DB_MAX_ALLOWED_BUILT_AGE=720h). Rebuild image to refresh.
+    fix: "Rebuild skills/rainbow-supply-chain/tests/docker/docker-compose.yml scanner image"
+    severity: "LOW"
+
+  - id: "context-window-workaround"
+    description: >
+      JERRY_CONTEXT_MONITOR__CONTEXT_WINDOW_TOKENS=1000000 set in ~/.zshrc
+      as workaround until ADR-PROJ023-006 Option E is implemented.
+    fix: "Implement ADR-PROJ023-006 Option E and remove the env var override"
+    severity: "LOW"

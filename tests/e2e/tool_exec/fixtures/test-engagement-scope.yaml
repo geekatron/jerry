@@ -1,0 +1,56 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+#
+# E2E test engagement scope for zone2_scoped_envoy fixture.
+# Authorizes example.com, httpbin.org, and scanme.nmap.org as Zone 2 targets.
+# Used by: test_tools_through_envoy.py
+#
+# This file is NOT a real engagement scope — it is a test fixture.
+
+engagement:
+  engagement_id: "E2E-TOOL-SCOPE-001"
+  version: "1.0"
+  lifecycle_state: "ACTIVE"
+  created_by: "e2e-test-harness"
+  created_at: "2026-03-19T00:00:00Z"
+
+  authorized_targets:
+    - type: domain
+      value: "example.com"
+    - type: domain
+      value: "httpbin.org"
+    - type: domain
+      value: "scanme.nmap.org"
+
+  excluded_targets: []
+
+  time_window:
+    start: "2026-01-01T00:00:00Z"
+    end: "2027-12-31T23:59:59Z"
+
+  technique_allowlist:
+    - subdomain-enumeration
+    - port-scanning
+    - http-probing
+    - dns-resolution
+    - web-crawling
+    - vulnerability-detection-scanning
+
+  escalation_authority: "e2e-test-operator"
+
+  rules_of_engagement:
+    max_requests_per_second: 10
+    max_concurrent_scans: 3
+    stealth_required: false
+    data_handling:
+      credential_quarantine: true
+      evidence_retention_days: 1
+      evidence_destruction_method: "secure-delete"
+    emergency_stop_contact: "e2e-test-operator"
+    communication_channel: "N/A"
+    additional_constraints: []
+
+  operator_approval:
+    approved_by: "e2e-test-operator"
+    approved_at: "2026-03-19T00:00:00Z"
+    confirmation: "Approved for E2E testing only"

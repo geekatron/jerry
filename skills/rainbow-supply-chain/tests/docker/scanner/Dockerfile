@@ -67,11 +67,25 @@ RUN ARCH="$([ "${TARGETARCH}" = "arm64" ] && echo "arm64" || echo "amd64")" && \
 RUN pip install --no-cache-dir checkov>=3.0
 
 # Create working directories
-RUN mkdir -p /workspace/output /workspace/evidence && \
-    chown -R scanner:scanner /workspace
+RUN mkdir -p /workspace/output /workspace/evidence /home/scanner/.cache/grype /home/scanner/.cache/trivy && \
+    chown -R scanner:scanner /workspace /home/scanner/.cache
 
-# Switch to non-root user
+# Allow pre-cached DBs to be used for up to 30 days between image rebuilds.
+# Default is 5 days which causes failures in offline/air-gapped containers.
+# To get fresh data: rebuild the image (grype db update runs during build).
+ENV GRYPE_DB_MAX_ALLOWED_BUILT_AGE=720h
+ENV GRYPE_DB_AUTO_UPDATE=false
+
+# Switch to non-root user BEFORE downloading DBs so caches land in the right place
 USER scanner
+
+# Pre-download Grype vulnerability DB during build (network available).
+# At runtime scanner-net routes through envoy-z1-update; first-run DB download
+# takes 5-10 minutes and may timeout. Pre-cache eliminates cold-start delay.
+RUN grype db update || true
+
+# Pre-download Trivy vulnerability DB during build.
+RUN trivy image --download-db-only --cache-dir /home/scanner/.cache/trivy || true
 WORKDIR /workspace
 
 # Health check: verify all tools are accessible

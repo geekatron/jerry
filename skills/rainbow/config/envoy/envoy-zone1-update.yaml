@@ -101,6 +101,8 @@ static_resources:
                         # Grype vulnerability DB (Anchore)
                         - "toolbox-data.anchore.io"
                         - "toolbox-data.anchore.io:443"
+                        - "grype.anchore.io"
+                        - "grype.anchore.io:443"
                         # Trivy DB (Aquasecurity via GitHub Container Registry)
                         - "ghcr.io"
                         - "ghcr.io:443"

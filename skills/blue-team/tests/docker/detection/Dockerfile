@@ -80,6 +80,11 @@ COPY --from=binaries /usr/local/bin/chainsaw /usr/local/bin/chainsaw
 # sigma-cli for Sigma rule conversion and validation (blue-siem)
 RUN pip install --no-cache-dir yara-x>=1.0.0 sigma-cli>=0.10
 
+# Install sigma backend plugins during build (network available).
+# At runtime Zone 1 has no network. Without backends, sigma cannot convert rules.
+# Note: elasticsearch backend provides lucene, eql, esql targets.
+RUN sigma plugin install splunk elasticsearch 2>/dev/null || true
+
 # ---------------------------------------------------------------------------
 # Pre-bundle detection rule packs (versioned, deterministic, updatable)
 # ---------------------------------------------------------------------------

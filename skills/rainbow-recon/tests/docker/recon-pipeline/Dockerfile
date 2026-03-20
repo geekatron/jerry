@@ -10,6 +10,12 @@ RUN apk add --no-cache git build-base libpcap-dev && \
 
 FROM alpine:3.19
 COPY --from=builder /go/bin/* /usr/local/bin/
-RUN apk add --no-cache ca-certificates libpcap
+RUN apk add --no-cache ca-certificates libpcap wget
+
+# Pre-download Nuclei templates during build (network available).
+# At runtime Zone 2 proxy blocks template update servers (api.pdtm.sh).
+# To update: rebuild image or mount templates volume.
+RUN nuclei -update-templates -silent 2>/dev/null || true
+
 WORKDIR /work
 ENTRYPOINT ["/bin/sh"]
