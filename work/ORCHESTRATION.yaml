@@ -18,6 +18,7 @@ workflow:
   created_at: "2026-03-20T00:00:00Z"
   updated_at: "2026-03-20T00:00:00Z"
   status: "ACTIVE"  # ACTIVE | PAUSED | COMPLETE | FAILED | CANCELLED
+  current_phase: 4
 
   id_source: "user"
   id_format: "semantic-date-seq"
@@ -55,10 +56,10 @@ pipelines:
     short_alias: "main"
     skill_source: "rainbow"
 
-    status: "PHASE_3_COMPLETE"
-    current_phase: 3
-    total_phases: 3
-    progress_percent: 100
+    status: "PHASE_4_IN_PROGRESS"
+    current_phase: 4
+    total_phases: 4
+    progress_percent: 75
 
     phases:
       - id: 1
@@ -179,6 +180,65 @@ pipelines:
         implementation_status: "DEFERRED"
         workaround: "export JERRY_CONTEXT_MONITOR__CONTEXT_WINDOW_TOKENS=1000000 in ~/.zshrc"
 
+      - id: 4
+        name: "Rainbow Orchestrator Container Lifecycle Management"
+        path_id: "phase-4"
+        status: "IN_PROGRESS"
+        started_at: "2026-03-20T00:00:00Z"
+        completed_at: null
+        agents: []
+        artifacts: []
+        outcome: null
+        description: >
+          Design and implement container lifecycle management in rainbow-orchestrator.
+          The orchestrator should detect which Docker clusters a request needs,
+          verify containers are running, start them if not, wait for health checks,
+          then dispatch to the agent. Currently the skill loads agent definitions
+          but has zero awareness of container state.
+        critical_findings_tasks:
+          - id: "CLM-001"
+            source: "PM-001"
+            severity: "Critical"
+            title: "Docker daemon restart invalidates state file"
+            description: "PID check in state file passes even after Docker daemon restart. State file says containers running but Docker has no record. Fix: always verify against Docker reality (docker compose ps) before trusting state file. Never skip the Docker check."
+            status: "TODO"
+          - id: "CLM-002"
+            source: "PM-002"
+            severity: "Critical"
+            title: "Concurrent worktrees share COMPOSE_PROJECT_NAME"
+            description: "Two worktree sessions manipulate the same compose project simultaneously causing mutual destruction. Fix: derive COMPOSE_PROJECT_NAME from worktree path hash or CLAUDE_PROJECT_DIR to isolate compose projects per worktree."
+            status: "TODO"
+          - id: "CLM-003"
+            source: "PM-003"
+            severity: "Critical"
+            title: "Zone 3 teardown deletes state before verifying containers are down"
+            description: "Failed teardown deletes state file before confirming containers stopped. Exploit containers leak with no recovery path. Fix: verify containers are down (docker compose ps) BEFORE deleting state file. If verification fails, log warning and keep state file for retry."
+            status: "TODO"
+          - id: "CLM-004"
+            source: "F-01"
+            severity: "Critical"
+            title: "scope_translator.py auto-expands domains to wildcards"
+            description: "scope_translator.py lines 272-274 expand target.example.com to *.target.example.com. A scope authorizing one specific domain silently permits all subdomains. Fix: remove automatic wildcard expansion; require explicit wildcard in scope document if subdomains are authorized."
+            status: "TODO"
+          - id: "CLM-005"
+            source: "F-06"
+            severity: "High"
+            title: "Named Docker volumes survive teardown leaking data between engagements"
+            description: "Volumes like msf-pgdata and envoy-z3-logs persist after docker compose down, leaking Metasploit loot and Envoy access logs between engagements. Fix: use --volumes flag on teardown AND verify volume removal. Consider engagement-scoped volume naming."
+            status: "TODO"
+          - id: "CLM-006"
+            source: "F-07"
+            severity: "High"
+            title: "Docker socket access grants host-equivalent privilege"
+            description: "The orchestrator runs docker compose commands via the Docker socket which grants host-level access. This is an accepted trust assumption but must be explicitly documented in the ADR and SKILL.md security model."
+            status: "TODO"
+          - id: "CLM-007"
+            source: "F-10"
+            severity: "Medium"
+            title: "Mutable image tags enable supply chain substitution"
+            description: "Docker images use mutable tags like envoyproxy/envoy:v1.31-latest and bcsecurity/empire:latest. A compromised registry could substitute malicious images. Fix: pin base images by digest in Dockerfiles."
+            status: "TODO"
+
 # =============================================================================
 # SYNC BARRIERS
 # =============================================================================
@@ -219,6 +279,12 @@ execution_queue:
         - "main-p3-005"
 
     - id: 4
+      name: "Phase 4: Rainbow Orchestrator Container Lifecycle Management"
+      execution_mode: "SEQUENTIAL"
+      status: "IN_PROGRESS"
+      agents: []
+
+    - id: 5
       name: "Remaining Work"
       execution_mode: "SEQUENTIAL"
       status: "READY"
@@ -232,7 +298,7 @@ execution_queue:
 # CHECKPOINTS
 # =============================================================================
 checkpoints:
-  latest_id: "CP-003"
+  latest_id: "CP-004"
   entries:
     - id: "CP-001"
       timestamp: "2026-03-20T00:00:00Z"
@@ -250,7 +316,13 @@ checkpoints:
       timestamp: "2026-03-20T00:00:00Z"
       trigger: "PHASE_COMPLETE"
       description: "Phase 3 complete: 2 research artifacts, 1 FMEA, 1 pre-mortem, 1 ADR; implementation deferred"
-      recovery_point: "remaining-work-start"
+      recovery_point: "phase-4-start"
+
+    - id: "CP-004"
+      timestamp: "2026-03-20T00:00:00Z"
+      trigger: "PHASE_COMPLETE"
+      description: "Commit 3b6d178a complete. All 37 E2E tests green. Dockerfile fixes done. Starting orchestrator lifecycle design."
+      recovery_point: "phase-4-in-progress"
 
 # =============================================================================
 # METRICS
@@ -258,8 +330,8 @@ checkpoints:
 metrics:
   execution:
     phases_complete: 3
-    phases_total: 3
-    phases_percent: 100
+    phases_total: 4
+    phases_percent: 75
     barriers_complete: 0
     barriers_total: 0
     barriers_percent: 100
@@ -277,8 +349,8 @@ metrics:
 
   timing:
     workflow_started: "2026-03-20T00:00:00Z"
-    last_activity: "2026-03-20T00:00:00Z"
-    estimated_completion: null  # Depends on remaining work completion
+    last_activity: "2026-03-20T12:00:00Z"
+    estimated_completion: null  # Depends on Phase 4 and remaining work completion
 
 # =============================================================================
 # BLOCKERS AND ISSUES
@@ -327,32 +399,46 @@ issues:
 # =============================================================================
 next_actions:
   immediate:
+    - action: "Design rainbow-orchestrator container lifecycle"
+      description: >
+        Use /problem-solving, /eng-team, /red-team, /adversary skills.
+        Design how the orchestrator detects which Docker clusters a request needs,
+        verifies containers are running, starts them if not, waits for health checks,
+        then dispatches to the agent. Currently the skill loads agent definitions
+        but has zero awareness of container state. Design should address:
+        - Cluster detection from request metadata or agent definition
+        - Container health check polling and timeout strategies
+        - Failure escalation when containers fail to start
+        - Integration with orchestration state tracking (ORCHESTRATION.yaml)
+      priority: 1
+      id: "orchestrator-lifecycle-design"
+
+  subsequent:
     - action: "Implement agent-level integration scenario"
       description: >
         Reproducible scenario exercising /rainbow and /blue-team skills
         dispatching tools through the CLI. Current tests prove container
         binaries work but do not exercise the agent dispatch pipeline.
-      priority: 1
+      priority: 2
       id: "agent-scenario"
 
-  subsequent:
     - action: "Commit all changes"
       description: >
         Commit 2 new files, 8 modified Dockerfiles/configs, and 5 research/ADR
         artifacts with a semantic commit message.
-      priority: 2
+      priority: 3
       id: "commit"
 
     - action: "Verify unit tests"
       description: "Confirm 449 unit tests still pass after all changes (uv run pytest tests/unit/)."
-      priority: 3
+      priority: 4
       id: "unit-test-verify"
 
     - action: "Implement ADR-PROJ023-006 Option E"
       description: >
         SessionStart-only + user override context window detection.
         Approx 73 lines across 5 files. DEFERRED until user is ready.
-      priority: 4
+      priority: 5
       id: "context-window-impl"
 
 # =============================================================================
@@ -360,14 +446,14 @@ next_actions:
 # =============================================================================
 resumption:
   recovery_state:
-    last_checkpoint: "CP-003"
-    current_phase: 3
-    current_phase_name: "Phase 3 complete; awaiting remaining work"
+    last_checkpoint: "CP-004"
+    current_phase: 4
+    current_phase_name: "Phase 4: Rainbow Orchestrator Container Lifecycle Management"
     workflow_status: "ACTIVE"
-    current_activity: "idle"
-    next_step: "Implement agent-level integration scenario (agent-scenario)"
+    current_activity: "phase-4-design"
+    next_step: "Design rainbow-orchestrator container lifecycle using /problem-solving, /eng-team, /red-team, /adversary"
     context_fill_at_update: null
-    updated_at: "2026-03-20T00:00:00Z"
+    updated_at: "2026-03-20T12:00:00Z"
     cross_session_portable: true
     ephemeral_references: false
 
