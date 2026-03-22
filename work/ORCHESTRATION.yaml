@@ -56,10 +56,10 @@ pipelines:
     short_alias: "main"
     skill_source: "rainbow"
 
-    status: "PHASE_4_IN_PROGRESS"
+    status: "PHASE_4_COMPLETE"
     current_phase: 4
     total_phases: 4
-    progress_percent: 75
+    progress_percent: 100
 
     phases:
       - id: 1
@@ -183,12 +183,38 @@ pipelines:
       - id: 4
         name: "Rainbow Orchestrator Container Lifecycle Management"
         path_id: "phase-4"
-        status: "IN_PROGRESS"
+        status: "COMPLETE"
         started_at: "2026-03-20T00:00:00Z"
-        completed_at: null
-        agents: []
-        artifacts: []
-        outcome: null
+        completed_at: "2026-03-21T00:00:00Z"
+        agents:
+          - id: "main-p4-001"
+            name: "CLM Implementation"
+            status: "COMPLETE"
+            artifact: "src/tool_exec/infrastructure/container_lifecycle/"
+            inputs:
+              - "projects/PROJ-023-exploit-framework/work/design/ADR-PROJ023-007-orchestrator-container-lifecycle.md"
+              - "projects/PROJ-023-exploit-framework/work/analysis/orchestrator-lifecycle-premortem.md"
+              - "projects/PROJ-023-exploit-framework/work/analysis/orchestrator-lifecycle-security-review.md"
+        artifacts:
+          - path: "src/tool_exec/infrastructure/container_lifecycle/"
+            description: "ContainerLifecycleManager package (7 files): CLM-001 Docker reality check, CLM-002 worktree isolation, CLM-003 safe teardown, CLM-005 volume cleanup"
+            status: "COMPLETE"
+          - path: "src/tool_exec/infrastructure/envoy/scope_translator.py"
+            description: "CLM-004: Removed wildcard auto-expansion from domain and URL target types"
+            status: "COMPLETE"
+          - path: "projects/PROJ-023-exploit-framework/work/design/ADR-PROJ023-007-orchestrator-container-lifecycle.md"
+            description: "CLM-006: Added Security Assumptions section documenting Docker socket trust"
+            status: "COMPLETE"
+          - path: "skills/rainbow/SKILL.md"
+            description: "CLM-006: Added Docker Socket Trust Assumption section to Known Limitations"
+            status: "COMPLETE"
+          - path: "skills/rainbow-exploit/tests/docker/"
+            description: "CLM-007: Pinned postgres, envoy, empire, metasploit images by digest"
+            status: "COMPLETE"
+          - path: "skills/rainbow/agents/rainbow-orchestrator.md"
+            description: "Wired CLM ensure_clusters_running() into orchestrator methodology step 4"
+            status: "COMPLETE"
+        outcome: "All 7 CLM tasks completed. 465 unit tests passing. 25 scope_translator tests + 15 CLM tests."
         description: >
           Design and implement container lifecycle management in rainbow-orchestrator.
           The orchestrator should detect which Docker clusters a request needs,
@@ -201,43 +227,43 @@ pipelines:
             severity: "Critical"
             title: "Docker daemon restart invalidates state file"
             description: "PID check in state file passes even after Docker daemon restart. State file says containers running but Docker has no record. Fix: always verify against Docker reality (docker compose ps) before trusting state file. Never skip the Docker check."
-            status: "TODO"
+            status: "DONE"
           - id: "CLM-002"
             source: "PM-002"
             severity: "Critical"
             title: "Concurrent worktrees share COMPOSE_PROJECT_NAME"
             description: "Two worktree sessions manipulate the same compose project simultaneously causing mutual destruction. Fix: derive COMPOSE_PROJECT_NAME from worktree path hash or CLAUDE_PROJECT_DIR to isolate compose projects per worktree."
-            status: "TODO"
+            status: "DONE"
           - id: "CLM-003"
             source: "PM-003"
             severity: "Critical"
             title: "Zone 3 teardown deletes state before verifying containers are down"
             description: "Failed teardown deletes state file before confirming containers stopped. Exploit containers leak with no recovery path. Fix: verify containers are down (docker compose ps) BEFORE deleting state file. If verification fails, log warning and keep state file for retry."
-            status: "TODO"
+            status: "DONE"
           - id: "CLM-004"
             source: "F-01"
             severity: "Critical"
             title: "scope_translator.py auto-expands domains to wildcards"
             description: "scope_translator.py lines 272-274 expand target.example.com to *.target.example.com. A scope authorizing one specific domain silently permits all subdomains. Fix: remove automatic wildcard expansion; require explicit wildcard in scope document if subdomains are authorized."
-            status: "TODO"
+            status: "DONE"
           - id: "CLM-005"
             source: "F-06"
             severity: "High"
             title: "Named Docker volumes survive teardown leaking data between engagements"
             description: "Volumes like msf-pgdata and envoy-z3-logs persist after docker compose down, leaking Metasploit loot and Envoy access logs between engagements. Fix: use --volumes flag on teardown AND verify volume removal. Consider engagement-scoped volume naming."
-            status: "TODO"
+            status: "DONE"
           - id: "CLM-006"
             source: "F-07"
             severity: "High"
             title: "Docker socket access grants host-equivalent privilege"
             description: "The orchestrator runs docker compose commands via the Docker socket which grants host-level access. This is an accepted trust assumption but must be explicitly documented in the ADR and SKILL.md security model."
-            status: "TODO"
+            status: "DONE"
           - id: "CLM-007"
             source: "F-10"
             severity: "Medium"
             title: "Mutable image tags enable supply chain substitution"
             description: "Docker images use mutable tags like envoyproxy/envoy:v1.31-latest and bcsecurity/empire:latest. A compromised registry could substitute malicious images. Fix: pin base images by digest in Dockerfiles."
-            status: "TODO"
+            status: "DONE"
 
 # =============================================================================
 # SYNC BARRIERS
@@ -281,8 +307,9 @@ execution_queue:
     - id: 4
       name: "Phase 4: Rainbow Orchestrator Container Lifecycle Management"
       execution_mode: "SEQUENTIAL"
-      status: "IN_PROGRESS"
-      agents: []
+      status: "COMPLETE"
+      agents:
+        - "main-p4-001"
 
     - id: 5
       name: "Remaining Work"
@@ -298,7 +325,7 @@ execution_queue:
 # CHECKPOINTS
 # =============================================================================
 checkpoints:
-  latest_id: "CP-004"
+  latest_id: "CP-005"
   entries:
     - id: "CP-001"
       timestamp: "2026-03-20T00:00:00Z"
@@ -324,19 +351,25 @@ checkpoints:
       description: "Commit 3b6d178a complete. All 37 E2E tests green. Dockerfile fixes done. Starting orchestrator lifecycle design."
       recovery_point: "phase-4-in-progress"
 
+    - id: "CP-005"
+      timestamp: "2026-03-21T00:00:00Z"
+      trigger: "PHASE_COMPLETE"
+      description: "Phase 4 complete: All 7 CLM tasks done. ContainerLifecycleManager package (7 files), CLM-004 wildcard fix, CLM-006 trust docs, CLM-007 digest pins. 465 unit tests passing."
+      recovery_point: "phase-5-remaining-work"
+
 # =============================================================================
 # METRICS
 # =============================================================================
 metrics:
   execution:
-    phases_complete: 3
+    phases_complete: 4
     phases_total: 4
-    phases_percent: 75
+    phases_percent: 100
     barriers_complete: 0
     barriers_total: 0
     barriers_percent: 100
-    agents_executed: 7
-    agents_total: 7
+    agents_executed: 8
+    agents_total: 8
     agents_percent: 100
     artifacts_created: 15
     artifacts_total: 15
@@ -446,14 +479,14 @@ next_actions:
 # =============================================================================
 resumption:
   recovery_state:
-    last_checkpoint: "CP-004"
-    current_phase: 4
-    current_phase_name: "Phase 4: Rainbow Orchestrator Container Lifecycle Management"
+    last_checkpoint: "CP-005"
+    current_phase: 5
+    current_phase_name: "Remaining Work"
     workflow_status: "ACTIVE"
-    current_activity: "phase-4-design"
-    next_step: "Design rainbow-orchestrator container lifecycle using /problem-solving, /eng-team, /red-team, /adversary"
+    current_activity: "remaining-work"
+    next_step: "Agent-level integration scenario, commit all changes, verify unit tests, implement context window detection"
     context_fill_at_update: null
-    updated_at: "2026-03-20T12:00:00Z"
+    updated_at: "2026-03-21T00:00:00Z"
     cross_session_portable: true
     ephemeral_references: false
 

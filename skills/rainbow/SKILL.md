@@ -358,6 +358,16 @@ The credential filter pipeline (`skills/rainbow/rules/rainbow-credential-filter.
 3. **Fail-closed specification** -- Filter crash or timeout rejects entire tool output block
 4. **BDD credential filter scenarios** -- Scanner and verifier agents have credential filter BDD scenarios
 
+### Docker Socket Trust Assumption (CLM-006)
+
+The Container Lifecycle Manager executes `docker compose` commands via the Docker socket (`/var/run/docker.sock`). Any process with Docker socket access has effective root-equivalent access to the host. This is an accepted trust assumption for a development-environment tool, not a production deployment.
+
+**Compensating controls:**
+1. **Socket not exposed to containers** -- No Docker-in-Docker; the CLM runs on the host only
+2. **Compose files are version-controlled** -- All Dockerfiles and compose files are reviewed via PR
+3. **Base images pinned by digest** -- Mutable tags replaced with digest-pinned references (CLM-007)
+4. **Worktree isolation** -- Each worktree gets a unique `COMPOSE_PROJECT_NAME` preventing cross-session interference (CLM-002)
+
 ---
 
 ## Routing Disambiguation

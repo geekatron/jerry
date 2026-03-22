@@ -154,13 +154,38 @@ class TestTranslateScopeToEnvoy:
     """Test translate_scope_to_envoy function."""
 
     def test_basic_domain_targets(self, basic_scope: Path) -> None:
-        """Domain targets produce virtual_host with wildcard subdomains."""
+        """Domain targets produce virtual_host with exact domains only (CLM-004: no auto-wildcard)."""
         vhosts = translate_scope_to_envoy(basic_scope, zone=2)
         assert len(vhosts) == 1
         domains = vhosts[0]["domains"]
+        # Bare domain and :443 variant present
         assert "target.example.com" in domains
-        assert "*.target.example.com" in domains
+        assert "target.example.com:443" in domains
         assert "api.example.com" in domains
+        assert "api.example.com:443" in domains
+        # CLM-004: No auto-expanded wildcards
+        assert "*.target.example.com" not in domains
+        assert "*.target.example.com:443" not in domains
+        assert "*.api.example.com" not in domains
+        assert "*.api.example.com:443" not in domains
+
+    def test_explicit_wildcard_domain_preserved(self, scope_dir: Path) -> None:
+        """Explicit wildcard domain input (*.target.example.com) is preserved (CLM-004)."""
+        scope_dir.mkdir(parents=True, exist_ok=True)
+        scope_path = scope_dir / "wildcard.yaml"
+        scope_data = {
+            "engagement": {
+                "engagement_id": "RBW-CLM004",
+                "authorized_targets": [
+                    {"type": "domain", "value": "*.target.example.com"},
+                ],
+            }
+        }
+        scope_path.write_text(yaml.dump(scope_data))
+        vhosts = translate_scope_to_envoy(scope_path, zone=2)
+        domains = vhosts[0]["domains"]
+        assert "*.target.example.com" in domains
+        assert "*.target.example.com:443" in domains
 
     def test_ip_target(self, mixed_scope: Path) -> None:
         """IP targets produce virtual_host with exact IP."""

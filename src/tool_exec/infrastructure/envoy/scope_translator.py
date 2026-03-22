@@ -265,13 +265,13 @@ def _extract_domains(targets: list[dict[str, str]]) -> list[str]:
 
         if target_type == "domain":
             _validate_domain(value)
-            # Add bare domain, :443 (for CONNECT/HTTPS), and wildcard subdomain.
+            # Add bare domain and :443 (for CONNECT/HTTPS).
             # Envoy CONNECT authority includes port suffix per GitHub #13704.
+            # CLM-004: Wildcard subdomains are NOT auto-expanded. If subdomain
+            # coverage is needed, the scope document must declare an explicit
+            # wildcard entry (e.g., type: domain, value: "*.target.example.com").
             domains.append(value)
             domains.append(f"{value}:443")
-            if not value.startswith("*."):
-                domains.append(f"*.{value}")
-                domains.append(f"*.{value}:443")
 
         elif target_type == "ip":
             _validate_ipv4(value)
@@ -280,13 +280,11 @@ def _extract_domains(targets: list[dict[str, str]]) -> list[str]:
 
         elif target_type == "url":
             # Extract host from URL
+            # CLM-004: No wildcard auto-expansion for URL targets either.
             host = _extract_host_from_url(value)
             _validate_domain(host)
             domains.append(host)
             domains.append(f"{host}:443")
-            if not host.startswith("*."):
-                domains.append(f"*.{host}")
-                domains.append(f"*.{host}:443")
 
         elif target_type == "cloud_account":
             # Map cloud provider to API domains

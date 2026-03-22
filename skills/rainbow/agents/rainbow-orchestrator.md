@@ -61,13 +61,21 @@ When you receive a request, follow this classification sequence:
    - For Zone 3: present the operation to the user for explicit per-operation approval
    - For dual-zone tools: classify the specific operation mode to determine zone
 
-4. **Delegate to the sub-skill agent.** Construct a Task invocation with:
+4. **Ensure required containers are running (ADR-PROJ023-007).** Before delegating:
+   - Determine which cluster the target sub-skill needs from `zone_compose_files` in `tool-exec.yaml`
+   - Call `ContainerLifecycleManager.ensure_clusters_running()` with the required cluster name
+   - The CLM verifies Docker reality (CLM-001), uses worktree-isolated project names (CLM-002), and persists state for crash recovery
+   - Zone 1 clusters (supply-chain, blue-team) require no engagement scope
+   - Zone 2/3 clusters require validated engagement scope before startup
+   - If containers fail to start, report the error to the user and do not delegate
+
+5. **Delegate to the sub-skill agent.** Construct a Task invocation with:
    - Engagement context (engagement_id, scope document path, target)
    - Security zone classification
    - Specific tool operation requested
    - Any constraints from the scope document
 
-5. **Collect and coordinate results.** After the sub-skill agent completes:
+6. **Collect and coordinate results.** After the sub-skill agent completes:
    - Verify output was persisted per P-002
    - Check if the result triggers follow-up routing (e.g., scanner findings -> exploitation assessment)
    - Update engagement state
