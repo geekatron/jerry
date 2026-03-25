@@ -1,0 +1,42 @@
+# docker-compose.yml -- EN-023-001 eBPF cgroup/connect4 PoC
+# Services: ebpf-test (privileged, BPF+microsocks), test-target (nginx)
+# Usage: docker compose up -d
+#        docker compose exec ebpf-test curl -v http://test-target/
+#        docker compose exec ebpf-test bpftool map dump pinned /sys/fs/bpf/poc_maps/map_orig_dst
+#        docker compose down
+name: ebpf-poc
+
+services:
+  ebpf-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    privileged: true
+    # Narrower alternative (use instead of privileged where supported):
+    # cap_add: [CAP_BPF, CAP_NET_ADMIN, CAP_SYS_ADMIN]
+    volumes:
+      - /sys/fs/bpf:/sys/fs/bpf
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    networks:
+      poc-net:
+        ipv4_address: 172.30.0.2
+    depends_on:
+      - test-target
+
+  test-target:
+    image: nginx:1.27-alpine
+    networks:
+      poc-net:
+        ipv4_address: 172.30.0.10
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+      - /tmp
+
+networks:
+  poc-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/24
