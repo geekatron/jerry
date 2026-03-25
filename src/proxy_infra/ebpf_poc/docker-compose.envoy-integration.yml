@@ -1,0 +1,157 @@
+# docker-compose.envoy-integration.yml -- EN-023-001 Hybrid Envoy + BPF integration test
+#
+# Architecture:
+#   hybrid-tool  -> HTTP_PROXY -> envoy:3128  -> HTTP targets (Envoy scope enforcement)
+#   hybrid-tool  -> BPF rewrite -> bridge -> SOCKS5 -> proxy-node:1080 -> raw TCP targets
+#
+# Network topology (mirrors Zone 2/3 pattern from ADR-PROJ023-003 v2):
+#   hybrid-internal (internal:true): hybrid-tool + envoy          -- tool traffic stays on this LAN
+#   hybrid-egress (external):        envoy + proxy-node + targets  -- only envoy/proxy reach here
+#
+# Zone 1 traffic (localhost, Docker DNS 127.0.0.11) must NOT be intercepted.
+# Bypass map is populated dynamically by entrypoint-hybrid.sh at runtime.
+#
+# Envoy config: test override of envoy-zone2-active.yaml that allows http-target.
+# Original Zone 2 config is NOT modified.
+#
+# EN-023-001 PROJ-023-exploit-framework
+name: ebpf-envoy-integration
+
+services:
+
+  # -------------------------------------------------------------------
+  # hybrid-tool: the tool container under test.
+  # Gets BOTH HTTP_PROXY (for HTTP/HTTPS) AND BPF cgroup/connect4 (for raw TCP).
+  # Uses entrypoint-hybrid.sh which loads BPF, populates bypass map, starts bridge.
+  # -------------------------------------------------------------------
+  hybrid-tool:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ebpf-poc:latest
+    entrypoint: ["/entrypoint-hybrid.sh"]
+    privileged: true
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      # HTTP proxy: Envoy handles HTTP/HTTPS scope enforcement
+      HTTP_PROXY: "http://envoy:3128"
+      HTTPS_PROXY: "http://envoy:3128"
+      # Exclude loopback and Docker DNS from proxy env — BPF bypass map handles them at kernel level
+      NO_PROXY: "localhost,127.0.0.1,127.0.0.11"
+      # BPF bridge will forward raw TCP through this SOCKS5 proxy
+      SOCKS_PROXY_HOST: proxy-node
+      SOCKS_PROXY_PORT: "1080"
+      # Envoy hostname for bypass map population (entrypoint resolves to IP)
+      ENVOY_HOST: envoy
+    volumes:
+      - /sys/fs/bpf:/sys/fs/bpf
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+      - ./entrypoint-hybrid.sh:/entrypoint-hybrid.sh:ro
+    networks:
+      hybrid-internal:
+        ipv4_address: 172.31.0.2
+    depends_on:
+      envoy:
+        condition: service_healthy
+      proxy-node:
+        condition: service_started
+      http-target:
+        condition: service_started
+      tcp-target:
+        condition: service_started
+
+  # -------------------------------------------------------------------
+  # envoy: Zone 2 Envoy forward proxy (deny-by-default, HTTP only).
+  # Uses test-specific config that allows http-target while denying everything else.
+  # Sits on BOTH networks: accepts requests from hybrid-internal, forwards on hybrid-egress.
+  # -------------------------------------------------------------------
+  envoy:
+    image: envoyproxy/envoy:v1.31-latest
+    volumes:
+      - ./envoy-integration-test.yaml:/etc/envoy/envoy.yaml:ro
+      - envoy-logs:/var/log/envoy
+    networks:
+      hybrid-internal:
+        ipv4_address: 172.31.0.10
+      hybrid-egress:
+        ipv4_address: 172.31.1.10
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c '</dev/tcp/localhost/3128' || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+
+  # -------------------------------------------------------------------
+  # proxy-node: microsocks SOCKS5 proxy.
+  # Simulates the remote VPS. Reachable only from hybrid-egress.
+  # BPF-redirected raw TCP connections arrive here via the bridge.
+  # -------------------------------------------------------------------
+  proxy-node:
+    build:
+      context: .
+      dockerfile: Dockerfile.proxy
+    networks:
+      hybrid-egress:
+        ipv4_address: 172.31.1.5
+    read_only: true
+    tmpfs:
+      - /tmp
+
+  # -------------------------------------------------------------------
+  # http-target: nginx web server for HTTP proxy tests.
+  # Envoy is allowed to forward to this host (allowlisted in envoy-integration-test.yaml).
+  # On hybrid-egress only — tool container cannot reach it directly.
+  # -------------------------------------------------------------------
+  http-target:
+    image: nginx:1.27-alpine
+    networks:
+      hybrid-egress:
+        ipv4_address: 172.31.1.20
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+      - /tmp
+
+  # -------------------------------------------------------------------
+  # tcp-target: raw TCP listener for BPF non-HTTP tests.
+  # Listens on port 4444. BPF intercepts the connect() call, bridge tunnels
+  # it through proxy-node SOCKS5. Verifies non-HTTP TCP path works.
+  # Uses socat for deterministic echo server.
+  # On hybrid-egress only — tool container cannot reach it directly.
+  # -------------------------------------------------------------------
+  tcp-target:
+    image: alpine:3.20
+    command: >
+      sh -c "apk add --no-cache socat &&
+             echo '[tcp-target] socat TCP echo ready on :4444' &&
+             socat TCP-LISTEN:4444,fork,reuseaddr EXEC:'echo TCP_ECHO_OK'"
+    networks:
+      hybrid-egress:
+        ipv4_address: 172.31.1.30
+    read_only: false
+
+networks:
+  # Internal network: hybrid-tool and envoy only.
+  # Tool container cannot reach the internet or targets directly.
+  hybrid-internal:
+    driver: bridge
+    internal: true
+    ipam:
+      config:
+        - subnet: 172.31.0.0/24
+
+  # Egress network: envoy, proxy-node, and test targets.
+  # Only envoy bridges the two networks (same pattern as Zone 2/3).
+  hybrid-egress:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.31.1.0/24
+
+volumes:
+  envoy-logs:
