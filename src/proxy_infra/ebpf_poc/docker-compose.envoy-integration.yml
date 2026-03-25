@@ -37,6 +37,9 @@ services:
       # HTTP proxy: Envoy handles HTTP/HTTPS scope enforcement
       HTTP_PROXY: "http://envoy:3128"
       HTTPS_PROXY: "http://envoy:3128"
+      http_proxy: "http://envoy:3128"
+      https_proxy: "http://envoy:3128"
+      no_proxy: "localhost,127.0.0.1,127.0.0.11"
       # Exclude loopback and Docker DNS from proxy env — BPF bypass map handles them at kernel level
       NO_PROXY: "localhost,127.0.0.1,127.0.0.11"
       # BPF bridge will forward raw TCP through this SOCKS5 proxy
@@ -51,6 +54,8 @@ services:
     networks:
       hybrid-internal:
         ipv4_address: 172.31.0.2
+      hybrid-egress:
+        ipv4_address: 172.31.1.2
     depends_on:
       envoy:
         condition: service_healthy
