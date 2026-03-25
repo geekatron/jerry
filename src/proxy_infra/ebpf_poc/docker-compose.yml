@@ -21,9 +21,11 @@ services:
       context: .
       dockerfile: Dockerfile
     privileged: true
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
-      - SOCKS_PROXY_HOST=proxy-node
-      - SOCKS_PROXY_PORT=1080
+      - SOCKS_PROXY_HOST=${SOCKS_PROXY_HOST:-proxy-node}
+      - SOCKS_PROXY_PORT=${SOCKS_PROXY_PORT:-1080}
     volumes:
       - /sys/fs/bpf:/sys/fs/bpf
       - /sys/fs/cgroup:/sys/fs/cgroup:rw
