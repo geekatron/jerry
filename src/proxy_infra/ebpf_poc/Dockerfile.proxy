@@ -1,0 +1,25 @@
+# Dockerfile.proxy -- microsocks SOCKS5 proxy (simulates remote VPS)
+# Minimal: just microsocks on Ubuntu, listening on 0.0.0.0:1080
+FROM ubuntu:24.04 AS build
+
+ARG MICROSOCKS_VERSION=1.0.5
+ARG MICROSOCKS_SHA256=939d1851a18a4c03f3cc5c92ff7a50eaf045da7814764b4cb9e26921db15abc8
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential curl ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN curl -fsSL \
+    "https://github.com/rofl0r/microsocks/archive/refs/tags/v${MICROSOCKS_VERSION}.tar.gz" \
+    -o /tmp/microsocks.tar.gz && \
+    echo "${MICROSOCKS_SHA256}  /tmp/microsocks.tar.gz" | sha256sum -c - && \
+    tar xzf /tmp/microsocks.tar.gz -C /tmp --strip-components=1 && \
+    cd /tmp && make
+
+FROM ubuntu:24.04
+COPY --from=build /tmp/microsocks /usr/local/bin/microsocks
+RUN chmod +x /usr/local/bin/microsocks
+
+EXPOSE 1080
+# No auth for PoC. Production uses per-node credentials injected via SSH.
+CMD ["microsocks", "-i", "0.0.0.0", "-p", "1080"]

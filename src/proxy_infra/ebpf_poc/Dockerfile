@@ -1,6 +1,5 @@
-# Dockerfile -- EN-023-001 eBPF cgroup/connect4 PoC
-# Ubuntu 24.04 | clang bpftool libbpf microsocks v1.0.5
-# Build: docker build -t ebpf-poc . | Run: docker run --privileged ebpf-poc
+# Dockerfile -- EN-023-001 eBPF cgroup/connect4 PoC (Full Chain)
+# Ubuntu 24.04 | clang bpftool libbpf microsocks python3 bridge
 FROM ubuntu:24.04 AS build
 
 ARG MICROSOCKS_VERSION=1.0.5
@@ -11,14 +10,14 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     build-essential dpkg-dev curl ca-certificates pkg-config \
     && rm -rf /var/lib/apt/lists/*
 
-# Compile BPF program (with asm symlink for clang -target bpf cross-compilation)
+# Compile BPF program
 WORKDIR /build/bpf
 COPY connect4.bpf.c Makefile ./
 RUN GNU_TRIPLE=$(dpkg-architecture -qDEB_HOST_GNU_TYPE) && \
     ln -sf /usr/include/${GNU_TRIPLE}/asm /usr/include/asm && \
     make
 
-# Build microsocks from source with SHA-256 verification
+# Build microsocks (fallback local proxy for testing)
 WORKDIR /build/microsocks
 RUN curl -fsSL \
     "https://github.com/rofl0r/microsocks/archive/refs/tags/v${MICROSOCKS_VERSION}.tar.gz" \
@@ -27,16 +26,20 @@ RUN curl -fsSL \
     tar xzf microsocks.tar.gz --strip-components=1 && \
     make
 
+# Runtime stage
 FROM ubuntu:24.04
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    linux-tools-common linux-tools-generic libbpf1 iproute2 curl \
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    linux-tools-common linux-tools-generic libbpf1 iproute2 curl python3 \
     && rm -rf /var/lib/apt/lists/*
-# Bypass version-checking wrapper: copy actual bpftool binary from build stage
+
+# Symlink actual bpftool binary (bypass version-checking wrapper)
 COPY --from=build /usr/lib/linux-tools/*/bpftool /usr/local/bin/bpftool
-RUN chmod +x /usr/local/bin/bpftool && bpftool version
+RUN chmod +x /usr/local/bin/bpftool
 
 COPY --from=build /build/bpf/connect4.bpf.o /opt/ebpf/connect4.bpf.o
 COPY --from=build /build/microsocks/microsocks /usr/local/bin/microsocks
+COPY bridge.py /opt/ebpf/bridge.py
 COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+RUN chmod +x /entrypoint.sh /opt/ebpf/bridge.py
+
 ENTRYPOINT ["/entrypoint.sh"]

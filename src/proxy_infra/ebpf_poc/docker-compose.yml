@@ -1,9 +1,18 @@
-# docker-compose.yml -- EN-023-001 eBPF cgroup/connect4 PoC
-# Services: ebpf-test (privileged, BPF+microsocks), test-target (nginx)
-# Usage: docker compose up -d
-#        docker compose exec ebpf-test curl -v http://test-target/
-#        docker compose exec ebpf-test bpftool map dump pinned /sys/fs/bpf/poc_maps/map_orig_dst
-#        docker compose down
+# docker-compose.yml -- EN-023-001 eBPF cgroup/connect4 PoC (Full Chain)
+#
+# Architecture:
+#   ebpf-test (tool container) -> BPF rewrite -> bridge -> SOCKS5 -> proxy-node -> test-target
+#
+# Services:
+#   ebpf-test:   BPF program + transparent bridge (the tool container)
+#   proxy-node:  microsocks SOCKS5 proxy (simulates remote VPS proxy)
+#   test-target: nginx (simulates engagement target)
+#
+# Usage:
+#   docker compose up -d
+#   docker compose exec ebpf-test curl -v http://test-target/
+#   docker compose exec ebpf-test bpftool map dump pinned /sys/fs/bpf/poc_maps/map_orig_dst
+#   docker compose down
 name: ebpf-poc
 
 services:
@@ -12,16 +21,33 @@ services:
       context: .
       dockerfile: Dockerfile
     privileged: true
-    # Narrower alternative (use instead of privileged where supported):
-    # cap_add: [CAP_BPF, CAP_NET_ADMIN, CAP_SYS_ADMIN]
+    environment:
+      - SOCKS_PROXY_HOST=proxy-node
+      - SOCKS_PROXY_PORT=1080
     volumes:
       - /sys/fs/bpf:/sys/fs/bpf
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
     networks:
       poc-net:
         ipv4_address: 172.30.0.2
     depends_on:
-      - test-target
+      proxy-node:
+        condition: service_started
+      test-target:
+        condition: service_started
+
+  proxy-node:
+    # Simulates a remote VPS running microsocks (the SOCKS5 proxy)
+    # In production: this would be a DigitalOcean/Vultr/Hetzner VPS
+    build:
+      context: .
+      dockerfile: Dockerfile.proxy
+    networks:
+      poc-net:
+        ipv4_address: 172.30.0.5
+    read_only: true
+    tmpfs:
+      - /tmp
 
   test-target:
     image: nginx:1.27-alpine
