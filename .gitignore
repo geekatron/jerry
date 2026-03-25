@@ -69,3 +69,6 @@ logs/hook-errors.log
 work/.zone3-audit/
 work/engagements/E2E-*/
 work/security-events/
+
+# Real engagement artifacts — NEVER commit to public repository
+projects/*/work/engagements/RED-*/
