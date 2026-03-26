@@ -61,4 +61,6 @@ BOUNDED_CONTEXTS: set[str] = {
     "work_tracking",
     "transcript",
     "configuration",
+    "proxy_infra",
+    "tool_exec",
 }
