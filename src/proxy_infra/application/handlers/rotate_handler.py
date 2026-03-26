@@ -27,17 +27,31 @@ class RotateHandler:
     Zone 3 approval gate is enforced at the CLI layer before this handler
     is called. Rotation is provision-before-destroy (PI-003).
 
+    The replacement node is provisioned with the operator's IP and SSH public
+    key supplied at construction time, not hardcoded (OPSEC: PI-006 firewall
+    allowlist must restrict access to a specific operator IP, never 0.0.0.0).
+
     References:
         - ADR-PROJ023-008: Application handler pattern
     """
 
-    def __init__(self, pool_service: ProxyPoolService) -> None:
-        """Initialize RotateHandler with the domain service.
+    def __init__(
+        self,
+        pool_service: ProxyPoolService,
+        operator_ip: str,
+        ssh_public_key: str,
+    ) -> None:
+        """Initialize RotateHandler with the domain service and operator credentials.
 
         Args:
             pool_service: Proxy pool domain service.
+            operator_ip: Operator egress IP for firewall allowlisting on the
+                replacement node. MUST be a specific host address, not 0.0.0.0.
+            ssh_public_key: OpenSSH public key to upload to the replacement node.
         """
         self._pool_service = pool_service
+        self._operator_ip = operator_ip
+        self._ssh_public_key = ssh_public_key
 
     def handle(self, command: RotateNodeCommand) -> ProxyNode:
         """Execute a rotate command.
@@ -84,8 +98,8 @@ class RotateHandler:
             count=1,
             role=target.role,
             proxy_type=target.proxy_type,
-            ssh_public_key="",
-            operator_ip="0.0.0.0",
+            ssh_public_key=self._ssh_public_key,
+            operator_ip=self._operator_ip,
         )
         replacements = provisioner.provision(config)
         return replacements[0]
