@@ -92,6 +92,18 @@ class ProxyProvisionerPort(ABC):
         raise NotImplementedError("TASK-023-027: not yet implemented")
 
     @abstractmethod
+    def list_instances(self, engagement_tag: str) -> list[ProxyNode]:
+        """List instances filtered by engagement tag.
+
+        Args:
+            engagement_tag: Tag to filter by (ISOLATION-002).
+
+        Returns:
+            List of ProxyNode instances matching the tag.
+        """
+        raise NotImplementedError("TASK-023-027: not yet implemented")
+
+    @abstractmethod
     def upload_ssh_key(self, public_key: str) -> str:
         """Upload an SSH public key to the provider.
 

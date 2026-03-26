@@ -47,7 +47,7 @@ class ProxyNode:
     proxy_type: ProxyType
     status: NodeStatus
     ssh_key_id: str
-    socks_port: int
     created_at: datetime
     engagement_id: str
+    socks_port: int = 1080
     fingerprint: str | None = None

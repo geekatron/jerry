@@ -48,3 +48,6 @@ class ProvisionConfig:
     socks_port: int = 1080
     firewall_rules: tuple[FirewallRule, ...] = field(default_factory=tuple)
     ssh_public_key: str = ""
+    engagement_tag: str = ""
+    provisioning_delay_seconds: int = 15
+    operator_ip: str = ""

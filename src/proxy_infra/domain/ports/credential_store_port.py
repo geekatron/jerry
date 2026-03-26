@@ -12,6 +12,10 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
+from src.proxy_infra.domain.exceptions.credential_not_found_error import CredentialNotFoundError
+
+__all__ = ["CredentialStorePort", "CredentialNotFoundError"]
+
 
 class CredentialStorePort(ABC):
     """Port interface for secure credential storage and retrieval.
@@ -19,21 +23,27 @@ class CredentialStorePort(ABC):
     Abstracts the credential storage backend (OS keychain, env vars)
     so the domain layer never depends on a specific storage mechanism.
 
+    Contract: get_credential() MUST raise CredentialNotFoundError on miss —
+    it must NEVER return None (FM-011).
+
     References:
         - ADR-PROJ023-008: Tiered credential storage design
     """
 
     @abstractmethod
-    def get_credential(self, provider_name: str) -> str | None:
+    def get_credential(self, provider_name: str) -> str:
         """Retrieve the API key for a cloud provider.
 
         Args:
             provider_name: Provider identifier (e.g., "digitalocean").
 
         Returns:
-            API key string, or None if not configured.
+            API key string. Never returns None.
+
+        Raises:
+            CredentialNotFoundError: If no credential is configured for the provider.
         """
-        raise NotImplementedError("TASK-023-027: not yet implemented")
+        raise NotImplementedError
 
     @abstractmethod
     def store_credential(self, provider_name: str, api_key: str) -> None:
@@ -43,7 +53,7 @@ class CredentialStorePort(ABC):
             provider_name: Provider identifier.
             api_key: API key to store securely.
         """
-        raise NotImplementedError("TASK-023-027: not yet implemented")
+        raise NotImplementedError
 
     @abstractmethod
     def delete_credential(self, provider_name: str) -> bool:
@@ -55,4 +65,4 @@ class CredentialStorePort(ABC):
         Returns:
             True if credential was found and deleted, False if not found.
         """
-        raise NotImplementedError("TASK-023-027: not yet implemented")
+        raise NotImplementedError
