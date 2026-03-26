@@ -33,6 +33,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from src.proxy_infra.application.handlers.bpf_bypass_port import BpfBypassPort
     from src.proxy_infra.application.handlers.manifest_writer_port import ManifestWriterPort
     from src.proxy_infra.application.handlers.node_health_port import NodeHealthPort
     from src.proxy_infra.application.handlers.ssh_credential_injection_handler import SshCredentialInjectionHandler
@@ -81,7 +82,7 @@ class EngagePipelineOrchestrator:
         credential_injector: SshCredentialInjectionHandler,
         health_checker: NodeHealthPort,
         manifest_writer: ManifestWriterPort,
-        bpf_port: object,
+        bpf_port: BpfBypassPort,
         engagement_dir: Path,
     ) -> None:
         """Initialise the pipeline orchestrator.
@@ -154,13 +155,17 @@ class EngagePipelineOrchestrator:
             # Manifest update
             self._manifest_writer.write(node)
 
-            # Write credential return file
-            cred_file = cred_dir / f"socks5_creds_{node.id}"
-            cred_file.write_text(
-                f"{inject_result.username}:{inject_result.password}",
-                encoding="utf-8",
+            # Write credential return file via Socks5CredentialReturnHandler
+            from src.proxy_infra.application.handlers.socks5_credential_return_handler import (
+                Socks5CredentialReturnHandler,
             )
-            os.chmod(cred_file, 0o600)
+
+            cred_handler = Socks5CredentialReturnHandler(credential_dir=cred_dir)
+            cred_handler.write_credentials(
+                node_id=node.id,
+                username=inject_result.username,
+                password=inject_result.password,
+            )
 
             injected_nodes.append(node)
 
