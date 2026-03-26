@@ -540,11 +540,15 @@ def credentials_check_command(provider: str) -> CredentialCheckResult:
         KeyringCredentialStore,
     )
 
+    from src.proxy_infra.domain.exceptions.credential_not_found_error import (
+        CredentialNotFoundError as _CredNotFound,
+    )
+
     keyring_store = KeyringCredentialStore()
     try:
         keyring_store.get_credential(provider)
         return CredentialCheckResult(found=True, provider=provider, source="keychain")
-    except Exception:
+    except _CredNotFound:
         pass
 
     env_var = f"JERRY_PROXY_{provider.upper()}_API_KEY"
