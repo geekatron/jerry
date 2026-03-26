@@ -20,10 +20,14 @@ class DestroyResult:
     Attributes:
         destroyed: Provider node IDs that were successfully destroyed.
         failed: Provider node IDs that could not be destroyed.
+        token_rotation_prompted: True when the operator was prompted to revoke
+            the API key at the provider control panel per F-C-003. Indicates
+            the teardown workflow surfaced the token rotation requirement.
     """
 
     destroyed: list[str]
     failed: list[str]
+    token_rotation_prompted: bool = False
 
     def __post_init__(self) -> None:
         """Normalise field values to plain lists so equality checks work.

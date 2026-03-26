@@ -22,8 +22,12 @@ class DestroyNodesCommand:
         node_ids: Specific node IDs to destroy, or empty tuple to destroy all
             nodes for the engagement.
         force: Skip confirmation prompt when True.
+        verify_credentials_rotated: Operator-confirmed that credentials have
+            been rotated at the provider control panel (FM-028). Teardown
+            will be blocked until this is True.
     """
 
     engagement_id: str
     node_ids: tuple[str, ...] = field(default_factory=tuple)
     force: bool = False
+    verify_credentials_rotated: bool = False
