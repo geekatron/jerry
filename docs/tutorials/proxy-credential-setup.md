@@ -10,7 +10,7 @@
 By the end of this tutorial, you will have:
 
 - A DigitalOcean API key stored as an encrypted macOS Keychain item named
-  `jerry-proxy / digitalocean`
+  `jerry / proxy.digitalocean.api-key`
 - Confirmed that `credentials_check_command` reports `found=True, source="keychain"`
 - Seen the keychain entry in Keychain Access.app
 - Run `engage_command` with the stored credential (no env var required)
@@ -74,7 +74,7 @@ credentials_set_command("digitalocean", "dop_v1_YOUR_TOKEN_HERE")
 ```
 
 macOS will display a permission dialog the first time a new service name
-(`jerry-proxy`) is written to Keychain. Click **Always Allow** to let the
+(`jerry`) is written to Keychain. Click **Always Allow** to let the
 Python process write to Keychain without prompting on future calls.
 
 **Expected result:** The function returns `None` with no output. No
@@ -105,19 +105,19 @@ read from macOS Keychain, not from an environment variable.
 Open Keychain Access from Spotlight (`Cmd+Space`, type `Keychain Access`,
 press `Return`).
 
-In the search bar at the top right, type `jerry-proxy`.
+In the search bar at the top right, type `jerry`.
 
 **Expected result:** One item appears:
 
 | Name | Kind | Keychain |
 |------|------|----------|
-| jerry-proxy | application password | login |
+| jerry | application password | login |
 
 Double-click the entry. In the detail panel you will see:
 
-- **Name:** `jerry-proxy`
-- **Account:** `digitalocean`
-- **Where:** `jerry-proxy`
+- **Name:** `jerry`
+- **Account:** `proxy.digitalocean.api-key`
+- **Where:** `jerry`
 
 Click **Show password** and authenticate with your login password or Touch
 ID. The stored API key value appears.
@@ -206,7 +206,7 @@ print(f"Test credential removed: {deleted}")
 Test credential removed: True
 ```
 
-Return to Keychain Access.app and search `jerry-proxy` again. No items
+Return to Keychain Access.app and search `jerry` again. No items
 appear. The entry is gone.
 
 ## Security notes
@@ -234,7 +234,7 @@ You now know how to:
 - Confirm storage using `credentials_check_command("digitalocean")` and reading
   `result.found` and `result.source`
 - Locate the keychain entry in Keychain Access.app under the service name
-  `jerry-proxy`
+  `jerry`
 - Retrieve credentials programmatically using `KeyringCredentialStore.get_credential`
 - Rotate a credential using `credentials_delete_command` followed by
   `credentials_set_command`
