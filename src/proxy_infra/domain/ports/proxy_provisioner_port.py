@@ -11,14 +11,12 @@ References:
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from src.proxy_infra.domain.value_objects.destroy_result import DestroyResult
-    from src.proxy_infra.domain.value_objects.firewall_rule import FirewallRule
-    from src.proxy_infra.domain.value_objects.health_status import HealthStatus
-    from src.proxy_infra.domain.value_objects.provision_config import ProvisionConfig
-    from src.proxy_infra.domain.value_objects.proxy_node import ProxyNode
+from src.proxy_infra.domain.value_objects.destroy_result import DestroyResult
+from src.proxy_infra.domain.value_objects.firewall_rule import FirewallRule
+from src.proxy_infra.domain.value_objects.health_status import HealthStatus
+from src.proxy_infra.domain.value_objects.provision_config import ProvisionConfig
+from src.proxy_infra.domain.value_objects.proxy_node import ProxyNode
 
 
 class ProxyProvisionerPort(ABC):

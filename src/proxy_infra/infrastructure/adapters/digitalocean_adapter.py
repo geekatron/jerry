@@ -12,16 +12,17 @@ References:
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from src.proxy_infra.domain.ports.proxy_provisioner_port import ProxyProvisionerPort
+from src.proxy_infra.domain.value_objects.destroy_result import DestroyResult
 
 if TYPE_CHECKING:
-    from src.proxy_infra.domain.value_objects.destroy_result import DestroyResult
     from src.proxy_infra.domain.value_objects.firewall_rule import FirewallRule
     from src.proxy_infra.domain.value_objects.health_status import HealthStatus
     from src.proxy_infra.domain.value_objects.provision_config import ProvisionConfig
     from src.proxy_infra.domain.value_objects.proxy_node import ProxyNode
+    from src.proxy_infra.infrastructure.persistence.audit_log_store import AuditLogStore
 
 
 class DigitalOceanProvisionerAdapter(ProxyProvisionerPort):
@@ -36,16 +37,31 @@ class DigitalOceanProvisionerAdapter(ProxyProvisionerPort):
         - ADR-PROJ023-008: DigitalOcean adapter design
     """
 
-    def __init__(self, api_key: str) -> None:
-        """Initialize the DigitalOcean adapter with an API key.
+    def __init__(
+        self,
+        client: Any,
+        audit_store: Any,
+        preflight_checker: Any | None = None,
+        api_key: str = "",
+    ) -> None:
+        """Initialize the DigitalOcean adapter.
 
         Args:
-            api_key: DigitalOcean personal access token. Must not be empty.
+            client: pydo Client instance configured with the DigitalOcean API key.
+            audit_store: AuditLogStore for recording all provisioner operations.
+            preflight_checker: Optional ApiKeyPreflightChecker.  When provided,
+                ``run()`` is called before every mutating operation (TASK-023-048).
+            api_key: Deprecated; kept for backwards compatibility.  Prefer
+                constructing the pydo Client externally and passing via ``client``.
         """
-        raise NotImplementedError("TASK-023-027: not yet implemented")
+        self._client = client
+        self._audit_store = audit_store
+        self._preflight = preflight_checker
 
     def provision(self, config: ProvisionConfig) -> list[ProxyNode]:
         """Provision Droplets on DigitalOcean.
+
+        Runs the API key pre-flight check before making any Droplet create calls.
 
         Args:
             config: Provisioning parameters.
@@ -54,20 +70,30 @@ class DigitalOceanProvisionerAdapter(ProxyProvisionerPort):
             List of provisioned ProxyNode instances.
 
         Raises:
+            ApiKeyExpiredError: If the pre-flight check finds the key expired.
             ProvisionError: If Droplet creation fails.
         """
-        raise NotImplementedError("TASK-023-027: not yet implemented")
+        if self._preflight is not None:
+            self._preflight.run()
+        raise NotImplementedError("TASK-023-027: full provision not yet implemented")
 
     def destroy(self, node_ids: list[str]) -> DestroyResult:
         """Destroy Droplets by provider ID.
+
+        Runs the API key pre-flight check before making any Droplet delete calls.
 
         Args:
             node_ids: DigitalOcean Droplet IDs to destroy.
 
         Returns:
             DestroyResult with per-node success/failure details.
+
+        Raises:
+            ApiKeyExpiredError: If the pre-flight check finds the key expired.
         """
-        raise NotImplementedError("TASK-023-027: not yet implemented")
+        if self._preflight is not None:
+            self._preflight.run()
+        raise NotImplementedError("TASK-023-027: full destroy not yet implemented")
 
     def health_check(self, node_id: str) -> HealthStatus:
         """Check health via DigitalOcean API and network probes.
@@ -85,6 +111,17 @@ class DigitalOceanProvisionerAdapter(ProxyProvisionerPort):
 
         Returns:
             List of all ProxyNode instances from this provider.
+        """
+        raise NotImplementedError("TASK-023-027: not yet implemented")
+
+    def list_instances(self, engagement_tag: str) -> list[ProxyNode]:
+        """List Droplets filtered by engagement tag.
+
+        Args:
+            engagement_tag: Engagement tag to filter by (ISOLATION-001).
+
+        Returns:
+            List of ProxyNode instances matching the tag.
         """
         raise NotImplementedError("TASK-023-027: not yet implemented")
 

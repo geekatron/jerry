@@ -18,20 +18,39 @@ class DestroyResult:
     """Immutable result of a node destruction operation.
 
     Attributes:
-        succeeded_ids: Provider node IDs that were successfully destroyed.
-        failed_ids: Provider node IDs that could not be destroyed.
-        errors: Mapping of failed node ID to error description.
+        destroyed: Provider node IDs that were successfully destroyed.
+        failed: Provider node IDs that could not be destroyed.
     """
 
-    succeeded_ids: tuple[str, ...]
-    failed_ids: tuple[str, ...]
-    errors: dict[str, str] = field(default_factory=dict)
+    destroyed: list[str]
+    failed: list[str]
+
+    def __post_init__(self) -> None:
+        """Normalise field values to plain lists so equality checks work.
+
+        Converts tuple inputs to lists for consistent ``result.failed == []``
+        comparisons in the caller.
+        """
+        # object.__setattr__ bypasses the frozen guard for normalisation only.
+        if isinstance(self.destroyed, tuple):
+            object.__setattr__(self, "destroyed", list(self.destroyed))
+        if isinstance(self.failed, tuple):
+            object.__setattr__(self, "failed", list(self.failed))
 
     @property
-    def all_succeeded(self) -> bool:
+    def is_all_successful(self) -> bool:
         """Return True if all requested nodes were successfully destroyed.
 
         Returns:
-            True when failed_ids is empty.
+            True when the failed list is empty.
         """
-        return len(self.failed_ids) == 0
+        return len(self.failed) == 0
+
+    @property
+    def all_succeeded(self) -> bool:
+        """Alias for is_all_successful for backwards compatibility.
+
+        Returns:
+            True when the failed list is empty.
+        """
+        return self.is_all_successful

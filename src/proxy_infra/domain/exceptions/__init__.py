@@ -3,6 +3,8 @@
 
 """Domain exceptions for proxy infrastructure bounded context."""
 
+from src.proxy_infra.domain.exceptions.api_key_expired_error import ApiKeyExpiredError
+from src.proxy_infra.domain.exceptions.api_key_permission_error import ApiKeyPermissionError
 from src.proxy_infra.domain.exceptions.burned_node_reuse_error import BurnedNodeReuseError
 from src.proxy_infra.domain.exceptions.credential_not_found_error import CredentialNotFoundError
 from src.proxy_infra.domain.exceptions.engagement_scope_error import EngagementScopeError
@@ -14,8 +16,11 @@ from src.proxy_infra.domain.exceptions.pool_capacity_exceeded_error import PoolC
 from src.proxy_infra.domain.exceptions.pool_limit_exceeded_error import PoolLimitExceededError
 from src.proxy_infra.domain.exceptions.provision_error import ProvisionError
 from src.proxy_infra.domain.exceptions.teardown_error import TeardownError
+from src.proxy_infra.domain.exceptions.vultr_ip_acl_mismatch_error import VultrIpAclMismatchError
 
 __all__ = [
+    "ApiKeyExpiredError",
+    "ApiKeyPermissionError",
     "BurnedNodeReuseError",
     "CredentialNotFoundError",
     "EngagementScopeError",
@@ -27,4 +32,5 @@ __all__ = [
     "PoolLimitExceededError",
     "ProvisionError",
     "TeardownError",
+    "VultrIpAclMismatchError",
 ]
