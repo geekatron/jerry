@@ -24,8 +24,6 @@ from __future__ import annotations
 
 import socket
 import urllib.request
-from dataclasses import dataclass
-from enum import Enum
 from typing import Any
 
 from src.proxy_infra.domain.exceptions.api_key_expired_error import ApiKeyExpiredError
@@ -49,34 +47,8 @@ def get_current_egress_ip() -> str:
         return "unknown"
 
 
-class PreflightStatus(str, Enum):
-    """Possible outcomes of an API key pre-flight check.
-
-    Attributes:
-        PASS: Key is valid and properly scoped.
-        WARNING: Check timed out; key validity cannot be confirmed but
-            provisioning may proceed (network issues should not block ops).
-        FAIL: Key is invalid, expired, or lacks required scope.
-    """
-
-    PASS = "PASS"
-    WARNING = "WARNING"
-    FAIL = "FAIL"
-
-
-@dataclass(frozen=True)
-class PreflightResult:
-    """Immutable result of an API key pre-flight check.
-
-    Attributes:
-        provider: Cloud provider name that was checked.
-        status: Outcome of the check (PASS, WARNING, or FAIL).
-        message: Human-readable description of the outcome.
-    """
-
-    provider: str
-    status: PreflightStatus
-    message: str = ""
+from src.proxy_infra.infrastructure.preflight.preflight_result import PreflightResult
+from src.proxy_infra.infrastructure.preflight.preflight_status import PreflightStatus
 
 
 class ApiKeyPreflightChecker:

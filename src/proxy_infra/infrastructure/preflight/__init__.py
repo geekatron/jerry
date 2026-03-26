@@ -17,10 +17,10 @@ References:
 
 from src.proxy_infra.infrastructure.preflight.api_key_preflight import (
     ApiKeyPreflightChecker,
-    PreflightResult,
-    PreflightStatus,
     get_current_egress_ip,
 )
+from src.proxy_infra.infrastructure.preflight.preflight_result import PreflightResult
+from src.proxy_infra.infrastructure.preflight.preflight_status import PreflightStatus
 
 __all__ = [
     "ApiKeyPreflightChecker",

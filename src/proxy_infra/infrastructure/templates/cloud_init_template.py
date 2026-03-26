@@ -26,7 +26,6 @@ References:
 from __future__ import annotations
 
 import re
-from enum import Enum
 from textwrap import dedent
 
 
@@ -58,11 +57,7 @@ _CREDENTIAL_PATTERNS: list[str] = [
 # ---------------------------------------------------------------------------
 
 
-class CloudInitType(Enum):
-    """Proxy node cloud-init template type selector."""
-
-    TYPE_A_SSH_ENDPOINT = "type_a_ssh_endpoint"
-    TYPE_B_MICROSOCKS = "type_b_microsocks"
+from src.proxy_infra.infrastructure.templates.cloud_init_type import CloudInitType  # noqa: E402
 
 
 class CloudInitTemplateGenerator:
