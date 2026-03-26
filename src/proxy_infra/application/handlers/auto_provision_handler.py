@@ -23,11 +23,13 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from src.proxy_infra.application.handlers.manifest_writer_port import ManifestWriterPort
     from src.proxy_infra.application.handlers.node_health_port import NodeHealthPort
+    from src.proxy_infra.application.handlers.ssh_credential_injection_handler import SshCredentialInjectionHandler
     from src.proxy_infra.application.handlers.ssh_readiness_port import SshReadinessPort
     from src.proxy_infra.domain.ports.proxy_provisioner_port import ProxyProvisionerPort
     from src.proxy_infra.domain.value_objects.provision_config import ProvisionConfig
@@ -67,6 +69,8 @@ class AutoProvisionHandler:
         health_checker: NodeHealthPort,
         manifest_writer: ManifestWriterPort,
         ssh_timeout_seconds: int = 120,
+        credential_injector: SshCredentialInjectionHandler | None = None,
+        private_key_path: Path | None = None,
     ) -> None:
         """Initialise AutoProvisionHandler with all required ports.
 
@@ -76,12 +80,20 @@ class AutoProvisionHandler:
             health_checker: Pre-use health gate port.
             manifest_writer: Pool manifest writer port.
             ssh_timeout_seconds: Max seconds to wait for SSH on new node.
+            credential_injector: Optional SSH credential injection handler.
+                When provided, a 5th stage is inserted between ssh_wait and
+                health check. When None, the original 4-stage pipeline runs
+                (backward compatible).
+            private_key_path: Path to engagement SSH private key. Required
+                when credential_injector is provided.
         """
         self._provisioner = provisioner
         self._ssh_readiness = ssh_readiness
         self._health_checker = health_checker
         self._manifest_writer = manifest_writer
         self._ssh_timeout_seconds = ssh_timeout_seconds
+        self._credential_injector = credential_injector
+        self._private_key_path = private_key_path
 
     def handle(self, config: ProvisionConfig) -> ProvisionResult:
         """Execute the full provision → ssh-wait → health → manifest pipeline.
@@ -125,8 +137,26 @@ class AutoProvisionHandler:
                 error=f"SSH not available on {node.ip} within {self._ssh_timeout_seconds}s",
             )
 
-        # Stage 3: Pre-use health check
-        logger.info("Stage 3/4 — pre-use health check: %s", node.ip)
+        # Stage 3 (optional): Credential injection
+        if self._credential_injector is not None:
+            stage_label = "3/5" if self._credential_injector else "—"
+            logger.info("Stage %s — credential injection: %s", stage_label, node.ip)
+            inject_result = self._credential_injector.inject(
+                node=node,
+                private_key_path=self._private_key_path or Path("/dev/null"),
+            )
+            if not inject_result.success:
+                return ProvisionResult(
+                    success=False,
+                    node=node,
+                    stage_failed="credential_inject",
+                    error=f"Credential injection failed at stage "
+                    f"'{inject_result.stage_failed}': {getattr(inject_result, 'error', '')}",
+                )
+
+        # Stage 4 (or 3): Pre-use health check
+        health_stage = "4/5" if self._credential_injector else "3/4"
+        logger.info("Stage %s — pre-use health check: %s", health_stage, node.ip)
         if not self._health_checker.check(node):
             return ProvisionResult(
                 success=False,
