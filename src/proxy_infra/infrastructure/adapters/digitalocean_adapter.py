@@ -372,7 +372,7 @@ class DigitalOceanProvisionerAdapter(ProxyProvisionerPort):
                     response_code=204,
                 )
                 destroyed.append(node_id)
-            except Exception as exc:
+            except Exception as exc:  # FM-022: catch all to build partial DestroyResult
                 self._audit.write_entry(
                     engagement_id=self._node_registry.get(node_id, {}).get("engagement_id", "unknown"),
                     action="destroy",
