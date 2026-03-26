@@ -34,6 +34,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from src.proxy_infra.application.handlers.credential_check_result import CredentialCheckResult
     from src.proxy_infra.domain.ports.proxy_provisioner_port import ProxyProvisionerPort
     from src.proxy_infra.domain.value_objects.destroy_result import DestroyResult
     from src.proxy_infra.domain.value_objects.proxy_node import ProxyNode
@@ -490,6 +491,89 @@ def engage_command(
             return pipeline_result.nodes or nodes
 
     return nodes
+
+
+# ---------------------------------------------------------------------------
+# credentials_set_command
+# ---------------------------------------------------------------------------
+
+
+def credentials_set_command(provider: str, api_key: str) -> None:
+    """Store a cloud provider API key in the macOS Keychain.
+
+    Composition root: instantiates ``KeyringCredentialStore`` and stores
+    the credential. The API key is accepted as a parameter (caller is
+    responsible for secure input, e.g., ``getpass.getpass``).
+
+    Args:
+        provider: Cloud provider name (e.g., "digitalocean").
+        api_key: API key to store. Never logged.
+    """
+    from src.proxy_infra.infrastructure.credentials.keyring_credential_store import (
+        KeyringCredentialStore,
+    )
+
+    store = KeyringCredentialStore()
+    store.store_credential(provider, api_key)
+
+
+# ---------------------------------------------------------------------------
+# credentials_check_command
+# ---------------------------------------------------------------------------
+
+
+def credentials_check_command(provider: str) -> CredentialCheckResult:
+    """Check whether a credential exists for a provider without revealing the value.
+
+    Tries Keychain first, then environment variable.
+
+    Args:
+        provider: Cloud provider name (e.g., "digitalocean").
+
+    Returns:
+        CredentialCheckResult with found=True/False and source.
+    """
+    from src.proxy_infra.application.handlers.credential_check_result import (
+        CredentialCheckResult,
+    )
+    from src.proxy_infra.infrastructure.credentials.keyring_credential_store import (
+        KeyringCredentialStore,
+    )
+
+    keyring_store = KeyringCredentialStore()
+    try:
+        keyring_store.get_credential(provider)
+        return CredentialCheckResult(found=True, provider=provider, source="keychain")
+    except Exception:
+        pass
+
+    env_var = f"JERRY_PROXY_{provider.upper()}_API_KEY"
+    if os.environ.get(env_var):
+        return CredentialCheckResult(found=True, provider=provider, source="environment")
+
+    return CredentialCheckResult(found=False, provider=provider, source="none")
+
+
+# ---------------------------------------------------------------------------
+# credentials_delete_command
+# ---------------------------------------------------------------------------
+
+
+def credentials_delete_command(provider: str) -> bool:
+    """Remove a stored credential from the macOS Keychain.
+
+    Args:
+        provider: Cloud provider name (e.g., "digitalocean").
+
+    Returns:
+        True if credential was found and deleted, False if not found.
+    """
+    from src.proxy_infra.infrastructure.credentials.keyring_credential_store import (
+        KeyringCredentialStore,
+    )
+
+    store = KeyringCredentialStore()
+    return store.delete_credential(provider)
 
 
 # ---------------------------------------------------------------------------
