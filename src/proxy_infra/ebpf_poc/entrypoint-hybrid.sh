@@ -23,7 +23,8 @@ BRIDGE_PORT=12345
 SOCKS_HOST=${SOCKS_PROXY_HOST:-proxy-node}
 SOCKS_PORT=${SOCKS_PROXY_PORT:-1080}
 ENVOY_HOST=${ENVOY_HOST:-envoy}
-INTERCEPT_CGROUP="/sys/fs/cgroup/jerry-intercept"
+# INTERCEPT_CGROUP is set AFTER container cgroup is discovered (must be a CHILD, not sibling)
+# See F-8: sibling cgroups don't inherit parent BPF programs
 
 echo "=== EN-023-001 Hybrid Envoy + BPF entrypoint ==="
 echo "[INFO] SOCKS proxy:   ${SOCKS_HOST}:${SOCKS_PORT}"
@@ -35,11 +36,15 @@ echo "[INFO] Bridge port:   127.0.0.1:${BRIDGE_PORT}"
 SHORT_ID=$(hostname)
 CONTAINER_CGROUP=$(find /sys/fs/cgroup/docker -maxdepth 1 -name "${SHORT_ID}*" -type d 2>/dev/null | head -1)
 if [ -z "$CONTAINER_CGROUP" ]; then
-    echo "[WARN] Could not find container cgroup for ${SHORT_ID}, using jerry-intercept"
-    CONTAINER_CGROUP="${INTERCEPT_CGROUP}"
-    mkdir -p "${CONTAINER_CGROUP}"
+    echo "[WARN] Could not find container cgroup for ${SHORT_ID}, using /sys/fs/cgroup as fallback"
+    CONTAINER_CGROUP="/sys/fs/cgroup"
 fi
 echo "[OK]   Container cgroup: ${CONTAINER_CGROUP}"
+
+# INTERCEPT_CGROUP must be a CHILD of CONTAINER_CGROUP so BPF inheritance works (F-8 fix)
+INTERCEPT_CGROUP="${CONTAINER_CGROUP}/jerry-intercept"
+mkdir -p "${INTERCEPT_CGROUP}" 2>/dev/null || true
+echo "[OK]   Intercept cgroup: ${INTERCEPT_CGROUP} (child of container cgroup)"
 
 # --- 2. Clean stale BPF pins from any previous run ---
 echo "[INFO] Cleaning stale BPF pins..."
@@ -143,8 +148,7 @@ exec "\$@"
 WRAPPER
 chmod +x /usr/local/bin/intercept
 
-# Ensure the intercept cgroup exists if we're using a named one
-mkdir -p "${INTERCEPT_CGROUP}" 2>/dev/null || true
+# Intercept cgroup already created above (child of container cgroup)
 
 # --- Ready ---
 cat <<'EOF'
@@ -163,7 +167,7 @@ Test commands:
 Inspect BPF maps:
   bpftool map dump pinned /sys/fs/bpf/poc_maps/dst_latest
   bpftool map dump pinned /sys/fs/bpf/poc_maps/bypass_ips
-  bpftool cgroup show /sys/fs/cgroup/jerry-intercept
+  bpftool cgroup show \${CONTAINER_CGROUP}/jerry-intercept
 
 EOF
 
