@@ -42,6 +42,17 @@ PI_006_SOCKS5_RESTRICTED_TO_OPERATOR_IP = "PI-006"
 PI_007_AUDIT_LOG_ALL_MUTATIONS = "PI-007"
 
 
+_INVARIANT_DESCRIPTIONS: dict[str, str] = {
+    PI_001_MAX_NODES_PER_ENGAGEMENT: "Total nodes per engagement must not exceed max_nodes (RATELIMIT-006).",
+    PI_002_ENGAGEMENT_ID_REQUIRED: "All mutating operations require a valid engagement_id.",
+    PI_003_BURNED_NODE_NO_REUSE: "Burned nodes must not be reused; rotation creates a new node first.",
+    PI_004_MANIFEST_INTEGRITY_ON_READ: "Pool manifest integrity hash must be verified on every read.",
+    PI_005_SSH_KEY_CLEANUP_ON_DESTROY: "SSH keys must be removed from provider on node destruction.",
+    PI_006_SOCKS5_RESTRICTED_TO_OPERATOR_IP: "Firewall rules must restrict SOCKS5 port to operator IP.",
+    PI_007_AUDIT_LOG_ALL_MUTATIONS: "Audit log entry must be written for every mutating operation.",
+}
+
+
 def describe_invariant(invariant_id: str) -> str:
     """Return a human-readable description of a domain invariant.
 
@@ -52,6 +63,6 @@ def describe_invariant(invariant_id: str) -> str:
         A description string for the invariant.
 
     Raises:
-        NotImplementedError: Always — not yet implemented (TASK-023-027).
+        KeyError: If invariant_id is not a recognized PI-NNN constant.
     """
-    raise NotImplementedError("TASK-023-027: not yet implemented")
+    return _INVARIANT_DESCRIPTIONS[invariant_id]
