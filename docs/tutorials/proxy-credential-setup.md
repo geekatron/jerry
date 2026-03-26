@@ -251,4 +251,4 @@ You now know how to:
   — `EnvCredentialStore` API and environment variable naming convention
   (`JERRY_PROXY_{PROVIDER}_API_KEY`)
 - **Explanation:** `docs/explanation/` for the design rationale behind the
-  two-tier credential storage model (ADR-PROJ023-008)
+  two-tier credential storage model (ADR-PROJ023-011)
