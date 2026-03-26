@@ -15,6 +15,9 @@ from src.proxy_infra.domain.exceptions.manifest_integrity_error import ManifestI
 from src.proxy_infra.domain.exceptions.pool_capacity_exceeded_error import PoolCapacityExceededError
 from src.proxy_infra.domain.exceptions.pool_limit_exceeded_error import PoolLimitExceededError
 from src.proxy_infra.domain.exceptions.provision_error import ProvisionError
+
+# Alias for backward compatibility (tests use ProvisioningError)
+ProvisioningError = ProvisionError
 from src.proxy_infra.domain.exceptions.teardown_error import TeardownError
 from src.proxy_infra.domain.exceptions.vultr_ip_acl_mismatch_error import VultrIpAclMismatchError
 
@@ -31,6 +34,7 @@ __all__ = [
     "PoolCapacityExceededError",
     "PoolLimitExceededError",
     "ProvisionError",
+    "ProvisioningError",
     "TeardownError",
     "VultrIpAclMismatchError",
 ]

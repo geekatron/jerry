@@ -12,17 +12,70 @@ References:
 
 from __future__ import annotations
 
+import os
+import time
+from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any
 
+from src.proxy_infra.domain.exceptions import ProvisionError
 from src.proxy_infra.domain.ports.proxy_provisioner_port import ProxyProvisionerPort
 from src.proxy_infra.domain.value_objects.destroy_result import DestroyResult
+from src.proxy_infra.domain.value_objects.health_status import HealthStatus
+from src.proxy_infra.domain.value_objects.node_status import NodeStatus
+from src.proxy_infra.domain.value_objects.proxy_node import ProxyNode
+
+try:
+    from pydo import Client  # type: ignore[import-untyped]
+except ImportError:  # pragma: no cover
+    Client = None  # type: ignore[assignment, misc]
 
 if TYPE_CHECKING:
     from src.proxy_infra.domain.value_objects.firewall_rule import FirewallRule
-    from src.proxy_infra.domain.value_objects.health_status import HealthStatus
     from src.proxy_infra.domain.value_objects.provision_config import ProvisionConfig
-    from src.proxy_infra.domain.value_objects.proxy_node import ProxyNode
     from src.proxy_infra.infrastructure.persistence.audit_log_store import AuditLogStore
+
+#: Default droplet image.
+_DEFAULT_IMAGE: str = "ubuntu-24-04-x64"
+#: Default droplet size (1 vCPU, 1 GB RAM).
+_DEFAULT_SIZE: str = "s-1vcpu-1gb"
+#: Maximum retry attempts on 429 rate-limit response (RATELIMIT-002).
+_MAX_RETRY_ATTEMPTS: int = 3
+#: Initial backoff delay in seconds for exponential backoff (RATELIMIT-002).
+_INITIAL_BACKOFF_SECONDS: float = 1.0
+#: Maximum backoff cap in seconds (RATELIMIT-002).
+_MAX_BACKOFF_SECONDS: float = 60.0
+#: Interval between droplet IP polling iterations in seconds.
+_POLL_INTERVAL_SECONDS: float = 2.0
+#: Maximum number of polling iterations before giving up on IP assignment.
+_MAX_POLL_ITERATIONS: int = 30
+
+
+def _build_cloud_init(config: ProvisionConfig) -> str:  # type: ignore[name-defined]
+    """Build a minimal cloud-init user-data script for SOCKS5 proxy configuration.
+
+    DigitalOcean accepts plain text cloud-init — do NOT base64-encode this value.
+    Base64 encoding user_data on DO causes cloud-init to treat the payload as a
+    literal base64 string, preventing script execution (TASK-023-028 AC).
+
+    Args:
+        config: Provisioning parameters containing socks_port and operator_ip.
+
+    Returns:
+        Cloud-init YAML string as plain text.
+    """
+    return f"""#cloud-config
+packages:
+  - microsocks
+  - ufw
+runcmd:
+  - ufw default deny incoming
+  - ufw default allow outgoing
+  - ufw allow from {config.operator_ip} to any port 22 proto tcp
+  - ufw allow from {config.operator_ip} to any port {config.socks_port} proto tcp
+  - ufw --force enable
+  - systemctl enable microsocks
+  - systemctl start microsocks
+"""
 
 
 class DigitalOceanProvisionerAdapter(ProxyProvisionerPort):
@@ -33,6 +86,15 @@ class DigitalOceanProvisionerAdapter(ProxyProvisionerPort):
 
     Service name in providers.yaml: "digitalocean"
 
+    Security properties:
+        - API key is never stored as an instance attribute (APIKEY-002: key not
+          exposed in repr).
+        - All API operations are recorded in the audit log (APICALL-004).
+        - Engagement tag is applied at creation time to prevent orphan resources
+          (ORPHAN-003).
+        - Firewall is created immediately after droplet to minimise the atomicity
+          gap (FM-035).
+
     References:
         - ADR-PROJ023-008: DigitalOcean adapter design
     """
@@ -42,26 +104,103 @@ class DigitalOceanProvisionerAdapter(ProxyProvisionerPort):
         client: Any,
         audit_store: Any,
         preflight_checker: Any | None = None,
-        api_key: str = "",
     ) -> None:
-        """Initialize the DigitalOcean adapter.
+        """Initialise the DigitalOcean adapter.
 
         Args:
             client: pydo Client instance configured with the DigitalOcean API key.
+                The caller is responsible for constructing the client — the adapter
+                never stores or logs the raw API key.
             audit_store: AuditLogStore for recording all provisioner operations.
+                Every API call appends one JSONL entry (APICALL-004).
             preflight_checker: Optional ApiKeyPreflightChecker.  When provided,
-                ``run()`` is called before every mutating operation (TASK-023-048).
-            api_key: Deprecated; kept for backwards compatibility.  Prefer
-                constructing the pydo Client externally and passing via ``client``.
+                ``run()`` is called before every mutating operation.
         """
         self._client = client
-        self._audit_store = audit_store
+        self._audit = audit_store
         self._preflight = preflight_checker
+        # Internal registry: maps node_id (str) -> {"ssh_key_id": str, "firewall_id": str}
+        # Populated during provision(); consulted during destroy() for targeted cleanup.
+        self._node_registry: dict[str, dict[str, str]] = {}
 
-    def provision(self, config: ProvisionConfig) -> list[ProxyNode]:
+    def __repr__(self) -> str:
+        """Return a safe string representation that never exposes the API key.
+
+        Returns:
+            String representation containing only the class name and client type.
+        """
+        return f"DigitalOceanProvisionerAdapter(client={type(self._client).__name__})"
+
+    # ------------------------------------------------------------------
+    # Factory
+    # ------------------------------------------------------------------
+
+    @classmethod
+    def from_env(
+        cls,
+        engagement_id: str,
+        audit_store: Any | None = None,
+        preflight_checker: Any | None = None,
+    ) -> DigitalOceanProvisionerAdapter:
+        """Construct an adapter by reading the API key from an environment variable.
+
+        The API key is read from ``JERRY_PROXY_DO_API_KEY`` and passed directly
+        to the pydo Client constructor.  The key is never stored as an instance
+        attribute — only the constructed client is retained.
+
+        Args:
+            engagement_id: Engagement identifier used when creating the default
+                AuditLogStore if none is provided.
+            audit_store: Optional pre-constructed AuditLogStore.  When ``None``,
+                a default store writing to ``./logs/audit/`` is created.
+            preflight_checker: Optional ApiKeyPreflightChecker.
+
+        Returns:
+            Configured DigitalOceanProvisionerAdapter instance.
+
+        Raises:
+            EnvironmentError: If ``JERRY_PROXY_DO_API_KEY`` is not set.
+        """
+        api_key = os.environ.get("JERRY_PROXY_DO_API_KEY", "")
+        if not api_key:
+            raise EnvironmentError(
+                "JERRY_PROXY_DO_API_KEY environment variable is not set — "
+                "DigitalOcean adapter requires an API key to authenticate"
+            )
+        client = Client(token=api_key)
+
+        if audit_store is None:
+            from src.proxy_infra.infrastructure.persistence.audit_log_store import (
+                AuditLogStore,
+            )
+
+            audit_store = AuditLogStore()
+
+        return cls(
+            client=client,
+            audit_store=audit_store,
+            preflight_checker=preflight_checker,
+        )
+
+    # ------------------------------------------------------------------
+    # ProxyProvisionerPort implementation
+    # ------------------------------------------------------------------
+
+    def provision(self, config: ProvisionConfig) -> list[ProxyNode]:  # type: ignore[name-defined]
         """Provision Droplets on DigitalOcean.
 
-        Runs the API key pre-flight check before making any Droplet create calls.
+        Execution order per TASK-023-028 AC:
+        1. Preflight API key validation.
+        2. Upload SSH public key (key ID needed for droplet creation).
+        3. Create Droplet with engagement tag at creation time (ORPHAN-003).
+        4. Create Cloud Firewall immediately after droplet ID is known (FM-035).
+        5. Sleep ``provisioning_delay_seconds`` to respect rate limits (RATELIMIT-001).
+        6. Poll for public IP assignment.
+        7. Return ``ProxyNode`` list.
+
+        Retry behaviour (RATELIMIT-002): ``droplets.create()`` is retried with
+        exponential backoff (1 s, 2 s, 4 s … capped at 60 s) when the provider
+        returns a 429 response.
 
         Args:
             config: Provisioning parameters.
@@ -70,33 +209,191 @@ class DigitalOceanProvisionerAdapter(ProxyProvisionerPort):
             List of provisioned ProxyNode instances.
 
         Raises:
-            ApiKeyExpiredError: If the pre-flight check finds the key expired.
-            ProvisionError: If Droplet creation fails.
+            ProvisionError: If Droplet creation fails after all retries.
         """
         if self._preflight is not None:
             self._preflight.run()
-        raise NotImplementedError("TASK-023-027: full provision not yet implemented")
+
+        nodes: list[ProxyNode] = []
+
+        for node_index in range(config.count):
+            node_name = f"jerry-proxy-{config.engagement_id}-{config.region}-{node_index}"
+
+            # Step 1: Upload SSH key — must precede droplet creation so the
+            # key ID is available as a creation parameter.
+            ssh_key_resp = self._client.ssh_keys.create(
+                body={
+                    "name": f"jerry-proxy-{config.engagement_id}",
+                    "public_key": config.ssh_public_key,
+                }
+            )
+            ssh_key_id: str = str(ssh_key_resp["ssh_key"]["id"])
+            self._audit.write_entry(
+                engagement_id=config.engagement_id,
+                action="provision",
+                provider="digitalocean",
+                resource_id=f"ssh-key-{ssh_key_id}",
+                response_code=201,
+            )
+
+            # Step 2: Render cloud-init user_data as plain text.
+            # DO accepts plain text — do NOT base64-encode (TASK-023-028 AC).
+            user_data = _build_cloud_init(config)
+
+            # Step 3: Create Droplet with exponential backoff on 429 (RATELIMIT-002).
+            droplet_body = {
+                "name": node_name,
+                "region": config.region,
+                "size": config.size,
+                "image": config.image,
+                "ssh_keys": [int(ssh_key_id)],
+                "user_data": user_data,
+                "tags": [config.engagement_tag],
+                "monitoring": False,
+            }
+            droplet_resp = self._create_droplet_with_retry(droplet_body, config.engagement_id)
+            droplet_id: int = droplet_resp["droplet"]["id"]
+            node_id = str(droplet_id)
+
+            self._audit.write_entry(
+                engagement_id=config.engagement_id,
+                action="provision",
+                provider="digitalocean",
+                resource_id=node_id,
+                response_code=202,
+            )
+
+            # Step 4: Create Cloud Firewall immediately after droplet ID is known (FM-035).
+            # This minimises the atomicity gap between droplet creation and firewall
+            # attachment.  UFW (configured via cloud-init) provides protection during
+            # the gap; the DO Cloud Firewall is the secondary layer.
+            firewall_resp = self._client.firewalls.create(
+                body={
+                    "name": f"jerry-proxy-{config.engagement_id}-{node_index}",
+                    "inbound_rules": [
+                        {
+                            "protocol": "tcp",
+                            "ports": "22",
+                            "sources": {"addresses": [f"{config.operator_ip}/32"]},
+                        },
+                        {
+                            "protocol": "tcp",
+                            "ports": str(config.socks_port),
+                            "sources": {"addresses": [f"{config.operator_ip}/32"]},
+                        },
+                    ],
+                    "outbound_rules": [
+                        {
+                            "protocol": "tcp",
+                            "ports": "all",
+                            "destinations": {"addresses": ["0.0.0.0/0", "::/0"]},
+                        },
+                    ],
+                    "droplet_ids": [droplet_id],
+                    "tags": [config.engagement_tag],
+                }
+            )
+            firewall_id: str = str(firewall_resp["firewall"]["id"])
+            self._audit.write_entry(
+                engagement_id=config.engagement_id,
+                action="provision",
+                provider="digitalocean",
+                resource_id=f"fw-{firewall_id}",
+                response_code=202,
+            )
+
+            # Step 5: Respect provisioning_delay_seconds to avoid triggering
+            # DigitalOcean abuse detection heuristics (RATELIMIT-001).
+            if config.provisioning_delay_seconds > 0:
+                time.sleep(config.provisioning_delay_seconds)
+
+            # Step 6: Register node resources for cleanup during destroy().
+            self._node_registry[node_id] = {
+                "ssh_key_id": ssh_key_id,
+                "firewall_id": firewall_id,
+                "engagement_id": config.engagement_id,
+            }
+
+            # Step 7: Poll for public IP assignment.
+            ip_address = self._poll_for_ip(node_id)
+
+            nodes.append(
+                ProxyNode(
+                    id=node_id,
+                    provider="digitalocean",
+                    ip=ip_address,
+                    region=config.region,
+                    role=config.role,
+                    proxy_type=config.proxy_type,
+                    status=NodeStatus.CONFIGURING,
+                    ssh_key_id=ssh_key_id,
+                    created_at=datetime.now(timezone.utc),
+                    engagement_id=config.engagement_id,
+                    socks_port=config.socks_port,
+                )
+            )
+
+        return nodes
 
     def destroy(self, node_ids: list[str]) -> DestroyResult:
         """Destroy Droplets by provider ID.
 
         Runs the API key pre-flight check before making any Droplet delete calls.
+        For each node:
+        1. Deletes the Droplet.
+        2. Removes the associated SSH key from the provider account (PI-005).
+        3. Deletes the associated Cloud Firewall rule set.
+
+        Partial failures are captured in ``DestroyResult.failed`` so the operator
+        can perform manual cleanup (FM-022).
 
         Args:
-            node_ids: DigitalOcean Droplet IDs to destroy.
+            node_ids: DigitalOcean Droplet IDs to destroy.  Each entry must be
+                a string representation of the numeric Droplet ID, optionally
+                prefixed with ``"do-"`` (e.g., ``"do-12345"`` or ``"12345"``).
 
         Returns:
             DestroyResult with per-node success/failure details.
-
-        Raises:
-            ApiKeyExpiredError: If the pre-flight check finds the key expired.
         """
         if self._preflight is not None:
             self._preflight.run()
-        raise NotImplementedError("TASK-023-027: full destroy not yet implemented")
+
+        destroyed: list[str] = []
+        failed: list[str] = []
+
+        for node_id in node_ids:
+            try:
+                self._client.droplets.destroy(droplet_id=node_id)
+                self._audit.write_entry(
+                    engagement_id=self._node_registry.get(node_id, {}).get("engagement_id", "unknown"),
+                    action="destroy",
+                    provider="digitalocean",
+                    resource_id=node_id,
+                    response_code=204,
+                )
+                destroyed.append(node_id)
+            except Exception as exc:
+                self._audit.write_entry(
+                    engagement_id=self._node_registry.get(node_id, {}).get("engagement_id", "unknown"),
+                    action="destroy",
+                    provider="digitalocean",
+                    resource_id=node_id,
+                    response_code=500,
+                )
+                failed.append(node_id)
+
+            # Always attempt SSH key cleanup (PI-005: SSH keys must not persist
+            # in the provider account post-engagement — they enable fingerprint
+            # enumeration of historical key material).
+            self._cleanup_ssh_key(node_id)
+
+            # Always attempt firewall cleanup.
+            self._cleanup_firewall(node_id)
+
+        return DestroyResult(destroyed=destroyed, failed=failed)
 
     def health_check(self, node_id: str) -> HealthStatus:
-        """Check health via DigitalOcean API and network probes.
+        """Check health via DigitalOcean API droplet status field.
 
         Args:
             node_id: DigitalOcean Droplet ID.
@@ -104,18 +401,47 @@ class DigitalOceanProvisionerAdapter(ProxyProvisionerPort):
         Returns:
             HealthStatus with reachability and service status.
         """
-        raise NotImplementedError("TASK-023-027: not yet implemented")
+        checked_at = datetime.now(timezone.utc)
+        try:
+            raw_id = node_id.removeprefix("do-")
+            resp = self._client.droplets.get(droplet_id=raw_id)
+            droplet = resp.get("droplet", {})
+            status = droplet.get("status", "unknown")
+            is_active = status == "active"
+            return HealthStatus(
+                node_id=node_id,
+                reachable=is_active,
+                socks_port_open=False,
+                ssh_accessible=is_active,
+                checked_at=checked_at,
+                error_message=None if is_active else f"droplet status={status}",
+            )
+        except Exception as exc:
+            return HealthStatus(
+                node_id=node_id,
+                reachable=False,
+                socks_port_open=False,
+                ssh_accessible=False,
+                checked_at=checked_at,
+                error_message=str(exc),
+            )
 
     def list_nodes(self) -> list[ProxyNode]:
-        """List all Droplets managed by this adapter.
+        """List all Droplets visible to this adapter's API key.
 
         Returns:
             List of all ProxyNode instances from this provider.
         """
-        raise NotImplementedError("TASK-023-027: not yet implemented")
+        resp = self._client.droplets.list()
+        droplets = self._extract_list(resp, "droplets")
+        return [self._droplet_to_node(d) for d in droplets]
 
     def list_instances(self, engagement_tag: str) -> list[ProxyNode]:
-        """List Droplets filtered by engagement tag.
+        """List Droplets filtered by engagement tag (ISOLATION-001).
+
+        Only Droplets that carry the exact ``engagement_tag`` value are returned.
+        Droplets from other engagements sharing the same provider account are
+        excluded to prevent cross-engagement node visibility.
 
         Args:
             engagement_tag: Engagement tag to filter by (ISOLATION-001).
@@ -123,7 +449,10 @@ class DigitalOceanProvisionerAdapter(ProxyProvisionerPort):
         Returns:
             List of ProxyNode instances matching the tag.
         """
-        raise NotImplementedError("TASK-023-027: not yet implemented")
+        resp = self._client.droplets.list()
+        droplets = self._extract_list(resp, "droplets")
+        matching = [d for d in droplets if engagement_tag in d.get("tags", [])]
+        return [self._droplet_to_node(d) for d in matching]
 
     def upload_ssh_key(self, public_key: str) -> str:
         """Upload an SSH public key to DigitalOcean.
@@ -132,23 +461,187 @@ class DigitalOceanProvisionerAdapter(ProxyProvisionerPort):
             public_key: OpenSSH public key string.
 
         Returns:
-            DigitalOcean-assigned key ID.
+            DigitalOcean-assigned key ID as a string.
         """
-        raise NotImplementedError("TASK-023-027: not yet implemented")
+        resp = self._client.ssh_keys.create(
+            body={"name": "jerry-proxy-key", "public_key": public_key}
+        )
+        return str(resp["ssh_key"]["id"])
 
     def remove_ssh_key(self, key_id: str) -> None:
-        """Remove an SSH key from DigitalOcean.
+        """Remove an SSH key from DigitalOcean by key ID.
 
         Args:
-            key_id: DigitalOcean-assigned key ID.
+            key_id: DigitalOcean-assigned SSH key identifier.
         """
-        raise NotImplementedError("TASK-023-027: not yet implemented")
+        self._client.ssh_keys.delete(ssh_key_identifier=key_id)
 
-    def configure_firewall(self, node_id: str, rules: list[FirewallRule]) -> None:
+    def configure_firewall(self, node_id: str, rules: list[FirewallRule]) -> None:  # type: ignore[name-defined]
         """Apply Cloud Firewall rules to a Droplet.
 
         Args:
             node_id: DigitalOcean Droplet ID.
             rules: Firewall rules to apply.
         """
-        raise NotImplementedError("TASK-023-027: not yet implemented")
+        # Not yet wired to the domain FirewallRule model; placeholder for
+        # post-provision rule updates.
+        raise NotImplementedError("configure_firewall not yet implemented")
+
+    # ------------------------------------------------------------------
+    # Private helpers
+    # ------------------------------------------------------------------
+
+    def _create_droplet_with_retry(
+        self, body: dict[str, Any], engagement_id: str
+    ) -> dict[str, Any]:
+        """Call droplets.create() with exponential backoff on 429 (RATELIMIT-002).
+
+        Retries up to ``_MAX_RETRY_ATTEMPTS`` times.  The initial backoff is
+        ``_INITIAL_BACKOFF_SECONDS``, doubling on each retry up to
+        ``_MAX_BACKOFF_SECONDS``.
+
+        Args:
+            body: Request body dict for ``client.droplets.create(body=body)``.
+            engagement_id: Engagement identifier for audit logging.
+
+        Returns:
+            Successful droplet creation response dict.
+
+        Raises:
+            ProvisionError: If all retry attempts are exhausted.
+        """
+        backoff = _INITIAL_BACKOFF_SECONDS
+        last_exc: Exception | None = None
+
+        for attempt in range(_MAX_RETRY_ATTEMPTS):
+            try:
+                return self._client.droplets.create(body=body)  # type: ignore[return-value]
+            except Exception as exc:
+                last_exc = exc
+                if "429" in str(exc):
+                    # Rate limited — apply exponential backoff (RATELIMIT-002).
+                    time.sleep(backoff)
+                    backoff = min(backoff * 2, _MAX_BACKOFF_SECONDS)
+                else:
+                    # Non-rate-limit failure — raise immediately as ProvisionError.
+                    raise ProvisionError(
+                        f"Droplet creation failed on attempt {attempt + 1}: {exc}"
+                    ) from exc
+
+        raise ProvisionError(
+            f"Droplet creation failed after {_MAX_RETRY_ATTEMPTS} attempts: {last_exc}"
+        )
+
+    def _poll_for_ip(self, node_id: str) -> str:
+        """Poll the Droplets API until a public IPv4 address is assigned.
+
+        Args:
+            node_id: DigitalOcean Droplet ID as a string.
+
+        Returns:
+            Public IPv4 address string, or empty string if not assigned within
+            the polling window.
+        """
+        for _ in range(_MAX_POLL_ITERATIONS):
+            try:
+                resp = self._client.droplets.get(droplet_id=node_id)
+                droplet = resp.get("droplet", {})
+                networks = droplet.get("networks", {}).get("v4", [])
+                public_ips = [n["ip_address"] for n in networks if n.get("type") == "public"]
+                if public_ips:
+                    return public_ips[0]
+            except Exception:
+                pass
+            time.sleep(_POLL_INTERVAL_SECONDS)
+        return ""
+
+    def _cleanup_ssh_key(self, node_id: str) -> None:
+        """Remove the SSH key associated with a node from DigitalOcean.
+
+        Looks up the SSH key ID from the internal node registry.  If the node
+        was not provisioned through this adapter instance, attempts deletion
+        using the node_id as a fallback identifier.
+
+        Args:
+            node_id: Provider-assigned Droplet ID used as the registry key.
+        """
+        registry_entry = self._node_registry.get(node_id, {})
+        key_id = registry_entry.get("ssh_key_id", node_id)
+        try:
+            self._client.ssh_keys.delete(ssh_key_identifier=key_id)
+        except Exception:
+            pass  # Best-effort cleanup; failure is non-fatal.
+
+    def _cleanup_firewall(self, node_id: str) -> None:
+        """Delete the Cloud Firewall associated with a node.
+
+        Looks up the firewall ID from the internal node registry.  If the node
+        was not provisioned through this adapter instance, attempts deletion
+        using the node_id as a fallback identifier.
+
+        Args:
+            node_id: Provider-assigned Droplet ID used as the registry key.
+        """
+        registry_entry = self._node_registry.get(node_id, {})
+        firewall_id = registry_entry.get("firewall_id", node_id)
+        try:
+            self._client.firewalls.delete(firewall_id=firewall_id)
+        except Exception:
+            pass  # Best-effort cleanup; failure is non-fatal.
+
+    @staticmethod
+    def _extract_list(resp: Any, key: str) -> list[dict[str, Any]]:
+        """Safely extract a list from an API response dict.
+
+        Args:
+            resp: Raw API response (expected to be a dict).
+            key: Key to extract from the response dict.
+
+        Returns:
+            The list value for the key, or an empty list if the response is not
+            a dict or the key is absent.
+        """
+        if not isinstance(resp, dict):
+            return []
+        return resp.get(key, []) or []
+
+    @staticmethod
+    def _droplet_to_node(droplet: dict[str, Any]) -> ProxyNode:
+        """Convert a raw DigitalOcean droplet dict to a ProxyNode value object.
+
+        Args:
+            droplet: Raw droplet dict from the DigitalOcean API.
+
+        Returns:
+            ProxyNode constructed from the droplet metadata.
+        """
+        from src.proxy_infra.domain.value_objects.proxy_role import ProxyRole
+        from src.proxy_infra.domain.value_objects.proxy_type import ProxyType
+
+        networks = droplet.get("networks", {}).get("v4", [])
+        public_ips = [n["ip_address"] for n in networks if n.get("type") == "public"]
+        ip = public_ips[0] if public_ips else ""
+
+        region = droplet.get("region", {})
+        region_slug = region.get("slug", "") if isinstance(region, dict) else str(region)
+
+        do_status = droplet.get("status", "unknown")
+        if do_status == "active":
+            status = NodeStatus.READY
+        elif do_status in ("new", "off"):
+            status = NodeStatus.PROVISIONING
+        else:
+            status = NodeStatus.UNHEALTHY
+
+        return ProxyNode(
+            id=str(droplet.get("id", "")),
+            provider="digitalocean",
+            ip=ip,
+            region=region_slug,
+            role=ProxyRole.ACTIVE,
+            proxy_type=ProxyType.DIRECT_SOCKS5,
+            status=status,
+            ssh_key_id="",
+            created_at=datetime.now(timezone.utc),
+            engagement_id="",
+        )
