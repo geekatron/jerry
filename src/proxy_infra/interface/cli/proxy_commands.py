@@ -373,6 +373,11 @@ def engage_command(
     adapter: ProxyProvisionerPort,
     audit_store: AuditLogStore,
     credential_dir: Path | None = None,
+    credential_injector: object | None = None,
+    ssh_readiness: object | None = None,
+    health_checker: object | None = None,
+    manifest_writer: object | None = None,
+    bpf_port: object | None = None,
 ) -> list[ProxyNode]:
     """Bootstrap a full engagement: parse config, generate SSH keys, provision nodes.
 
@@ -382,16 +387,29 @@ def engage_command(
 
     Zone 3 operation — caller must have obtained operator approval (P-020).
 
+    When all injection ports are provided (credential_injector, ssh_readiness,
+    health_checker, manifest_writer), the pipeline extends to the full
+    engage-to-route flow: provision → inject → BPF bypass → compose generation.
+    When injection ports are absent, only provisioning runs (backward compatible).
+
     Args:
         config_path: Path to the engagement YAML config file.
         adapter: Concrete ProxyProvisionerPort implementation.
         audit_store: AuditLogStore for audit entries.
         credential_dir: Directory for generated credentials.  When ``None``,
             defaults to ``{config_path.parent}/credentials/``.
+        credential_injector: Optional SshCredentialInjectionHandler for
+            post-boot credential injection.  When provided alongside
+            ssh_readiness, health_checker, and manifest_writer, the full
+            engage pipeline runs.
+        ssh_readiness: Optional SshReadinessPort for SSH availability polling.
+        health_checker: Optional NodeHealthPort for pre-use health gate.
+        manifest_writer: Optional ManifestWriterPort for pool manifest updates.
+        bpf_port: Optional BPF bypass map port.  When ``None``, a no-op port
+            is used (BPF bypass map not updated).
 
     Returns:
-        List of provisioned ProxyNode instances with SSH keypair available
-        in the credential directory.
+        List of provisioned (and optionally injected) ProxyNode instances.
 
     Raises:
         FileNotFoundError: If config_path does not exist.
@@ -442,12 +460,53 @@ def engage_command(
     # Stage 5: Provision via existing provision_command
     nodes = provision_command(provision_config, adapter, audit_store)
 
+    # Stage 6: If credential_injector and supporting ports are provided,
+    # run the full engage pipeline (inject → BPF → compose)
+    if (
+        credential_injector is not None
+        and ssh_readiness is not None
+        and health_checker is not None
+        and manifest_writer is not None
+    ):
+        from src.proxy_infra.application.handlers.engage_pipeline_orchestrator import (
+            EngagePipelineOrchestrator,
+        )
+
+        engagement_dir = credential_dir.parent
+        orchestrator = EngagePipelineOrchestrator(
+            provisioner=adapter,
+            ssh_readiness=ssh_readiness,
+            credential_injector=credential_injector,
+            health_checker=health_checker,
+            manifest_writer=manifest_writer,
+            bpf_port=bpf_port if bpf_port is not None else _noop_bpf_port(),
+            engagement_dir=engagement_dir,
+        )
+        pipeline_result = orchestrator.orchestrate(
+            provision_config,
+            private_key_path=keygen_result.private_key_path,
+        )
+        if pipeline_result.success:
+            return pipeline_result.nodes or nodes
+
     return nodes
 
 
 # ---------------------------------------------------------------------------
 # Private helpers
 # ---------------------------------------------------------------------------
+
+
+class _NoopBpfPort:
+    """No-op BPF port for when BPF bypass map is not needed."""
+
+    def update_bypass_ips(self, ips: list[str]) -> None:
+        """No-op bypass IP update."""
+
+
+def _noop_bpf_port() -> _NoopBpfPort:
+    """Return a no-op BPF port instance."""
+    return _NoopBpfPort()
 
 
 def _run_preflight_if_present(adapter: ProxyProvisionerPort) -> None:

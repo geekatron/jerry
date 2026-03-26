@@ -490,3 +490,60 @@ class TestEngageCommand:
         provision_config = call_args[0][0] if call_args[0] else call_args[1].get("config")
         assert provision_config.ssh_public_key
         assert provision_config.ssh_public_key.startswith("ssh-ed25519 ")
+
+    def test_engage_when_injection_ports_provided_then_orchestrator_called(
+        self, tmp_path: Path,
+    ) -> None:
+        """When all injection ports are provided, EngagePipelineOrchestrator runs."""
+        from src.proxy_infra.interface.cli.proxy_commands import engage_command
+
+        config_file = self._write_valid_yaml(tmp_path)
+        adapter = MagicMock()
+        adapter.provision.return_value = [MagicMock(id="node-1", ip="1.2.3.4")]
+        audit = MagicMock()
+
+        injector = MagicMock()
+        injector.inject.return_value = MagicMock(
+            success=True, username="u", password="p"
+        )
+        ssh_ready = MagicMock()
+        ssh_ready.wait_for_ssh.return_value = True
+        health = MagicMock()
+        health.check.return_value = True
+        manifest = MagicMock()
+
+        result = engage_command(
+            config_path=config_file,
+            adapter=adapter,
+            audit_store=audit,
+            credential_dir=tmp_path / "credentials",
+            credential_injector=injector,
+            ssh_readiness=ssh_ready,
+            health_checker=health,
+            manifest_writer=manifest,
+        )
+        # Orchestrator should have been invoked — compose file should exist
+        compose_file = tmp_path / "docker-compose.socks.yaml"
+        assert compose_file.exists()
+
+    def test_engage_when_no_injection_ports_then_provision_only(
+        self, tmp_path: Path,
+    ) -> None:
+        """Without injection ports, only provisioning runs (backward compat)."""
+        from src.proxy_infra.interface.cli.proxy_commands import engage_command
+
+        config_file = self._write_valid_yaml(tmp_path)
+        adapter = MagicMock()
+        adapter.provision.return_value = [MagicMock(id="node-1", ip="1.2.3.4")]
+        audit = MagicMock()
+
+        result = engage_command(
+            config_path=config_file,
+            adapter=adapter,
+            audit_store=audit,
+            credential_dir=tmp_path / "credentials",
+        )
+        # No compose file — provision only
+        compose_file = tmp_path / "docker-compose.socks.yaml"
+        assert not compose_file.exists()
+        assert len(result) == 1
