@@ -29,6 +29,8 @@ References:
 
 from __future__ import annotations
 
+import os
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -359,6 +361,88 @@ def gc_command(
         )
 
     return orphan_ids
+
+
+# ---------------------------------------------------------------------------
+# engage_command
+# ---------------------------------------------------------------------------
+
+
+def engage_command(
+    config_path: Path,
+    adapter: ProxyProvisionerPort,
+    audit_store: AuditLogStore,
+    credential_dir: Path | None = None,
+) -> list[ProxyNode]:
+    """Bootstrap a full engagement: parse config, generate SSH keys, provision nodes.
+
+    Composition root for the hands-free pipeline.  Reads the engagement YAML
+    config, generates a per-engagement Ed25519 SSH keypair, constructs a
+    ``ProvisionConfig``, and calls ``provision_command``.
+
+    Zone 3 operation — caller must have obtained operator approval (P-020).
+
+    Args:
+        config_path: Path to the engagement YAML config file.
+        adapter: Concrete ProxyProvisionerPort implementation.
+        audit_store: AuditLogStore for audit entries.
+        credential_dir: Directory for generated credentials.  When ``None``,
+            defaults to ``{config_path.parent}/credentials/``.
+
+    Returns:
+        List of provisioned ProxyNode instances with SSH keypair available
+        in the credential directory.
+
+    Raises:
+        FileNotFoundError: If config_path does not exist.
+        ValueError: If config has missing or invalid fields.
+    """
+    from src.proxy_infra.application.handlers.engagement_config_parser import (
+        EngagementConfigParser,
+    )
+    from src.proxy_infra.domain.value_objects.proxy_role import ProxyRole
+    from src.proxy_infra.domain.value_objects.proxy_type import ProxyType
+    from src.proxy_infra.domain.value_objects.provision_config import ProvisionConfig
+    from src.proxy_infra.infrastructure.keygen.ssh_keygen_adapter import SshKeygenAdapter
+
+    # Stage 1: Parse engagement config
+    parser = EngagementConfigParser()
+    eng_config = parser.parse(config_path)
+
+    # Stage 2: Create credential directory
+    if credential_dir is None:
+        credential_dir = config_path.parent / "credentials"
+    credential_dir.mkdir(parents=True, exist_ok=True)
+    os.chmod(credential_dir, 0o700)
+
+    # Stage 3: Generate SSH keypair
+    keygen = SshKeygenAdapter()
+    keygen_result = keygen.generate(
+        engagement_id=eng_config.engagement_id,
+        credential_dir=credential_dir,
+    )
+    ssh_public_key = keygen_result.public_key_path.read_text(encoding="utf-8").strip()
+
+    # Stage 4: Build ProvisionConfig from engagement config + generated key
+    provision_config = ProvisionConfig(
+        provider=eng_config.provider,
+        region=eng_config.region,
+        engagement_id=eng_config.engagement_id,
+        engagement_tag=eng_config.engagement_tag,
+        count=eng_config.count,
+        role=ProxyRole.ACTIVE,
+        proxy_type=ProxyType.DIRECT_SOCKS5,
+        ssh_public_key=ssh_public_key,
+        operator_ip=eng_config.operator_ip,
+        image=eng_config.image,
+        size=eng_config.size,
+        socks_port=eng_config.socks_port,
+    )
+
+    # Stage 5: Provision via existing provision_command
+    nodes = provision_command(provision_config, adapter, audit_store)
+
+    return nodes
 
 
 # ---------------------------------------------------------------------------
