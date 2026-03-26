@@ -10,7 +10,10 @@ References:
 
 from __future__ import annotations
 
+import os
 from typing import TYPE_CHECKING
+
+from src.proxy_infra.domain.exceptions.credential_not_found_error import CredentialNotFoundError
 
 if TYPE_CHECKING:
     from src.proxy_infra.application.commands.add_provider_command import AddProviderCommand
@@ -33,10 +36,13 @@ class AddProviderHandler:
         Args:
             credential_store: Credential storage port implementation.
         """
-        raise NotImplementedError("TASK-023-027: not yet implemented")
+        self._credential_store = credential_store
 
     def handle(self, command: AddProviderCommand) -> None:
         """Execute an add-provider command.
+
+        Reads the API key from the environment variable specified in the
+        command and stores it via the credential store port.
 
         Args:
             command: The add-provider command containing provider name,
@@ -46,4 +52,10 @@ class AddProviderHandler:
             CredentialNotFoundError: If the referenced env var is not set
                 and use_keyring is False.
         """
-        raise NotImplementedError("TASK-023-027: not yet implemented")
+        api_key = os.environ.get(command.api_key_env, "")
+        if not api_key:
+            raise CredentialNotFoundError(
+                f"Environment variable {command.api_key_env!r} is not set. "
+                f"Cannot register provider {command.name!r} without an API key."
+            )
+        self._credential_store.store_credential(command.name, api_key)

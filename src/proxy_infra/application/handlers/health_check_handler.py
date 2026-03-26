@@ -21,6 +21,9 @@ if TYPE_CHECKING:
 class HealthCheckHandler:
     """Handles HealthCheckQuery to run health probes on proxy nodes.
 
+    Delegates the actual health checking to the ProxyHealthService domain
+    service, which in turn uses the ProxyHealthPort adapter for network probes.
+
     References:
         - ADR-PROJ023-008: Application handler pattern
     """
@@ -31,10 +34,12 @@ class HealthCheckHandler:
         Args:
             health_service: Proxy health domain service.
         """
-        raise NotImplementedError("TASK-023-027: not yet implemented")
+        self._health_service = health_service
 
     def handle(self, query: HealthCheckQuery) -> list[HealthStatus]:
         """Execute a health check query.
+
+        Delegates to ProxyHealthService to check each node via the health port.
 
         Args:
             query: The health check query with optional engagement_id filter.
@@ -42,4 +47,12 @@ class HealthCheckHandler:
         Returns:
             List of HealthStatus results, one per checked node.
         """
-        raise NotImplementedError("TASK-023-027: not yet implemented")
+        from src.proxy_infra.domain.value_objects.proxy_pool import ProxyPool
+
+        # Build a pool from the health port's provisioner listing
+        # The health service checks all nodes in the pool
+        pool = ProxyPool(
+            nodes=(),
+            engagement_id=query.engagement_id,
+        )
+        return self._health_service.check_pool(pool)

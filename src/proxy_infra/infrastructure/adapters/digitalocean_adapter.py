@@ -479,13 +479,54 @@ class DigitalOceanProvisionerAdapter(ProxyProvisionerPort):
     def configure_firewall(self, node_id: str, rules: list[FirewallRule]) -> None:  # type: ignore[name-defined]
         """Apply Cloud Firewall rules to a Droplet.
 
+        If the node was provisioned through this adapter (and therefore has a
+        firewall ID in the internal registry), the existing firewall is updated.
+        Otherwise a new Cloud Firewall is created and attached to the Droplet.
+
         Args:
             node_id: DigitalOcean Droplet ID.
             rules: Firewall rules to apply.
         """
-        # Not yet wired to the domain FirewallRule model; placeholder for
-        # post-provision rule updates.
-        raise NotImplementedError("configure_firewall not yet implemented")
+        inbound_rules: list[dict[str, Any]] = []
+        outbound_rules: list[dict[str, Any]] = []
+        for rule in rules:
+            entry: dict[str, Any] = {
+                "protocol": rule.protocol,
+                "ports": rule.ports,
+            }
+            if rule.direction == "inbound":
+                entry["sources"] = {"addresses": [rule.sources]}
+                inbound_rules.append(entry)
+            else:
+                entry["destinations"] = {"addresses": [rule.sources]}
+                outbound_rules.append(entry)
+
+        registry_entry = self._node_registry.get(node_id, {})
+        existing_fw_id = registry_entry.get("firewall_id")
+
+        if existing_fw_id:
+            self._client.firewalls.update(
+                firewall_id=existing_fw_id,
+                body={
+                    "name": f"jerry-proxy-{node_id}",
+                    "inbound_rules": inbound_rules,
+                    "outbound_rules": outbound_rules,
+                    "droplet_ids": [int(node_id)],
+                },
+            )
+        else:
+            resp = self._client.firewalls.create(
+                body={
+                    "name": f"jerry-proxy-{node_id}",
+                    "inbound_rules": inbound_rules,
+                    "outbound_rules": outbound_rules,
+                    "droplet_ids": [int(node_id)],
+                }
+            )
+            new_fw_id = str(resp["firewall"]["id"])
+            if node_id not in self._node_registry:
+                self._node_registry[node_id] = {}
+            self._node_registry[node_id]["firewall_id"] = new_fw_id
 
     # ------------------------------------------------------------------
     # Private helpers
