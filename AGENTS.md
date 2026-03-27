@@ -674,6 +674,34 @@ When handing off between agents, include:
 
 ---
 
+## Cyber-Ops Skill Agents
+
+These agents implement engagement lifecycle orchestration through the `/cyber-ops` skill, coordinating `/red-team`, `/blue-team`, and `/rainbow` across 3 engagement modes (purple, split, single-team). Follows a 6-phase lifecycle (Define → Provision → Execute → Analyze → Report → Teardown) with 7 confirmation gates (G1-G7) enforcing operator authority (P-020).
+
+| Agent | File | Role | Cognitive Mode |
+|-------|------|------|----------------|
+| cyber-ops-lead | `skills/cyber-ops/agents/cyber-ops-lead.md` | Engagement Lifecycle Coordinator | Convergent |
+| cyber-ops-provision | `skills/cyber-ops/agents/cyber-ops-provision.md` | Infrastructure Lifecycle Manager | Systematic |
+| cyber-ops-analyze | `skills/cyber-ops/agents/cyber-ops-analyze.md` | Cross-Team Correlation Analyst | Integrative |
+| cyber-ops-teardown | `skills/cyber-ops/agents/cyber-ops-teardown.md` | Teardown Orchestrator | Systematic |
+
+**Key Capabilities:**
+
+| Agent | Primary Use Case | Output Type |
+|-------|------------------|-------------|
+| cyber-ops-lead | Engagement lifecycle state machine, confirmation gate orchestration, engagement config generation | Engagement state files, config YAML |
+| cyber-ops-provision | Infrastructure provisioning coordination, proxy chain standup, sensor deployment | Provisioning plans, infrastructure state |
+| cyber-ops-analyze | Red team findings vs blue team detections correlation, ATT&CK coverage mapping | Cross-team correlation reports, gap analysis |
+| cyber-ops-teardown | Credential revocation, infrastructure destruction, evidence archival with integrity verification | Teardown reports, archive manifests |
+
+**Invocation**: Use `/cyber-ops` skill which manages the 6-phase engagement lifecycle.
+
+**Model Tiers:** cyber-ops-lead (opus), cyber-ops-analyze (opus); cyber-ops-provision (sonnet), cyber-ops-teardown (sonnet).
+
+**Artifact Location**: `work/engagements/{engagement_id}/`
+
+---
+
 ## Adding New Agents
 
 New agents should be added within their respective skill directory:
