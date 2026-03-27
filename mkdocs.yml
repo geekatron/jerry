@@ -110,9 +110,11 @@ nav:
     - Plugin Development: playbooks/PLUGIN-DEVELOPMENT.md
   - Tutorials:
     - Proxy Credential Setup: tutorials/proxy-credential-setup.md
+    - Purple Team Engagement: tutorials/purple-team-engagement.md
   - Reference:
     - CLAUDE.md Guide: CLAUDE-MD-GUIDE.md
     - Credential Naming Convention: reference/credential-naming-convention.md
+    - Engagement Config Schema: reference/engagement-config-schema.md
     - Schema Versioning: schemas/SCHEMA_VERSIONING.md
     - Session Context Schema: schemas/SESSION_CONTEXT_GUIDE.md
   - Articles:
