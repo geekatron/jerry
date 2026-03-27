@@ -149,8 +149,12 @@ class FullEngagementConfig:
         if not self.scope.targets:
             raise ValueError("scope.targets must contain at least one target")
         if self.engagement.mode == "split":
-            blue = self.teams.get("blue", {})
-            if not blue or not blue.get("operator"):
+            # teams can be TeamsConfig or dict (backward compat)
+            if isinstance(self.teams, dict):
+                blue = self.teams.get("blue", {})
+            else:
+                blue = self.teams.blue
+            if not blue or not blue.get("operator", ""):
                 raise ValueError(
                     "teams.blue.operator is required for split mode — "
                     "blue team operator must be assigned"

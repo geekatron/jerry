@@ -26,11 +26,16 @@ import yaml
 
 from src.proxy_infra.domain.value_objects.engagement_config import EngagementConfig
 from src.proxy_infra.domain.value_objects.full_engagement_config import (
+    CredentialsConfig,
     EngagementMetadata,
     FullEngagementConfig,
     InfrastructureConfig,
+    OutputConfig,
     ProxyInfraConfig,
+    PurpleTeamConfig,
+    RulesOfEngagementConfig,
     ScopeConfig,
+    TeamsConfig,
 )
 
 logger = logging.getLogger(__name__)
@@ -98,15 +103,51 @@ class FullEngagementConfigParser:
 
         infrastructure = InfrastructureConfig(proxy=proxy)
 
+        # Instantiate typed sections 4-8
+        teams_data = data.get("teams", {})
+        teams = TeamsConfig(
+            red=teams_data.get("red", {}),
+            blue=teams_data.get("blue", {}),
+        )
+
+        creds_data = data.get("credentials", {})
+        credentials = CredentialsConfig(
+            proxy_api_key=creds_data.get("proxy_api_key", {}),
+        )
+
+        roe_data = data.get("rules_of_engagement", {})
+        rules_of_engagement = RulesOfEngagementConfig(
+            authorization=str(roe_data.get("authorization", "")),
+            escalation_contact=str(roe_data.get("escalation_contact", "")),
+            emergency_stop=bool(roe_data.get("emergency_stop", True)),
+            notification_required=bool(roe_data.get("notification_required", False)),
+            data_handling=str(roe_data.get("data_handling", "no_exfil")),
+        )
+
+        pt_data = data.get("purple_team", {})
+        purple_team = PurpleTeamConfig(
+            technique_approval=str(pt_data.get("technique_approval", "per_technique")),
+            pivot_mode=str(pt_data.get("pivot_mode", "sequential")),
+            correlation_mode=str(pt_data.get("correlation_mode", "real_time")),
+        )
+
+        out_data = data.get("output", {})
+        output = OutputConfig(
+            report_format=str(out_data.get("report_format", "markdown")),
+            report_template=str(out_data.get("report_template", "default")),
+            archive_location=str(out_data.get("archive_location", "")),
+            retention_days=int(out_data.get("retention_days", 90)),
+        )
+
         return FullEngagementConfig(
             engagement=metadata,
             scope=scope,
             infrastructure=infrastructure,
-            teams=data.get("teams", {}),
-            credentials=data.get("credentials", {}),
-            rules_of_engagement=data.get("rules_of_engagement", {}),
-            purple_team=data.get("purple_team", {}),
-            output=data.get("output", {}),
+            teams=teams,
+            credentials=credentials,
+            rules_of_engagement=rules_of_engagement,
+            purple_team=purple_team,
+            output=output,
         )
 
     def extract_proxy_config(self, config_path: Path) -> EngagementConfig:
