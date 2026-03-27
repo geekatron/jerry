@@ -134,13 +134,29 @@ class FullEngagementConfigParser:
             )
 
         proxy = full.infrastructure.proxy
-        # operator_ip is not in the full config's proxy section —
-        # resolve from the first target or a default
-        operator_ip = "0.0.0.0"  # placeholder — resolved at runtime by engage_command
-        if full.scope.targets:
-            # Use the operator_ip from the red team section if available
+
+        # Resolve operator_ip: check infrastructure.proxy.operator_ip first,
+        # then teams.red.operator_ip, then raise if neither is set.
+        operator_ip = (
+            proxy_data.get("operator_ip", "")
+            if (proxy_data := full.infrastructure.proxy.__dict__) and False
+            else ""
+        )
+        # Try the raw YAML data — operator_ip may be in the proxy section
+        raw = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+        raw_proxy = raw.get("infrastructure", {}).get("proxy", {})
+        operator_ip = str(raw_proxy.get("operator_ip", ""))
+
+        if not operator_ip:
             red_team = full.teams.get("red", {})
-            operator_ip = red_team.get("operator_ip", "0.0.0.0")
+            operator_ip = str(red_team.get("operator_ip", ""))
+
+        if not operator_ip:
+            raise ValueError(
+                "operator_ip could not be resolved from the engagement config. "
+                "Set infrastructure.proxy.operator_ip or teams.red.operator_ip "
+                "to your public egress IP for firewall allowlisting."
+            )
 
         return EngagementConfig(
             engagement_id=full.engagement.id,
@@ -149,7 +165,7 @@ class FullEngagementConfigParser:
             count=proxy.count,
             proxy_type=proxy.proxy_type,
             socks_port=proxy.socks_port,
-            operator_ip=operator_ip if operator_ip != "0.0.0.0" else "127.0.0.1",
+            operator_ip=operator_ip,
             image=proxy.image,
             size=proxy.size,
         )

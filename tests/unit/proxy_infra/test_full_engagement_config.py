@@ -51,6 +51,7 @@ def _write_full_config(tmp_path: Path, overrides: dict | None = None) -> Path:
                 "count": 3,
                 "proxy_type": "direct_socks5",
                 "socks_port": 1080,
+                "operator_ip": "174.7.155.69",
             },
         },
         "teams": {

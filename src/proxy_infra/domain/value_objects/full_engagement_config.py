@@ -66,6 +66,51 @@ class ScopeConfig:
 
 
 @dataclass(frozen=True)
+class TeamsConfig:
+    """Section 4: Team operator assignments."""
+
+    red: dict = field(default_factory=dict)
+    blue: dict = field(default_factory=dict)
+
+
+@dataclass(frozen=True)
+class CredentialsConfig:
+    """Section 5: Credential references (NOT values — keyring key names only)."""
+
+    proxy_api_key: dict = field(default_factory=dict)
+
+
+@dataclass(frozen=True)
+class RulesOfEngagementConfig:
+    """Section 6: Authorization, escalation, and data handling rules."""
+
+    authorization: str = ""
+    escalation_contact: str = ""
+    emergency_stop: bool = True
+    notification_required: bool = False
+    data_handling: str = "no_exfil"
+
+
+@dataclass(frozen=True)
+class PurpleTeamConfig:
+    """Section 7: Purple-mode-specific configuration."""
+
+    technique_approval: str = "per_technique"
+    pivot_mode: str = "sequential"
+    correlation_mode: str = "real_time"
+
+
+@dataclass(frozen=True)
+class OutputConfig:
+    """Section 8: Report format and retention settings."""
+
+    report_format: str = "markdown"
+    report_template: str = "default"
+    archive_location: str = ""
+    retention_days: int = 90
+
+
+@dataclass(frozen=True)
 class FullEngagementConfig:
     """Complete v1.0.0 engagement configuration (8 sections).
 
@@ -73,21 +118,21 @@ class FullEngagementConfig:
         engagement: Section 1 — metadata (id, name, type, mode, dates)
         scope: Section 2 — targets, techniques, exclusions
         infrastructure: Section 3 — proxy and sensor configuration
-        teams: Section 4 — operator assignments
-        credentials: Section 5 — credential references (NOT values)
-        rules_of_engagement: Section 6 — authorization and data handling
-        purple_team: Section 7 — purple-mode-specific config
-        output: Section 8 — report format and retention
+        teams: Section 4 — operator assignments (typed)
+        credentials: Section 5 — credential references (typed)
+        rules_of_engagement: Section 6 — authorization and data handling (typed)
+        purple_team: Section 7 — purple-mode-specific config (typed)
+        output: Section 8 — report format and retention (typed)
     """
 
     engagement: EngagementMetadata
     scope: ScopeConfig
     infrastructure: InfrastructureConfig = field(default_factory=InfrastructureConfig)
-    teams: dict = field(default_factory=dict)
-    credentials: dict = field(default_factory=dict)
-    rules_of_engagement: dict = field(default_factory=dict)
-    purple_team: dict = field(default_factory=dict)
-    output: dict = field(default_factory=dict)
+    teams: TeamsConfig | dict = field(default_factory=dict)
+    credentials: CredentialsConfig | dict = field(default_factory=dict)
+    rules_of_engagement: RulesOfEngagementConfig | dict = field(default_factory=dict)
+    purple_team: PurpleTeamConfig | dict = field(default_factory=dict)
+    output: OutputConfig | dict = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         """Enforce domain invariants.
