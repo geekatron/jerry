@@ -1,0 +1,111 @@
+# Jerry Engagement Config Template (v1.0.0)
+#
+# This is the full engagement configuration schema. Operators fill in the
+# required fields; optional fields have sensible defaults.
+#
+# Usage:
+#   1. Copy this template to your engagement directory
+#   2. Fill in required fields (marked REQUIRED)
+#   3. Run: jerry cyber-ops engage engagement.yaml
+#
+# Schema: ADR-PROJ023-010 Decision 2
+# Source: FEAT-023-006 (Engagement Config Integration)
+
+# ============================================================================
+# Section 1: Engagement Metadata (REQUIRED)
+# ============================================================================
+engagement:
+  id: "ENG-XXXX"                    # REQUIRED — unique engagement identifier
+  name: ""                          # REQUIRED — human-readable engagement name
+  type: "penetration_test"          # REQUIRED — penetration_test | red_team | purple_team | blue_team | threat_hunt
+  mode: "single"                    # REQUIRED — purple | split | single
+  start_date: ""                    # REQUIRED — ISO 8601 (YYYY-MM-DD)
+  end_date: ""                      # OPTIONAL — planned end date
+  classification: "confidential"    # OPTIONAL — public | internal | confidential | restricted
+
+# ============================================================================
+# Section 2: Scope (REQUIRED)
+# ============================================================================
+scope:
+  targets:                          # REQUIRED — at least one target
+    - host: ""                      # IP, CIDR, or hostname
+      type: "ip"                    # ip | cidr | hostname | url
+      description: ""               # What this target is
+  authorized_techniques:            # OPTIONAL — ATT&CK technique IDs allowed
+    - "T1595"                       # Active Scanning
+    - "T1590"                       # Gather Victim Network Information
+  excluded_techniques: []           # OPTIONAL — explicitly forbidden techniques
+  exclusions:                       # OPTIONAL — out-of-scope items
+    - host: ""
+      reason: ""
+  time_window:                      # OPTIONAL — execution time constraints
+    timezone: "UTC"
+    start_hour: 0
+    end_hour: 24
+    days: ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
+
+# ============================================================================
+# Section 3: Infrastructure (OPTIONAL — defaults to no proxy)
+# ============================================================================
+infrastructure:
+  proxy:
+    enabled: false                  # Set true to provision SOCKS proxy pool
+    provider: "digitalocean"        # Cloud provider: digitalocean | vultr | hetzner
+    region: "nyc1"                  # Provider region
+    count: 1                        # Number of proxy nodes (1-10)
+    proxy_type: "direct_socks5"     # direct_socks5 | ssh_tunnel
+    socks_port: 1080                # SOCKS5 listening port
+    image: "ubuntu-24-04-x64"       # OS image
+    size: "s-1vcpu-1gb"             # Instance size
+  sensors:
+    enabled: false                  # Set true for blue team detection sensors
+    type: "wazuh"                   # Sensor platform: wazuh | elastic | splunk
+
+# ============================================================================
+# Section 4: Teams (REQUIRED for split mode)
+# ============================================================================
+teams:
+  red:
+    operator: ""                    # Red team operator name/ID
+    role: "attacker"                # attacker | validator
+  blue:
+    operator: ""                    # Blue team operator name/ID (split mode)
+    role: "defender"                # defender | hunter
+
+# ============================================================================
+# Section 5: Credentials (REQUIRED — references, NOT values)
+# ============================================================================
+credentials:
+  # Credential resolution: keychain key name or env var name
+  # The actual secret value is NEVER in this file
+  proxy_api_key:
+    source: "keychain"              # keychain | environment
+    key_name: "proxy.digitalocean.api-key"  # Keychain: jerry/{key_name}
+    env_var: "JERRY_PROXY_DIGITALOCEAN_API_KEY"  # Env fallback
+
+# ============================================================================
+# Section 6: Rules of Engagement (RECOMMENDED)
+# ============================================================================
+rules_of_engagement:
+  authorization: ""                 # Reference to authorization document
+  escalation_contact: ""            # Who to contact on incident
+  emergency_stop: true              # Enable emergency stop capability
+  notification_required: false      # Whether to notify target before testing
+  data_handling: "no_exfil"         # no_exfil | evidence_vault_only | client_approved
+
+# ============================================================================
+# Section 7: Purple Team Config (REQUIRED for purple mode)
+# ============================================================================
+purple_team:
+  technique_approval: "per_technique"  # per_technique | batch | pre_approved
+  pivot_mode: "sequential"             # sequential | interleaved
+  correlation_mode: "real_time"        # real_time | post_execution
+
+# ============================================================================
+# Section 8: Output (OPTIONAL)
+# ============================================================================
+output:
+  report_format: "markdown"        # markdown | pdf | html
+  report_template: "default"       # default | executive | technical
+  archive_location: ""             # Override for archive directory
+  retention_days: 90               # Days to retain engagement artifacts

@@ -1,0 +1,59 @@
+# Jerry Purple Team Engagement Config (Pre-filled)
+#
+# Pre-configured for solo operator purple team exercise.
+# Fill in the REQUIRED fields marked with CHANGEME.
+
+engagement:
+  id: "ENG-CHANGEME"
+  name: "Purple Team Exercise — CHANGEME"
+  type: "purple_team"
+  mode: "purple"
+  start_date: "CHANGEME"           # YYYY-MM-DD
+  classification: "confidential"
+
+scope:
+  targets:
+    - host: "CHANGEME"             # Target IP or hostname
+      type: "ip"
+      description: "CHANGEME"
+
+infrastructure:
+  proxy:
+    enabled: true
+    provider: "digitalocean"
+    region: "nyc1"
+    count: 3
+    proxy_type: "direct_socks5"
+    socks_port: 1080
+  sensors:
+    enabled: true
+    type: "wazuh"
+
+teams:
+  red:
+    operator: "CHANGEME"
+    role: "attacker"
+  blue:
+    operator: "CHANGEME"           # Same operator in purple mode
+    role: "defender"
+
+credentials:
+  proxy_api_key:
+    source: "keychain"
+    key_name: "proxy.digitalocean.api-key"
+
+rules_of_engagement:
+  authorization: "CHANGEME"        # Path to authorization document
+  escalation_contact: "CHANGEME"
+  emergency_stop: true
+  data_handling: "evidence_vault_only"
+
+purple_team:
+  technique_approval: "per_technique"
+  pivot_mode: "sequential"
+  correlation_mode: "real_time"
+
+output:
+  report_format: "markdown"
+  report_template: "technical"
+  retention_days: 90
