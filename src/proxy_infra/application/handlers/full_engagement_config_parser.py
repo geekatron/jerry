@@ -1,0 +1,155 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+
+"""FullEngagementConfigParser — parses full v1.0.0 engagement config YAML.
+
+Parses the rich 8-section engagement config consumed by ``/cyber-ops`` and
+extracts the narrow ``EngagementConfig`` consumed by the proxy pipeline.
+
+Design constraints:
+    H-07: Application layer — imports domain only.
+    H-10: One public class per file.
+    H-11: All public methods have type annotations.
+
+References:
+    - TASK-023-098: FullEngagementConfig value object
+    - TASK-023-099: from_full_config() bridge + backward compat
+    - ADR-PROJ023-010: Engagement config schema v1.0.0
+"""
+
+from __future__ import annotations
+
+import logging
+from pathlib import Path
+
+import yaml
+
+from src.proxy_infra.domain.value_objects.engagement_config import EngagementConfig
+from src.proxy_infra.domain.value_objects.full_engagement_config import (
+    EngagementMetadata,
+    FullEngagementConfig,
+    InfrastructureConfig,
+    ProxyInfraConfig,
+    ScopeConfig,
+)
+
+logger = logging.getLogger(__name__)
+
+
+class FullEngagementConfigParser:
+    """Parses full v1.0.0 engagement config YAML into FullEngagementConfig.
+
+    Also provides ``extract_proxy_config()`` to bridge the full config
+    into the narrow ``EngagementConfig`` consumed by the proxy pipeline.
+    """
+
+    def parse(self, config_path: Path) -> FullEngagementConfig:
+        """Parse a full engagement config YAML file.
+
+        Args:
+            config_path: Path to the YAML engagement config.
+
+        Returns:
+            Validated FullEngagementConfig value object.
+
+        Raises:
+            FileNotFoundError: If config_path does not exist.
+            ValueError: If required fields are missing or invalid.
+        """
+        if not config_path.exists():
+            raise FileNotFoundError(f"Engagement config not found: {config_path}")
+
+        data = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+        if not isinstance(data, dict):
+            raise ValueError(f"Engagement config must be a YAML mapping, got {type(data).__name__}")
+
+        eng_data = data.get("engagement", {})
+        scope_data = data.get("scope", {})
+        infra_data = data.get("infrastructure", {})
+        proxy_data = infra_data.get("proxy", {})
+
+        metadata = EngagementMetadata(
+            id=str(eng_data.get("id", "")),
+            name=str(eng_data.get("name", "")),
+            type=str(eng_data.get("type", "penetration_test")),
+            mode=str(eng_data.get("mode", "single")),
+            start_date=str(eng_data.get("start_date", "")),
+            end_date=str(eng_data.get("end_date", "")),
+            classification=str(eng_data.get("classification", "confidential")),
+        )
+
+        scope = ScopeConfig(
+            targets=scope_data.get("targets", []),
+            authorized_techniques=scope_data.get("authorized_techniques", []),
+            excluded_techniques=scope_data.get("excluded_techniques", []),
+            exclusions=scope_data.get("exclusions", []),
+        )
+
+        proxy = ProxyInfraConfig(
+            enabled=bool(proxy_data.get("enabled", False)),
+            provider=str(proxy_data.get("provider", "digitalocean")),
+            region=str(proxy_data.get("region", "nyc1")),
+            count=int(proxy_data.get("count", 1)),
+            proxy_type=str(proxy_data.get("proxy_type", "direct_socks5")),
+            socks_port=int(proxy_data.get("socks_port", 1080)),
+            image=str(proxy_data.get("image", "ubuntu-24-04-x64")),
+            size=str(proxy_data.get("size", "s-1vcpu-1gb")),
+        )
+
+        infrastructure = InfrastructureConfig(proxy=proxy)
+
+        return FullEngagementConfig(
+            engagement=metadata,
+            scope=scope,
+            infrastructure=infrastructure,
+            teams=data.get("teams", {}),
+            credentials=data.get("credentials", {}),
+            rules_of_engagement=data.get("rules_of_engagement", {}),
+            purple_team=data.get("purple_team", {}),
+            output=data.get("output", {}),
+        )
+
+    def extract_proxy_config(self, config_path: Path) -> EngagementConfig:
+        """Extract the proxy-relevant EngagementConfig from a full config.
+
+        Bridge method: reads the full v1.0.0 schema and extracts the
+        infrastructure.proxy section into the narrow EngagementConfig
+        consumed by the proxy provisioning pipeline.
+
+        Args:
+            config_path: Path to the full engagement config YAML.
+
+        Returns:
+            EngagementConfig with proxy-relevant fields.
+
+        Raises:
+            ValueError: If infrastructure.proxy.enabled is false.
+        """
+        full = self.parse(config_path)
+
+        if not full.infrastructure.proxy.enabled:
+            raise ValueError(
+                "infrastructure.proxy is not enabled in this engagement config. "
+                "Set infrastructure.proxy.enabled: true to use the proxy pipeline."
+            )
+
+        proxy = full.infrastructure.proxy
+        # operator_ip is not in the full config's proxy section —
+        # resolve from the first target or a default
+        operator_ip = "0.0.0.0"  # placeholder — resolved at runtime by engage_command
+        if full.scope.targets:
+            # Use the operator_ip from the red team section if available
+            red_team = full.teams.get("red", {})
+            operator_ip = red_team.get("operator_ip", "0.0.0.0")
+
+        return EngagementConfig(
+            engagement_id=full.engagement.id,
+            provider=proxy.provider,
+            region=proxy.region,
+            count=proxy.count,
+            proxy_type=proxy.proxy_type,
+            socks_port=proxy.socks_port,
+            operator_ip=operator_ip if operator_ip != "0.0.0.0" else "127.0.0.1",
+            image=proxy.image,
+            size=proxy.size,
+        )
