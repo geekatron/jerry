@@ -189,8 +189,12 @@ class FullEngagementConfigParser:
         operator_ip = str(raw_proxy.get("operator_ip", ""))
 
         if not operator_ip:
-            red_team = full.teams.get("red", {})
-            operator_ip = str(red_team.get("operator_ip", ""))
+            # teams can be TeamsConfig or dict (backward compat)
+            if isinstance(full.teams, dict):
+                red_team = full.teams.get("red", {})
+            else:
+                red_team = full.teams.red
+            operator_ip = str(red_team.get("operator_ip", "") if isinstance(red_team, dict) else "")
 
         if not operator_ip:
             raise ValueError(

@@ -51,7 +51,7 @@ Before starting, you need:
 In the **red terminal**, copy the split-team template into your engagement workspace:
 
 ```
-cp skills/rainbow/templates/split-team-template.yaml \
+cp skills/cyber-ops/templates/engagement-config-template.yaml \
    work/engagements/ENG-SPLIT-001/engagement-config.yaml
 ```
 
