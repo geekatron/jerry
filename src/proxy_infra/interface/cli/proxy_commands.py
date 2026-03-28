@@ -379,6 +379,7 @@ def engage_command(
     health_checker: object | None = None,
     manifest_writer: object | None = None,
     bpf_port: object | None = None,
+    full_pipeline: bool = False,
 ) -> list[ProxyNode]:
     """Bootstrap a full engagement: parse config, generate SSH keys, provision nodes.
 
@@ -461,25 +462,47 @@ def engage_command(
     # Stage 5: Provision via existing provision_command
     nodes = provision_command(provision_config, adapter, audit_store)
 
-    # Stage 6: If credential_injector and supporting ports are provided,
-    # run the full engage pipeline (inject → BPF → compose)
-    if (
-        credential_injector is not None
-        and ssh_readiness is not None
-        and health_checker is not None
-        and manifest_writer is not None
-    ):
+    # Stage 6: Run the full engage pipeline (inject → BPF → compose)
+    # When credential_injector is explicitly provided OR full_pipeline=True,
+    # run the full injection pipeline. Otherwise, return provision-only results.
+    #
+    # In production: caller passes full_pipeline=True (default for CLI invocation)
+    # In tests: caller omits injection ports → provision-only path
+    if credential_injector is not None or full_pipeline:
         from src.proxy_infra.application.handlers.engage_pipeline_orchestrator import (
             EngagePipelineOrchestrator,
+        )
+        from src.proxy_infra.application.handlers.ssh_credential_injection_handler import (
+            SshCredentialInjectionHandler,
+        )
+        from src.proxy_infra.infrastructure.ssh.curl_socks_verifier import CurlSocksVerifier
+        from src.proxy_infra.infrastructure.ssh.subprocess_ssh_executor import (
+            SubprocessSshExecutor,
+        )
+        from src.proxy_infra.infrastructure.ssh.tcp_ssh_readiness_adapter import (
+            TcpSshReadinessAdapter,
+        )
+
+        # Resolve real adapters — composition root wires concrete implementations
+        _ssh_readiness = ssh_readiness or TcpSshReadinessAdapter()
+        _health_checker = health_checker or _noop_health_checker()
+        _manifest_writer = manifest_writer or _noop_manifest_writer()
+        _ssh_executor = SubprocessSshExecutor()
+        _socks_verifier = CurlSocksVerifier()
+        _injector = credential_injector or SshCredentialInjectionHandler(
+            ssh_readiness=_ssh_readiness,
+            ssh_executor=_ssh_executor,
+            socks_verifier=_socks_verifier,
+            manifest_writer=_manifest_writer,
         )
 
         engagement_dir = credential_dir.parent
         orchestrator = EngagePipelineOrchestrator(
             provisioner=adapter,
-            ssh_readiness=ssh_readiness,
-            credential_injector=credential_injector,
-            health_checker=health_checker,
-            manifest_writer=manifest_writer,
+            ssh_readiness=_ssh_readiness,
+            credential_injector=_injector,
+            health_checker=_health_checker,
+            manifest_writer=_manifest_writer,
             bpf_port=bpf_port if bpf_port is not None else _noop_bpf_port(),
             engagement_dir=engagement_dir,
         )
@@ -583,6 +606,31 @@ def credentials_delete_command(provider: str) -> bool:
 # ---------------------------------------------------------------------------
 # Private helpers
 # ---------------------------------------------------------------------------
+
+
+class _NoopHealthChecker:
+    """No-op health checker — always passes."""
+
+    def check(self, node: object) -> bool:
+        """Always returns True — health check bypassed."""
+        return True
+
+
+class _NoopManifestWriter:
+    """No-op manifest writer — does nothing."""
+
+    def write(self, node: object) -> None:
+        """No-op write."""
+
+
+def _noop_health_checker() -> _NoopHealthChecker:
+    """Return a no-op health checker."""
+    return _NoopHealthChecker()
+
+
+def _noop_manifest_writer() -> _NoopManifestWriter:
+    """Return a no-op manifest writer."""
+    return _NoopManifestWriter()
 
 
 class _NoopBpfPort:
