@@ -38,6 +38,7 @@ dependencies = [
     "mdit-py-plugins>=0.4.0",
     "pyyaml>=6.0",  # EN-005: StalenessDetector ORCHESTRATION.yaml parsing
     "keyring>=25.7.0",
+    "pydo>=0.29.0",
 ]
 
 [project.optional-dependencies]

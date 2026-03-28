@@ -58,7 +58,7 @@ class VultrProvisionerAdapter(ProxyProvisionerPort):
         """
         raise NotImplementedError("TASK-023-027: not yet implemented")
 
-    def destroy(self, node_ids: list[str]) -> DestroyResult:
+    def destroy(self, node_ids: list[str], engagement_id: str = "") -> DestroyResult:
         """Destroy VPS instances by provider ID.
 
         Args:

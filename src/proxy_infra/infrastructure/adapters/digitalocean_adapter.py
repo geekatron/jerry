@@ -12,9 +12,10 @@ References:
 
 from __future__ import annotations
 
+import logging
 import os
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any
 
 from src.proxy_infra.domain.exceptions import ProvisionError
@@ -32,7 +33,8 @@ except ImportError:  # pragma: no cover
 if TYPE_CHECKING:
     from src.proxy_infra.domain.value_objects.firewall_rule import FirewallRule
     from src.proxy_infra.domain.value_objects.provision_config import ProvisionConfig
-    from src.proxy_infra.infrastructure.persistence.audit_log_store import AuditLogStore
+
+logger = logging.getLogger(__name__)
 
 #: Default droplet image.
 _DEFAULT_IMAGE: str = "ubuntu-24-04-x64"
@@ -163,7 +165,7 @@ class DigitalOceanProvisionerAdapter(ProxyProvisionerPort):
         """
         api_key = os.environ.get("JERRY_PROXY_DO_API_KEY", "")
         if not api_key:
-            raise EnvironmentError(
+            raise OSError(
                 "JERRY_PROXY_DO_API_KEY environment variable is not set — "
                 "DigitalOcean adapter requires an API key to authenticate"
             )
@@ -327,7 +329,7 @@ class DigitalOceanProvisionerAdapter(ProxyProvisionerPort):
                     proxy_type=config.proxy_type,
                     status=NodeStatus.CONFIGURING,
                     ssh_key_id=ssh_key_id,
-                    created_at=datetime.now(timezone.utc),
+                    created_at=datetime.now(UTC),
                     engagement_id=config.engagement_id,
                     socks_port=config.socks_port,
                 )
@@ -335,7 +337,7 @@ class DigitalOceanProvisionerAdapter(ProxyProvisionerPort):
 
         return nodes
 
-    def destroy(self, node_ids: list[str]) -> DestroyResult:
+    def destroy(self, node_ids: list[str], engagement_id: str = "") -> DestroyResult:
         """Destroy Droplets by provider ID.
 
         Runs the API key pre-flight check before making any Droplet delete calls.
@@ -344,6 +346,11 @@ class DigitalOceanProvisionerAdapter(ProxyProvisionerPort):
         2. Removes the associated SSH key from the provider account (PI-005).
         3. Deletes the associated Cloud Firewall rule set.
 
+        After the per-node loop, performs an engagement-level sweep of any SSH
+        keys and firewalls that were not captured by the in-memory registry
+        (PI-005: cross-process resilience).  The sweep is triggered only when
+        ``engagement_id`` is provided.
+
         Partial failures are captured in ``DestroyResult.failed`` so the operator
         can perform manual cleanup (FM-022).
 
@@ -351,6 +358,12 @@ class DigitalOceanProvisionerAdapter(ProxyProvisionerPort):
             node_ids: DigitalOcean Droplet IDs to destroy.  Each entry must be
                 a string representation of the numeric Droplet ID, optionally
                 prefixed with ``"do-"`` (e.g., ``"do-12345"`` or ``"12345"``).
+            engagement_id: Optional engagement identifier.  When provided, a
+                name-based API sweep is performed after the per-node loop to
+                delete any SSH keys and firewalls that share the
+                ``jerry-proxy-{engagement_id}`` name prefix but were not
+                captured in the in-memory registry (cross-process destroy
+                resilience, PI-005).
 
         Returns:
             DestroyResult with per-node success/failure details.
@@ -365,16 +378,20 @@ class DigitalOceanProvisionerAdapter(ProxyProvisionerPort):
             try:
                 self._client.droplets.destroy(droplet_id=node_id)
                 self._audit.write_entry(
-                    engagement_id=self._node_registry.get(node_id, {}).get("engagement_id", "unknown"),
+                    engagement_id=self._node_registry.get(node_id, {}).get(
+                        "engagement_id", "unknown"
+                    ),
                     action="destroy",
                     provider="digitalocean",
                     resource_id=node_id,
                     response_code=204,
                 )
                 destroyed.append(node_id)
-            except Exception as exc:  # FM-022: catch all to build partial DestroyResult
+            except Exception:  # FM-022: catch all to build partial DestroyResult
                 self._audit.write_entry(
-                    engagement_id=self._node_registry.get(node_id, {}).get("engagement_id", "unknown"),
+                    engagement_id=self._node_registry.get(node_id, {}).get(
+                        "engagement_id", "unknown"
+                    ),
                     action="destroy",
                     provider="digitalocean",
                     resource_id=node_id,
@@ -390,6 +407,14 @@ class DigitalOceanProvisionerAdapter(ProxyProvisionerPort):
             # Always attempt firewall cleanup.
             self._cleanup_firewall(node_id)
 
+        # Engagement-level resource cleanup (PI-005: cross-process resilience).
+        # Sweeps all SSH keys and firewalls matching the engagement name prefix
+        # so that resources orphaned by a prior process (empty _node_registry)
+        # are cleaned up even when the per-node registry path finds nothing.
+        if engagement_id:
+            self._cleanup_engagement_ssh_keys(engagement_id)
+            self._cleanup_engagement_firewalls(engagement_id)
+
         return DestroyResult(destroyed=destroyed, failed=failed)
 
     def health_check(self, node_id: str) -> HealthStatus:
@@ -401,7 +426,7 @@ class DigitalOceanProvisionerAdapter(ProxyProvisionerPort):
         Returns:
             HealthStatus with reachability and service status.
         """
-        checked_at = datetime.now(timezone.utc)
+        checked_at = datetime.now(UTC)
         try:
             raw_id = node_id.removeprefix("do-")
             resp = self._client.droplets.get(droplet_id=raw_id)
@@ -599,36 +624,187 @@ class DigitalOceanProvisionerAdapter(ProxyProvisionerPort):
     def _cleanup_ssh_key(self, node_id: str) -> None:
         """Remove the SSH key associated with a node from DigitalOcean.
 
-        Looks up the SSH key ID from the internal node registry.  If the node
-        was not provisioned through this adapter instance, attempts deletion
-        using the node_id as a fallback identifier.
+        Fast path: looks up the SSH key ID from the internal node registry
+        (same-process provision -> destroy).  When the registry has no entry
+        for this node (cross-process destroy), the deletion is skipped here;
+        the caller is expected to follow up with
+        ``_cleanup_engagement_ssh_keys()`` to perform a name-based sweep.
 
         Args:
             node_id: Provider-assigned Droplet ID used as the registry key.
         """
         registry_entry = self._node_registry.get(node_id, {})
-        key_id = registry_entry.get("ssh_key_id", node_id)
+        key_id = registry_entry.get("ssh_key_id")
+        if not key_id:
+            # Registry miss — cross-process sweep handles this via
+            # _cleanup_engagement_ssh_keys(); nothing to do here.
+            return
         try:
             self._client.ssh_keys.delete(ssh_key_identifier=key_id)
-        except Exception:
-            pass  # Best-effort cleanup; failure is non-fatal.
+            self._audit.write_entry(
+                engagement_id=registry_entry.get("engagement_id", "unknown"),
+                action="cleanup_ssh_key",
+                provider="digitalocean",
+                resource_id=f"ssh-key-{key_id}",
+                response_code=204,
+            )
+        except Exception as exc:
+            logger.warning(
+                "SSH key cleanup failed for node %s (key_id=%s): %s",
+                node_id,
+                key_id,
+                exc,
+            )
 
     def _cleanup_firewall(self, node_id: str) -> None:
         """Delete the Cloud Firewall associated with a node.
 
-        Looks up the firewall ID from the internal node registry.  If the node
-        was not provisioned through this adapter instance, attempts deletion
-        using the node_id as a fallback identifier.
+        Fast path: looks up the firewall ID from the internal node registry
+        (same-process provision -> destroy).  When the registry has no entry
+        for this node (cross-process destroy), the deletion is skipped here;
+        the caller is expected to follow up with
+        ``_cleanup_engagement_firewalls()`` to perform a name-based sweep.
 
         Args:
             node_id: Provider-assigned Droplet ID used as the registry key.
         """
         registry_entry = self._node_registry.get(node_id, {})
-        firewall_id = registry_entry.get("firewall_id", node_id)
+        firewall_id = registry_entry.get("firewall_id")
+        if not firewall_id:
+            # Registry miss — cross-process sweep handles this via
+            # _cleanup_engagement_firewalls(); nothing to do here.
+            return
         try:
             self._client.firewalls.delete(firewall_id=firewall_id)
-        except Exception:
-            pass  # Best-effort cleanup; failure is non-fatal.
+            self._audit.write_entry(
+                engagement_id=registry_entry.get("engagement_id", "unknown"),
+                action="cleanup_firewall",
+                provider="digitalocean",
+                resource_id=f"fw-{firewall_id}",
+                response_code=204,
+            )
+        except Exception as exc:
+            logger.warning(
+                "Firewall cleanup failed for node %s (firewall_id=%s): %s",
+                node_id,
+                firewall_id,
+                exc,
+            )
+
+    def _cleanup_engagement_ssh_keys(self, engagement_id: str) -> None:
+        """Delete all SSH keys whose name begins with ``jerry-proxy-{engagement_id}``.
+
+        Fallback sweep for cross-process destroy scenarios where ``_node_registry``
+        is empty (PI-005).  Queries the DigitalOcean SSH keys API, filters by the
+        engagement-scoped name prefix, and deletes each match.  An audit entry is
+        written for every deleted key (FIND-003).
+
+        The name prefix is deliberately broad enough to catch both the per-engagement
+        key (``jerry-proxy-{engagement_id}``) and any per-node variants that may
+        exist from earlier adapter revisions.
+
+        Args:
+            engagement_id: Engagement identifier used to build the name prefix
+                ``jerry-proxy-{engagement_id}``.
+        """
+        name_prefix = f"jerry-proxy-{engagement_id}"
+        try:
+            resp = self._client.ssh_keys.list()
+            ssh_keys: list[dict[str, Any]] = self._extract_list(resp, "ssh_keys")
+        except Exception as exc:
+            logger.warning(
+                "Could not list SSH keys for engagement-level cleanup (engagement_id=%s): %s",
+                engagement_id,
+                exc,
+            )
+            return
+
+        for key in ssh_keys:
+            key_name: str = key.get("name", "")
+            if not key_name.startswith(name_prefix):
+                continue
+            key_id = str(key.get("id", ""))
+            try:
+                self._client.ssh_keys.delete(ssh_key_identifier=key_id)
+                self._audit.write_entry(
+                    engagement_id=engagement_id,
+                    action="cleanup_ssh_key",
+                    provider="digitalocean",
+                    resource_id=f"ssh-key-{key_id}",
+                    response_code=204,
+                )
+                logger.debug(
+                    "Deleted engagement SSH key %s (name=%s) for engagement %s",
+                    key_id,
+                    key_name,
+                    engagement_id,
+                )
+            except Exception as exc:
+                logger.warning(
+                    "Failed to delete SSH key %s (name=%s) for engagement %s: %s",
+                    key_id,
+                    key_name,
+                    engagement_id,
+                    exc,
+                )
+
+    def _cleanup_engagement_firewalls(self, engagement_id: str) -> None:
+        """Delete all firewalls whose name begins with ``jerry-proxy-{engagement_id}``.
+
+        Fallback sweep for cross-process destroy scenarios where ``_node_registry``
+        is empty (PI-005).  Queries the DigitalOcean firewalls API, filters by the
+        engagement-scoped name prefix, and deletes each match.  An audit entry is
+        written for every deleted firewall (FIND-003).
+
+        Firewall names follow the pattern ``jerry-proxy-{engagement_id}-{node_index}``
+        (set at provision time).  The prefix filter
+        ``jerry-proxy-{engagement_id}`` is therefore a correct sub-string match
+        for all firewalls belonging to this engagement.
+
+        Args:
+            engagement_id: Engagement identifier used to build the name prefix
+                ``jerry-proxy-{engagement_id}``.
+        """
+        name_prefix = f"jerry-proxy-{engagement_id}"
+        try:
+            resp = self._client.firewalls.list()
+            firewalls: list[dict[str, Any]] = self._extract_list(resp, "firewalls")
+        except Exception as exc:
+            logger.warning(
+                "Could not list firewalls for engagement-level cleanup (engagement_id=%s): %s",
+                engagement_id,
+                exc,
+            )
+            return
+
+        for fw in firewalls:
+            fw_name: str = fw.get("name", "")
+            if not fw_name.startswith(name_prefix):
+                continue
+            fw_id = str(fw.get("id", ""))
+            try:
+                self._client.firewalls.delete(firewall_id=fw_id)
+                self._audit.write_entry(
+                    engagement_id=engagement_id,
+                    action="cleanup_firewall",
+                    provider="digitalocean",
+                    resource_id=f"fw-{fw_id}",
+                    response_code=204,
+                )
+                logger.debug(
+                    "Deleted engagement firewall %s (name=%s) for engagement %s",
+                    fw_id,
+                    fw_name,
+                    engagement_id,
+                )
+            except Exception as exc:
+                logger.warning(
+                    "Failed to delete firewall %s (name=%s) for engagement %s: %s",
+                    fw_id,
+                    fw_name,
+                    engagement_id,
+                    exc,
+                )
 
     @staticmethod
     def _extract_list(resp: Any, key: str) -> list[dict[str, Any]]:
@@ -683,6 +859,6 @@ class DigitalOceanProvisionerAdapter(ProxyProvisionerPort):
             proxy_type=ProxyType.DIRECT_SOCKS5,
             status=status,
             ssh_key_id="",
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
             engagement_id="",
         )

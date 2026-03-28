@@ -31,22 +31,17 @@ Test pyramid: 60% happy path / 30% negative / 10% architecture
 
 from __future__ import annotations
 
-import time
-from datetime import datetime, timezone
-from unittest.mock import MagicMock, call, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
-from src.proxy_infra.infrastructure.adapters.digitalocean_adapter import (
-    DigitalOceanProvisionerAdapter,
-)
-from src.proxy_infra.domain.value_objects.node_status import NodeStatus
+from src.proxy_infra.domain.value_objects.destroy_result import DestroyResult
 from src.proxy_infra.domain.value_objects.provision_config import ProvisionConfig
 from src.proxy_infra.domain.value_objects.proxy_role import ProxyRole
 from src.proxy_infra.domain.value_objects.proxy_type import ProxyType
-from src.proxy_infra.domain.value_objects.destroy_result import DestroyResult
-from src.proxy_infra.domain.exceptions import ProvisioningError
-
+from src.proxy_infra.infrastructure.adapters.digitalocean_adapter import (
+    DigitalOceanProvisionerAdapter,
+)
 
 # =============================================================================
 # Fixtures
@@ -58,9 +53,7 @@ def mock_do_client() -> MagicMock:
     """Return a fully configured mock of the pydo Client for DO adapter tests."""
     client = MagicMock()
     # Simulate successful SSH key upload
-    client.ssh_keys.create.return_value = {
-        "ssh_key": {"id": 98765, "name": "jerry-proxy-ENG-001"}
-    }
+    client.ssh_keys.create.return_value = {"ssh_key": {"id": 98765, "name": "jerry-proxy-ENG-001"}}
     # Simulate successful droplet creation
     client.droplets.create.return_value = {
         "droplet": {
@@ -77,9 +70,7 @@ def mock_do_client() -> MagicMock:
             "id": 12345,
             "name": "jerry-proxy-ENG-001-nyc1",
             "status": "active",
-            "networks": {
-                "v4": [{"type": "public", "ip_address": "203.0.113.10"}]
-            },
+            "networks": {"v4": [{"type": "public", "ip_address": "203.0.113.10"}]},
         }
     }
     # Simulate successful firewall creation
@@ -100,6 +91,7 @@ def mock_preflight() -> MagicMock:
     """Return a mock ApiKeyPreflightChecker that always passes."""
     preflight = MagicMock()
     from src.proxy_infra.infrastructure.preflight import PreflightResult, PreflightStatus
+
     preflight.run.return_value = PreflightResult(
         status=PreflightStatus.PASS,
         provider="digitalocean",
@@ -190,24 +182,26 @@ class TestDigitalOceanAdapterProvision:
         """TASK-023-028 AC: SSH key must be uploaded before droplet is created."""
         call_order = []
         mock_do_client.ssh_keys.create.side_effect = lambda **kw: (
-            call_order.append("ssh_key_create")
-            or {"ssh_key": {"id": 98765, "name": "test"}}
+            call_order.append("ssh_key_create") or {"ssh_key": {"id": 98765, "name": "test"}}
         )
         mock_do_client.droplets.create.side_effect = lambda **kw: (
             call_order.append("droplet_create")
-            or {"droplet": {
-                "id": 12345, "name": "test", "status": "new",
-                "networks": {"v4": []}, "tags": []
-            }}
+            or {
+                "droplet": {
+                    "id": 12345,
+                    "name": "test",
+                    "status": "new",
+                    "networks": {"v4": []},
+                    "tags": [],
+                }
+            }
         )
         try:
             adapter.provision(provision_config)
         except Exception:
             pass  # POST-create steps may fail in mocked context
         if "ssh_key_create" in call_order and "droplet_create" in call_order:
-            assert call_order.index("ssh_key_create") < call_order.index(
-                "droplet_create"
-            ), (
+            assert call_order.index("ssh_key_create") < call_order.index("droplet_create"), (
                 "SSH key must be uploaded BEFORE droplet is created — "
                 "TASK-023-028 AC: droplet references the key ID at creation time"
             )
@@ -253,6 +247,7 @@ class TestDigitalOceanAdapterProvision:
             # If user_data is present, it must be plain text starting with #cloud-config
             # or a shebang — not a base64 blob
             import base64
+
             try:
                 decoded = base64.b64decode(user_data, validate=True)
                 # If it decodes cleanly AND looks like cloud-init, it may be base64
@@ -297,9 +292,7 @@ class TestDigitalOceanAdapterProvision:
         """provision() must return a list with one ProxyNode for count=1."""
         result = adapter.provision(provision_config)
         assert isinstance(result, list), "provision() must return a list"
-        assert len(result) == 1, (
-            "provision() with count=1 must return a list with one ProxyNode"
-        )
+        assert len(result) == 1, "provision() with count=1 must return a list with one ProxyNode"
 
     def test_provision_node_has_provider_set_to_digitalocean(
         self,
@@ -394,8 +387,11 @@ class TestDigitalOceanAdapterRateLimits:
         rate_limit_exc = Exception("429 Too Many Requests")
         success_response = {
             "droplet": {
-                "id": 12345, "name": "test", "status": "new",
-                "networks": {"v4": []}, "tags": []
+                "id": 12345,
+                "name": "test",
+                "status": "new",
+                "networks": {"v4": []},
+                "tags": [],
             }
         }
         mock_do_client.droplets.create.side_effect = [rate_limit_exc, success_response]
@@ -486,6 +482,7 @@ class TestDigitalOceanAdapterDestroy:
         When one node fails to destroy (e.g., already deleted, API error),
         the operator must know which nodes need manual cleanup.
         """
+
         # First call succeeds, second fails
         def destroy_side_effect(droplet_id: str, **kwargs: object) -> None:
             if str(droplet_id) == "do-99999":
@@ -511,8 +508,16 @@ class TestDigitalOceanAdapterDestroy:
 
         SSH keys persisting in the provider account after teardown allow
         post-engagement enumeration of historical key fingerprints.
+
+        Uses engagement_id to trigger the name-based sweep (cross-process
+        resilience path) since a fresh adapter has an empty _node_registry.
         """
-        adapter.destroy(node_ids=["do-11111"])
+        mock_do_client.ssh_keys.list.return_value = {
+            "ssh_keys": [
+                {"id": 99999, "name": "jerry-proxy-ENG-TEST"},
+            ]
+        }
+        adapter.destroy(node_ids=["do-11111"], engagement_id="ENG-TEST")
         mock_do_client.ssh_keys.delete.assert_called()
 
     def test_destroy_deletes_associated_firewall(
@@ -520,8 +525,17 @@ class TestDigitalOceanAdapterDestroy:
         adapter: DigitalOceanProvisionerAdapter,
         mock_do_client: MagicMock,
     ) -> None:
-        """TASK-023-028 AC: destroy() must delete the firewall rules created at provision."""
-        adapter.destroy(node_ids=["do-11111"])
+        """TASK-023-028 AC: destroy() must delete the firewall rules created at provision.
+
+        Uses engagement_id to trigger the name-based sweep (cross-process
+        resilience path) since a fresh adapter has an empty _node_registry.
+        """
+        mock_do_client.firewalls.list.return_value = {
+            "firewalls": [
+                {"id": "fw-abc", "name": "jerry-proxy-ENG-TEST-0"},
+            ]
+        }
+        adapter.destroy(node_ids=["do-11111"], engagement_id="ENG-TEST")
         mock_do_client.firewalls.delete.assert_called()
 
 
@@ -606,14 +620,13 @@ class TestDigitalOceanAdapterApiKeySource:
     def test_adapter_can_be_constructed_from_env_var(self) -> None:
         """TASK-023-028 AC: adapter must expose from_env() factory method."""
         import os
+
         with patch.dict(os.environ, {"JERRY_PROXY_DO_API_KEY": "dop_test_key"}):
             with patch(
                 "src.proxy_infra.infrastructure.adapters.digitalocean_adapter.Client"
             ) as mock_client_class:
                 mock_client_class.return_value = MagicMock()
-                adapter = DigitalOceanProvisionerAdapter.from_env(
-                    engagement_id="ENG-001"
-                )
+                adapter = DigitalOceanProvisionerAdapter.from_env(engagement_id="ENG-001")
         assert adapter is not None, (
             "DigitalOceanProvisionerAdapter.from_env() must return an adapter instance"
         )
@@ -629,6 +642,4 @@ class TestDigitalOceanAdapterApiKeySource:
             preflight_checker=mock_preflight,
         )
         repr_str = repr(adapter)
-        assert "dop_v1_" not in repr_str, (
-            "Adapter repr must not expose API key — APIKEY-002"
-        )
+        assert "dop_v1_" not in repr_str, "Adapter repr must not expose API key — APIKEY-002"

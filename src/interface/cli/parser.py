@@ -120,6 +120,9 @@ Examples:
     # Tool namespace (STORY-W12-001: jerry tool exec CLI)
     _add_tool_namespace(subparsers)
 
+    # Proxy namespace (STORY-023-022: Jerry CLI Proxy Namespace Integration)
+    _add_proxy_namespace(subparsers)
+
     return parser
 
 
@@ -1117,4 +1120,170 @@ def _add_tool_namespace(
         help=(
             "List all tools in the registry and exit. Optionally filter to a specific FAMILY name."
         ),
+    )
+
+
+def _add_proxy_namespace(
+    subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
+) -> None:
+    """Add proxy namespace commands for proxy infrastructure management.
+
+    Commands:
+        - credentials set/check/delete: Manage cloud provider API keys
+        - engage: Run the full hands-free pipeline from config
+        - status: List proxy nodes for an engagement
+        - destroy: Tear down proxy infrastructure
+        - gc: Garbage collect orphaned resources
+
+    References:
+        - STORY-023-022: Jerry CLI Proxy Namespace Integration
+        - ADR-PROJ023-008: CLI Bounded Context Architecture for Proxy Infrastructure
+    """
+    proxy_parser = subparsers.add_parser(
+        "proxy",
+        help="Proxy infrastructure management commands",
+        description="Manage proxy infrastructure for red team engagements.",
+    )
+
+    proxy_subparsers = proxy_parser.add_subparsers(
+        title="commands",
+        dest="command",
+        metavar="<command>",
+    )
+
+    # --- credentials subcommand group ---
+    _add_proxy_credentials_subcommands(proxy_subparsers)
+
+    # --- engage ---
+    engage_parser = proxy_subparsers.add_parser(
+        "engage",
+        help="Run the full hands-free proxy pipeline",
+        description="Parse engagement config, generate SSH keys, provision nodes, "
+        "inject credentials, verify connectivity, and compose manifests.",
+    )
+    engage_parser.add_argument(
+        "config",
+        help="Path to engagement YAML config file",
+    )
+    engage_parser.add_argument(
+        "--full-pipeline",
+        dest="full_pipeline",
+        action="store_true",
+        default=False,
+        help="Run the full engage-to-route pipeline (provision + inject + verify + compose)",
+    )
+
+    # --- status ---
+    status_parser = proxy_subparsers.add_parser(
+        "status",
+        help="List proxy nodes for an engagement",
+        description="Query the cloud provider for all proxy nodes tagged with the engagement ID.",
+    )
+    status_parser.add_argument(
+        "--engagement",
+        required=True,
+        help="Engagement ID to query (e.g., RED-0001)",
+    )
+
+    # --- destroy ---
+    destroy_parser = proxy_subparsers.add_parser(
+        "destroy",
+        help="Tear down proxy infrastructure",
+        description="Destroy all (or specified) proxy nodes for an engagement. Zone 3 operation.",
+    )
+    destroy_parser.add_argument(
+        "--engagement",
+        required=True,
+        help="Engagement ID to destroy (e.g., RED-0001)",
+    )
+    destroy_parser.add_argument(
+        "--node-ids",
+        dest="node_ids",
+        nargs="*",
+        default=None,
+        help="Specific node IDs to destroy (default: all nodes for engagement)",
+    )
+
+    # --- gc ---
+    gc_parser = proxy_subparsers.add_parser(
+        "gc",
+        help="Garbage collect orphaned proxy resources",
+        description="Detect and optionally destroy orphaned proxy nodes not associated "
+        "with active engagements.",
+    )
+    gc_parser.add_argument(
+        "--engagement",
+        required=True,
+        help="Engagement ID to search for orphaned resources",
+    )
+    gc_mode_group = gc_parser.add_mutually_exclusive_group()
+    gc_mode_group.add_argument(
+        "--dry-run",
+        dest="dry_run",
+        action="store_true",
+        default=True,
+        help="List orphans without destroying (default)",
+    )
+    gc_mode_group.add_argument(
+        "--confirm",
+        action="store_true",
+        default=False,
+        help="Destroy all discovered orphans (Zone 3 operation)",
+    )
+
+
+def _add_proxy_credentials_subcommands(
+    proxy_subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
+) -> None:
+    """Add ``jerry proxy credentials set/check/delete`` subcommands.
+
+    Three-level deep command structure: proxy -> credentials -> set/check/delete.
+    Each subcommand takes a positional ``provider`` argument.
+
+    Args:
+        proxy_subparsers: The subparsers action from the proxy namespace parser.
+    """
+    cred_parser = proxy_subparsers.add_parser(
+        "credentials",
+        help="Manage cloud provider API keys",
+        description="Store, check, or delete cloud provider credentials in macOS Keychain.",
+    )
+
+    cred_subparsers = cred_parser.add_subparsers(
+        title="credential commands",
+        dest="credentials_command",
+        metavar="<action>",
+    )
+
+    # credentials set
+    set_parser = cred_subparsers.add_parser(
+        "set",
+        help="Store a cloud provider API key in macOS Keychain",
+        description="Prompt for an API key (no echo) and store it securely.",
+    )
+    set_parser.add_argument(
+        "provider",
+        help="Cloud provider name (e.g., digitalocean)",
+    )
+
+    # credentials check
+    check_parser = cred_subparsers.add_parser(
+        "check",
+        help="Check if a credential exists without revealing the value",
+        description="Report whether a credential is stored in Keychain or environment.",
+    )
+    check_parser.add_argument(
+        "provider",
+        help="Cloud provider name (e.g., digitalocean)",
+    )
+
+    # credentials delete
+    delete_parser = cred_subparsers.add_parser(
+        "delete",
+        help="Remove a stored credential from macOS Keychain",
+        description="Delete the API key for the specified provider.",
+    )
+    delete_parser.add_argument(
+        "provider",
+        help="Cloud provider name (e.g., digitalocean)",
     )

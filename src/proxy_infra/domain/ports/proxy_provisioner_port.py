@@ -51,14 +51,19 @@ class ProxyProvisionerPort(ABC):
         raise NotImplementedError("TASK-023-027: not yet implemented")
 
     @abstractmethod
-    def destroy(self, node_ids: list[str]) -> DestroyResult:
+    def destroy(self, node_ids: list[str], engagement_id: str = "") -> DestroyResult:
         """Destroy one or more proxy nodes.
 
         Removes cloud instances and cleans up associated resources
-        (SSH keys, firewall rules, DNS records).
+        (SSH keys, firewall rules, DNS records).  When ``engagement_id``
+        is provided, performs an engagement-level sweep to delete any
+        orphaned SSH keys and firewalls that the in-memory registry
+        could not locate (PI-005: cross-process resilience).
 
         Args:
             node_ids: Provider-assigned node identifiers to destroy.
+            engagement_id: Optional engagement identifier for name-based
+                resource cleanup across process boundaries.
 
         Returns:
             DestroyResult with success/failure details per node.

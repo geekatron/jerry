@@ -127,6 +127,8 @@ def main() -> int:
         return _handle_hooks(adapter, args)
     elif args.namespace == "tool":
         return _handle_tool(args)
+    elif args.namespace == "proxy":
+        return _handle_proxy(args, json_output)
 
     # Unknown namespace (shouldn't happen with argparse)
     parser.print_help()
@@ -805,6 +807,371 @@ def _handle_hooks(adapter: CLIAdapter, args: Any) -> int:
         stdin_json = sys.stdin.read()
 
     return adapter.cmd_hooks(hooks_command, stdin_json)
+
+
+def _handle_proxy(args: Any, json_output: bool) -> int:
+    """Route proxy namespace commands.
+
+    Does not require the CLIAdapter; uses the proxy_infra bounded context
+    with its own composition roots in proxy_commands.py.
+
+    Args:
+        args: Parsed arguments with .command (and sub-attributes per subcommand).
+        json_output: Whether to output JSON.
+
+    Returns:
+        Exit code: 0 (success), 1 (error).
+
+    References:
+        - STORY-023-022: Jerry CLI Proxy Namespace Integration
+    """
+    if args.command is None:
+        print("No proxy command specified. Use 'jerry proxy --help'.")
+        return 1
+
+    if args.command == "credentials":
+        return _handle_proxy_credentials(args, json_output)
+    elif args.command == "engage":
+        return _handle_proxy_engage(args, json_output)
+    elif args.command == "status":
+        return _handle_proxy_status(args, json_output)
+    elif args.command == "destroy":
+        return _handle_proxy_destroy(args, json_output)
+    elif args.command == "gc":
+        return _handle_proxy_gc(args, json_output)
+
+    print(f"Unknown proxy command: {args.command}")
+    return 1
+
+
+def _handle_proxy_credentials(args: Any, json_output: bool) -> int:
+    """Route proxy credentials subcommands (set/check/delete).
+
+    Args:
+        args: Parsed arguments with .credentials_command and .provider.
+        json_output: Whether to output JSON.
+
+    Returns:
+        Exit code.
+    """
+    credentials_command = getattr(args, "credentials_command", None)
+    if credentials_command is None:
+        print("No credentials command specified. Use 'jerry proxy credentials --help'.")
+        return 1
+
+    from src.proxy_infra.interface.cli.proxy_commands import (
+        credentials_check_command,
+        credentials_delete_command,
+        credentials_set_command,
+    )
+
+    if credentials_command == "set":
+        import getpass
+
+        api_key = getpass.getpass(f"Enter {args.provider} API key: ")
+        if not api_key.strip():
+            print("Error: API key cannot be empty.")
+            return 1
+        credentials_set_command(args.provider, api_key)
+        print(f"Stored in macOS Keychain as jerry/proxy.{args.provider}.api-key")
+        return 0
+
+    elif credentials_command == "check":
+        result = credentials_check_command(args.provider)
+        if json_output:
+            import json
+
+            print(
+                json.dumps(
+                    {
+                        "found": result.found,
+                        "provider": result.provider,
+                        "source": result.source,
+                    }
+                )
+            )
+        elif result.found:
+            print(f"Found: {args.provider} credential in {result.source}")
+        else:
+            print(f"Not found: no credential for {args.provider}")
+            print(f"  Store one with: jerry proxy credentials set {args.provider}")
+        return 0 if result.found else 1
+
+    elif credentials_command == "delete":
+        deleted = credentials_delete_command(args.provider)
+        if json_output:
+            import json
+
+            print(json.dumps({"deleted": deleted, "provider": args.provider}))
+        elif deleted:
+            print(f"Deleted: {args.provider} credential removed from Keychain")
+        else:
+            print(f"Not found: no credential to delete for {args.provider}")
+        return 0 if deleted else 1
+
+    print(f"Unknown credentials command: {credentials_command}")
+    return 1
+
+
+def _handle_proxy_engage(args: Any, json_output: bool) -> int:
+    """Handle ``jerry proxy engage <config.yaml>``.
+
+    Args:
+        args: Parsed arguments with .config and .full_pipeline.
+        json_output: Whether to output JSON.
+
+    Returns:
+        Exit code.
+    """
+    from pathlib import Path
+
+    from src.proxy_infra.interface.cli.proxy_commands import engage_command
+
+    config_path = Path(args.config)
+    if not config_path.exists():
+        print(f"Error: config file not found: {config_path}")
+        return 1
+
+    # Parse config to get engagement_id for adapter construction
+    from src.proxy_infra.application.handlers.engagement_config_parser import (
+        EngagementConfigParser,
+    )
+
+    eng_config = EngagementConfigParser().parse(config_path)
+    adapter, audit_store = _create_proxy_adapter(eng_config.engagement_id)
+    full_pipeline = getattr(args, "full_pipeline", False)
+
+    try:
+        nodes = engage_command(
+            config_path=config_path,
+            adapter=adapter,
+            audit_store=audit_store,
+            full_pipeline=full_pipeline,
+        )
+        if json_output:
+            import json
+
+            print(
+                json.dumps(
+                    {
+                        "status": "success",
+                        "nodes": [{"id": n.id, "ip": n.ip, "region": n.region} for n in nodes],
+                    }
+                )
+            )
+        else:
+            print(f"Engaged {len(nodes)} proxy node(s):")
+            for node in nodes:
+                print(f"  {node.id}  {node.ip}  {node.region}")
+        return 0
+    except Exception as exc:
+        print(f"Error: {exc}")
+        return 1
+
+
+def _derive_engagement_tag(engagement_id: str) -> str:
+    """Derive the engagement tag from a raw engagement ID.
+
+    Matches ``EngagementConfig.engagement_tag`` property so the CLI user
+    can pass the raw ID (e.g., ``RED-0001``) and the handler translates
+    it to the tag format used by the adapter (``jerry-red-0001``).
+
+    Args:
+        engagement_id: Raw engagement ID from CLI args.
+
+    Returns:
+        Derived engagement tag for adapter filtering.
+    """
+    return f"jerry-{engagement_id.lower()}"
+
+
+def _handle_proxy_status(args: Any, json_output: bool) -> int:
+    """Handle ``jerry proxy status --engagement <id>``.
+
+    Args:
+        args: Parsed arguments with .engagement.
+        json_output: Whether to output JSON.
+
+    Returns:
+        Exit code.
+    """
+    from src.proxy_infra.interface.cli.proxy_commands import status_command
+
+    tag = _derive_engagement_tag(args.engagement)
+    adapter, audit_store = _create_proxy_adapter(tag)
+    nodes = status_command(tag, adapter, audit_store)
+
+    if json_output:
+        import json
+
+        print(
+            json.dumps(
+                {
+                    "engagement": args.engagement,
+                    "nodes": [
+                        {
+                            "id": n.id,
+                            "ip": n.ip,
+                            "region": n.region,
+                            "status": n.status.value
+                            if hasattr(n.status, "value")
+                            else str(n.status),
+                        }
+                        for n in nodes
+                    ],
+                }
+            )
+        )
+    else:
+        if not nodes:
+            print(f"No proxy nodes found for engagement {args.engagement}")
+        else:
+            print(f"Proxy nodes for engagement {args.engagement}:")
+            for node in nodes:
+                status_val = (
+                    node.status.value if hasattr(node.status, "value") else str(node.status)
+                )
+                print(f"  {node.id}  {node.ip}  {node.region}  {status_val}")
+    return 0
+
+
+def _handle_proxy_destroy(args: Any, json_output: bool) -> int:
+    """Handle ``jerry proxy destroy --engagement <id>``.
+
+    Args:
+        args: Parsed arguments with .engagement and optional .node_ids.
+        json_output: Whether to output JSON.
+
+    Returns:
+        Exit code.
+    """
+    from src.proxy_infra.interface.cli.proxy_commands import destroy_command
+
+    raw_id = args.engagement
+    tag = _derive_engagement_tag(raw_id)
+    adapter, audit_store = _create_proxy_adapter(tag)
+    node_ids = getattr(args, "node_ids", None)
+
+    result = destroy_command(tag, adapter, audit_store, node_ids=node_ids, raw_engagement_id=raw_id)
+
+    if json_output:
+        import json
+
+        print(
+            json.dumps(
+                {
+                    "engagement": args.engagement,
+                    "destroyed": result.destroyed,
+                    "failed": result.failed,
+                    "success": result.is_all_successful,
+                }
+            )
+        )
+    else:
+        if result.is_all_successful:
+            print(f"Destroyed {len(result.destroyed)} node(s) for engagement {args.engagement}")
+        else:
+            print(f"Partial failure: {len(result.failed)} node(s) failed to destroy")
+    return 0 if result.is_all_successful else 1
+
+
+def _handle_proxy_gc(args: Any, json_output: bool) -> int:
+    """Handle ``jerry proxy gc --engagement <id>``.
+
+    Args:
+        args: Parsed arguments with .engagement, .dry_run, and .confirm.
+        json_output: Whether to output JSON.
+
+    Returns:
+        Exit code.
+    """
+    from src.proxy_infra.interface.cli.proxy_commands import gc_command
+
+    raw_id = args.engagement
+    tag = _derive_engagement_tag(raw_id)
+    adapter, audit_store = _create_proxy_adapter(tag)
+    dry_run = not getattr(args, "confirm", False)
+
+    orphan_ids = gc_command(tag, adapter, audit_store, dry_run=dry_run, raw_engagement_id=raw_id)
+
+    if json_output:
+        import json
+
+        print(
+            json.dumps(
+                {
+                    "engagement": args.engagement,
+                    "dry_run": dry_run,
+                    "orphan_ids": orphan_ids,
+                    "count": len(orphan_ids),
+                }
+            )
+        )
+    else:
+        mode = "DRY RUN" if dry_run else "CONFIRM"
+        if orphan_ids:
+            print(f"[{mode}] Found {len(orphan_ids)} orphaned node(s):")
+            for oid in orphan_ids:
+                print(f"  {oid}")
+            if not dry_run:
+                print("Orphaned nodes destroyed.")
+        else:
+            print(f"[{mode}] No orphaned nodes found for engagement {args.engagement}")
+    return 0
+
+
+def _create_proxy_adapter(engagement_id: str) -> tuple[Any, Any]:
+    """Bootstrap the proxy provisioner adapter and audit store.
+
+    Composition root for proxy CLI commands that need cloud provider access.
+    Creates a DigitalOcean adapter from environment and a filesystem audit store.
+
+    Args:
+        engagement_id: Engagement identifier for adapter construction and audit log.
+
+    Returns:
+        Tuple of (ProxyProvisionerPort adapter, AuditLogStore).
+
+    Raises:
+        SystemExit: If no API key is available (Keychain or environment).
+    """
+    import os
+
+    from src.proxy_infra.infrastructure.persistence.audit_log_store import AuditLogStore
+
+    # Resolve API key: Keychain first, then environment
+    api_key = os.environ.get("JERRY_PROXY_DO_API_KEY") or os.environ.get(
+        "DIGITALOCEAN_ACCESS_TOKEN"
+    )
+    if not api_key:
+        try:
+            from src.proxy_infra.infrastructure.credentials.keyring_credential_store import (
+                KeyringCredentialStore,
+            )
+
+            store = KeyringCredentialStore()
+            api_key = store.get_credential("digitalocean")
+        except Exception:
+            pass
+
+    if not api_key:
+        print(
+            "Error: No DigitalOcean API key found.\n"
+            "  Set one with: jerry proxy credentials set digitalocean\n"
+            "  Or export JERRY_PROXY_DO_API_KEY=<your-key>"
+        )
+        raise SystemExit(1)
+
+    # Export for the adapter's from_env() factory
+    os.environ["JERRY_PROXY_DO_API_KEY"] = api_key
+
+    from src.proxy_infra.infrastructure.adapters.digitalocean_adapter import (
+        DigitalOceanProvisionerAdapter,
+    )
+
+    adapter = DigitalOceanProvisionerAdapter.from_env(engagement_id)
+    audit_store = AuditLogStore()
+    return adapter, audit_store
 
 
 if __name__ == "__main__":

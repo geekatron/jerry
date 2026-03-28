@@ -29,20 +29,18 @@ Naming convention: test_{scenario}_when_{condition}_then_{expected}
 from __future__ import annotations
 
 import json
-import tempfile
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
-from unittest.mock import MagicMock, call, patch
+from unittest.mock import MagicMock, call
 
 import pytest
 
 from src.proxy_infra.domain.value_objects.destroy_result import DestroyResult
 from src.proxy_infra.domain.value_objects.node_status import NodeStatus
+from src.proxy_infra.domain.value_objects.provision_config import ProvisionConfig
 from src.proxy_infra.domain.value_objects.proxy_node import ProxyNode
 from src.proxy_infra.domain.value_objects.proxy_role import ProxyRole
 from src.proxy_infra.domain.value_objects.proxy_type import ProxyType
-from src.proxy_infra.domain.value_objects.provision_config import ProvisionConfig
 from src.proxy_infra.infrastructure.persistence.audit_log_store import AuditLogStore
 from src.proxy_infra.interface.cli.proxy_commands import (
     destroy_command,
@@ -51,7 +49,6 @@ from src.proxy_infra.interface.cli.proxy_commands import (
     rotate_command,
     status_command,
 )
-
 
 # =============================================================================
 # Shared fixtures
@@ -76,7 +73,7 @@ def sample_node() -> ProxyNode:
         proxy_type=ProxyType.DIRECT_SOCKS5,
         status=NodeStatus.READY,
         ssh_key_id="key-1",
-        created_at=datetime(2026, 1, 1, tzinfo=timezone.utc),
+        created_at=datetime(2026, 1, 1, tzinfo=UTC),
         engagement_id="ENG-001",
     )
 
@@ -164,7 +161,7 @@ class TestProvisionCommand:
                 proxy_type=ProxyType.DIRECT_SOCKS5,
                 status=NodeStatus.CONFIGURING,
                 ssh_key_id=f"key-{i}",
-                created_at=datetime(2026, 1, 1, tzinfo=timezone.utc),
+                created_at=datetime(2026, 1, 1, tzinfo=UTC),
                 engagement_id="ENG-001",
             )
             for i in range(3)
@@ -342,7 +339,7 @@ class TestRotateCommand:
             proxy_type=ProxyType.DIRECT_SOCKS5,
             status=NodeStatus.CONFIGURING,
             ssh_key_id="key-new",
-            created_at=datetime(2026, 1, 2, tzinfo=timezone.utc),
+            created_at=datetime(2026, 1, 2, tzinfo=UTC),
             engagement_id="ENG-001",
         )
         adapter = _make_adapter(nodes=[replacement], has_preflight=True)
@@ -429,7 +426,7 @@ class TestDestroyCommand:
 
         result = destroy_command("ENG-001", adapter, audit_store, node_ids=["do-111"])
 
-        adapter.destroy.assert_called_once_with(["do-111"])
+        adapter.destroy.assert_called_once_with(["do-111"], engagement_id="ENG-001")
         assert result.destroyed == ["do-111"]
         assert result.failed == []
 
@@ -445,19 +442,24 @@ class TestDestroyCommand:
         result = destroy_command("ENG-001", adapter, audit_store, node_ids=None)
 
         adapter.list_instances.assert_called_once_with("ENG-001")
-        adapter.destroy.assert_called_once_with(["do-111"])
+        adapter.destroy.assert_called_once_with(["do-111"], engagement_id="ENG-001")
         assert result.is_all_successful
 
     def test_destroy_when_no_nodes_found_then_returns_empty_result(
         self,
         audit_store: AuditLogStore,
     ) -> None:
-        """destroy_command returns empty DestroyResult when there are no nodes."""
+        """destroy_command returns empty DestroyResult when there are no nodes.
+
+        Even with no droplets, the engagement-level sweep still runs to clean
+        up orphaned SSH keys and firewalls (PI-005 cross-process resilience).
+        """
         adapter = _make_adapter(nodes=[])
 
         result = destroy_command("ENG-001", adapter, audit_store)
 
-        adapter.destroy.assert_not_called()
+        # Sweep runs with empty node list to clean orphaned SSH keys / firewalls
+        adapter.destroy.assert_called_once_with([], engagement_id="ENG-001")
         assert result.destroyed == []
         assert result.failed == []
 
@@ -496,9 +498,7 @@ class TestDestroyCommand:
     ) -> None:
         """destroy_command preserves partial failure information from the adapter."""
         adapter = _make_adapter(nodes=[])
-        adapter.destroy.return_value = DestroyResult(
-            destroyed=["do-111"], failed=["do-222"]
-        )
+        adapter.destroy.return_value = DestroyResult(destroyed=["do-111"], failed=["do-222"])
 
         result = destroy_command("ENG-001", adapter, audit_store, node_ids=["do-111", "do-222"])
 
@@ -592,7 +592,7 @@ class TestGcCommandDryRun:
                 proxy_type=ProxyType.DIRECT_SOCKS5,
                 status=NodeStatus.READY,
                 ssh_key_id=f"key-{i}",
-                created_at=datetime(2026, 1, 1, tzinfo=timezone.utc),
+                created_at=datetime(2026, 1, 1, tzinfo=UTC),
                 engagement_id="ENG-CRASHED",
             )
             for i in range(3)
@@ -619,7 +619,7 @@ class TestGcCommandConfirm:
 
         result = gc_command("ENG-001", adapter, audit_store, dry_run=False)
 
-        adapter.destroy.assert_called_once_with(["do-111"])
+        adapter.destroy.assert_called_once_with(["do-111"], engagement_id="ENG-001")
         assert result == ["do-111"]
 
     def test_gc_confirm_when_no_orphans_then_destroy_not_called(
@@ -677,7 +677,7 @@ class TestGcCommandConfirm:
                 proxy_type=ProxyType.SSH_TUNNEL,
                 status=NodeStatus.READY,
                 ssh_key_id="k1",
-                created_at=datetime(2026, 2, 1, tzinfo=timezone.utc),
+                created_at=datetime(2026, 2, 1, tzinfo=UTC),
                 engagement_id="ENG-002",
             ),
             ProxyNode(
@@ -689,7 +689,7 @@ class TestGcCommandConfirm:
                 proxy_type=ProxyType.SSH_TUNNEL,
                 status=NodeStatus.READY,
                 ssh_key_id="k2",
-                created_at=datetime(2026, 2, 1, tzinfo=timezone.utc),
+                created_at=datetime(2026, 2, 1, tzinfo=UTC),
                 engagement_id="ENG-002",
             ),
         ]
@@ -859,7 +859,7 @@ class TestCliCommandArchitecture:
         key = "src.proxy_infra.interface.cli.proxy_commands"
         sys.modules.pop(key, None)
 
-        mod = importlib.import_module(key)
+        importlib.import_module(key)  # ensure module is loadable
         src = importlib.util.find_spec(key)
         if src and src.origin:
             module_text = Path(src.origin).read_text()
@@ -868,7 +868,6 @@ class TestCliCommandArchitecture:
 
     def test_provision_command_function_has_type_annotations(self) -> None:
         """provision_command has complete return type annotation (H-11)."""
-        import inspect
         from src.proxy_infra.interface.cli.proxy_commands import provision_command as fn
 
         hints = fn.__annotations__

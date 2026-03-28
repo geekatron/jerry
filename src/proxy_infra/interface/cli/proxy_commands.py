@@ -30,6 +30,7 @@ References:
 from __future__ import annotations
 
 import os
+from datetime import UTC
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -37,8 +38,8 @@ if TYPE_CHECKING:
     from src.proxy_infra.application.handlers.credential_check_result import CredentialCheckResult
     from src.proxy_infra.domain.ports.proxy_provisioner_port import ProxyProvisionerPort
     from src.proxy_infra.domain.value_objects.destroy_result import DestroyResult
-    from src.proxy_infra.domain.value_objects.proxy_node import ProxyNode
     from src.proxy_infra.domain.value_objects.provision_config import ProvisionConfig
+    from src.proxy_infra.domain.value_objects.proxy_node import ProxyNode
     from src.proxy_infra.infrastructure.persistence.audit_log_store import AuditLogStore
 
 
@@ -209,7 +210,7 @@ def rotate_command(
         if remaining:
             return remaining[0]
         # Construct a minimal sentinel node using the existing node's id
-        from datetime import datetime, timezone
+        from datetime import datetime
 
         from src.proxy_infra.domain.value_objects.node_status import NodeStatus
         from src.proxy_infra.domain.value_objects.proxy_node import ProxyNode
@@ -225,7 +226,7 @@ def rotate_command(
             proxy_type=ProxyType.DIRECT_SOCKS5,
             status=NodeStatus.DESTROYED,
             ssh_key_id="",
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
             engagement_id=engagement_id,
         )
 
@@ -242,6 +243,7 @@ def destroy_command(
     adapter: ProxyProvisionerPort,
     audit_store: AuditLogStore,
     node_ids: list[str] | None = None,
+    raw_engagement_id: str = "",
 ) -> DestroyResult:
     """Tear down all (or specified) proxy nodes for an engagement.
 
@@ -250,12 +252,17 @@ def destroy_command(
     Zone 3 operation — caller must have obtained operator approval (P-020).
 
     Args:
-        engagement_id: Owning engagement identifier (PI-002).
+        engagement_id: Engagement tag for ``list_instances`` filtering
+            (e.g., ``jerry-red-0001``).  Also used as fallback for
+            ``raw_engagement_id`` if that parameter is empty.
         adapter: Concrete ProxyProvisionerPort implementation to use.
         audit_store: AuditLogStore for the destroy audit entry.
         node_ids: Specific node IDs to destroy.  When ``None`` or empty,
             the function queries ``adapter.list_instances(engagement_id)``
             first to obtain the full node list, then destroys all of them.
+        raw_engagement_id: Original engagement ID from the config (e.g.,
+            ``RED-0001``).  Used for SSH key and firewall name-based
+            cleanup (PI-005).  When empty, falls back to ``engagement_id``.
 
     Returns:
         DestroyResult with per-node success/failure lists.
@@ -276,9 +283,14 @@ def destroy_command(
         ids_to_destroy = [n.id for n in nodes]
 
     if not ids_to_destroy:
+        # Still run engagement-level cleanup for orphaned SSH keys / firewalls
+        cleanup_id = raw_engagement_id or engagement_id
+        adapter.destroy([], engagement_id=cleanup_id)
         return DestroyResult(destroyed=[], failed=[])
 
-    result = adapter.destroy(ids_to_destroy)
+    # Pass raw engagement ID for name-based SSH key / firewall cleanup (PI-005)
+    cleanup_id = raw_engagement_id or engagement_id
+    result = adapter.destroy(ids_to_destroy, engagement_id=cleanup_id)
 
     audit_store.write_entry(
         engagement_id=engagement_id,
@@ -301,6 +313,7 @@ def gc_command(
     adapter: ProxyProvisionerPort,
     audit_store: AuditLogStore,
     dry_run: bool = True,
+    raw_engagement_id: str = "",
 ) -> list[str]:
     """Detect and optionally destroy orphaned proxy nodes (ORPHAN-001 to ORPHAN-006).
 
@@ -352,7 +365,7 @@ def gc_command(
     _run_preflight_if_present(adapter)
 
     if orphan_ids:
-        adapter.destroy(orphan_ids)
+        adapter.destroy(orphan_ids, engagement_id=raw_engagement_id or engagement_id)
         audit_store.write_entry(
             engagement_id=engagement_id,
             action="destroy",
@@ -420,9 +433,9 @@ def engage_command(
     from src.proxy_infra.application.handlers.engagement_config_parser import (
         EngagementConfigParser,
     )
+    from src.proxy_infra.domain.value_objects.provision_config import ProvisionConfig
     from src.proxy_infra.domain.value_objects.proxy_role import ProxyRole
     from src.proxy_infra.domain.value_objects.proxy_type import ProxyType
-    from src.proxy_infra.domain.value_objects.provision_config import ProvisionConfig
     from src.proxy_infra.infrastructure.keygen.ssh_keygen_adapter import SshKeygenAdapter
 
     # Stage 1: Parse engagement config
@@ -559,12 +572,11 @@ def credentials_check_command(provider: str) -> CredentialCheckResult:
     from src.proxy_infra.application.handlers.credential_check_result import (
         CredentialCheckResult,
     )
-    from src.proxy_infra.infrastructure.credentials.keyring_credential_store import (
-        KeyringCredentialStore,
-    )
-
     from src.proxy_infra.domain.exceptions.credential_not_found_error import (
         CredentialNotFoundError as _CredNotFound,
+    )
+    from src.proxy_infra.infrastructure.credentials.keyring_credential_store import (
+        KeyringCredentialStore,
     )
 
     keyring_store = KeyringCredentialStore()
