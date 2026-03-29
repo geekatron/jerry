@@ -172,6 +172,10 @@ def pytest_configure(config: pytest.Config) -> None:
         "markers",
         "e2e: end-to-end tests requiring Docker and real CLI invocation",
     )
+    config.addinivalue_line(
+        "markers",
+        "e2e_targets: tests requiring vulnerable target containers (DVWA, vuln-api)",
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -315,6 +319,92 @@ def runtime_cluster(project_root: Path) -> str:  # type: ignore[misc]
     yield compose
 
     _compose_down(compose, cwd=cwd)
+
+
+@pytest.fixture(scope="session")
+def vulnerable_targets(project_root: Path, exploit_cluster: str) -> str:  # type: ignore[misc]
+    """Build and start vulnerable target containers once per session.
+
+    Starts DVWA and vulnerable REST API on the isolated z3-targets network
+    (internal: true, no internet egress). Composed alongside the exploit
+    cluster via multi-file compose so exploit-ops and exploit-msf can
+    reach targets through shared z3-targets membership.
+
+    Depends on exploit_cluster to ensure the base exploit compose is up
+    before the targets overlay is applied.
+
+    TASK-023-116: Target health check fixture + readiness polling.
+
+    Yields the targets compose file path.
+    """
+    targets_compose = str(
+        project_root / "skills/rainbow-exploit/tests/docker/docker-compose.targets.yml"
+    )
+    cwd = str(project_root)
+
+    # Build and start with both compose files so network extensions merge
+    subprocess.run(
+        [
+            "docker",
+            "compose",
+            "-f",
+            exploit_cluster,
+            "-f",
+            targets_compose,
+            "build",
+            "--quiet",
+        ],
+        check=True,
+        cwd=cwd,
+        timeout=600,
+    )
+    subprocess.run(
+        [
+            "docker",
+            "compose",
+            "-f",
+            exploit_cluster,
+            "-f",
+            targets_compose,
+            "up",
+            "--detach",
+            "dvwa",
+            "vuln-api",
+        ],
+        check=True,
+        cwd=cwd,
+        timeout=120,
+    )
+
+    # Poll both targets for readiness (TASK-023-116 AC: 30s timeout)
+    dvwa_ready = _wait_for_health(targets_compose, "dvwa", cwd=cwd, max_wait=30)
+    api_ready = _wait_for_health(targets_compose, "vuln-api", cwd=cwd, max_wait=30)
+
+    if not dvwa_ready:
+        pytest.fail("DVWA did not become healthy within 30 seconds")
+    if not api_ready:
+        pytest.fail("Vulnerable API did not become healthy within 30 seconds")
+
+    yield targets_compose
+
+    # Teardown only the target services; exploit_cluster handles its own cleanup
+    subprocess.run(
+        [
+            "docker",
+            "compose",
+            "-f",
+            exploit_cluster,
+            "-f",
+            targets_compose,
+            "rm",
+            "-f",
+            "-s",
+            "dvwa",
+            "vuln-api",
+        ],
+        cwd=cwd,
+        timeout=60,
+    )
 
 
 # ---------------------------------------------------------------------------

@@ -127,6 +127,7 @@ markers = [
     "subprocess: marks tests that invoke external processes",
     "security: marks security/adversarial test scenarios",
     "regression: marks regression test scenarios",
+    "e2e_targets: marks tests requiring vulnerable target containers (DVWA, vuln-api)",
 ]
 
 [tool.coverage.report]
