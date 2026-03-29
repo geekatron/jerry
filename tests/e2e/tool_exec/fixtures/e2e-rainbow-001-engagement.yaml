@@ -1,0 +1,140 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 Adam Nowak
+#
+# Canonical test engagement for E2E validation of /rainbow, /rainbow-*, and /blue-team.
+#
+# This engagement exercises ALL 3 zones, ALL 5 rainbow sub-skills, and blue-team:
+#   Zone 1: supply-chain scanning, blue-team YARA/Sigma, cloud compliance audit
+#   Zone 2: recon pipeline (subfinder, httpx, dnsx), runtime (mitmproxy)
+#   Zone 3: exploit tools (impacket, pwntools), C2 operations (Empire)
+#
+# Safe targets:
+#   - example.com (IANA reserved, no real infrastructure affected)
+#   - scanme.nmap.org (explicit permission for scanning)
+#   - httpbin.org (public HTTP testing service)
+#   - localhost/127.0.0.1 (local-only for Zone 1 scans)
+#
+# This file is NOT a real engagement — it is a test fixture.
+# Engagement ID prefix E2E- prevents accidental use in production.
+#
+# Usage:
+#   uv run pytest tests/e2e/tool_exec/test_rainbow_e2e_smoke.py -v -s
+#
+# Prerequisites:
+#   - Docker daemon running
+#   - All Docker compose images built (first run builds automatically)
+#   - DO API key in Keychain (for SOCKS proxy tests, optional)
+#   - terraform + age in PATH (for SOCKS proxy tests, optional)
+
+engagement:
+  engagement_id: "E2E-RAINBOW-001"
+  name: "Canonical Rainbow E2E Validation"
+  version: "1.0"
+  type: "purple_team"
+  mode: "purple"
+  lifecycle_state: "ACTIVE"
+  classification: "test"
+  created_by: "e2e-test-harness"
+  created_at: "2026-03-28T00:00:00Z"
+
+scope:
+  authorized_targets:
+    # Zone 2 recon targets (safe, explicitly permit scanning)
+    - type: domain
+      value: "example.com"
+      zones: [2]
+    - type: domain
+      value: "scanme.nmap.org"
+      zones: [2]
+    - type: domain
+      value: "httpbin.org"
+      zones: [2, 3]
+    # Zone 1 local-only targets
+    - type: ip
+      value: "127.0.0.1"
+      zones: [1]
+    # Zone 3 exploitation targets (httpbin.org only — safe POST/PUT testing)
+    - type: domain
+      value: "httpbin.org"
+      zones: [3]
+
+  excluded_targets:
+    - type: cidr
+      value: "10.0.0.0/8"
+    - type: cidr
+      value: "172.16.0.0/12"
+    - type: cidr
+      value: "192.168.0.0/16"
+
+  authorized_techniques:
+    # Zone 2: Reconnaissance
+    - subdomain-enumeration
+    - port-scanning
+    - http-probing
+    - dns-resolution
+    - web-crawling
+    - vulnerability-detection-scanning
+    # Zone 3: Exploitation (constrained to safe targets)
+    - credential-testing
+    - payload-generation
+
+  time_window:
+    start: "2026-01-01T00:00:00Z"
+    end: "2027-12-31T23:59:59Z"
+
+  rules_of_engagement:
+    max_requests_per_second: 5
+    max_concurrent_scans: 2
+    stealth_required: false
+    data_handling:
+      credential_quarantine: true
+      evidence_retention_days: 1
+      evidence_destruction_method: "secure-delete"
+    emergency_stop_contact: "e2e-test-operator"
+
+infrastructure:
+  proxy:
+    enabled: false
+    provider: "digitalocean"
+    region: "nyc3"
+    count: 1
+    proxy_type: "direct_socks5"
+    socks_port: 1080
+    image: "ubuntu-24-04-x64"
+    size: "s-1vcpu-1gb"
+
+teams:
+  red:
+    operator: "e2e-red"
+    role: "attacker"
+  blue:
+    operator: "e2e-blue"
+    role: "defender"
+
+credentials:
+  proxy_api_key:
+    source: "keychain"
+    key_name: "proxy.digitalocean.api-key"
+
+purple_team:
+  technique_approval: "pre-approved"
+  pivot_mode: "sequential"
+  correlation_mode: "post-execution"
+
+output:
+  report_format: "markdown"
+  retention_days: 1
+
+# --- Test Matrix ---
+# Each zone/sub-skill combination that this engagement exercises:
+#
+# | Zone | Sub-Skill          | Tool(s)                    | Container Service   |
+# |------|--------------------|----------------------------|---------------------|
+# | 1    | supply-chain       | syft, grype, trivy         | scanner             |
+# | 1    | blue-team          | yr (YARA-X), sigma         | detection           |
+# | 1    | cloud              | checkov                    | cloud-auditor       |
+# | 2    | recon              | subfinder, httpx, dnsx     | recon-pipeline      |
+# | 2    | recon (envoy)      | nuclei (detection only)    | recon-pipeline      |
+# | 2    | runtime            | mitmproxy                  | mitmproxy           |
+# | 3    | exploit            | impacket-smbclient (safe)  | exploit-ops         |
+# | 3    | exploit (envoy)    | pwntools checksec          | exploit-ops         |
