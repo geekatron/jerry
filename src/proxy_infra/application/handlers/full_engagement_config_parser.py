@@ -81,6 +81,7 @@ class FullEngagementConfigParser:
             start_date=str(eng_data.get("start_date", "")),
             end_date=str(eng_data.get("end_date", "")),
             classification=str(eng_data.get("classification", "confidential")),
+            e2e_mode=bool(eng_data.get("e2e_mode", False)),
         )
 
         scope = ScopeConfig(

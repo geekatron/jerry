@@ -16,7 +16,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-
 _VALID_MODES = ("purple", "split", "single")
 _VALID_TYPES = ("penetration_test", "red_team", "purple_team", "blue_team", "threat_hunt")
 
@@ -32,6 +31,7 @@ class EngagementMetadata:
     start_date: str
     end_date: str = ""
     classification: str = "confidential"
+    e2e_mode: bool = False
 
 
 @dataclass(frozen=True)
