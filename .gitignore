@@ -55,6 +55,14 @@ htmlcov/
 .tox/
 .nox/
 
+# Terraform state and provider cache (OPSEC R-GITIGNORE)
+*.tfstate
+*.tfstate.*
+*.tfstate.age
+**/.terraform/
+*.tfvars
+*.tfvars.json
+
 # Misc
 *.tgz
 *.bak

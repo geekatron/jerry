@@ -1,0 +1,85 @@
+terraform {
+  required_providers {
+    digitalocean = {
+      source  = "digitalocean/digitalocean"
+      version = "= 2.43.0"
+    }
+  }
+}
+
+provider "digitalocean" {
+  # Token from DIGITALOCEAN_TOKEN environment variable
+}
+
+resource "digitalocean_ssh_key" "proxy_key" {
+  name       = "jerry-proxy-{{ engagement_id }}"
+  public_key = "{{ ssh_public_key }}"
+}
+
+resource "digitalocean_droplet" "proxy" {
+  name     = "jerry-proxy-{{ engagement_id }}-{{ region }}-0"
+  region   = "{{ region }}"
+  size     = "{{ size }}"
+  image    = "{{ image }}"
+  ssh_keys = [digitalocean_ssh_key.proxy_key.id]
+  tags     = ["jerry-proxy", "{{ engagement_id }}"]
+
+  user_data = <<-EOF
+    #cloud-config
+    packages:
+      - microsocks
+      - ufw
+    runcmd:
+      - ufw default deny incoming
+      - ufw default allow outgoing
+      - ufw allow from {{ operator_ip }} to any port 22 proto tcp
+      - ufw allow from {{ operator_ip }} to any port {{ socks_port }} proto tcp
+      - ufw --force enable
+      - systemctl enable microsocks
+      - systemctl start microsocks
+  EOF
+}
+
+resource "digitalocean_firewall" "proxy_fw" {
+  name = "jerry-proxy-{{ engagement_id }}-0"
+
+  droplet_ids = [digitalocean_droplet.proxy.id]
+
+  inbound_rule {
+    protocol         = "tcp"
+    port_range       = "22"
+    source_addresses = ["{{ operator_ip }}/32"]
+  }
+
+  inbound_rule {
+    protocol         = "tcp"
+    port_range       = "{{ socks_port }}"
+    source_addresses = ["{{ operator_ip }}/32"]
+  }
+
+  outbound_rule {
+    protocol              = "tcp"
+    port_range            = "all"
+    destination_addresses = ["0.0.0.0/0", "::/0"]
+  }
+}
+
+output "droplet_ip" {
+  value       = digitalocean_droplet.proxy.ipv4_address
+  description = "Public IP of the proxy droplet"
+}
+
+output "droplet_id" {
+  value       = digitalocean_droplet.proxy.id
+  description = "DigitalOcean droplet ID"
+}
+
+output "ssh_key_id" {
+  value       = digitalocean_ssh_key.proxy_key.id
+  description = "DigitalOcean SSH key ID"
+}
+
+output "firewall_id" {
+  value       = digitalocean_firewall.proxy_fw.id
+  description = "DigitalOcean firewall ID"
+}

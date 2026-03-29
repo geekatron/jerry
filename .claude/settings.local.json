@@ -71,7 +71,7 @@
       "Bash(pkill:*)",
       "Bash(curl:*)",
       "Bash(mkdir:*)",
-      "Bash(rm -f /Users/adam.nowak/workspace/GitHub/geekatron/jerry/.git/worktrees/*/index.lock:*)",
+      "Bash(rm -f /Users/adam.nowak/workspace/GitHub/geekatron/jerry/.git/worktrees/proj-023-exploit-framework/index.lock:*)",
       "Bash(cat:*)",
       "Bash(head:*)",
       "Bash(tail:*)",
@@ -85,7 +85,9 @@
       "Bash(ENVF=:*)",
       "Bash(CONTAINER_ID:*)",
       "Bash(/Users:*)",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "Skill(eng-team)",
+      "Skill(user-experience)"
     ]
   },
   "hooks": {
