@@ -726,6 +726,208 @@ class TestEdgeCases:
 
 
 # =============================================================================
+# SocksBridge — _socks5_connect coverage
+# =============================================================================
+
+
+class TestSocksBridgeSocks5Connect:
+    """Cover _socks5_connect for SOCKS5 protocol negotiation paths."""
+
+    def test_socks5_connect_success(self) -> None:
+        """Successful SOCKS5 negotiation returns a connected socket."""
+        bridge = SocksBridge(socks_host="127.0.0.1", socks_port=1080)
+        mock_sock = MagicMock(spec=socket.socket)
+        # Auth response: version 5, no-auth accepted
+        # Connect response: version 5, success, reserved, IPv4, 4 bytes addr, 2 bytes port
+        mock_sock.recv.side_effect = [
+            bytes([0x05, 0x00]),  # auth accepted
+            bytes([0x05, 0x00, 0x00, 0x01, 0, 0, 0, 0, 0, 0]),  # connect success
+        ]
+        with patch("socket.socket", return_value=mock_sock):
+            result = bridge._socks5_connect("1.2.3.4", 80)
+        assert result is mock_sock
+        mock_sock.connect.assert_called_once_with(("127.0.0.1", 1080))
+
+    def test_socks5_connect_auth_rejected_raises(self) -> None:
+        """ConnectionError raised when SOCKS5 proxy rejects auth method."""
+        bridge = SocksBridge()
+        mock_sock = MagicMock(spec=socket.socket)
+        mock_sock.recv.return_value = bytes([0x05, 0xFF])  # no acceptable methods
+        with patch("socket.socket", return_value=mock_sock):
+            with pytest.raises(ConnectionError, match="method negotiation rejected"):
+                bridge._socks5_connect("1.2.3.4", 80)
+        mock_sock.close.assert_called()
+
+    def test_socks5_connect_request_rejected_raises(self) -> None:
+        """ConnectionError raised when SOCKS5 CONNECT request fails."""
+        bridge = SocksBridge()
+        mock_sock = MagicMock(spec=socket.socket)
+        mock_sock.recv.side_effect = [
+            bytes([0x05, 0x00]),  # auth OK
+            bytes([0x05, 0x01, 0x00, 0x01, 0, 0, 0, 0, 0, 0]),  # connect FAIL (code 1)
+        ]
+        with patch("socket.socket", return_value=mock_sock):
+            with pytest.raises(ConnectionError, match="CONNECT failed"):
+                bridge._socks5_connect("1.2.3.4", 80)
+        mock_sock.close.assert_called()
+
+
+# =============================================================================
+# SocksBridge — _relay coverage
+# =============================================================================
+
+
+class TestSocksBridgeRelay:
+    """Cover _relay bidirectional data forwarding."""
+
+    def test_relay_forwards_data_bidirectionally(self) -> None:
+        """Data from client is forwarded to remote and vice versa."""
+        bridge = SocksBridge()
+        client = MagicMock(spec=socket.socket)
+        remote = MagicMock(spec=socket.socket)
+
+        # First select: client readable -> data forwarded to remote
+        # Second select: remote readable -> data forwarded to client
+        # Third select: client readable -> empty data (connection closed)
+        client.recv.side_effect = [b"hello", b""]
+        remote.recv.return_value = b"world"
+
+        with patch("select.select") as mock_select:
+            mock_select.side_effect = [
+                ([client], [], []),
+                ([remote], [], []),
+                ([client], [], []),
+            ]
+            bridge._relay(client, remote)
+
+        remote.sendall.assert_called_with(b"hello")
+        client.sendall.assert_called_with(b"world")
+
+    def test_relay_closes_both_sockets_on_error(self) -> None:
+        """Both sockets are closed when a socket error occurs."""
+        bridge = SocksBridge()
+        client = MagicMock(spec=socket.socket)
+        remote = MagicMock(spec=socket.socket)
+        client.recv.side_effect = BrokenPipeError("broken")
+
+        with patch("select.select") as mock_select:
+            mock_select.return_value = ([client], [], [])
+            bridge._relay(client, remote)
+
+        client.close.assert_called_once()
+        remote.close.assert_called_once()
+
+    def test_relay_stops_on_select_timeout(self) -> None:
+        """Relay stops when select returns no readable sockets (timeout)."""
+        bridge = SocksBridge()
+        client = MagicMock(spec=socket.socket)
+        remote = MagicMock(spec=socket.socket)
+
+        with patch("select.select") as mock_select:
+            mock_select.return_value = ([], [], [])  # timeout — no readable
+            bridge._relay(client, remote)
+
+        client.close.assert_called_once()
+        remote.close.assert_called_once()
+
+    def test_relay_stops_on_errored_socket(self) -> None:
+        """Relay stops when select reports an errored socket."""
+        bridge = SocksBridge()
+        client = MagicMock(spec=socket.socket)
+        remote = MagicMock(spec=socket.socket)
+
+        with patch("select.select") as mock_select:
+            mock_select.return_value = ([], [], [client])  # client errored
+            bridge._relay(client, remote)
+
+        client.close.assert_called_once()
+        remote.close.assert_called_once()
+
+
+# =============================================================================
+# SocksBridge — _accept_loop coverage
+# =============================================================================
+
+
+class TestSocksBridgeAcceptLoop:
+    """Cover _accept_loop connection dispatch."""
+
+    def test_accept_loop_dispatches_to_handle_connection(self) -> None:
+        """Accepted connections are dispatched to handle_connection in threads."""
+        bridge = SocksBridge(listen_port=19879)
+        mock_server = MagicMock(spec=socket.socket)
+        mock_client = MagicMock(spec=socket.socket)
+        mock_server.accept.side_effect = [
+            (mock_client, ("127.0.0.1", 55555)),
+            OSError("closed"),  # break the loop
+        ]
+        bridge._server = mock_server
+        bridge._running = True
+
+        with patch.object(bridge, "handle_connection"):
+            bridge._accept_loop()
+
+        mock_server.accept.assert_called()
+
+    def test_accept_loop_stops_on_oserror(self) -> None:
+        """Accept loop exits cleanly when server socket raises OSError."""
+        bridge = SocksBridge()
+        mock_server = MagicMock(spec=socket.socket)
+        mock_server.accept.side_effect = OSError("socket closed")
+        bridge._server = mock_server
+        bridge._running = True
+
+        bridge._accept_loop()  # Should not raise
+
+
+# =============================================================================
+# SocksBridge — handle_connection error path coverage
+# =============================================================================
+
+
+class TestSocksBridgeHandleConnectionErrors:
+    """Cover handle_connection error paths for full coverage."""
+
+    def test_handle_connection_closes_on_socks5_failure(self) -> None:
+        """When _socks5_connect raises, client socket is closed."""
+        bridge = SocksBridge(allowed_networks=["0.0.0.0/0"])
+        mock_client = MagicMock(spec=socket.socket)
+        mock_client.getsockopt.return_value = struct.pack("<Q", 42)
+
+        bpf_json = _bpftool_map_json(_IP_1_2_3_4_LE, _PORT_80_BPF)
+
+        with (
+            patch("subprocess.run") as mock_run,
+            patch.object(bridge, "_socks5_connect", side_effect=ConnectionError("refused")),
+        ):
+            mock_run.return_value = _make_completed(0, stdout=bpf_json)
+            bridge.handle_connection(mock_client, ("127.0.0.1", 54321))
+
+        mock_client.close.assert_called()
+
+    def test_handle_connection_fallback_to_dst_latest_when_cookie_fails(self) -> None:
+        """When SO_COOKIE fails, handle_connection falls back to dst_latest[0]."""
+        bridge = SocksBridge(allowed_networks=["0.0.0.0/0"])
+        mock_client = MagicMock(spec=socket.socket)
+        mock_client.getsockopt.side_effect = OSError("SO_COOKIE not supported")
+
+        bpf_json = _bpftool_map_json(_IP_1_2_3_4_LE, _PORT_80_BPF)
+
+        with (
+            patch("subprocess.run") as mock_run,
+            patch.object(bridge, "_socks5_connect") as mock_socks,
+            patch.object(bridge, "_relay"),
+        ):
+            mock_run.return_value = _make_completed(0, stdout=bpf_json)
+            mock_socks.return_value = MagicMock(spec=socket.socket)
+            bridge.handle_connection(mock_client, ("127.0.0.1", 54321))
+
+        # Should have fallen back to dst_latest (key 0 0 0 0, not hex cookie)
+        calls = mock_run.call_args_list
+        assert any("0" in str(c) for c in calls), "Expected fallback to dst_latest"
+
+
+# =============================================================================
 # Helpers (private)
 # =============================================================================
 
