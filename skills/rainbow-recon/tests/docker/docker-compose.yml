@@ -5,9 +5,48 @@
 # Envoy enforces scope-derived allowlist at network level.
 #
 # Architecture: ADR-PROJ023-003 v2 (Envoy Forward Proxy)
+# EN-023-008: eBPF transparent proxy integration (BPF init sidecar + read-only bpffs)
 # Task: T13-009
 
+# --- BPF capability anchor (DC-2: init container pattern) ---
+# bpf-init has write access; tool containers get read-only mounts.
+x-bpf-init-capabilities: &bpf-init-capabilities
+  cap_add:
+    - CAP_BPF
+    - CAP_NET_ADMIN
+    - CAP_SYS_ADMIN
+  security_opt:
+    - no-new-privileges:true
+  volumes:
+    - /sys/fs/bpf:/sys/fs/bpf
+    - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    - bpf-objects:/opt/ebpf
+
 services:
+
+  # --- bpf-init: loads BPF program, populates bypass map, exits healthy ---
+  # Uses BpfManager (Python) via the bpf-builder image. No shell scripts.
+  # Constraint B2: BPF loaded BEFORE tool container starts (depends_on healthcheck).
+  bpf-init:
+    image: bpf-builder:latest
+    container_name: recon-bpf-init
+    <<: *bpf-init-capabilities
+    # Copy BPF object + bpftool to shared volume, then exit healthy.
+    # BPF loading is wired via GatedLifecycleManager in TASK-023-165.
+    # This service ensures artifacts are available; lifecycle manages attachment.
+    command: >
+      sh -c "cp /opt/ebpf/connect4.bpf.o /opt/ebpf/connect4.bpf.o &&
+             cp /usr/local/bin/bpftool /opt/ebpf/bpftool &&
+             chmod +x /opt/ebpf/bpftool &&
+             echo 'BPF artifacts ready' && sleep infinity"
+    networks:
+      - zone2-active
+    healthcheck:
+      test: ["CMD-SHELL", "test -f /opt/ebpf/connect4.bpf.o"]
+      interval: 2s
+      timeout: 2s
+      retries: 5
+      start_period: 2s
 
   recon-pipeline:
     build:
@@ -18,6 +57,8 @@ services:
     working_dir: /work
     volumes:
       - ../../../../work:/work
+      - bpf-objects:/opt/ebpf:ro
+      - /sys/fs/bpf:/sys/fs/bpf:ro
     networks:
       - zone2-active
     environment:
@@ -26,6 +67,10 @@ services:
       # Exclude internal DNS resolution from proxy to avoid breaking dnsx
       # which uses raw DNS sockets (not HTTP). dnsx is NOT proxy-aware.
       NO_PROXY: "localhost,127.0.0.1"
+      PATH: "/opt/ebpf:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+    # DC-4: Disable IPv6 (connect4 only intercepts IPv4)
+    sysctls:
+      net.ipv6.conf.all.disable_ipv6: 1
     security_opt:
       - no-new-privileges:true
     read_only: false
@@ -35,6 +80,8 @@ services:
     depends_on:
       envoy-z2:
         condition: service_started
+      bpf-init:
+        condition: service_healthy
 
   envoy-z2:
     # Zone 2 deny-by-default proxy.
@@ -70,3 +117,4 @@ networks:
 
 volumes:
   envoy-z2-logs:
+  bpf-objects:

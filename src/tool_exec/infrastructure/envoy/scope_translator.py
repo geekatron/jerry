@@ -212,6 +212,13 @@ def generate_envoy_config(
     for i, vhost in enumerate(scope_vhosts):
         virtual_hosts.insert(deny_all_idx + i, vhost)
 
+    # EN-023-008: Add transparent TCP listener + ORIGINAL_DST cluster
+    # for BPF-redirected raw TCP connections. This is groundwork for full
+    # Envoy unification (requires 3 BPF programs per ps-researcher finding).
+    # Current architecture: raw TCP scope enforcement via SocksBridge, not Envoy.
+    _add_transparent_tcp_listener(config)
+    _add_original_dst_cluster(config)
+
     # Write generated config
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w") as f:
@@ -222,6 +229,69 @@ def generate_envoy_config(
 
     logger.info("Generated Envoy config: %s", output_path)
     return output_path
+
+
+def _add_transparent_tcp_listener(config: dict[str, Any]) -> None:
+    """Add a transparent TCP listener with original_dst filter to the config.
+
+    EN-023-008: This listener recovers the original destination from
+    BPF-redirected connections. Coexists with the HTTP forward proxy
+    on port 3128. Port 15001 chosen to avoid conflict with standard ports.
+
+    Args:
+        config: Mutable Envoy config dict to add the listener to.
+    """
+    transparent_listener: dict[str, Any] = {
+        "name": "transparent_tcp",
+        "address": {
+            "socket_address": {"address": "0.0.0.0", "port_value": 15001},
+        },
+        "listener_filters": [
+            {
+                "name": "envoy.filters.listener.original_dst",
+                "typed_config": {
+                    "@type": "type.googleapis.com/envoy.extensions.filters.listener.original_dst.v3.OriginalDst",
+                },
+            },
+        ],
+        "filter_chains": [
+            {
+                "filters": [
+                    {
+                        "name": "envoy.filters.network.tcp_proxy",
+                        "typed_config": {
+                            "@type": "type.googleapis.com/envoy.extensions.filters.network.tcp_proxy.v3.TcpProxy",
+                            "stat_prefix": "transparent_tcp",
+                            "cluster": "original_dst_cluster",
+                        },
+                    },
+                ],
+            },
+        ],
+    }
+    config["static_resources"]["listeners"].append(transparent_listener)
+    logger.info("Added transparent_tcp listener on port 15001")
+
+
+def _add_original_dst_cluster(config: dict[str, Any]) -> None:
+    """Add an ORIGINAL_DST cluster for transparent TCP proxying.
+
+    EN-023-008: The ORIGINAL_DST cluster type selects upstream hosts
+    based on the downstream connection's restored original destination.
+    lb_policy must be CLUSTER_PROVIDED (mandatory for ORIGINAL_DST).
+
+    Args:
+        config: Mutable Envoy config dict to add the cluster to.
+    """
+    original_dst_cluster: dict[str, Any] = {
+        "name": "original_dst_cluster",
+        "type": "ORIGINAL_DST",
+        "connect_timeout": "10s",
+        "lb_policy": "CLUSTER_PROVIDED",
+    }
+    clusters = config["static_resources"].setdefault("clusters", [])
+    clusters.append(original_dst_cluster)
+    logger.info("Added original_dst_cluster (type: ORIGINAL_DST)")
 
 
 def _load_scope(scope_path: Path) -> dict[str, Any]:

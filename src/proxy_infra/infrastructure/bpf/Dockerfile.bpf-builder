@@ -1,0 +1,57 @@
+# Dockerfile.bpf-builder -- EN-023-008 Production BPF compiler
+# Compiles connect4.bpf.c for Docker Desktop's LinuxKit kernel.
+#
+# Based on PoC Dockerfile (src/proxy_infra/ebpf_poc/Dockerfile) lines 1-18.
+# Uses CO-RE compilation pattern: compiled with linux-libc-dev headers,
+# BPF program uses bpf_helpers.h stable API that is kernel-version independent.
+#
+# Constraint B4: NEVER compile on macOS host. Always inside Docker.
+#
+# EN-023-008 TASK-023-161
+
+# --- Stage 1: Build BPF object ---
+FROM ubuntu:24.04 AS build
+
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    clang llvm libbpf-dev linux-libc-dev \
+    build-essential dpkg-dev pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /build/bpf
+COPY connect4.bpf.c Makefile ./
+
+# GNU_TRIPLE detection + asm symlink (PoC Dockerfile lines 16-17)
+# Required for cross-platform header resolution on Ubuntu 24.04
+RUN GNU_TRIPLE=$(dpkg-architecture -qDEB_HOST_GNU_TYPE) && \
+    ln -sf /usr/include/${GNU_TRIPLE}/asm /usr/include/asm && \
+    make
+
+# --- Stage 2: Runtime image with compiled artifact + bpftool ---
+FROM ubuntu:24.04
+
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    linux-tools-common linux-tools-generic libbpf1 iproute2 python3 file \
+    && rm -rf /var/lib/apt/lists/*
+
+# Symlink actual bpftool binary (bypass version-checking wrapper)
+# linux-tools-generic installs a wrapper script at /usr/sbin/bpftool that checks
+# kernel version; the actual binary is under /usr/lib/linux-tools/*/bpftool.
+# We symlink the real binary directly to avoid the version check failing in containers.
+RUN BPFTOOL_BIN=$(find /usr/lib/linux-tools* -name bpftool -type f 2>/dev/null | head -1) && \
+    if [ -n "$BPFTOOL_BIN" ]; then \
+        ln -sf "$BPFTOOL_BIN" /usr/local/bin/bpftool; \
+    else \
+        echo "ERROR: bpftool binary not found" && exit 1; \
+    fi
+
+# Copy compiled BPF object to standard location
+COPY --from=build /build/bpf/connect4.bpf.o /opt/ebpf/connect4.bpf.o
+
+# Version manifest: git commit hash embedded at build time
+ARG GIT_COMMIT=unknown
+RUN echo "${GIT_COMMIT}" > /opt/ebpf/connect4.bpf.version
+
+# Verify the artifact is a valid eBPF ELF
+RUN file /opt/ebpf/connect4.bpf.o | grep -q "ELF 64-bit LSB relocatable, eBPF"
+
+CMD ["bpftool", "version"]

@@ -33,11 +33,13 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from src.proxy_infra.application.handlers.bpf_bypass_port import BpfBypassPort
     from src.proxy_infra.application.handlers.manifest_writer_port import ManifestWriterPort
     from src.proxy_infra.application.handlers.node_health_port import NodeHealthPort
-    from src.proxy_infra.application.handlers.ssh_credential_injection_handler import SshCredentialInjectionHandler
+    from src.proxy_infra.application.handlers.ssh_credential_injection_handler import (
+        SshCredentialInjectionHandler,
+    )
     from src.proxy_infra.application.handlers.ssh_readiness_port import SshReadinessPort
+    from src.proxy_infra.domain.ports.bpf_bypass_port import BpfBypassPort
     from src.proxy_infra.domain.ports.proxy_provisioner_port import ProxyProvisionerPort
     from src.proxy_infra.domain.value_objects.provision_config import ProvisionConfig
     from src.proxy_infra.domain.value_objects.proxy_node import ProxyNode
@@ -141,7 +143,8 @@ class EngagePipelineOrchestrator:
 
             # Credential injection
             inject_result = self._credential_injector.inject(
-                node=node, private_key_path=private_key_path,
+                node=node,
+                private_key_path=private_key_path,
             )
             if not inject_result.success:
                 logger.warning("Injection failed for node %s — skipping", node.id)

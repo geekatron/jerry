@@ -1,30 +1,11 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2026 Adam Nowak
 
-"""BpfBypassPort — Protocol for updating the BPF bypass IP map (H-10).
+"""MOVED: BpfBypassPort is now at src/proxy_infra/domain/ports/bpf_bypass_port.py.
 
-Design constraints:
-    H-07: Application layer port — no infrastructure imports.
-    H-10: One public class per file.
-    H-11: All public methods have type annotations.
+This file exists only for backward compatibility. Import from the new location.
 """
 
-from __future__ import annotations
+from src.proxy_infra.domain.ports.bpf_bypass_port import BpfBypassPort
 
-from typing import Protocol
-
-
-class BpfBypassPort(Protocol):
-    """Port for updating the BPF cgroup/connect4 bypass IP map.
-
-    Implementations populate the bypass map with proxy node IPs so that
-    BPF-redirected traffic doesn't loop back through the proxy itself.
-    """
-
-    def update_bypass_ips(self, ips: list[str]) -> None:
-        """Update the bypass map with proxy node IPs.
-
-        Args:
-            ips: List of IPv4 addresses to add to the bypass map.
-        """
-        ...
+__all__ = ["BpfBypassPort"]
