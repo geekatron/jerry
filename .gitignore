@@ -62,6 +62,9 @@ htmlcov/
 **/.terraform/
 *.tfvars
 *.tfvars.json
+# Generated HCL (contains operator_ip + SSH public key — FINDING-001)
+work/**/terraform/
+work/**/main.tf
 
 # Misc
 *.tgz

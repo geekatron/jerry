@@ -41,8 +41,8 @@ _CLOUD_PROVIDER_DOMAINS: dict[str, list[str]] = {
     ],
     "gcp": [
         "*.googleapis.com",
-        "*.google.com",
         "accounts.google.com",
+        "oauth2.googleapis.com",
         "cloudresourcemanager.googleapis.com",
     ],
 }
@@ -360,12 +360,22 @@ def _resolve_cloud_account(value: str) -> list[str]:
 
 
 def _find_deny_all_index(virtual_hosts: list[dict[str, Any]]) -> int:
-    """Find the index of the deny_all virtual_host (must be last)."""
+    """Find the index of the deny_all virtual_host (must be last).
+
+    Raises:
+        ScopeTranslationError: If no deny_all catch-all is found. The
+            deny_all entry is a hard OPSEC requirement — without it,
+            Envoy passes through unmatched routes instead of blocking them.
+    """
     for i, vhost in enumerate(virtual_hosts):
         if vhost.get("name") == "deny_all":
             return i
         domains = vhost.get("domains", [])
         if "*" in domains and len(domains) == 1:
             return i
-    # If no deny_all found, append at the end
-    return len(virtual_hosts)
+    msg = (
+        "Base Envoy config is missing the deny_all catch-all virtual_host. "
+        "Without deny_all, out-of-scope destinations are silently reachable. "
+        "Add a virtual_host with domains: ['*'] and a direct_response 403 action."
+    )
+    raise ScopeTranslationError(msg)

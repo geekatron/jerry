@@ -52,9 +52,7 @@ class TestHclTemplateOpsec:
 
     def test_hcl_template_pins_exact_provider_version(self) -> None:
         """R-PROVIDER-PIN: Template must use = version constraint, not ~>."""
-        template = Path(
-            "src/proxy_infra/infrastructure/terraform/templates/digitalocean/main.tf.j2"
-        )
+        template = Path("infra/terraform/modules/digitalocean-proxy/main.tf.j2")
         assert template.exists(), "main.tf.j2 must exist"
         content = template.read_text()
         # Must have exact pin (= "X.Y.Z") not approximate (~> X.Y)
@@ -63,9 +61,7 @@ class TestHclTemplateOpsec:
 
     def test_hcl_template_has_no_tls_private_key_resource(self) -> None:
         """R-NO-TLS-PRIVATE-KEY: Template must not declare tls_private_key."""
-        template = Path(
-            "src/proxy_infra/infrastructure/terraform/templates/digitalocean/main.tf.j2"
-        )
+        template = Path("infra/terraform/modules/digitalocean-proxy/main.tf.j2")
         content = template.read_text()
         assert "tls_private_key" not in content, (
             "HCL template must not contain tls_private_key resource — "

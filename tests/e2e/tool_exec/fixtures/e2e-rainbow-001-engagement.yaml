@@ -27,18 +27,20 @@
 #   - terraform + age in PATH (for SOCKS proxy tests, optional)
 
 engagement:
-  engagement_id: "E2E-RAINBOW-001"
+  id: "E2E-RAINBOW-001"
   name: "Canonical Rainbow E2E Validation"
   version: "1.0"
   type: "purple_team"
   mode: "purple"
-  lifecycle_state: "ACTIVE"
+  start_date: "2026-01-01"
+  end_date: "2027-12-31"
   classification: "test"
+  e2e_mode: true
   created_by: "e2e-test-harness"
   created_at: "2026-03-28T00:00:00Z"
 
 scope:
-  authorized_targets:
+  targets:
     # Zone 2 recon targets (safe, explicitly permit scanning)
     - type: domain
       value: "example.com"

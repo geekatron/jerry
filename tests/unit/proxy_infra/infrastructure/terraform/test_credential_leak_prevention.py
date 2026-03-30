@@ -20,15 +20,17 @@ from pathlib import Path
 
 import pytest
 
+_E2E_DIRS = [Path("tests/e2e/proxy_infra"), Path("tests/e2e/tool_exec")]
+
 
 class TestNoCredentialReturnInFixtures:
     """Verify no test fixture returns a raw credential string."""
 
-    def test_e2e_fixtures_do_not_return_credentials(self) -> None:
+    @pytest.mark.parametrize("e2e_dir", _E2E_DIRS, ids=lambda p: p.name)
+    def test_e2e_fixtures_do_not_return_credentials(self, e2e_dir: Path) -> None:
         """E2E test fixtures must not return values named after credentials."""
-        e2e_dir = Path("tests/e2e/proxy_infra")
         if not e2e_dir.exists():
-            pytest.skip("E2E test directory does not exist")
+            pytest.skip(f"{e2e_dir} does not exist")
 
         credential_var_names = {
             "api_key",
@@ -72,11 +74,11 @@ class TestNoCredentialReturnInFixtures:
             + "\n".join(violations)
         )
 
-    def test_e2e_test_methods_do_not_accept_credential_parameters(self) -> None:
+    @pytest.mark.parametrize("e2e_dir", _E2E_DIRS, ids=lambda p: p.name)
+    def test_e2e_test_methods_do_not_accept_credential_parameters(self, e2e_dir: Path) -> None:
         """E2E test methods must not have parameters named after credentials."""
-        e2e_dir = Path("tests/e2e/proxy_infra")
         if not e2e_dir.exists():
-            pytest.skip("E2E test directory does not exist")
+            pytest.skip(f"{e2e_dir} does not exist")
 
         credential_param_names = {
             "api_key",
@@ -107,11 +109,11 @@ class TestNoCredentialReturnInFixtures:
             "Use an autouse fixture that sets env vars instead:\n" + "\n".join(violations)
         )
 
-    def test_fixture_credential_pattern_uses_yield_not_return(self) -> None:
+    @pytest.mark.parametrize("e2e_dir", _E2E_DIRS, ids=lambda p: p.name)
+    def test_fixture_credential_pattern_uses_yield_not_return(self, e2e_dir: Path) -> None:
         """Credential-related fixtures must use yield (for cleanup) not return."""
-        e2e_dir = Path("tests/e2e/proxy_infra")
         if not e2e_dir.exists():
-            pytest.skip("E2E test directory does not exist")
+            pytest.skip(f"{e2e_dir} does not exist")
 
         violations = []
 
@@ -155,4 +157,49 @@ class TestNoCredentialReturnInFixtures:
         assert violations == [], (
             "OPSEC: Credential fixtures that return values leak in tracebacks:\n"
             + "\n".join(violations)
+        )
+
+    @pytest.mark.parametrize("e2e_dir", _E2E_DIRS, ids=lambda p: p.name)
+    def test_no_print_of_credential_substrings(self, e2e_dir: Path) -> None:
+        """No print() or f-string exposes credential variable substrings.
+
+        CA-002b: The actual leak was `print(f"... prefix={api_key[:4]}...")`.
+        This test catches any print() call whose f-string references a
+        credential-named variable via subscript (e.g., key[:N]).
+        """
+        if not e2e_dir.exists():
+            pytest.skip(f"{e2e_dir} does not exist")
+
+        credential_names = {"api_key", "do_api_key", "token", "secret", "password", "credential"}
+        violations = []
+
+        for py_file in e2e_dir.rglob("*.py"):
+            tree = ast.parse(py_file.read_text())
+            for node in ast.walk(tree):
+                if not isinstance(node, ast.Call):
+                    continue
+                # Check if it's a print() call
+                is_print = isinstance(node.func, ast.Name) and node.func.id == "print"
+                if not is_print:
+                    continue
+                # Walk the print arguments looking for credential variable references
+                for arg in node.args:
+                    for child in ast.walk(arg):
+                        if isinstance(child, ast.Subscript) and isinstance(child.value, ast.Name):
+                            if child.value.id in credential_names:
+                                violations.append(
+                                    f"{py_file.name}:{node.lineno}: "
+                                    f"print() references credential "
+                                    f"'{child.value.id}' via subscript"
+                                )
+                        elif isinstance(child, ast.Name) and child.id in credential_names:
+                            violations.append(
+                                f"{py_file.name}:{node.lineno}: "
+                                f"print() references credential variable "
+                                f"'{child.id}'"
+                            )
+
+        assert violations == [], (
+            "OPSEC: print() calls that reference credential variables "
+            "leak values into LLM conversation context:\n" + "\n".join(violations)
         )

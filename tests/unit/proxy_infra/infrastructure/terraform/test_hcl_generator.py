@@ -185,7 +185,7 @@ class TestHclGeneratorValidation:
 
 def _template_dir() -> Path:
     """Return path to the production Jinja2 templates directory."""
-    return Path("src/proxy_infra/infrastructure/terraform/templates")
+    return Path("infra/terraform/modules")
 
 
 def _valid_config() -> dict[str, str | int]:

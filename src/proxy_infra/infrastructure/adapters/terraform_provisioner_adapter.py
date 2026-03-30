@@ -89,9 +89,7 @@ class TerraformProvisionerAdapter(ProxyProvisionerPort):
                 HclGenerator,
             )
 
-            hcl_generator = HclGenerator(
-                template_dir=Path("src/proxy_infra/infrastructure/terraform/templates")
-            )
+            hcl_generator = HclGenerator(template_dir=Path("infra/terraform/modules"))
         self._hcl_generator = hcl_generator
 
         if terraform_runner is None:

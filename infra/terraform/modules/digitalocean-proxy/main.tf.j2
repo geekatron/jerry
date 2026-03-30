@@ -27,14 +27,39 @@ resource "digitalocean_droplet" "proxy" {
   user_data = <<-EOF
     #cloud-config
     packages:
-      - microsocks
       - ufw
+      - gcc
+      - make
+      - git
     runcmd:
       - ufw default deny incoming
       - ufw default allow outgoing
       - ufw allow from {{ operator_ip }} to any port 22 proto tcp
       - ufw allow from {{ operator_ip }} to any port {{ socks_port }} proto tcp
       - ufw --force enable
+      - git clone https://github.com/rofl0r/microsocks.git /opt/microsocks
+      - cd /opt/microsocks && git checkout v1.0.4
+      - make -C /opt/microsocks
+      - cp /opt/microsocks/microsocks /usr/local/bin/microsocks
+      - chmod 755 /usr/local/bin/microsocks
+      - |
+        SOCKS_USER=$(openssl rand -hex 16)
+        SOCKS_PASS=$(openssl rand -hex 32)
+        printf 'SOCKS_USER=%s\nSOCKS_PASS=%s\n' "$SOCKS_USER" "$SOCKS_PASS" > /etc/microsocks.env
+        chmod 0600 /etc/microsocks.env
+      - |
+        cat > /etc/systemd/system/microsocks.service <<UNIT
+        [Unit]
+        Description=microsocks SOCKS5 proxy
+        After=network.target
+        [Service]
+        EnvironmentFile=/etc/microsocks.env
+        ExecStart=/usr/local/bin/microsocks -p {{ socks_port }} -u $SOCKS_USER -P $SOCKS_PASS
+        Restart=always
+        [Install]
+        WantedBy=multi-user.target
+        UNIT
+      - systemctl daemon-reload
       - systemctl enable microsocks
       - systemctl start microsocks
   EOF

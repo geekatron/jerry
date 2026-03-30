@@ -49,8 +49,14 @@ class HclGenerator:
         Args:
             template_dir: Path to the templates directory containing
                 provider-specific subdirectories with .tf.j2 files.
+
+        Raises:
+            ValueError: If template_dir does not exist or is not a directory.
         """
-        self._template_dir = template_dir
+        resolved = Path(template_dir).resolve()
+        if not resolved.is_dir():
+            raise ValueError(f"template_dir must be an existing directory: {template_dir}")
+        self._template_dir = resolved
 
     def generate(self, config: dict[str, Any], work_dir: Path) -> Path:
         """Generate a main.tf file from engagement config parameters.
@@ -73,12 +79,15 @@ class HclGenerator:
 
         from jinja2.sandbox import SandboxedEnvironment
 
+        # SandboxedEnvironment: blocks builtins, os, and attribute traversal (C-04).
+        # autoescape=False: HTML escaping would corrupt HCL syntax. Injection
+        # prevention is handled by SandboxedEnvironment + input validation above.
         env = SandboxedEnvironment(
             loader=self._make_loader(),
             autoescape=False,
             keep_trailing_newline=True,
         )
-        template = env.get_template("digitalocean/main.tf.j2")
+        template = env.get_template("digitalocean-proxy/main.tf.j2")
 
         rendered = template.render(
             engagement_id=config["engagement_id"],

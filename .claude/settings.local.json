@@ -87,7 +87,8 @@
       "Bash(/Users:*)",
       "Bash(cd:*)",
       "Skill(eng-team)",
-      "Skill(user-experience)"
+      "Skill(user-experience)",
+      "Skill(jerry:prompt-engineering)"
     ]
   },
   "hooks": {
