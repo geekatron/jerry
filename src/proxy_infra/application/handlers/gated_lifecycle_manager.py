@@ -155,11 +155,23 @@ class GatedLifecycleManager:
 
         # EN-023-008: Load BPF before transitioning to ACTIVE
         if self._bpf_port is not None:
+            config = self._configs.get(engagement_id)
             try:
                 self._bpf_port.load_and_attach(engagement_id)
-                self._bpf_port.populate_bypass([], "")
-                logger.info("BPF loaded for engagement %s", engagement_id)
-            except RuntimeError:
+                # Extract proxy IPs and Envoy IP from engagement config.
+                # FINDING-003: populate_bypass filters empty strings internally.
+                proxy_ips = getattr(config, "proxy_pool_ips", []) if config else []
+                envoy_ip = getattr(config, "envoy_ip", "") if config else ""
+                self._bpf_port.populate_bypass(proxy_ips, envoy_ip)
+                # FINDING-005: Verify readiness before declaring ACTIVE
+                if not self._bpf_port.is_ready():
+                    self._bpf_port.detach_and_cleanup()
+                    raise RuntimeError(
+                        f"BPF readiness check failed for {engagement_id}: "
+                        "program pin or bridge not confirmed"
+                    )
+                logger.info("BPF loaded and ready for engagement %s", engagement_id)
+            except (RuntimeError, ValueError):
                 logger.error(
                     "BPF load failed for %s — rolling back", engagement_id,
                 )

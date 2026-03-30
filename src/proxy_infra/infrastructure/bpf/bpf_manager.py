@@ -143,7 +143,7 @@ class BpfManager:
         Raises:
             RuntimeError: If any map update fails.
         """
-        all_ips = list(proxy_ips) + [envoy_ip]
+        all_ips = [ip for ip in list(proxy_ips) + [envoy_ip] if ip]
         for ip in all_ips:
             logger.info("Adding %s to bypass_ips BPF map", ip)
             self._map_update_bypass(ip)

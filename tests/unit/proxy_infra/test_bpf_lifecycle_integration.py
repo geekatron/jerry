@@ -40,7 +40,11 @@ from src.proxy_infra.domain.ports.bpf_lifecycle_port import IBpfLifecyclePort
 
 
 def _write_config(tmp_path: Path, engagement_id: str) -> Path:
-    """Write a minimal E2E engagement config YAML (pre-approved gates)."""
+    """Write a minimal E2E engagement config YAML (pre-approved gates).
+
+    Includes proxy_pool_ips and envoy_ip so BPF bypass map population
+    is triggered during activate() (FINDING-003 fix).
+    """
     config_data = {
         "engagement": {
             "id": engagement_id,
@@ -52,6 +56,10 @@ def _write_config(tmp_path: Path, engagement_id: str) -> Path:
         },
         "scope": {
             "targets": ["10.0.0.1"],
+        },
+        "proxy": {
+            "proxy_pool_ips": ["192.168.1.100"],
+            "envoy_ip": "172.31.0.10",
         },
     }
     config_path = tmp_path / f"{engagement_id}-config.yaml"
