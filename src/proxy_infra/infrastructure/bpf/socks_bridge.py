@@ -53,6 +53,14 @@ _RELAY_BUFFER: int = 65536
 # Relay idle timeout seconds
 _RELAY_TIMEOUT: int = 30
 
+# Linux SO_COOKIE socket option (kernel 4.18+).
+# Returns the 64-bit socket cookie that BPF uses as the key in dst_lookup.
+_SO_COOKIE: int = 57
+
+# Default pinned path for the dst_lookup LRU hash map.
+# Keyed by socket cookie (__u64), value is struct orig_dst {dst_ip, dst_port}.
+_DEFAULT_DST_LOOKUP_PATH: str = "/sys/fs/bpf/rainbow_maps/dst_lookup"
+
 
 class SocksBridge:
     """Transparent bridge from BPF-redirected TCP to SOCKS5 proxy.
@@ -82,6 +90,7 @@ class SocksBridge:
         socks_host: str = "127.0.0.1",
         socks_port: int = 1080,
         map_path: str = "/sys/fs/bpf/rainbow_maps/dst_latest",
+        dst_lookup_path: str = _DEFAULT_DST_LOOKUP_PATH,
         allowed_networks: list[str] | None = None,
     ) -> None:
         """Initialise the SOCKS bridge.
@@ -90,7 +99,8 @@ class SocksBridge:
             listen_port: Port the bridge will accept connections on.
             socks_host: SOCKS5 proxy host address.
             socks_port: SOCKS5 proxy port.
-            map_path: Pinned bpffs path to the BPF dst_latest array map.
+            map_path: Pinned bpffs path to the BPF dst_latest array map (diagnostic fallback).
+            dst_lookup_path: Pinned bpffs path to the dst_lookup LRU hash map (primary).
             allowed_networks: CIDR allowlist for raw TCP scope validation.
                 None or empty list disables scope filtering.
         """
@@ -98,6 +108,7 @@ class SocksBridge:
         self._socks_host = socks_host
         self._socks_port = socks_port
         self._map_path = map_path
+        self._dst_lookup_path = dst_lookup_path
         self._allowed_networks: list[ipaddress.IPv4Network] = []
 
         if allowed_networks:
@@ -210,6 +221,97 @@ class SocksBridge:
             logger.warning("Failed to parse bpftool map output: %s", exc)
             return None
 
+    def get_socket_cookie(self, sock: socket.socket) -> int | None:
+        """Retrieve the kernel socket cookie for a connected socket.
+
+        The socket cookie is a unique 64-bit identifier assigned by the kernel
+        to each socket. The BPF cgroup/connect4 program uses
+        ``bpf_get_socket_cookie()`` to key the ``dst_lookup`` LRU hash map,
+        enabling per-connection destination lookup without the TOCTOU race
+        inherent in the single-entry ``dst_latest`` array.
+
+        Args:
+            sock: A connected TCP socket to read the cookie from.
+
+        Returns:
+            The 64-bit socket cookie, or None if the getsockopt call fails
+            (e.g., kernel does not support SO_COOKIE, or not running on Linux).
+        """
+        try:
+            # SO_COOKIE returns an 8-byte (uint64) value
+            cookie_bytes = sock.getsockopt(socket.SOL_SOCKET, _SO_COOKIE, 8)
+            return struct.unpack("<Q", cookie_bytes)[0]
+        except OSError as exc:
+            logger.warning("Failed to get SO_COOKIE: %s", exc)
+            return None
+
+    def read_original_dst_by_cookie(
+        self,
+        cookie: int,
+        lookup_path: str | None = None,
+    ) -> OriginalDestination | None:
+        """Read the original destination from the dst_lookup LRU hash by socket cookie.
+
+        This is the primary destination lookup method (DC-1). Unlike
+        ``read_original_dst()`` which reads the single-entry ``dst_latest[0]``
+        array (subject to TOCTOU races under concurrent connections), this
+        method uses the per-socket-cookie ``dst_lookup`` LRU hash map which
+        provides correct per-connection isolation.
+
+        The BPF program writes to ``dst_lookup`` keyed by
+        ``bpf_get_socket_cookie(ctx)`` on every intercepted ``connect()``.
+        The bridge retrieves the matching entry using the same cookie obtained
+        via ``SO_COOKIE`` getsockopt on the accepted client socket.
+
+        Args:
+            cookie: The 64-bit socket cookie from ``get_socket_cookie()``.
+            lookup_path: Override the dst_lookup map path (for testing).
+
+        Returns:
+            OriginalDestination with ip and port, or None if lookup fails.
+        """
+        path = lookup_path or self._dst_lookup_path
+        # Encode cookie as 8 hex bytes (little-endian uint64)
+        cookie_bytes = struct.pack("<Q", cookie)
+        hex_key = " ".join(f"0x{b:02x}" for b in cookie_bytes)
+
+        try:
+            result = subprocess.run(
+                ["bpftool", "-j", "map", "lookup", "pinned", path,
+                 "key", "hex"] + hex_key.split(),
+                capture_output=True,
+                text=True,
+                timeout=2,
+            )
+        except (subprocess.TimeoutExpired, FileNotFoundError) as exc:
+            logger.warning("bpftool dst_lookup failed: %s", exc)
+            return None
+
+        if result.returncode != 0:
+            logger.debug("dst_lookup miss for cookie %d: %s", cookie, result.stderr.strip())
+            return None
+
+        try:
+            data = json.loads(result.stdout)
+            if isinstance(data, list):
+                data = data[0] if data else {}
+            formatted = data.get("formatted", data)
+            value = formatted.get("value", formatted)
+
+            dst_ip_raw: int = value.get("dst_ip", 0)
+            dst_port_raw: int = value.get("dst_port", 0)
+
+            ip_bytes = struct.pack("<I", dst_ip_raw)
+            ip_str = socket.inet_ntoa(ip_bytes)
+
+            port_bytes = struct.pack("<I", dst_port_raw)
+            port = struct.unpack("!H", port_bytes[:2])[0]
+
+            return OriginalDestination(ip=ip_str, port=port)
+        except (KeyError, ValueError, json.JSONDecodeError) as exc:
+            logger.warning("Failed to parse dst_lookup output: %s", exc)
+            return None
+
     def is_destination_allowed(self, ip: str) -> bool:
         """Check whether the destination IP is within the allowed scope (OPSEC-F1).
 
@@ -247,7 +349,18 @@ class SocksBridge:
             addr: Remote address tuple (ip, port) of the connecting client.
         """
         try:
-            original = self.read_original_dst()
+            # DC-1: Use per-socket-cookie lookup (dst_lookup) as primary.
+            # Falls back to dst_latest[0] if SO_COOKIE is unavailable.
+            original = None
+            cookie = self.get_socket_cookie(client)
+            if cookie is not None:
+                original = self.read_original_dst_by_cookie(cookie)
+
+            if original is None:
+                # Fallback to dst_latest[0] — racy under concurrent connections
+                # but better than dropping the connection entirely.
+                original = self.read_original_dst()
+
             if original is None:
                 logger.warning(
                     "No original destination in BPF map for %s:%d; dropping",

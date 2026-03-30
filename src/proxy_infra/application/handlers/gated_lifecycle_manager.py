@@ -36,6 +36,7 @@ from src.proxy_infra.domain.value_objects.gate_approval_mode import GateApproval
 from src.proxy_infra.domain.value_objects.gate_context import GateContext
 
 if TYPE_CHECKING:
+    from src.proxy_infra.domain.ports.bpf_lifecycle_port import IBpfLifecyclePort
     from src.proxy_infra.domain.ports.operator_confirmation_port import (
         OperatorConfirmationPort,
     )
@@ -79,17 +80,22 @@ class GatedLifecycleManager:
         engagement_dir: Path,
         confirmation_port: OperatorConfirmationPort,
         gate_timeout_seconds: int = _DEFAULT_GATE_TIMEOUT,
+        bpf_port: IBpfLifecyclePort | None = None,
     ) -> None:
-        """Initialize with lifecycle manager and confirmation port.
+        """Initialize with lifecycle manager, confirmation port, and optional BPF port.
 
         Args:
             engagement_dir: Base directory for engagements.
             confirmation_port: Adapter for operator confirmation.
             gate_timeout_seconds: Timeout for human gates.
+            bpf_port: Optional BPF lifecycle port. When provided, BPF is loaded
+                on ACTIVE and detached on TEARDOWN. When None, lifecycle operates
+                without BPF (standalone dev/test, PM-005 conditional loading).
         """
         self._lifecycle = EngagementLifecycleManager(engagement_dir)
         self._confirmation = confirmation_port
         self._gate_timeout = gate_timeout_seconds
+        self._bpf_port = bpf_port
         self._configs: dict[str, FullEngagementConfig] = {}
 
     def create(self, config_path: Path) -> EngagementState:
@@ -127,7 +133,12 @@ class GatedLifecycleManager:
         return self._lifecycle.approve_scope(engagement_id)
 
     def activate(self, engagement_id: str) -> EngagementState:
-        """G3: PROVISIONING -> ACTIVE with gate check.
+        """G3: PROVISIONING -> ACTIVE with gate check and BPF load.
+
+        EN-023-008: After the G3 gate passes, loads the BPF cgroup/connect4
+        program and populates the bypass map before transitioning to ACTIVE.
+        If BPF load fails, rolls back with detach_and_cleanup (OG-001).
+        BPF is optional — skipped when bpf_port is None (PM-005).
 
         Args:
             engagement_id: Engagement identifier.
@@ -138,8 +149,23 @@ class GatedLifecycleManager:
         Raises:
             GateDeniedError: If operator denies the gate.
             GateTimeoutError: If gate times out.
+            RuntimeError: If BPF load fails (after rollback).
         """
         self._check_gate("G3", engagement_id, "PROVISIONING", "ACTIVE")
+
+        # EN-023-008: Load BPF before transitioning to ACTIVE
+        if self._bpf_port is not None:
+            try:
+                self._bpf_port.load_and_attach(engagement_id)
+                self._bpf_port.populate_bypass([], "")
+                logger.info("BPF loaded for engagement %s", engagement_id)
+            except RuntimeError:
+                logger.error(
+                    "BPF load failed for %s — rolling back", engagement_id,
+                )
+                self._bpf_port.detach_and_cleanup()
+                raise
+
         return self._lifecycle.activate(engagement_id)
 
     def complete_execution(self, engagement_id: str) -> EngagementState:
@@ -165,7 +191,11 @@ class GatedLifecycleManager:
         return self._lifecycle.complete_analysis(engagement_id)
 
     def approve_report(self, engagement_id: str) -> EngagementState:
-        """G5: REPORTING -> TEARDOWN with gate check.
+        """G5: REPORTING -> TEARDOWN with gate check and BPF detach.
+
+        EN-023-008: Detaches BPF program from container cgroup and unpins
+        from bpffs during TEARDOWN transition. Constraint B3: NEVER leave
+        BPF pinned after teardown.
 
         Args:
             engagement_id: Engagement identifier.
@@ -178,6 +208,12 @@ class GatedLifecycleManager:
             GateTimeoutError: If gate times out.
         """
         self._check_gate("G5", engagement_id, "REPORTING", "TEARDOWN")
+
+        # EN-023-008: Detach BPF on teardown (constraint B3)
+        if self._bpf_port is not None:
+            logger.info("Detaching BPF for engagement %s", engagement_id)
+            self._bpf_port.detach_and_cleanup()
+
         return self._lifecycle.approve_report(engagement_id)
 
     def complete_teardown(self, engagement_id: str) -> EngagementState:

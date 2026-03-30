@@ -432,6 +432,84 @@ class TestSocksBridgeReadOriginalDst:
 
 
 # =============================================================================
+# SocksBridge — DC-1 cookie-based dst_lookup (concurrent connection race fix)
+# =============================================================================
+
+
+class TestSocksBridgeCookieLookup:
+    """DC-1: Bridge uses SO_COOKIE + dst_lookup for per-connection isolation."""
+
+    def test_get_socket_cookie_returns_uint64(self) -> None:
+        """get_socket_cookie returns the 64-bit cookie from SO_COOKIE getsockopt."""
+        bridge = SocksBridge()
+        mock_sock = MagicMock(spec=socket.socket)
+        # Cookie 42 as little-endian uint64
+        mock_sock.getsockopt.return_value = struct.pack("<Q", 42)
+
+        cookie = bridge.get_socket_cookie(mock_sock)
+
+        assert cookie == 42
+        mock_sock.getsockopt.assert_called_once()
+
+    def test_get_socket_cookie_returns_none_on_oserror(self) -> None:
+        """get_socket_cookie returns None when SO_COOKIE is not supported."""
+        bridge = SocksBridge()
+        mock_sock = MagicMock(spec=socket.socket)
+        mock_sock.getsockopt.side_effect = OSError("Protocol not available")
+
+        cookie = bridge.get_socket_cookie(mock_sock)
+
+        assert cookie is None
+
+    def test_read_original_dst_by_cookie_returns_destination(self) -> None:
+        """read_original_dst_by_cookie looks up dst_lookup by cookie and returns destination."""
+        bridge = SocksBridge(dst_lookup_path="/sys/fs/bpf/rainbow_maps/dst_lookup")
+        bpf_json = _bpftool_map_json(_IP_1_2_3_4_LE, _PORT_80_BPF)
+
+        with patch("subprocess.run") as mock_run:
+            mock_run.return_value = _make_completed(0, stdout=bpf_json)
+            result = bridge.read_original_dst_by_cookie(42)
+
+        assert result is not None
+        assert result.ip == "1.2.3.4"
+        assert result.port == 80
+
+        # Verify the cookie was encoded as hex key in the bpftool command
+        cmd = mock_run.call_args[0][0]
+        assert "hex" in cmd
+        assert "/sys/fs/bpf/rainbow_maps/dst_lookup" in cmd
+
+    def test_read_original_dst_by_cookie_returns_none_on_miss(self) -> None:
+        """read_original_dst_by_cookie returns None when cookie has no map entry."""
+        bridge = SocksBridge()
+        with patch("subprocess.run") as mock_run:
+            mock_run.return_value = _make_completed(1, stderr="not found")
+            result = bridge.read_original_dst_by_cookie(999)
+        assert result is None
+
+    def test_handle_connection_uses_cookie_lookup_first(self) -> None:
+        """handle_connection tries SO_COOKIE + dst_lookup before falling back to dst_latest."""
+        bridge = SocksBridge(allowed_networks=["0.0.0.0/0"])
+        mock_client = MagicMock(spec=socket.socket)
+        mock_client.getsockopt.return_value = struct.pack("<Q", 42)
+
+        bpf_json = _bpftool_map_json(_IP_1_2_3_4_LE, _PORT_80_BPF)
+
+        with (
+            patch("subprocess.run") as mock_run,
+            patch.object(bridge, "_socks5_connect") as mock_socks,
+            patch.object(bridge, "_relay"),
+        ):
+            mock_run.return_value = _make_completed(0, stdout=bpf_json)
+            mock_socks.return_value = MagicMock(spec=socket.socket)
+            bridge.handle_connection(mock_client, ("127.0.0.1", 54321))
+
+        # Verify dst_lookup was called (hex key in command)
+        first_call_cmd = mock_run.call_args_list[0][0][0]
+        assert "hex" in first_call_cmd, "Expected cookie-based hex key lookup"
+
+
+# =============================================================================
 # SocksBridge — scope validation (OPSEC-F1)
 # =============================================================================
 
