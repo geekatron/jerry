@@ -104,4 +104,5 @@ capabilities:
   - Return transient output only (P-002)
   - Omit mandatory disclaimer (P-043)
   - Use hardcoded pipeline names in paths
+  - Use bash brace expansion for directory scaffolding (GH #53 — creates cartesian product of empty dirs)
   - Misrepresent capabilities or confidence (P-022)

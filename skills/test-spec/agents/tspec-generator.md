@@ -152,6 +152,7 @@ For each `$.extensions[*]`, generate ONE Scenario whose type depends on outcome:
 - `outcome = "failure"` -> Negative test scenario (error/rejection path)
 - `outcome = "success"` -> Alternate success scenario
 - `outcome = "rejoin:{N}"` -> Additional scenario that merges back to basic flow at step N
+- Outcome does NOT match any of the above -> Pending classification scenario with `@pending-classification` tag (RULE-OT-04). Do NOT silently skip; generate a placeholder scenario to preserve 1:1 cardinality and flag for H-31 user clarification.
 
 Source annotation: `**Source:** EXT-{STEP}{LETTER} (anchor_step: {N}, outcome: {outcome})`
 
@@ -255,7 +256,7 @@ After writing the Feature file, verify:
 | Failure | Response |
 |---------|---------|
 | Input UC artifact does not exist at path | Report path; ask user to confirm correct path before proceeding |
-| `$.extensions[*].outcome` does not match pattern `^(success|failure|rejoin:\d+)$` | Flag specific extension ID; apply H-31: ask user how to classify this outcome before generating the scenario |
+| `$.extensions[*].outcome` does not match pattern `^(success|failure|rejoin:\d+)$` | Generate a pending classification scenario per RULE-OT-04: include `@pending-classification` tag, placeholder Then clause with raw outcome value, and `[UNRECOGNIZED]` marker in Source annotation. Flag specific extension ID; apply H-31: ask user how to classify this outcome. Do NOT silently skip the extension. |
 | Basic flow step type is unknown (not actor_action, system_response, validation) | Flag step; map to closest semantic type; report the mapping decision |
 | UC detail_level is BULLETED_OUTLINE but user insists on generating | Refuse generation; provide exact rejection message; offer to call /use-case to elaborate first |
 </guardrails>

@@ -85,6 +85,7 @@ Load `skills/use-case/rules/use-case-writing-rules.md` UC 2.0 Slice Lifecycle Ru
 
 | Step | Activity | Action |
 |------|---------|--------|
+| 0 | Pre-check | **Duplicate slice_id detection (REQUIRED before any slice creation).** Read the artifact's existing `$.slices[]` array and collect all current `slice_id` values into a set. Before appending any new slice in Steps 2-4, compare its proposed `slice_id` against this set. If a duplicate is found: HALT and invoke H-31 clarification -- present the conflict (proposed `slice_id`, existing slice title, existing slice state) and ask the user whether to (a) overwrite the existing slice, (b) rename the new slice with an incremented suffix, or (c) abort the slicing operation. Do NOT silently overwrite or create duplicate slice_ids. When the artifact has no existing `$.slices[]` (first invocation), this step is a no-op -- proceed to Step 1. |
 | 1 | Activity 2 | Validate input artifact: `detail_level >= ESSENTIAL_OUTLINE`, `basic_flow` non-empty, `extensions` non-empty. **If validation fails, execute the rejection artifact protocol (see below) and HALT -- do not proceed to Step 2.** |
 | 2 | Activity 2 | Identify slice candidates: the basic flow is always Slice 1; each significant extension branch is a candidate for a separate slice |
 | 3 | Activity 2 | Apply INVEST criteria to each candidate; record in `invest_assessment{}` |
@@ -224,8 +225,8 @@ After updating the artifact, verify the YAML frontmatter satisfies the allOf con
 - `realization_level_must_match_populated_blocks`: Only set INTERACTION_DEFINED when interactions[] is non-empty
 - `slice_state_must_be_explicitly_set_on_every_transition`: Never leave slice_state implicit
 
-**Re-invocation (append-only):**
-When re-invoked on an artifact that already has `slices[]`, preserve existing slices and append new ones unless the user explicitly requests replacement. Overwriting existing slices without user approval discards INVEST assessments, test cases, and worktracker Story linkages that downstream agents and implementers depend on.
+**Re-invocation (append-only with duplicate detection):**
+When re-invoked on an artifact that already has `slices[]`, preserve existing slices and append new ones unless the user explicitly requests replacement. Step 0 (duplicate slice_id detection) MUST execute before any new slices are appended -- this prevents silent ID collisions that would corrupt downstream worktracker Story linkages, /test-spec slice-scoped coverage, and /contract-design interaction traceability. Overwriting existing slices without user approval discards INVEST assessments, test cases, and worktracker Story linkages that downstream agents and implementers depend on.
 
 **Forbidden actions (with consequences):**
 - P-003 VIOLATION: NEVER spawn recursive subagents or delegate to other agents via Task tool -- Consequence: agent hierarchy violation breaks orchestrator-worker topology and causes uncontrolled token consumption. uc-slicer is a T2 worker agent without Task tool access.
@@ -243,5 +244,6 @@ When re-invoked on an artifact that already has `slices[]`, preserve existing sl
 | Rejection artifact written | uc-slicer writes `{artifact_path}-rejection.yaml` alongside the rejected artifact. Report artifact path to user. Do not proceed to Step 2. |
 | Slice fails INVEST criteria | Record failure in invest_assessment{}, report to user, ask whether to redefine slice boundaries or proceed with documented INVEST exceptions |
 | allOf constraint violation after update | Fix the artifact: populate the required block before setting the triggering field (e.g., populate interactions[] before setting realization_level: INTERACTION_DEFINED) |
+| Duplicate slice_id detected (Step 0) | HALT and invoke H-31 clarification. Present the conflict details: proposed slice_id, existing slice title, existing slice state. Ask user whether to overwrite, rename (increment suffix), or abort. Do NOT proceed to Step 1 until resolved. |
 | Worktracker CLI fails | Report the error, persist slice definitions to the artifact file, note that Story entity creation failed and must be retried |
 </guardrails>

@@ -125,7 +125,7 @@ For each interaction in `$.interactions[*]`, apply the following check to both `
 EXACT_MATCH_TERMS (case-insensitive, whole description after strip):
   TBD, TODO, N/A, n/a, ..., xxx, yyy, zzz, none
 
-SUBSTRING_TERMS (case-insensitive word-boundary match):
+SUBSTRING_TERMS (case-insensitive, regex word-boundary match via \b{term}\b):
   FIXME, placeholder, "to be determined", "to be defined", "to be completed",
   "not yet defined", "fill in later", "needs description", pending,
   "insert description", "description here", "lorem ipsum", "example text",
@@ -137,10 +137,21 @@ Matching algorithm:
      all comparisons. This prevents bypass via Unicode padding.
   1. If normalized description.strip() matches any EXACT_MATCH_TERMS (case-insensitive):
      REJECT -- entire description is a placeholder.
-  2. If any SUBSTRING_TERMS appears as a word-boundary match in description
-     AND description total length < 60 characters:
+  2. If any SUBSTRING_TERMS matches via regex \b{term}\b (case-insensitive) in
+     description AND description total length < 60 characters:
      REJECT -- short description dominated by placeholder language.
+     NOTE: The \b word-boundary anchor ensures that a term like "pending"
+     matches only as a standalone word. Substring occurrences within larger
+     words (e.g., "pending" inside "impending") MUST NOT trigger rejection.
   3. Otherwise: PASS to Layer 2b.
+
+Expected behavior examples:
+  - "pending review"              → REJECT (standalone \bpending\b matches,
+                                    length < 60)
+  - "impending return item"       → PASS   (\bpending\b does NOT match
+                                    inside "impending")
+  - "FIXME: add description"      → REJECT (EXACT_TERMS match on FIXME via
+                                    \bFIXME\b, length < 60)
 ```
 
 On REJECT, produce the following actionable error message and stop:

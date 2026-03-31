@@ -15,7 +15,7 @@
 | [1. Input Validation Rules](#1-input-validation-rules) | Pre-transformation guards (RULE-IV-01 through RULE-IV-04) |
 | [2. Clark Mapping Rules (Steps 1-7)](#2-clark-mapping-rules-steps-1-7) | Core UC2.0-to-Gherkin algorithm (RULE-C1-01 through RULE-C7-01) |
 | [3. Step-Type-to-Clause Rules (SD-07)](#3-step-type-to-clause-rules-sd-07) | actor_action/system_response/validation lookup (RULE-ST-01 through RULE-ST-03) |
-| [4. Outcome-Type-to-Scenario Rules (SD-08)](#4-outcome-type-to-scenario-rules-sd-08) | failure/success/rejoin lookup (RULE-OT-01 through RULE-OT-03) |
+| [4. Outcome-Type-to-Scenario Rules (SD-08)](#4-outcome-type-to-scenario-rules-sd-08) | failure/success/rejoin/unrecognized lookup (RULE-OT-01 through RULE-OT-04) |
 | [5. Slice-Scoped Generation Rules](#5-slice-scoped-generation-rules) | Slice-filtered scenario generation (RULE-SL-01 through RULE-SL-02) |
 | [6. Post-Generation Quality Assurance Rules](#6-post-generation-quality-assurance-rules) | Verification after generation (RULE-QA-01 through RULE-QA-04) |
 
@@ -75,11 +75,11 @@ WHEN `$.alternative_flows` contains entries, generate ONE Scenario per alternati
 Rationale: Clark Step 4 maps each alternative flow to a distinct scenario, preserving the distinct path identity while linking it back to the source flow via the branches_from_step reference.
 
 **RULE-C5-01: Map each extension to exactly ONE Scenario using SD-08 outcome lookup.**
-WHEN `$.extensions` contains entries, generate ONE Scenario per extension using the outcome-type-to-scenario lookup (see RULE-OT-01 through RULE-OT-03). Do NOT merge multiple extensions into a single Scenario. For each extension, include:
+WHEN `$.extensions` contains entries, generate ONE Scenario per extension using the outcome-type-to-scenario lookup (see RULE-OT-01 through RULE-OT-04). Do NOT merge multiple extensions into a single Scenario. For each extension, include:
 - Title: `Scenario: {$.title} - {$.extensions[N].name or "Error at step {anchor_step}"}`
 - Given clauses: preconditions PLUS the extension condition (`$.extensions[N].condition`)
 - When clauses: the steps preceding the extension trigger (from basic_flow up to anchor_step)
-- Then clauses: derived from the extension's outcome type (see RULE-OT-01 through RULE-OT-03)
+- Then clauses: derived from the extension's outcome type (see RULE-OT-01 through RULE-OT-04)
 - Source annotation: `**Source:** {$.extensions[N].id} (anchor_step: {anchor_step}, outcome: {outcome})`
 Rationale: Clark Step 5 mandates one scenario per extension to ensure every exception condition has an explicit acceptance test. Merging extensions would obscure individual error path coverage.
 
@@ -146,6 +146,17 @@ WHEN an extension has `$.extensions[*].outcome` matching the pattern `rejoin:{N}
 - Is annotated as type: `error (rejoin:N)` in the Traceability Matrix
 Do NOT treat rejoin outcomes identically to success outcomes. A rejoin scenario must demonstrate both the deviation handling AND the successful resumption from step N. Rationale: The rejoin:{N} pattern encodes error-recovery paths where the system handles a deviation and resumes the main flow at a known point; the generated scenario must demonstrate both the deviation handling and the successful resumption.
 
+**RULE-OT-04: Extension with unrecognized outcome generates a pending classification scenario.**
+WHEN an extension has `$.extensions[*].outcome` that does NOT match `success`, `failure`, or the pattern `rejoin:\d+`, generate a Scenario that:
+- Is titled to indicate pending classification (e.g., "Borrow a Book - [PENDING CLASSIFICATION] Unrecognized outcome at step 3")
+- Has Given clauses from preconditions PLUS the extension condition
+- Has When clauses leading to the point where the extension is triggered (basic_flow steps up to anchor_step, plus the extension trigger)
+- Has Then clauses containing a placeholder: `Then the system handles the outcome "{raw_outcome_value}" # PENDING: outcome not classified as success/failure/rejoin -- requires user classification per H-31`
+- Includes a `@pending-classification` tag on the Scenario line for automated detection
+- Is annotated as type: `error (pending classification)` in the Traceability Matrix
+- Source annotation: `**Source:** {$.extensions[N].id} (anchor_step: {anchor_step}, outcome: {outcome} [UNRECOGNIZED])`
+Do NOT silently skip extensions with unrecognized outcomes. The extension MUST produce a scenario to maintain the 1:1 cardinality guarantee (RULE-QA-01). The pending classification marker enables tspec-analyst to flag these scenarios for user review. Rationale: Silently dropping extensions with unrecognized outcomes violates the Clark mapping contract (one scenario per extension) and hides untested paths. Generating a pending classification scenario preserves traceability while surfacing the classification gap for H-31 clarification.
+
 ---
 
 ## 5. Slice-Scoped Generation Rules
@@ -199,6 +210,6 @@ Then write the file. Rationale: Reporting before writing gives the user an oppor
 
 *Rules Version: 1.0.0*
 *Author: eng-backend | Date: 2026-03-09*
-*Minimum rule count satisfied: 20 rules (4 IV + 7 C + 3 ST + 3 OT + 2 SL + 4 QA = 23, exceeding minimum of 19)*
+*Minimum rule count satisfied: 20 rules (4 IV + 7 C + 3 ST + 4 OT + 2 SL + 4 QA = 24, exceeding minimum of 19)*
 *Target file size: < 500 lines (CB-05 compliant)*
 *Reference: Clark (2018) UC2.0-to-Gherkin mapping algorithm, SD-07, SD-08*

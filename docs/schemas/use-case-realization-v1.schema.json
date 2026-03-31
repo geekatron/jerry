@@ -195,7 +195,7 @@
       "items": {
         "$ref": "#/$defs/slice"
       },
-      "description": "Jacobson UC 2.0 slices. Present when realization_level >= STORY_DEFINED."
+      "description": "Jacobson UC 2.0 slices. Present when realization_level >= STORY_DEFINED. CONSTRAINT: Each slice_id within this array MUST be unique. JSON Schema uniqueItems applies to full object equality and cannot enforce per-property uniqueness; this constraint is enforced by uc-slicer Step 0 (duplicate slice_id detection) at runtime."
     },
     "slice_ids": {
       "type": "array",

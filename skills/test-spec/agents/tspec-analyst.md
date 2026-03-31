@@ -40,10 +40,10 @@ The skill closes the quality assurance gap in the /test-spec pipeline: generatio
 
 <input>
 **Primary inputs (both required):**
-1. Feature file produced by tspec-generator: `projects/${JERRY_PROJECT}/test-specs/UC-{DOMAIN}-{NNN}-{slug}.feature.md`
+1. Feature file(s) produced by tspec-generator: `projects/${JERRY_PROJECT}/test-specs/UC-{DOMAIN}-{NNN}-{slug}.feature.md` -- one file for single-file analysis, or multiple files sharing the same `source_use_case` frontmatter value for aggregate cross-slice analysis (Step 2c)
 2. Source use case artifact: `projects/${JERRY_PROJECT}/use-cases/UC-{DOMAIN}-{NNN}-{slug}.md`
 
-Coverage analysis requires both inputs. Without the source UC artifact there is no coverage baseline. Without the Feature file there is nothing to measure.
+Coverage analysis requires at minimum one Feature file and the source UC artifact. Without the source UC artifact there is no coverage baseline. Without at least one Feature file there is nothing to measure. When multiple Feature files are provided for the same use case, aggregate coverage mode activates automatically (Step 2c).
 
 **Derived inputs (parsed from Feature file YAML frontmatter):**
 - `source_use_case`: UC identifier, used to locate source artifact if path not provided
@@ -105,6 +105,63 @@ slice_mappable_flows:
   - count($.alternative_flows where branches_from_step in slice_steps)
   - count($.extensions where anchor_step in slice_steps)
 ```
+
+### Step 2b: Staleness Detection (Feature File vs. Live UC)
+
+After computing `total_mappable_flows` from the live UC (Step 2), cross-reference against the generation-time snapshot stored in the Feature file's YAML frontmatter:
+
+1. Read `coverage.total_flows` from the Feature file's YAML frontmatter (this is the flow count recorded by tspec-generator at generation time)
+2. Compute the live UC flow count using the Step 2 formula (`total_mappable_flows`)
+3. Compare the two values:
+   - If `coverage.total_flows == total_mappable_flows`: no staleness detected; proceed normally
+   - If `coverage.total_flows != total_mappable_flows`: the UC has changed since the Feature file was generated
+
+4. When a divergence is detected, emit a **Staleness Warning** section in the coverage report containing:
+   - `snapshot_total_flows`: the `coverage.total_flows` value from Feature file frontmatter
+   - `live_total_flows`: the `total_mappable_flows` computed from the current UC artifact
+   - `delta`: `live_total_flows - snapshot_total_flows` (positive = flows added, negative = flows removed)
+   - `recommendation`: "Re-generate the Feature file using tspec-generator to synchronize with the current use case artifact."
+
+5. The live UC count (`total_mappable_flows`) remains the **primary denominator** for all coverage calculations (current behavior). The staleness warning does not change the coverage formula -- it flags that the Feature file may be missing scenarios for newly added flows (or referencing flows that no longer exist).
+
+6. If `coverage.total_flows` is absent from the Feature file frontmatter (e.g., older Feature files generated before this field existed), skip staleness detection and note "Staleness detection skipped: coverage.total_flows not present in Feature file frontmatter" in the report.
+
+### Step 2c: Aggregate Coverage Mode (Cross-Slice)
+
+Activates when the user provides multiple Feature files for the same use case. Detection: two or more Feature files share the same `source_use_case` value in their YAML frontmatter.
+
+1. **Collect slice Feature files:** Glob the `test-specs/` directory for all `.feature.md` files. Parse each file's YAML frontmatter and group by `source_use_case`. Identify the group matching the current analysis target. Each file in the group must have a non-null `slice_id`.
+
+2. **Compute per-slice coverage:** For each slice Feature file, apply the slice-scoped coverage formula from Step 2:
+   ```
+   slice_steps = $.slices[slice_id].steps_included[*]
+
+   slice_mappable_flows:
+     - 1 if any basic_flow step is in slice_steps
+     - count($.alternative_flows where branches_from_step in slice_steps)
+     - count($.extensions where anchor_step in slice_steps)
+
+   slice_coverage = mapped_scenarios / slice_mappable_flows
+   ```
+
+3. **Compute union coverage:** Merge the mapped flow sets across all slices:
+   ```
+   all_mapped_flows = union(slice_1.mapped_flows, slice_2.mapped_flows, ..., slice_N.mapped_flows)
+   total_uc_flows   = 1 (basic_flow) + count($.alternative_flows) + count($.extensions)
+
+   aggregate_coverage = count(all_mapped_flows) / total_uc_flows * 100
+   ```
+   Union coverage answers: "What percentage of the full UC flow space is covered by at least one slice's scenarios?"
+
+4. **Identify cross-slice gaps:** For each extension in the source UC:
+   - Determine the `anchor_step` (the step where the extension branches)
+   - Determine the full flow path: the sequence of steps the extension traverses before rejoining or terminating
+   - If the `anchor_step` belongs to Slice A's `steps_included` but the flow path traverses steps belonging to Slice B's `steps_included`, and neither slice's Feature file maps that extension, flag it as a **cross-slice gap**
+   - Cross-slice gaps are flows that fall in the seam between slices -- each slice assumes the other covers the extension because part of the flow is in scope for each
+
+5. **Report aggregate metrics:** Emit both per-slice and aggregate results. Cross-slice gaps are classified at P0 priority (they represent flows that no slice covers despite each slice partially owning the flow path).
+
+6. **Single-slice fallback:** When only one Feature file exists for the `source_use_case`, aggregate mode does not activate. Proceed with standard single-file coverage analysis (Steps 3-7).
 
 ### Step 3: Enumerate Mapped Scenarios
 
@@ -175,6 +232,37 @@ Report at a glance:
 - Gap count by priority (P0, P1, P2, P3)
 - 7 Cs quality assessment: PASS/WARN/FAIL per criterion
 
+## Staleness Warning (conditional)
+
+Emitted between L0 and L1 when Step 2b detects a divergence between the Feature file's `coverage.total_flows` frontmatter snapshot and the live UC flow count. Format:
+
+```
+### Staleness Warning
+
+| Metric | Value |
+|--------|-------|
+| Feature file snapshot (`coverage.total_flows`) | {snapshot_total_flows} |
+| Live UC flow count | {live_total_flows} |
+| Delta | {delta} ({+N flows added | -N flows removed}) |
+
+**Impact:** Coverage metrics use the live UC flow count as denominator.
+The Feature file was generated against a UC with {snapshot_total_flows} flows,
+but the UC now contains {live_total_flows} flows.
+
+**Recommendation:** Re-generate the Feature file using tspec-generator to
+synchronize with the current use case artifact.
+```
+
+When `coverage.total_flows` is absent from the Feature file frontmatter, emit instead:
+
+```
+### Staleness Warning
+
+Staleness detection skipped: `coverage.total_flows` not present in Feature file
+frontmatter. Consider re-generating the Feature file with a current version of
+tspec-generator to enable staleness detection.
+```
+
 ## L1: Per-Flow Coverage Detail
 
 For each use case flow element:
@@ -193,6 +281,57 @@ Coverage gap details:
 - Risk assessment for uncovered paths (business impact of each P0/P1 gap)
 - Recommendation: proceed to implementation (coverage >= target) or return to tspec-generator
 
+## Aggregate Coverage Report (conditional)
+
+Emitted when Step 2c activates (multiple Feature files share the same `source_use_case`). Appended after the L2 section in the coverage report. Output path uses the UC identifier without a slice suffix: `projects/${JERRY_PROJECT}/test-specs/UC-{DOMAIN}-{NNN}-{slug}-aggregate-coverage.md`
+
+### L0: Aggregate Summary
+
+```
+## Aggregate Coverage Summary
+
+| Metric | Value |
+|--------|-------|
+| Source Use Case | {source_use_case} |
+| Slices Analyzed | {slice_count} |
+| Slice IDs | {comma-separated slice_ids} |
+| Per-Slice Coverage | {slice_id_1}: {X}%, {slice_id_2}: {Y}%, ... |
+| Union Coverage | {all_mapped_flows} / {total_uc_flows} = {aggregate_coverage}% |
+| Cross-Slice Gaps | {cross_slice_gap_count} |
+| Goal Level Target | {target}% |
+| Aggregate Assessment | {PASS | FAIL} |
+```
+
+### L1: Cross-Slice Gap Detail
+
+For each cross-slice gap identified in Step 2c:
+
+```
+### Cross-Slice Gap: {flow_element_id}
+
+| Field | Value |
+|-------|-------|
+| Flow Element | {EXT-NN or AF-NN} |
+| Anchor Step | Step {N} (in {slice_id_A}) |
+| Flow Path Steps | Steps {N, N+1, ...} (spans {slice_id_A}, {slice_id_B}) |
+| Slice A Coverage | {slice_id_A}: anchor step in scope, flow path partially covered |
+| Slice B Coverage | {slice_id_B}: flow path steps in scope, anchor step not in scope |
+| Owning Slice | Neither -- cross-slice seam |
+| Priority | P0 (cross-slice gap) |
+| Recommendation | {Add scenario to slice_id_X covering the full extension path, or create a dedicated integration slice} |
+```
+
+### L1: Per-Slice Coverage Matrix
+
+```
+| Slice ID | Mappable Flows | Mapped Scenarios | Coverage | Gaps |
+|----------|---------------|------------------|----------|------|
+| {slice_id_1} | {N} | {M} | {X}% | {G} |
+| {slice_id_2} | {N} | {M} | {Y}% | {G} |
+| ... | | | | |
+| **Union** | **{total_uc_flows}** | **{all_mapped_flows}** | **{aggregate}%** | **{total_gaps}** |
+```
+
 ## Post-Creation Verification
 
 After writing the coverage report, verify:
@@ -201,6 +340,9 @@ After writing the coverage report, verify:
 3. Every basic_flow step is accounted for (mapped or gap)
 4. Every extension is accounted for (mapped or gap)
 5. All gaps cite specific flow element IDs (not vague "more tests needed")
+6. (Aggregate mode only) Aggregate coverage report exists at the aggregate output path
+7. (Aggregate mode only) Union coverage percentage is computed (all_mapped_flows / total_uc_flows)
+8. (Aggregate mode only) Every cross-slice gap cites the specific flow element, anchor step, and the slice IDs involved
 </output>
 
 <guardrails>
