@@ -1,11 +1,12 @@
 # BUG-010: uc-slicer lacks duplicate slice_id conflict detection (#199)
 
 > **Type:** bug
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Severity:** major
 > **Created:** 2026-03-31
+> **Completed:** 2026-03-31
 > **Parent:** PROJ-030-bugs
 > **GitHub Issue:** [#199](https://github.com/geekatron/jerry/issues/199)
 > **Coordinating Epic:** EPIC-002 (PROJ-024)

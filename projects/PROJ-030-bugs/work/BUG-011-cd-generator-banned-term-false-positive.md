@@ -1,11 +1,12 @@
 # BUG-011: cd-generator banned-term false positives under 60 chars (#198)
 
 > **Type:** bug
-> **Status:** pending
+> **Status:** completed
 > **Priority:** medium
 > **Impact:** high
 > **Severity:** major
 > **Created:** 2026-03-31
+> **Completed:** 2026-03-31
 > **Parent:** PROJ-030-bugs
 > **GitHub Issue:** [#198](https://github.com/geekatron/jerry/issues/198)
 > **Coordinating Epic:** EPIC-002 (PROJ-024)

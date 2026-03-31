@@ -10,8 +10,8 @@
 | FEAT-001 | Feature | Claude Code Schema Validation Research and Refinement | in_progress | EPIC-001 |
 | EN-004 | Enabler | Memory-Keeper Collision Detection Enhancement | pending | FEAT-001 |
 | EPIC-002 | Epic | Issue Triage Batch — UC Pipeline Bugs, Output Paths, Quick Wins | in_progress | PROJ-024 |
-| TASK-013 | Task | use-case SKILL.md missing Activity 5 entry (#200) | open | EPIC-002 |
-| TASK-014 | Task | Orchestration scaffold cartesian product dirs (#53) | open | EPIC-002 |
+| TASK-013 | Task | use-case SKILL.md missing Activity 5 entry (#200) | completed | EPIC-002 |
+| TASK-014 | Task | Orchestration scaffold cartesian product dirs (#53) | completed | EPIC-002 |
 
 ## Completed
 

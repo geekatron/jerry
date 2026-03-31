@@ -1,11 +1,12 @@
 # BUG-007: tspec-generator silently skips unrecognized extension outcomes (#195)
 
 > **Type:** bug
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Severity:** major
 > **Created:** 2026-03-31
+> **Completed:** 2026-03-31
 > **Parent:** PROJ-030-bugs
 > **GitHub Issue:** [#195](https://github.com/geekatron/jerry/issues/195)
 > **Coordinating Epic:** EPIC-002 (PROJ-024)

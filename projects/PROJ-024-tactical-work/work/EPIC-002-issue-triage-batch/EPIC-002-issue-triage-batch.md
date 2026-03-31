@@ -68,14 +68,14 @@ This Epic is the **cross-session resumption artifact**. Any session on the `feat
 | BUG-010 | Bug | uc-slicer lacks duplicate slice_id conflict detection | completed | PROJ-030 | #199 | 1 | — |
 | BUG-011 | Bug | cd-generator banned-term false positives under 60 chars | completed | PROJ-030 | #198 | 1 | — |
 | **Output Path Remediation** | | | | | | | |
-| BUG-006 | Bug | Agent output paths hardcoded to skill directories | open | PROJ-030 | #230 | 2 | — |
-| TASK-011 | Task | Update .gitignore for skills/*/output/ | open | PROJ-030 | — | 2a | — |
-| TASK-009 | Task | Remove committed eng-team/output/ (28 files) | open | PROJ-030 | — | 2a | — |
-| TASK-006 | Task | eng-team path remediation (22 files) | open | PROJ-030 | — | 2b | TASK-009 |
-| TASK-007 | Task | red-team path remediation (25 files) | open | PROJ-030 | — | 2b | — |
-| TASK-008 | Task | UX skills path remediation (60 files) | open | PROJ-030 | — | 2b | — |
-| TASK-012 | Task | Fix diataxis naming inconsistencies | open | PROJ-030 | — | 2b | — |
-| TASK-010 | Task | Add output path MEDIUM standard (AD-M-011) | open | PROJ-030 | — | 2c | TASK-006, TASK-007, TASK-008 |
+| BUG-006 | Bug | Agent output paths hardcoded to skill directories | pending | PROJ-030 | #230 | 2 | — |
+| TASK-011 | Task | Update .gitignore for skills/*/output/ | pending | PROJ-030 | — | 2a | — |
+| TASK-009 | Task | Remove committed eng-team/output/ (28 files) | pending | PROJ-030 | — | 2a | — |
+| TASK-006 | Task | eng-team path remediation (22 files) | pending | PROJ-030 | — | 2b | TASK-009 |
+| TASK-007 | Task | red-team path remediation (25 files) | pending | PROJ-030 | — | 2b | — |
+| TASK-008 | Task | UX skills path remediation (60 files) | pending | PROJ-030 | — | 2b | — |
+| TASK-012 | Task | Fix diataxis naming inconsistencies | pending | PROJ-030 | — | 2b | — |
+| TASK-010 | Task | Add output path MEDIUM standard (AD-M-011) | pending | PROJ-030 | — | 2c | TASK-006, TASK-007, TASK-008 |
 | **Quick Wins** | | | | | | | |
 | TASK-013 | Task | use-case SKILL.md missing Activity 5 entry | completed | PROJ-024 | #200 | 0 | — |
 | TASK-014 | Task | Orchestration scaffold cartesian product dirs | completed | PROJ-024 | #53 | 0 | — |
@@ -162,7 +162,7 @@ All 5 bugs are in agent definition `.md` files and transformation rule files —
 **To resume in a new session:**
 
 1. Read this file: `projects/PROJ-024-tactical-work/work/EPIC-002-issue-triage-batch/EPIC-002-issue-triage-batch.md`
-2. Check the Work Items table — find the first `open` item in the lowest incomplete phase
+2. Check the Work Items table — find the first `pending` item in the lowest incomplete phase
 3. Update status to `in_progress` before starting work
 4. When complete, update status to `completed` and set the next item to `in_progress`
 5. Update PROJ-030 WORKTRACKER.md for bug/task status changes
@@ -172,7 +172,7 @@ All 5 bugs are in agent definition `.md` files and transformation rule files —
 ```
 Resume work on EPIC-002 (Issue Triage Batch).
 Read: projects/PROJ-024-tactical-work/work/EPIC-002-issue-triage-batch/EPIC-002-issue-triage-batch.md
-Find the next open item and execute it.
+Find the next pending item and execute it.
 ```
 
 ---
@@ -181,11 +181,12 @@ Find the next open item and execute it.
 
 | GitHub Issue | Worktracker Entity | Status |
 |---|---|---|
-| [#195](https://github.com/geekatron/jerry/issues/195) | BUG-007 (PROJ-030) | open |
-| [#196](https://github.com/geekatron/jerry/issues/196) | BUG-009 (PROJ-030) | open |
-| [#197](https://github.com/geekatron/jerry/issues/197) | BUG-008 (PROJ-030) | open |
-| [#198](https://github.com/geekatron/jerry/issues/198) | BUG-011 (PROJ-030) | open |
-| [#199](https://github.com/geekatron/jerry/issues/199) | BUG-010 (PROJ-030) | open |
-| [#200](https://github.com/geekatron/jerry/issues/200) | TASK-013 (PROJ-024) | open |
-| [#53](https://github.com/geekatron/jerry/issues/53) | TASK-014 (PROJ-024) | open |
-| [#230](https://github.com/geekatron/jerry/issues/230) | BUG-006 (PROJ-030) | open |
+| [#195](https://github.com/geekatron/jerry/issues/195) | BUG-007 (PROJ-030) | completed |
+| [#196](https://github.com/geekatron/jerry/issues/196) | BUG-009 (PROJ-030) | completed |
+| [#197](https://github.com/geekatron/jerry/issues/197) | BUG-008 (PROJ-030) | completed |
+| [#198](https://github.com/geekatron/jerry/issues/198) | BUG-011 (PROJ-030) | completed |
+| [#199](https://github.com/geekatron/jerry/issues/199) | BUG-010 (PROJ-030) | completed |
+| [#200](https://github.com/geekatron/jerry/issues/200) | TASK-013 (PROJ-024) | completed |
+| [#53](https://github.com/geekatron/jerry/issues/53) | TASK-014 (PROJ-024) | completed |
+| [#230](https://github.com/geekatron/jerry/issues/230) | BUG-006 (PROJ-030) | pending |
+| [#231](https://github.com/geekatron/jerry/issues/231) | Future: deterministic CLI resolver | pending |

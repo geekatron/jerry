@@ -1,11 +1,12 @@
 # BUG-009: tspec-analyst has no cross-slice aggregate coverage (#196)
 
 > **Type:** bug
-> **Status:** pending
+> **Status:** completed
 > **Priority:** medium
 > **Impact:** high
 > **Severity:** major
 > **Created:** 2026-03-31
+> **Completed:** 2026-03-31
 > **Parent:** PROJ-030-bugs
 > **Depends On:** BUG-008
 > **GitHub Issue:** [#196](https://github.com/geekatron/jerry/issues/196)
