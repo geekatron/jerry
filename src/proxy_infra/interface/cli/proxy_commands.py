@@ -646,10 +646,7 @@ def _noop_manifest_writer() -> _NoopManifestWriter:
 
 
 class _NoopBpfPort:
-    """No-op BPF port for when BPF bypass map is not needed."""
-
-    def update_bypass_ips(self, ips: list[str]) -> None:
-        """No-op bypass IP update."""
+    """No-op BPF port for when BPF lifecycle management is not needed."""
 
 
 def _noop_bpf_port() -> _NoopBpfPort:

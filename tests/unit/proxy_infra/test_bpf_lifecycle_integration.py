@@ -33,7 +33,6 @@ from src.proxy_infra.application.handlers.gated_lifecycle_manager import (
 )
 from src.proxy_infra.domain.ports.bpf_lifecycle_port import IBpfLifecyclePort
 
-
 # ---------------------------------------------------------------------------
 # Helpers (reuse pattern from test_engagement_gate_lifecycle.py)
 # ---------------------------------------------------------------------------
@@ -135,21 +134,8 @@ class TestBpfDetachedOnTeardown:
         bpf.detach_and_cleanup.assert_called_once()
 
 
-class TestBpfBypassMapPopulated:
-    """Bypass map populated during activation."""
-
-    def test_bypass_map_populated_on_activate(self, tmp_path: Path) -> None:
-        """activate() calls bpf_port.populate_bypass()."""
-        bpf = MagicMock(spec=IBpfLifecyclePort)
-        bpf.is_ready.return_value = True
-        glm = _create_glm(tmp_path, bpf_port=bpf)
-
-        config_path = _write_config(tmp_path, "E2E-BPF-004")
-        state = glm.create(config_path)
-        glm.approve_scope(state.engagement_id)
-        glm.activate(state.engagement_id)
-
-        bpf.populate_bypass.assert_called_once()
+# EN-023-010: TestBpfBypassMapPopulated removed — bypass_ips map replaced
+# by SO_MARK loop prevention. See tests/architecture/test_bypass_map_removed.py.
 
 
 class TestBpfRollbackOnFailure:

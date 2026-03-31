@@ -11,8 +11,6 @@ Manifest location: {base_dir}/work/engagements/{engagement_id}/proxy-pool.yaml
 Invariants enforced:
     PI-004: SHA-256 integrity hash verified on every read. ManifestIntegrityError
         raised if the stored hash does not match computed hash.
-    EN-023-001 F-4: BPF bypass_ips map updated with all proxy node IPs before
-        traffic routing, when a bpf_port adapter is supplied.
 
 Atomic write pattern:
     Writes go to a .tmp sibling file; os.replace() is used for atomic rename.
@@ -26,13 +24,12 @@ References:
 from __future__ import annotations
 
 import os
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 import yaml
 
-from src.proxy_infra.domain.exceptions.manifest_integrity_error import ManifestIntegrityError
 from src.proxy_infra.domain.services.proxy_pool_service import ProxyPoolService
 from src.proxy_infra.domain.value_objects.node_status import NodeStatus
 from src.proxy_infra.domain.value_objects.pool_manifest import PoolManifest
@@ -61,10 +58,6 @@ class PoolManifestStore:
     Invariants enforced:
         PI-004: Integrity hash is verified on every read. ManifestIntegrityError
             is raised if the hash does not match the stored pool data.
-        EN-023-001 F-4: When a bpf_port adapter is supplied, load() calls
-            bpf_port.update_bypass_ips(ips) with all proxy node IPs BEFORE
-            returning. This ensures bypass_ips is populated before any BPF
-            routing directs tool traffic through proxy nodes.
 
     References:
         - ADR-PROJ023-008: Manifest integrity (PI-004), atomic write pattern
@@ -73,20 +66,14 @@ class PoolManifestStore:
     def __init__(
         self,
         base_dir: Path | str,
-        bpf_port: Any = None,
     ) -> None:
         """Initialize PoolManifestStore.
 
         Args:
             base_dir: Root directory of the engagement workspace. Manifests are
                 written to {base_dir}/work/engagements/{engagement_id}/proxy-pool.yaml.
-            bpf_port: Optional BPF adapter implementing update_bypass_ips(ips: list[str]).
-                When provided, load() calls update_bypass_ips with all proxy node IPs
-                before returning (EN-023-001 F-4). When None, BPF update is skipped
-                (zero-proxy backward compatibility).
         """
         self._base_dir = Path(base_dir)
-        self._bpf_port = bpf_port
         self._pool_service = ProxyPoolService(provisioner=None)  # type: ignore[arg-type]
 
     # ------------------------------------------------------------------
@@ -112,9 +99,7 @@ class PoolManifestStore:
         """Load and integrity-verify the pool manifest for an engagement.
 
         Reads the YAML file from disk, reconstructs the PoolManifest domain
-        object, verifies the SHA-256 integrity hash (PI-004), and optionally
-        updates the BPF bypass_ips map with all proxy node IPs before returning
-        (EN-023-001 F-4).
+        object, and verifies the SHA-256 integrity hash (PI-004).
 
         Args:
             engagement_id: Owning engagement identifier.
@@ -139,12 +124,6 @@ class PoolManifestStore:
 
         # PI-004: verify hash before returning any data to caller
         self._pool_service.verify_manifest_integrity(manifest)
-
-        # EN-023-001 F-4: update BPF bypass_ips BEFORE returning so routing
-        # is configured before any tool traffic is directed through BPF maps
-        if self._bpf_port is not None:
-            proxy_ips = [node.ip for node in manifest.pool.nodes]
-            self._bpf_port.update_bypass_ips(proxy_ips)
 
         return manifest
 
@@ -277,7 +256,7 @@ class PoolManifestStore:
             engagement_id=pool_data.get("engagement_id", ""),
         )
 
-        updated_raw = data.get("updated_at", datetime.now(timezone.utc).isoformat())
+        updated_raw = data.get("updated_at", datetime.now(UTC).isoformat())
         if isinstance(updated_raw, str):
             updated_at = datetime.fromisoformat(updated_raw)
         else:

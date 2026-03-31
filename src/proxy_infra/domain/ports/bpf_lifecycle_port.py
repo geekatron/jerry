@@ -3,8 +3,9 @@
 
 """IBpfLifecyclePort — Protocol for full BPF program lifecycle management.
 
-Extends the BpfBypassPort (bypass map only) with load/attach/detach/readiness
-operations needed by the engagement lifecycle state machine.
+EN-023-010: Unified Envoy architecture with SO_MARK loop prevention.
+No bypass maps needed — Envoy upstream sockets are marked with SO_MARK=100
+and the BPF connect4 program skips marked connections.
 
 Design constraints:
     H-07: Domain layer port — no infrastructure or application imports.
@@ -12,8 +13,7 @@ Design constraints:
     H-11: All public methods have type annotations.
 
 References:
-    EN-023-008: eBPF transparent proxy integration
-    AP-4: IBpfLifecyclePort extends BpfBypassPort contract
+    EN-023-010: Envoy unified traffic path with SO_MARK loop prevention
     DC-2: Init container pattern (load externally, tool gets read-only bpffs)
 """
 
@@ -24,21 +24,19 @@ from typing import Protocol, runtime_checkable
 
 @runtime_checkable
 class IBpfLifecyclePort(Protocol):
-    """Port for full BPF cgroup/connect4 program lifecycle management.
+    """Port for BPF program lifecycle management (3-program architecture).
 
-    Extends the bypass map update capability with program load/attach,
-    readiness verification, and teardown cleanup. Used by
-    GatedLifecycleManager to wire BPF into the engagement lifecycle.
+    Manages connect4, sockops, and getsockopt programs as a single unit.
+    Used by GatedLifecycleManager to wire BPF into the engagement lifecycle.
 
-    Lifecycle:
-        1. load_and_attach(container_id)  — Load BPF, attach to container cgroup
-        2. populate_bypass(proxy_ips, envoy_ip) — Fill bypass_ips map
-        3. is_ready() — Verify pin exists and bridge is listening
-        4. detach_and_cleanup() — Unpin and detach on teardown
+    EN-023-010 lifecycle:
+        1. load_and_attach(container_id)  — Load all 3 BPF programs, attach to cgroup
+        2. is_ready() — Verify all pins exist and Envoy is listening on port 15001
+        3. detach_and_cleanup() — Unpin and detach all programs on teardown
     """
 
     def load_and_attach(self, container_id: str) -> None:
-        """Load BPF program and attach to the specified container's cgroup.
+        """Load BPF programs and attach to the specified container's cgroup.
 
         Args:
             container_id: Docker container ID (short or full).
@@ -48,32 +46,8 @@ class IBpfLifecyclePort(Protocol):
         """
         ...
 
-    def populate_bypass(self, proxy_ips: list[str], envoy_ip: str) -> None:
-        """Populate the bypass_ips BPF map to prevent redirect loops.
-
-        Must be called AFTER load_and_attach (constraint B7).
-
-        Args:
-            proxy_ips: List of SOCKS5 proxy node IPv4 addresses.
-            envoy_ip: IPv4 address of the Envoy forward proxy container.
-
-        Raises:
-            RuntimeError: If any map update fails.
-        """
-        ...
-
-    def update_bypass_ips(self, ips: list[str]) -> None:
-        """Update the bypass map with proxy node IPs.
-
-        Backward-compatible with BpfBypassPort contract.
-
-        Args:
-            ips: List of IPv4 addresses to add to the bypass map.
-        """
-        ...
-
     def is_ready(self) -> bool:
-        """Check that the BPF program is pinned and the bridge is listening.
+        """Check that BPF programs are pinned and Envoy is listening on port 15001.
 
         Returns:
             True if BPF is fully operational.
@@ -81,7 +55,7 @@ class IBpfLifecyclePort(Protocol):
         ...
 
     def detach_and_cleanup(self) -> None:
-        """Detach BPF program from cgroup and unpin from bpffs.
+        """Detach BPF programs from cgroup and unpin from bpffs.
 
         Safe to call even if load_and_attach was never completed.
         Constraint B3: NEVER leave BPF pinned after teardown.

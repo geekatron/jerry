@@ -10,7 +10,7 @@ Implements the FM-007 teardown sequence:
   (4) Delete SSH keys via provider API
   (5) Delete firewalls via provider API
   (6) Delete pool manifest file
-  (7) Clear BPF bypass_ips routing config
+  (7) (removed) BPF bypass map — replaced by SO_MARK loop prevention (EN-023-010)
   (8) Post-teardown orphan verification (FM-018)
 
 Additional gates:
@@ -75,8 +75,8 @@ class DestroyHandler:
             manifest_store: Optional PoolManifestStore for reading and deleting
                 pool manifests during teardown. When None, teardown proceeds in
                 zero-proxy mode (no manifest operations).
-            bpf_port: Optional BPF adapter. When provided, clear_bypass_ips() is
-                called during teardown to remove proxy routing configuration.
+            bpf_port: Optional BPF adapter. Retained for interface compatibility;
+                bypass map operations removed per EN-023-010.
             pool_service: Optional ProxyPoolService. When provisioner is None, the
                 provisioner is sourced from pool_service._provisioner. Supports
                 backwards-compatible injection pattern from tests.
@@ -119,9 +119,7 @@ class DestroyHandler:
 
         # Determine which nodes to destroy from manifest (or explicit list)
         nodes_to_destroy: list[str] = []
-        if self._manifest_store is not None and self._manifest_store.exists(
-            command.engagement_id
-        ):
+        if self._manifest_store is not None and self._manifest_store.exists(command.engagement_id):
             manifest = self._manifest_store.load(command.engagement_id)
             if command.node_ids:
                 nodes_to_destroy = list(command.node_ids)
@@ -158,15 +156,12 @@ class DestroyHandler:
         if self._manifest_store is not None:
             self._manifest_store.delete(command.engagement_id)
 
-        # Step 7: Clear BPF bypass_ips routing config
-        if self._bpf_port is not None:
-            self._bpf_port.clear_bypass_ips()
+        # Step 7: (removed) BPF bypass map no longer exists — EN-023-010 uses
+        # SO_MARK on Envoy upstream sockets for loop prevention.
 
         # Step 8: Post-teardown orphan verification (FM-018)
         if self._provisioner is not None:
-            orphans = self._provisioner.list_instances(
-                engagement_tag=command.engagement_id
-            )
+            orphans = self._provisioner.list_instances(engagement_tag=command.engagement_id)
             if orphans:
                 orphan_ids = ", ".join(o.id for o in orphans)
                 raise TeardownError(

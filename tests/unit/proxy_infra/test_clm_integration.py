@@ -29,10 +29,9 @@ from __future__ import annotations
 
 import hashlib
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
-from unittest.mock import MagicMock, call, patch
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -50,7 +49,6 @@ from src.proxy_infra.domain.value_objects.proxy_pool import ProxyPool
 from src.proxy_infra.domain.value_objects.proxy_role import ProxyRole
 from src.proxy_infra.domain.value_objects.proxy_type import ProxyType
 from src.proxy_infra.infrastructure.persistence.pool_manifest_store import PoolManifestStore
-
 
 # =============================================================================
 # Shared helpers
@@ -75,7 +73,7 @@ def _make_node(
         proxy_type=ProxyType.SOCKS5 if hasattr(ProxyType, "SOCKS5") else ProxyType.DIRECT_SOCKS5,
         status=status,
         ssh_key_id="key-123",
-        created_at=datetime(2026, 3, 25, 12, 0, 0, tzinfo=timezone.utc),
+        created_at=datetime(2026, 3, 25, 12, 0, 0, tzinfo=UTC),
         engagement_id=engagement_id,
         socks_port=socks_port,
         fingerprint=fingerprint,
@@ -140,7 +138,7 @@ def _make_manifest(
         engagement_id=engagement_id,
         pool=pool,
         integrity_hash=integrity_hash,
-        updated_at=datetime(2026, 3, 25, 12, 0, 0, tzinfo=timezone.utc),
+        updated_at=datetime(2026, 3, 25, 12, 0, 0, tzinfo=UTC),
         audit_trail=(),
     )
 
@@ -290,21 +288,9 @@ class TestPoolManifestStore:
         loaded = store.load("ENG-TEST")
         assert loaded is not None
 
-    def test_load_updates_bpf_bypass_ips_when_bpf_port_provided(
-        self,
-        store: PoolManifestStore,
-    ) -> None:
-        """GIVEN a BPF port WHEN load() called THEN bypass_ips updated with proxy node IPs (EN-023-001 F-4)."""
-        mock_bpf_port = MagicMock()
-        store_with_bpf = PoolManifestStore(base_dir=store._base_dir, bpf_port=mock_bpf_port)
-        node = _make_node(ip="10.0.0.1")
-        pool = _make_pool(nodes=[node])
-        manifest = _make_manifest(pool=pool)
-        store_with_bpf.save(manifest)
-
-        store_with_bpf.load("ENG-TEST")
-
-        mock_bpf_port.update_bypass_ips.assert_called_once_with(["10.0.0.1"])
+    # EN-023-010: test_load_updates_bpf_bypass_ips_when_bpf_port_provided removed —
+    # bypass_ips map replaced by SO_MARK loop prevention. PoolManifestStore
+    # no longer accepts or uses a bpf_port parameter.
 
     def test_save_embeds_integrity_hash_in_written_yaml(
         self,
@@ -400,14 +386,14 @@ class TestProxyHealthService:
             reachable=True,
             socks_port_open=True,
             ssh_accessible=True,
-            checked_at=datetime(2026, 3, 25, 12, 0, 0, tzinfo=timezone.utc),
+            checked_at=datetime(2026, 3, 25, 12, 0, 0, tzinfo=UTC),
         )
         healthy_status_2 = HealthStatus(
             node_id="node-002",
             reachable=True,
             socks_port_open=True,
             ssh_accessible=True,
-            checked_at=datetime(2026, 3, 25, 12, 0, 0, tzinfo=timezone.utc),
+            checked_at=datetime(2026, 3, 25, 12, 0, 0, tzinfo=UTC),
         )
         mock_health_port.check_node.side_effect = [healthy_status_1, healthy_status_2]
 
@@ -428,7 +414,7 @@ class TestProxyHealthService:
             reachable=True,
             socks_port_open=True,
             ssh_accessible=True,
-            checked_at=datetime(2026, 3, 25, 12, 0, 0, tzinfo=timezone.utc),
+            checked_at=datetime(2026, 3, 25, 12, 0, 0, tzinfo=UTC),
         )
         mock_health_port.check_node.return_value = expected
 
@@ -450,7 +436,7 @@ class TestProxyHealthService:
             reachable=True,
             socks_port_open=False,
             ssh_accessible=True,
-            checked_at=datetime(2026, 3, 25, 12, 0, 0, tzinfo=timezone.utc),
+            checked_at=datetime(2026, 3, 25, 12, 0, 0, tzinfo=UTC),
             error_message="SOCKS5 port refused",
         )
         mock_health_port.check_node.return_value = unhealthy
@@ -467,7 +453,6 @@ class TestProxyHealthService:
         mock_provisioner: MagicMock,
     ) -> None:
         """GIVEN an unhealthy node WHEN trigger_rotation() called THEN node marked BURNED and replacement added."""
-        from src.proxy_infra.domain.value_objects.provision_config import ProvisionConfig
 
         original_node = _make_node(status=NodeStatus.UNHEALTHY)
         pool = _make_pool(nodes=[original_node])
@@ -482,9 +467,7 @@ class TestProxyHealthService:
         )
 
         # Original node should be marked BURNED
-        original_in_new_pool = next(
-            (n for n in updated_pool.nodes if n.id == "node-001"), None
-        )
+        original_in_new_pool = next((n for n in updated_pool.nodes if n.id == "node-001"), None)
         assert original_in_new_pool is not None
         assert original_in_new_pool.status == NodeStatus.BURNED
 
@@ -515,9 +498,7 @@ class TestProxyHealthService:
         mock_health_port: MagicMock,
     ) -> None:
         """GIVEN a 3-node pool WHEN check_pool() called THEN check_node invoked exactly 3 times."""
-        nodes = [
-            _make_node(f"node-{i:03d}", ip=f"1.2.3.{i}") for i in range(1, 4)
-        ]
+        nodes = [_make_node(f"node-{i:03d}", ip=f"1.2.3.{i}") for i in range(1, 4)]
         pool = _make_pool(nodes=nodes)
 
         def make_status(node: ProxyNode) -> HealthStatus:
@@ -526,7 +507,7 @@ class TestProxyHealthService:
                 reachable=True,
                 socks_port_open=True,
                 ssh_accessible=True,
-                checked_at=datetime(2026, 3, 25, 12, 0, 0, tzinfo=timezone.utc),
+                checked_at=datetime(2026, 3, 25, 12, 0, 0, tzinfo=UTC),
             )
 
         mock_health_port.check_node.side_effect = make_status
@@ -550,7 +531,7 @@ class TestProxyHealthService:
             reachable=False,
             socks_port_open=False,
             ssh_accessible=False,
-            checked_at=datetime(2026, 3, 25, 12, 0, 0, tzinfo=timezone.utc),
+            checked_at=datetime(2026, 3, 25, 12, 0, 0, tzinfo=UTC),
             error_message="Connection timed out",
         )
         mock_health_port.check_node.return_value = down_status
@@ -620,9 +601,7 @@ class TestDestroyHandlerTeardownSequence:
         """GIVEN a valid engagement WHEN handle() called THEN DestroyResult.is_all_successful."""
         manifest = _make_manifest()
         store.save(manifest)
-        mock_provisioner.destroy.return_value = DestroyResult(
-            destroyed=["node-001"], failed=[]
-        )
+        mock_provisioner.destroy.return_value = DestroyResult(destroyed=["node-001"], failed=[])
 
         command = DestroyNodesCommand(
             engagement_id="ENG-TEST",
@@ -644,10 +623,6 @@ class TestDestroyHandlerTeardownSequence:
         manifest = _make_manifest()
         store.save(manifest)
         call_sequence: list[str] = []
-
-        original_purge = destroy_handler._purge_secrets
-        original_remove_ssh = destroy_handler._remove_ssh_agent_key
-        original_destroy = mock_provisioner.destroy
 
         def track_purge(eng_id: str) -> None:
             call_sequence.append("purge_secrets")
@@ -722,25 +697,9 @@ class TestDestroyHandlerTeardownSequence:
         assert result.is_all_successful is True
         assert result.destroyed == []
 
-    def test_handle_removes_all_proxy_routing_config(
-        self,
-        destroy_handler: DestroyHandler,
-        store: PoolManifestStore,
-    ) -> None:
-        """GIVEN proxy routing in place WHEN handle() called THEN routing config cleared."""
-        manifest = _make_manifest()
-        store.save(manifest)
-
-        mock_bpf = MagicMock()
-        destroy_handler._bpf_port = mock_bpf
-
-        command = DestroyNodesCommand(
-            engagement_id="ENG-TEST",
-            verify_credentials_rotated=True,
-        )
-        destroy_handler.handle(command)
-
-        mock_bpf.clear_bypass_ips.assert_called_once()
+    # EN-023-010: test_handle_removes_all_proxy_routing_config removed —
+    # bypass_ips map replaced by SO_MARK loop prevention. DestroyHandler
+    # no longer calls clear_bypass_ips().
 
     # --- Negative cases ---
 
@@ -790,9 +749,7 @@ class TestDestroyHandlerTeardownSequence:
         """GIVEN a failing VPS destroy WHEN handle() called THEN TeardownError raised."""
         manifest = _make_manifest()
         store.save(manifest)
-        mock_provisioner.destroy.return_value = DestroyResult(
-            destroyed=[], failed=["node-001"]
-        )
+        mock_provisioner.destroy.return_value = DestroyResult(destroyed=[], failed=["node-001"])
 
         command = DestroyNodesCommand(
             engagement_id="ENG-TEST",

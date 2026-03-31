@@ -1,12 +1,15 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2026 Adam Nowak
 
-"""BpfBypassPort — Protocol for updating the BPF bypass IP map (H-10).
+"""BpfBypassPort — DEPRECATED, replaced by IBpfLifecyclePort.
+
+EN-023-010: The bypass map architecture has been replaced by Envoy SO_MARK
+loop prevention. This port is retained as an empty protocol for backward
+compatibility with existing imports. New code should use IBpfLifecyclePort.
 
 Design constraints:
     H-07: Domain layer port — no infrastructure or application imports.
     H-10: One public class per file.
-    H-11: All public methods have type annotations.
 """
 
 from __future__ import annotations
@@ -15,16 +18,11 @@ from typing import Protocol
 
 
 class BpfBypassPort(Protocol):
-    """Port for updating the BPF cgroup/connect4 bypass IP map.
+    """DEPRECATED: Bypass map port replaced by SO_MARK loop prevention.
 
-    Implementations populate the bypass map with proxy node IPs so that
-    BPF-redirected traffic doesn't loop back through the proxy itself.
+    EN-023-010: The unified Envoy architecture uses SO_MARK=100 on upstream
+    sockets instead of a mutable bypass map. This protocol is retained
+    as an empty interface for backward compatibility.
     """
 
-    def update_bypass_ips(self, ips: list[str]) -> None:
-        """Update the bypass map with proxy node IPs.
-
-        Args:
-            ips: List of IPv4 addresses to add to the bypass map.
-        """
-        ...
+    ...

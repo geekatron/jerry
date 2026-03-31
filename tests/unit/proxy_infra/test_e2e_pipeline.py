@@ -23,24 +23,16 @@ Naming convention: test_{scenario}_when_{condition}_then_{expected}
 
 from __future__ import annotations
 
-import os
-import stat
-import tempfile
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from unittest.mock import MagicMock, patch, PropertyMock
-
-import pytest
-import yaml
+from unittest.mock import MagicMock
 
 from src.proxy_infra.application.handlers.auto_provision_handler import AutoProvisionHandler
-from src.proxy_infra.application.handlers.provision_result import ProvisionResult
 from src.proxy_infra.domain.value_objects.node_status import NodeStatus
+from src.proxy_infra.domain.value_objects.provision_config import ProvisionConfig
 from src.proxy_infra.domain.value_objects.proxy_node import ProxyNode
 from src.proxy_infra.domain.value_objects.proxy_role import ProxyRole
 from src.proxy_infra.domain.value_objects.proxy_type import ProxyType
-from src.proxy_infra.domain.value_objects.provision_config import ProvisionConfig
-
 
 # =============================================================================
 # Shared fixtures
@@ -77,7 +69,7 @@ def _make_node(
         proxy_type=ProxyType.DIRECT_SOCKS5,
         status=NodeStatus.CONFIGURING,
         ssh_key_id="key-123",
-        created_at=datetime.now(timezone.utc),
+        created_at=datetime.now(UTC),
         engagement_id="ENG-001",
         socks_port=1080,
     )
@@ -217,7 +209,8 @@ class TestEngagePipelineOrchestrator:
     """Tests for the full engage pipeline: config → provision → inject → BPF → compose."""
 
     def test_orchestrate_when_valid_config_then_produces_compose_file(
-        self, tmp_path: Path,
+        self,
+        tmp_path: Path,
     ) -> None:
         """Full pipeline produces a Docker Compose sidecar file."""
         from src.proxy_infra.application.handlers.engage_pipeline_orchestrator import (
@@ -232,9 +225,7 @@ class TestEngagePipelineOrchestrator:
         ssh_readiness.wait_for_ssh.return_value = True
 
         injection_handler = MagicMock()
-        injection_handler.inject.return_value = MagicMock(
-            success=True, username="u", password="p"
-        )
+        injection_handler.inject.return_value = MagicMock(success=True, username="u", password="p")
 
         health_checker = MagicMock()
         health_checker.check.return_value = True
@@ -259,51 +250,13 @@ class TestEngagePipelineOrchestrator:
         compose_file = tmp_path / "docker-compose.socks.yaml"
         assert compose_file.exists()
 
-    def test_orchestrate_when_valid_then_bpf_bypass_updated_with_node_ips(
-        self, tmp_path: Path,
-    ) -> None:
-        """BPF bypass map should contain all proxy node IPs."""
-        from src.proxy_infra.application.handlers.engage_pipeline_orchestrator import (
-            EngagePipelineOrchestrator,
-        )
-
-        provisioner = MagicMock()
-        nodes = [_make_node("n1", "1.2.3.4"), _make_node("n2", "5.6.7.8")]
-        provisioner.provision.return_value = nodes
-
-        ssh_readiness = MagicMock()
-        ssh_readiness.wait_for_ssh.return_value = True
-
-        injection_handler = MagicMock()
-        injection_handler.inject.return_value = MagicMock(
-            success=True, username="u", password="p"
-        )
-
-        health_checker = MagicMock()
-        health_checker.check.return_value = True
-
-        bpf_port = MagicMock()
-        manifest_writer = MagicMock()
-
-        orchestrator = EngagePipelineOrchestrator(
-            provisioner=provisioner,
-            ssh_readiness=ssh_readiness,
-            credential_injector=injection_handler,
-            health_checker=health_checker,
-            manifest_writer=manifest_writer,
-            bpf_port=bpf_port,
-            engagement_dir=tmp_path,
-        )
-
-        orchestrator.orchestrate(_make_config(), private_key_path=Path("/tmp/key"))
-
-        bpf_port.update_bypass_ips.assert_called_once()
-        bypass_ips = bpf_port.update_bypass_ips.call_args[0][0]
-        assert "1.2.3.4" in bypass_ips
-        assert "5.6.7.8" in bypass_ips
+    # EN-023-010: test_orchestrate_when_valid_then_bpf_bypass_updated_with_node_ips
+    # removed — bypass_ips map replaced by SO_MARK loop prevention. The
+    # EngagePipelineOrchestrator no longer calls update_bypass_ips().
 
     def test_orchestrate_when_provision_fails_then_no_compose_generated(
-        self, tmp_path: Path,
+        self,
+        tmp_path: Path,
     ) -> None:
         """Failed provisioning should not produce a compose file."""
         from src.proxy_infra.application.handlers.engage_pipeline_orchestrator import (
@@ -328,7 +281,8 @@ class TestEngagePipelineOrchestrator:
         assert not (tmp_path / "docker-compose.socks.yaml").exists()
 
     def test_orchestrate_writes_credential_return_files(
-        self, tmp_path: Path,
+        self,
+        tmp_path: Path,
     ) -> None:
         """Credential return files should be written for each injected node."""
         from src.proxy_infra.application.handlers.engage_pipeline_orchestrator import (
@@ -367,7 +321,8 @@ class TestEngagePipelineOrchestrator:
         assert cred_file.read_text() == "jerry-aaa:secretpass"
 
     def test_orchestrate_compose_contains_socks_proxy_host(
-        self, tmp_path: Path,
+        self,
+        tmp_path: Path,
     ) -> None:
         """Generated compose file should reference proxy node addresses."""
         from src.proxy_infra.application.handlers.engage_pipeline_orchestrator import (
@@ -382,9 +337,7 @@ class TestEngagePipelineOrchestrator:
         ssh_readiness.wait_for_ssh.return_value = True
 
         injection_handler = MagicMock()
-        injection_handler.inject.return_value = MagicMock(
-            success=True, username="u", password="p"
-        )
+        injection_handler.inject.return_value = MagicMock(success=True, username="u", password="p")
 
         health_checker = MagicMock()
         health_checker.check.return_value = True

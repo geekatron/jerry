@@ -114,13 +114,9 @@ class SocksBridge:
         if allowed_networks:
             for cidr in allowed_networks:
                 try:
-                    self._allowed_networks.append(
-                        ipaddress.IPv4Network(cidr, strict=False)
-                    )
+                    self._allowed_networks.append(ipaddress.IPv4Network(cidr, strict=False))
                 except ValueError as exc:
-                    raise ValueError(
-                        f"Invalid CIDR in allowed_networks: {cidr!r}"
-                    ) from exc
+                    raise ValueError(f"Invalid CIDR in allowed_networks: {cidr!r}") from exc
 
         self._server: socket.socket | None = None
         self._running = False
@@ -143,7 +139,9 @@ class SocksBridge:
 
         logger.info(
             "SocksBridge listening on 127.0.0.1:%d -> SOCKS5 %s:%d",
-            self._listen_port, self._socks_host, self._socks_port,
+            self._listen_port,
+            self._socks_host,
+            self._socks_port,
         )
 
         accept_thread = threading.Thread(target=self._accept_loop, daemon=True)
@@ -185,8 +183,7 @@ class SocksBridge:
         path = map_path or self._map_path
         try:
             result = subprocess.run(
-                ["bpftool", "-j", "map", "lookup", "pinned", path,
-                 "key", "0", "0", "0", "0"],
+                ["bpftool", "-j", "map", "lookup", "pinned", path, "key", "0", "0", "0", "0"],
                 capture_output=True,
                 text=True,
                 timeout=2,
@@ -277,8 +274,7 @@ class SocksBridge:
 
         try:
             result = subprocess.run(
-                ["bpftool", "-j", "map", "lookup", "pinned", path,
-                 "key", "hex"] + hex_key.split(),
+                ["bpftool", "-j", "map", "lookup", "pinned", path, "key", "hex"] + hex_key.split(),
                 capture_output=True,
                 text=True,
                 timeout=2,
@@ -339,55 +335,23 @@ class SocksBridge:
         client: socket.socket,
         addr: tuple[str, int],
     ) -> None:
-        """Handle a single BPF-redirected TCP connection.
+        """Handle a diagnostic/legacy TCP connection.
 
-        Reads original destination from BPF map, validates scope, establishes
-        SOCKS5 tunnel, then relays data bidirectionally until one side closes.
+        EN-023-010: Raw TCP traffic now routes through Envoy transparent TCP
+        listener on port 15001, not SocksBridge. This method is retained for
+        diagnostic purposes only. It does NOT read BPF maps or forward traffic.
 
         Args:
-            client: Accepted client socket from the BPF redirect.
+            client: Accepted client socket.
             addr: Remote address tuple (ip, port) of the connecting client.
         """
-        try:
-            # DC-1: Use per-socket-cookie lookup (dst_lookup) as primary.
-            # Falls back to dst_latest[0] if SO_COOKIE is unavailable.
-            original = None
-            cookie = self.get_socket_cookie(client)
-            if cookie is not None:
-                original = self.read_original_dst_by_cookie(cookie)
-
-            if original is None:
-                # Fallback to dst_latest[0] — racy under concurrent connections
-                # but better than dropping the connection entirely.
-                original = self.read_original_dst()
-
-            if original is None:
-                logger.warning(
-                    "No original destination in BPF map for %s:%d; dropping",
-                    addr[0], addr[1],
-                )
-                client.close()
-                return
-
-            if not self.is_destination_allowed(original.ip):
-                logger.warning(
-                    "OPSEC-F1 scope violation: %s:%d -> %s:%d blocked (not in scope)",
-                    addr[0], addr[1], original.ip, original.port,
-                )
-                client.close()
-                return
-
-            logger.info(
-                "Forwarding %s:%d -> %s:%d via SOCKS5 %s:%d",
-                addr[0], addr[1], original.ip, original.port,
-                self._socks_host, self._socks_port,
-            )
-            remote = self._socks5_connect(original.ip, original.port)
-            self._relay(client, remote)
-
-        except Exception as exc:
-            logger.error("Error handling connection from %s:%d: %s", addr[0], addr[1], exc)
-            client.close()
+        logger.info(
+            "SocksBridge diagnostic: connection from %s:%d (not forwarding — "
+            "raw TCP routes through Envoy:15001 per EN-023-010)",
+            addr[0],
+            addr[1],
+        )
+        client.close()
 
     # ------------------------------------------------------------------
     # Private helpers
@@ -434,9 +398,7 @@ class SocksBridge:
         resp = sock.recv(2)
         if len(resp) < 2 or resp[1] != _SOCKS5_AUTH_NONE:
             sock.close()
-            raise ConnectionError(
-                f"SOCKS5 method negotiation rejected: {resp!r}"
-            )
+            raise ConnectionError(f"SOCKS5 method negotiation rejected: {resp!r}")
 
         # Phase 2: CONNECT request
         ip_bytes = socket.inet_aton(dst_ip)
@@ -450,8 +412,7 @@ class SocksBridge:
         if len(reply) < 2 or reply[1] != _SOCKS5_SUCCESS:
             sock.close()
             raise ConnectionError(
-                f"SOCKS5 CONNECT failed (code {reply[1] if len(reply) > 1 else '?'}): "
-                f"{reply!r}"
+                f"SOCKS5 CONNECT failed (code {reply[1] if len(reply) > 1 else '?'}): {reply!r}"
             )
 
         sock.settimeout(None)
@@ -470,9 +431,7 @@ class SocksBridge:
         sockets = [client, remote]
         try:
             while True:
-                readable, _, errored = select.select(
-                    sockets, [], sockets, _RELAY_TIMEOUT
-                )
+                readable, _, errored = select.select(sockets, [], sockets, _RELAY_TIMEOUT)
                 if errored:
                     break
                 if not readable:

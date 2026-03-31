@@ -95,7 +95,7 @@ class EngagePipelineOrchestrator:
             credential_injector: SSH credential injection handler.
             health_checker: Pre-use health gate port.
             manifest_writer: Pool manifest writer port.
-            bpf_port: Object with update_bypass_ips(ips: list[str]) method.
+            bpf_port: BPF port (bypass operations removed per EN-023-010).
             engagement_dir: Base directory for engagement artifacts.
         """
         self._provisioner = provisioner
@@ -179,10 +179,8 @@ class EngagePipelineOrchestrator:
                 error="No nodes successfully injected",
             )
 
-        # Stage 6: Update BPF bypass map with all proxy IPs
-        proxy_ips = [n.ip for n in injected_nodes]
-        logger.info("Updating BPF bypass map with %d proxy IPs", len(proxy_ips))
-        self._bpf_port.update_bypass_ips(proxy_ips)
+        # Stage 6: (removed) BPF bypass map no longer needed — EN-023-010 uses
+        # SO_MARK on Envoy upstream sockets for loop prevention.
 
         # Stage 7: Generate Docker Compose sidecar config
         compose_path = self._engagement_dir / "docker-compose.socks.yaml"

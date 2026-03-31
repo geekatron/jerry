@@ -135,8 +135,9 @@ class GatedLifecycleManager:
     def activate(self, engagement_id: str) -> EngagementState:
         """G3: PROVISIONING -> ACTIVE with gate check and BPF load.
 
-        EN-023-008: After the G3 gate passes, loads the BPF cgroup/connect4
-        program and populates the bypass map before transitioning to ACTIVE.
+        EN-023-010: After the G3 gate passes, loads BPF programs and verifies
+        readiness before transitioning to ACTIVE. SO_MARK on Envoy upstream
+        sockets prevents redirect loops — no bypass map needed.
         If BPF load fails, rolls back with detach_and_cleanup (OG-001).
         BPF is optional — skipped when bpf_port is None (PM-005).
 
@@ -153,27 +154,21 @@ class GatedLifecycleManager:
         """
         self._check_gate("G3", engagement_id, "PROVISIONING", "ACTIVE")
 
-        # EN-023-008: Load BPF before transitioning to ACTIVE
+        # EN-023-010: Load BPF before transitioning to ACTIVE
         if self._bpf_port is not None:
-            config = self._configs.get(engagement_id)
             bpf_cleanup_done = False
             try:
                 self._bpf_port.load_and_attach(engagement_id)
-                # Extract proxy IPs and Envoy IP from engagement config.
-                # FINDING-003: populate_bypass filters empty strings internally.
-                proxy_ips = getattr(config, "proxy_pool_ips", []) if config else []
-                envoy_ip = getattr(config, "envoy_ip", "") if config else ""
-                self._bpf_port.populate_bypass(proxy_ips, envoy_ip)
-                # FINDING-005: Verify readiness before declaring ACTIVE
                 if not self._bpf_port.is_ready():
                     raise RuntimeError(
                         f"BPF readiness check failed for {engagement_id}: "
-                        "program pin or bridge not confirmed"
+                        "program pins or Envoy not confirmed"
                     )
                 logger.info("BPF loaded and ready for engagement %s", engagement_id)
-            except (RuntimeError, ValueError):
+            except RuntimeError:
                 logger.error(
-                    "BPF load failed for %s — rolling back", engagement_id,
+                    "BPF load failed for %s — rolling back",
+                    engagement_id,
                 )
                 if not bpf_cleanup_done:
                     self._bpf_port.detach_and_cleanup()

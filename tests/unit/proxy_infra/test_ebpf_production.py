@@ -36,14 +36,12 @@ from __future__ import annotations
 import json
 import socket
 import struct
-from unittest.mock import MagicMock, call, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
 from src.proxy_infra.infrastructure.bpf.bpf_manager import BpfManager
-from src.proxy_infra.infrastructure.bpf.original_destination import OriginalDestination
 from src.proxy_infra.infrastructure.bpf.socks_bridge import SocksBridge
-
 
 # =============================================================================
 # Helpers
@@ -83,34 +81,41 @@ class TestBpfManagerLoadAndAttach:
     """BPF manager loads program from .bpf.o and attaches to container cgroup."""
 
     def test_load_and_pin_calls_bpftool_prog_load(self) -> None:
-        """Given a BPF object path, load_and_attach calls bpftool prog load with pin path."""
+        """Given a BPF object path, load_and_attach calls bpftool prog load for each program."""
+        from src.proxy_infra.infrastructure.bpf.bpf_manager import _PROGRAMS
+
         manager = BpfManager("/opt/ebpf/connect4.bpf.o")
+        prog = _PROGRAMS[0]  # connect4
         with patch("subprocess.run") as mock_run:
             mock_run.return_value = _make_completed(0, stdout="abc123\n")
-            manager._load_and_pin()
+            manager._load_and_pin_program(prog)
         call_args = mock_run.call_args[0][0]
         assert "bpftool" in call_args
         assert "prog" in call_args
         assert "load" in call_args
-        assert "/opt/ebpf/connect4.bpf.o" in call_args
-        assert str(manager._pin_path) in call_args
 
     def test_load_and_pin_includes_pinmaps_flag(self) -> None:
         """bpftool prog load includes 'pinmaps <map_dir>' so all maps are pinned (OPSEC-F5)."""
+        from src.proxy_infra.infrastructure.bpf.bpf_manager import _PROGRAMS
+
         manager = BpfManager("/opt/ebpf/connect4.bpf.o")
+        prog = _PROGRAMS[0]
         with patch("subprocess.run") as mock_run:
             mock_run.return_value = _make_completed(0)
-            manager._load_and_pin()
+            manager._load_and_pin_program(prog)
         cmd = mock_run.call_args[0][0]
         assert "pinmaps" in cmd
 
     def test_load_and_pin_raises_on_bpftool_failure(self) -> None:
         """RuntimeError raised when bpftool prog load returns non-zero."""
+        from src.proxy_infra.infrastructure.bpf.bpf_manager import _PROGRAMS
+
         manager = BpfManager("/opt/ebpf/connect4.bpf.o")
+        prog = _PROGRAMS[0]
         with patch("subprocess.run") as mock_run:
             mock_run.return_value = _make_completed(1, stderr="verifier rejected")
             with pytest.raises(RuntimeError, match="verifier rejected"):
-                manager._load_and_pin()
+                manager._load_and_pin_program(prog)
 
     def test_detach_root_cgroup_called_before_container_attach(self) -> None:
         """F-2: root cgroup detach command precedes container cgroup attach command (ordering)."""
@@ -157,12 +162,12 @@ class TestBpfManagerLoadAndAttach:
         with patch("subprocess.run", side_effect=track):
             manager.load_and_attach("abc123")
 
-        assert any(
-            "docker/abc123" in t for t in attach_targets
-        ), f"Expected container cgroup attach, got: {attach_targets}"
-        assert not any(
-            t == "/sys/fs/cgroup" for t in attach_targets
-        ), "BPF must not attach to root cgroup in production"
+        assert any("docker/abc123" in t for t in attach_targets), (
+            f"Expected container cgroup attach, got: {attach_targets}"
+        )
+        assert not any(t == "/sys/fs/cgroup" for t in attach_targets), (
+            "BPF must not attach to root cgroup in production"
+        )
 
 
 # =============================================================================
@@ -197,66 +202,8 @@ class TestBpfManagerDetachStaleRoot:
 
 
 # =============================================================================
-# BpfManager — bypass_ips map population (F-4, OPSEC-F3)
-# =============================================================================
-
-
-class TestBpfManagerBypassMap:
-    """BPF manager populates bypass_ips map with proxy pool IPs and Envoy IP."""
-
-    def test_populate_bypass_calls_map_update_for_each_proxy_ip(self) -> None:
-        """F-4: each proxy pool IP triggers a bpftool map update bypass entry."""
-        manager = BpfManager("/opt/ebpf/connect4.bpf.o")
-        proxy_ips = ["10.0.0.1", "10.0.0.2", "10.0.0.3"]
-        envoy_ip = "172.17.0.2"
-
-        with patch("subprocess.run") as mock_run:
-            mock_run.return_value = _make_completed(0)
-            manager.populate_bypass(proxy_ips, envoy_ip)
-
-        # Should be called once per IP (3 proxy + 1 envoy = 4 total)
-        assert mock_run.call_count == 4
-
-    def test_populate_bypass_adds_envoy_ip_to_map(self) -> None:
-        """OPSEC-F3: Envoy IP is added to bypass_ips map to prevent double-proxy."""
-        manager = BpfManager("/opt/ebpf/connect4.bpf.o")
-        envoy_ip = "172.17.0.5"
-        calls_with_envoy: list[list[str]] = []
-
-        def capture(cmd: list[str], **kwargs: object) -> MagicMock:
-            cmd_str = " ".join(str(c) for c in cmd)
-            if "172.17.0.5" in cmd_str or _ip_hex(envoy_ip) in cmd_str:
-                calls_with_envoy.append(cmd)
-            return _make_completed(0)
-
-        with patch("subprocess.run", side_effect=capture):
-            manager.populate_bypass([], envoy_ip)
-
-        assert len(calls_with_envoy) >= 1, "Envoy IP not found in any bypass map update call"
-
-    def test_populate_bypass_map_update_uses_pinned_map_path(self) -> None:
-        """bypass_ips map update references the pinned map path under map_dir."""
-        manager = BpfManager("/opt/ebpf/connect4.bpf.o")
-        with patch("subprocess.run") as mock_run:
-            mock_run.return_value = _make_completed(0)
-            manager.populate_bypass(["1.2.3.4"], "10.0.0.1")
-        for c in mock_run.call_args_list:
-            cmd = c[0][0]
-            cmd_str = " ".join(str(x) for x in cmd)
-            if "map" in cmd_str and "update" in cmd_str:
-                assert "bypass_ips" in cmd_str, f"Expected bypass_ips in cmd: {cmd_str}"
-                break
-        else:
-            pytest.fail("No bpftool map update call found")
-
-    def test_populate_bypass_raises_on_invalid_ip(self) -> None:
-        """ValueError raised when an invalid IP address is passed to populate_bypass."""
-        manager = BpfManager("/opt/ebpf/connect4.bpf.o")
-        with patch("subprocess.run") as mock_run:
-            mock_run.return_value = _make_completed(0)
-            with pytest.raises(ValueError, match="Invalid IPv4"):
-                manager.populate_bypass(["not-an-ip"], "10.0.0.1")
-
+# EN-023-010: TestBpfManagerBypassMap removed — bypass_ips map replaced by
+# SO_MARK loop prevention. See tests/architecture/test_bypass_map_removed.py.
 
 # =============================================================================
 # BpfManager — bpffs pin verification (OPSEC-F5)
@@ -267,29 +214,33 @@ class TestBpfManagerPinVerification:
     """BPF program is pinned to bpffs; manager verifies pin before declaring ready."""
 
     def test_is_ready_returns_true_when_pinned_and_bridge_listening(self) -> None:
-        """is_ready() returns True when both pin check and bridge check succeed."""
-        manager = BpfManager("/opt/ebpf/connect4.bpf.o", bridge_port=12345)
+        """is_ready() returns True when all 3 pin checks and port check succeed."""
+        manager = BpfManager("/opt/ebpf/connect4.bpf.o", bridge_port=15001)
         with patch("subprocess.run") as mock_run:
             mock_run.side_effect = [
-                _make_completed(0, stdout="prog_type cgroup_sock_addr"),  # pin check
-                _make_completed(0, stdout="LISTEN 0 128 127.0.0.1:12345 *:*"),  # ss
+                _make_completed(0, stdout="prog_type cgroup_sock_addr"),  # connect4 pin
+                _make_completed(0, stdout="prog_type cgroup_sock_ops"),  # sockops pin
+                _make_completed(0, stdout="prog_type cgroup_getsockopt"),  # getsockopt pin
+                _make_completed(0, stdout="LISTEN 0 128 0.0.0.0:15001 *:*"),  # ss
             ]
             assert manager.is_ready() is True
 
     def test_is_ready_returns_false_when_not_pinned(self) -> None:
-        """OPSEC-F5: is_ready() returns False when bpftool prog show fails for pin path."""
+        """OPSEC-F5: is_ready() returns False when first bpftool prog show fails."""
         manager = BpfManager("/opt/ebpf/connect4.bpf.o")
         with patch("subprocess.run") as mock_run:
             mock_run.return_value = _make_completed(1, stderr="no such file")
             assert manager.is_ready() is False
 
     def test_is_ready_returns_false_when_bridge_not_listening(self) -> None:
-        """is_ready() returns False when bridge port is not in ss LISTEN output."""
-        manager = BpfManager("/opt/ebpf/connect4.bpf.o", bridge_port=12345)
+        """is_ready() returns False when Envoy port 15001 is not in ss output."""
+        manager = BpfManager("/opt/ebpf/connect4.bpf.o", bridge_port=15001)
         with patch("subprocess.run") as mock_run:
             mock_run.side_effect = [
-                _make_completed(0, stdout="prog_type cgroup_sock_addr"),  # pin OK
-                _make_completed(0, stdout="LISTEN 0 128 0.0.0.0:22 *:*"),  # no bridge port
+                _make_completed(0, stdout="prog_type cgroup_sock_addr"),  # connect4 pin OK
+                _make_completed(0, stdout="prog_type cgroup_sock_ops"),  # sockops pin OK
+                _make_completed(0, stdout="prog_type cgroup_getsockopt"),  # getsockopt pin OK
+                _make_completed(0, stdout="LISTEN 0 128 0.0.0.0:22 *:*"),  # no Envoy port
             ]
             assert manager.is_ready() is False
 
@@ -324,9 +275,7 @@ class TestBpfManagerContainerCgroup:
         """find command uses -name '<container_id>*' pattern for prefix match."""
         manager = BpfManager("/opt/ebpf/connect4.bpf.o")
         with patch("subprocess.run") as mock_run:
-            mock_run.return_value = _make_completed(
-                0, stdout="/sys/fs/cgroup/docker/abc123\n"
-            )
+            mock_run.return_value = _make_completed(0, stdout="/sys/fs/cgroup/docker/abc123\n")
             manager.get_container_cgroup("abc123")
         cmd = mock_run.call_args[0][0]
         assert "find" in cmd
@@ -487,26 +436,8 @@ class TestSocksBridgeCookieLookup:
             result = bridge.read_original_dst_by_cookie(999)
         assert result is None
 
-    def test_handle_connection_uses_cookie_lookup_first(self) -> None:
-        """handle_connection tries SO_COOKIE + dst_lookup before falling back to dst_latest."""
-        bridge = SocksBridge(allowed_networks=["0.0.0.0/0"])
-        mock_client = MagicMock(spec=socket.socket)
-        mock_client.getsockopt.return_value = struct.pack("<Q", 42)
-
-        bpf_json = _bpftool_map_json(_IP_1_2_3_4_LE, _PORT_80_BPF)
-
-        with (
-            patch("subprocess.run") as mock_run,
-            patch.object(bridge, "_socks5_connect") as mock_socks,
-            patch.object(bridge, "_relay"),
-        ):
-            mock_run.return_value = _make_completed(0, stdout=bpf_json)
-            mock_socks.return_value = MagicMock(spec=socket.socket)
-            bridge.handle_connection(mock_client, ("127.0.0.1", 54321))
-
-        # Verify dst_lookup was called (hex key in command)
-        first_call_cmd = mock_run.call_args_list[0][0][0]
-        assert "hex" in first_call_cmd, "Expected cookie-based hex key lookup"
+    # EN-023-010: test_handle_connection_uses_cookie_lookup_first removed —
+    # handle_connection no longer reads BPF maps (traffic routes through Envoy).
 
 
 # =============================================================================
@@ -657,8 +588,8 @@ class TestBpfManagerDetachAndCleanup:
         combined = " ".join(str(c) for c in detach_calls[0])
         assert "/sys/fs/cgroup/docker/abc123" in combined
 
-    def test_detach_and_cleanup_calls_unlink_for_pin(self) -> None:
-        """detach_and_cleanup calls unlink on the pin path to remove from bpffs."""
+    def test_detach_and_cleanup_calls_unlink_for_all_pins(self) -> None:
+        """detach_and_cleanup calls unlink for all 3 program pins."""
         manager = BpfManager("/opt/ebpf/connect4.bpf.o")
         unlink_calls: list[list[str]] = []
 
@@ -670,9 +601,9 @@ class TestBpfManagerDetachAndCleanup:
         with patch("subprocess.run", side_effect=capture):
             manager.detach_and_cleanup()
 
-        assert len(unlink_calls) >= 1
-        combined = " ".join(str(c) for c in unlink_calls[0])
-        assert str(manager._pin_path) in combined
+        assert len(unlink_calls) == 3, (
+            f"Expected 3 unlink calls (one per program), got {len(unlink_calls)}"
+        )
 
     def test_detach_and_cleanup_safe_when_no_attached_cgroup(self) -> None:
         """detach_and_cleanup does not raise when no cgroup was previously attached."""
@@ -700,18 +631,13 @@ class TestBpfManagerDetachAndCleanup:
 class TestEdgeCases:
     """Edge cases: empty proxy pool, simultaneous bypass + Envoy, timeout handling."""
 
-    def test_populate_bypass_with_empty_proxy_list_only_adds_envoy(self) -> None:
-        """populate_bypass with empty proxy_ips still adds the Envoy IP (OPSEC-F3)."""
-        manager = BpfManager("/opt/ebpf/connect4.bpf.o")
-        with patch("subprocess.run") as mock_run:
-            mock_run.return_value = _make_completed(0)
-            manager.populate_bypass([], "172.17.0.2")
-        # Exactly one map update: just the Envoy IP
-        assert mock_run.call_count == 1
+    # EN-023-010: test_populate_bypass_with_empty_proxy_list_only_adds_envoy
+    # removed — bypass_ips map replaced by SO_MARK loop prevention.
 
     def test_bpf_manager_run_raises_on_command_timeout(self) -> None:
         """RuntimeError raised when a subprocess command times out."""
         import subprocess as _subprocess
+
         manager = BpfManager("/opt/ebpf/connect4.bpf.o")
         with patch("subprocess.run", side_effect=_subprocess.TimeoutExpired("bpftool", 30)):
             with pytest.raises(RuntimeError, match="timed out"):
@@ -886,45 +812,17 @@ class TestSocksBridgeAcceptLoop:
 
 
 class TestSocksBridgeHandleConnectionErrors:
-    """Cover handle_connection error paths for full coverage."""
+    """EN-023-010: handle_connection is diagnostic-only, closes connections immediately."""
 
-    def test_handle_connection_closes_on_socks5_failure(self) -> None:
-        """When _socks5_connect raises, client socket is closed."""
+    def test_handle_connection_closes_client_immediately(self) -> None:
+        """handle_connection closes the client socket (diagnostic mode, no forwarding)."""
         bridge = SocksBridge(allowed_networks=["0.0.0.0/0"])
         mock_client = MagicMock(spec=socket.socket)
-        mock_client.getsockopt.return_value = struct.pack("<Q", 42)
+        bridge.handle_connection(mock_client, ("127.0.0.1", 54321))
+        mock_client.close.assert_called_once()
 
-        bpf_json = _bpftool_map_json(_IP_1_2_3_4_LE, _PORT_80_BPF)
-
-        with (
-            patch("subprocess.run") as mock_run,
-            patch.object(bridge, "_socks5_connect", side_effect=ConnectionError("refused")),
-        ):
-            mock_run.return_value = _make_completed(0, stdout=bpf_json)
-            bridge.handle_connection(mock_client, ("127.0.0.1", 54321))
-
-        mock_client.close.assert_called()
-
-    def test_handle_connection_fallback_to_dst_latest_when_cookie_fails(self) -> None:
-        """When SO_COOKIE fails, handle_connection falls back to dst_latest[0]."""
-        bridge = SocksBridge(allowed_networks=["0.0.0.0/0"])
-        mock_client = MagicMock(spec=socket.socket)
-        mock_client.getsockopt.side_effect = OSError("SO_COOKIE not supported")
-
-        bpf_json = _bpftool_map_json(_IP_1_2_3_4_LE, _PORT_80_BPF)
-
-        with (
-            patch("subprocess.run") as mock_run,
-            patch.object(bridge, "_socks5_connect") as mock_socks,
-            patch.object(bridge, "_relay"),
-        ):
-            mock_run.return_value = _make_completed(0, stdout=bpf_json)
-            mock_socks.return_value = MagicMock(spec=socket.socket)
-            bridge.handle_connection(mock_client, ("127.0.0.1", 54321))
-
-        # Should have fallen back to dst_latest (key 0 0 0 0, not hex cookie)
-        calls = mock_run.call_args_list
-        assert any("0" in str(c) for c in calls), "Expected fallback to dst_latest"
+    # EN-023-010: test_handle_connection_fallback_to_dst_latest_when_cookie_fails
+    # removed — handle_connection no longer reads BPF maps.
 
 
 # =============================================================================

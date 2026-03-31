@@ -212,12 +212,18 @@ def generate_envoy_config(
     for i, vhost in enumerate(scope_vhosts):
         virtual_hosts.insert(deny_all_idx + i, vhost)
 
-    # EN-023-008: Add transparent TCP listener + ORIGINAL_DST cluster
-    # for BPF-redirected raw TCP connections. This is groundwork for full
-    # Envoy unification (requires 3 BPF programs per ps-researcher finding).
-    # Current architecture: raw TCP scope enforcement via SocksBridge, not Envoy.
-    _add_transparent_tcp_listener(config)
+    # EN-023-010: Extract scope domains from generated virtual_hosts for TCP
+    # scope enforcement. Both HTTP and TCP listeners use the same domain set.
+    scope_domains: list[str] = []
+    for vhost in scope_vhosts:
+        scope_domains.extend(vhost.get("domains", []))
+
+    # EN-023-010: Add transparent TCP listener with scope enforcement +
+    # ORIGINAL_DST cluster with SO_MARK=100 for BPF loop prevention.
+    # All traffic (HTTP and raw TCP) now routes through Envoy.
+    _add_transparent_tcp_listener(config, scope_domains)
     _add_original_dst_cluster(config)
+    _add_deny_all_tcp_cluster(config)
 
     # Write generated config
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -231,16 +237,59 @@ def generate_envoy_config(
     return output_path
 
 
-def _add_transparent_tcp_listener(config: dict[str, Any]) -> None:
-    """Add a transparent TCP listener with original_dst filter to the config.
+def _add_transparent_tcp_listener(
+    config: dict[str, Any],
+    scope_domains: list[str],
+) -> None:
+    """Add a transparent TCP listener with scope-enforced filter chains.
 
-    EN-023-008: This listener recovers the original destination from
-    BPF-redirected connections. Coexists with the HTTP forward proxy
-    on port 3128. Port 15001 chosen to avoid conflict with standard ports.
+    EN-023-010: This listener recovers the original destination from
+    BPF-redirected connections and enforces engagement scope via filter
+    chain matching. Coexists with the HTTP forward proxy on port 3128.
+    Port 15001 is reserved for Envoy transparent TCP (C8).
+
+    Filter chain structure:
+      1. Scope-allowed chain: server_names match engagement scope domains.
+         Routes to original_dst_cluster for transparent proxying.
+      2. Deny-all chain: catch-all (no match criteria). Routes to
+         deny_all_tcp cluster which has no endpoints, causing immediate
+         connection close for out-of-scope destinations.
 
     Args:
         config: Mutable Envoy config dict to add the listener to.
+        scope_domains: Engagement scope domains (same set used by HTTP listener).
     """
+    # Scope-allowed filter chain: matches engagement scope domains via SNI
+    scope_chain: dict[str, Any] = {
+        "filter_chain_match": {
+            "server_names": list(scope_domains),
+        },
+        "filters": [
+            {
+                "name": "envoy.filters.network.tcp_proxy",
+                "typed_config": {
+                    "@type": "type.googleapis.com/envoy.extensions.filters.network.tcp_proxy.v3.TcpProxy",
+                    "stat_prefix": "transparent_tcp",
+                    "cluster": "original_dst_cluster",
+                },
+            },
+        ],
+    }
+
+    # Deny-all catch-all: no filter_chain_match means it catches everything
+    deny_chain: dict[str, Any] = {
+        "filters": [
+            {
+                "name": "envoy.filters.network.tcp_proxy",
+                "typed_config": {
+                    "@type": "type.googleapis.com/envoy.extensions.filters.network.tcp_proxy.v3.TcpProxy",
+                    "stat_prefix": "transparent_tcp_denied",
+                    "cluster": "deny_all_tcp",
+                },
+            },
+        ],
+    }
+
     transparent_listener: dict[str, Any] = {
         "name": "transparent_tcp",
         "address": {
@@ -254,31 +303,26 @@ def _add_transparent_tcp_listener(config: dict[str, Any]) -> None:
                 },
             },
         ],
-        "filter_chains": [
-            {
-                "filters": [
-                    {
-                        "name": "envoy.filters.network.tcp_proxy",
-                        "typed_config": {
-                            "@type": "type.googleapis.com/envoy.extensions.filters.network.tcp_proxy.v3.TcpProxy",
-                            "stat_prefix": "transparent_tcp",
-                            "cluster": "original_dst_cluster",
-                        },
-                    },
-                ],
-            },
-        ],
+        "filter_chains": [scope_chain, deny_chain],
     }
     config["static_resources"]["listeners"].append(transparent_listener)
-    logger.info("Added transparent_tcp listener on port 15001")
+    logger.info(
+        "Added transparent_tcp listener on port 15001 with %d scope domains",
+        len(scope_domains),
+    )
 
 
 def _add_original_dst_cluster(config: dict[str, Any]) -> None:
-    """Add an ORIGINAL_DST cluster for transparent TCP proxying.
+    """Add an ORIGINAL_DST cluster with SO_MARK=100 for BPF loop prevention.
 
-    EN-023-008: The ORIGINAL_DST cluster type selects upstream hosts
+    EN-023-010: The ORIGINAL_DST cluster type selects upstream hosts
     based on the downstream connection's restored original destination.
     lb_policy must be CLUSTER_PROVIDED (mandatory for ORIGINAL_DST).
+
+    SO_MARK=100 on upstream sockets prevents the BPF connect4 program
+    from re-intercepting Envoy's own outbound connections (C2). The BPF
+    program checks ``bpf_getsockopt(SO_MARK)`` and skips redirect when
+    mark == ENVOY_MARK (100), matching maps.h ``#define ENVOY_MARK 100``.
 
     Args:
         config: Mutable Envoy config dict to add the cluster to.
@@ -288,10 +332,46 @@ def _add_original_dst_cluster(config: dict[str, Any]) -> None:
         "type": "ORIGINAL_DST",
         "connect_timeout": "10s",
         "lb_policy": "CLUSTER_PROVIDED",
+        "upstream_bind_config": {
+            "socket_options": [
+                {
+                    "description": "SO_MARK for BPF loop prevention (C2: must be 100)",
+                    "level": 1,  # SOL_SOCKET
+                    "name": 36,  # SO_MARK
+                    "int_value": 100,  # ENVOY_MARK from maps.h
+                    "state": "STATE_PREBIND",
+                },
+            ],
+        },
     }
     clusters = config["static_resources"].setdefault("clusters", [])
     clusters.append(original_dst_cluster)
-    logger.info("Added original_dst_cluster (type: ORIGINAL_DST)")
+    logger.info("Added original_dst_cluster with SO_MARK=100")
+
+
+def _add_deny_all_tcp_cluster(config: dict[str, Any]) -> None:
+    """Add a STATIC cluster with no endpoints for TCP deny-all behavior.
+
+    EN-023-010: Connections routed to this cluster are immediately closed
+    because there are no upstream hosts. This is the TCP equivalent of the
+    HTTP 403 direct_response on the deny_all virtual_host.
+
+    Args:
+        config: Mutable Envoy config dict to add the cluster to.
+    """
+    deny_cluster: dict[str, Any] = {
+        "name": "deny_all_tcp",
+        "type": "STATIC",
+        "connect_timeout": "1s",
+        "lb_policy": "ROUND_ROBIN",
+        "load_assignment": {
+            "cluster_name": "deny_all_tcp",
+            "endpoints": [],
+        },
+    }
+    clusters = config["static_resources"].setdefault("clusters", [])
+    clusters.append(deny_cluster)
+    logger.info("Added deny_all_tcp cluster (STATIC, no endpoints)")
 
 
 def _load_scope(scope_path: Path) -> dict[str, Any]:
