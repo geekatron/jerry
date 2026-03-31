@@ -1,15 +1,16 @@
-# Dockerfile.bpf-builder -- EN-023-008 Production BPF compiler
-# Compiles connect4.bpf.c for Docker Desktop's LinuxKit kernel.
+# Dockerfile.bpf-builder -- EN-023-009 Production BPF compiler (3-program)
+# Compiles connect4, sockops, getsockopt BPF programs for LinuxKit kernel.
 #
-# Based on PoC Dockerfile (src/proxy_infra/ebpf_poc/Dockerfile) lines 1-18.
-# Uses CO-RE compilation pattern: compiled with linux-libc-dev headers,
-# BPF program uses bpf_helpers.h stable API that is kernel-version independent.
+# Build context: src/proxy_infra/ebpf_poc/
+#   docker build -f Dockerfile.bpf-builder -t bpf-builder src/proxy_infra/ebpf_poc/
 #
 # Constraint B4: NEVER compile on macOS host. Always inside Docker.
+# Constraint C5: All 3 programs must be present for ACTIVE engagement.
+# Constraint C7: Shared maps.h ensures map schema consistency.
 #
-# EN-023-008 TASK-023-161
+# EN-023-009 TASK-023-169/170/171
 
-# --- Stage 1: Build BPF object ---
+# --- Stage 1: Build BPF objects ---
 FROM ubuntu:24.04 AS build
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -18,15 +19,14 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /build/bpf
-COPY connect4.bpf.c Makefile ./
+COPY connect4.bpf.c sockops.bpf.c getsockopt.bpf.c maps.h Makefile ./
 
-# GNU_TRIPLE detection + asm symlink (PoC Dockerfile lines 16-17)
-# Required for cross-platform header resolution on Ubuntu 24.04
+# GNU_TRIPLE detection + asm symlink (required for cross-platform header resolution)
 RUN GNU_TRIPLE=$(dpkg-architecture -qDEB_HOST_GNU_TYPE) && \
     ln -sf /usr/include/${GNU_TRIPLE}/asm /usr/include/asm && \
     make
 
-# --- Stage 2: Runtime image with compiled artifact + bpftool ---
+# --- Stage 2: Runtime image with compiled artifacts + bpftool ---
 FROM ubuntu:24.04
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -34,9 +34,6 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     && rm -rf /var/lib/apt/lists/*
 
 # Symlink actual bpftool binary (bypass version-checking wrapper)
-# linux-tools-generic installs a wrapper script at /usr/sbin/bpftool that checks
-# kernel version; the actual binary is under /usr/lib/linux-tools/*/bpftool.
-# We symlink the real binary directly to avoid the version check failing in containers.
 RUN BPFTOOL_BIN=$(find /usr/lib/linux-tools* -name bpftool -type f 2>/dev/null | head -1) && \
     if [ -n "$BPFTOOL_BIN" ]; then \
         ln -sf "$BPFTOOL_BIN" /usr/local/bin/bpftool; \
@@ -44,14 +41,18 @@ RUN BPFTOOL_BIN=$(find /usr/lib/linux-tools* -name bpftool -type f 2>/dev/null |
         echo "ERROR: bpftool binary not found" && exit 1; \
     fi
 
-# Copy compiled BPF object to standard location
+# Copy all 3 compiled BPF objects to standard location
 COPY --from=build /build/bpf/connect4.bpf.o /opt/ebpf/connect4.bpf.o
+COPY --from=build /build/bpf/sockops.bpf.o /opt/ebpf/sockops.bpf.o
+COPY --from=build /build/bpf/getsockopt.bpf.o /opt/ebpf/getsockopt.bpf.o
 
-# Version manifest: git commit hash embedded at build time
+# Version manifest
 ARG GIT_COMMIT=unknown
-RUN echo "${GIT_COMMIT}" > /opt/ebpf/connect4.bpf.version
+RUN echo "${GIT_COMMIT}" > /opt/ebpf/bpf.version
 
-# Verify the artifact is a valid eBPF ELF
-RUN file /opt/ebpf/connect4.bpf.o | grep -q "ELF 64-bit LSB relocatable, eBPF"
+# Verify all 3 artifacts are valid eBPF ELFs (B9: never declare ready without verify)
+RUN file /opt/ebpf/connect4.bpf.o | grep -q "ELF 64-bit LSB relocatable, eBPF" && \
+    file /opt/ebpf/sockops.bpf.o | grep -q "ELF 64-bit LSB relocatable, eBPF" && \
+    file /opt/ebpf/getsockopt.bpf.o | grep -q "ELF 64-bit LSB relocatable, eBPF"
 
 CMD ["bpftool", "version"]

@@ -1,85 +1,72 @@
 // SPDX-License-Identifier: GPL-2.0
-// connect4.bpf.c -- eBPF cgroup/connect4 transparent SOCKS5 redirect
+// connect4.bpf.c -- eBPF cgroup/connect4 transparent Envoy redirect
 //
 // Intercepts outbound IPv4 connect() from the container cgroup.
-// Stores original destination in array map[0] for bridge to read.
-// Rewrites destination to 127.0.0.1:BRIDGE_PORT (local bridge).
+// Stores original destination in dst_lookup[cookie] for getsockopt to read.
+// Rewrites destination to Envoy:15001 (transparent TCP listener).
 //
-// Bypass rules (no redirect):
-//   - Loopback (127.0.0.0/8) — prevents redirect loops with bridge
-//   - Destinations in bypass_ips map — proxy-node IPs populated by entrypoint
+// Skip rules (no redirect):
+//   - SO_MARK == ENVOY_MARK (100) -- Envoy's own upstream connections (C2)
+//   - Loopback (127.0.0.0/8) -- prevents redirect loops
 //
-// EN-023-001 PoC -- PROJ-023-exploit-framework
+// EN-023-009 / TASK-023-171 -- PROJ-023-exploit-framework
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_endian.h>
+#include "maps.h"
 
-#define BRIDGE_PORT     12345
 #define LOOPBACK_PREFIX 0x7f000000u
 #define LOOPBACK_MASK   0xff000000u
-/* Docker subnet skip removed — per-container cgroup attachment solved the isolation */
 
-struct orig_dst {
-    __u32 dst_ip;
-    __u32 dst_port;
-};
+/* SOL_SOCKET and SO_MARK for bpf_getsockopt (may not be in BPF UAPI) */
+#ifndef SOL_SOCKET
+#define SOL_SOCKET 1
+#endif
 
-/* Array map[0]: latest intercepted destination (bridge reads this) */
-struct {
-    __uint(type, BPF_MAP_TYPE_ARRAY);
-    __uint(max_entries, 1);
-    __type(key,   __u32);
-    __type(value, struct orig_dst);
-} dst_latest SEC(".maps");
-
-/* LRU hash keyed by socket cookie for bpftool inspection */
-struct {
-    __uint(type, BPF_MAP_TYPE_LRU_HASH);
-    __uint(max_entries, 4096);
-    __type(key,   __u64);
-    __type(value, struct orig_dst);
-} dst_lookup SEC(".maps");
-
-/* Bypass set: IPs that should NOT be redirected (proxy-node IPs) */
-struct {
-    __uint(type, BPF_MAP_TYPE_HASH);
-    __uint(max_entries, 64);
-    __type(key,   __u32);    /* IP in network byte order */
-    __type(value, __u8);     /* 1 = bypass */
-} bypass_ips SEC(".maps");
+#ifndef SO_MARK
+#define SO_MARK 36
+#endif
 
 SEC("cgroup/connect4")
 int connect4_redirect(struct bpf_sock_addr *ctx)
 {
+    /*
+     * Check SO_MARK: skip redirect for Envoy upstream connections (C2).
+     * IN-001 fix: check bpf_getsockopt return value. If the helper fails,
+     * mark remains 0 which is safe (non-Envoy connections have mark 0).
+     * A failure here means we cannot read the mark, so we conservatively
+     * proceed with interception (fail-closed, not fail-open).
+     */
+    __u32 mark = 0;
+    int ret = bpf_getsockopt(ctx, SOL_SOCKET, SO_MARK, &mark, sizeof(mark));
+    if (ret == 0 && mark == ENVOY_MARK)
+        return 1;
+
     __u32 dst_ip_nbo = ctx->user_ip4;
     __u32 dst_ip_hbo = bpf_ntohl(dst_ip_nbo);
 
-    /* Skip loopback — bridge and Docker DNS are on 127.x */
+    /* Skip loopback -- Docker DNS and local services on 127.x */
     if ((dst_ip_hbo & LOOPBACK_MASK) == LOOPBACK_PREFIX)
         return 1;
 
-    /* Skip bypass IPs (proxy nodes — bridge connects to these directly) */
-    __u8 *bypass = bpf_map_lookup_elem(&bypass_ips, &dst_ip_nbo);
-    if (bypass)
-        return 1;
-
+    /* Store original destination indexed by socket cookie */
     struct orig_dst orig = {
         .dst_ip   = dst_ip_nbo,
         .dst_port = ctx->user_port,
     };
 
-    /* Write to array[0] for bridge */
-    __u32 zero = 0;
-    bpf_map_update_elem(&dst_latest, &zero, &orig, BPF_ANY);
-
-    /* Store in LRU hash for inspection */
     __u64 cookie = bpf_get_socket_cookie(ctx);
     bpf_map_update_elem(&dst_lookup, &cookie, &orig, BPF_ANY);
 
-    /* Rewrite to local bridge */
+    /*
+     * Redirect to Envoy transparent TCP listener (C1, C8).
+     * SM-008: 127.0.0.1 assumes Envoy is co-located in the same network
+     * namespace as the tool container (Docker Compose default bridge).
+     * If Envoy moves to a separate namespace, use its routable IP instead.
+     */
     ctx->user_ip4  = bpf_htonl(0x7f000001u);
-    ctx->user_port = bpf_htons(BRIDGE_PORT);
+    ctx->user_port = bpf_htons(ENVOY_PORT);
 
     return 1;
 }
