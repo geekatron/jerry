@@ -12,7 +12,7 @@
 
 Replace all `skills/ux-*/output/{engagement-id}/` and `skills/user-experience/output/{engagement-id}/` paths with `projects/${JERRY_PROJECT}/engagements/{engagement-id}/` across 60 config files in 11 sub-skills.
 
-Full line-level audit: [`BUG-006-ux-audit-detail.md`](BUG-006-ux-audit-detail.md)
+Full line-level audit: [`BUG-006-ux-audit-detail.md`](../research/BUG-006-ux-audit-detail.md)
 
 ## Files Per Sub-Skill
 

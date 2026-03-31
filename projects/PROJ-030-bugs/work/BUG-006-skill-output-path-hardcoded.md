@@ -122,7 +122,7 @@ Uses correct `projects/${JERRY_PROJECT}/docs/` pattern but has plural/singular n
 ### eng-team (10 agents, 22 config files + 28 output files)
 
 **Hardcoded path pattern:** `skills/eng-team/output/{engagement-id}/eng-{agent}-{topic-slug}.md`
-**Full line-level audit:** [`BUG-006-eng-audit-detail.md`](BUG-006-eng-audit-detail.md) (verified via `grep -rn 'skills/eng-team/output' skills/eng-team/`)
+**Full line-level audit:** [`BUG-006-eng-audit-detail.md`](../research/BUG-006-eng-audit-detail.md) (verified via `grep -rn 'skills/eng-team/output' skills/eng-team/`)
 
 | File Category | Count | Files |
 |---------------|-------|-------|
@@ -143,7 +143,7 @@ Uses correct `projects/${JERRY_PROJECT}/docs/` pattern but has plural/singular n
 ### red-team (11 agents, 25 config files)
 
 **Hardcoded path pattern:** `skills/red-team/output/{engagement-id}/red-{agent}-{topic-slug}.md`
-**Full line-level audit:** [`BUG-006-red-audit-detail.md`](BUG-006-red-audit-detail.md) (verified via `grep -rn 'skills/red-team/output' skills/red-team/`)
+**Full line-level audit:** [`BUG-006-red-audit-detail.md`](../research/BUG-006-red-audit-detail.md) (verified via `grep -rn 'skills/red-team/output' skills/red-team/`)
 
 | File Category | Count | Files |
 |---------------|-------|-------|
@@ -182,7 +182,7 @@ Uses correct `projects/${JERRY_PROJECT}/docs/` pattern but has plural/singular n
 | `skills/ux-heart-metrics/agents/ux-heart-analyst.md` | 288, 405 | Output location, artifact path in handoff |
 | `skills/ux-heart-metrics/agents/ux-heart-analyst.governance.yaml` | 50 | `output.location` field |
 
-This pattern (SKILL.md + agent .md + governance .yaml) is consistent across all 11 UX sub-skills. Full line-level audit for all 11 sub-skills persisted at [`BUG-006-ux-audit-detail.md`](BUG-006-ux-audit-detail.md) with per-file, per-line citations and a sum-check verification table (7+5+5+7+3+6+6+7+5+4+5 = 60).
+This pattern (SKILL.md + agent .md + governance .yaml) is consistent across all 11 UX sub-skills. Full line-level audit for all 11 sub-skills persisted at [`BUG-006-ux-audit-detail.md`](../research/BUG-006-ux-audit-detail.md) with per-file, per-line citations and a sum-check verification table (7+5+5+7+3+6+6+7+5+4+5 = 60).
 
 ---
 
@@ -256,9 +256,9 @@ This preserves engagement-ID scoping while placing outputs in user project direc
 | Children | [TASK-010](TASK-010-output-path-standard.md) | Add output path standard to agent-development-standards.md |
 | Children | [TASK-011](TASK-011-gitignore-skill-output.md) | Update .gitignore |
 | Children | [TASK-012](TASK-012-diataxis-naming-consistency.md) | Fix diataxis naming inconsistencies |
-| Audit Detail | [BUG-006-eng-audit-detail.md](BUG-006-eng-audit-detail.md) | eng-team line-level audit (22 files, 10 agents) |
-| Audit Detail | [BUG-006-red-audit-detail.md](BUG-006-red-audit-detail.md) | red-team line-level audit (25 files, 11 agents) |
-| Audit Detail | [BUG-006-ux-audit-detail.md](BUG-006-ux-audit-detail.md) | UX line-level audit (60 files, 11 sub-skills) |
+| Audit Detail | [BUG-006-eng-audit-detail.md](../research/BUG-006-eng-audit-detail.md) | eng-team line-level audit (22 files, 10 agents) |
+| Audit Detail | [BUG-006-red-audit-detail.md](../research/BUG-006-red-audit-detail.md) | red-team line-level audit (25 files, 11 agents) |
+| Audit Detail | [BUG-006-ux-audit-detail.md](../research/BUG-006-ux-audit-detail.md) | UX line-level audit (60 files, 11 sub-skills) |
 
 ---
 
