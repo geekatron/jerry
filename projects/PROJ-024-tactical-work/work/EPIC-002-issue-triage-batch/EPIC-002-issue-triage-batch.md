@@ -69,13 +69,14 @@ This Epic is the **cross-session resumption artifact**. Any session on the `feat
 | BUG-011 | Bug | cd-generator banned-term false positives under 60 chars | completed | PROJ-030 | #198 | 1 | — |
 | **Output Path Remediation** | | | | | | | |
 | BUG-006 | Bug | Agent output paths hardcoded to skill directories | pending | PROJ-030 | #230 | 2 | — |
+| TASK-015 | Task | Add filename_pattern to governance schema | pending | PROJ-030 | — | 2-pre | — |
 | TASK-011 | Task | Update .gitignore for skills/*/output/ | pending | PROJ-030 | — | 2a | — |
 | TASK-009 | Task | Remove committed eng-team/output/ (28 files) | pending | PROJ-030 | — | 2a | — |
-| TASK-006 | Task | eng-team path remediation (22 files) | pending | PROJ-030 | — | 2b | TASK-009 |
-| TASK-007 | Task | red-team path remediation (25 files) | pending | PROJ-030 | — | 2b | — |
-| TASK-008 | Task | UX skills path remediation (60 files) | pending | PROJ-030 | — | 2b | — |
+| TASK-006 | Task | eng-team: governance YAML + agent .md + SKILL.md + template (22 files) | pending | PROJ-030 | — | 2b | TASK-015, TASK-009 |
+| TASK-007 | Task | red-team: governance YAML + agent .md + SKILL.md + templates (25 files) | pending | PROJ-030 | — | 2b | TASK-015 |
+| TASK-008 | Task | UX: governance YAML + agent .md + SKILL.md + templates + rules (60 files) | pending | PROJ-030 | — | 2b | TASK-015 |
 | TASK-012 | Task | Fix diataxis naming inconsistencies | pending | PROJ-030 | — | 2b | — |
-| TASK-010 | Task | Add output path MEDIUM standard (AD-M-011) | pending | PROJ-030 | — | 2c | TASK-006, TASK-007, TASK-008 |
+| TASK-010 | Task | Add AD-M-011 standard to agent-development-standards.md | pending | PROJ-030 | — | 2c | TASK-006, TASK-007, TASK-008 |
 | **Quick Wins** | | | | | | | |
 | TASK-013 | Task | use-case SKILL.md missing Activity 5 entry | completed | PROJ-024 | #200 | 0 | — |
 | TASK-014 | Task | Orchestration scaffold cartesian product dirs | completed | PROJ-024 | #53 | 0 | — |
@@ -100,15 +101,19 @@ graph TD
         B08 --> B09
     end
 
+    subgraph "Phase 2-pre: Schema (first)"
+        T15["TASK-015<br/>Add filename_pattern<br/>to governance schema"]
+    end
+
     subgraph "Phase 2a: Output Path Prep (parallel)"
         T11["TASK-011<br/>.gitignore update"]
         T09["TASK-009<br/>Delete eng-team/output/"]
     end
 
     subgraph "Phase 2b: Output Path Fix (parallel)"
-        T06["TASK-006<br/>eng-team paths (22)"]
-        T07["TASK-007<br/>red-team paths (25)"]
-        T08["TASK-008<br/>UX paths (60)"]
+        T06["TASK-006<br/>eng-team (22 files)"]
+        T07["TASK-007<br/>red-team (25 files)"]
+        T08["TASK-008<br/>UX (60 files)"]
         T12["TASK-012<br/>diataxis naming"]
     end
 
@@ -116,6 +121,9 @@ graph TD
         T10["TASK-010<br/>AD-M-011 standard"]
     end
 
+    T15 --> T06
+    T15 --> T07
+    T15 --> T08
     T09 --> T06
     T06 --> T10
     T07 --> T10
@@ -149,11 +157,15 @@ All 5 bugs are in agent definition `.md` files and transformation rule files —
 
 ### Phase 2: Output Path Remediation (~2-3 sessions)
 
-**2a (prep):** TASK-011 (.gitignore) and TASK-009 (delete eng-team/output/) — do first to prevent accumulation during remediation.
+Per [ADR-EPIC002-001](../../../docs/design/ADR-EPIC002-001-unified-output-path-resolution.md) migration guide:
 
-**2b (fix):** TASK-006, TASK-007, TASK-008, TASK-012 — can parallelize across sessions using worktree isolation.
+**2-pre (schema):** TASK-015 — add `filename_pattern` to governance schema. MUST execute first so YAML validation accepts the new field.
 
-**2c (standard):** TASK-010 — after all path fixes validated, codify the convention as AD-M-011.
+**2a (prep):** TASK-011 (.gitignore) and TASK-009 (delete eng-team/output/) — prevent accumulation during remediation.
+
+**2b (fix):** TASK-006 (eng, 22 files), TASK-007 (red, 25 files), TASK-008 (UX, 60 files), TASK-012 (diataxis) — each task now covers governance YAML + agent .md + SKILL.md + templates per ADR Steps 1-4. Can parallelize across sessions.
+
+**2c (standard):** TASK-010 — codify AD-M-011 in agent-development-standards.md after all path fixes validated.
 
 ---
 

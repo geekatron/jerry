@@ -25,6 +25,7 @@
 | TASK-010 | Task | Add output path MEDIUM standard to agent-development-standards.md | pending | BUG-006 |
 | TASK-011 | Task | Update .gitignore to prevent skills/*/output/ accumulation | pending | BUG-006 |
 | TASK-012 | Task | Fix diataxis SKILL.md plural/singular naming inconsistencies | pending | BUG-006 |
+| TASK-015 | Task | Add filename_pattern to agent-governance-v1.schema.json | pending | BUG-006 |
 | BUG-007 | Bug | tspec-generator silently skips unrecognized extensions (#195) | completed | PROJ-030-bugs |
 | BUG-008 | Bug | tspec-analyst uses live UC as coverage denominator (#197) | completed | PROJ-030-bugs |
 | BUG-009 | Bug | tspec-analyst has no cross-slice aggregate coverage (#196) | completed | PROJ-030-bugs |
