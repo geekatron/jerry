@@ -30,6 +30,7 @@ RUN curl -fsSL \
 FROM ubuntu:24.04
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     linux-tools-common linux-tools-generic libbpf1 iproute2 curl python3 \
+    netcat-openbsd socat \
     && rm -rf /var/lib/apt/lists/*
 
 # Symlink actual bpftool binary (bypass version-checking wrapper)
