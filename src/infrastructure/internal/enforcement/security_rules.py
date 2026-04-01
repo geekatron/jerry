@@ -80,16 +80,15 @@ class SecurityRules:
     # substring matching. This catches: curl URL && bash, wget URL | sh, etc.
 
     cd_patterns: tuple[str, ...] = (
-        "cd ",
-        "cd\t",
-        "&& cd",
-        "; cd",
-        "$(cd",
-        "| cd",
-        "(cd",  # BV-01: subshell cd
-        "pushd",  # BV-01: pushd builtin
-        "env -c",  # BV-01: env -C (case-insensitive match)
-        "env --chdir",  # BV-01: env --chdir
+        r"(?<!\w)cd\s",  # bare cd + whitespace, word-boundary (not "argocd")
+        r"&&\s*cd\b",  # && cd
+        r";\s*cd\b",  # ; cd
+        r"\$\(\s*cd\b",  # $(cd
+        r"\|\s*cd\b",  # | cd
+        r"\(\s*cd\b",  # BV-01: subshell (cd
+        r"\bpushd\b",  # BV-01: pushd builtin
+        r"\benv\s+-[Cc]\b",  # BV-01: env -C / env -c
+        r"\benv\s+--chdir\b",  # BV-01: env --chdir
     )
 
     force_push_branches: tuple[str, ...] = (
