@@ -129,7 +129,7 @@ The facilitator follows a 5-phase sequential workflow corresponding to the four 
 **Purpose:** Establish sprint context, confirm wave entry criteria, and execute Day 1 activities to align the team around the challenge.
 
 **Activities:**
-1. Confirm Wave 5 entry criteria are met: Wave 4 completed (30+ users for Kano survey OR 1 B=MAP bottleneck diagnosed), OR bypass condition satisfied (team at product inception with existing user research — minimum 5 user interviews OR 30+ survey responses documented in engagement context). Check for a `WAVE-4-SIGNOFF.md` artifact in `skills/user-experience/output/`; if absent, ask the orchestrator to confirm which wave entry condition is satisfied per H-31. Verify against `skills/user-experience/rules/wave-progression.md#wave-definitions` for authoritative entry criteria.
+1. Confirm Wave 5 entry criteria are met: Wave 4 completed (30+ users for Kano survey OR 1 B=MAP bottleneck diagnosed), OR bypass condition satisfied (team at product inception with existing user research — minimum 5 user interviews OR 30+ survey responses documented in engagement context). Check for a `WAVE-4-SIGNOFF.md` artifact in `projects/${JERRY_PROJECT}/engagements/`; if absent, ask the orchestrator to confirm which wave entry condition is satisfied per H-31. Verify against `skills/user-experience/rules/wave-progression.md#wave-definitions` for authoritative entry criteria.
 2. Catalog upstream inputs: check for `/ux-jtbd` job statements (job statement + switch forces feed the challenge statement); check for `/ux-heuristic-eval` findings (severity-rated findings provide problem context). If present, import finding IDs and key data points.
 3. **Challenge Definition** -- Articulate the sprint challenge as a "How Might We" (HMW) question (IDEO design thinking technique, Brown, 2009; adopted in Sprint methodology per Knapp et al., 2016, Chapter 4). The challenge should be specific enough to test in 4 days but broad enough to allow creative solutions.
 4. **Long-Term Goal** -- Define what success looks like 6-12 months from now. This anchors the sprint against strategic objectives, not just tactical improvements.
@@ -263,7 +263,7 @@ This agent operates as a single AI facilitator. The AJ&Smart Design Sprint 2.0 (
 
 **Output location:**
 ```
-skills/ux-design-sprint/output/{engagement-id}/ux-sprint-facilitator-{topic-slug}.md
+projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-sprint-facilitator-{topic-slug}.md
 ```
 
 Where `{engagement-id}` follows format `UX-{NNNN}` (e.g., `UX-0012`) and `{topic-slug}` is a kebab-case descriptor of the sprint challenge matching the pattern `^[a-z0-9]+(-[a-z0-9]+)*$` (max 40 characters; e.g., `mobile-navigation`, `checkout-redesign`, `onboarding-flow`).
@@ -379,7 +379,7 @@ handoff:
     - "Hypotheses generated for each validated and invalidated sprint assumption"
     - "Experiment designs prioritize assumptions that were partially validated"
   artifacts:
-    - "skills/ux-design-sprint/output/{engagement-id}/ux-sprint-facilitator-{topic-slug}.md"
+    - "projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-sprint-facilitator-{topic-slug}.md"
   key_findings:
     - "{key finding 1}"
     - "{key finding 2}"
@@ -405,7 +405,7 @@ handoff:
     - "Prototype evaluated against Nielsen's 10 heuristics"
     - "Severity-rated findings mapped to sprint question areas"
   artifacts:
-    - "skills/ux-design-sprint/output/{engagement-id}/ux-sprint-facilitator-{topic-slug}.md"
+    - "projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-sprint-facilitator-{topic-slug}.md"
   key_findings:
     - "{key finding 1}"
     - "{key finding 2}"
@@ -447,9 +447,18 @@ synthesis_judgments:
     rationale: string
 degraded_mode: bool
 degraded_mode_detail: string  # which MCPs unavailable, if any
-artifact_path: skills/ux-design-sprint/output/{engagement-id}/ux-sprint-facilitator-{topic-slug}.md
+artifact_path: projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-sprint-facilitator-{topic-slug}.md
 handoff_ready: bool  # true if Day 4 complete for downstream handoffs
 ```
+
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-EPIC002-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-sprint-facilitator-{topic-slug}.md`
+4. **Fallback** -- `work/ux-sprint-facilitator-{topic-slug}.md` with warning
 </output>
 
 <guardrails>

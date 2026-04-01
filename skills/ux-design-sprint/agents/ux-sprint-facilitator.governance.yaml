@@ -55,7 +55,8 @@ guardrails:
   fallback_behavior: warn_and_retry
 output:
   required: true
-  location: "skills/ux-design-sprint/output/{engagement-id}/ux-sprint-facilitator-{topic-slug}.md"
+  location: "projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-sprint-facilitator-{topic-slug}.md"
+  filename_pattern: "ux-sprint-facilitator-{topic-slug}.md"
   template: "skills/ux-design-sprint/templates/design-sprint-template.md"
   levels:
   - L0

@@ -213,10 +213,10 @@ When the user's intent does not match any of the patterns in Steps 3b–3d:
 
 Delegate to the routed sub-skill agent(s) using structured handoffs:
 
-1. **Generate Engagement ID:** Format `UX-{NNNN}` (sequential within the repository). Generation mechanism: search for existing engagement directories matching `skills/user-experience/output/UX-*`, extract the maximum numeric suffix, and increment by 1. If no prior engagements exist, start at `UX-0001`.
+1. **Generate Engagement ID:** Format `UX-{NNNN}` (sequential within the repository). Generation mechanism: search for existing engagement directories matching `projects/${JERRY_PROJECT}/engagements/UX-*`, extract the maximum numeric suffix, and increment by 1. If no prior engagements exist, start at `UX-0001`.
 2. **Construct Handoff:** Build a structured handoff conforming to `docs/schemas/handoff-v2.schema.json`. Required fields: `from_agent` (ux-orchestrator), `to_agent` (target sub-skill), `task`, `success_criteria`, `artifacts` (prior output file paths), `key_findings` (3-5 orientation bullets), `blockers`, `confidence`, `criticality`. Include engagement ID, product context, user request, wave state, and prior sub-skill outputs (if any).
 3. **Delegate to Worker:** Invoke the sub-skill agent with the structured handoff. The sub-skill operates within its declared tool tier and returns results to this orchestrator.
-4. **Verify Output:** After the sub-skill returns, verify its output file exists at the declared location. Each sub-skill declares its output path in its SKILL.md (pattern: `skills/{sub-skill-name}/output/{engagement-id}/`). The parent SKILL.md (`skills/user-experience/SKILL.md`) Agent Roster table provides the authoritative sub-skill-to-path mapping. If the output file is missing: report the delegation failure to the user with the sub-skill name, expected path, and any error context returned by the worker.
+4. **Verify Output:** After the sub-skill returns, verify its output file exists at the declared location. Each sub-skill declares its output path in its SKILL.md (pattern: `projects/${JERRY_PROJECT}/engagements/{engagement-id}/`). The parent SKILL.md (`skills/user-experience/SKILL.md`) Agent Roster table provides the authoritative sub-skill-to-path mapping. If the output file is missing: report the delegation failure to the user with the sub-skill name, expected path, and any error context returned by the worker.
 5. **Apply Confidence Gate:** Classify the sub-skill's synthesis outputs per the 3-tier confidence protocol (HIGH/MEDIUM/LOW). Enforce gate behavior per the synthesis validation rules.
 
 **CRISIS mode execution:** CRISIS mode respects wave gates. Before delegating each CRISIS sub-skill, verify its wave signoff exists. If a CRISIS sub-skill is not yet deployed (wave not signed off): skip it, note the gap in the CRISIS synthesis report with a "Sub-skill unavailable — wave N not yet signed off" annotation, and proceed with the remaining CRISIS sub-skills. If only 1 of 3 CRISIS sub-skills is deployed, produce a partial CRISIS report. If none are deployed, inform the user that CRISIS mode requires at least Wave 1 deployment and recommend completing KICKOFF-SIGNOFF.md and deploying Wave 1 as the immediate next step.
@@ -228,7 +228,7 @@ Delegate to the routed sub-skill agent(s) using structured handoffs:
 ### Phase 5: SYNTHESIZE (Multi-Framework)
 
 Synthesis activates under three conditions:
-1. **Automatic:** After the second sub-skill completes for the same engagement ID (detected by checking `skills/user-experience/output/{engagement-id}/` for 2+ sub-skill output directories).
+1. **Automatic:** After the second sub-skill completes for the same engagement ID (detected by checking `projects/${JERRY_PROJECT}/engagements/{engagement-id}/` for 2+ sub-skill output files).
 2. **User-requested:** User explicitly asks for synthesis (e.g., "combine these findings", "cross-reference results").
 3. **CRISIS completion:** After the 3-skill CRISIS sequence completes (always produces a CRISIS synthesis).
 
@@ -290,9 +290,9 @@ Escalation is automatic and transparent to the user per AD-M-009 model selection
 |-------------|----------|---------------|
 | Routing decision | Inline (session context) | Every request |
 | Sub-skill delegation | Via Agent tool to worker agent | Every routed request |
-| Cross-framework synthesis | `skills/user-experience/output/{engagement-id}/ux-orchestrator-synthesis.md` | When 2+ sub-skill outputs exist |
-| CRISIS synthesis | `skills/user-experience/output/{engagement-id}/ux-orchestrator-crisis.md` | After CRISIS 3-skill sequence |
-| Wave bypass record | `skills/user-experience/output/{engagement-id}/wave-bypass-{wave-N}.md` | When user approves bypass |
+| Cross-framework synthesis | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-orchestrator-synthesis.md` | When 2+ sub-skill outputs exist |
+| CRISIS synthesis | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-orchestrator-crisis.md` | After CRISIS 3-skill sequence |
+| Wave bypass record | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/wave-bypass-{wave-N}.md` | When user approves bypass |
 
 **Output Structure (L0/L1/L2):**
 
@@ -339,7 +339,16 @@ All persisted outputs follow the three-level structure:
 [Current wave state and recommended progression]
 ```
 
-**File Persistence:** All outputs are written to the filesystem per P-002. No output exists only in session context. Engagement directories are created automatically at `skills/user-experience/output/{engagement-id}/`.
+**File Persistence:** All outputs are written to the filesystem per P-002. No output exists only in session context. Engagement directories are created automatically at `projects/${JERRY_PROJECT}/engagements/{engagement-id}/`.
+
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-EPIC002-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-orchestrator-{type}.md`
+4. **Fallback** -- `work/ux-orchestrator-{type}.md` with warning
 
 </output>
 

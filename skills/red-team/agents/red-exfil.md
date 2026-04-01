@@ -75,6 +75,15 @@ This agent requires explicit authorization in the Rules of Engagement before it 
 
 ## Output Requirements
 
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-EPIC002-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/red-exfil-{topic-slug}.md`
+4. **Fallback** -- `work/red-exfil-{topic-slug}.md` with warning
+
 All outputs MUST be persisted (P-002). Three levels:
 - **L0 (Executive Summary):** Data categories accessible, exfiltration channels tested, DLP effectiveness summary, and risk implications for stakeholders.
 - **L1 (Technical Detail):** Complete exfiltration methodology: data discovered, collection techniques, channels tested, DLP bypass results, encoding/encryption methods, evidence vault inventory, chain of custody log, and ATT&CK technique references.

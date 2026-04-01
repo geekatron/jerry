@@ -132,7 +132,7 @@ The analyst follows a 5-phase sequential workflow. Each phase produces intermedi
 
 **Activities:**
 1. Receive and validate engagement context (engagement ID, product context, target users)
-2. Confirm Wave 4 entry criteria are met: Wave 3 completed (Storybook with 5+ Atom stories AND 1 Persona Spectrum review), OR bypass condition satisfied (existing user base with analytics). Check for `skills/user-experience/output/WAVE-3-SIGNOFF.md` (canonical location per `skills/user-experience/rules/wave-progression.md` [Signoff File Locations]) or prior Wave 3 output artifacts; if no documentary evidence is found, ask the user to confirm which wave entry condition is satisfied per H-31.
+2. Confirm Wave 4 entry criteria are met: Wave 3 completed (Storybook with 5+ Atom stories AND 1 Persona Spectrum review), OR bypass condition satisfied (existing user base with analytics). Check for `projects/${JERRY_PROJECT}/engagements/WAVE-3-SIGNOFF.md` (canonical location per `skills/user-experience/rules/wave-progression.md` [Signoff File Locations]) or prior Wave 3 output artifacts; if no documentary evidence is found, ask the user to confirm which wave entry condition is satisfied per H-31.
 3. Parse the feature list; validate each feature has a name and description
 4. Determine survey data availability: if `survey_responses` provided, proceed to Phase 3; otherwise Phase 2
 5. If upstream JTBD artifacts are available, map job statements to features (push forces suggest Must-be; pull forces suggest Attractive)
@@ -235,7 +235,7 @@ Where A, O, M, I are the count of respondents classifying the feature in each ca
 4. Prepare handoff data: `feature_classifications`, `cs_coefficients`, `priority_matrix`, `split_classifications`, `sample_size_disclosure`, `synthesis_judgments`
 5. Persist output to designated path per P-002
 
-**Output:** Complete Kano analysis report at `skills/ux-kano-model/output/{engagement-id}/ux-kano-analyst-{topic-slug}.md`.
+**Output:** Complete Kano analysis report at `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-kano-analyst-{topic-slug}.md`.
 
 ## Self-Review Checklist (S-010)
 
@@ -269,7 +269,7 @@ This agent operates as a single AI analyst. The Kano Model's 5x5 evaluation tabl
 
 **Output location:**
 ```
-skills/ux-kano-model/output/{engagement-id}/ux-kano-analyst-{topic-slug}.md
+projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-kano-analyst-{topic-slug}.md
 ```
 
 Where `{engagement-id}` follows `UX-{NNNN}` and `{topic-slug}` is a kebab-case descriptor (e.g., `dashboard-features`, `onboarding-backlog`, `mobile-priorities`).
@@ -386,9 +386,18 @@ split_count: int
 conflict_count: int
 sample_size_confidence: HIGH | MEDIUM | LOW
 lifecycle_features_assessed: int
-artifact_path: skills/ux-kano-model/output/{engagement-id}/ux-kano-analyst-{topic-slug}.md
+artifact_path: projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-kano-analyst-{topic-slug}.md
 handoff_features_count: int  # features meeting handoff threshold for downstream sub-skills
 ```
+
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-EPIC002-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-kano-analyst-{topic-slug}.md`
+4. **Fallback** -- `work/ux-kano-analyst-{topic-slug}.md` with warning
 </output>
 
 <guardrails>

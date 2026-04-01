@@ -85,6 +85,15 @@ All outputs MUST be persisted to files (P-002). Every output includes three leve
 - **L1 (Technical Detail):** Implementation code with security annotations, input validation rules, auth flow documentation, database access patterns, API endpoint security specifications.
 - **L2 (Strategic Implications):** Backend security posture assessment, dependency risk landscape, scalability considerations for security controls, evolution path for auth architecture.
 
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-EPIC002-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/eng-backend-{topic-slug}.md`
+4. **Fallback** -- `work/eng-backend-{topic-slug}.md` with warning
+
 ## Standards Reference
 
 | Standard | Application |

@@ -80,14 +80,14 @@ Wave gate scoring uses the same S-014 6-dimension rubric as H-13, with weights:
 
 | Wave | Signoff File | Location |
 |------|-------------|----------|
-| Foundation | KICKOFF-SIGNOFF.md | `skills/user-experience/output/KICKOFF-SIGNOFF.md` |
-| Wave 1 | WAVE-1-SIGNOFF.md | `skills/user-experience/output/WAVE-1-SIGNOFF.md` |
-| Wave 2 | WAVE-2-SIGNOFF.md | `skills/user-experience/output/WAVE-2-SIGNOFF.md` |
-| Wave 3 | WAVE-3-SIGNOFF.md | `skills/user-experience/output/WAVE-3-SIGNOFF.md` |
-| Wave 4 | WAVE-4-SIGNOFF.md | `skills/user-experience/output/WAVE-4-SIGNOFF.md` |
-| Wave 5 | WAVE-5-SIGNOFF.md | `skills/user-experience/output/WAVE-5-SIGNOFF.md` |
+| Foundation | KICKOFF-SIGNOFF.md | `projects/${JERRY_PROJECT}/engagements/KICKOFF-SIGNOFF.md` |
+| Wave 1 | WAVE-1-SIGNOFF.md | `projects/${JERRY_PROJECT}/engagements/WAVE-1-SIGNOFF.md` |
+| Wave 2 | WAVE-2-SIGNOFF.md | `projects/${JERRY_PROJECT}/engagements/WAVE-2-SIGNOFF.md` |
+| Wave 3 | WAVE-3-SIGNOFF.md | `projects/${JERRY_PROJECT}/engagements/WAVE-3-SIGNOFF.md` |
+| Wave 4 | WAVE-4-SIGNOFF.md | `projects/${JERRY_PROJECT}/engagements/WAVE-4-SIGNOFF.md` |
+| Wave 5 | WAVE-5-SIGNOFF.md | `projects/${JERRY_PROJECT}/engagements/WAVE-5-SIGNOFF.md` |
 
-> **Build-phase convention:** During skill build orchestrations (e.g., PROJ-022), signoff files are created at `skills/user-experience/work/WAVE-{N}-SIGNOFF.md` alongside other build-phase work artifacts. The `output/` paths above are the canonical operational locations used by CI gates (UX-CI-007, UX-CI-008) and wave state detection in production. Signoff files are moved to `output/` when the skill build is finalized and the skill transitions from build phase to operational phase. Both Wave 1 and Wave 2 signoffs follow this build-phase convention.
+> **Build-phase convention:** During skill build orchestrations (e.g., PROJ-022), signoff files are created at `skills/user-experience/work/WAVE-{N}-SIGNOFF.md` alongside other build-phase work artifacts. The `projects/${JERRY_PROJECT}/engagements/` paths above are the canonical operational locations used by CI gates (UX-CI-007, UX-CI-008) and wave state detection in production. Signoff files are moved to `engagements/` when the skill build is finalized and the skill transitions from build phase to operational phase. Both Wave 1 and Wave 2 signoffs follow this build-phase convention.
 
 ### Signoff File Validation
 
@@ -126,7 +126,7 @@ Wave bypass allows routing to a sub-skill whose wave has not been formally signe
 
 ### Bypass Documentation
 
-Bypass documentation is persisted at `skills/user-experience/output/{engagement-id}/wave-bypass-{wave-N}.md`. See `ux-routing-rules.md` [Bypass Routing] for full documentation structure.
+Bypass documentation is persisted at `projects/${JERRY_PROJECT}/engagements/{engagement-id}/wave-bypass-{wave-N}.md`. See `ux-routing-rules.md` [Bypass Routing] for full documentation structure.
 
 > **Path scoping rationale:** Bypass files are engagement-scoped (contain `{engagement-id}`) because the same wave may be bypassed differently in separate engagements -- each engagement has its own unmet criterion, impact assessment, and remediation plan. Signoff files (see [Signoff File Locations](#signoff-requirements)) are project-scoped (no engagement-id) because wave completion is a project-wide state change: once a wave is signed off, it is deployed for all future engagements.
 

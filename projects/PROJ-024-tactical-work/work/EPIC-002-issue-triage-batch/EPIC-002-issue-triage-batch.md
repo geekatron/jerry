@@ -53,7 +53,7 @@ This Epic is the **cross-session resumption artifact**. Any session on the `feat
 |-------|-------------|--------|
 | Phase 0 | Quick Wins (TASK-013, TASK-014) | completed |
 | Phase 1 | UC Pipeline Bugs (BUG-007 through BUG-011) | completed |
-| Phase 2 | Output Path Remediation (BUG-006, TASK-006 through TASK-012) | pending |
+| Phase 2 | Output Path Remediation (BUG-006, TASK-006 through TASK-012) | completed |
 
 ---
 
@@ -68,15 +68,15 @@ This Epic is the **cross-session resumption artifact**. Any session on the `feat
 | BUG-010 | Bug | uc-slicer lacks duplicate slice_id conflict detection | completed | PROJ-030 | #199 | 1 | — |
 | BUG-011 | Bug | cd-generator banned-term false positives under 60 chars | completed | PROJ-030 | #198 | 1 | — |
 | **Output Path Remediation** | | | | | | | |
-| BUG-006 | Bug | Agent output paths hardcoded to skill directories | pending | PROJ-030 | #230 | 2 | — |
-| TASK-015 | Task | Add filename_pattern to governance schema | pending | PROJ-030 | — | 2-pre | — |
-| TASK-011 | Task | Update .gitignore for skills/*/output/ | pending | PROJ-030 | — | 2a | — |
-| TASK-009 | Task | Remove committed eng-team/output/ (28 files) | pending | PROJ-030 | — | 2a | — |
-| TASK-006 | Task | eng-team: governance YAML + agent .md + SKILL.md + template (22 files) | pending | PROJ-030 | — | 2b | TASK-015, TASK-009 |
-| TASK-007 | Task | red-team: governance YAML + agent .md + SKILL.md + templates (25 files) | pending | PROJ-030 | — | 2b | TASK-015 |
-| TASK-008 | Task | UX: governance YAML + agent .md + SKILL.md + templates + rules (60 files) | pending | PROJ-030 | — | 2b | TASK-015 |
-| TASK-012 | Task | Fix diataxis naming inconsistencies | pending | PROJ-030 | — | 2b | — |
-| TASK-010 | Task | Add AD-M-011 standard to agent-development-standards.md | pending | PROJ-030 | — | 2c | TASK-006, TASK-007, TASK-008 |
+| BUG-006 | Bug | Agent output paths hardcoded to skill directories | completed | PROJ-030 | #230 | 2 | — |
+| TASK-015 | Task | Add filename_pattern to governance schema | completed | PROJ-030 | — | 2-pre | — |
+| TASK-011 | Task | Update .gitignore for skills/*/output/ | completed | PROJ-030 | — | 2a | — |
+| TASK-009 | Task | Remove committed eng-team/output/ (28 files) | completed | PROJ-030 | — | 2a | — |
+| TASK-006 | Task | eng-team: governance YAML + agent .md + SKILL.md + template (22 files) | completed | PROJ-030 | — | 2b | TASK-015, TASK-009 |
+| TASK-007 | Task | red-team: governance YAML + agent .md + SKILL.md + templates (25 files) | completed | PROJ-030 | — | 2b | TASK-015 |
+| TASK-008 | Task | UX: governance YAML + agent .md + SKILL.md + templates + rules (60 files) | completed | PROJ-030 | — | 2b | TASK-015 |
+| TASK-012 | Task | Fix diataxis naming inconsistencies | completed | PROJ-030 | — | 2b | — |
+| TASK-010 | Task | Add AD-M-011 standard to agent-development-standards.md | completed | PROJ-030 | — | 2c | TASK-006, TASK-007, TASK-008 |
 | **Quick Wins** | | | | | | | |
 | TASK-013 | Task | use-case SKILL.md missing Activity 5 entry | completed | PROJ-024 | #200 | 0 | — |
 | TASK-014 | Task | Orchestration scaffold cartesian product dirs | completed | PROJ-024 | #53 | 0 | — |

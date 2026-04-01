@@ -90,6 +90,15 @@ scope:
 
 ## Output Requirements
 
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-EPIC002-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/red-lead-{topic-slug}.md`
+4. **Fallback** -- `work/red-lead-{topic-slug}.md` with warning
+
 All outputs MUST be persisted (P-002). Three levels:
 - **L0 (Executive Summary):** Engagement overview, scope boundaries in plain language, authorized activities, timeline, and risk summary for stakeholders.
 - **L1 (Technical Detail):** Complete YAML scope document, technique allowlists with ATT&CK references, target specifications, evidence handling procedures, and agent authorization matrix.

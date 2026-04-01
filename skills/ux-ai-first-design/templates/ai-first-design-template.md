@@ -371,7 +371,7 @@ progressive_disclosure_plan:
   stage_5_eligible: {{true | false}}
 synthesis_judgments_count: {{N}}
 degraded_mode: {{true | false}}
-artifact_path: skills/ux-ai-first-design/output/{{engagement-id}}/ux-ai-design-guide-{{topic-slug}}.md
+artifact_path: projects/${JERRY_PROJECT}/engagements/{{engagement-id}}/ux-ai-design-guide-{{topic-slug}}.md
 handoff_ready: {{true | false}}
 ```
 -->

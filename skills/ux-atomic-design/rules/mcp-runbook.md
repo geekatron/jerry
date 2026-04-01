@@ -258,7 +258,7 @@ The `ux-atomic-architect` agent operates at **T3 (External)** per `agent-develop
 | Tool | Reason |
 |------|--------|
 | Agent | Worker agent; P-003 prohibition. `disallowedTools: [Agent]` in agent frontmatter. |
-| Memory-Keeper | No cross-session state requirement. Sub-skill state is engagement-scoped per P-002. All output persisted to `skills/ux-atomic-design/output/{engagement-id}/`. |
+| Memory-Keeper | No cross-session state requirement. Sub-skill state is engagement-scoped per P-002. All output persisted to `projects/${JERRY_PROJECT}/engagements/{engagement-id}/`. |
 
 ### Citation Requirements
 

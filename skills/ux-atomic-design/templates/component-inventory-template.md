@@ -459,7 +459,7 @@ success_criteria:                                  # [handoff-v2] required, min 
   - "Consolidation candidates identified with recommendations"
   - "Design system maturity classified with evidence"
 artifacts:                                         # [handoff-v2] required
-  - "skills/ux-atomic-design/output/{{ENGAGEMENT_ID}}/ux-atomic-architect-{{TOPIC_SLUG}}.md"
+  - "projects/${JERRY_PROJECT}/engagements/{{ENGAGEMENT_ID}}/ux-atomic-architect-{{TOPIC_SLUG}}.md"
 key_findings:                                      # [handoff-v2] required, 3-5 entries per CB-04
   - "{{top finding 1 summary}}"
   - "{{top finding 2 summary}}"
@@ -483,7 +483,7 @@ storybook_mol_org_coverage_pct: {{MOL_ORG_COVERAGE_PCT}}  # [ux-ext] component-l
 consolidation_candidates: {{CONSOLIDATION_COUNT}}    # [ux-ext]
 design_system_maturity: {{nascent | developing | mature | optimized}}  # [ux-ext]
 degraded_mode: {{true / false}}                      # [ux-ext]
-artifact_path: "skills/ux-atomic-design/output/{{ENGAGEMENT_ID}}/ux-atomic-architect-{{TOPIC_SLUG}}.md"  # [ux-ext]
+artifact_path: "projects/${JERRY_PROJECT}/engagements/{{ENGAGEMENT_ID}}/ux-atomic-architect-{{TOPIC_SLUG}}.md"  # [ux-ext]
 handoff_components_count: {{HANDOFF_COUNT}}           # [ux-ext] components meeting handoff threshold for /ux-inclusive-design
 ```
 

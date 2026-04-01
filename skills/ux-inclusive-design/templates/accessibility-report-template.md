@@ -544,7 +544,7 @@ success_criteria:                                     # [handoff-v2] required, m
   - "Persona Spectrum profiles complete for all interaction patterns"
   - "Remediation priorities ranked with WCAG technique references"
 artifacts:                                            # [handoff-v2] required
-  - "skills/ux-inclusive-design/output/{{ENGAGEMENT_ID}}/ux-inclusive-evaluator-{{TOPIC_SLUG}}.md"
+  - "projects/${JERRY_PROJECT}/engagements/{{ENGAGEMENT_ID}}/ux-inclusive-evaluator-{{TOPIC_SLUG}}.md"
 key_findings:                                         # [handoff-v2] required, 3-5 entries per CB-04
   - "{{top finding 1 summary}}"
   - "{{top finding 2 summary}}"
@@ -571,7 +571,7 @@ major_violations: {{N}}                                 # [ux-ext] severity 3
 persona_spectrums_produced: {{N}}                       # [ux-ext]
 interaction_patterns_evaluated: {{N}}                   # [ux-ext]
 degraded_mode: {{true / false}}                         # [ux-ext]
-artifact_path: "skills/ux-inclusive-design/output/{{ENGAGEMENT_ID}}/ux-inclusive-evaluator-{{TOPIC_SLUG}}.md"  # [ux-ext]
+artifact_path: "projects/${JERRY_PROJECT}/engagements/{{ENGAGEMENT_ID}}/ux-inclusive-evaluator-{{TOPIC_SLUG}}.md"  # [ux-ext]
 synthesis_judgments_count: {{N}}                         # [ux-ext]
 ```
 

@@ -228,7 +228,7 @@ success_criteria:                                     # [handoff-v2] required, m
   - "Exclusion points identified per pattern with design opportunities"
   - "WCAG cross-references present for all findings"
 artifacts:                                            # [handoff-v2] required
-  - "skills/ux-inclusive-design/output/{{ENGAGEMENT_ID}}/persona-spectrum-{{TOPIC_SLUG}}.md"
+  - "projects/${JERRY_PROJECT}/engagements/{{ENGAGEMENT_ID}}/persona-spectrum-{{TOPIC_SLUG}}.md"
 key_findings:                                         # [handoff-v2] required, 3-5 entries per CB-04
   - "{{top exclusion finding 1}}"
   - "{{top exclusion finding 2}}"
@@ -249,7 +249,7 @@ exclusion_by_disability:                              # [ux-ext]
 design_opportunities_count: {{N}}                       # [ux-ext]
 wcag_cross_references_count: {{N}}                      # [ux-ext]
 degraded_mode: {{true / false}}                         # [ux-ext]
-artifact_path: "skills/ux-inclusive-design/output/{{ENGAGEMENT_ID}}/persona-spectrum-{{TOPIC_SLUG}}.md"  # [ux-ext]
+artifact_path: "projects/${JERRY_PROJECT}/engagements/{{ENGAGEMENT_ID}}/persona-spectrum-{{TOPIC_SLUG}}.md"  # [ux-ext]
 ```
 
 ---

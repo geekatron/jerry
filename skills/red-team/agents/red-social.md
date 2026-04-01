@@ -76,6 +76,15 @@ This agent requires explicit authorization in the Rules of Engagement before it 
 
 ## Output Requirements
 
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-EPIC002-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/red-social-{topic-slug}.md`
+4. **Fallback** -- `work/red-social-{topic-slug}.md` with warning
+
 All outputs MUST be persisted (P-002). Three levels:
 - **L0 (Executive Summary):** Campaign overview, success metrics (click/credential rates), organizational resilience assessment, and security awareness gap summary for stakeholders.
 - **L1 (Technical Detail):** Complete campaign methodology: pretext documentation, phishing templates (sanitized), delivery method details, credential harvesting approach, campaign metrics, timeline, and ATT&CK technique references.

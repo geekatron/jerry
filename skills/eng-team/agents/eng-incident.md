@@ -142,6 +142,15 @@ All outputs MUST be persisted to files (P-002). Every output includes three leve
 - **L1 (Technical Detail):** Step-by-step runbooks with command examples, monitoring configuration (log queries, alert rules, dashboard definitions), containment procedures with rollback steps, communication templates.
 - **L2 (Strategic Implications):** Incident response maturity assessment, gaps in monitoring coverage, organizational readiness evaluation, recommendations for IR program evolution, lessons learned integration path.
 
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-EPIC002-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/eng-incident-{topic-slug}.md`
+4. **Fallback** -- `work/eng-incident-{topic-slug}.md` with warning
+
 ## Standards Reference
 
 | Standard | Application |

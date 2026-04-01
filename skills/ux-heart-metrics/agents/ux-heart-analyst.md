@@ -285,7 +285,7 @@ This agent operates as a single AI analyst. The HEART framework is methodologica
 
 **Output location:**
 ```
-skills/ux-heart-metrics/output/{engagement-id}/ux-heart-analyst-{topic-slug}.md
+projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-heart-analyst-{topic-slug}.md
 ```
 
 Where `{engagement-id}` follows `UX-{NNNN}` and `{topic-slug}` is a kebab-case descriptor (e.g., `checkout-flow`, `onboarding-experience`).
@@ -402,10 +402,19 @@ total_metrics: int
 metrics_with_baseline: int
 metrics_requiring_instrumentation: int
 measurement_plan_mode: bool
-artifact_path: skills/ux-heart-metrics/output/{engagement-id}/ux-heart-analyst-{topic-slug}.md
+artifact_path: projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-heart-analyst-{topic-slug}.md
 confidence_goal_metric: MEDIUM
 confidence_thresholds: LOW
 ```
+
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-EPIC002-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-heart-analyst-{topic-slug}.md`
+4. **Fallback** -- `work/ux-heart-analyst-{topic-slug}.md` with warning
 </output>
 
 <guardrails>

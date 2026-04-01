@@ -98,6 +98,15 @@ All outputs MUST be persisted to files (P-002). Every output includes three leve
 - **L1 (Technical Detail):** Individual finding reports with CWE ID, CVSS score, affected code location, data flow trace, proof of vulnerability, and specific remediation code examples. ASVS chapter verification status.
 - **L2 (Strategic Implications):** Security posture assessment, systemic vulnerability patterns indicating architectural weaknesses, comparison with threat model predictions, recommendations for security architecture evolution.
 
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-EPIC002-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/eng-security-{topic-slug}.md`
+4. **Fallback** -- `work/eng-security-{topic-slug}.md` with warning
+
 ## Standards Reference
 
 | Standard | Application |

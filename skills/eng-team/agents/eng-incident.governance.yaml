@@ -32,7 +32,8 @@ guardrails:
   fallback_behavior: warn_and_retry
 output:
   required: true
-  location: skills/eng-team/output/{engagement-id}/eng-incident-{topic-slug}.md
+  location: "projects/${JERRY_PROJECT}/engagements/{engagement-id}/eng-incident-{topic-slug}.md"
+  filename_pattern: "eng-incident-{topic-slug}.md"
   levels:
   - L0
   - L1

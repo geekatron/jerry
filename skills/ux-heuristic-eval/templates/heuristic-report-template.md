@@ -442,7 +442,7 @@ success_criteria:                            # [handoff-v2] required, min 1
   - "Every finding has severity rating with specific evidence"
   - "Findings deduplicated and ranked by severity"
 artifacts:                                   # [handoff-v2] required
-  - "skills/ux-heuristic-eval/output/{{ENGAGEMENT_ID}}/ux-heuristic-evaluator-{{TOPIC_SLUG}}.md"
+  - "projects/${JERRY_PROJECT}/engagements/{{ENGAGEMENT_ID}}/ux-heuristic-evaluator-{{TOPIC_SLUG}}.md"
 key_findings:                                # [handoff-v2] required, 3-5 entries per CB-04
   - "{{top finding 1 summary}}"
   - "{{top finding 2 summary}}"

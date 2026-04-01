@@ -123,7 +123,7 @@ The architect follows a 5-phase sequential workflow. Each phase produces interme
 
 **Activities:**
 1. Identify the product domain, target users, and the specific screens, flows, or feature areas to be inventoried
-2. Confirm Wave 3 entry criteria are met: Wave 2 completed (launched product with analytics OR 1 completed Lean UX hypothesis cycle), OR bypass condition satisfied (Storybook already in use). Check for a `WAVE-2-SIGNOFF.md` artifact or prior `/ux-lean-ux` or `/ux-heart-metrics` output artifacts in `skills/user-experience/output/`; if no documentary evidence is found, ask the user to confirm which wave entry condition is satisfied per H-31.
+2. Confirm Wave 3 entry criteria are met: Wave 2 completed (launched product with analytics OR 1 completed Lean UX hypothesis cycle), OR bypass condition satisfied (Storybook already in use). Check for a `WAVE-2-SIGNOFF.md` artifact or prior `/ux-lean-ux` or `/ux-heart-metrics` output artifacts in `projects/${JERRY_PROJECT}/engagements/`; if no documentary evidence is found, ask the user to confirm which wave entry condition is satisfied per H-31.
 3. Catalog upstream inputs: check for `/ux-heuristic-eval` severity-rated findings with component inconsistency citations (heuristic #4); if present, import finding IDs to inform refactoring priorities
 4. Determine MCP operating mode: probe for Storybook MCP adapter availability; if unavailable, activate Manual Component Inventory Mode and prepare P-022 degraded mode disclosure
 5. Establish design system references: identify the component library (e.g., Material UI, Radix, Shadcn/ui, custom), design token documentation, and existing Storybook instance URL (if any)
@@ -251,7 +251,7 @@ This agent operates as a single AI architect. Brad Frost's Atomic Design methodo
 
 **Output location:**
 ```
-skills/ux-atomic-design/output/{engagement-id}/ux-atomic-architect-{topic-slug}.md
+projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-atomic-architect-{topic-slug}.md
 ```
 
 Where `{engagement-id}` follows `UX-{NNNN}` and `{topic-slug}` is a kebab-case descriptor (e.g., `checkout-flow`, `navigation-system`, `full-product`).
@@ -358,9 +358,18 @@ storybook_coverage_pct: float  # component-level coverage
 consolidation_candidates: int
 design_system_maturity: nascent | developing | mature | optimized
 degraded_mode: bool
-artifact_path: skills/ux-atomic-design/output/{engagement-id}/ux-atomic-architect-{topic-slug}.md
+artifact_path: projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-atomic-architect-{topic-slug}.md
 handoff_components_count: int  # components meeting handoff threshold for /ux-inclusive-design
 ```
+
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-EPIC002-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-atomic-architect-{topic-slug}.md`
+4. **Fallback** -- `work/ux-atomic-architect-{topic-slug}.md` with warning
 </output>
 
 <guardrails>

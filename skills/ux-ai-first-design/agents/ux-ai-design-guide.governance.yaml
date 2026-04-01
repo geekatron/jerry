@@ -57,7 +57,8 @@ guardrails:
   fallback_behavior: warn_and_retry
 output:
   required: true
-  location: "skills/ux-ai-first-design/output/{engagement-id}/ux-ai-design-guide-{topic-slug}.md"
+  location: "projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-ai-design-guide-{topic-slug}.md"
+  filename_pattern: "ux-ai-design-guide-{topic-slug}.md"
   template: "skills/ux-ai-first-design/templates/ai-first-design-template.md"
   levels:
   - L0

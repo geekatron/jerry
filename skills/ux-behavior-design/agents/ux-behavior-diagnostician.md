@@ -119,7 +119,7 @@ The diagnostician follows a 5-phase sequential workflow. Each phase produces int
 
 **Activities:**
 1. Identify the product domain, target users, and the specific action users should take but are not taking. Define the target behavior using Fogg's statement format: "After [CONTEXT], I will [SPECIFIC BEHAVIOR]" (Fogg, 2020, Chapters 14-15). The behavior statement must be specific and observable -- not "users will engage more" but "after viewing the pricing page, I will click 'Start Free Trial'."
-2. Confirm Wave 4 entry criteria are met: Wave 3 completed (Storybook with 5+ Atom stories AND 1 Persona Spectrum review), OR bypass condition satisfied (existing user base with analytics). Check for a `WAVE-3-SIGNOFF.md` artifact in `skills/user-experience/output/`; if absent, ask the orchestrator to confirm which wave entry condition is satisfied per H-31.
+2. Confirm Wave 4 entry criteria are met: Wave 3 completed (Storybook with 5+ Atom stories AND 1 Persona Spectrum review), OR bypass condition satisfied (existing user base with analytics). Check for a `WAVE-3-SIGNOFF.md` artifact in `projects/${JERRY_PROJECT}/engagements/`; if absent, ask the orchestrator to confirm which wave entry condition is satisfied per H-31.
 3. Catalog upstream inputs: check for `/ux-heuristic-eval` severity-rated findings (severity >= 2); if present, import finding IDs for bottleneck context. Heuristic findings identify specific UI locations where user behavior breaks down.
 4. Catalog available behavioral evidence and classify quality:
    - **Strong (Direct observation):** Analytics data, funnel metrics, session recordings, A/B test results
@@ -297,7 +297,7 @@ This agent operates as a single AI diagnostician. The Fogg Behavior Model (Fogg,
 
 **Output location:**
 ```
-skills/ux-behavior-design/output/{engagement-id}/ux-behavior-diagnostician-{topic-slug}.md
+projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-behavior-diagnostician-{topic-slug}.md
 ```
 
 Where `{engagement-id}` follows format `UX-{NNNN}` (e.g., `UX-0001`) and `{topic-slug}` is a kebab-case descriptor of the target behavior matching the pattern `^[a-z0-9]+(-[a-z0-9]+)*$` (max 40 characters; e.g., `checkout-abandonment`, `onboarding-completion`, `plan-upgrade`).
@@ -413,7 +413,7 @@ handoff:
     - "Metric baselines established for affected HEART dimension"
     - "Target thresholds set for post-intervention measurement"
   artifacts:
-    - "skills/ux-behavior-design/output/{engagement-id}/ux-behavior-diagnostician-{topic-slug}.md"
+    - "projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-behavior-diagnostician-{topic-slug}.md"
   key_findings:
     - "{key finding 1}"
     - "{key finding 2}"
@@ -455,9 +455,18 @@ prompt_assessment:
 intervention_count: int
 top_intervention: string  # description of highest-priority intervention
 degraded_mode: bool
-artifact_path: skills/ux-behavior-design/output/{engagement-id}/ux-behavior-diagnostician-{topic-slug}.md
+artifact_path: projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-behavior-diagnostician-{topic-slug}.md
 handoff_ready: bool  # true if bottleneck identification is complete for /ux-heart-metrics handoff
 ```
+
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-EPIC002-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-behavior-diagnostician-{topic-slug}.md`
+4. **Fallback** -- `work/ux-behavior-diagnostician-{topic-slug}.md` with warning
 </output>
 
 <guardrails>

@@ -207,7 +207,7 @@ This agent operates as a single AI evaluator. Nielsen recommends 3-5 independent
 
 **Output location:**
 ```
-skills/ux-heuristic-eval/output/{engagement-id}/ux-heuristic-evaluator-{topic-slug}.md
+projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-heuristic-evaluator-{topic-slug}.md
 ```
 
 Where `{engagement-id}` follows `UX-{NNNN}` and `{topic-slug}` is a kebab-case descriptor (e.g., `settings-page`, `checkout-flow`).
@@ -295,9 +295,18 @@ severity_distribution: {0: N, 1: N, 2: N, 3: N, 4: N}
 heuristics_evaluated: 10
 screens_evaluated: int
 degraded_mode: bool
-artifact_path: skills/ux-heuristic-eval/output/{engagement-id}/ux-heuristic-evaluator-{topic-slug}.md
+artifact_path: projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-heuristic-evaluator-{topic-slug}.md
 handoff_findings_count: int  # severity >= 2 findings for downstream
 ```
+
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-EPIC002-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-heuristic-evaluator-{topic-slug}.md`
+4. **Fallback** -- `work/ux-heuristic-evaluator-{topic-slug}.md` with warning
 </output>
 
 <guardrails>

@@ -149,7 +149,7 @@ Source: `skills/user-experience/rules/ux-routing-rules.md` [Stage Routing Table]
 
 | Agent | Role | Tier | Mode | Model | Output Location |
 |-------|------|------|------|-------|-----------------|
-| `ux-heart-analyst` | HEART metrics framework specialist | T2 | Systematic | Sonnet | `skills/ux-heart-metrics/output/{engagement-id}/ux-heart-analyst-{topic-slug}.md` |
+| `ux-heart-analyst` | HEART metrics framework specialist | T2 | Systematic | Sonnet | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-heart-analyst-{topic-slug}.md` |
 
 **Single-agent sub-skill.** The `ux-heart-analyst` handles the full HEART methodology -- from dimension selection through metric specification. Complex multi-feature engagements are decomposed into multiple invocations by the `ux-orchestrator`, each targeting a specific product area or feature.
 
@@ -485,7 +485,7 @@ When the product has no analytics infrastructure at all (no event tracking, no d
 ### Output Location
 
 ```
-skills/ux-heart-metrics/output/{engagement-id}/ux-heart-analyst-{topic-slug}.md
+projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-heart-analyst-{topic-slug}.md
 ```
 
 Where `{engagement-id}` follows the `UX-{NNNN}` pattern established by the `ux-orchestrator` and `{topic-slug}` is a kebab-case descriptor of the analysis topic.
@@ -714,7 +714,7 @@ Validation sources that advance LOW threshold recommendations to MEDIUM:
 | P-020 | NEVER override user intent | User decides which HEART dimensions to measure, which metrics to implement, and whether to act on LOW-confidence threshold recommendations. |
 | P-022 | NEVER deceive about actions, capabilities, or confidence | Goal-metric mappings transparently classified as MEDIUM confidence. Threshold recommendations classified as LOW confidence with `[REFERENCE-ONLY]` tag. Synthesis Judgments Summary enumerates all AI judgment calls. |
 | P-001 | NEVER present findings without evidence or source citations | All metric recommendations cite the HEART framework (Rodden, Hutchinson & Fu, 2010). Industry benchmarks cite specific studies. |
-| P-002 | NEVER leave outputs in transient context only | All outputs persisted to `skills/ux-heart-metrics/output/{engagement-id}/`. |
+| P-002 | NEVER leave outputs in transient context only | All outputs persisted to `projects/${JERRY_PROJECT}/engagements/{engagement-id}/`. |
 
 ---
 

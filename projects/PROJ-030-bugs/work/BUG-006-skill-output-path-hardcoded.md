@@ -1,7 +1,7 @@
 # BUG-006: Agent output paths hardcoded to skill directories — breaks end-user output persistence (#230)
 
 > **Type:** bug
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** critical
 > **Severity:** major
@@ -215,13 +215,13 @@ This preserves engagement-ID scoping while placing outputs in user project direc
 
 ## Acceptance Criteria
 
-- [ ] AC-1: All `skills/*/output/` path references replaced with `projects/${JERRY_PROJECT}/` or engagement-relative paths
-- [ ] AC-2: `skills/eng-team/output/` directory and its 28 files removed from the repository
-- [ ] AC-3: No `output/` directories exist under any `skills/` folder
-- [ ] AC-4: All affected governance YAML files pass schema validation after path updates
-- [ ] AC-5: Diataxis SKILL.md plural/singular inconsistencies resolved to match governance files
-- [ ] AC-6: Output path convention documented in `agent-development-standards.md` as a MEDIUM standard
-- [ ] AC-7: `.gitignore` updated to prevent future `skills/*/output/` accumulation
+- [x] AC-1: All `skills/*/output/` path references replaced with `projects/${JERRY_PROJECT}/` or engagement-relative paths
+- [x] AC-2: `skills/eng-team/output/` directory and its 28 files removed from the repository
+- [x] AC-3: No `output/` directories exist under any `skills/` folder
+- [x] AC-4: All affected governance YAML files pass schema validation after path updates
+- [x] AC-5: Diataxis SKILL.md plural/singular inconsistencies resolved to match governance files
+- [x] AC-6: Output path convention documented in `agent-development-standards.md` as a MEDIUM standard
+- [x] AC-7: `.gitignore` updated to prevent future `skills/*/output/` accumulation
 
 ---
 
@@ -278,3 +278,4 @@ This preserves engagement-ID scoping while placing outputs in user project direc
 | 2026-03-31 | Revision: persisted UX audit detail (BUG-006-ux-audit-detail.md, 60 files, 11 sub-skills with line citations and sum-check); created 7 task entity files (TASK-006 through TASK-012); linked audit detail and task files in Related Items |
 | 2026-03-31 | C4 adversarial review iter 5: 0.892 REVISE — WORKTRACKER TASK-007 row still "22+"; GH issue lacks H-32 back-link; eng/red audit detail not persisted |
 | 2026-03-31 | Revision: fixed WORKTRACKER.md TASK-007 row to "25"; added worktracker back-link to GH issue; created BUG-006-eng-audit-detail.md (22 files) and BUG-006-red-audit-detail.md (25 files) with full line-level citations and sum-checks |
+| 2026-04-01 | Phase 2 execution: all 9 tasks completed (TASK-015 schema, TASK-011 .gitignore, TASK-009 eng-team/output/ removal, TASK-006 eng-team 22 files, TASK-007 red-team 25 files, TASK-008 UX 60 files, TASK-012 diataxis naming, TASK-010 AD-M-011 standard). Verification: `grep -r 'skills/.*/output/' skills/` returns zero matches. AC-1 through AC-7 all satisfied. |

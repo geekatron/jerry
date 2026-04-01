@@ -178,7 +178,7 @@ Each contradiction in the synthesis output MUST include:
 
 <!-- Source: SKILL.md (skills/user-experience/SKILL.md) Section "Cross-Framework Synthesis Protocol" — output structure requirements. Output filename convention: {topic-slug} per SKILL.md, e.g., ux-orchestrator-synthesis.md for standard synthesis, ux-orchestrator-crisis.md for CRISIS mode. See also: skills/user-experience/rules/ci-checks.md#output-quality-checks for CI gates UX-CI-011 through UX-CI-013 that validate synthesis output structure. -->
 
-The orchestrator produces synthesis reports at `skills/user-experience/output/{engagement-id}/ux-orchestrator-synthesis.md` (engagement ID format defined in `skills/user-experience/rules/ux-routing-rules.md#cross-sub-skill-handoff`) with the following required sections:
+The orchestrator produces synthesis reports at `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-orchestrator-synthesis.md` (engagement ID format defined in `skills/user-experience/rules/ux-routing-rules.md#cross-sub-skill-handoff`) with the following required sections:
 
 | Section | Content | Confidence Level |
 |---------|---------|-----------------|
@@ -190,7 +190,7 @@ The orchestrator produces synthesis reports at `skills/user-experience/output/{e
 
 ### CRISIS Synthesis Variant
 
-When the orchestrator operates in CRISIS mode (see `skills/user-experience/rules/ux-routing-rules.md#crisis-routing`), it produces a synthesis report at `skills/user-experience/output/{engagement-id}/ux-orchestrator-crisis.md`. The CRISIS synthesis follows the same 4-step protocol and confidence classification gates defined in this file, with the following CRISIS-specific additions managed by `ux-routing-rules.md`:
+When the orchestrator operates in CRISIS mode (see `skills/user-experience/rules/ux-routing-rules.md#crisis-routing`), it produces a synthesis report at `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-orchestrator-crisis.md`. The CRISIS synthesis follows the same 4-step protocol and confidence classification gates defined in this file, with the following CRISIS-specific additions managed by `ux-routing-rules.md`:
 
 - **Priority ranking** of findings by user impact severity (CRISIS urgency ordering)
 - **Quick-win identification** for findings addressable within one sprint

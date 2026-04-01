@@ -67,6 +67,15 @@ This agent provides METHODOLOGY GUIDANCE for reconnaissance operations, not auto
 
 ## Output Requirements
 
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-EPIC002-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/red-recon-{topic-slug}.md`
+4. **Fallback** -- `work/red-recon-{topic-slug}.md` with warning
+
 All outputs MUST be persisted (P-002). Three levels:
 - **L0 (Executive Summary):** High-level attack surface overview, number of discovered targets, key entry points, and risk summary for stakeholders.
 - **L1 (Technical Detail):** Complete enumeration results: IP addresses, open ports, service versions, technology stacks, DNS records, subdomain lists, certificate analysis, and identified attack vectors with ATT&CK technique references.

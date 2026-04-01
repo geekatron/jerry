@@ -47,7 +47,8 @@ guardrails:
   fallback_behavior: escalate_to_user
 output:
   required: true
-  location: "skills/ux-jtbd/output/{engagement-id}/ux-jtbd-analyst-{topic-slug}.md"
+  location: "projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-jtbd-analyst-{topic-slug}.md"
+  filename_pattern: "ux-jtbd-analyst-{topic-slug}.md"
   levels:
   - L0
   - L1

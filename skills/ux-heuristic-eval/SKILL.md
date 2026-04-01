@@ -109,7 +109,7 @@ Do NOT use for:
 
 | Agent | Role | Tier | Mode | Model | Output Location |
 |-------|------|------|------|-------|-----------------|
-| `ux-heuristic-evaluator`** | Nielsen heuristic evaluation specialist | T4 | Systematic | Haiku* | `skills/ux-heuristic-eval/output/{engagement-id}/ux-heuristic-evaluator-{topic-slug}.md` |
+| `ux-heuristic-evaluator`** | Nielsen heuristic evaluation specialist | T4 | Systematic | Haiku* | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-heuristic-evaluator-{topic-slug}.md` |
 
 *Haiku for high-volume checklist evaluation; escalates to Sonnet when: (1) critical finding count >= 3 (severity 3 or 4), (2) Figma MCP benchmark fails pre-launch threshold, or (3) evaluation spans > 50 screens. Escalation is automatic within the orchestrator's routing logic per AD-M-009 model selection justification.
 
@@ -192,7 +192,7 @@ Evaluate all 10 heuristics. Rate severity 0-4 for each finding.
 Produce ranked findings with remediation recommendations.
 
 ## MANDATORY PERSISTENCE (P-002)
-Create file at: skills/ux-heuristic-eval/output/UX-0001/ux-heuristic-evaluator-settings-page.md
+Create file at: projects/${JERRY_PROJECT}/engagements/UX-0001/ux-heuristic-evaluator-settings-page.md
 """
 )
 ```
@@ -325,7 +325,7 @@ Protocol: call `mcp__context7__resolve-library-id` with the framework name, then
 ### Output Location
 
 ```
-skills/ux-heuristic-eval/output/{engagement-id}/ux-heuristic-evaluator-{topic-slug}.md
+projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-heuristic-evaluator-{topic-slug}.md
 ```
 
 Where:

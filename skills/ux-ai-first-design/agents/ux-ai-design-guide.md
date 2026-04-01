@@ -309,7 +309,7 @@ This agent operates as a single AI design guide. The Yang et al. (2020) and Amer
 
 **Output location:**
 ```
-skills/ux-ai-first-design/output/{engagement-id}/ux-ai-design-guide-{topic-slug}.md
+projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-ai-design-guide-{topic-slug}.md
 ```
 
 Where `{engagement-id}` follows format `UX-{NNNN}` (e.g., `UX-0001`) and `{topic-slug}` is a kebab-case descriptor of the AI capability matching the pattern `^[a-z0-9]+(-[a-z0-9]+)*$` (max 40 characters; e.g., `recommendation-engine`, `ai-assistant`, `content-moderation`).
@@ -440,7 +440,7 @@ handoff:
     - "AI controls assessed for keyboard navigation"
     - "Progressive disclosure stages reviewed for cognitive accessibility"
   artifacts:
-    - "skills/ux-ai-first-design/output/{engagement-id}/ux-ai-design-guide-{topic-slug}.md"
+    - "projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-ai-design-guide-{topic-slug}.md"
   key_findings:
     - "Trust-risk: {level}; Error-risk: {level}"
     - "Interaction pattern: {pattern_name}"
@@ -473,7 +473,7 @@ handoff:
     - "AI-specific heuristics applied: transparency, controllability, error recovery, feedback quality"
     - "Severity ratings assigned per finding with AI context"
   artifacts:
-    - "skills/ux-ai-first-design/output/{engagement-id}/ux-ai-design-guide-{topic-slug}.md"
+    - "projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-ai-design-guide-{topic-slug}.md"
   key_findings:
     - "Trust-risk: {level}; Error-risk: {level}"
     - "Interaction pattern: {pattern_name}"
@@ -518,9 +518,18 @@ progressive_disclosure_plan:
   stage_5_eligible: bool  # whether Stage 5 Autonomy is appropriate for this use case
 synthesis_judgments_count: int
 degraded_mode: bool
-artifact_path: skills/ux-ai-first-design/output/{engagement-id}/ux-ai-design-guide-{topic-slug}.md
+artifact_path: projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-ai-design-guide-{topic-slug}.md
 handoff_ready: bool  # true if both risk dimensions classified and interaction pattern selected for downstream handoffs
 ```
+
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-EPIC002-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-ai-design-guide-{topic-slug}.md`
+4. **Fallback** -- `work/ux-ai-design-guide-{topic-slug}.md` with warning
 </output>
 
 <guardrails>

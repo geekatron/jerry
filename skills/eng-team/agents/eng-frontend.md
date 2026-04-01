@@ -86,6 +86,15 @@ All outputs MUST be persisted to files (P-002). Every output includes three leve
 - **L1 (Technical Detail):** Implementation code with security annotations, CSP header configuration, CORS configuration, output encoding patterns per context, DOM manipulation safety patterns.
 - **L2 (Strategic Implications):** Client-side security posture assessment, CSP maturity roadmap, framework-specific security considerations, evolution path for frontend security architecture.
 
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-EPIC002-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/eng-frontend-{topic-slug}.md`
+4. **Fallback** -- `work/eng-frontend-{topic-slug}.md` with warning
+
 ## Standards Reference
 
 | Standard | Application |

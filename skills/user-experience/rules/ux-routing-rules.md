@@ -158,7 +158,7 @@ The sequence follows the evaluate-diagnose-measure pattern (source: SKILL.md [Ca
 
 <!-- Source: SKILL.md (skills/user-experience/SKILL.md) Section "Cross-Framework Synthesis Protocol" (line 375). Cross-reference: `skills/user-experience/rules/synthesis-validation.md` [Cross-Framework Synthesis Protocol] for authoritative synthesis protocol. -->
 
-After the 3-skill CRISIS sequence completes, the orchestrator automatically produces a CRISIS synthesis report at `skills/user-experience/output/{engagement-id}/ux-orchestrator-crisis.md`. This synthesis follows the Cross-Framework Synthesis Protocol defined in `skills/user-experience/rules/synthesis-validation.md`, but with CRISIS-specific additions:
+After the 3-skill CRISIS sequence completes, the orchestrator automatically produces a CRISIS synthesis report at `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-orchestrator-crisis.md`. This synthesis follows the Cross-Framework Synthesis Protocol defined in `skills/user-experience/rules/synthesis-validation.md`, but with CRISIS-specific additions:
 - **Priority ranking:** Findings are ranked by combined heuristic severity + behavioral bottleneck impact.
 - **Quick-win identification:** Findings where the behavioral bottleneck is "prompt" (easiest to fix per Fogg model) are flagged as quick wins.
 - **Metric coverage:** Each finding is mapped to a HEART metric so progress can be tracked.
@@ -177,12 +177,12 @@ The router checks wave signoff state before routing to gated sub-skills. Wave st
 
 | File | Existence Indicates |
 |------|-------------------|
-| `skills/user-experience/output/KICKOFF-SIGNOFF.md` | Foundation complete; Wave 1 authorized |
-| `skills/user-experience/output/WAVE-1-SIGNOFF.md` | Wave 1 complete; Wave 2 authorized |
-| `skills/user-experience/output/WAVE-2-SIGNOFF.md` | Wave 2 complete; Wave 3 authorized |
-| `skills/user-experience/output/WAVE-3-SIGNOFF.md` | Wave 3 complete; Wave 4 authorized |
-| `skills/user-experience/output/WAVE-4-SIGNOFF.md` | Wave 4 complete; Wave 5 authorized |
-| `skills/user-experience/output/WAVE-5-SIGNOFF.md` | Wave 5 complete; all waves deployed (full operational mode) |
+| `projects/${JERRY_PROJECT}/engagements/KICKOFF-SIGNOFF.md` | Foundation complete; Wave 1 authorized |
+| `projects/${JERRY_PROJECT}/engagements/WAVE-1-SIGNOFF.md` | Wave 1 complete; Wave 2 authorized |
+| `projects/${JERRY_PROJECT}/engagements/WAVE-2-SIGNOFF.md` | Wave 2 complete; Wave 3 authorized |
+| `projects/${JERRY_PROJECT}/engagements/WAVE-3-SIGNOFF.md` | Wave 3 complete; Wave 4 authorized |
+| `projects/${JERRY_PROJECT}/engagements/WAVE-4-SIGNOFF.md` | Wave 4 complete; Wave 5 authorized |
+| `projects/${JERRY_PROJECT}/engagements/WAVE-5-SIGNOFF.md` | Wave 5 complete; all waves deployed (full operational mode) |
 
 ### Routing Behavior for Unavailable Sub-Skills
 
@@ -234,7 +234,7 @@ Please provide the following three fields:
 
 <!-- Source: SKILL.md (skills/user-experience/SKILL.md) Section "Wave Architecture" — bypass documentation structure. Cross-reference: `skills/user-experience/rules/wave-progression.md` [Bypass Mechanism] for authoritative bypass field definitions. -->
 
-Bypass documentation is persisted at `skills/user-experience/output/{engagement-id}/wave-bypass-{wave-N}.md` with the following structure:
+Bypass documentation is persisted at `projects/${JERRY_PROJECT}/engagements/{engagement-id}/wave-bypass-{wave-N}.md` with the following structure:
 
 | Field | Content |
 |-------|---------|
@@ -251,7 +251,7 @@ Bypass documentation is persisted at `skills/user-experience/output/{engagement-
 
 <!-- Source: SKILL.md (skills/user-experience/SKILL.md) Section "Wave Transition Quality Gates" — bypass constraints. Cumulative ceiling: maximum 2 concurrent bypasses. -->
 
-- **Cumulative ceiling:** Maximum 2 concurrent bypasses per team. If a team has 2 active bypasses, the orchestrator requires remediation of at least one before granting additional bypasses. Active bypass count is determined by scanning `skills/user-experience/output/{engagement-id}/wave-bypass-*.md` files and checking for the absence of a `Remediation completed` field (source: SKILL.md Section "Wave Transition Quality Gates").
+- **Cumulative ceiling:** Maximum 2 concurrent bypasses per team. If a team has 2 active bypasses, the orchestrator requires remediation of at least one before granting additional bypasses. Active bypass count is determined by scanning `projects/${JERRY_PROJECT}/engagements/{engagement-id}/wave-bypass-*.md` files and checking for the absence of a `Remediation completed` field (source: SKILL.md Section "Wave Transition Quality Gates").
 - **Warning banner:** All sub-skill outputs produced under bypass carry a warning banner: "[WAVE BYPASS] This output was produced before Wave {N} entry criteria were met. See wave-bypass-{wave-N}.md for bypass documentation."
 - **Bypass tracking:** Active bypasses are listed in the engagement directory and checked at each wave signoff. A wave signoff cannot complete if it has unresolved bypasses for that wave.
 
@@ -304,7 +304,7 @@ The orchestrator maintains session state flags to manage routing behavior within
 
 ### Session Scope
 
-A "session" in the routing context is scoped to an **engagement ID** (`UX-{NNNN}`). The engagement ID is established at the first routing decision and persists across all orchestrator invocations within that engagement. A new engagement ID resets all session state flags to their initial values. The engagement ID is carried in the orchestrator's output path: `skills/user-experience/output/{engagement-id}/`.
+A "session" in the routing context is scoped to an **engagement ID** (`UX-{NNNN}`). The engagement ID is established at the first routing decision and persists across all orchestrator invocations within that engagement. A new engagement ID resets all session state flags to their initial values. The engagement ID is carried in the orchestrator's output path: `projects/${JERRY_PROJECT}/engagements/{engagement-id}/`.
 
 ### State Storage
 

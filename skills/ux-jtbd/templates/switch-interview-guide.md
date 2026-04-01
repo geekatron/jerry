@@ -72,7 +72,7 @@ A minimum of **5-10 switch interviews** with distinct participants is required b
 1. **Informed consent.** Before beginning, explain the purpose of the interview, how the data will be used, and that participation is voluntary. Obtain written or verbal (recorded) consent.
 2. **Anonymity.** Assure the participant that their responses will be anonymized in all reports. Use participant codes (P-001, P-002) rather than names in analysis artifacts.
 3. **Right to withdraw.** The participant may stop the interview or decline any question at any time without consequence.
-4. **Data handling.** Interview recordings and transcripts are stored in the engagement directory (`skills/ux-jtbd/output/{{ENGAGEMENT_ID}}/`) and are not shared outside the research team without explicit permission.
+4. **Data handling.** Interview recordings and transcripts are stored in the engagement directory (`projects/${JERRY_PROJECT}/engagements/{{ENGAGEMENT_ID}}/`) and are not shared outside the research team without explicit permission.
 5. **No deception.** Per P-022, do not misrepresent the purpose of the interview or how the data will be used.
 
 ### Rapport-Building Opening (5-7 minutes)

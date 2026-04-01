@@ -93,6 +93,15 @@ All outputs MUST be persisted to files (P-002). Every output includes three leve
 - **L1 (Technical Detail):** IaC templates with security annotations, Dockerfile configurations, secrets management architecture, SBOM output, Checkov/Trivy scan results and remediation.
 - **L2 (Strategic Implications):** Supply chain risk landscape, SLSA maturity roadmap, infrastructure security evolution path, vendor dependency risk assessment.
 
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-EPIC002-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/eng-infra-{topic-slug}.md`
+4. **Fallback** -- `work/eng-infra-{topic-slug}.md` with warning
+
 ## Standards Reference
 
 | Standard | Application |

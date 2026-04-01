@@ -76,6 +76,15 @@ When consuming eng-architect threat models through Integration Point 1, red-vuln
 
 ## Output Requirements
 
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-EPIC002-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/red-vuln-{topic-slug}.md`
+4. **Fallback** -- `work/red-vuln-{topic-slug}.md` with warning
+
 All outputs MUST be persisted (P-002). Three levels:
 - **L0 (Executive Summary):** Vulnerability count by severity (Critical/High/Medium/Low), top exploitable findings, overall risk posture, and key recommendations for stakeholders.
 - **L1 (Technical Detail):** Complete vulnerability inventory with CVE IDs, CVSS scores, exploit availability status, affected services/versions, attack path diagrams, and prioritized exploitation targets with ATT&CK technique mappings.

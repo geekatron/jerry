@@ -138,17 +138,17 @@ Do NOT use for:
 
 | Agent | Role | Tier | Mode | Model | Wave | Output Location |
 |-------|------|------|------|-------|------|-----------------|
-| `ux-orchestrator` | Parent orchestrator: routing, wave gating, cross-framework synthesis | T5 | Integrative | Opus | 0 | `skills/user-experience/output/{engagement-id}/ux-orchestrator-{topic-slug}.md` |
-| `ux-heuristic-evaluator` | Nielsen heuristic evaluation specialist | T4 | Systematic | Haiku* | 1 | `skills/ux-heuristic-eval/output/{engagement-id}/ux-heuristic-evaluator-{topic-slug}.md` |
-| `ux-jtbd-analyst` | Jobs-to-Be-Done research and analysis | T4 | Divergent | Sonnet | 1 | `skills/ux-jtbd/output/{engagement-id}/ux-jtbd-analyst-{topic-slug}.md` |
-| `ux-lean-ux-facilitator` | Lean UX hypothesis and experiment facilitation | T4 | Systematic | Sonnet | 2 | `skills/ux-lean-ux/output/{engagement-id}/ux-lean-ux-facilitator-{topic-slug}.md` |
-| `ux-heart-analyst` | HEART metrics framework specialist | T2 | Systematic | Sonnet | 2 | `skills/ux-heart-metrics/output/{engagement-id}/ux-heart-analyst-{topic-slug}.md` |
-| `ux-atomic-architect` | Atomic design component taxonomy architect | T4 | Systematic | Sonnet | 3 | `skills/ux-atomic-design/output/{engagement-id}/ux-atomic-architect-{topic-slug}.md` |
-| `ux-inclusive-evaluator` | Inclusive design and accessibility auditor | T4 | Systematic | Sonnet | 3 | `skills/ux-inclusive-design/output/{engagement-id}/ux-inclusive-evaluator-{topic-slug}.md` |
-| `ux-behavior-diagnostician` | Fogg B=MAP behavior bottleneck diagnosis | T2 | Convergent | Sonnet | 4 | `skills/ux-behavior-design/output/{engagement-id}/ux-behavior-diagnostician-{topic-slug}.md` |
-| `ux-kano-analyst` | Kano model feature classification and prioritization | T2 | Convergent | Sonnet | 4 | `skills/ux-kano-model/output/{engagement-id}/ux-kano-analyst-{topic-slug}.md` |
-| `ux-sprint-facilitator` | AJ&Smart Design Sprint 2.0 facilitation | T4 | Systematic | Opus | 5 | `skills/ux-design-sprint/output/{engagement-id}/ux-sprint-facilitator-{topic-slug}.md` |
-| `ux-ai-design-guide` | AI-first interaction design specialist (CONDITIONAL) | T4 | Divergent | Opus | 5 | `skills/ux-ai-first-design/output/{engagement-id}/ux-ai-design-guide-{topic-slug}.md` |
+| `ux-orchestrator` | Parent orchestrator: routing, wave gating, cross-framework synthesis | T5 | Integrative | Opus | 0 | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-orchestrator-{topic-slug}.md` |
+| `ux-heuristic-evaluator` | Nielsen heuristic evaluation specialist | T4 | Systematic | Haiku* | 1 | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-heuristic-evaluator-{topic-slug}.md` |
+| `ux-jtbd-analyst` | Jobs-to-Be-Done research and analysis | T4 | Divergent | Sonnet | 1 | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-jtbd-analyst-{topic-slug}.md` |
+| `ux-lean-ux-facilitator` | Lean UX hypothesis and experiment facilitation | T4 | Systematic | Sonnet | 2 | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-lean-ux-facilitator-{topic-slug}.md` |
+| `ux-heart-analyst` | HEART metrics framework specialist | T2 | Systematic | Sonnet | 2 | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-heart-analyst-{topic-slug}.md` |
+| `ux-atomic-architect` | Atomic design component taxonomy architect | T4 | Systematic | Sonnet | 3 | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-atomic-architect-{topic-slug}.md` |
+| `ux-inclusive-evaluator` | Inclusive design and accessibility auditor | T4 | Systematic | Sonnet | 3 | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-inclusive-evaluator-{topic-slug}.md` |
+| `ux-behavior-diagnostician` | Fogg B=MAP behavior bottleneck diagnosis | T2 | Convergent | Sonnet | 4 | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-behavior-diagnostician-{topic-slug}.md` |
+| `ux-kano-analyst` | Kano model feature classification and prioritization | T2 | Convergent | Sonnet | 4 | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-kano-analyst-{topic-slug}.md` |
+| `ux-sprint-facilitator` | AJ&Smart Design Sprint 2.0 facilitation | T4 | Systematic | Opus | 5 | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-sprint-facilitator-{topic-slug}.md` |
+| `ux-ai-design-guide` | AI-first interaction design specialist (CONDITIONAL) | T4 | Divergent | Opus | 5 | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-ai-design-guide-{topic-slug}.md` |
 
 **Tool tier key:** T2 = Read-Write (Read, Write, Edit, Glob, Grep, Bash); T4 = External (T2 + WebSearch, WebFetch, Context7 MCP, Memory-Keeper); T5 = Orchestration (T4 + Agent). See `agent-development-standards.md` [Tool Security Tiers] for full definitions. All tier assignments follow the principle of least privilege (AR-006) — T2 agents (ux-heart-analyst, ux-behavior-diagnostician, ux-kano-analyst) operate on user-provided data only; T4 agents access external UX standards and documentation.
 
@@ -375,7 +375,7 @@ When the orchestrator invokes multiple sub-skills for the same engagement (e.g.,
 3. **Contradiction Identification:** Signals from different frameworks that recommend opposing actions are flagged as contradictions. Contradictions always receive LOW synthesis confidence with both positions presented and no resolution attempted — the user decides (P-020).
 4. **Unified Output:** A synthesis report is produced with three sections: (a) Convergent Findings (HIGH confidence), (b) Single-Framework Findings (MEDIUM), (c) Contradictions (LOW, user decision required). Each finding traces back to its source sub-skill output by engagement ID and finding number.
 
-**Output location:** `skills/user-experience/output/{engagement-id}/ux-orchestrator-synthesis.md`
+**Output location:** `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-orchestrator-synthesis.md`
 
 **Failure mode:** If synthesis confidence is LOW across > 50% of findings, the orchestrator adds a banner: "Cross-framework synthesis produced mostly low-confidence results. Consider validating individual sub-skill outputs independently before acting on synthesis recommendations." This is a P-022 compliance mechanism — the orchestrator does not overstate the value of synthesis when evidence is weak.
 

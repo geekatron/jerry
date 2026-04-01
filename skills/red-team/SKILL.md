@@ -103,17 +103,17 @@ See [Routing Disambiguation](#routing-disambiguation) for full exclusion conditi
 
 | Agent | Role | ATT&CK Tactics | Model | Output Location |
 |-------|------|----------------|-------|-----------------|
-| `red-lead` | Engagement Lead & Scope Authority | All (oversight) | opus | `skills/red-team/output/{engagement-id}/red-lead-{topic-slug}.md` |
-| `red-recon` | Reconnaissance Specialist | TA0043 Reconnaissance | sonnet | `skills/red-team/output/{engagement-id}/red-recon-{topic-slug}.md` |
-| `red-vuln` | Vulnerability Analyst | Analysis support | sonnet | `skills/red-team/output/{engagement-id}/red-vuln-{topic-slug}.md` |
-| `red-exploit` | Exploitation Specialist | TA0001, TA0002, TA0040 | sonnet | `skills/red-team/output/{engagement-id}/red-exploit-{topic-slug}.md` |
-| `red-privesc` | Privilege Escalation Specialist | TA0004, TA0006 | sonnet | `skills/red-team/output/{engagement-id}/red-privesc-{topic-slug}.md` |
-| `red-lateral` | Lateral Movement Specialist | TA0008, TA0007 | sonnet | `skills/red-team/output/{engagement-id}/red-lateral-{topic-slug}.md` |
-| `red-persist` | Persistence Specialist (RoE-GATED) | TA0003, TA0005 | sonnet | `skills/red-team/output/{engagement-id}/red-persist-{topic-slug}.md` |
-| `red-exfil` | Data Exfiltration Specialist (RoE-GATED) | TA0009, TA0010 | sonnet | `skills/red-team/output/{engagement-id}/red-exfil-{topic-slug}.md` |
-| `red-reporter` | Engagement Reporter | TA0040 (documentation) | opus | `skills/red-team/output/{engagement-id}/red-reporter-{topic-slug}.md` |
-| `red-infra` | Infrastructure & Tooling Specialist | TA0042, TA0011, TA0005 | sonnet | `skills/red-team/output/{engagement-id}/red-infra-{topic-slug}.md` |
-| `red-social` | Social Engineering Specialist (RoE-GATED) | TA0043, TA0001 | sonnet | `skills/red-team/output/{engagement-id}/red-social-{topic-slug}.md` |
+| `red-lead` | Engagement Lead & Scope Authority | All (oversight) | opus | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/red-lead-{topic-slug}.md` |
+| `red-recon` | Reconnaissance Specialist | TA0043 Reconnaissance | sonnet | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/red-recon-{topic-slug}.md` |
+| `red-vuln` | Vulnerability Analyst | Analysis support | sonnet | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/red-vuln-{topic-slug}.md` |
+| `red-exploit` | Exploitation Specialist | TA0001, TA0002, TA0040 | sonnet | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/red-exploit-{topic-slug}.md` |
+| `red-privesc` | Privilege Escalation Specialist | TA0004, TA0006 | sonnet | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/red-privesc-{topic-slug}.md` |
+| `red-lateral` | Lateral Movement Specialist | TA0008, TA0007 | sonnet | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/red-lateral-{topic-slug}.md` |
+| `red-persist` | Persistence Specialist (RoE-GATED) | TA0003, TA0005 | sonnet | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/red-persist-{topic-slug}.md` |
+| `red-exfil` | Data Exfiltration Specialist (RoE-GATED) | TA0009, TA0010 | sonnet | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/red-exfil-{topic-slug}.md` |
+| `red-reporter` | Engagement Reporter | TA0040 (documentation) | opus | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/red-reporter-{topic-slug}.md` |
+| `red-infra` | Infrastructure & Tooling Specialist | TA0042, TA0011, TA0005 | sonnet | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/red-infra-{topic-slug}.md` |
+| `red-social` | Social Engineering Specialist (RoE-GATED) | TA0043, TA0001 | sonnet | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/red-social-{topic-slug}.md` |
 
 ---
 
@@ -185,7 +185,7 @@ scope:
     - red-infra
     - red-reporter
   evidence_handling:
-    storage: "skills/red-team/output/RED-0001/evidence/"
+    storage: "projects/${JERRY_PROJECT}/engagements/RED-0001/evidence/"
     retention_days: 90
     destruction_method: "secure-delete"
   signature:
@@ -271,7 +271,7 @@ Task(
     prompt="""
 ## RED TEAM CONTEXT (REQUIRED)
 - **Engagement ID:** RED-0001
-- **Scope Document:** skills/red-team/output/RED-0001/red-lead-scope.md
+- **Scope Document:** projects/${JERRY_PROJECT}/engagements/RED-0001/red-lead-scope.md
 - **Target:** 10.0.0.0/24
 - **Phase:** Reconnaissance
 
@@ -518,21 +518,21 @@ All agent outputs MUST be persisted to files. Transient-only output is a P-002 v
 ### Output Location Convention
 
 ```
-skills/red-team/output/{engagement-id}/{agent-name}-{topic-slug}.md
+projects/${JERRY_PROJECT}/engagements/{engagement-id}/{agent-name}-{topic-slug}.md
 ```
 
 **Examples:**
-- `skills/red-team/output/RED-0001/red-lead-scope.md`
-- `skills/red-team/output/RED-0001/red-recon-network-enumeration.md`
-- `skills/red-team/output/RED-0001/red-vuln-cve-analysis.md`
-- `skills/red-team/output/RED-0001/red-reporter-final-report.md`
+- `projects/${JERRY_PROJECT}/engagements/RED-0001/red-lead-scope.md`
+- `projects/${JERRY_PROJECT}/engagements/RED-0001/red-recon-network-enumeration.md`
+- `projects/${JERRY_PROJECT}/engagements/RED-0001/red-vuln-cve-analysis.md`
+- `projects/${JERRY_PROJECT}/engagements/RED-0001/red-reporter-final-report.md`
 
 ### Evidence Storage
 
 Evidence artifacts (screenshots, tool output, logs) are stored in:
 
 ```
-skills/red-team/output/{engagement-id}/evidence/
+projects/${JERRY_PROJECT}/engagements/{engagement-id}/evidence/
 ```
 
 ---

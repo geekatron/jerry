@@ -69,6 +69,15 @@ This agent provides METHODOLOGY GUIDANCE for privilege escalation, not autonomou
 
 ## Output Requirements
 
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-EPIC002-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/red-privesc-{topic-slug}.md`
+4. **Fallback** -- `work/red-privesc-{topic-slug}.md` with warning
+
 All outputs MUST be persisted (P-002). Three levels:
 - **L0 (Executive Summary):** Privilege escalation success/failure summary, highest privilege achieved, credentials discovered, and risk implications for stakeholders.
 - **L1 (Technical Detail):** Complete escalation methodology: enumeration results, identified vectors, escalation steps, credential inventory (hashes/tokens only -- never plaintext passwords in output), ATT&CK technique references, and tool commands used.

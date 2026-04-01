@@ -114,7 +114,7 @@ Do NOT use for:
 
 | Agent | Role | Tier | Mode | Model | Output Location |
 |-------|------|------|------|-------|-----------------|
-| `ux-atomic-architect` | Atomic design component taxonomy architect | T4 | Systematic | Sonnet | `skills/ux-atomic-design/output/{engagement-id}/ux-atomic-architect-{topic-slug}.md` |
+| `ux-atomic-architect` | Atomic design component taxonomy architect | T4 | Systematic | Sonnet | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-atomic-architect-{topic-slug}.md` |
 
 **STUB:** The agent definition file (`skills/ux-atomic-design/agents/ux-atomic-architect.md`) is pending Wave 3 Phase 2 implementation as part of PROJ-022 EPIC-003. The SKILL.md specifies the methodology and output contract that the agent will implement.
 
@@ -201,7 +201,7 @@ Construct an atomic design component inventory for the checkout flow.
 5. Identify duplicate or near-duplicate components for consolidation
 
 ## MANDATORY PERSISTENCE (P-002)
-Create file at: skills/ux-atomic-design/output/UX-0001/ux-atomic-architect-checkout-flow.md
+Create file at: projects/${JERRY_PROJECT}/engagements/UX-0001/ux-atomic-architect-checkout-flow.md
 """
 )
 ```
@@ -361,7 +361,7 @@ The architect follows a 5-phase sequential workflow. Each phase produces interme
 
 **Activities:**
 1. Identify the product domain, target users, and the specific screens, flows, or feature areas to be inventoried
-2. Confirm Wave 3 entry criteria are met: Wave 2 completed (launched product with analytics OR 1 completed Lean UX hypothesis cycle), OR bypass condition satisfied (Storybook already in use). *(Verification: check for a `WAVE-2-SIGNOFF.md` artifact or prior `/ux-lean-ux` or `/ux-heart-metrics` output artifacts in `skills/user-experience/output/`; if no documentary evidence is found, ask the user to confirm which wave entry condition is satisfied per H-31.)*
+2. Confirm Wave 3 entry criteria are met: Wave 2 completed (launched product with analytics OR 1 completed Lean UX hypothesis cycle), OR bypass condition satisfied (Storybook already in use). *(Verification: check for a `WAVE-2-SIGNOFF.md` artifact or prior `/ux-lean-ux` or `/ux-heart-metrics` output artifacts in `projects/${JERRY_PROJECT}/engagements/`; if no documentary evidence is found, ask the user to confirm which wave entry condition is satisfied per H-31.)*
 3. Catalog upstream inputs: check for `/ux-heuristic-eval` severity-rated findings with component inconsistency citations (heuristic #4); if present, import finding IDs to inform refactoring priorities
 4. Determine MCP operating mode: probe for Storybook MCP adapter availability; if unavailable, activate Manual Component Inventory Mode and prepare P-022 degraded mode disclosure
 5. Establish design system references: identify the component library (e.g., Material UI, Radix, Shadcn/ui, custom), design token documentation, and existing Storybook instance URL (if any)
@@ -484,7 +484,7 @@ Protocol: call `mcp__context7__resolve-library-id` with the library name, then `
 ### Output Location
 
 ```
-skills/ux-atomic-design/output/{engagement-id}/ux-atomic-architect-{topic-slug}.md
+projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-atomic-architect-{topic-slug}.md
 ```
 
 Where:

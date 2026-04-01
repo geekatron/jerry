@@ -70,6 +70,15 @@ All outputs MUST be persisted to files (P-002). Every output includes three leve
 - **L1 (Technical Detail):** Complete implementation plan with task breakdown, coding standards with examples, dependency analysis with CVE references, linting/formatting configuration, PR review checklists.
 - **L2 (Strategic Implications):** SAMM maturity trajectory, technical debt risk from standards choices, long-term maintainability considerations, dependency strategy evolution.
 
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-EPIC002-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/eng-lead-{topic-slug}.md`
+4. **Fallback** -- `work/eng-lead-{topic-slug}.md` with warning
+
 ## Standards Reference
 
 | Standard | Application |
