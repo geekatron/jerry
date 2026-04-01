@@ -582,7 +582,8 @@ class TestBashCdFalsePositives:
         )
 
     def test_still_blocks_cd_after_separator(
-        self, engine: SecurityEnforcementEngine,
+        self,
+        engine: SecurityEnforcementEngine,
     ) -> None:
         """Regression: cd after separators must still be blocked."""
         decision = engine.evaluate(
@@ -592,7 +593,8 @@ class TestBashCdFalsePositives:
         assert decision.action == "block"
 
     def test_still_blocks_cd_after_pipe(
-        self, engine: SecurityEnforcementEngine,
+        self,
+        engine: SecurityEnforcementEngine,
     ) -> None:
         """Regression: cd after pipe must still be blocked."""
         decision = engine.evaluate(
@@ -602,7 +604,8 @@ class TestBashCdFalsePositives:
         assert decision.action == "block"
 
     def test_still_blocks_cd_with_tab(
-        self, engine: SecurityEnforcementEngine,
+        self,
+        engine: SecurityEnforcementEngine,
     ) -> None:
         """Regression: cd followed by tab must still be blocked."""
         decision = engine.evaluate(

@@ -15,7 +15,7 @@ file in the repository. Validates:
 
 Exclusions:
     - ``.git/`` -- git internals
-    - ``.claude/worktrees/`` -- temporary worktree copies
+    - ``.worktrees/`` -- temporary worktree copies
     - ``.venv/`` -- virtual environment third-party packages
     - ``.pytest_cache/`` -- pytest cache (contains auto-generated README.md)
 
@@ -47,7 +47,7 @@ from src.domain.markdown_ast.document_type import (
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 # Directories excluded from test discovery
-_EXCLUDED_DIRS = frozenset({".git", ".venv", ".pytest_cache"})
+_EXCLUDED_DIRS = frozenset({".git", ".venv", ".pytest_cache", ".worktrees"})
 
 # Files intentionally classified as UNKNOWN -- each entry requires
 # a justification comment. Target: < 20 files.
@@ -74,8 +74,8 @@ def _discover_md_files() -> list[str]:
         parts = md_file.relative_to(REPO_ROOT).parts
         if any(part in _EXCLUDED_DIRS for part in parts):
             continue
-        # Skip worktree copies
-        if ".claude/worktrees/" in rel:
+        # Skip worktree copies (both .claude/worktrees/ and .worktrees/)
+        if ".worktrees/" in rel or ".claude/worktrees/" in rel:
             continue
         files.append(rel)
     return sorted(files)
