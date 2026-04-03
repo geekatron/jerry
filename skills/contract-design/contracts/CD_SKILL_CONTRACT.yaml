@@ -1,0 +1,293 @@
+# Contract Design Skill Interface Contract
+# OpenAPI 3.0-inspired schema for cd-* agent handoffs
+#
+# Version: 1.0.0
+# Skill: contract-design
+# Reference: skills/contract-design/SKILL.md v1.0.0
+# Standards: OpenAPI 3.1.0, RFC 9110 (HTTP Semantics), OWASP ASVS 5.0
+
+openapi: "3.0.3"
+info:
+  title: Contract Design Skill Contract
+  version: "1.0.0"
+  description: |
+    Interface contract for the /contract-design skill defining input/output
+    schemas for cd-generator and cd-validator agents. This contract enables
+    reliable agent orchestration and cross-skill handoffs within the
+    use-case -> contract-design pipeline.
+
+    Key transformation algorithm: UC-to-contract v1.0.0
+    Rules: skills/contract-design/rules/uc-to-contract-rules.md
+    Templates: skills/contract-design/templates/openapi-template.yaml
+
+    PROTOTYPE LABELING: All generated contracts carry x-prototype: true until
+    human review validates semantic correctness. See RULE-TR-02.
+
+# =============================================================================
+# AGENTS
+# =============================================================================
+
+agents:
+  cd-generator:
+    description: >-
+      API Contract Generator. Transforms use case realization artifacts at
+      realization_level = INTERACTION_DEFINED into OpenAPI 3.1 specifications.
+      Uses the UC-to-contract transformation algorithm (uc-to-contract-rules.md).
+      Requires interactions block produced by uc-slicer Activity 5.
+    cognitive_mode: convergent
+    model: opus
+    tool_tier: T2
+    reasoning_effort: max
+    input_schema:
+      $ref: "#/components/schemas/GeneratorInput"
+    output_schema:
+      $ref: "#/components/schemas/GeneratorOutput"
+    output_location: "projects/${JERRY_PROJECT}/contracts/UC-{DOMAIN}-{NNN}-{slug}.openapi.yaml"
+    secondary_output_location: "projects/${JERRY_PROJECT}/contracts/UC-{DOMAIN}-{NNN}-{slug}-mapping.md"
+
+  cd-validator:
+    description: >-
+      API Contract Validator. Validates generated OpenAPI 3.1 specifications
+      against structural standards and verifies traceability from every operation
+      back to its source use case interaction. Executes a 9-step validation
+      protocol producing a validation report with per-check PASS/FAIL verdicts
+      and traceability coverage percentage.
+    cognitive_mode: systematic
+    model: sonnet
+    tool_tier: T2
+    reasoning_effort: high
+    input_schema:
+      $ref: "#/components/schemas/ValidatorInput"
+    output_schema:
+      $ref: "#/components/schemas/ValidatorOutput"
+    output_location: "projects/${JERRY_PROJECT}/contracts/UC-{DOMAIN}-{NNN}-{slug}-validation.md"
+
+# =============================================================================
+# COMPONENTS
+# =============================================================================
+
+components:
+  schemas:
+
+    # -------------------------------------------------------------------------
+    # cd-generator Input
+    # -------------------------------------------------------------------------
+    GeneratorInput:
+      type: object
+      description: "Input parameters for cd-generator invocation"
+      required:
+        - artifact_path
+        - output_path
+        - success_criteria
+      properties:
+        artifact_path:
+          type: string
+          description: "Full path to the UC realization artifact (.md with YAML frontmatter)"
+          example: "projects/${JERRY_PROJECT}/use-cases/UC-LIB-001-borrow-a-book.md"
+        output_path:
+          type: string
+          description: "Full path for the generated OpenAPI contract file (.openapi.yaml)"
+          example: "projects/${JERRY_PROJECT}/contracts/UC-LIB-001-borrow-a-book.openapi.yaml"
+        success_criteria:
+          type: array
+          description: "Verifiable acceptance criteria for this generation session"
+          items:
+            type: string
+          example:
+            - "At least 1 OpenAPI path+operation per consumer interaction"
+            - "Mapping document with traceability annotations"
+            - "x-prototype: true in info section"
+        realization_level:
+          type: string
+          description: "Expected realization level of the UC artifact (must be INTERACTION_DEFINED)"
+          enum: [INTERACTION_DEFINED]
+          default: "INTERACTION_DEFINED"
+        interaction_count:
+          type: integer
+          description: "Count of interactions in the UC artifact (for progress validation)"
+          minimum: 1
+
+    # -------------------------------------------------------------------------
+    # cd-generator Output
+    # -------------------------------------------------------------------------
+    GeneratorOutput:
+      type: object
+      description: "Output report from cd-generator"
+      required:
+        - openapi_file_path
+        - mapping_file_path
+        - operation_count
+        - x_prototype_status
+        - verdict
+      properties:
+        openapi_file_path:
+          type: string
+          description: "Path where the OpenAPI contract was written"
+        mapping_file_path:
+          type: string
+          description: "Path where the traceability mapping document was written"
+        operation_count:
+          type: integer
+          description: "Number of API operations generated (must equal consumer interaction count)"
+          minimum: 0
+        x_prototype_status:
+          type: boolean
+          description: "Confirms x-prototype: true is present in info section"
+          enum: [true]
+        unmapped_interactions:
+          type: array
+          description: "List of interaction IDs that could not be mapped (empty = full coverage)"
+          items:
+            type: string
+        verdict:
+          type: string
+          description: "Generation outcome"
+          enum: [COMPLETE, PARTIAL, REJECTED]
+        key_findings:
+          type: array
+          description: "Summary bullets for orchestrator handoff (3-5 entries)"
+          items:
+            type: string
+          minItems: 3
+          maxItems: 5
+
+    # -------------------------------------------------------------------------
+    # cd-validator Input
+    # -------------------------------------------------------------------------
+    ValidatorInput:
+      type: object
+      description: "Input parameters for cd-validator invocation"
+      required:
+        - contract_path
+        - artifact_path
+        - success_criteria
+      properties:
+        contract_path:
+          type: string
+          description: "Full path to the generated OpenAPI contract file (.openapi.yaml)"
+          example: "projects/${JERRY_PROJECT}/contracts/UC-LIB-001-borrow-a-book.openapi.yaml"
+        artifact_path:
+          type: string
+          description: "Full path to the source UC realization artifact (.md)"
+          example: "projects/${JERRY_PROJECT}/use-cases/UC-LIB-001-borrow-a-book.md"
+        mapping_path:
+          type: string
+          description: "Full path to the traceability mapping document (-mapping.md). Optional but improves validation quality."
+          example: "projects/${JERRY_PROJECT}/contracts/UC-LIB-001-borrow-a-book-mapping.md"
+        success_criteria:
+          type: array
+          description: "Verifiable acceptance criteria for this validation session"
+          items:
+            type: string
+          example:
+            - "PASS verdict on all 9 validation checks"
+            - "Traceability coverage = 100% of consumer interactions"
+
+    # -------------------------------------------------------------------------
+    # cd-validator Output
+    # -------------------------------------------------------------------------
+    ValidatorOutput:
+      type: object
+      description: "Output from cd-validator validation session"
+      required:
+        - validation_report_path
+        - verdict
+        - traceability_coverage
+        - checks_passed
+        - checks_failed
+      properties:
+        validation_report_path:
+          type: string
+          description: "Path where the validation report was written (-validation.md)"
+        verdict:
+          type: string
+          description: "Overall validation verdict"
+          enum: [PASS, FAIL]
+        traceability_coverage:
+          type: string
+          description: "Coverage as N/M = P% (numerator/denominator format)"
+          example: "3/3 = 100%"
+          pattern: "^\\d+/\\d+ = \\d+(\\.\\d+)?%$"
+        checks_passed:
+          type: integer
+          description: "Count of steps that received PASS verdict (max 9)"
+          minimum: 0
+          maximum: 9
+        checks_failed:
+          type: integer
+          description: "Count of steps that received FAIL verdict"
+          minimum: 0
+          maximum: 9
+        failed_checks:
+          type: array
+          description: "List of step numbers that failed (empty if all pass)"
+          items:
+            type: integer
+        traceability_gaps:
+          type: array
+          description: "List of interaction IDs with no mapped operation (empty = full coverage)"
+          items:
+            type: string
+        key_findings:
+          type: array
+          description: "Summary bullets for orchestrator handoff (3-5 entries)"
+          items:
+            type: string
+          minItems: 3
+          maxItems: 5
+
+    # -------------------------------------------------------------------------
+    # Shared: UC Interaction (read-only reference)
+    # -------------------------------------------------------------------------
+    UCInteraction:
+      type: object
+      description: >-
+        One entry from $.interactions[*] in a use case realization artifact.
+        All 7 fields are required for contract generation. Reference type only --
+        this skill is a read-only consumer of UC artifacts.
+      required:
+        - id
+        - source_step
+        - source_flow
+        - actor_role
+        - system_role
+        - request_description
+        - response_description
+      properties:
+        id:
+          type: string
+          description: "Unique interaction identifier within the UC (e.g., INT-01)"
+          pattern: "^INT-\\d{2}$"
+        source_step:
+          type: integer
+          description: "Step number in the flow this interaction was derived from"
+          minimum: 1
+        source_flow:
+          type: string
+          description: "Flow identifier (basic_flow, alternative_flow_N, extension_NN)"
+        actor_role:
+          type: string
+          description: "Role of the initiating actor in this interaction"
+          enum: [consumer, provider]
+        system_role:
+          type: string
+          description: "Role of the system in this interaction"
+          enum: [receiver, initiator, processor]
+        request_description:
+          type: string
+          description: "Natural language description of what the actor sends/requests"
+          minLength: 10
+        response_description:
+          type: string
+          description: "Natural language description of what the system returns/does"
+          minLength: 10
+        preconditions:
+          type: array
+          description: "Observable conditions that must be true before this interaction"
+          items:
+            type: string
+        postconditions:
+          type: array
+          description: "Observable state changes guaranteed after successful interaction"
+          items:
+            type: string

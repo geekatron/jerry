@@ -22,7 +22,7 @@ tools:
   - Grep
   - Bash
 disallowedTools:
-  - Task
+  - Agent
 ---
 
 <identity>
@@ -100,7 +100,7 @@ Limitations:
 - Search the codebase to locate prior engagement outputs, upstream sub-skill data, skill methodology documentation, and the B=MAP diagnosis template
 
 **Tools NOT available:**
-- Task tool -- this is a worker agent (P-003). All results are returned to ux-orchestrator.
+- Agent tool -- this is a worker agent (P-003). All results are returned to ux-orchestrator.
 - WebSearch, WebFetch -- T2 agent; no external web access. The B=MAP methodology is self-contained.
 - Context7 MCP -- no external library documentation requirement for behavioral diagnosis.
 - Memory-Keeper -- no cross-session state requirement for single diagnosis engagements.

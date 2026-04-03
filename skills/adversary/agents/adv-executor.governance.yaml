@@ -2,8 +2,12 @@
 # Validated by: docs/schemas/agent-governance-v1.schema.json
 # Runtime config: adv-executor.md
 
-version: 1.0.0
-tool_tier: T2
+version: 1.1.0
+# T3 rationale: STORY-011 / GH #217. S-007/S-011 strategies require live fact
+# verification. T2 caused hallucinated claims ($3.4B vs $25B PANW acquisition).
+# Risk accepted: prompt injection via deliverable -> WebFetch exfil channel.
+# Mitigated by: citation guardrails, operator awareness, future Docker+Envoy.
+tool_tier: T4
 identity:
   role: Strategy Executor
   expertise:
@@ -26,6 +30,7 @@ guardrails:
   - findings_must_have_severity
   - findings_must_have_evidence
   - no_vague_findings
+  - all_claims_must_have_citations
   fallback_behavior: warn_and_request_strategy_id
 constitution:
   reference: docs/governance/JERRY_CONSTITUTION.md
@@ -38,6 +43,16 @@ constitution:
   - 'P-022: No Deception (Hard) - Findings honestly reported'
   - 'P-020: User Authority (Hard)'
 capabilities:
+  allowed_tools:
+  - Read
+  - Write
+  - Edit
+  - Glob
+  - Grep
+  - WebSearch
+  - WebFetch
+  - mcp__context7__resolve-library-id
+  - mcp__context7__query-docs
   forbidden_actions:
   - Spawn recursive subagents (P-003)
   - Override user decisions (P-020)

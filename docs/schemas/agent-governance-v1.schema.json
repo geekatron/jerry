@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://jerry-framework.dev/schemas/agent-governance/v1.0.0",
+  "$id": "https://jerry-framework.dev/schemas/agent-governance/v1.1.0",
   "title": "Jerry Agent Governance Schema",
   "description": "Validates .governance.yaml companion files for Jerry Framework agents. Separated from agent-definition-v1 per Claude Code official frontmatter restructure.",
   "type": "object",
@@ -14,7 +14,8 @@
     "tool_tier": {
       "type": "string",
       "enum": ["T1", "T2", "T3", "T4", "T5"],
-      "description": "Security tier. T1=Read-Only, T2=Read-Write, T3=External, T4=Persistent, T5=Full."
+      "description": "Security tier (risk-ordered). T1=Read-Only, T2=Read-Write, T3=Persistent (+MK), T4=External (+Web, includes MK), T5=Orchestration (+Agent). Note: eng-*/red-* agents are T4 but MUST NOT use Memory-Keeper (P-002 engagement-scoped output). See agent-development-standards.md Tool Security Tiers.",
+      "$comment": "STORY-017 (2026-03-28): Tier names renumbered per ADR-STORY015-001 Option A. T3/T4 meanings swapped (Persistent before External). eng-*/red-* agents classified T4 but MUST NOT use Memory-Keeper per mcp-tool-standards.md exclusion."
     },
     "identity": {
       "type": "object",

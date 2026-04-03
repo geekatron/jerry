@@ -27,6 +27,8 @@
 
 ---
 
+> **Tier Model Notice (2026-03-28):** The tool security tier definitions in this ADR use the **pre-renumbering model** (T3=External, T4=Persistent, T5=Full). The current tier model is **Persistent-First Linear** (T3=Persistent, T4=External, T5=Orchestration) per ADR-STORY015-001. See `.context/rules/agent-development-standards.md` [Tool Security Tiers] for the authoritative current tier definitions.
+
 ## L0: Executive Summary
 
 This ADR establishes the canonical format for defining Claude Code agents within the Jerry Framework. It formalizes the implicit patterns already present in 37 production agents across 8 skills into an explicit, validatable, and enforceable standard.

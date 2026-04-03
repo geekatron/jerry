@@ -54,6 +54,9 @@ def _run_hook(
     """Run a jerry hook via CLI and capture output."""
     env = os.environ.copy()
     env["JERRY_PROJECT"] = "PROJ-004-context-resilience"
+    # Clear env vars that override context window detection (BUG-001)
+    env.pop("JERRY_CONTEXT_MONITOR__CONTEXT_WINDOW_TOKENS", None)
+    env.pop("ANTHROPIC_MODEL", None)
     if env_overrides:
         env.update(env_overrides)
 

@@ -112,11 +112,11 @@ Do NOT use for:
 
 | Agent | Role | Tier | Mode | Model | Output Location |
 |-------|------|------|------|-------|-----------------|
-| `ux-lean-ux-facilitator` | Lean UX hypothesis and experiment facilitation specialist | T3 | Systematic | Sonnet | `skills/ux-lean-ux/output/{engagement-id}/ux-lean-ux-facilitator-{topic-slug}.md` |
+| `ux-lean-ux-facilitator` | Lean UX hypothesis and experiment facilitation specialist | T4 | Systematic | Sonnet | `skills/ux-lean-ux/output/{engagement-id}/ux-lean-ux-facilitator-{topic-slug}.md` |
 
 **STUB:** The agent definition file (`skills/ux-lean-ux/agents/ux-lean-ux-facilitator.md`) currently contains frontmatter, identity, purpose, and guardrails sections only. Full agent body implementation (`<input>`, `<capabilities>`, `<methodology>`, `<output>` sections) is pending Wave 2 completion of PROJ-022 EPIC-003. The SKILL.md specifies the methodology and output contract that the agent will implement.
 
-**Tool tier:** T3 (External) = Read, Write, Edit, Glob, Grep + WebSearch, WebFetch + Context7 MCP. The T3 tier enables access to external Lean UX methodology documentation via Context7 and web search for A/B testing framework references. Bash is intentionally excluded; T3 tier does not require shell access for MCP operations. See `agent-development-standards.md` [Tool Security Tiers] for full tier definitions.
+**Tool tier:** T4 (External) = Read, Write, Edit, Glob, Grep + WebSearch, WebFetch + Context7 MCP. The T4 tier enables access to external Lean UX methodology documentation via Context7 and web search for A/B testing framework references. Bash is intentionally excluded; T4 tier does not require shell access for MCP operations. See `agent-development-standards.md` [Tool Security Tiers] for full tier definitions.
 
 The agent produces output at three levels per AD-M-004:
 - **L0 (Executive Summary):** Top hypotheses with validation status; key assumptions identified; experiment recommendations for stakeholders and cross-framework synthesis input.
@@ -129,7 +129,7 @@ The agent produces output at three levels per AD-M-004:
 
 ## P-003 Compliance
 
-The `/ux-lean-ux` sub-skill contains a single **worker** agent. It is invoked by the `ux-orchestrator` (T5) via the Task tool. The agent does NOT have Task tool access and MUST NOT spawn sub-agents.
+The `/ux-lean-ux` sub-skill contains a single **worker** agent. It is invoked by the `ux-orchestrator` (T5) via the Agent tool. The agent does NOT have Agent tool access and MUST NOT spawn sub-agents.
 
 ```
 MAIN CONTEXT (user request)
@@ -137,14 +137,14 @@ MAIN CONTEXT (user request)
     v
 ux-orchestrator (T5, Opus, Integrative) -- parent orchestrator
     |
-    +-- ux-lean-ux-facilitator (T3, Systematic, Sonnet) -- THIS sub-skill's worker
+    +-- ux-lean-ux-facilitator (T4, Systematic, Sonnet) -- THIS sub-skill's worker
     +-- [other sub-skill workers...]
 ```
 
 **Enforcement:**
-- `disallowedTools: [Task]` declared in `skills/ux-lean-ux/agents/ux-lean-ux-facilitator.md` frontmatter
+- `disallowedTools: [Agent]` declared in `skills/ux-lean-ux/agents/ux-lean-ux-facilitator.md` frontmatter
 - P-003 prohibition in `skills/ux-lean-ux/agents/ux-lean-ux-facilitator.governance.yaml` `capabilities.forbidden_actions`
-- CI gate validates no sub-skill agent has Task access (documented in `skills/user-experience/rules/ci-checks.md`)
+- CI gate validates no sub-skill agent has Agent access (documented in `skills/user-experience/rules/ci-checks.md`)
 
 > **Source:** P-003 hierarchy from parent SKILL.md [P-003 Compliance].
 
@@ -172,12 +172,12 @@ The `ux-orchestrator` routes these requests to `ux-lean-ux-facilitator` based on
 "Have ux-lean-ux-facilitator design an experiment for the onboarding changes"
 ```
 
-### Via Task Tool (orchestrator internal)
+### Via Agent Tool (orchestrator internal)
 
-The `ux-orchestrator` invokes the agent via the Task tool:
+The `ux-orchestrator` invokes the agent via the Agent tool:
 
 ```python
-Task(
+Agent(
     description="ux-lean-ux-facilitator: Lean UX hypothesis cycle for checkout redesign",
     subagent_type="jerry:ux-lean-ux-facilitator",
     prompt="""
@@ -553,7 +553,7 @@ All agents in this sub-skill adhere to the **Jerry Constitution v1.0**:
 
 | Principle | Requirement | Consequence of Violation |
 |-----------|-------------|-------------------------|
-| P-003 | NEVER spawn recursive subagents -- worker agent, no Task tool access | Agent hierarchy violation; uncontrolled token consumption |
+| P-003 | NEVER spawn recursive subagents -- worker agent, no Agent tool access | Agent hierarchy violation; uncontrolled token consumption |
 | P-020 | NEVER override user decisions on hypothesis priority or experiment selection | Unauthorized action; trust erosion |
 | P-022 | NEVER present hypotheses as validated without experiment evidence; NEVER inflate experiment confidence without data | Governance undermined; quality assessment invalidated |
 | P-001 | NEVER present assumption classifications without reasoning for the quadrant placement | Unreliable outputs; unfounded claims propagate downstream |
@@ -562,7 +562,7 @@ All agents in this sub-skill adhere to the **Jerry Constitution v1.0**:
 **Per-agent enforcement:** The `ux-lean-ux-facilitator` agent declares:
 - `constitution.principles_applied`: P-003, P-020, P-022, P-001, P-002 in `skills/ux-lean-ux/agents/ux-lean-ux-facilitator.governance.yaml`
 - `capabilities.forbidden_actions`: 3 entries in NPT-009 format referencing the constitutional triplet
-- `disallowedTools: [Task]` in `skills/ux-lean-ux/agents/ux-lean-ux-facilitator.md` frontmatter
+- `disallowedTools: [Agent]` in `skills/ux-lean-ux/agents/ux-lean-ux-facilitator.md` frontmatter
 
 ### AI-Augmented Analysis Limitations
 

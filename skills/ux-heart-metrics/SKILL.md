@@ -163,7 +163,7 @@ Source: `skills/user-experience/rules/ux-routing-rules.md` [Stage Routing Table]
 
 - **Option 1 (Natural Language):** Best for most users. The `ux-orchestrator` handles routing, wave gating, and engagement context automatically. Use this unless you have a specific reason to bypass the orchestrator.
 - **Option 2 (Explicit Agent):** When the user knows they specifically need HEART metrics and an engagement context is already established via the parent orchestrator. Direct invocation without an established engagement context bypasses wave gating and lifecycle-stage triage.
-- **Option 3 (Task Tool):** Used by `ux-orchestrator` internally for agent dispatch. Not typically invoked directly by users.
+- **Option 3 (Agent Tool):** Used by `ux-orchestrator` internally for agent dispatch. Not typically invoked directly by users.
 
 ### Option 1: Natural Language Request
 
@@ -187,12 +187,12 @@ Request the agent by name:
 "I need ux-heart-analyst to specify task success metrics for the checkout"
 ```
 
-### Option 3: Native Agent Invocation (Task Tool)
+### Option 3: Native Agent Invocation (Agent Tool)
 
-The `ux-orchestrator` dispatches to `ux-heart-analyst` via Task:
+The `ux-orchestrator` dispatches to `ux-heart-analyst` via Agent:
 
 ```python
-Task(
+Agent(
     description="ux-heart-analyst: HEART metrics for checkout flow",
     subagent_type="jerry:ux-heart-analyst",
     prompt="""
@@ -226,7 +226,7 @@ Claude Code enforces the agent's `tools` frontmatter -- `ux-heart-analyst` only 
 
 ## P-003 Compliance
 
-The `ux-heart-analyst` is a **worker agent** within the `/user-experience` orchestrator-worker topology. It does NOT have Task tool access and MUST NOT spawn sub-agents.
+The `ux-heart-analyst` is a **worker agent** within the `/user-experience` orchestrator-worker topology. It does NOT have Agent tool access and MUST NOT spawn sub-agents.
 
 ```
 MAIN CONTEXT (user request)
@@ -239,9 +239,9 @@ ux-orchestrator (T5, Opus, Integrative)
 ```
 
 **Enforcement:**
-- `disallowedTools: [Task]` declared in `skills/ux-heart-metrics/agents/ux-heart-analyst.md` frontmatter
+- `disallowedTools: [Agent]` declared in `skills/ux-heart-metrics/agents/ux-heart-analyst.md` frontmatter
 - P-003 prohibition in `skills/ux-heart-metrics/agents/ux-heart-analyst.governance.yaml` `capabilities.forbidden_actions`
-- CI gate validates no sub-skill agent has Task access (documented in `skills/user-experience/rules/ci-checks.md`)
+- CI gate validates no sub-skill agent has Agent access (documented in `skills/user-experience/rules/ci-checks.md`)
 
 ---
 
@@ -710,7 +710,7 @@ Validation sources that advance LOW threshold recommendations to MEDIUM:
 
 | Principle | Requirement | Sub-Skill Application |
 |-----------|-------------|----------------------|
-| P-003 | NEVER spawn recursive subagents | Worker agent; no Task tool access. Returns results to ux-orchestrator. |
+| P-003 | NEVER spawn recursive subagents | Worker agent; no Agent tool access. Returns results to ux-orchestrator. |
 | P-020 | NEVER override user intent | User decides which HEART dimensions to measure, which metrics to implement, and whether to act on LOW-confidence threshold recommendations. |
 | P-022 | NEVER deceive about actions, capabilities, or confidence | Goal-metric mappings transparently classified as MEDIUM confidence. Threshold recommendations classified as LOW confidence with `[REFERENCE-ONLY]` tag. Synthesis Judgments Summary enumerates all AI judgment calls. |
 | P-001 | NEVER present findings without evidence or source citations | All metric recommendations cite the HEART framework (Rodden, Hutchinson & Fu, 2010). Industry benchmarks cite specific studies. |

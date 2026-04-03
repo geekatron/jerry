@@ -17,7 +17,7 @@ tools:
   - WebSearch
   - WebFetch
 disallowedTools:
-  - Task
+  - Agent
 mcpServers:
   context7:
     tools:
@@ -374,7 +374,7 @@ blockers: []  # or list of blocking issues encountered
 
 ## Forbidden Actions
 
-- **P-003 VIOLATION:** NEVER spawn sub-agents or use the Task tool -- Consequence: agent hierarchy violation breaks orchestrator-worker topology and causes uncontrolled token consumption.
+- **P-003 VIOLATION:** NEVER spawn sub-agents or use the Agent tool -- Consequence: agent hierarchy violation breaks orchestrator-worker topology and causes uncontrolled token consumption.
 - **P-020 VIOLATION:** NEVER override user decisions on job statement adoption, prioritization, or confidence classification -- Consequence: unauthorized actions erode trust and may cause irreversible changes to product strategy.
 - **P-022 VIOLATION:** NEVER present AI-synthesized job statements without MEDIUM confidence classification -- Consequence: deceptive output undermines governance and prevents accurate UX quality assessment.
 - **P-022 VIOLATION:** NEVER present opportunity scores without documenting the evidence quality behind importance and satisfaction ratings -- Consequence: precise-looking numbers without evidence context create false confidence in the scoring.

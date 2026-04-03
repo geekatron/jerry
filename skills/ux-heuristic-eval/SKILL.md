@@ -109,13 +109,13 @@ Do NOT use for:
 
 | Agent | Role | Tier | Mode | Model | Output Location |
 |-------|------|------|------|-------|-----------------|
-| `ux-heuristic-evaluator`** | Nielsen heuristic evaluation specialist | T3 | Systematic | Haiku* | `skills/ux-heuristic-eval/output/{engagement-id}/ux-heuristic-evaluator-{topic-slug}.md` |
+| `ux-heuristic-evaluator`** | Nielsen heuristic evaluation specialist | T4 | Systematic | Haiku* | `skills/ux-heuristic-eval/output/{engagement-id}/ux-heuristic-evaluator-{topic-slug}.md` |
 
 *Haiku for high-volume checklist evaluation; escalates to Sonnet when: (1) critical finding count >= 3 (severity 3 or 4), (2) Figma MCP benchmark fails pre-launch threshold, or (3) evaluation spans > 50 screens. Escalation is automatic within the orchestrator's routing logic per AD-M-009 model selection justification.
 
 **STUB: The agent definition file (`skills/ux-heuristic-eval/agents/ux-heuristic-evaluator.md`) currently contains frontmatter, identity, purpose, and guardrails sections only. Full agent body implementation (`<input>`, `<capabilities>`, `<methodology>`, `<output>` sections) is pending Wave 1 completion of PROJ-022 EPIC-002. The SKILL.md specifies the methodology and output contract that the agent will implement.
 
-**Tool tier:** T3 (External) = Read, Write, Edit, Glob, Grep + WebSearch, WebFetch + Context7 MCP. The T3 tier enables access to external UX standards documentation via Context7 and web search. Bash is intentionally excluded; T3 tier does not require shell access for MCP operations. See `agent-development-standards.md` [Tool Security Tiers] for full tier definitions.
+**Tool tier:** T4 (External) = Read, Write, Edit, Glob, Grep + WebSearch, WebFetch + Context7 MCP. The T4 tier enables access to external UX standards documentation via Context7 and web search. Bash is intentionally excluded; T4 tier does not require shell access for MCP operations. See `agent-development-standards.md` [Tool Security Tiers] for full tier definitions.
 
 The agent produces output at three levels per AD-M-004:
 - **L0 (Executive Summary):** Top 3-5 findings with severity ratings for stakeholders and cross-framework synthesis input.
@@ -128,7 +128,7 @@ The agent produces output at three levels per AD-M-004:
 
 ## P-003 Compliance
 
-The `/ux-heuristic-eval` sub-skill contains a single **worker** agent. It is invoked by the `ux-orchestrator` (T5) via the Task tool. The agent does NOT have Task tool access and MUST NOT spawn sub-agents.
+The `/ux-heuristic-eval` sub-skill contains a single **worker** agent. It is invoked by the `ux-orchestrator` (T5) via the Agent tool. The agent does NOT have Agent tool access and MUST NOT spawn sub-agents.
 
 ```
 MAIN CONTEXT (user request)
@@ -136,14 +136,14 @@ MAIN CONTEXT (user request)
     v
 ux-orchestrator (T5, Opus, Integrative) -- parent orchestrator
     |
-    +-- ux-heuristic-evaluator (T3, Systematic, Haiku) -- THIS sub-skill's worker
+    +-- ux-heuristic-evaluator (T4, Systematic, Haiku) -- THIS sub-skill's worker
     +-- [other sub-skill workers...]
 ```
 
 **Enforcement:**
-- `disallowedTools: [Task]` declared in `skills/ux-heuristic-eval/agents/ux-heuristic-evaluator.md` frontmatter
+- `disallowedTools: [Agent]` declared in `skills/ux-heuristic-eval/agents/ux-heuristic-evaluator.md` frontmatter
 - P-003 prohibition in `skills/ux-heuristic-eval/agents/ux-heuristic-evaluator.governance.yaml` `capabilities.forbidden_actions`
-- CI gate validates no sub-skill agent has Task access (documented in `skills/user-experience/rules/ci-checks.md`)
+- CI gate validates no sub-skill agent has Agent access (documented in `skills/user-experience/rules/ci-checks.md`)
 
 > **Source:** P-003 hierarchy from parent SKILL.md [P-003 Compliance] (lines 174-196).
 
@@ -170,12 +170,12 @@ The `ux-orchestrator` routes these requests to `ux-heuristic-evaluator` based on
 "Have ux-heuristic-evaluator evaluate the form design"
 ```
 
-### Via Task Tool (orchestrator internal)
+### Via Agent Tool (orchestrator internal)
 
-The `ux-orchestrator` invokes the agent via the Task tool:
+The `ux-orchestrator` invokes the agent via the Agent tool:
 
 ```python
-Task(
+Agent(
     description="ux-heuristic-evaluator: Heuristic evaluation of settings page",
     subagent_type="jerry:ux-heuristic-evaluator",
     prompt="""
@@ -454,7 +454,7 @@ All agents in this sub-skill adhere to the **Jerry Constitution v1.0**:
 
 | Principle | Requirement | Consequence of Violation |
 |-----------|-------------|-------------------------|
-| P-003 | NEVER spawn recursive subagents -- worker agent, no Task tool access | Agent hierarchy violation; uncontrolled token consumption |
+| P-003 | NEVER spawn recursive subagents -- worker agent, no Agent tool access | Agent hierarchy violation; uncontrolled token consumption |
 | P-020 | NEVER override user decisions on finding priority or remediation approach | Unauthorized action; trust erosion |
 | P-022 | NEVER inflate severity ratings without specific evidence from the interface | Governance undermined; quality assessment invalidated |
 | P-001 | NEVER present findings without evidence from the interface under review | Unreliable outputs; unfounded claims propagate downstream |
@@ -463,7 +463,7 @@ All agents in this sub-skill adhere to the **Jerry Constitution v1.0**:
 **Per-agent enforcement:** The `ux-heuristic-evaluator` agent declares:
 - `constitution.principles_applied`: P-003, P-020, P-022, P-001, P-002 in `skills/ux-heuristic-eval/agents/ux-heuristic-evaluator.governance.yaml`
 - `capabilities.forbidden_actions`: 3 entries in NPT-009 format referencing the constitutional triplet
-- `disallowedTools: [Task]` in `skills/ux-heuristic-eval/agents/ux-heuristic-evaluator.md` frontmatter
+- `disallowedTools: [Agent]` in `skills/ux-heuristic-eval/agents/ux-heuristic-evaluator.md` frontmatter
 
 ---
 

@@ -3,7 +3,7 @@
 # Runtime config: ps-investigator.md
 
 version: 2.2.0
-tool_tier: T3
+tool_tier: T4
 identity:
   role: Investigation Specialist
   expertise:

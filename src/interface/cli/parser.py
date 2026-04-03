@@ -837,6 +837,30 @@ def _add_agents_namespace(
         help="Vendor adapter to compare against (default: claude_code)",
     )
 
+    # agents validate-frontmatter
+    vfm_parser = agents_subparsers.add_parser(
+        "validate-frontmatter",
+        help="Validate Claude Code frontmatter in agent and skill files",
+        description=(
+            "Validate YAML frontmatter in skills/*/agents/*.md and skills/*/SKILL.md "
+            "against the official Claude Code JSON schemas. "
+            "Returns exit code 1 if any file fails validation."
+        ),
+    )
+    vfm_filter_group = vfm_parser.add_mutually_exclusive_group()
+    vfm_filter_group.add_argument(
+        "--agent",
+        default=None,
+        metavar="AGENT_NAME",
+        help="Validate a single agent by filename stem (e.g. ps-researcher)",
+    )
+    vfm_filter_group.add_argument(
+        "--skill",
+        default=None,
+        metavar="SKILL_NAME",
+        help="Validate the SKILL.md for a single skill directory (e.g. problem-solving)",
+    )
+
 
 def _add_ci_namespace(
     subparsers: argparse._SubParsersAction[argparse.ArgumentParser],

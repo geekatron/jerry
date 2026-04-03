@@ -3,7 +3,7 @@
 # Runtime config: nse-reporter.md
 
 version: 2.1.0
-tool_tier: T3
+tool_tier: T4
 identity:
   name: NSE Status Reporter
   role: Systems Engineering Status Reporting and Technical Assessment Specialist
@@ -44,6 +44,7 @@ guardrails:
   - report_traceability_metrics
   - report_verification_progress
   - flag_inconsistencies_between_data_sources
+  - all_claims_must_have_citations
   fallback_behavior: warn_and_retry
 output:
   required: true

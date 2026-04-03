@@ -116,11 +116,11 @@ Do NOT use for:
 
 | Agent | Role | Tier | Mode | Model | Output Location |
 |-------|------|------|------|-------|-----------------|
-| `ux-sprint-facilitator` | AJ&Smart Design Sprint 2.0 facilitation | T3 | Systematic | Opus | `skills/ux-design-sprint/output/{engagement-id}/ux-sprint-facilitator-{topic-slug}.md` |
+| `ux-sprint-facilitator` | AJ&Smart Design Sprint 2.0 facilitation | T4 | Systematic | Opus | `skills/ux-design-sprint/output/{engagement-id}/ux-sprint-facilitator-{topic-slug}.md` |
 
 **STUB:** The agent definition file (`skills/ux-design-sprint/agents/ux-sprint-facilitator.md`) is pending Wave 5 Phase 2 implementation as part of PROJ-022 EPIC-005. The SKILL.md specifies the methodology and output contract that the agent will implement.
 
-**Tool tier:** T3 (External) = Read, Write, Edit, Glob, Grep, Bash + WebSearch, WebFetch, Context7 MCP. T3 access is required because Design Sprint facilitation benefits from external research during Day 1 expert interviews and Day 2 lightning demos (competitive analysis, industry precedent research). See `.context/rules/agent-development-standards.md` [Tool Security Tiers].
+**Tool tier:** T4 (External) = Read, Write, Edit, Glob, Grep, Bash + WebSearch, WebFetch, Context7 MCP. T4 access is required because Design Sprint facilitation benefits from external research during Day 1 expert interviews and Day 2 lightning demos (competitive analysis, industry precedent research). See `.context/rules/agent-development-standards.md` [Tool Security Tiers].
 
 The agent produces output at three levels per AD-M-004:
 - **L0 (Executive Summary):** Sprint challenge statement; winning solution summary; Day 4 test results (pass/fail per sprint question); top validated findings; recommended next steps.
@@ -131,7 +131,7 @@ The agent produces output at three levels per AD-M-004:
 
 ## P-003 Compliance
 
-The `/ux-design-sprint` sub-skill contains a single **worker** agent. It is invoked by the `ux-orchestrator` (T5) via the Task tool. The agent does NOT have Task tool access and MUST NOT spawn sub-agents.
+The `/ux-design-sprint` sub-skill contains a single **worker** agent. It is invoked by the `ux-orchestrator` (T5) via the Agent tool. The agent does NOT have Agent tool access and MUST NOT spawn sub-agents.
 
 ```
 MAIN CONTEXT (user request)
@@ -139,14 +139,14 @@ MAIN CONTEXT (user request)
     v
 ux-orchestrator (T5, Opus, Integrative) -- parent orchestrator
     |
-    +-- ux-sprint-facilitator (T3, Systematic, Opus) -- THIS sub-skill's worker
+    +-- ux-sprint-facilitator (T4, Systematic, Opus) -- THIS sub-skill's worker
     +-- [other sub-skill workers...]
 ```
 
 **Enforcement:**
-- `disallowedTools: [Task]` declared in `skills/ux-design-sprint/agents/ux-sprint-facilitator.md` frontmatter
+- `disallowedTools: [Agent]` declared in `skills/ux-design-sprint/agents/ux-sprint-facilitator.md` frontmatter
 - P-003 prohibition in `skills/ux-design-sprint/agents/ux-sprint-facilitator.governance.yaml` `capabilities.forbidden_actions`
-- CI gate validates no sub-skill agent has Task access (documented in `skills/user-experience/rules/ci-checks.md`)
+- CI gate validates no sub-skill agent has Agent access (documented in `skills/user-experience/rules/ci-checks.md`)
 
 ---
 
@@ -172,12 +172,12 @@ This is a sub-skill invoked by the `ux-orchestrator`, not directly by users. Use
 "Have ux-sprint-facilitator run a Design Sprint 2.0 for our mobile app onboarding"
 ```
 
-### Via Task Tool (orchestrator internal)
+### Via Agent Tool (orchestrator internal)
 
-The `ux-orchestrator` invokes the agent via the Task tool:
+The `ux-orchestrator` invokes the agent via the Agent tool:
 
 ```python
-Task(
+Agent(
     description="ux-sprint-facilitator: Design Sprint 2.0 for mobile navigation redesign",
     subagent_type="jerry:ux-sprint-facilitator",
     prompt="""
@@ -598,7 +598,7 @@ The following CI gate criteria apply to this sub-skill (full gate definitions in
 
 | Gate | Check | Enforcement |
 |------|-------|-------------|
-| **No Task tool access** | `disallowedTools: [Task]` present in agent frontmatter; agent MUST NOT have Task in `tools` list | L5 (CI): grep agent frontmatter for Task tool presence |
+| **No Agent tool access** | `disallowedTools: [Agent]` present in agent frontmatter; agent MUST NOT have Agent in `tools` list | L5 (CI): grep agent frontmatter for Agent tool presence |
 | **P-003 forbidden action** | `capabilities.forbidden_actions` in `.governance.yaml` MUST include P-003 recursive subagent prohibition | L5 (CI): schema validation of governance YAML against `docs/schemas/agent-governance-v1.schema.json` |
 | **Output schema validation** | Agent output MUST contain all Required Output Sections (Executive Summary, Sprint Context, Day 1-4, Strategic Implications, Synthesis Judgments Summary, Handoff Data) | L4 (post-tool): section heading presence check on output artifact |
 
@@ -606,7 +606,7 @@ The following CI gate criteria apply to this sub-skill (full gate definitions in
 
 ## Degraded Mode Behavior
 
-The `ux-sprint-facilitator` operates at T3 (External) and has access to WebSearch, WebFetch, and Context7 MCP. Additionally, it depends on Figma (REQ) for prototype creation and Miro (REQ) for collaborative sprint activities. Both MCP dependencies are required, so degraded mode behavior is significant.
+The `ux-sprint-facilitator` operates at T4 (External) and has access to WebSearch, WebFetch, and Context7 MCP. Additionally, it depends on Figma (REQ) for prototype creation and Miro (REQ) for collaborative sprint activities. Both MCP dependencies are required, so degraded mode behavior is significant.
 
 ### Figma MCP Unavailable
 
@@ -680,7 +680,7 @@ All agents in this sub-skill adhere to the **Jerry Constitution v1.0**:
 
 | Principle | Requirement | Consequence of Violation |
 |-----------|-------------|-------------------------|
-| P-003 | NEVER spawn recursive subagents -- worker agent, no Task tool access | Agent hierarchy violation; uncontrolled token consumption |
+| P-003 | NEVER spawn recursive subagents -- worker agent, no Agent tool access | Agent hierarchy violation; uncontrolled token consumption |
 | P-020 | NEVER override the Decider's sprint decisions or user priorities on solution selection | Unauthorized action; trust erosion; sprint methodology violation (Decider authority is core to GV Sprint) |
 | P-022 | NEVER present sprint findings as certain without disclosing evidence limitations; NEVER inflate theme strength without meeting the >= 3/5 user threshold; NEVER omit degraded mode disclosure when operating without Figma or Miro | Governance undermined; quality assessment invalidated |
 | P-001 | NEVER present Day 4 findings without citing specific user observations from the interview grid | Unreliable outputs; unfounded claims propagate downstream |
@@ -691,7 +691,7 @@ All agents in this sub-skill adhere to the **Jerry Constitution v1.0**:
 **Per-agent enforcement:** The `ux-sprint-facilitator` agent declares:
 - `constitution.principles_applied`: P-003, P-020, P-022, P-001, P-002, P-004, P-011 in `skills/ux-design-sprint/agents/ux-sprint-facilitator.governance.yaml`
 - `capabilities.forbidden_actions`: 3 entries in NPT-009 format referencing the constitutional triplet
-- `disallowedTools: [Task]` in `skills/ux-design-sprint/agents/ux-sprint-facilitator.md` frontmatter
+- `disallowedTools: [Agent]` in `skills/ux-design-sprint/agents/ux-sprint-facilitator.md` frontmatter
 
 ### AI-Facilitated Sprint Limitations
 

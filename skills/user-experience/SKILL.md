@@ -14,7 +14,7 @@ agents:
   - ux-kano-analyst
   - ux-sprint-facilitator
   - ux-ai-design-guide
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task, WebSearch, WebFetch, mcp__context7__resolve-library-id, mcp__context7__query-docs, mcp__memory-keeper__context_save, mcp__memory-keeper__context_get, mcp__memory-keeper__context_search
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Agent, WebSearch, WebFetch, mcp__context7__resolve-library-id, mcp__context7__query-docs, mcp__memory-keeper__context_save, mcp__memory-keeper__context_get, mcp__memory-keeper__context_search
 activation-keywords:
   - "user experience"
   - "UX evaluation"
@@ -139,18 +139,18 @@ Do NOT use for:
 | Agent | Role | Tier | Mode | Model | Wave | Output Location |
 |-------|------|------|------|-------|------|-----------------|
 | `ux-orchestrator` | Parent orchestrator: routing, wave gating, cross-framework synthesis | T5 | Integrative | Opus | 0 | `skills/user-experience/output/{engagement-id}/ux-orchestrator-{topic-slug}.md` |
-| `ux-heuristic-evaluator` | Nielsen heuristic evaluation specialist | T3 | Systematic | Haiku* | 1 | `skills/ux-heuristic-eval/output/{engagement-id}/ux-heuristic-evaluator-{topic-slug}.md` |
-| `ux-jtbd-analyst` | Jobs-to-Be-Done research and analysis | T3 | Divergent | Sonnet | 1 | `skills/ux-jtbd/output/{engagement-id}/ux-jtbd-analyst-{topic-slug}.md` |
-| `ux-lean-ux-facilitator` | Lean UX hypothesis and experiment facilitation | T3 | Systematic | Sonnet | 2 | `skills/ux-lean-ux/output/{engagement-id}/ux-lean-ux-facilitator-{topic-slug}.md` |
+| `ux-heuristic-evaluator` | Nielsen heuristic evaluation specialist | T4 | Systematic | Haiku* | 1 | `skills/ux-heuristic-eval/output/{engagement-id}/ux-heuristic-evaluator-{topic-slug}.md` |
+| `ux-jtbd-analyst` | Jobs-to-Be-Done research and analysis | T4 | Divergent | Sonnet | 1 | `skills/ux-jtbd/output/{engagement-id}/ux-jtbd-analyst-{topic-slug}.md` |
+| `ux-lean-ux-facilitator` | Lean UX hypothesis and experiment facilitation | T4 | Systematic | Sonnet | 2 | `skills/ux-lean-ux/output/{engagement-id}/ux-lean-ux-facilitator-{topic-slug}.md` |
 | `ux-heart-analyst` | HEART metrics framework specialist | T2 | Systematic | Sonnet | 2 | `skills/ux-heart-metrics/output/{engagement-id}/ux-heart-analyst-{topic-slug}.md` |
-| `ux-atomic-architect` | Atomic design component taxonomy architect | T3 | Systematic | Sonnet | 3 | `skills/ux-atomic-design/output/{engagement-id}/ux-atomic-architect-{topic-slug}.md` |
-| `ux-inclusive-evaluator` | Inclusive design and accessibility auditor | T3 | Systematic | Sonnet | 3 | `skills/ux-inclusive-design/output/{engagement-id}/ux-inclusive-evaluator-{topic-slug}.md` |
+| `ux-atomic-architect` | Atomic design component taxonomy architect | T4 | Systematic | Sonnet | 3 | `skills/ux-atomic-design/output/{engagement-id}/ux-atomic-architect-{topic-slug}.md` |
+| `ux-inclusive-evaluator` | Inclusive design and accessibility auditor | T4 | Systematic | Sonnet | 3 | `skills/ux-inclusive-design/output/{engagement-id}/ux-inclusive-evaluator-{topic-slug}.md` |
 | `ux-behavior-diagnostician` | Fogg B=MAP behavior bottleneck diagnosis | T2 | Convergent | Sonnet | 4 | `skills/ux-behavior-design/output/{engagement-id}/ux-behavior-diagnostician-{topic-slug}.md` |
 | `ux-kano-analyst` | Kano model feature classification and prioritization | T2 | Convergent | Sonnet | 4 | `skills/ux-kano-model/output/{engagement-id}/ux-kano-analyst-{topic-slug}.md` |
-| `ux-sprint-facilitator` | AJ&Smart Design Sprint 2.0 facilitation | T3 | Systematic | Opus | 5 | `skills/ux-design-sprint/output/{engagement-id}/ux-sprint-facilitator-{topic-slug}.md` |
-| `ux-ai-design-guide` | AI-first interaction design specialist (CONDITIONAL) | T3 | Divergent | Opus | 5 | `skills/ux-ai-first-design/output/{engagement-id}/ux-ai-design-guide-{topic-slug}.md` |
+| `ux-sprint-facilitator` | AJ&Smart Design Sprint 2.0 facilitation | T4 | Systematic | Opus | 5 | `skills/ux-design-sprint/output/{engagement-id}/ux-sprint-facilitator-{topic-slug}.md` |
+| `ux-ai-design-guide` | AI-first interaction design specialist (CONDITIONAL) | T4 | Divergent | Opus | 5 | `skills/ux-ai-first-design/output/{engagement-id}/ux-ai-design-guide-{topic-slug}.md` |
 
-**Tool tier key:** T2 = Read-Write (Read, Write, Edit, Glob, Grep, Bash); T3 = T2 + External (WebSearch, WebFetch, Context7 MCP); T5 = T3 + T4 (Memory-Keeper) + Task (orchestration delegation). See `agent-development-standards.md` [Tool Security Tiers] for full definitions. All tier assignments follow the principle of least privilege (AR-006) — T2 agents (ux-heart-analyst, ux-behavior-diagnostician, ux-kano-analyst) operate on user-provided data only; T3 agents access external UX standards and documentation.
+**Tool tier key:** T2 = Read-Write (Read, Write, Edit, Glob, Grep, Bash); T4 = External (T2 + WebSearch, WebFetch, Context7 MCP, Memory-Keeper); T5 = Orchestration (T4 + Agent). See `agent-development-standards.md` [Tool Security Tiers] for full definitions. All tier assignments follow the principle of least privilege (AR-006) — T2 agents (ux-heart-analyst, ux-behavior-diagnostician, ux-kano-analyst) operate on user-provided data only; T4 agents access external UX standards and documentation.
 
 *Haiku for high-volume checklist evaluation; escalates to Sonnet when: (1) heuristic severity is "critical" (>= 3 critical findings), (2) Figma MCP benchmark fails pre-launch threshold, or (3) evaluation spans > 50 screens. Escalation is automatic within the orchestrator's routing logic per AD-M-009 model selection justification.
 
@@ -163,7 +163,7 @@ All agents produce output at three levels per AD-M-004:
 
 ## P-003 Compliance
 
-The `/user-experience` skill enforces strict single-level nesting per H-01/P-003. Only `ux-orchestrator` has Task tool access. All 10 sub-skill agents are workers that MUST NOT include Task in their tool list.
+The `/user-experience` skill enforces strict single-level nesting per H-01/P-003. Only `ux-orchestrator` has Agent tool access. All 10 sub-skill agents are workers that MUST NOT include Agent in their tool list.
 
 ```
 MAIN CONTEXT (user request)
@@ -171,19 +171,19 @@ MAIN CONTEXT (user request)
     v
 ux-orchestrator (T5, Opus, Integrative) -- routes, gates, synthesizes
     |
-    +-- ux-heuristic-evaluator    (T3, Systematic, Haiku)     [Wave 1]
-    +-- ux-jtbd-analyst           (T3, Divergent, Sonnet)     [Wave 1]
-    +-- ux-lean-ux-facilitator    (T3, Systematic, Sonnet)    [Wave 2]
+    +-- ux-heuristic-evaluator    (T4, Systematic, Haiku)     [Wave 1]
+    +-- ux-jtbd-analyst           (T4, Divergent, Sonnet)     [Wave 1]
+    +-- ux-lean-ux-facilitator    (T4, Systematic, Sonnet)    [Wave 2]
     +-- ux-heart-analyst          (T2, Systematic, Sonnet)    [Wave 2]
-    +-- ux-atomic-architect       (T3, Systematic, Sonnet)    [Wave 3]
-    +-- ux-inclusive-evaluator    (T3, Systematic, Sonnet)    [Wave 3]
+    +-- ux-atomic-architect       (T4, Systematic, Sonnet)    [Wave 3]
+    +-- ux-inclusive-evaluator    (T4, Systematic, Sonnet)    [Wave 3]
     +-- ux-behavior-diagnostician (T2, Convergent, Sonnet)    [Wave 4]
     +-- ux-kano-analyst           (T2, Convergent, Sonnet)    [Wave 4]
-    +-- ux-sprint-facilitator     (T3, Systematic, Opus)      [Wave 5]
-    +-- ux-ai-design-guide        (T3, Divergent, Opus)       [Wave 5 COND]
+    +-- ux-sprint-facilitator     (T4, Systematic, Opus)      [Wave 5]
+    +-- ux-ai-design-guide        (T4, Divergent, Opus)       [Wave 5 COND]
 ```
 
-**Enforcement:** Sub-skill agents declare `disallowedTools: [Task]` in `.md` frontmatter. CI gate validates no sub-skill agent has Task access (documented in `skills/user-experience/rules/ci-checks.md`). Each `.governance.yaml` includes Task prohibition in `capabilities.forbidden_actions` with P-003 consequence statement.
+**Enforcement:** Sub-skill agents declare `disallowedTools: [Agent]` in `.md` frontmatter. CI gate validates no sub-skill agent has Agent access (documented in `skills/user-experience/rules/ci-checks.md`). Each `.governance.yaml` includes Agent prohibition in `capabilities.forbidden_actions` with P-003 consequence statement.
 
 ---
 
@@ -214,12 +214,12 @@ Request a specific agent by name:
 "I need ux-inclusive-evaluator to review color contrast and screen reader compatibility"
 ```
 
-### Option 3: Native Agent Invocation (Task Tool)
+### Option 3: Native Agent Invocation (Agent Tool)
 
-The orchestrator invokes sub-skill agents as named subagents via Task:
+The orchestrator invokes sub-skill agents as named subagents via Agent:
 
 ```python
-Task(
+Agent(
     description="ux-heuristic-evaluator: Heuristic evaluation of settings page",
     subagent_type="ux-heuristic-evaluator",
     prompt="""
@@ -237,7 +237,7 @@ Produce ranked findings with remediation recommendations.
 )
 ```
 
-Claude Code enforces each agent's `tools` frontmatter -- worker agents only have access to their declared tool tier (T2 or T3).
+Claude Code enforces each agent's `tools` frontmatter -- worker agents only have access to their declared tool tier (T2 or T4).
 
 ---
 
@@ -495,7 +495,7 @@ All agents adhere to the **Jerry Constitution v1.0**:
 **Per-agent enforcement:** Every agent (orchestrator + 10 sub-skill agents) declares in `.governance.yaml`:
 - `constitution.principles_applied`: P-003, P-020, P-022 (minimum; additional principles per agent)
 - `capabilities.forbidden_actions`: Minimum 3 entries in NPT-009 format referencing the constitutional triplet
-- Sub-skill agents: `disallowedTools: [Task]` in `.md` frontmatter (P-003 enforcement)
+- Sub-skill agents: `disallowedTools: [Agent]` in `.md` frontmatter (P-003 enforcement)
 - Domain-specific forbidden actions added per agent role
 
 ---

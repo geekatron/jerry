@@ -28,9 +28,13 @@ tools:
   - file_edit
   - file_search_glob
   - file_search_content
+  - web_search
+  - web_fetch
+  - mcp__context7__resolve-library-id
+  - mcp__context7__query-docs
   forbidden:
   - agent_delegate
-tool_tier: T2
+tool_tier: T3
 guardrails:
   input_validation:
   - strategy_id: must be one of S-001 through S-014 (selected only)

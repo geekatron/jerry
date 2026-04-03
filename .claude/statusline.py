@@ -1,10 +1,14 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run
+# /// script
+# requires-python = ">=3.10"
+# dependencies = []
+# ///
 """
 ECW Status Line - Evolved Claude Workflow
 Single-file, self-contained status line for Claude Code.
 
-Version: 3.0.0
-Python: 3.9+ (stdlib only, zero dependencies)
+Version: 3.0.1
+Python: 3.10+ (stdlib only, zero dependencies; uv auto-downloads if needed)
 License: MIT
 
 Features:
@@ -24,10 +28,11 @@ Installation:
        {
          "statusLine": {
            "type": "command",
-           "command": "python3 ~/.claude/statusline.py",
+           "command": "uv run ~/.claude/statusline.py",
            "padding": 0
          }
        }
+    Note: uv auto-downloads Python 3.10+ on first run if not available.
 
 Configuration:
     Optional: Create ~/.claude/ecw-statusline-config.json to override defaults.
@@ -159,6 +164,14 @@ DEFAULT_CONFIG: dict[str, Any] = {
         "enabled": True,  # Try calling jerry context estimate for domain data
         "command": "",  # Override command; empty = auto-detect via CLAUDE_PLUGIN_ROOT
         "timeout": 3,  # Timeout in seconds for jerry subprocess
+    },
+    # Layout settings (multi-line support)
+    "layout": {
+        "mode": "single-line",  # "single-line" or "multi-line"
+        "lines": {
+            "1": ["model", "context", "cost", "tokens", "session", "compaction"],
+            "2": ["directory", "git", "tools"],
+        },
     },
     # Advanced settings
     "advanced": {
@@ -1273,12 +1286,69 @@ def build_directory_segment(data: dict, config: dict) -> str:
 # =============================================================================
 
 
+def _build_segment_by_name(
+    name: str,
+    data: dict,
+    config: dict,
+    jerry_data: dict | None,
+    compact: bool,
+) -> str | None:
+    """Build a single segment by name. Returns None if segment is disabled or empty."""
+    segments_config = config["segments"]
+
+    # Check if segment is enabled in segments config.
+    # sub_agents is Jerry-only and defaults to True when Jerry data exists.
+    if name == "sub_agents":
+        if jerry_data is None:
+            return None
+    elif not segments_config.get(name, False):
+        return None
+
+    # Segments that are suppressed in compact mode
+    compact_suppressed = {"tokens", "session", "compaction", "tools", "directory"}
+    if compact and name in compact_suppressed:
+        return None
+
+    if name == "model":
+        return build_model_segment(data, config)
+    elif name == "context":
+        return build_context_segment(data, config, jerry_data=jerry_data)
+    elif name == "cost":
+        return build_cost_segment(data, config)
+    elif name == "tokens":
+        return build_tokens_segment(data, config)
+    elif name == "session":
+        return build_session_segment(data, config)
+    elif name == "sub_agents":
+        if jerry_data:
+            return build_sub_agents_segment(jerry_data, config)
+        return None
+    elif name == "compaction":
+        seg = build_compaction_segment(data, config, jerry_data=jerry_data)
+        return seg if seg else None
+    elif name == "tools":
+        seg = build_tools_segment(data, config)
+        return seg if seg else None
+    elif name == "git":
+        seg = build_git_segment(data, config)
+        return seg if seg else None
+    elif name == "directory":
+        return build_directory_segment(data, config)
+    else:
+        debug_log(f"Unknown segment name in layout: {name}")
+        return None
+
+
 def build_status_line(data: dict, config: dict, jerry_data: dict | None = None) -> str:
     """Build the complete status line from all segments.
 
     When jerry_data is available (FEAT-002), uses Jerry's domain
     computation for context/compaction/sub-agent segments. All other
     segments use the raw Claude Code data.
+
+    Supports two layout modes:
+    - "single-line": All segments on one line (default, backward compatible)
+    - "multi-line": Segments split across configured lines
     """
     segments_config = config["segments"]
     display_config = config["display"]
@@ -1294,54 +1364,74 @@ def build_status_line(data: dict, config: dict, jerry_data: dict | None = None) 
         if term_width > 0 and term_width < display_config["auto_compact_width"]:
             compact = True
 
-    segments = []
-
-    if segments_config["model"]:
-        segments.append(build_model_segment(data, config))
-
-    if segments_config["context"]:
-        segments.append(build_context_segment(data, config, jerry_data=jerry_data))
-
-    if segments_config["cost"]:
-        segments.append(build_cost_segment(data, config))
-
-    if not compact:
-        if segments_config.get("tokens", True):
-            segments.append(build_tokens_segment(data, config))
-
-        if segments_config["session"]:
-            segments.append(build_session_segment(data, config))
-
-        # Sub-agents segment (Jerry-only, FEAT-002) — before compaction/tools
-        # so it isn't pushed off-screen by long tool breakdowns
-        if jerry_data:
-            sub_agents_segment = build_sub_agents_segment(jerry_data, config)
-            if sub_agents_segment:
-                segments.append(sub_agents_segment)
-
-        if segments_config.get("compaction", True):
-            compaction_segment = build_compaction_segment(data, config, jerry_data=jerry_data)
-            if compaction_segment:
-                segments.append(compaction_segment)
-
-        if segments_config["tools"]:
-            tools_segment = build_tools_segment(data, config)
-            if tools_segment:
-                segments.append(tools_segment)
-
-    if segments_config["git"]:
-        git_segment = build_git_segment(data, config)
-        if git_segment:
-            segments.append(git_segment)
-
-    if segments_config["directory"] and not compact:
-        segments.append(build_directory_segment(data, config))
-
     sep_color = ansi_color(colors["separator"], config)
     reset = ansi_reset(config)
     colored_sep = f"{sep_color}{separator}{reset}"
 
-    return colored_sep.join(segments)
+    layout_config = config.get("layout", {})
+    layout_mode = layout_config.get("mode", "single-line")
+
+    if layout_mode == "multi-line" and not compact:
+        # Multi-line mode: build each line from its configured segment list
+        lines_config = layout_config.get("lines", {})
+        output_lines = []
+
+        for line_key in sorted(lines_config.keys()):
+            segment_names = lines_config[line_key]
+            line_segments = []
+            for name in segment_names:
+                seg = _build_segment_by_name(name, data, config, jerry_data, compact)
+                if seg:
+                    line_segments.append(seg)
+            if line_segments:
+                output_lines.append(colored_sep.join(line_segments))
+
+        return "\n".join(output_lines)
+    else:
+        # Single-line mode (default, backward compatible)
+        segments = []
+
+        if segments_config["model"]:
+            segments.append(build_model_segment(data, config))
+
+        if segments_config["context"]:
+            segments.append(build_context_segment(data, config, jerry_data=jerry_data))
+
+        if segments_config["cost"]:
+            segments.append(build_cost_segment(data, config))
+
+        if not compact:
+            if segments_config.get("tokens", True):
+                segments.append(build_tokens_segment(data, config))
+
+            if segments_config["session"]:
+                segments.append(build_session_segment(data, config))
+
+            # Sub-agents segment (Jerry-only, FEAT-002)
+            if jerry_data:
+                sub_agents_segment = build_sub_agents_segment(jerry_data, config)
+                if sub_agents_segment:
+                    segments.append(sub_agents_segment)
+
+            if segments_config.get("compaction", True):
+                compaction_segment = build_compaction_segment(data, config, jerry_data=jerry_data)
+                if compaction_segment:
+                    segments.append(compaction_segment)
+
+            if segments_config["tools"]:
+                tools_segment = build_tools_segment(data, config)
+                if tools_segment:
+                    segments.append(tools_segment)
+
+        if segments_config["git"]:
+            git_segment = build_git_segment(data, config)
+            if git_segment:
+                segments.append(git_segment)
+
+        if segments_config["directory"] and not compact:
+            segments.append(build_directory_segment(data, config))
+
+        return colored_sep.join(segments)
 
 
 # =============================================================================

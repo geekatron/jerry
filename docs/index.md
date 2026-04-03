@@ -66,7 +66,7 @@ Jerry's CI pipeline tests on macOS, Ubuntu, and Windows. Encountering a platform
 
 ---
 
-> **Early Access Notice:** Jerry is under active development. The framework is functional and used in production workflows, but APIs, skill interfaces, and configuration formats may change between releases. See [releases](https://github.com/geekatron/jerry/releases) for version history. For version pinning, see the [Local Clone Install](INSTALLATION.md#alternative-local-clone-install) section.
+> **Early Access Notice:** Jerry is under active development. The framework is functional and used in production workflows, but APIs, skill interfaces, and configuration formats may change between releases. See [releases](https://github.com/geekatron/jerry/releases) for version history. For version pinning, see the [Local Clone Install](INSTALLATION.md#local-clone) section.
 
 ---
 
@@ -91,7 +91,7 @@ Install [uv](https://docs.astral.sh/uv/) to enable Jerry's hooks for session con
 curl -LsSf https://astral.sh/uv/install.sh | sh   # macOS/Linux
 ```
 
-Restart your terminal. See the [Installation Guide](INSTALLATION.md#enable-hooks-recommended) for Windows instructions and the full [Capability Matrix](INSTALLATION.md#capability-matrix).
+Restart your terminal. See the [Installation Guide](INSTALLATION.md#enable-hooks-early-access) for Windows instructions and the full [Capability Matrix](INSTALLATION.md#capability-matrix).
 
 ### 3. Create a Project and Start Working
 

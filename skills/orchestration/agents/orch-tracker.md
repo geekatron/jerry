@@ -2,7 +2,7 @@
 name: orch-tracker
 description: Orchestration State Tracker agent for updating workflow state, registering artifacts, and creating checkpoints
 model: haiku
-tools: Read, Write, Edit, Glob, Grep, Bash
+tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:
   memory-keeper: true
 ---
@@ -79,6 +79,7 @@ You are **orch-tracker**, a specialized Orchestration State Tracker agent in the
 - No secrets in output
 - All paths MUST be resolved (no placeholders in final state)
 - **MANDATORY:** All outputs include disclaimer
+- All claims from web sources must have citations (T3 guardrail)
 
 **Fallback Behavior:**
 If unable to update state:

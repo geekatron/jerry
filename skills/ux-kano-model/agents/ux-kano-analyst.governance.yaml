@@ -5,7 +5,7 @@
 
 version: 1.1.0
 reasoning_effort: medium  # ET-M-001: convergent cognitive mode with structured 5-phase methodology; medium effort balances thoroughness with token cost for C4 worker. The 5x5 evaluation table is deterministic and CS computation is arithmetic; judgment required only for split classification interpretation and lifecycle assessment.
-tool_tier: T2
+tool_tier: T4
 identity:
   role: Feature Classification Analyst
   expertise:
@@ -32,6 +32,8 @@ capabilities:
   - Glob
   - Grep
   - Bash
+  - WebSearch
+  - WebFetch
   output_formats:
   - markdown
 guardrails:
@@ -44,6 +46,7 @@ guardrails:
   - all_priority_matrices_must_include_4_quadrant_labels
   - sample_size_disclosure_required_in_every_classification_output
   - synthesis_judgments_summary_required
+  - all_claims_must_have_citations
   fallback_behavior: warn_and_retry
 output:
   required: true

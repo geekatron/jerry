@@ -6,7 +6,7 @@
 
 version: 1.0.0
 reasoning_effort: medium  # MEDIUM standard deviation (ET-M-001): reasoning_effort set to medium (not max) for this worker agent — systematic cognitive mode with fixed 4-day protocol constrains interpretive variance at medium depth. C4 applies to deliverable quality gate, not individual agent reasoning allocation. Override requires documented justification per AD-M-009.
-tool_tier: T3
+tool_tier: T4
 identity:
   role: Design Sprint 2.0 Facilitator
   expertise:

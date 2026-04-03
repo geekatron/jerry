@@ -8,7 +8,7 @@
 | [Scoring Context](#scoring-context) | Text metadata and calibration reference |
 | [Trait Scores](#trait-scores) | Per-trait scores with evidence summary |
 | [Detailed Trait Analysis](#detailed-trait-analysis) | Per-trait evidence and improvement paths |
-| [Improvement Recommendations](#improvement-recommendations) | Priority-ordered improvement actions |
+| [Improvement Recommendations](#improvement-recommendations-priority-ordered) | Priority-ordered improvement actions |
 | [Boundary Violation Check](#boundary-violation-check) | Boundary condition audit |
 | [Leniency Bias Check](#leniency-bias-check) | Scoring integrity verification |
 

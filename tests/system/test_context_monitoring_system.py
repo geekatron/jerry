@@ -89,15 +89,21 @@ pytestmark = [
 
 
 @pytest.fixture()
-def system_components(tmp_path: Path) -> SystemComponents:
+def system_components(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> SystemComponents:
     """Wire all real context_monitoring components together.
 
     Note: Manual wiring is used instead of the production composition root
     (src/bootstrap.py) because bootstrap requires a full project environment
     with CLI context. E2E tests exercise the composition root via `jerry` CLI.
 
+    Uses monkeypatch to clear env vars that override context window detection
+    (BUG-001: JERRY_CONTEXT_MONITOR__CONTEXT_WINDOW_TOKENS=1000000 in Claude sessions).
+
     Returns a typed NamedTuple for IDE support and self-documentation.
     """
+    # Clear env vars that override context window detection (BUG-001)
+    monkeypatch.delenv("JERRY_CONTEXT_MONITOR__CONTEXT_WINDOW_TOKENS", raising=False)
+    monkeypatch.delenv("ANTHROPIC_MODEL", raising=False)
     # Infrastructure (lock_dir scoped to tmp_path for test isolation)
     file_adapter = AtomicFileAdapter(lock_dir=tmp_path / "locks")
     checkpoint_dir = tmp_path / "checkpoints"

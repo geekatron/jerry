@@ -12,9 +12,9 @@
 | EN-001 | Enabler | CI pipeline security hardening | in_progress | PROJ-030-bugs |
 | TASK-003 | Task | Consolidate pre_tool_use.py into CLI enforcement pipeline (#150) | in_progress | EN-001 |
 | TASK-004 | Task | Claude Code permission syntax reference (#179) | in_progress | PROJ-030-bugs |
-| BUG-004 | Bug | settings.json uses undocumented field names (#180) | pending | PROJ-030-bugs |
-| BUG-005 | Bug | Skill(jerry:name) permission pattern undocumented (#181) | pending | PROJ-030-bugs |
-| TASK-005 | Task | Migrate deprecated Bash(:*) syntax (#182) | pending | PROJ-030-bugs |
+| BUG-004 | Bug | settings.json uses undocumented field names (#180) | completed | PROJ-030-bugs |
+| BUG-005 | Bug | Skill(jerry:name) permission pattern undocumented (#181) | completed | PROJ-030-bugs |
+| TASK-005 | Task | Migrate deprecated Bash(:*) syntax (#182) | completed | PROJ-030-bugs |
 | TASK-001 | Task | Create CHANGELOG.md and establish changelog process | completed | EN-001 |
 | TASK-002 | Task | Document CI pipeline hardening changes using /diataxis | completed | EN-001 |
 

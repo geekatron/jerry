@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import hashlib
 from collections.abc import Callable
+from pathlib import Path
 from typing import Generic, TypeVar
 
 from src.infrastructure.internal.file_store import IFileStore
@@ -92,7 +93,7 @@ class FileRepository(Generic[TAggregate, TId]):
         """Get file path for an aggregate ID."""
         # Sanitize ID for filesystem safety
         safe_id = self._sanitize_id(str(aggregate_id))
-        return f"{self._base_path}/{safe_id}.json"
+        return str(Path(self._base_path) / f"{safe_id}.json")
 
     def _sanitize_id(self, id_str: str) -> str:
         """Sanitize ID for use in file path.

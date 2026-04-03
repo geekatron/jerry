@@ -153,7 +153,7 @@ Request a specific agent:
 
 ```
 "Use pe-builder to walk me through constructing a C3 orchestration prompt"
-"Have pe-constraint-gen produce NPT-009 forbidden actions for a T3 research agent"
+"Have pe-constraint-gen produce NPT-009 forbidden actions for a T4 research agent"
 "I need pe-scorer to evaluate this prompt and tell me what to fix"
 ```
 
@@ -227,7 +227,7 @@ pe-scorer returns dimension-level scores (C1-C7) with weighted composite and spe
 | Need | Agent | Example |
 |------|-------|---------|
 | Build prompt from scratch | pe-builder | "Help me build a prompt for a C3 architecture decision" |
-| Generate agent guardrails | pe-constraint-gen | "Generate NPT-009 forbidden actions for a T3 research agent" |
+| Generate agent guardrails | pe-constraint-gen | "Generate NPT-009 forbidden actions for a T4 research agent" |
 | Convert positive to negation | pe-constraint-gen | "Convert these DOs to NPT-013 format: 'Always cite sources'" |
 | Evaluate prompt quality | pe-scorer | "Score this prompt and tell me what to fix" |
 | Full build-and-score cycle | pe-builder + pe-scorer | "Build a prompt for X, then score it" |

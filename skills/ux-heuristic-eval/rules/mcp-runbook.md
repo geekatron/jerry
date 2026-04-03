@@ -200,7 +200,7 @@ The `ux-heuristic-evaluator` agent operates at **T3 (External)** per `agent-deve
 
 | Tool | Reason |
 |------|--------|
-| Task | Worker agent; P-003 prohibition. `disallowedTools: [Task]` in agent frontmatter. |
+| Agent | Worker agent; P-003 prohibition. `disallowedTools: [Agent]` in agent frontmatter. |
 | Memory-Keeper | No cross-session state requirement. Sub-skill state is engagement-scoped per P-002. All output persisted to `skills/ux-heuristic-eval/output/{engagement-id}/`. |
 
 ### Citation Requirements

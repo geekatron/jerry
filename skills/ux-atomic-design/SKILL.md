@@ -114,11 +114,11 @@ Do NOT use for:
 
 | Agent | Role | Tier | Mode | Model | Output Location |
 |-------|------|------|------|-------|-----------------|
-| `ux-atomic-architect` | Atomic design component taxonomy architect | T3 | Systematic | Sonnet | `skills/ux-atomic-design/output/{engagement-id}/ux-atomic-architect-{topic-slug}.md` |
+| `ux-atomic-architect` | Atomic design component taxonomy architect | T4 | Systematic | Sonnet | `skills/ux-atomic-design/output/{engagement-id}/ux-atomic-architect-{topic-slug}.md` |
 
 **STUB:** The agent definition file (`skills/ux-atomic-design/agents/ux-atomic-architect.md`) is pending Wave 3 Phase 2 implementation as part of PROJ-022 EPIC-003. The SKILL.md specifies the methodology and output contract that the agent will implement.
 
-**Tool tier:** T3 (External) = Read, Write, Edit, Glob, Grep + WebSearch, WebFetch + Context7 MCP. The T3 tier enables access to external component library documentation (Material UI, Radix, Shadcn/ui) via Context7 and web search for Storybook configuration patterns. Bash is intentionally excluded; T3 tier does not require shell access for MCP operations. See `.context/rules/agent-development-standards.md` [Tool Security Tiers] for full tier definitions.
+**Tool tier:** T4 (External) = Read, Write, Edit, Glob, Grep + WebSearch, WebFetch + Context7 MCP. The T4 tier enables access to external component library documentation (Material UI, Radix, Shadcn/ui) via Context7 and web search for Storybook configuration patterns. Bash is intentionally excluded; T4 tier does not require shell access for MCP operations. See `.context/rules/agent-development-standards.md` [Tool Security Tiers] for full tier definitions.
 
 The agent produces output at three levels per AD-M-004:
 - **L0 (Executive Summary):** Top component reuse opportunities; design token consistency score; Storybook coverage percentage; key findings for stakeholders and cross-framework synthesis input.
@@ -131,7 +131,7 @@ The agent produces output at three levels per AD-M-004:
 
 ## P-003 Compliance
 
-The `/ux-atomic-design` sub-skill contains a single **worker** agent. It is invoked by the `ux-orchestrator` (T5) via the Task tool. The agent does NOT have Task tool access and MUST NOT spawn sub-agents.
+The `/ux-atomic-design` sub-skill contains a single **worker** agent. It is invoked by the `ux-orchestrator` (T5) via the Agent tool. The agent does NOT have Agent tool access and MUST NOT spawn sub-agents.
 
 ```
 MAIN CONTEXT (user request)
@@ -139,14 +139,14 @@ MAIN CONTEXT (user request)
     v
 ux-orchestrator (T5, Opus, Integrative) -- parent orchestrator
     |
-    +-- ux-atomic-architect (T3, Systematic, Sonnet) -- THIS sub-skill's worker
+    +-- ux-atomic-architect (T4, Systematic, Sonnet) -- THIS sub-skill's worker
     +-- [other sub-skill workers...]
 ```
 
 **Enforcement:**
-- `disallowedTools: [Task]` declared in `skills/ux-atomic-design/agents/ux-atomic-architect.md` frontmatter
+- `disallowedTools: [Agent]` declared in `skills/ux-atomic-design/agents/ux-atomic-architect.md` frontmatter
 - P-003 prohibition in `skills/ux-atomic-design/agents/ux-atomic-architect.governance.yaml` `capabilities.forbidden_actions`
-- CI gate validates no sub-skill agent has Task access (documented in `skills/user-experience/rules/ci-checks.md`)
+- CI gate validates no sub-skill agent has Agent access (documented in `skills/user-experience/rules/ci-checks.md`)
 
 > **Source:** P-003 hierarchy from parent SKILL.md [P-003 Compliance].
 
@@ -176,12 +176,12 @@ The `ux-orchestrator` routes these requests to `ux-atomic-architect` based on [s
 "Have ux-atomic-architect audit design tokens across the navigation system"
 ```
 
-### Via Task Tool (orchestrator internal)
+### Via Agent Tool (orchestrator internal)
 
-The `ux-orchestrator` invokes the agent via the Task tool:
+The `ux-orchestrator` invokes the agent via the Agent tool:
 
 ```python
-Task(
+Agent(
     description="ux-atomic-architect: Atomic design component taxonomy for checkout flow",
     subagent_type="jerry:ux-atomic-architect",
     prompt="""
@@ -613,7 +613,7 @@ All agents in this sub-skill adhere to the **Jerry Constitution v1.0**:
 
 | Principle | Requirement | Consequence of Violation |
 |-----------|-------------|-------------------------|
-| P-003 | NEVER spawn recursive subagents -- worker agent, no Task tool access | Agent hierarchy violation; uncontrolled token consumption |
+| P-003 | NEVER spawn recursive subagents -- worker agent, no Agent tool access | Agent hierarchy violation; uncontrolled token consumption |
 | P-020 | NEVER override user decisions on component classification or consolidation priorities | Unauthorized action; trust erosion |
 | P-022 | NEVER present component coverage as complete without disclosing inventory scope limitations; NEVER inflate design token consistency scores without comprehensive evidence | Governance undermined; quality assessment invalidated |
 | P-001 | NEVER present component classifications without reasoning for the hierarchy level assignment | Unreliable outputs; unfounded claims propagate downstream |
@@ -622,7 +622,7 @@ All agents in this sub-skill adhere to the **Jerry Constitution v1.0**:
 **Per-agent enforcement:** The `ux-atomic-architect` agent declares:
 - `constitution.principles_applied`: P-003, P-020, P-022, P-001, P-002 in `skills/ux-atomic-design/agents/ux-atomic-architect.governance.yaml`
 - `capabilities.forbidden_actions`: 3 entries in NPT-009 format referencing the constitutional triplet
-- `disallowedTools: [Task]` in `skills/ux-atomic-design/agents/ux-atomic-architect.md` frontmatter
+- `disallowedTools: [Agent]` in `skills/ux-atomic-design/agents/ux-atomic-architect.md` frontmatter
 
 ### AI-Augmented Analysis Limitations
 

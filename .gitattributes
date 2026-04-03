@@ -1,0 +1,136 @@
+# =============================================================================
+# .gitattributes -- Cross-platform line ending consistency
+# Repository: geekatron/jerry
+# Issue: #116
+# PROJ: PROJ-011
+#
+# SECURITY NOTE: This file is protected by CODEOWNERS. Modifications require
+# approval from a designated maintainer. The CI pipeline validates this file
+# against the base branch to prevent self-referential bypass (RED-116-F009).
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Default: auto-detect text and normalize to LF
+# -----------------------------------------------------------------------------
+# Rationale: Catches any file type not explicitly listed below. The text=auto
+# heuristic correctly identifies binary content and skips it. The eol=lf
+# ensures consistent line endings on this LF-first project, even on Windows
+# checkouts. Subdirectory .gitattributes overrides are blocked by CI
+# (RED-116-F007 mitigation).
+# -----------------------------------------------------------------------------
+* text=auto eol=lf
+
+# =============================================================================
+# Text files -- explicit LF normalization with semantic diff drivers
+# =============================================================================
+
+# Source code
+*.py        text eol=lf diff=python
+*.ts        text eol=lf
+*.sh        text eol=lf
+
+# Configuration
+*.yaml      text eol=lf
+*.yml       text eol=lf
+*.json      text eol=lf
+*.toml      text eol=lf
+*.ini       text eol=lf
+*.cfg       text eol=lf
+
+# Documentation
+*.md        text eol=lf diff=markdown
+*.txt       text eol=lf
+*.rst       text eol=lf
+
+# Web
+*.html      text eol=lf
+*.css       text eol=lf
+*.svg       text eol=lf
+
+# Subtitles / Transcripts
+*.vtt       text eol=lf
+*.srt       text eol=lf
+
+# Diagrams
+*.mmd       text eol=lf
+
+# BDD / Testing
+*.feature   text eol=lf
+
+# Data / Markup
+*.xml       text eol=lf
+
+# Lock files (text, suppress noisy auto-generated diffs)
+*.lock      text eol=lf -diff
+
+# Git / Repo marker files
+.gitignore  text eol=lf
+.gitkeep    text eol=lf
+
+# Extensionless known files
+LICENSE     text eol=lf
+NOTICE      text eol=lf
+Makefile    text eol=lf
+CNAME       text eol=lf
+
+# =============================================================================
+# Windows scripts -- proactive CRLF (required by Windows interpreters)
+# =============================================================================
+# These extensions do not currently exist in the repository but are included
+# proactively per issue #116 to prevent future cross-platform issues.
+# Windows cmd.exe requires CRLF; PowerShell is CRLF-conventional.
+# =============================================================================
+*.bat       text eol=crlf
+*.cmd       text eol=crlf
+*.ps1       text eol=crlf
+
+# =============================================================================
+# Binary files -- no normalization, no diff, no merge
+# =============================================================================
+
+# Documents
+*.pdf       binary
+*.docx      binary
+
+# Images (proactive -- not currently in repo but prevents future issues)
+*.png       binary
+*.jpg       binary
+*.jpeg      binary
+*.gif       binary
+*.ico       binary
+*.webp      binary
+
+# Fonts
+*.woff      binary
+*.woff2     binary
+*.ttf       binary
+*.eot       binary
+
+# Archives
+*.zip       binary
+*.tar.gz    binary
+*.gz        binary
+*.bz2       binary
+*.xz        binary
+*.7z        binary
+*.jar       binary
+*.whl       binary
+
+# Python bytecode (should be .gitignored, but defense-in-depth)
+*.pyc       binary
+*.pyo       binary
+
+# Native binaries (should be .gitignored, but defense-in-depth)
+*.so        binary
+*.dll       binary
+*.exe       binary
+
+# =============================================================================
+# SECURITY CONSTRAINTS (enforced by CI, documented here for reference)
+# =============================================================================
+# 1. No `binary`, `-diff`, or `-text` on source extensions (RED-116-F003)
+# 2. No `filter` attributes except `filter=lfs` on LFS-tracked files (RED-116-F010)
+# 3. No `whitespace` negation rules (RED-116-F008)
+# 4. No subdirectory .gitattributes files (RED-116-F007)
+# 5. No `export-ignore` on security-critical files (RED-116-F011)
+# =============================================================================

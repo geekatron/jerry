@@ -7,7 +7,7 @@ These tests define the expected behavior of the security enforcement engine
 BEFORE implementation exists. Each test should FAIL until the corresponding
 production code is written (GREEN phase).
 
-Security checks ported from scripts/pre_tool_use.py:
+Security checks (originally ported from pre_tool_use.py, removed in STORY-023):
 - C-001/C-002: File write security (blocked paths, sensitive file patterns)
 - C-003/C-004/C-005: Bash command security (cd, rm, dangerous commands)
 - C-007: Git operation security (force push blocking)

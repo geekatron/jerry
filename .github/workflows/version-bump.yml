@@ -3,15 +3,92 @@
 # updates version across all files via bump-my-version, and creates a tag
 # that triggers release.yml.
 #
+# DUAL-FILTER ARCHITECTURE (#187):
+# Two complementary (not redundant) filters prevent unnecessary runs:
+#   Filter A (paths-ignore, trigger level): Coarse file-based filter.
+#     GitHub evaluates this BEFORE the workflow is queued. If ALL changed
+#     files are in paths-ignore, the workflow never starts. Zero CI cost.
+#   Filter B (startsWith, job-level if:): Fine commit-type filter.
+#     Evaluated AFTER the workflow is queued but before any steps run.
+#     Skips the job for non-bump conventional commit prefixes.
+# Together they eliminate ~60-70% of unnecessary runs. See research:
+#   projects/PROJ-030-bugs/research/workflow-filtering-research.md
+#
 # References:
 #   - EN-108: Version Bumping Strategy
 #   - TASK-003: Design Version Bumping Process
+#   - #187: Dual filtering implementation
 
 name: Version Bump
 
 on:
   push:
     branches: [main]
+    # #187 Filter A: Skip workflow when ONLY non-version-relevant files change.
+    # Uses paths-ignore (denylist) because the set of irrelevant paths is
+    # smaller and more stable than enumerating all version-relevant paths.
+    # Does NOT affect workflow_dispatch — manual triggers always fire.
+    # Source: https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions#onpushpull_requestpull_request_targetpathspaths-ignore
+    paths-ignore:
+      # Only exclude files that can NEVER affect the shipped plugin.
+      # Jerry is a Claude Code plugin — skills/, hooks/, .context/, .claude/,
+      # scripts/, agents, rules, templates are ALL product surface.
+      # When in doubt, do NOT exclude. A wasted CI run (BumpType.NONE)
+      # is better than a missed version bump.
+      #
+      # --- Documentation site (published separately, not part of plugin) ---
+      # Product-relevant docs/ subdirs intentionally NOT excluded:
+      #   docs/schemas/    — runtime validation schemas (validate-agent-frontmatter.py)
+      #   docs/governance/ — JERRY_CONSTITUTION.md, C4-escalation (AE-001)
+      #   docs/knowledge/  — knowledge files loaded by agents at runtime
+      #   docs/design/     — ADRs; baselined ADR changes trigger AE-004 (C4)
+      #   docs/experience/ — learnings captured by agents
+      # MAINTENANCE: When creating a new docs/ subdirectory, assess if it
+      # contains runtime files loaded by agents or enforcement. If yes: do
+      # NOT add here. If pure doc-site content: add to this list.
+      # (red-exploit Finding 1: projects/PROJ-030-bugs/reviews/)
+      - 'docs/reference/**'
+      - 'docs/explanation/**'
+      - 'docs/howto/**'
+      - 'docs/playbooks/**'
+      - 'docs/blog/**'
+      - 'docs/index.md'
+      - 'docs/INSTALLATION.md'
+      - 'docs/BOOTSTRAP.md'
+      - 'docs/CLAUDE-MD-GUIDE.md'
+      - 'site/**'
+      - 'overrides/**'
+      - 'mkdocs.yml'
+      - 'CNAME'
+      # --- Project management (internal work tracking) ---
+      - 'projects/**'
+      # --- Operational (maintainer tooling, not shipped) ---
+      - 'runbooks/**'
+      - '.pre-commit-config.yaml'
+      - 'pytest.ini'
+      - 'requirements-*.txt'
+      # --- Community/legal (no behavioral impact) ---
+      - 'CODE_OF_CONDUCT.md'
+      - 'CONTRIBUTING.md'
+      - 'LICENSE'
+      - 'NOTICE'
+      - 'SECURITY.md'
+      - 'SOUNDTRACK.md'
+      - 'README.md'
+      # --- CI config (enumerated, NOT blanket .github/**) ---
+      # release.yml is NOT excluded — artifact packaging changes are product-relevant.
+      # (red-exploit Finding 2)
+      - '.github/workflows/ci.yml'
+      - '.github/workflows/version-bump.yml'
+      - '.github/workflows/docs.yml'
+      - '.github/workflows/pat-monitor.yml'
+      - '.github/dependabot.yml'
+      - '.github/CODEOWNERS'
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/pull_request_template.md'
+      # MAINTENANCE: When adding new .github/ files, assess product relevance.
+      # release.yml is NOT excluded — artifact packaging is product-relevant.
+      # ISSUE_TEMPLATE and PR templates are community files, not product.
   workflow_dispatch:
     inputs:
       bump_type:
@@ -40,29 +117,96 @@ jobs:
     name: Determine and Apply Version Bump
     runs-on: ubuntu-latest
 
-    # Skip if this is a version bump commit (prevent infinite loop)
-    # BUG-003/F-003: Use github.actor (authenticated identity set by
-    # GitHub from the token) instead of author.name (any committer can
-    # set git config user.name "github-actions[bot]" to suppress bumps)
-    # EN-001/F-004: workflow_dispatch also respects [skip-bump] to
-    # prevent double-bumping a commit already marked skip
+    # BUG-003 (complete fix): UV_LOCKED prevents all uv sync/run commands
+    # from modifying uv.lock AND fails if the lockfile is stale relative to
+    # pyproject.toml. Stricter than UV_FROZEN (which silently uses stale
+    # lockfiles). The original fix only added --frozen to uv sync, but
+    # uv run (jerry CLI, sync_versions.py) also re-resolves the lockfile
+    # when CI uv version differs from the one that generated it.
+    # Source: https://docs.astral.sh/uv/reference/environment/
+    env:
+      UV_LOCKED: "1"
+
+    # #187 Filter B: Skip non-bump conventional commit prefixes.
+    # Only feat:, fix:, perf:, and breaking changes (!) produce bumps.
+    # All other prefixes resolve to BumpType.NONE in the CLI — skip them.
+    #
+    # startsWith() is case-insensitive: "This function is not case sensitive."
+    #   Source: https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/evaluate-expressions#startswith
+    #
+    # head_commit.message is null on workflow_dispatch (no push commit).
+    # Null coerces to empty string '', making all startsWith() return false
+    # and all !startsWith() return true. workflow_dispatch always passes.
+    #   Source: https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/evaluate-expressions#literals
+    #
+    # NOTE: Assumes standard merge commits (not squash/rebase).
+    # With standard merges, head_commit.message is "Merge pull request #N..."
+    # which passes all startsWith checks. detect-bump-type reads the
+    # individual commits inside the merge. With rebase merges, only the last
+    # commit's subject is checked, which could skip a PR with mixed types.
+    # (red-exploit V6 — not applicable; Jerry uses standard merges)
+    # Verify: GitHub repo Settings > General > Pull Requests > merge method
+    #
+    # Research: projects/PROJ-030-bugs/research/workflow-filtering-research.md
+    #
+    # SECURITY: workflow_dispatch has no secondary approval — any actor with
+    # repo write access can trigger any bump type. Two threat scenarios:
+    #   1. Authorized collaborator: accepted risk (write access = trusted)
+    #   2. Compromised PAT: accepted risk — VERSION_BUMP_PAT has contents:write
+    #      scope; a compromised PAT can push to main directly anyway, making
+    #      workflow_dispatch a less interesting attack vector.
+    # If external write contributors are added, configure a GitHub Environment
+    # with required reviewers.
+    # (eng-security FINDING-001: projects/PROJ-030-bugs/reviews/eng-security-187-dual-filter-review.md)
+    #
+    # MAINTENANCE: The denylist below must ONLY contain prefixes that
+    # detect-bump-type treats as BumpType.NONE. Do NOT add prefixes that
+    # could be bump-worthy (feat:, fix:, perf:).
+    # (eng-security FINDING-003: projects/PROJ-030-bugs/reviews/eng-security-187-dual-filter-review.md)
+    #
+    # Prefix rationale:
+    #   deps: — Jerry convention for dependency updates not using build(deps):
+    #   revert: — rolling back a feat/fix does not create a new forward bump
+    #   [skip-bump] intentionally absent from workflow_dispatch (no commit)
     if: >-
       (
-        github.event_name == 'workflow_dispatch' &&
-        !contains(github.event.head_commit.message, '[skip-bump]')
+        github.event_name == 'workflow_dispatch'
       ) ||
       (
         github.event_name != 'workflow_dispatch' &&
         !contains(github.event.head_commit.message, '[skip-bump]') &&
-        github.actor != 'github-actions[bot]'
+        github.actor != 'github-actions[bot]' &&
+        !startsWith(github.event.head_commit.message, 'ci:') &&
+        !startsWith(github.event.head_commit.message, 'ci(') &&
+        !startsWith(github.event.head_commit.message, 'deps:') &&
+        !startsWith(github.event.head_commit.message, 'deps(') &&
+        !startsWith(github.event.head_commit.message, 'docs:') &&
+        !startsWith(github.event.head_commit.message, 'docs(') &&
+        !startsWith(github.event.head_commit.message, 'chore:') &&
+        !startsWith(github.event.head_commit.message, 'chore(') &&
+        !startsWith(github.event.head_commit.message, 'style:') &&
+        !startsWith(github.event.head_commit.message, 'style(') &&
+        !startsWith(github.event.head_commit.message, 'refactor:') &&
+        !startsWith(github.event.head_commit.message, 'refactor(') &&
+        !startsWith(github.event.head_commit.message, 'test:') &&
+        !startsWith(github.event.head_commit.message, 'test(') &&
+        !startsWith(github.event.head_commit.message, 'build:') &&
+        !startsWith(github.event.head_commit.message, 'build(') &&
+        !startsWith(github.event.head_commit.message, 'revert:') &&
+        !startsWith(github.event.head_commit.message, 'revert(')
       )
+
+    # NOTE on per-step `if:` guards: Steps that modify the repo (bump, push)
+    # use `if: steps.bump.outputs.type != 'none'` to skip when there's nothing
+    # to bump. The "Job summary" step uses `if: always()` so the run always
+    # reports its outcome regardless of skip/success/failure.
 
     steps:
       # ------------------------------------------------------------------
       # Checkout with PAT for push-through-branch-protection
       # ------------------------------------------------------------------
       - name: Checkout repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
           token: ${{ secrets.VERSION_BUMP_PAT }}
@@ -71,7 +215,7 @@ jobs:
       # Set up Python + UV + bump-my-version
       # ------------------------------------------------------------------
       - name: Install uv
-        uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5.4.2
+        uses: astral-sh/setup-uv@e06108dd0aef18192324c70427afc47652e63a82 # v7.5.0
         with:
           version: "0.10.9"
 
@@ -79,23 +223,20 @@ jobs:
         run: uv python install 3.14
 
       # BUG-003/RISK-01: Pin bump-my-version to exact version to prevent
-      # supply chain attacks via PyPI package compromise. Update pin
-      # periodically via Dependabot or manual review.
+      # supply chain attacks via PyPI package compromise.
+      # NOTE: Dependabot does NOT track `uv tool install` version pins
+      # (only `uses:` action pins and requirements files). This pin must
+      # be updated manually. Check PyPI for new releases quarterly.
       - name: Install bump-my-version
         run: uv tool install 'bump-my-version==1.2.7'
 
       # ------------------------------------------------------------------
       # Install project dependencies for bump detection
-      # BUG-003: Use --frozen to prevent uv.lock modification in CI.
-      # Without --frozen, uv performs full dependency re-resolution against
-      # the CI Python version (3.14). When this differs from the version
-      # used to generate uv.lock locally, the resolver updates platform
-      # markers and dependency bounds, modifying uv.lock and making the
-      # working tree dirty — which causes bump-my-version to fail
-      # (allow_dirty = false).
+      # BUG-003: UV_LOCKED=1 (job-level env) handles lockfile protection.
+      # Do NOT add --frozen here — it conflicts with UV_LOCKED.
       # ------------------------------------------------------------------
       - name: Install project dependencies
-        run: uv sync --frozen
+        run: uv sync
 
       # ------------------------------------------------------------------
       # Determine bump type from commits
@@ -121,16 +262,16 @@ jobs:
 
       # ------------------------------------------------------------------
       # Ensure clean working tree before bump (BUG-003)
-      # Fail-fast guard: with --frozen, the tree should be clean.
-      # If dirty, something unexpected happened — fail loudly so a
-      # human investigates rather than silently committing unreviewed
-      # changes (allow_dirty = false is a supply chain security control).
+      # BUG-003: Fail-fast guard. With UV_LOCKED=1, uv sync/run cannot
+      # modify uv.lock. If the tree is dirty, something unexpected happened.
+      # Fail loudly so a human investigates (allow_dirty = false is a
+      # supply chain security control).
       # ------------------------------------------------------------------
       - name: Ensure clean working tree
         if: steps.bump.outputs.type != 'none'
         run: |
           if [[ -n "$(git status --porcelain)" ]]; then
-            echo "::error::Working tree unexpectedly dirty before bump (uv sync --frozen should prevent this)"
+            echo "::error::Working tree unexpectedly dirty before bump (UV_LOCKED=1 should prevent this)"
             git diff --name-only
             echo ""
             echo "If only uv.lock is dirty, the lockfile needs regeneration."
@@ -168,19 +309,48 @@ jobs:
             bump-my-version bump "$BUMP_TYPE"
           fi
 
+          # BUG-003/FIX: Regenerate uv.lock after version bump.
+          # bump-my-version changes the version in pyproject.toml, making
+          # uv.lock stale. UV_LOCKED blocks subsequent uv commands without
+          # this step. In the prerelease path, the amend also folds the
+          # --no-commit changes from line 171 into the bump commit.
+          # Unset UV_LOCKED temporarily so uv lock can update the file.
+          UV_LOCKED=0 uv lock
+
+          # Guard: verify uv lock only changed the jerry version field,
+          # not transitive dependencies. A broader change could indicate
+          # a supply chain issue (red-exploit Finding 1).
+          LOCK_DIFF=$(git diff --unified=0 uv.lock | grep "^[+-]" | grep -v "^[+-][+-][+-]" || true)
+          LOCK_LINES=$(echo "$LOCK_DIFF" | grep -c "." || true)
+          if [[ "$LOCK_LINES" -gt 2 ]]; then
+            echo "::warning::uv.lock changed more than the version field ($LOCK_LINES diff lines). Review the lockfile changes."
+            git diff uv.lock
+          fi
+
+          git add uv.lock
+          git commit --amend --no-edit
+
+          # Re-create the tag at the amended commit SHA.
+          # bump-my-version created the tag at the pre-amend commit (C1).
+          # The amend creates a new commit (C2), orphaning C1. Without
+          # re-tagging, the release tag points to a commit that does NOT
+          # include the regenerated uv.lock. (eng-devsecops Finding 5)
+          NEW_VERSION=$(grep -oP '^version = "\K[^"]+' pyproject.toml | head -1)
+          if git tag -l "v${NEW_VERSION}" | grep -q .; then
+            git tag -d "v${NEW_VERSION}"
+            git tag -a "v${NEW_VERSION}" -m "Release v${NEW_VERSION}"
+            echo "Re-tagged v${NEW_VERSION} at amended commit $(git rev-parse HEAD)"
+          fi
+
       # ------------------------------------------------------------------
       # Validate version consistency
-      # BUG-003: Use --frozen here too. Without it, uv sync after the
-      # bump commit could re-resolve dependencies and re-dirty the tree,
-      # which doesn't break the bump (already committed) but leaves the
-      # runner in an inconsistent state for the version check script.
-      # The version field change in pyproject.toml does not affect
-      # dependency resolution, so --frozen is safe here.
+      # BUG-003: UV_LOCKED=1 (job-level env) prevents lockfile modification.
+      # Do NOT add --frozen — it conflicts with UV_LOCKED.
       # ------------------------------------------------------------------
       - name: Validate version sync
         if: steps.bump.outputs.type != 'none'
         run: |
-          uv sync --frozen
+          uv sync
           uv run python scripts/sync_versions.py --check
 
       # ------------------------------------------------------------------

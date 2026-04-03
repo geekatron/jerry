@@ -3,7 +3,7 @@
 # Runtime config: ts-extractor.md
 
 version: 1.4.2
-tool_tier: T4
+tool_tier: T3
 identity:
   role: Entity Extraction Specialist
   expertise:

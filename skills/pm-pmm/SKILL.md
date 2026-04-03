@@ -1,18 +1,8 @@
 ---
 name: pm-pmm
-description: >
-  Product management and product marketing decision framework. Invoke when users
-  need product strategy (PRDs, vision, roadmaps), customer insight (personas,
-  journey maps, VOC), business analysis (business cases, market sizing, pricing),
-  competitive intelligence (battle cards, win/loss, competitive analysis), or
-  go-to-market planning (GTM plans, positioning, MRDs, buyer personas).
-  Uses 18 validated industry frameworks organized around Cagan's Value Risk and
-  Business Viability Risk domains. Supports discovery mode (hypothesis-driven)
-  and delivery mode (stakeholder-ready).
-  Trigger keywords: PRD, product requirements, roadmap, prioritize, RICE,
-  persona, journey map, VOC, business case, market sizing, TAM, competitive
-  analysis, battle card, GTM, go-to-market, positioning, messaging, MRD.
+description: "Product management and product marketing decision framework. Invoke when users need product strategy (PRDs, vision, roadmaps), customer insight (personas, journey maps, VOC), business analysis (business cases, market sizing, pricing), competitive intelligence (battle cards, win/loss, competitive analysis), or go-to-market planning (GTM plans, positioning, MRDs, buyer personas). Uses 18 validated industry frameworks organized around Cagan's Value Risk and Business Viability Risk domains. Supports discovery mode (hypothesis-driven) and delivery mode (stakeholder-ready). Trigger keywords - PRD, product requirements, roadmap, prioritize, RICE, persona, journey map, VOC, business case, market sizing, TAM, competitive analysis, battle card, GTM, go-to-market, positioning, messaging, MRD."
 version: "1.0.0"
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 activation-keywords:
   - "PRD"
   - "product requirements"

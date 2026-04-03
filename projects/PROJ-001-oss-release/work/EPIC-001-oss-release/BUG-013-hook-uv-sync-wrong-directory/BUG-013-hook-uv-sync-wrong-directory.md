@@ -1,7 +1,7 @@
 # BUG-013: SessionStart Hook `uv sync` Runs in Wrong Directory
 
 > **Type:** bug
-> **Status:** in_progress
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Severity:** major
@@ -9,6 +9,7 @@
 > **Parent:** EPIC-001-oss-release
 > **Owner:** Claude
 > **Found In:** 0.7.0
+> **Completed:** 2026-03-30T00:00:00Z
 
 ---
 
@@ -165,3 +166,4 @@ Add `--directory ${CLAUDE_PLUGIN_ROOT}` to the `uv sync` command so it resolves 
 |------|--------|--------|-------|
 | 2026-02-20 | Claude | pending | Initial report. `uv sync` missing `--directory` flag on SessionStart hook. |
 | 2026-02-20 | Claude | in_progress | Root cause confirmed. Fix applied to `hooks/hooks.json`. |
+| 2026-03-30 | Claude | completed | H-32 parity audit: GH #46 is CLOSED. Marking entity completed to match. |

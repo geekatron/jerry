@@ -323,11 +323,11 @@ class TestMcpDeclarationConsistency:
     @pytest.mark.parametrize(
         "agent_name,expected_tier",
         [
-            ("pm-product-strategist", "T3"),
-            ("pm-customer-insight", "T3"),
-            ("pm-market-strategist", "T3"),
-            ("pm-business-analyst", "T3"),
-            ("pm-competitive-analyst", "T3"),
+            ("pm-product-strategist", "T4"),
+            ("pm-customer-insight", "T4"),
+            ("pm-market-strategist", "T4"),
+            ("pm-business-analyst", "T4"),
+            ("pm-competitive-analyst", "T4"),
         ],
     )
     def test_tool_tier_matches_capability_when_governance_loaded(

@@ -109,11 +109,14 @@ resumption:
 
 
 @pytest.fixture()
-def e2e_env(tmp_path: Path) -> dict[str, object]:
+def e2e_env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> dict[str, object]:
     """Create a full E2E environment with real components.
 
     Returns a dict with all components and paths needed for E2E testing.
     """
+    # Clear env vars that override context window detection (BUG-001)
+    monkeypatch.delenv("JERRY_CONTEXT_MONITOR__CONTEXT_WINDOW_TOKENS", raising=False)
+    monkeypatch.delenv("ANTHROPIC_MODEL", raising=False)
     # Config
     layered_config = LayeredConfigAdapter(
         env_prefix="JERRY_",
@@ -305,8 +308,12 @@ class TestContextExhaustionE2E:
         self,
         create_transcript,
         tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Pipeline works end-to-end without ORCHESTRATION.yaml (fail-open)."""
+        # Clear env vars that override context window detection (BUG-001)
+        monkeypatch.delenv("JERRY_CONTEXT_MONITOR__CONTEXT_WINDOW_TOKENS", raising=False)
+        monkeypatch.delenv("ANTHROPIC_MODEL", raising=False)
         # Create estimator
         layered = LayeredConfigAdapter(
             env_prefix="JERRY_",

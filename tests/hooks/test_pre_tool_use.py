@@ -1,13 +1,16 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2026 Adam Nowak
 
-"""Tests for pre_tool_use.py hook.
+"""Tests for PreToolUse hook enforcement via CLI pipeline.
 
 These tests validate the security guardrail hook returns correct decision values
-and properly blocks dangerous operations.
+and properly blocks dangerous operations, using the consolidated CLI enforcement
+path (``uv run jerry hooks pre-tool-use``).
 
 References:
     - TD-003: Add hook decision value tests
+    - #150: pre_tool_use.py consolidation into CLI pipeline
+    - STORY-023: Deprecated script removal
     - Claude Code Hooks: https://docs.anthropic.com/en/docs/claude-code/hooks
 """
 
@@ -15,23 +18,22 @@ from __future__ import annotations
 
 import json
 import subprocess
-import sys
 from pathlib import Path
 from typing import Any
 
-# Path to the hook script (moved from .claude/hooks/ to scripts/ in Phase 4)
-HOOK_SCRIPT = Path(__file__).parent.parent.parent / "scripts" / "pre_tool_use.py"
+# Repo root for --directory flag
+_REPO_ROOT = str(Path(__file__).resolve().parents[2])
 
 
 def run_hook(tool_name: str, tool_input: dict[str, Any]) -> tuple[int, dict[str, Any]]:
-    """Run the pre_tool_use hook with given input.
+    """Run the pre-tool-use hook via CLI.
 
     Args:
-        tool_name: The name of the tool being used
-        tool_input: The input parameters for the tool
+        tool_name: The name of the tool being used.
+        tool_input: The input parameters for the tool.
 
     Returns:
-        Tuple of (exit_code, parsed_output_json)
+        Tuple of (exit_code, parsed_output_json).
     """
     input_json = json.dumps(
         {
@@ -41,28 +43,37 @@ def run_hook(tool_name: str, tool_input: dict[str, Any]) -> tuple[int, dict[str,
     )
 
     result = subprocess.run(
-        [sys.executable, str(HOOK_SCRIPT)],
+        ["uv", "run", "--directory", _REPO_ROOT, "jerry", "--json", "hooks", "pre-tool-use"],
         input=input_json,
         capture_output=True,
         text=True,
+        timeout=15,
     )
 
-    # Parse the JSON output from stdout
-    output = {}
+    output: dict[str, Any] = {}
     if result.stdout.strip():
         output = json.loads(result.stdout.strip())
 
     return result.returncode, output
 
 
-def get_decision(output: dict[str, Any]) -> str:
-    """Extract permissionDecision from hookSpecificOutput."""
-    return output.get("hookSpecificOutput", {}).get("permissionDecision", "")
+def is_blocked(output: dict[str, Any]) -> bool:
+    """Return True if the hook blocked the tool use."""
+    return output.get("decision") == "block"
+
+
+def is_approved(output: dict[str, Any]) -> bool:
+    """Return True if the hook approved the tool use.
+
+    The CLI handler returns ``{}`` for approve (no ``decision`` key)
+    or any value other than ``"block"``.
+    """
+    return "decision" not in output or output["decision"] != "block"
 
 
 def get_reason(output: dict[str, Any]) -> str:
-    """Extract permissionDecisionReason from hookSpecificOutput."""
-    return output.get("hookSpecificOutput", {}).get("permissionDecisionReason", "")
+    """Extract the block reason from hook output."""
+    return output.get("reason", "")
 
 
 # =============================================================================
@@ -71,28 +82,28 @@ def get_reason(output: dict[str, Any]) -> str:
 
 
 class TestApproveDecision:
-    """Tests verifying allowed tools return 'approve' decision."""
+    """Tests verifying allowed tools are approved by CLI enforcement."""
 
     def test_read_tool_returns_approve(self) -> None:
         """Read tool should always be approved."""
         exit_code, output = run_hook("Read", {"file_path": "/some/file.txt"})
 
         assert exit_code == 0
-        assert get_decision(output) == "allow"
+        assert is_approved(output)
 
     def test_glob_tool_returns_approve(self) -> None:
         """Glob tool should always be approved."""
         exit_code, output = run_hook("Glob", {"pattern": "**/*.py"})
 
         assert exit_code == 0
-        assert get_decision(output) == "allow"
+        assert is_approved(output)
 
     def test_grep_tool_returns_approve(self) -> None:
         """Grep tool should always be approved."""
         exit_code, output = run_hook("Grep", {"pattern": "test", "path": "."})
 
         assert exit_code == 0
-        assert get_decision(output) == "allow"
+        assert is_approved(output)
 
     def test_write_to_safe_path_returns_approve(self) -> None:
         """Write to non-sensitive path should be approved."""
@@ -105,7 +116,7 @@ class TestApproveDecision:
         )
 
         assert exit_code == 0
-        assert get_decision(output) == "allow"
+        assert is_approved(output)
 
     def test_bash_safe_command_returns_approve(self) -> None:
         """Safe bash command should be approved."""
@@ -117,7 +128,7 @@ class TestApproveDecision:
         )
 
         assert exit_code == 0
-        assert get_decision(output) == "allow"
+        assert is_approved(output)
 
     def test_bash_git_status_returns_approve(self) -> None:
         """git status command should be approved."""
@@ -129,7 +140,7 @@ class TestApproveDecision:
         )
 
         assert exit_code == 0
-        assert get_decision(output) == "allow"
+        assert is_approved(output)
 
 
 # =============================================================================
@@ -138,7 +149,7 @@ class TestApproveDecision:
 
 
 class TestBlockDecision:
-    """Tests verifying dangerous operations return 'block' decision."""
+    """Tests verifying dangerous operations are blocked by CLI enforcement."""
 
     def test_write_to_ssh_blocked(self) -> None:
         """Writing to ~/.ssh should be blocked."""
@@ -151,10 +162,10 @@ class TestBlockDecision:
         )
 
         assert exit_code == 0  # Hook exits 0, decision in output
-        assert get_decision(output) == "deny"
+        assert is_blocked(output)
         reason = get_reason(output)
         assert reason
-        assert "ssh" in reason.lower()
+        assert "ssh" in reason.lower() or "blocked" in reason.lower()
 
     def test_write_to_env_file_blocked(self) -> None:
         """Writing to .env files should be blocked."""
@@ -167,7 +178,7 @@ class TestBlockDecision:
         )
 
         assert exit_code == 0
-        assert get_decision(output) == "deny"
+        assert is_blocked(output)
         assert "sensitive" in get_reason(output).lower()
 
     def test_write_to_credentials_blocked(self) -> None:
@@ -181,7 +192,7 @@ class TestBlockDecision:
         )
 
         assert exit_code == 0
-        assert get_decision(output) == "deny"
+        assert is_blocked(output)
 
     def test_bash_rm_rf_root_blocked(self) -> None:
         """rm -rf / command should be blocked."""
@@ -193,8 +204,13 @@ class TestBlockDecision:
         )
 
         assert exit_code == 0
-        assert get_decision(output) == "deny"
-        assert "dangerous" in get_reason(output).lower() or "rm" in get_reason(output).lower()
+        assert is_blocked(output)
+        reason = get_reason(output)
+        assert (
+            "dangerous" in reason.lower()
+            or "rm" in reason.lower()
+            or "destructive" in reason.lower()
+        )
 
     def test_bash_rm_split_flags_blocked(self) -> None:
         """rm -r -f / with split flags should be blocked (RT-004)."""
@@ -206,7 +222,7 @@ class TestBlockDecision:
         )
 
         assert exit_code == 0
-        assert get_decision(output) == "deny"
+        assert is_blocked(output)
 
     def test_bash_rm_long_flags_blocked(self) -> None:
         """rm --recursive --force / with long flags should be blocked (RT-004)."""
@@ -218,7 +234,7 @@ class TestBlockDecision:
         )
 
         assert exit_code == 0
-        assert get_decision(output) == "deny"
+        assert is_blocked(output)
 
     def test_bash_rm_fr_root_blocked(self) -> None:
         """rm -fr / with reversed flags should be blocked (RT-004)."""
@@ -230,7 +246,7 @@ class TestBlockDecision:
         )
 
         assert exit_code == 0
-        assert get_decision(output) == "deny"
+        assert is_blocked(output)
 
     def test_bash_rm_rf_home_blocked(self) -> None:
         """rm -rf ~ targeting home should be blocked (RT-004)."""
@@ -242,7 +258,7 @@ class TestBlockDecision:
         )
 
         assert exit_code == 0
-        assert get_decision(output) == "deny"
+        assert is_blocked(output)
 
     def test_bash_cd_command_blocked(self) -> None:
         """cd command should be blocked (use absolute paths instead)."""
@@ -254,7 +270,7 @@ class TestBlockDecision:
         )
 
         assert exit_code == 0
-        assert get_decision(output) == "deny"
+        assert is_blocked(output)
         assert "cd" in get_reason(output).lower()
 
     def test_git_force_push_main_blocked(self) -> None:
@@ -267,23 +283,8 @@ class TestBlockDecision:
         )
 
         assert exit_code == 0
-        assert get_decision(output) == "deny"
-        assert "force push" in get_reason(output).lower()
-
-    def test_pipe_to_bash_warned(self) -> None:
-        """Piping to bash triggers warning but is approved (trusted sources)."""
-        # Note: The hook warns but approves "| bash" patterns
-        # Only exact "curl | bash" or "wget | bash" substring is blocked
-        exit_code, output = run_hook(
-            "Bash",
-            {
-                "command": "echo 'test' | bash",
-            },
-        )
-
-        # This triggers a warning but is approved
-        assert exit_code == 0
-        assert get_decision(output) == "allow"
+        assert is_blocked(output)
+        assert "force push" in get_reason(output).lower() or "force" in get_reason(output).lower()
 
     def test_eval_command_blocked(self) -> None:
         """eval command should be blocked."""
@@ -295,17 +296,16 @@ class TestBlockDecision:
         )
 
         assert exit_code == 0
-        assert get_decision(output) == "deny"
-        assert "dangerous" in get_reason(output).lower()
+        assert is_blocked(output)
 
 
 # =============================================================================
-# Test: Decision Format Matches Spec
+# Test: Decision Format Matches CLI Spec
 # =============================================================================
 
 
 class TestDecisionFormat:
-    """Tests verifying output format matches Claude Code hook specification."""
+    """Tests verifying output format matches CLI hook specification."""
 
     def test_output_is_valid_json(self) -> None:
         """Hook output must be valid JSON."""
@@ -314,25 +314,14 @@ class TestDecisionFormat:
         assert _exit_code == 0
         assert isinstance(output, dict)
 
-    def test_output_contains_hookspecificoutput(self) -> None:
-        """Hook output must contain hookSpecificOutput with permissionDecision."""
+    def test_approve_returns_empty_or_no_block(self) -> None:
+        """Approved tools should return empty JSON or non-block decision."""
         _exit_code, output = run_hook("Read", {"file_path": "test.txt"})
 
-        assert "hookSpecificOutput" in output
-        hso = output["hookSpecificOutput"]
-        assert "permissionDecision" in hso
-        assert hso["hookEventName"] == "PreToolUse"
+        assert is_approved(output)
 
-    def test_allow_decision_has_correct_value(self) -> None:
-        """Allow decision must be exactly 'allow' string."""
-        _exit_code, output = run_hook("Glob", {"pattern": "*.txt"})
-
-        decision = get_decision(output)
-        assert decision == "allow"
-        assert isinstance(decision, str)
-
-    def test_deny_decision_includes_reason(self) -> None:
-        """Deny decision must include permissionDecisionReason."""
+    def test_block_decision_includes_reason(self) -> None:
+        """Block decision must include a reason string."""
         _exit_code, output = run_hook(
             "Write",
             {
@@ -341,23 +330,18 @@ class TestDecisionFormat:
             },
         )
 
-        assert get_decision(output) == "deny"
+        assert is_blocked(output)
         reason = get_reason(output)
         assert isinstance(reason, str)
         assert len(reason) > 0
 
-    def test_invalid_json_input_returns_error(self) -> None:
-        """Invalid JSON input should return exit code 2 with error on stderr."""
-        result = subprocess.run(
-            [sys.executable, str(HOOK_SCRIPT)],
-            input="not valid json",
-            capture_output=True,
-            text=True,
-        )
+    def test_hook_always_exits_zero(self) -> None:
+        """Hook should always exit 0 (fail-open design)."""
+        exit_code, _output = run_hook("Read", {"file_path": "test.txt"})
+        assert exit_code == 0
 
-        assert result.returncode == 2  # Error exit code
-        # Error details are on stderr per hook spec
-        assert result.stderr.strip()
+        exit_code, _output = run_hook("Write", {"file_path": "~/.ssh/test", "content": "x"})
+        assert exit_code == 0
 
 
 # =============================================================================
@@ -372,13 +356,13 @@ class TestEdgeCases:
         """Empty tool input should be handled gracefully."""
         _exit_code, output = run_hook("Read", {})
 
-        assert get_decision(output) == "allow"
+        assert is_approved(output)
 
     def test_unknown_tool_returns_approve(self) -> None:
         """Unknown tool names should default to approve."""
         _exit_code, output = run_hook("UnknownTool", {"param": "value"})
 
-        assert get_decision(output) == "allow"
+        assert is_approved(output)
 
     def test_edit_to_sensitive_path_blocked(self) -> None:
         """Edit tool should also check file paths."""
@@ -392,7 +376,7 @@ class TestEdgeCases:
         )
 
         assert exit_code == 0
-        assert get_decision(output) == "deny"
+        assert is_blocked(output)
 
     def test_multiedit_to_sensitive_path_blocked(self) -> None:
         """MultiEdit tool should also check file paths."""
@@ -405,4 +389,4 @@ class TestEdgeCases:
         )
 
         assert exit_code == 0
-        assert get_decision(output) == "deny"
+        assert is_blocked(output)

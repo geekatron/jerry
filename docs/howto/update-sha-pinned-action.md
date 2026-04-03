@@ -31,7 +31,7 @@ Navigate to the action's GitHub releases page (e.g., `https://github.com/actions
 
 If the diff is correct and CI passes, merge the PR.
 
-Dependabot PRs do not update `docs/reference/ci-cd-pipeline-security.md`. After merging, update the SHA-to-version mapping table in the reference doc with the new SHA and version — follow [Scenario B, Step 5](#5-update-the-reference-document) as a post-merge commit.
+Dependabot PRs do not update `docs/reference/ci-cd-pipeline-security.md`. After merging, update the SHA-to-version mapping table in the reference doc with the new SHA and version — follow [Scenario B, Step 5](#5-update-the-sha-to-version-mapping-table) as a post-merge commit.
 
 If CI fails, check the [Verification](#verification) section below.
 

@@ -1,39 +1,42 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://jerry-framework.dev/schemas/claude-code-skill-frontmatter/v1.0.0",
+  "$id": "https://jerry-framework.dev/schemas/claude-code-skill-frontmatter/v1.1.0",
   "title": "Claude Code SKILL.md Frontmatter Schema",
-  "description": "Validates YAML frontmatter in SKILL.md files against Anthropic's documented Claude Code skill fields. Source: https://code.claude.com/docs/en/skills (March 2026). Unrecognized fields are silently ignored by Claude Code at runtime but flagged here to prevent dead metadata.",
+  "description": "Correctness gate for YAML frontmatter in SKILL.md files. Validates field types, enums, and patterns against Anthropic's documented Claude Code skill fields and the Agent Skills open standard (agentskills.io, March 2026). This schema is NOT a security boundary -- it cannot prevent prompt injection in descriptions or arbitrary commands in hooks. Unrecognized fields are silently accepted (additionalProperties: true) because Claude Code ignores unknown fields at runtime. Jerry-specific fields (version, activation-keywords) pass through without validation here. Sources: https://code.claude.com/docs/en/skills, https://agentskills.io/specification.",
   "type": "object",
   "properties": {
     "name": {
       "type": "string",
-      "pattern": "^[a-z0-9]([a-z0-9-]*[a-z0-9])?$",
+      "allOf": [
+        { "pattern": "^[a-z]([a-z0-9]+-)*[a-z0-9]+$|^[a-z][a-z0-9]*$" },
+        { "not": { "pattern": "claude|anthropic" } }
+      ],
       "maxLength": 64,
-      "description": "Display name and /slash-command. If omitted, uses directory name. Lowercase letters, numbers, and hyphens only."
+      "description": "Display name and /slash-command. If omitted, uses directory name. Lowercase letters, numbers, hyphens only. Must not contain consecutive hyphens (--). Must not start or end with hyphen. Must match parent directory name. Must not contain reserved words 'claude' or 'anthropic' (enforced by schema). No XML angle brackets. Example: 'my-skill-name'."
     },
     "description": {
       "type": "string",
       "minLength": 10,
       "maxLength": 1024,
-      "description": "What the skill does and when to use it. Claude uses this to decide when to load automatically. WARNING: Claude Code's skill indexer may misparse YAML multiline indicators (>, |, >-, |-). Use single-line strings."
+      "description": "What the skill does and when to use it. Claude uses this to decide when to load automatically. Should describe WHAT + WHEN + trigger phrases. Should be written in third person. No XML angle brackets (<>). Falls back to first paragraph of markdown if omitted. KNOWN ISSUE: Claude Code uses a simplified parser -- multiline YAML (>, |, >-) silently breaks skill discovery with no error (#4700). Use single-line or quoted strings only. Values containing colons must be quoted to avoid YAML mapping interpretation."
     },
     "argument-hint": {
       "type": "string",
-      "description": "Hint shown during autocomplete for expected arguments. Example: '[issue-number]' or '[filename] [format]'."
+      "description": "Hint shown during autocomplete for expected arguments. Example: '[issue-number]' or '[filename] [format]'. KNOWN ISSUE: Unquoted brackets with colons (e.g., [optional: path]) cause YAML flow-sequence misparsing and a React TUI crash (#22161). Quote values containing brackets."
     },
     "disable-model-invocation": {
       "type": "boolean",
-      "description": "Set to true to prevent Claude from automatically loading this skill. Only user invocation via /name allowed. Default: false."
+      "description": "When true: skill description NOT loaded into context, Claude cannot invoke automatically, only user can invoke via /name. When false (default): description always in context, Claude can auto-invoke."
     },
     "user-invocable": {
       "type": "boolean",
-      "description": "Set to false to hide from the / menu. Only Claude can invoke automatically. Default: true."
+      "description": "When false: hidden from / menu, only Claude can invoke automatically. Only controls menu visibility, NOT Skill tool access. To block programmatic invocation, use disable-model-invocation: true. Default: true."
     },
     "allowed-tools": {
       "oneOf": [
         {
           "type": "string",
-          "description": "Comma-separated tool names. Example: 'Read, Write, Glob, Bash'"
+          "description": "Comma-separated tool names. Example: 'Read, Write, Glob, Bash'. Supports permission syntax: 'Bash(git:*)'"
         },
         {
           "type": "array",
@@ -41,25 +44,68 @@
           "description": "Array of tool names."
         }
       ],
-      "description": "Tools Claude can use without asking permission when this skill is active."
+      "description": "SECURITY NOTE: This field GRANTS permission, it does NOT restrict tools. Listed tools get blanket auto-approval when skill is active. Unlisted tools still work -- they just prompt for permission. To restrict tools, use agent-level 'tools' or 'disallowedTools' fields instead. Example: 'Read, Glob, Grep'. KNOWN LIMITATION: Enforcement may not be reliable across all Claude Code versions and the Agent SDK ignores this field entirely (#18837, #18737). Do not use as a skill-only field in agent .md files -- agents use 'tools' (camelCase), not 'allowed-tools' (kebab-case)."
     },
     "model": {
       "type": "string",
-      "description": "Model to use when this skill is active. Accepts aliases (sonnet, opus, haiku) or full IDs (claude-opus-4-6, claude-sonnet-4, claude-haiku-4-5)."
+      "pattern": "^(sonnet|opus|haiku|inherit|default|claude-[a-z0-9-]+(\\[1m\\])?|opusplan)$",
+      "description": "Model to use when this skill is active. Aliases: sonnet, opus, haiku, default, inherit. Full IDs: claude-opus-4-6, claude-sonnet-4, claude-haiku-4-5. Extended context: opus[1m], sonnet[1m]. Special: opusplan."
+    },
+    "effort": {
+      "type": "string",
+      "enum": ["low", "medium", "high", "max"],
+      "description": "Reasoning depth when this skill is active. Overrides session effort level. 'max' is Opus 4.6 only. CLAUDE_CODE_EFFORT_LEVEL env var takes precedence. Default: inherits from session (medium for Opus/Sonnet 4.6). Maps to Jerry ET-M-001 criticality reasoning."
     },
     "context": {
       "type": "string",
       "enum": ["fork"],
-      "description": "Set to 'fork' to run in a forked subagent context."
+      "description": "Set to 'fork' to run in a forked subagent context. Skill content becomes the subagent task prompt. Subagent does NOT have access to conversation history. CLAUDE.md is still loaded. KNOWN LIMITATIONS: (1) context:fork may be ignored when invoked via Skill tool (#17283, reported resolved but unreliable per #18394). (2) Forked contexts break AskUserQuestion -- subagents cannot prompt the user (#19751). Test thoroughly before relying on this field."
     },
     "agent": {
       "type": "string",
-      "description": "Subagent type when context: fork is set. Options: built-in (Explore, Plan, general-purpose) or custom agent name."
+      "description": "Subagent type when context: fork is set. Built-in: Explore (Haiku, read-only tools), Plan (inherits model, read-only tools), general-purpose (inherits model, all tools). Custom: any name matching .claude/agents/*.md. Default: general-purpose."
     },
     "hooks": {
       "type": "object",
-      "description": "Hooks scoped to this skill's lifecycle.",
+      "description": "Hooks scoped to this skill's lifecycle. Only run when active; auto-cleaned on finish. Merged with global hooks. Example: hooks: { PreToolUse: [{ type: command, command: './validate.sh' }] }. Skill-only feature: once: true runs hook once then removes it (NOT available for agents). Stop auto-converts to SubagentStop. Handler types: command, http, prompt, agent. KNOWN LIMITATION: Skill hooks are not triggered in plugin contexts (#17688).",
       "additionalProperties": true
+    },
+    "paths": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Comma-separated glob patterns for file-scoped activation."
+        },
+        {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Array of glob patterns for file-scoped activation."
+        }
+      ],
+      "description": "Glob patterns limiting when this skill auto-activates. When set, Claude loads the skill only when working with files matching the patterns. Same format as path-specific rules. KNOWN ISSUE: Glob patterns starting with { or * are YAML reserved indicators and must be quoted (#13905)."
+    },
+    "shell": {
+      "type": "string",
+      "enum": ["bash", "powershell"],
+      "description": "Shell for !`command` inline blocks in skill content. 'powershell' requires CLAUDE_CODE_USE_POWERSHELL_TOOL=1 env var. Default: bash."
+    },
+    "mode": {
+      "type": "boolean",
+      "description": "UNCONFIRMED (secondary source only). When true, categorizes skill as a 'mode command' shown in a separate UI section. Default: false. Not confirmed in primary Anthropic documentation as of March 2026."
+    },
+    "license": {
+      "type": "string",
+      "description": "Agent Skills Standard field. License name or reference to bundled license file. For skill distribution/portability."
+    },
+    "compatibility": {
+      "type": "string",
+      "maxLength": 500,
+      "description": "Agent Skills Standard field. Environment requirements (max 500 chars)."
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": { "type": "string" },
+      "description": "Agent Skills Standard field. Arbitrary key-value pairs (string-to-string map). Recommended keys: author, version, mcp-server, category, tags."
     }
   },
   "additionalProperties": true

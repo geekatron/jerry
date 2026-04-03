@@ -27,6 +27,8 @@
 
 ---
 
+> **Tier Model Notice (2026-03-28):** The tool security tier definitions in this ADR use the **pre-renumbering model** (T3=External, T4=Persistent, T5=Full). The current tier model is **Persistent-First Linear** (T3=Persistent, T4=External, T5=Orchestration) per ADR-STORY015-001. See `.context/rules/agent-development-standards.md` [Tool Security Tiers] for the authoritative current tier definitions.
+
 ## L0: Executive Summary
 
 This ADR establishes the canonical approach to routing user requests to the appropriate skill and agent within the Jerry framework. The decision preserves keyword-based routing as the deterministic fast path (Layer 1), introduces a rule-based decision tree for disambiguation (Layer 2), and defines an LLM-based fallback for ambiguous or novel requests (Layer 3). Only Layer 1 enhancements -- negative keywords, priority ordering, and compound triggers -- are recommended for immediate implementation. Layers 2 and 3 are designed now but deferred until empirical scaling triggers are met (approximately 15 and 20+ skills respectively).

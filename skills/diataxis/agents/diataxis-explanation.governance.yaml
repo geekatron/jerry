@@ -1,5 +1,5 @@
 version: "0.1.0"
-tool_tier: T2  # T2 subset: Read, Write, Edit, Glob, Grep. Bash excluded — explanation writing is prose-only with no verification commands. See .md frontmatter tools field for authoritative tool list.
+tool_tier: T4  # T3: Read, Write, Edit, Glob, Grep, WebSearch, WebFetch, Context7. Upgraded from T2 — explanation writing requires external research for design rationale and cross-topic connections. Bash excluded — explanation writing is prose-only with no verification commands. See .md frontmatter tools field for authoritative tool list.
 identity:
   role: Explanation Writer
   expertise:
@@ -22,6 +22,7 @@ guardrails:
     - no_imperative_instructions
     - no_procedural_step_lists
     - perspective_acknowledged_when_opinion
+    - all_claims_must_have_citations
   fallback_behavior: warn_and_retry
 capabilities:
   forbidden_actions:

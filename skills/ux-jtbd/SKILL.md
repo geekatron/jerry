@@ -131,11 +131,11 @@ Source: `skills/user-experience/rules/ux-routing-rules.md` [Stage Routing Table]
 
 | Agent | Role | Tier | Mode | Model | Output Location |
 |-------|------|------|------|-------|-----------------|
-| `ux-jtbd-analyst` | JTBD research and analysis specialist | T3 | Divergent | Sonnet | `skills/ux-jtbd/output/{engagement-id}/ux-jtbd-analyst-{topic-slug}.md` |
+| `ux-jtbd-analyst` | JTBD research and analysis specialist | T4 | Divergent | Sonnet | `skills/ux-jtbd/output/{engagement-id}/ux-jtbd-analyst-{topic-slug}.md` |
 
 **Single-agent sub-skill.** The `ux-jtbd-analyst` handles the full JTBD methodology -- from context gathering through job statement synthesis. Complex multi-job engagements are decomposed into multiple invocations by the `ux-orchestrator`, each targeting a specific job domain.
 
-**Tool tier:** T3 (Read-Write + External). The analyst uses WebSearch and WebFetch for secondary research (competitive analysis, domain literature, product reviews) and Context7 for JTBD framework documentation lookup. See `skills/ux-jtbd/agents/ux-jtbd-analyst.md` for the full agent definition and `skills/ux-jtbd/agents/ux-jtbd-analyst.governance.yaml` for governance metadata.
+**Tool tier:** T4 (External). The analyst uses WebSearch and WebFetch for secondary research (competitive analysis, domain literature, product reviews) and Context7 for JTBD framework documentation lookup. See `skills/ux-jtbd/agents/ux-jtbd-analyst.md` for the full agent definition and `skills/ux-jtbd/agents/ux-jtbd-analyst.governance.yaml` for governance metadata.
 
 ---
 
@@ -145,7 +145,7 @@ Source: `skills/user-experience/rules/ux-routing-rules.md` [Stage Routing Table]
 
 - **Option 1 (Natural Language):** Best for most users. The `ux-orchestrator` handles routing, wave gating, and engagement context automatically. Use this unless you have a specific reason to bypass the orchestrator.
 - **Option 2 (Explicit Agent):** When the user knows they specifically need JTBD analysis and an engagement context is already established via the parent orchestrator. Direct invocation without an established engagement context bypasses wave gating and lifecycle-stage triage.
-- **Option 3 (Task Tool):** Used by `ux-orchestrator` internally for agent dispatch. Not typically invoked directly by users.
+- **Option 3 (Agent Tool):** Used by `ux-orchestrator` internally for agent dispatch. Not typically invoked directly by users.
 
 ### Option 1: Natural Language Request
 
@@ -169,12 +169,12 @@ Request the agent by name:
 "I need ux-jtbd-analyst to identify underserved outcomes in our workflow"
 ```
 
-### Option 3: Native Agent Invocation (Task Tool)
+### Option 3: Native Agent Invocation (Agent Tool)
 
-The `ux-orchestrator` dispatches to `ux-jtbd-analyst` via Task:
+The `ux-orchestrator` dispatches to `ux-jtbd-analyst` via Agent:
 
 ```python
-Task(
+Agent(
     description="ux-jtbd-analyst: Jobs-to-Be-Done analysis for onboarding flow",
     subagent_type="jerry:ux-jtbd-analyst",
     prompt="""
@@ -192,7 +192,7 @@ Produce job map with outcome expectations using Ulwick ODI format.
 )
 ```
 
-Claude Code enforces the agent's `tools` frontmatter -- `ux-jtbd-analyst` only has access to its declared T3 tool tier (Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch).
+Claude Code enforces the agent's `tools` frontmatter -- `ux-jtbd-analyst` only has access to its declared T4 tool tier (Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch).
 
 ### Registration (H-26(c) Exception)
 
@@ -207,7 +207,7 @@ Claude Code enforces the agent's `tools` frontmatter -- `ux-jtbd-analyst` only h
 
 ## P-003 Compliance
 
-The `ux-jtbd-analyst` is a **worker agent** within the `/user-experience` orchestrator-worker topology. It does NOT have Task tool access and MUST NOT spawn sub-agents.
+The `ux-jtbd-analyst` is a **worker agent** within the `/user-experience` orchestrator-worker topology. It does NOT have Agent tool access and MUST NOT spawn sub-agents.
 
 ```
 MAIN CONTEXT (user request)
@@ -215,14 +215,14 @@ MAIN CONTEXT (user request)
     v
 ux-orchestrator (T5, Opus, Integrative)
     |
-    +-- ux-jtbd-analyst (T3, Divergent, Sonnet)  <-- THIS SUB-SKILL
+    +-- ux-jtbd-analyst (T4, Divergent, Sonnet)  <-- THIS SUB-SKILL
     +-- [other sub-skill agents...]
 ```
 
 **Enforcement:**
-- `disallowedTools: [Task]` declared in `skills/ux-jtbd/agents/ux-jtbd-analyst.md` frontmatter
+- `disallowedTools: [Agent]` declared in `skills/ux-jtbd/agents/ux-jtbd-analyst.md` frontmatter
 - P-003 prohibition in `skills/ux-jtbd/agents/ux-jtbd-analyst.governance.yaml` `capabilities.forbidden_actions`
-- CI gate validates no sub-skill agent has Task access (documented in `skills/user-experience/rules/ci-checks.md`)
+- CI gate validates no sub-skill agent has Agent access (documented in `skills/user-experience/rules/ci-checks.md`)
 
 ---
 
@@ -622,7 +622,7 @@ Validation sources that advance MEDIUM to HIGH confidence:
 
 | Principle | Requirement | Sub-Skill Application |
 |-----------|-------------|----------------------|
-| P-003 | NEVER spawn recursive subagents | Worker agent; no Task tool access. Returns results to ux-orchestrator. |
+| P-003 | NEVER spawn recursive subagents | Worker agent; no Agent tool access. Returns results to ux-orchestrator. |
 | P-020 | NEVER override user intent | User decides which job statements to adopt, which to discard, and whether to validate MEDIUM-confidence outputs. |
 | P-022 | NEVER deceive about actions, capabilities, or confidence | AI-synthesized job statements transparently classified as MEDIUM confidence. Synthesis Judgments Summary enumerates all AI judgment calls. |
 | P-001 | NEVER present findings without evidence or source citations | All job statements cite secondary research sources (product reviews, competitor analysis, domain literature). |

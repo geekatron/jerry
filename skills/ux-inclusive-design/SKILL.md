@@ -123,11 +123,11 @@ Do NOT use for:
 
 | Agent | Role | Tier | Mode | Model | Output Location |
 |-------|------|------|------|-------|-----------------|
-| `ux-inclusive-evaluator` | Inclusive design and WCAG 2.2 accessibility auditor | T3 | Systematic | Sonnet | `skills/ux-inclusive-design/output/{engagement-id}/ux-inclusive-evaluator-{topic-slug}.md` |
+| `ux-inclusive-evaluator` | Inclusive design and WCAG 2.2 accessibility auditor | T4 | Systematic | Sonnet | `skills/ux-inclusive-design/output/{engagement-id}/ux-inclusive-evaluator-{topic-slug}.md` |
 
 **STUB:** The agent definition file (`skills/ux-inclusive-design/agents/ux-inclusive-evaluator.md`) is planned for creation during Wave 3 implementation of PROJ-022 EPIC-004. The SKILL.md specifies the methodology and output contract that the agent will implement. Agent definition file and governance YAML will contain frontmatter, identity, purpose, guardrails, and full body sections (`<input>`, `<capabilities>`, `<methodology>`, `<output>`).
 
-**Tool tier:** T3 (External) = Read, Write, Edit, Glob, Grep + WebSearch, WebFetch + Context7 MCP. The T3 tier enables access to external WCAG specifications, ARIA authoring practices, and accessibility API documentation via Context7 and web search. Bash is intentionally excluded; T3 tier does not require shell access for MCP operations. See `agent-development-standards.md` [Tool Security Tiers] for full tier definitions.
+**Tool tier:** T4 (External) = Read, Write, Edit, Glob, Grep + WebSearch, WebFetch + Context7 MCP. The T4 tier enables access to external WCAG specifications, ARIA authoring practices, and accessibility API documentation via Context7 and web search. Bash is intentionally excluded; T4 tier does not require shell access for MCP operations. See `agent-development-standards.md` [Tool Security Tiers] for full tier definitions.
 
 The agent produces output at three levels per AD-M-004:
 - **L0 (Executive Summary):** Conformance level achieved (A, AA, AAA, or none); critical WCAG violations count; Persona Spectrum coverage summary; top remediation priorities for stakeholders and cross-framework synthesis input.
@@ -140,7 +140,7 @@ The agent produces output at three levels per AD-M-004:
 
 ## P-003 Compliance
 
-The `/ux-inclusive-design` sub-skill contains a single **worker** agent. It is invoked by the `ux-orchestrator` (T5) via the Task tool. The agent does NOT have Task tool access and MUST NOT spawn sub-agents.
+The `/ux-inclusive-design` sub-skill contains a single **worker** agent. It is invoked by the `ux-orchestrator` (T5) via the Agent tool. The agent does NOT have Agent tool access and MUST NOT spawn sub-agents.
 
 ```
 MAIN CONTEXT (user request)
@@ -148,14 +148,14 @@ MAIN CONTEXT (user request)
     v
 ux-orchestrator (T5, Opus, Integrative) -- parent orchestrator
     |
-    +-- ux-inclusive-evaluator (T3, Systematic, Sonnet) -- THIS sub-skill's worker
+    +-- ux-inclusive-evaluator (T4, Systematic, Sonnet) -- THIS sub-skill's worker
     +-- [other sub-skill workers...]
 ```
 
 **Enforcement:**
-- `disallowedTools: [Task]` declared in `skills/ux-inclusive-design/agents/ux-inclusive-evaluator.md` frontmatter
+- `disallowedTools: [Agent]` declared in `skills/ux-inclusive-design/agents/ux-inclusive-evaluator.md` frontmatter
 - P-003 prohibition in `skills/ux-inclusive-design/agents/ux-inclusive-evaluator.governance.yaml` `capabilities.forbidden_actions`
-- CI gate validates no sub-skill agent has Task access (documented in `skills/user-experience/rules/ci-checks.md`)
+- CI gate validates no sub-skill agent has Agent access (documented in `skills/user-experience/rules/ci-checks.md`)
 
 > **Source:** P-003 hierarchy from parent SKILL.md [P-003 Compliance].
 
@@ -185,12 +185,12 @@ The `ux-orchestrator` routes these requests to `ux-inclusive-evaluator` based on
 "Have ux-inclusive-evaluator perform a WCAG 2.2 AAA audit of the navigation"
 ```
 
-### Via Task Tool (orchestrator internal)
+### Via Agent Tool (orchestrator internal)
 
-The `ux-orchestrator` invokes the agent via the Task tool:
+The `ux-orchestrator` invokes the agent via the Agent tool:
 
 ```python
-Task(
+Agent(
     description="ux-inclusive-evaluator: WCAG 2.2 accessibility audit of checkout flow",
     subagent_type="jerry:ux-inclusive-evaluator",
     prompt="""
@@ -585,7 +585,7 @@ All agents in this sub-skill adhere to the **Jerry Constitution v1.0**:
 
 | Principle | Requirement | Consequence of Violation |
 |-----------|-------------|-------------------------|
-| P-003 | NEVER spawn recursive subagents -- worker agent, no Task tool access | Agent hierarchy violation; uncontrolled token consumption |
+| P-003 | NEVER spawn recursive subagents -- worker agent, no Agent tool access | Agent hierarchy violation; uncontrolled token consumption |
 | P-020 | NEVER override user decisions on target conformance level or remediation priority | Unauthorized action; trust erosion |
 | P-022 | NEVER present WCAG pass/fail status without evidence; NEVER inflate conformance claims without criterion-level verification | Governance undermined; legal compliance assessment invalidated |
 | P-001 | NEVER present accessibility findings without WCAG success criteria references or Persona Spectrum evidence | Unreliable outputs; unfounded compliance claims propagate downstream |
@@ -594,7 +594,7 @@ All agents in this sub-skill adhere to the **Jerry Constitution v1.0**:
 **Per-agent enforcement:** The `ux-inclusive-evaluator` agent declares:
 - `constitution.principles_applied`: P-003, P-020, P-022, P-001, P-002 in `skills/ux-inclusive-design/agents/ux-inclusive-evaluator.governance.yaml`
 - `capabilities.forbidden_actions`: 3 entries in NPT-009 format referencing the constitutional triplet
-- `disallowedTools: [Task]` in `skills/ux-inclusive-design/agents/ux-inclusive-evaluator.md` frontmatter
+- `disallowedTools: [Agent]` in `skills/ux-inclusive-design/agents/ux-inclusive-evaluator.md` frontmatter
 
 ### AI-Augmented Analysis Limitations
 

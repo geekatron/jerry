@@ -3,7 +3,7 @@
 # Runtime config: ux-heart-analyst.md
 
 version: 1.0.0
-tool_tier: T2
+tool_tier: T4
 identity:
   role: HEART Metrics Analyst
   expertise:
@@ -29,6 +29,8 @@ capabilities:
   - Edit
   - Glob
   - Grep
+  - WebSearch
+  - WebFetch
   output_formats:
   - markdown
 reasoning_effort: medium  # ET-M-001: systematic/sonnet analysis agent; medium reasoning for structured GSM process execution. The methodology is well-defined but requires analytical judgment for dimension selection and signal identification.
@@ -41,6 +43,7 @@ guardrails:
   - all_thresholds_must_have_confidence_level
   - all_goals_must_cite_heart_dimension
   - synthesis_judgments_summary_required
+  - all_claims_must_have_citations
   fallback_behavior: warn_and_retry
 output:
   required: true

@@ -119,6 +119,7 @@ nav:
     - Session Context Schema: schemas/SESSION_CONTEXT_GUIDE.md
   - Explanation:
     - CI/CD Supply Chain Security: explanation/ci-cd-supply-chain-security.md
+    - Permission & Security Model: explanation/permission-security-model.md
   - Articles:
     - blog/index.md
   - Research:

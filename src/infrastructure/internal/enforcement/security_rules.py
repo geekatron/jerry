@@ -9,7 +9,7 @@ as immutable frozen data. Injectable for testing.
 References:
     - #150: pre_tool_use.py consolidation
     - ADR-150-001: Pre-Tool Enforcement Pipeline Consolidation
-    - scripts/pre_tool_use.py: Original rule definitions
+    - STORY-023: Deprecated scripts/pre_tool_use.py removed
 """
 
 from __future__ import annotations
@@ -23,7 +23,7 @@ class SecurityRules:
 
     All fields are immutable tuples. Injectable for testing with
     custom rule sets. Default values match the production rules
-    from scripts/pre_tool_use.py.
+    originally defined in the pre_tool_use.py script (removed in STORY-023).
 
     Attributes:
         blocked_write_paths: Absolute path prefixes that must never be written.
@@ -96,10 +96,10 @@ class SecurityRules:
         "master",
     )
 
-    # Note: Windows-specific path enforcement (normcase, %SystemRoot%) from
-    # scripts/pre_tool_use.py is not ported. Jerry Framework targets macOS/Linux
-    # CI runners. If Windows support is needed, add platform-aware checks in a
-    # future PR rather than carrying dead config fields.
+    # Note: Windows-specific path enforcement (normcase, %SystemRoot%) from the
+    # original pre_tool_use.py script is not ported. Jerry Framework targets
+    # macOS/Linux CI runners. If Windows support is needed, add platform-aware
+    # checks in a future PR rather than carrying dead config fields.
 
     @classmethod
     def default(cls) -> SecurityRules:

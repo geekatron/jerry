@@ -92,3 +92,4 @@ Apply `uv sync --frozen` and SHA-pinned actions across all workflows. Port stand
 |------|--------|--------|-------|
 | 2026-03-09 | Claude | pending | Created from BUG-003 security review findings |
 | 2026-03-09 | Claude | in_progress | Tasks 1-5 complete: all workflows use --frozen, all actions SHA-pinned, release.yml pip removed, skip-bump guard added, Dependabot configured. Task 6 (#150 script consolidation) pending. |
+| 2026-03-30 | Claude | in_progress | H-32 parity audit: GH #153 is CLOSED but EN-001 has outstanding sub-tasks (TASK-003 in_progress, TASK-004 in_progress via GH #179). GH #153 may have been closed as partial scope. Keeping EN-001 in_progress until TASK-003/004 complete. |

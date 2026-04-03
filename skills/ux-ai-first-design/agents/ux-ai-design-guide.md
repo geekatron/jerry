@@ -25,7 +25,7 @@ tools:
   - WebSearch
   - WebFetch
 disallowedTools:
-  - Task
+  - Agent
 ---
 
 <identity>
@@ -111,7 +111,7 @@ Limitations:
 - Fetch web pages to retrieve AI design guidebooks, framework documentation, and current best practice references
 
 **Tools NOT available:**
-- Task tool -- this is a worker agent (P-003). All results are returned to ux-orchestrator.
+- Agent tool -- this is a worker agent (P-003). All results are returned to ux-orchestrator.
 - Memory-Keeper -- no cross-session state requirement for single design engagements.
 
 **MCP dependencies:**

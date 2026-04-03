@@ -132,7 +132,7 @@ Output at three levels per AD-M-004:
 
 ## P-003 Compliance
 
-This sub-skill contains a single worker agent (`ux-kano-analyst`) that is invoked by the parent `ux-orchestrator`. The agent MUST NOT include Task in its tool list per H-01/P-003.
+This sub-skill contains a single worker agent (`ux-kano-analyst`) that is invoked by the parent `ux-orchestrator`. The agent MUST NOT include Agent in its tool list per H-01/P-003.
 
 ```
 MAIN CONTEXT (user request)
@@ -143,7 +143,7 @@ ux-orchestrator (T5, Opus, Integrative) -- routes, gates, synthesizes
     +-- ux-kano-analyst (T2, Convergent, Sonnet) [Wave 4] -- THIS SUB-SKILL
 ```
 
-**Enforcement:** The `ux-kano-analyst` agent declares `disallowedTools: [Task]` in `.md` frontmatter. The `.governance.yaml` includes Task prohibition in `capabilities.forbidden_actions` with P-003 consequence statement.
+**Enforcement:** The `ux-kano-analyst` agent declares `disallowedTools: [Agent]` in `.md` frontmatter. The `.governance.yaml` includes Agent prohibition in `capabilities.forbidden_actions` with P-003 consequence statement.
 
 ---
 
@@ -168,12 +168,12 @@ Describe your feature prioritization need; the orchestrator routes to this sub-s
 "Have ux-kano-analyst analyze the survey results in the attached data"
 ```
 
-### Via Task Tool (orchestrator internal)
+### Via Agent Tool (orchestrator internal)
 
-The `ux-orchestrator` invokes the agent via the Task tool:
+The `ux-orchestrator` invokes the agent via the Agent tool:
 
 ```python
-Task(
+Agent(
     description="ux-kano-analyst: Kano feature classification for dashboard features",
     subagent_type="jerry:ux-kano-analyst",
     prompt="""
@@ -632,7 +632,7 @@ All agents in this sub-skill adhere to the **Jerry Constitution v1.0**:
 
 | Principle | Requirement | Consequence of Violation |
 |-----------|-------------|-------------------------|
-| P-003 | NEVER spawn recursive subagents -- worker agent, no Task tool access | Agent hierarchy violation; uncontrolled token consumption |
+| P-003 | NEVER spawn recursive subagents -- worker agent, no Agent tool access | Agent hierarchy violation; uncontrolled token consumption |
 | P-020 | NEVER override user decisions on feature priority or classification interpretation | Unauthorized action; trust erosion |
 | P-022 | NEVER present classification confidence without sample size disclosure; NEVER inflate statistical claims with insufficient respondent data | Governance undermined; false precision in prioritization decisions |
 | P-001 | NEVER present Kano classifications without response distribution evidence or CS coefficient derivation | Unreliable outputs; unfounded prioritization claims propagate downstream |
@@ -641,7 +641,7 @@ All agents in this sub-skill adhere to the **Jerry Constitution v1.0**:
 **Per-agent enforcement:** The `ux-kano-analyst` agent declares:
 - `constitution.principles_applied`: P-003, P-020, P-022, P-001, P-002 in `skills/ux-kano-model/agents/ux-kano-analyst.governance.yaml`
 - `capabilities.forbidden_actions`: 3 entries in NPT-009 format referencing the constitutional triplet
-- `disallowedTools: [Task]` in `skills/ux-kano-model/agents/ux-kano-analyst.md` frontmatter
+- `disallowedTools: [Agent]` in `skills/ux-kano-model/agents/ux-kano-analyst.md` frontmatter
 
 ### AI-Augmented Analysis Limitations
 

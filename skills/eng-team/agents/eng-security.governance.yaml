@@ -3,7 +3,7 @@
 # Runtime config: eng-security.md
 
 version: 1.0.0
-tool_tier: T3
+tool_tier: T4
 identity:
   role: Security Code Review Specialist
   expertise:

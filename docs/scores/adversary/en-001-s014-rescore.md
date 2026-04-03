@@ -12,6 +12,7 @@
 | [Improvement Recommendations](#improvement-recommendations-priority-ordered) | Priority-ordered actionable recommendations |
 | [Scoring Impact Analysis](#scoring-impact-analysis) | Gap-to-threshold analysis per dimension |
 | [Leniency Bias Check](#leniency-bias-check-h-15-self-review) | H-15 self-review validation |
+| [References](#references) | Source documents and coordination rules |
 
 ---
 
@@ -341,3 +342,14 @@ No Critical findings. No contradictions introduced by the revisions. The deliver
 *Template: `.context/templates/adversarial/s-014-llm-as-judge.md`*
 *Prior Score: `docs/scores/adversary/en-001-s014-score.md`*
 *Scored: 2026-02-20*
+
+---
+
+## References
+
+| Source | Content |
+|--------|---------|
+| `skills/saucer-boy-framework-voice/SKILL.md` | Cross-skill coordination rule: file renames require `grep -r` consumer search |
+| `.context/rules/quality-enforcement.md` | S-014 LLM-as-Judge scoring SSOT |
+| `.context/templates/adversarial/s-014-llm-as-judge.md` | Scoring template |
+| `docs/scores/adversary/en-001-s014-score.md` | Prior score report (iteration 1) |

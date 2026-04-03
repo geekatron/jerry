@@ -90,8 +90,15 @@ pytestmark = [
 
 
 @pytest.fixture()
-def layered_config(tmp_path: Path) -> LayeredConfigAdapter:
-    """Create a real LayeredConfigAdapter with default settings."""
+def layered_config(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> LayeredConfigAdapter:
+    """Create a real LayeredConfigAdapter with default settings.
+
+    Uses monkeypatch to clear JERRY_CONTEXT_MONITOR__CONTEXT_WINDOW_TOKENS
+    so tests are deterministic regardless of the host environment (which may
+    set 1M for Opus 4.6 sessions).
+    """
+    monkeypatch.delenv("JERRY_CONTEXT_MONITOR__CONTEXT_WINDOW_TOKENS", raising=False)
+    monkeypatch.delenv("ANTHROPIC_MODEL", raising=False)
     return LayeredConfigAdapter(
         env_prefix="JERRY_",
         root_config_path=tmp_path / "config.toml",

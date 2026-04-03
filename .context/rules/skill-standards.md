@@ -95,7 +95,7 @@ SKILL.md SHOULD follow this section order:
 | 5 | When to Use / Do NOT use | YES | Trigger conditions AND anti-patterns |
 | 6 | Available Agents | YES (multi-agent only) | Agent, Role, Model, Output Location columns. Single-agent skills SHOULD omit. |
 | 7 | P-003 Compliance | YES (multi-agent only) | ASCII hierarchy diagram showing MAIN CONTEXT as orchestrator. Single-agent skills SHOULD omit. |
-| 8 | Invoking an Agent | YES (multi-agent only) | Three options: natural language, explicit agent, Task tool code. Single-agent skills SHOULD omit. |
+| 8 | Invoking an Agent | YES (multi-agent only) | Three options: natural language, explicit agent, Agent tool code. Single-agent skills SHOULD omit. |
 | 9 | Domain-specific sections | YES | Skill-specific content organized by topic |
 | 10 | Integration Points | RECOMMENDED | Cross-skill connections |
 | 11 | Constitutional Compliance | RECOMMENDED | P-NNN principle mapping table |

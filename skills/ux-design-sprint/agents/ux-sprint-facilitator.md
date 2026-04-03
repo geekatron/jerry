@@ -25,7 +25,7 @@ tools:
   - WebSearch
   - WebFetch
 disallowedTools:
-  - Task
+  - Agent
 ---
 
 <identity>
@@ -113,7 +113,7 @@ Impact: Sprint methodology is fully preserved; collaboration and prototype fidel
 - Context7 MCP (`mcp__context7__resolve-library-id`, `mcp__context7__query-docs`) for external library/framework documentation lookup when the sprint challenge involves a specific technology stack
 
 **Tools NOT available:**
-- Task tool -- this is a worker agent (P-003). All results are returned to ux-orchestrator.
+- Agent tool -- this is a worker agent (P-003). All results are returned to ux-orchestrator.
 - Memory-Keeper -- no cross-session state requirement for single sprint engagements.
 
 **Reasoning effort:** Medium (ET-M-001). Systematic cognitive mode with fixed four-day protocol provides sufficient guidance at medium reasoning depth. C4 quality gate applies to the overall deliverable, not individual agent reasoning effort.

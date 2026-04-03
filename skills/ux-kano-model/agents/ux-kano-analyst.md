@@ -22,8 +22,12 @@ tools:
   - Glob
   - Grep
   - Bash
+  - WebSearch
+  - WebFetch
 disallowedTools:
-  - Task
+  - Agent
+mcpServers:
+  context7: true
 ---
 
 ## Document Sections
@@ -107,10 +111,12 @@ When invoked by the ux-orchestrator, expect:
 - Execute commands to perform data validation and file operations
 
 **Tools NOT available:**
-- Task tool -- this is a worker agent (P-003). All results are returned to ux-orchestrator.
-- WebSearch / WebFetch -- this agent operates on user-provided data only. The Kano methodology is self-contained; no external research is required (T2 principle of least privilege per AR-006).
-- Context7 MCP -- no external library documentation required for survey analysis.
+- Agent tool -- this is a worker agent (P-003). All results are returned to ux-orchestrator.
 - Memory-Keeper -- no cross-session state requirement for single classification engagements.
+
+**Tools available for external research (T3):**
+- WebSearch / WebFetch -- for competitive feature landscape research, current Kano survey best practices, and CS coefficient benchmarking against published studies.
+- Context7 -- for up-to-date library and framework documentation lookup.
 
 **Reasoning effort:** Medium (ET-M-001). Convergent cognitive mode with structured 5-phase methodology provides sufficient guidance at medium reasoning depth. The 5x5 evaluation table is deterministic; CS coefficient computation is arithmetic. Judgment is required for split classification interpretation and lifecycle assessment, but the methodology constrains the decision space. C4 quality gate applies to the overall deliverable, not individual agent reasoning effort.
 </capabilities>

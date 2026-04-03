@@ -673,8 +673,173 @@ def _handle_agents(args: Any, json_output: bool) -> int:
 
         return 1 if drift_count > 0 else 0
 
+    elif args.command == "validate-frontmatter":
+        return _handle_agents_validate_frontmatter(args, json_output)
+
     print(f"Unknown agents command: {args.command}")
     return 1
+
+
+def _handle_agents_validate_frontmatter(args: Any, json_output: bool) -> int:
+    """Handle the 'jerry agents validate-frontmatter' subcommand.
+
+    Validates YAML frontmatter in skills/*/agents/*.md and skills/*/SKILL.md
+    against the official Claude Code JSON schemas. Supports --agent and --skill
+    filters for single-file validation. Respects --json for machine-readable output.
+
+    Args:
+        args: Parsed arguments. May include .agent and .skill filter attributes.
+        json_output: When True, emit structured JSON to stdout.
+
+    Returns:
+        0 if all validated files pass (or pass with warnings).
+        1 if any file fails validation or schema files are missing.
+    """
+    import json as _json
+    from pathlib import Path
+
+    from src.agents.application.commands.validate_frontmatter_command import (
+        ValidateFrontmatterCommand,
+    )
+    from src.agents.application.commands.validate_frontmatter_command_handler import (
+        ValidateFrontmatterCommandHandler,
+    )
+
+    # Resolve repo root from this file's location
+    repo_root = Path(__file__).resolve().parents[3]
+
+    agent_schema_path = repo_root / "docs/schemas/claude-code-frontmatter-v1.schema.json"
+    skill_schema_path = repo_root / "docs/schemas/claude-code-skill-frontmatter-v1.schema.json"
+
+    try:
+        handler = ValidateFrontmatterCommandHandler(
+            repo_root=repo_root,
+            agent_schema_path=agent_schema_path,
+            skill_schema_path=skill_schema_path,
+        )
+    except FileNotFoundError as exc:
+        print(f"ERROR: {exc}")
+        return 1
+
+    command = ValidateFrontmatterCommand(
+        agent_filter=getattr(args, "agent", None),
+        skill_filter=getattr(args, "skill", None),
+        repo_root=repo_root,
+    )
+    result = handler.handle(command)
+
+    if json_output:
+        # Machine-readable output for CI integration
+        output = {
+            "total": result.total,
+            "passed": result.passed,
+            "failed": result.failed,
+            "pass_with_warnings": result.pass_with_warnings,
+            "no_frontmatter": result.no_frontmatter,
+            "parse_errors": result.parse_errors,
+            "is_valid": result.is_valid,
+            "files": [
+                {
+                    "path": r.relative_path,
+                    "type": r.file_type,
+                    "status": r.status,
+                    "errors": [
+                        {"field": e[0], "constraint": e[1], "value": e[2]} for e in r.errors
+                    ],
+                    "warnings": [
+                        {"field": w[0], "constraint": w[1], "value": w[2]} for w in r.warnings
+                    ],
+                }
+                for r in sorted(result.all_results, key=lambda x: x.relative_path)
+            ],
+        }
+        print(_json.dumps(output, indent=2))
+    else:
+        _print_frontmatter_table(result)
+
+    return 0 if result.is_valid else 1
+
+
+def _print_frontmatter_table(result: Any) -> None:
+    """Print a human-readable validation report to stdout.
+
+    Prints a summary table and, on failure, per-file error details.
+
+    Args:
+        result: ValidateFrontmatterResult with all file outcomes.
+    """
+    # --- Summary ---
+    clean = result.passed - result.pass_with_warnings
+    validation_failures = result.failed - result.no_frontmatter - result.parse_errors
+
+    print(f"{'=' * 68}")
+    print("  Claude Code Frontmatter Validation")
+    print(f"{'=' * 68}")
+    print(f"  Total scanned:        {result.total}")
+    print(f"  Agents:               {len(result.agent_results)}")
+    print(f"  Skills:               {len(result.skill_results)}")
+    print(f"  Pass (clean):         {clean}")
+    print(f"  Pass (with warnings): {result.pass_with_warnings}")
+    print(f"  Fail (schema errors): {validation_failures}")
+    print(f"  No frontmatter:       {result.no_frontmatter}")
+    print(f"  Parse errors:         {result.parse_errors}")
+    print(f"{'=' * 68}")
+    overall = "ALL PASSED" if result.is_valid else "FAILURES FOUND"
+    print(f"  Result: {overall}")
+    print(f"{'=' * 68}")
+
+    # --- Per-file status table ---
+    print()
+    col_status = 16
+    col_type = 7
+    header = f"  {'STATUS':<{col_status}} {'TYPE':<{col_type}} {'FILE'}"
+    print(header)
+    print(f"  {'-' * (col_status - 2)}  {'-' * (col_type - 2)}  {'-' * 50}")
+
+    status_labels = {
+        "pass": "PASS",
+        "pass_with_warnings": "PASS (warn)",
+        "fail": "FAIL",
+        "no_frontmatter": "NO FM",
+        "parse_error": "PARSE ERR",
+    }
+
+    for r in sorted(result.all_results, key=lambda x: x.relative_path):
+        label = status_labels.get(r.status, r.status)
+        print(f"  {label:<{col_status}} {r.file_type:<{col_type}} {r.relative_path}")
+
+    # --- Failure detail ---
+    failures = [r for r in result.all_results if r.failed]
+    if failures:
+        print()
+        print(f"{'=' * 68}")
+        print("  FAILURE DETAILS")
+        print(f"{'=' * 68}")
+        for r in sorted(failures, key=lambda x: x.relative_path):
+            print()
+            print(f"  {r.relative_path}")
+            print(f"  Type: {r.file_type}  Status: {r.status}")
+            if r.errors:
+                print(f"  {'FIELD':<30} {'CONSTRAINT':<30} CURRENT VALUE")
+                print(f"  {'-' * 28}  {'-' * 28}  {'-' * 20}")
+                for field_path, constraint, val in r.errors:
+                    # Truncate long values for human output
+                    val_display = val if len(val) <= 60 else val[:57] + "..."
+                    print(f"  {field_path:<30} {constraint:<30} {val_display}")
+
+    # --- Warning detail ---
+    warn_results = [r for r in result.all_results if r.status == "pass_with_warnings"]
+    if warn_results:
+        print()
+        print(f"{'=' * 68}")
+        print("  WARNINGS (files passed)")
+        print(f"{'=' * 68}")
+        for r in sorted(warn_results, key=lambda x: x.relative_path):
+            print()
+            print(f"  {r.relative_path}")
+            for field_path, constraint, val in r.warnings:
+                val_display = val if len(val) <= 80 else val[:77] + "..."
+                print(f"    [{constraint}] {field_path}: {val_display}")
 
 
 def _handle_ci(args: Any, json_output: bool) -> int:

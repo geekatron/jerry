@@ -3,7 +3,7 @@
 # Runtime config: ps-analyst.md
 
 version: 2.3.0
-tool_tier: T3
+tool_tier: T4
 identity:
   role: Analysis Specialist
   expertise:

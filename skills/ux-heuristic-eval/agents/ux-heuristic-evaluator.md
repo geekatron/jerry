@@ -18,7 +18,7 @@ tools:
   - WebSearch
   - WebFetch
 disallowedTools:
-  - Task
+  - Agent
 mcpServers:
   context7:
     tools:
@@ -98,7 +98,7 @@ Input was provided via screenshot-input mode. Some features are reduced:
 - Resolve and query external UX framework documentation via Context7 (Nielsen Norman Group, WCAG 2.2, Material Design guidelines)
 
 **Tools NOT available:**
-- Task tool -- this is a worker agent (P-003). All results are returned to ux-orchestrator.
+- Agent tool -- this is a worker agent (P-003). All results are returned to ux-orchestrator.
 - Memory-Keeper -- no cross-session state requirement for single evaluations.
 
 **Context7 usage protocol:**

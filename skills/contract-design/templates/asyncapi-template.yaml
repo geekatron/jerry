@@ -1,0 +1,38 @@
+# AsyncAPI 3.0 Contract Template -- /contract-design skill
+# Status: SCAFFOLDING (x-deferred: true)
+# Deferred per DI-07, ASM-005, G-02 (multi-actor pub/sub mapping unresolved)
+# Template version: 1.0.0
+
+asyncapi: "3.0.0"
+info:
+  title: "{{UC_TITLE}} Async Contract"
+  version: "{{CONTRACT_VERSION}}"
+  description: |
+    Async API contract template for use case {{UC_ID}}.
+    DEFERRED: This template is structural scaffolding only.
+    cd-generator v1.0.0 does not populate this template.
+    Activation requires resolution of G-02 (multi-actor pub/sub mapping).
+  x-deferred: true
+  x-deferred-reason: "G-02: multi-actor pub/sub behavior mapping unresolved"
+  x-activation-prerequisite: "Resolve G-02; extend cd-generator methodology steps 2-6 for event-driven patterns"
+  x-source-use-case: "{{UC_ID}}"
+
+channels:
+  # Channels derived from interactions where actor_role = provider
+  # and communication pattern is event-driven (publish/subscribe)
+  "{{CHANNEL_NAME}}":
+    description: "{{CHANNEL_DESCRIPTION}}"
+    messages:
+      "{{MESSAGE_NAME}}":
+        $ref: "#/components/messages/{{MESSAGE_NAME}}"
+
+components:
+  messages:
+    "{{MESSAGE_NAME}}":
+      payload:
+        $ref: "#/components/schemas/{{PAYLOAD_SCHEMA_NAME}}"
+  schemas:
+    "{{PAYLOAD_SCHEMA_NAME}}":
+      type: object
+      description: "Event payload derived from interaction postconditions"
+      properties: {}

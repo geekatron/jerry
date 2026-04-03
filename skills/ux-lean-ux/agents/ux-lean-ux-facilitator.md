@@ -19,7 +19,7 @@ tools:
   - WebSearch
   - WebFetch
 disallowedTools:
-  - Task
+  - Agent
 mcpServers:
   context7:
     tools:
@@ -115,7 +115,7 @@ Input was provided via text-based exercise mode. Some features are reduced:
 - Resolve and query external Lean UX framework documentation via Context7 (Gothelf & Seiden methodology, A/B testing frameworks, experiment design patterns)
 
 **Tools NOT available:**
-- Task tool -- this is a worker agent (P-003). All results are returned to ux-orchestrator.
+- Agent tool -- this is a worker agent (P-003). All results are returned to ux-orchestrator.
 - Memory-Keeper -- no cross-session state requirement for single hypothesis cycles.
 
 **Reasoning effort:** Medium (ET-M-001). Systematic cognitive mode with structured methodology steps provides sufficient guidance at medium reasoning depth. C4 quality gate applies to the overall deliverable, not individual agent reasoning effort.

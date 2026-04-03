@@ -1,0 +1,569 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jerry-framework.dev/schemas/use-case-realization/v1.0.0",
+  "title": "Jerry Use Case Realization Schema",
+  "description": "Validates use case artifact YAML frontmatter produced by uc-author and uc-slicer agents. Implements Cockburn's 12-step use case structure with Jacobson UC 2.0 slice extensions. Source: skills/use-case/rules/use-case-writing-rules.md, skills/use-case/SKILL.md.",
+  "type": "object",
+  "required": [
+    "id",
+    "title",
+    "work_type",
+    "version",
+    "status",
+    "goal_level",
+    "goal_symbol",
+    "primary_actor",
+    "detail_level",
+    "created_at",
+    "created_by"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^UC-[A-Z]+-\\d{3}$",
+      "description": "Use case identifier. Format: UC-{DOMAIN}-{NNN}. Example: UC-LIB-001."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Use case title. Short, verb-phrase form (e.g., 'Borrow a Book')."
+    },
+    "work_type": {
+      "const": "USE_CASE",
+      "description": "Discriminator field. Always USE_CASE for use case artifacts."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version in MAJOR.MINOR.PATCH format."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["DRAFT", "REVIEW", "APPROVED"],
+      "description": "Use case lifecycle status."
+    },
+    "goal_level": {
+      "type": "string",
+      "enum": ["SUMMARY", "USER_GOAL", "SUBFUNCTION"],
+      "description": "Cockburn goal level. SUMMARY (+): cloud-level, above user goals. USER_GOAL (!): sea-level, primary. SUBFUNCTION (-): underwater, below user goals."
+    },
+    "goal_symbol": {
+      "type": "string",
+      "enum": ["+", "!", "-"],
+      "description": "Goal level symbol. Must be consistent with goal_level: SUMMARY=+, USER_GOAL=!, SUBFUNCTION=-. Enforced by allOf constraints."
+    },
+    "domain": {
+      "type": "string",
+      "pattern": "^[A-Z]{2,10}$",
+      "description": "Short domain code used in the UC identifier. Example: LIB, AUTH, INV."
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1,
+      "description": "System or subsystem boundary. Free-form string (e.g., 'Library Management System')."
+    },
+    "primary_actor": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The actor whose goal drives this use case."
+    },
+    "detail_level": {
+      "type": "string",
+      "enum": [
+        "BRIEFLY_DESCRIBED",
+        "BULLETED_OUTLINE",
+        "ESSENTIAL_OUTLINE",
+        "FULLY_DESCRIBED"
+      ],
+      "description": "Cockburn detail level. Progressive elaboration: BRIEFLY_DESCRIBED -> BULLETED_OUTLINE -> ESSENTIAL_OUTLINE -> FULLY_DESCRIBED."
+    },
+    "trigger": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The event that initiates this use case."
+    },
+    "preconditions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1,
+      "description": "Conditions that must be true before the use case starts."
+    },
+    "postconditions": {
+      "type": "object",
+      "required": ["success", "failure"],
+      "properties": {
+        "success": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "description": "Observable outcomes when the use case succeeds."
+        },
+        "failure": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "description": "Observable outcomes when the use case fails."
+        }
+      },
+      "additionalProperties": false,
+      "description": "Guaranteed outcomes categorized by success and failure."
+    },
+    "basic_flow": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/flow_step"
+      },
+      "minItems": 3,
+      "maxItems": 9,
+      "description": "Main success scenario steps (3-9 steps per Cockburn guidelines)."
+    },
+    "extensions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/extension"
+      },
+      "description": "Exception/alternative paths branching from basic_flow steps. Required for /test-spec generation at ESSENTIAL_OUTLINE or above."
+    },
+    "alternative_flows": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/alternative_flow"
+      },
+      "description": "Complete alternative paths through the use case."
+    },
+    "supporting_actors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "type"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "type": {
+            "type": "string",
+            "enum": ["human", "system", "timer", "external"],
+            "description": "Actor classification."
+          }
+        },
+        "additionalProperties": false
+      },
+      "description": "Secondary actors involved in the use case."
+    },
+    "stakeholders": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "interest"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "interest": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "description": "Stakeholders and their interests in this use case."
+    },
+    "priority": {
+      "type": "string",
+      "enum": ["P1", "P2", "P3", "P4"],
+      "description": "Use case priority. P1=Critical, P2=High, P3=Medium, P4=Low."
+    },
+    "realization_level": {
+      "type": "string",
+      "enum": ["OUTLINED", "STORY_DEFINED", "INTERACTION_DEFINED"],
+      "description": "UC 2.0 realization progress. OUTLINED: basic structure exists. STORY_DEFINED: slices defined with INVEST assessment. INTERACTION_DEFINED: interactions[] populated, enables /contract-design."
+    },
+    "slices": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/slice"
+      },
+      "description": "Jacobson UC 2.0 slices. Present when realization_level >= STORY_DEFINED."
+    },
+    "slice_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "References to slice IDs for cross-referencing."
+    },
+    "interactions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/interaction"
+      },
+      "description": "System boundary interactions. Required when realization_level = INTERACTION_DEFINED. Consumed by /contract-design cd-generator."
+    },
+    "related_use_cases": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^UC-[A-Z]+-\\d{3}$"
+      },
+      "description": "References to related use case IDs."
+    },
+    "parent_id": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^UC-[A-Z]+-\\d{3}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Parent use case ID for sub-use-cases. Null for top-level use cases."
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 creation timestamp."
+    },
+    "created_by": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Agent or user that created this artifact."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 last update timestamp."
+    },
+    "last_modified_by": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Agent or user that last modified this artifact."
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "flow_step": {
+      "type": "object",
+      "required": ["step", "actor", "action", "type"],
+      "properties": {
+        "step": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Step number (1-indexed, sequential)."
+        },
+        "actor": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Actor performing this step. Must be primary_actor, a supporting_actor name, or 'System'."
+        },
+        "action": {
+          "type": "string",
+          "minLength": 1,
+          "description": "What the actor does in this step."
+        },
+        "type": {
+          "type": "string",
+          "enum": ["actor_action", "system_response", "validation"],
+          "description": "Step classification for Clark transformation mapping. actor_action -> When clause, system_response -> Then clause, validation -> Then assertion clause."
+        }
+      },
+      "additionalProperties": false
+    },
+    "extension": {
+      "type": "object",
+      "required": ["id", "anchor_step", "condition", "outcome", "steps"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^EXT-\\d+[A-Z]$",
+          "description": "Extension identifier. Format: EXT-{anchor_step}{letter}. Example: EXT-2A."
+        },
+        "anchor_step": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Basic flow step number where this extension branches."
+        },
+        "condition": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The condition that triggers this extension."
+        },
+        "outcome": {
+          "type": "string",
+          "pattern": "^(success|failure|rejoin:\\d+)$",
+          "description": "Extension outcome. success: separate successful end state. failure: use case fails. rejoin:{step}: returns to basic flow at specified step."
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/flow_step"
+          },
+          "minItems": 1,
+          "description": "Extension flow steps."
+        }
+      },
+      "additionalProperties": false
+    },
+    "alternative_flow": {
+      "type": "object",
+      "required": ["id", "condition", "steps"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^AF-\\d{2}$",
+          "description": "Alternative flow identifier. Format: AF-{NN}. Example: AF-01."
+        },
+        "condition": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Condition that triggers this alternative flow."
+        },
+        "branches_from_step": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Basic flow step number where this alternative flow branches. Required for slice-scoped coverage computation in tspec-analyst."
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/flow_step"
+          },
+          "minItems": 1,
+          "description": "Alternative flow steps."
+        }
+      },
+      "additionalProperties": false
+    },
+    "slice": {
+      "type": "object",
+      "required": ["slice_id", "title", "steps_included", "slice_state"],
+      "properties": {
+        "slice_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Slice identifier. Format: {UC-ID}-S{N}. Example: UC-LIB-001-S1."
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Slice title describing the vertical slice of behavior."
+        },
+        "steps_included": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "minItems": 1,
+          "description": "Basic flow step numbers included in this slice."
+        },
+        "slice_state": {
+          "type": "string",
+          "enum": ["SCOPED", "PREPARED", "ANALYZED", "IMPLEMENTED", "VERIFIED"],
+          "description": "UC 2.0 slice lifecycle state."
+        },
+        "invest_assessment": {
+          "type": "object",
+          "properties": {
+            "independent": { "type": "boolean" },
+            "negotiable": { "type": "boolean" },
+            "valuable": { "type": "boolean" },
+            "estimable": { "type": "boolean" },
+            "small": { "type": "boolean" },
+            "testable": { "type": "boolean" }
+          },
+          "description": "INVEST criteria assessment for slice sizing."
+        },
+        "test_cases": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Test case references. Populated at PREPARED state and beyond."
+        },
+        "realization_level": {
+          "type": "string",
+          "enum": ["STORY_DEFINED", "INTERACTION_DEFINED"],
+          "description": "Slice-level realization progress."
+        }
+      },
+      "additionalProperties": true
+    },
+    "interaction": {
+      "type": "object",
+      "required": [
+        "id",
+        "source_step",
+        "source_flow",
+        "actor_role",
+        "system_role",
+        "request_description",
+        "response_description"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^INT-\\d{2,3}$",
+          "description": "Interaction identifier. Format: INT-{NN} or INT-{NNN} for use cases with >99 interactions. Examples: INT-01, INT-100."
+        },
+        "source_step": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "References the basic_flow or extension step number."
+        },
+        "source_flow": {
+          "type": "string",
+          "pattern": "^(basic_flow|AF-\\d{2}|EXT-\\d+[A-Z])$",
+          "description": "Flow containing the source step. basic_flow, AF-{NN}, or EXT-{step}{letter}."
+        },
+        "actor_role": {
+          "type": "string",
+          "enum": ["consumer", "provider"],
+          "description": "Actor's role in this interaction."
+        },
+        "system_role": {
+          "type": "string",
+          "enum": ["receiver", "provider", "initiator"],
+          "description": "System's role in this interaction. 'initiator' used when system proactively triggers the interaction (e.g., timer-based events, system notifications)."
+        },
+        "request_description": {
+          "type": "string",
+          "minLength": 20,
+          "description": "What the actor requests from the system. Must be a semantically meaningful description of the request action (minimum 20 characters). Descriptions should contain action verbs recognizable by HTTP method inference (e.g., 'submits', 'retrieves', 'updates', 'removes'). Placeholder text (e.g., 'TBD', 'placeholder') will be rejected by cd-generator."
+        },
+        "response_description": {
+          "type": "string",
+          "minLength": 20,
+          "description": "What the system responds to the actor. Must be a semantically meaningful description of the system response (minimum 20 characters). Descriptions should describe observable state changes or returned data. Placeholder text (e.g., 'TBD', 'placeholder') will be rejected by cd-generator."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "goal_level": { "const": "SUMMARY" }
+        },
+        "required": ["goal_level"]
+      },
+      "then": {
+        "properties": {
+          "goal_symbol": { "const": "+" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "goal_level": { "const": "USER_GOAL" }
+        },
+        "required": ["goal_level"]
+      },
+      "then": {
+        "properties": {
+          "goal_symbol": { "const": "!" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "goal_level": { "const": "SUBFUNCTION" }
+        },
+        "required": ["goal_level"]
+      },
+      "then": {
+        "properties": {
+          "goal_symbol": { "const": "-" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "realization_level": { "const": "INTERACTION_DEFINED" }
+        },
+        "required": ["realization_level"]
+      },
+      "then": {
+        "required": ["interactions"],
+        "properties": {
+          "interactions": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "realization_level": { "const": "STORY_DEFINED" }
+        },
+        "required": ["realization_level"]
+      },
+      "then": {
+        "required": ["slices"],
+        "properties": {
+          "slices": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "detail_level": { "enum": ["ESSENTIAL_OUTLINE", "FULLY_DESCRIBED"] }
+        },
+        "required": ["detail_level"]
+      },
+      "then": {
+        "required": ["extensions"],
+        "properties": {
+          "extensions": {
+            "minItems": 1,
+            "description": "Extensions are required at ESSENTIAL_OUTLINE and FULLY_DESCRIBED detail levels for complete use case specification."
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "realization_level": { "const": "INTERACTION_DEFINED" },
+          "detail_level": { "enum": ["BRIEFLY_DESCRIBED", "BULLETED_OUTLINE"] }
+        },
+        "required": ["realization_level", "detail_level"]
+      },
+      "then": false,
+      "description": "INTERACTION_DEFINED realization requires at minimum ESSENTIAL_OUTLINE detail level. BRIEFLY_DESCRIBED and BULLETED_OUTLINE cannot support interaction sequences."
+    },
+    {
+      "if": {
+        "properties": {
+          "detail_level": { "enum": ["BULLETED_OUTLINE", "ESSENTIAL_OUTLINE", "FULLY_DESCRIBED"] }
+        },
+        "required": ["detail_level"]
+      },
+      "then": {
+        "required": ["trigger", "preconditions", "postconditions", "basic_flow"],
+        "description": "trigger, preconditions, postconditions, and basic_flow are required at BULLETED_OUTLINE and above. BRIEFLY_DESCRIBED artifacts contain only a narrative brief without structured flow data."
+      }
+    }
+  ]
+}

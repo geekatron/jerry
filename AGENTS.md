@@ -23,6 +23,9 @@
 | [Prompt Engineering Skill Agents](#prompt-engineering-skill-agents) | pe-* agents (3 total) |
 | [Diataxis Skill Agents](#diataxis-skill-agents) | diataxis-* agents (6 total) |
 | [User-Experience Skill Agents](#user-experience-skill-agents) | ux-* agents (11 total) |
+| [Use Case Skill Agents](#use-case-skill-agents) | uc-* agents (2 total) |
+| [Test Spec Skill Agents](#test-spec-skill-agents) | tspec-* agents (2 total) |
+| [Contract Design Skill Agents](#contract-design-skill-agents) | cd-* agents (2 total) |
 | [MCP Tool Access](#mcp-tool-access) | Context7 and Memory-Keeper agent matrix |
 | [Agent Handoff Protocol](#agent-handoff-protocol) | Multi-agent coordination |
 | [Adding New Agents](#adding-new-agents) | Extension guide |
@@ -59,13 +62,16 @@ to specific skills. This provides:
 | Diataxis Agents | 6 | `/diataxis` skill |
 | Prompt Engineering Agents | 3 | `/prompt-engineering` skill |
 | User-Experience Agents | 11 | `/user-experience` skill |
-| **Total** | **83** | |
+| Use Case Agents | 2 | `/use-case` skill |
+| Test Spec Agents | 2 | `/test-spec` skill |
+| Contract Design Agents | 2 | `/contract-design` skill |
+| **Total** | **89** | |
 
 > **Verification:** Agent counts verified against filesystem scan (`skills/*/agents/*.md`).
-> 76 total files found; 4 template/extension files excluded from counts:
+> 82 total files found; 4 template/extension files excluded from counts:
 > `NSE_AGENT_TEMPLATE.md`, `NSE_EXTENSION.md`, `PS_AGENT_TEMPLATE.md`, `PS_EXTENSION.md`.
-> Per-skill sum: 9 + 10 + 3 + 3 + 3 + 5 + 3 + 1 + 10 + 11 + 5 +6 + 3 + 11 = 83 invokable agents.
-> Last verified: 2026-03-03.
+> Per-skill sum: 9 + 10 + 3 + 3 + 3 + 5 + 3 + 1 + 10 + 11 + 5 + 6 + 3 + 11 + 2 + 2 + 2 = 89 invokable agents.
+> Last verified: 2026-03-09.
 
 ---
 
@@ -369,11 +375,85 @@ These agents implement AI-augmented UX methodology for tiny teams through the `/
 
 **Model Tiers:** ux-orchestrator (opus), ux-sprint-facilitator (opus), ux-ai-design-guide (opus), ux-heuristic-evaluator (haiku*); all others (sonnet). *Haiku for high-volume checklist evaluation; escalates to Sonnet per AD-M-009.
 
-**Tool Tiers:** ux-orchestrator is T5 (full, with Task for delegation); all sub-skill agents are T2 or T3 (no Task tool per P-003).
+**Tool Tiers:** ux-orchestrator is T5 (Orchestration, with Task for delegation); all sub-skill agents are T2 or T4 (no Task tool per P-003).
 
 **Wave Architecture:** Sub-skills deploy in 5 criteria-gated waves. Wave 0 (Foundation) deploys the orchestrator. Waves 1-5 deploy sub-skills progressively based on team maturity criteria.
 
 **Artifact Location**: `skills/{sub-skill}/output/{engagement-id}/ux-{agent}-{topic-slug}.md`
+
+---
+
+## Use Case Skill Agents
+
+These agents implement guided use case authoring and decomposition through the `/use-case` skill, using Cockburn's 12-step writing process and Jacobson UC 2.0 progressive narrative levels and slicing methodology.
+
+| Agent | File | Role | Cognitive Mode |
+|-------|------|------|----------------|
+| uc-author | `skills/use-case/agents/uc-author.md` | Use Case Author (Cockburn 12-step, Jacobson UC 2.0 narrative levels) | Integrative |
+| uc-slicer | `skills/use-case/agents/uc-slicer.md` | Use Case Slicer (Jacobson UC 2.0 Activities 2, 4, 5) | Systematic |
+
+**Key Capabilities:**
+
+| Agent | Primary Use Case | Output Type |
+|-------|------------------|-------------|
+| uc-author | Create and elaborate use case artifacts through four progressive detail levels | Use case artifacts with YAML frontmatter |
+| uc-slicer | Decompose use cases into implementation-ready slices; produce realization interaction sequences | Updated UC artifacts with slices and interactions |
+
+**Invocation**: Use `/use-case` skill. Keywords: write use case, create use case, elaborate, Cockburn, slice, decompose, INVEST, interaction sequence.
+
+**Model Tiers:** Both agents use sonnet.
+
+**Artifact Location**: `projects/${JERRY_PROJECT}/use-cases/`
+
+---
+
+## Test Spec Skill Agents
+
+These agents implement BDD test specification generation from use case artifacts through the `/test-spec` skill, using Clark's (2018) UC2.0-to-Gherkin deterministic transformation algorithm.
+
+| Agent | File | Role | Cognitive Mode |
+|-------|------|------|----------------|
+| tspec-generator | `skills/test-spec/agents/tspec-generator.md` | Clark Transformation -- UC flows to Gherkin scenarios | Systematic |
+| tspec-analyst | `skills/test-spec/agents/tspec-analyst.md` | Coverage Analysis -- 7 Cs quality framework | Convergent |
+
+**Key Capabilities:**
+
+| Agent | Primary Use Case | Output Type |
+|-------|------------------|-------------|
+| tspec-generator | Transform use case flows (basic, alternative, extensions) into Gherkin BDD Feature files | Feature files (.feature.md) with traceability |
+| tspec-analyst | Analyze test coverage completeness against use case flows using 7 Cs framework | Coverage reports with gap remediation |
+
+**Invocation**: Use `/test-spec` skill. Keywords: test spec, BDD, Gherkin, feature file, Given When Then, generate tests from use case, coverage analysis.
+
+**Model Tiers:** Both agents use sonnet.
+
+**Artifact Location**: `projects/${JERRY_PROJECT}/test-specs/`
+
+---
+
+## Contract Design Skill Agents
+
+These agents implement API contract generation from use case artifacts through the `/contract-design` skill, using a novel UC-to-contract transformation algorithm producing OpenAPI 3.1 specifications with full traceability.
+
+| Agent | File | Role | Cognitive Mode |
+|-------|------|------|----------------|
+| cd-generator | `skills/contract-design/agents/cd-generator.md` | UC-to-OpenAPI Transformation (novel algorithm, 9-step mapping) | Convergent |
+| cd-validator | `skills/contract-design/agents/cd-validator.md` | Contract Validation (9-step protocol, traceability verification) | Systematic |
+
+**Key Capabilities:**
+
+| Agent | Primary Use Case | Output Type |
+|-------|------------------|-------------|
+| cd-generator | Transform UC interaction sequences into OpenAPI 3.1 contracts with HTTP method inference and schema derivation | OpenAPI contracts (.openapi.yaml) + mapping documents |
+| cd-validator | Validate contracts against OpenAPI 3.1 structural standards and verify traceability from operations to source interactions | Validation reports with PASS/FAIL per check |
+
+**Invocation**: Use `/contract-design` skill. Keywords: API contract, OpenAPI, contract design, generate contract, contract from use case, API specification.
+
+**Model Tiers:** cd-generator uses opus; cd-validator uses sonnet.
+
+**PROTOTYPE Label:** All generated contracts carry `x-prototype: true` until human reviewer validates and removes. Neither agent removes the label (P-020 user authority).
+
+**Artifact Location**: `projects/${JERRY_PROJECT}/contracts/`
 
 ---
 

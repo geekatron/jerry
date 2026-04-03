@@ -1,25 +1,29 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://jerry-framework.dev/schemas/claude-code-frontmatter/v1.0.0",
+  "$id": "https://jerry-framework.dev/schemas/claude-code-frontmatter/v1.1.0",
   "title": "Claude Code Agent Frontmatter Schema",
-  "description": "Validates YAML frontmatter in agent .md files against Anthropic's documented Claude Code fields. Source: https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/sub-agents (March 2026). Unrecognized fields are silently ignored by Claude Code at runtime but flagged here to prevent governance metadata from leaking into frontmatter.",
+  "description": "Correctness gate for YAML frontmatter in agent .md files. Validates field types, enums, and patterns against Anthropic's documented Claude Code fields (March 2026). This schema is NOT a security boundary -- it cannot prevent prompt injection in descriptions, arbitrary commands in hooks, or malicious MCP server configs. Unrecognized fields are silently accepted (additionalProperties: true) because Claude Code ignores unknown fields at runtime. Governance metadata belongs in the companion .governance.yaml file, not here. Sources: https://code.claude.com/docs/en/sub-agents, https://code.claude.com/docs/en/tools-reference, https://code.claude.com/docs/en/hooks.",
   "type": "object",
   "required": ["name", "description"],
   "properties": {
     "name": {
       "type": "string",
-      "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$",
-      "description": "Agent identifier. Kebab-case, lowercase letters and hyphens. Must be unique within scope (project > user > plugin)."
+      "allOf": [
+        { "pattern": "^[a-z]([a-z0-9]+-)*[a-z0-9]+$|^[a-z][a-z0-9]*$" },
+        { "not": { "pattern": "claude|anthropic" } }
+      ],
+      "description": "Agent identifier. Kebab-case, lowercase letters, numbers, and hyphens. Must not contain consecutive hyphens (--). Must not start or end with hyphen. Must not contain reserved words 'claude' or 'anthropic' (enforced by schema). Must be unique within scope (project > user > plugin). Example: 'my-agent-name'."
     },
     "description": {
       "type": "string",
       "minLength": 10,
-      "description": "When Claude should delegate to this agent. Include 'use proactively' to encourage automatic invocation. This is the primary routing signal."
+      "maxLength": 2048,
+      "description": "When Claude should delegate to this agent. Include 'use proactively' to encourage automatic invocation. This is the primary routing signal. No XML angle brackets (<>). Max 2048 chars to prevent context budget exhaustion. KNOWN ISSUE: Claude Code uses a simplified parser -- multiline YAML (>, |, >-) silently breaks agent discovery with no error (#4700). Use single-line or quoted strings only."
     },
     "model": {
       "type": "string",
-      "enum": ["sonnet", "opus", "haiku", "inherit"],
-      "description": "Model selection. Defaults to inherit from parent if omitted."
+      "pattern": "^(sonnet|opus|haiku|inherit|default|claude-[a-z0-9-]+(\\[1m\\])?|opusplan)$",
+      "description": "Model selection. Aliases: sonnet, opus, haiku, inherit, default. Full IDs: claude-opus-4-6, claude-sonnet-4-6, claude-haiku-4-5. Extended context: opus[1m], sonnet[1m]. Special: opusplan. Resolution: CLAUDE_CODE_SUBAGENT_MODEL env var > per-invocation > frontmatter > parent. Default: inherit."
     },
     "tools": {
       "oneOf": [
@@ -33,7 +37,7 @@
           "description": "Array of tool names. Example: ['Read', 'Write', 'Glob', 'Bash']"
         }
       ],
-      "description": "Allowlist of tools. If omitted, agent inherits ALL tools from parent. Special syntax: Agent(name) restricts spawnable subagents."
+      "description": "Allowlist of tools. If omitted, agent inherits ALL tools from parent including MCP tools. Special syntax: Agent(name1, name2) restricts which subagents can be spawned. disallowedTools is applied first when both are set. NOTE: The subagent spawning tool was renamed from 'Task' to 'Agent' in v2.1.63. Both names work as aliases. Hook payloads use 'Agent' as tool_name (#29677)."
     },
     "disallowedTools": {
       "oneOf": [
@@ -43,33 +47,55 @@
           "items": { "type": "string" }
         }
       ],
-      "description": "Denylist of tools to remove from inherited or specified set."
+      "description": "Denylist of tools to remove from inherited or specified set. Applied before tools allowlist. Tool names are PascalCase. Example: 'Bash, WebSearch, Write'. Common tools: Agent, Bash, Edit, Glob, Grep, Read, WebFetch, WebSearch, Write. MCP tools: mcp__<server>__<tool>. KNOWN LIMITATION: Restriction is name-based not capability-based -- agents with Bash access can bypass Write/Edit restrictions via shell commands (#31292). For true read-only enforcement, exclude Bash from tools."
     },
     "mcpServers": {
-      "type": "object",
-      "additionalProperties": {
-        "oneOf": [
-          { "type": "boolean", "const": true },
-          {
-            "type": "object",
-            "description": "Full MCP server config or tool allowlist.",
-            "properties": {
-              "tools": {
-                "type": "array",
-                "items": { "type": "string" },
-                "description": "Allowlist of specific MCP tools from this server."
+      "oneOf": [
+        {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "Server name reference. Reuses already-configured server from parent session."
+              },
+              {
+                "type": "object",
+                "description": "Inline server definition. Key is server name, value is config object with type, command, args.",
+                "additionalProperties": true
               }
-            },
-            "additionalProperties": true
-          }
-        ]
-      },
-      "description": "MCP servers available to this agent. Keys are server names. Value: true (all tools) or object with config/tool allowlist."
+            ]
+          },
+          "description": "Official array format per Anthropic docs. Each entry is a string reference or inline {name: config} definition."
+        },
+        {
+          "type": "object",
+          "additionalProperties": {
+            "oneOf": [
+              { "type": "boolean", "const": true },
+              {
+                "type": "object",
+                "description": "Full MCP server config or tool allowlist.",
+                "properties": {
+                  "tools": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Allowlist of specific MCP tools from this server."
+                  }
+                },
+                "additionalProperties": true
+              }
+            ]
+          },
+          "description": "Legacy object format (key=server name, value=true or config). Functional at runtime. Used by Jerry agents."
+        }
+      ],
+      "description": "MCP servers available to this subagent. Official format: array of string references or inline definitions. Legacy format: object with server names as keys. Both accepted at runtime. String references share parent session connection; inline definitions are connected at subagent start, disconnected at finish. KNOWN ISSUE: Custom agents in .claude/agents/ may not receive MCP tools at runtime even when declared here (#25200). Verify MCP tool availability in your deployment."
     },
     "permissionMode": {
       "type": "string",
       "enum": ["default", "acceptEdits", "dontAsk", "bypassPermissions", "plan"],
-      "description": "Permission prompt behavior for this agent."
+      "description": "Permission prompt behavior. KNOWN LIMITATION: If parent uses bypassPermissions, ALL subagents inherit it unconditionally -- this field cannot restrict permissions below the parent level (#20264). If parent uses auto mode, subagent inherits auto mode and this field is ignored."
     },
     "maxTurns": {
       "type": "integer",
@@ -79,30 +105,39 @@
     "skills": {
       "type": "array",
       "items": { "type": "string" },
-      "description": "Skill names to preload. Full skill content injected into agent context. Subagents do NOT inherit parent skills."
+      "description": "Skill names to preload. Full skill content injected into agent context at startup. Subagents do NOT inherit skills from parent conversation."
     },
     "hooks": {
       "type": "object",
-      "description": "Lifecycle hooks scoped to this agent. Supports PreToolUse, PostToolUse, SubagentStart, SubagentStop events.",
+      "description": "Lifecycle hooks scoped to this agent. Keys are event names, values are arrays of hook configs. Stop auto-converts to SubagentStop. Example: hooks: { PreToolUse: [{ type: command, command: './check.sh' }] }. Events: PreToolUse, PostToolUse, SubagentStart, SubagentStop, Stop, UserPromptSubmit, SessionStart, TaskCreated, TaskCompleted, PreCompact, PostCompact, and 14 more. Handler types: command, http, prompt, agent. KNOWN LIMITATION: Hooks defined in agent frontmatter are NOT executed when the agent runs as a subagent (#18392). All hook-based enforcement must be at session level.",
       "additionalProperties": true
     },
     "memory": {
       "type": "string",
       "enum": ["user", "project", "local"],
-      "description": "Persistent memory scope for cross-session learning."
+      "description": "Persistent memory scope for cross-session learning. Creates memory directory: user at ~/.claude/agent-memory/<name>/, project at .claude/agent-memory/<name>/, local at .claude/agent-memory-local/<name>/. When enabled, Read/Write/Edit auto-enabled. First 200 lines or 25KB of MEMORY.md injected into system prompt."
     },
     "background": {
       "type": "boolean",
-      "description": "Run as background task. Default: false."
+      "description": "Always run as background task. Background subagents auto-deny permissions not pre-approved. AskUserQuestion tool calls fail but subagent continues. Default: false."
+    },
+    "effort": {
+      "type": "string",
+      "enum": ["low", "medium", "high", "max"],
+      "description": "Reasoning depth when this agent is active. Overrides session effort level. 'max' is Opus 4.6 only. CLAUDE_CODE_EFFORT_LEVEL env var takes precedence. Default: inherits from session."
     },
     "isolation": {
       "type": "string",
       "enum": ["worktree"],
-      "description": "Run in temporary git worktree (auto-cleaned if no changes)."
+      "description": "Run in temporary git worktree. Gives isolated copy of repository. Auto-cleaned if subagent makes no changes. KNOWN ISSUE: Context compaction during worktree execution can cause CWD drift and nested worktrees, potentially bypassing branch isolation (#27881)."
+    },
+    "initialPrompt": {
+      "type": "string",
+      "description": "Auto-submitted as first user turn when agent runs as main session agent (--agent flag or agent setting). Commands (/skill-name) and skills are processed. Prepended to user-provided prompt. Only meaningful for --agent mode, not subagent invocations."
     },
     "color": {
       "type": "string",
-      "description": "Background color for subagent UI identification. Undocumented but used by /agents command (e.g., 'blue', 'purple'). See github.com/anthropics/claude-code/issues/8501."
+      "description": "Background color for subagent UI identification. Used by /agents interactive command. Not in official frontmatter table. Known values: blue, purple, yellow, green, red. See github.com/anthropics/claude-code/issues/8501."
     }
   },
   "additionalProperties": true

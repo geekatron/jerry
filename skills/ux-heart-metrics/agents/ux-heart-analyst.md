@@ -16,8 +16,12 @@ tools:
   - Edit
   - Glob
   - Grep
+  - WebSearch
+  - WebFetch
 disallowedTools:
-  - Task
+  - Agent
+mcpServers:
+  context7: true
 ---
 
 <identity>
@@ -92,9 +96,12 @@ until instrumentation is implemented and baseline data is collected.
 - Search the codebase to locate prior engagement outputs, skill methodology documentation, and cross-framework handoff data
 
 **Tools NOT available:**
-- Task tool -- this is a worker agent (P-003). All results are returned to ux-orchestrator.
-- WebSearch / WebFetch -- this is a T2 agent. The HEART methodology is self-contained in the agent definition; no external web research is required.
-- Context7 / Memory-Keeper -- no external documentation lookup or cross-session state requirement.
+- Agent tool -- this is a worker agent (P-003). All results are returned to ux-orchestrator.
+- Memory-Keeper -- no cross-session state requirement.
+
+**Tools available for external research (T3):**
+- WebSearch / WebFetch -- for industry benchmarks (Baymard Institute, Bain NPS), current HEART methodology research, and competitive metric comparisons.
+- Context7 -- for up-to-date library and framework documentation lookup.
 </capabilities>
 
 <methodology>

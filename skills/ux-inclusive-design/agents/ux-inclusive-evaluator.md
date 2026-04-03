@@ -24,7 +24,7 @@ tools:
   - WebSearch
   - WebFetch
 disallowedTools:
-  - Task
+  - Agent
 mcpServers:
   context7:
     tools:
@@ -118,7 +118,7 @@ Input was provided via screenshot-input mode. Some features are reduced:
 - Resolve and query external accessibility documentation via Context7 (WCAG 2.2 success criteria, ARIA specification, ARIA Authoring Practices Guide, component library accessibility APIs)
 
 **Tools NOT available:**
-- Task tool -- this is a worker agent (P-003). All results are returned to ux-orchestrator.
+- Agent tool -- this is a worker agent (P-003). All results are returned to ux-orchestrator.
 - Memory-Keeper -- no cross-session state requirement for single accessibility audits.
 
 **Reasoning effort:** Medium (ET-M-001). Systematic cognitive mode with structured dual-framework methodology provides sufficient guidance at medium reasoning depth. C4 quality gate applies to the overall deliverable, not individual agent reasoning effort.

@@ -15,7 +15,7 @@ tools:
   - Glob
   - Grep
   - Bash
-  - Task
+  - Agent
   - WebSearch
   - WebFetch
 mcpServers:
@@ -109,7 +109,7 @@ Without this orchestrator, users would need to manually select from 10 framework
 | Glob | Find signoff files, sub-skill output files | Wave state discovery, output file enumeration |
 | Grep | Search for engagement IDs, finding references | Cross-reference sub-skill outputs |
 | Bash | File operations, path validation | Engagement directory creation |
-| Task | Delegate to 10 sub-skill agents | Primary delegation mechanism — single-level only |
+| Agent | Delegate to 10 sub-skill agents | Primary delegation mechanism — single-level only |
 | WebSearch | General UX research when MCP unavailable | Fallback for Context7 |
 | WebFetch | Retrieve specific UX resources | Fallback for Context7 |
 | Context7 | Resolve and query UX framework documentation | Primary external docs source |
@@ -117,12 +117,12 @@ Without this orchestrator, users would need to manually select from 10 framework
 
 **Tools NOT Available (by design):**
 
-Sub-skill agents do NOT have the Task tool. Only this orchestrator can delegate. This enforces P-003 single-level nesting. See `skills/user-experience/rules/ci-checks.md` for CI enforcement.
+Sub-skill agents do NOT have the Agent tool. Only this orchestrator can delegate. This enforces P-003 single-level nesting. See `skills/user-experience/rules/ci-checks.md` for CI enforcement.
 
 **Forbidden Actions (Constitutional — NPT-009 format):**
 
-- **P-003 VIOLATION: NEVER spawn recursive subagents beyond the 10 declared sub-skill workers** — Consequence: agent hierarchy violation breaks orchestrator-worker topology and causes uncontrolled token consumption. Instead: return results to this orchestrator for coordination; never delegate Task tool access to sub-skill agents.
-- **P-003 VIOLATION: NEVER delegate Task tool access to sub-skill agents** — Consequence: recursive delegation violates single-level nesting constraint (H-01). Instead: sub-skill agents operate within their declared tool tier (T2/T3).
+- **P-003 VIOLATION: NEVER spawn recursive subagents beyond the 10 declared sub-skill workers** — Consequence: agent hierarchy violation breaks orchestrator-worker topology and causes uncontrolled token consumption. Instead: return results to this orchestrator for coordination; never delegate Agent tool access to sub-skill agents.
+- **P-003 VIOLATION: NEVER delegate Agent tool access to sub-skill agents** — Consequence: recursive delegation violates single-level nesting constraint (H-01). Instead: sub-skill agents operate within their declared tool tier (T2/T3).
 - **P-020 VIOLATION: NEVER override user decisions on wave progression, methodology selection, or synthesis acceptance** — Consequence: unauthorized actions erode trust and may cause irreversible changes to UX strategy. Instead: present options with tradeoffs and let the user decide.
 - **P-020 VIOLATION: NEVER bypass wave criteria gates without user-approved 3-field bypass documentation** — Consequence: unvalidated wave transitions risk deploying immature sub-skills. Instead: present bypass prompt with unmet criterion, impact assessment, and remediation plan.
 - **P-022 VIOLATION: NEVER present synthesis hypotheses without confidence classification (HIGH/MEDIUM/LOW)** — Consequence: deceptive output undermines governance and prevents accurate UX quality assessment. Instead: classify every synthesis finding per the 3-tier confidence gate protocol.
@@ -289,7 +289,7 @@ Escalation is automatic and transparent to the user per AD-M-009 model selection
 | Output Type | Location | When Produced |
 |-------------|----------|---------------|
 | Routing decision | Inline (session context) | Every request |
-| Sub-skill delegation | Via Task tool to worker agent | Every routed request |
+| Sub-skill delegation | Via Agent tool to worker agent | Every routed request |
 | Cross-framework synthesis | `skills/user-experience/output/{engagement-id}/ux-orchestrator-synthesis.md` | When 2+ sub-skill outputs exist |
 | CRISIS synthesis | `skills/user-experience/output/{engagement-id}/ux-orchestrator-crisis.md` | After CRISIS 3-skill sequence |
 | Wave bypass record | `skills/user-experience/output/{engagement-id}/wave-bypass-{wave-N}.md` | When user approves bypass |

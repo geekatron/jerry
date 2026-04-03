@@ -1,0 +1,16 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.12, pytest-9.0.2, pluggy-1.6.0 -- /Users/adam.nowak/workspace/GitHub/geekatron/jerry-wt/feat/PROJ-024-tactical-work/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/adam.nowak/workspace/GitHub/geekatron/jerry-wt/feat/PROJ-024-tactical-work
+configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
+plugins: cov-7.0.0
+collecting ... collected 6 items
+
+scripts/tests/test_validate_agent_frontmatter.py::TestP003AgentToolCheck::test_non_t5_agent_with_agent_tool_produces_error PASSED [ 16%]
+scripts/tests/test_validate_agent_frontmatter.py::TestP003AgentToolCheck::test_non_t5_agent_with_task_alias_produces_error PASSED [ 33%]
+scripts/tests/test_validate_agent_frontmatter.py::TestP003AgentToolCheck::test_t5_agent_with_agent_tool_no_error PASSED [ 50%]
+scripts/tests/test_validate_agent_frontmatter.py::TestP003AgentToolCheck::test_agent_without_agent_tool_no_error PASSED [ 66%]
+scripts/tests/test_validate_agent_frontmatter.py::TestP003AgentToolCheck::test_string_format_tools_with_agent_produces_error PASSED [ 83%]
+scripts/tests/test_validate_agent_frontmatter.py::TestP003AgentToolCheck::test_missing_governance_yaml_defaults_to_error PASSED [100%]
+
+============================== 6 passed in 0.07s ===============================

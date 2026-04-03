@@ -92,7 +92,7 @@ def get_unguarded_imports_from_file(file_path: Path) -> list[str]:
 
     Fail-open imports guarded by try/except with ImportError handlers
     are excluded. This matches the established pattern used by
-    pre_tool_use.py (EN-703) and session_start_hook.py (EN-706).
+    pre-tool-use.py CLI pipeline (EN-703) and session_start_hook.py (EN-706).
 
     Returns a list of module names that are imported at top level.
     """

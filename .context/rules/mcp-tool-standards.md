@@ -1,6 +1,6 @@
 # MCP Tool Standards
 
-<!-- VERSION: 1.3.1 | DATE: 2026-02-20 | SOURCE: FEAT-028-mcp-tool-integration -->
+<!-- VERSION: 1.4.0 | DATE: 2026-03-28 | SOURCE: FEAT-028-mcp-tool-integration, ADR-STORY015-001, STORY-017 | REVISION: STORY-017 tier renumbering: MCP-M-001 T3/T4 refs, eng-*/red-* MK exclusion notes -->
 
 > Governance rules for proactive MCP tool usage across Jerry Framework agents.
 
@@ -40,7 +40,7 @@
 
 | ID | Standard | Guidance |
 |----|----------|----------|
-| MCP-M-001 | Memory-Keeper SHOULD be used for multi-session research that produces reusable findings. | Store key findings with `jerry/{project}/research/{slug}` key pattern. |
+| MCP-M-001 | Memory-Keeper SHOULD be used for multi-session research that produces reusable findings. T4 (Persistent + External) agents are the primary target of this standard; T3 (Persistent) agents may also use Memory-Keeper for cross-session state management. | Store key findings with `jerry/{project}/research/{slug}` key pattern. |
 | MCP-M-002 | New agents SHOULD declare MCP tool usage in their agent definition file's `capabilities.allowed_tools` YAML frontmatter. Research/documentation agents SHOULD use Context7; cross-session agents SHOULD use Memory-Keeper. | Follow existing agent patterns in `skills/*/agents/*.md`. |
 
 ---
@@ -164,14 +164,25 @@ Memory-Keeper is REQUIRED at orchestration phase boundaries (MCP-002). Memory-Ke
 | red-infra | resolve, query | — | C2 framework documentation |
 | red-social | resolve, query | — | Social engineering methodology |
 
+| adv-executor | resolve, query | — | Fact verification during adversarial strategy execution (STORY-011, GH #217) |
+| ux-orchestrator | resolve, query | — | UX methodology and framework documentation |
+| ux-atomic-architect | resolve, query | — | Component library documentation (Material UI, Radix, Shadcn/ui) |
+| ux-heart-analyst | resolve, query | — | HEART/GSM framework documentation and benchmark data |
+| ux-heuristic-evaluator | resolve, query | — | External UX standards and Nielsen documentation |
+| ux-inclusive-evaluator | resolve, query | — | WCAG specifications, ARIA authoring practices |
+| ux-jtbd-analyst | resolve, query | — | JTBD framework documentation and domain literature |
+| ux-kano-analyst | resolve, query | — | Kano model methodology and survey design references |
+| ux-lean-ux-facilitator | resolve, query | — | Lean UX methodology and experiment design patterns |
+
 **Not included (by design):**
-- **adv-*** — Self-contained strategy execution; no external research or cross-session state
+- **adv-scorer, adv-selector** — Scoring and strategy selection are self-contained; no external research
 - **wt-*** — Read-only auditing of worktracker files
 - **ps-critic, ps-validator, ps-reviewer** — Quality evaluation; no external library research needed
 - **ps-reporter** — Report generation from existing data
-- **eng-*** — File-based persistence per P-002 (engagement-scoped output); no cross-session state requirement
-- **pm-product-strategist, pm-business-analyst** — T3 tools (WebSearch/WebFetch) but no Context7; external research via web search only
-- **red-*** — File-based persistence per P-002 (engagement-scoped output); scope documents and evidence stored in engagement directories
+- **eng-*** — T4 (Persistent + External) under the new tier model but MUST NOT use Memory-Keeper. File-based persistence per P-002 (engagement-scoped output) remains the correct mechanism. The T4 tier permits MK as a ceiling; the `.md` frontmatter and this exclusion note prevent actual MK access.
+- **ux-ai-design-guide, ux-sprint-facilitator, ux-behavior-diagnostician** — T4 tools (WebSearch/WebFetch) but no Context7; external research via web search only
+- **pm-product-strategist, pm-business-analyst** — T4 tools (WebSearch/WebFetch) but no Context7; external research via web search only
+- **red-*** — T4 (Persistent + External) under the new tier model but MUST NOT use Memory-Keeper. File-based persistence per P-002 (engagement-scoped output) remains the correct mechanism; scope documents and evidence stored in engagement directories. The T4 tier permits MK as a ceiling; the `.md` frontmatter and this exclusion note prevent actual MK access.
 
 > **Classification rule for new agents:** See MCP-M-002 in [MEDIUM Standards](#medium-standards).
 
@@ -194,6 +205,18 @@ Memory-Keeper is REQUIRED at orchestration phase boundaries (MCP-002). Memory-Ke
 
 For Claude Code permission patterns (MCP wildcards, skill permissions, Bash patterns, file access, evaluation order, settings scope), see `docs/reference/claude-code-permissions.md`.
 
+### MCP Server Namespace Note
+
+Context7 registers under two server names depending on installation method:
+- **`mcp__context7__*`** — direct MCP server configuration (via `.mcp.json` or CLI)
+- **`mcp__plugin_context7_context7__*`** — plugin-registered form (via `enabledPlugins` in `.claude/settings.json` with `context7@claude-plugins-official`)
+
+Both wildcards are in `settings.local.json` to cover both registration paths. This dual-namespace pattern is a known Claude Code behavior for plugins that expose MCP servers. See GitHub Issue #29360 for the namespace resolution discussion.
+
+### Permission Mode
+
+Neither `settings.json` nor `settings.local.json` sets `defaultMode`. Claude Code defaults to `"default"` mode: prompts for permission on first use of each tool. The `Skill()` entries in `settings.local.json` pre-approve skill invocations so they don't prompt. Without these entries, skills would still work but would prompt on first invocation per session.
+
 ---
 
 ## References
@@ -205,3 +228,13 @@ For Claude Code permission patterns (MCP wildcards, skill permissions, Bash patt
 | `.claude/settings.local.json` | Runtime MCP server configuration |
 | `quality-enforcement.md` | Quality gate thresholds and enforcement architecture |
 | `docs/reference/claude-code-permissions.md` | Claude Code permission syntax reference (patterns, wildcards, evaluation order, scopes) |
+| ADR-STORY015-001 | Tier model renumbering decision (Option A: Persistent-First Linear) | `projects/PROJ-024-tactical-work/.../STORY-015-tier-model-renumbering/ADR-STORY015-001-tier-model-renumbering.md` |
+
+---
+
+## Changelog
+
+| Version | Date | Story | Changes |
+|---------|------|-------|---------|
+| 1.4.0 | 2026-03-28 | STORY-017 | MCP-M-001 updated with T3/T4 tier references per ADR-STORY015-001. eng-\*/red-\* exclusion notes expanded: "T4 permits MK ceiling but MUST NOT use" with P-002 engagement-scoped rationale. pm-product-strategist/pm-business-analyst updated to "T4 tools". ADR-STORY015-001 added to References. |
+| 1.3.1 | 2026-02-20 | FEAT-028 | Initial MCP tool governance standards |

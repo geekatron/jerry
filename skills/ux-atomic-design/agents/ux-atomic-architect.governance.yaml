@@ -4,7 +4,7 @@
 
 version: 1.0.0
 reasoning_effort: medium  # ET-M-001: systematic cognitive mode with structured 5-phase methodology; medium effort balances thoroughness with token cost for C4 worker. Worker agent (not orchestrator) per ET-M-001 guidance; C4 applies to the overall deliverable quality gate, not individual agent reasoning.
-tool_tier: T3
+tool_tier: T4
 identity:
   role: Component Taxonomy Architect
   expertise:

@@ -3,7 +3,7 @@
 # Runtime config: ts-parser.md
 
 version: 2.1.2
-tool_tier: T4
+tool_tier: T3
 identity:
   role: Transcript Parsing Orchestrator
   expertise:

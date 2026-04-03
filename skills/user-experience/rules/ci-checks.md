@@ -8,7 +8,7 @@
 
 | Section | Purpose |
 |---------|---------|
-| [P-003 Enforcement](#p-003-enforcement) | No sub-skill agent has Task tool access (UX-CI-001, UX-CI-002, UX-CI-003) |
+| [P-003 Enforcement](#p-003-enforcement) | No sub-skill agent has Agent tool access (UX-CI-001, UX-CI-002, UX-CI-003) |
 | [Schema Validation](#schema-validation) | Governance YAML validation against JSON Schema (UX-CI-004, UX-CI-005, UX-CI-006) |
 | [Wave Gate Compliance](#wave-gate-compliance) | Signoff file existence and structure verification (UX-CI-007, UX-CI-008) |
 | [Trigger Map Validation](#trigger-map-validation) | Keyword collision detection for new sub-skills (UX-CI-009, UX-CI-010) |
@@ -24,26 +24,26 @@
 <!-- Source: SKILL.md Section "P-003 Compliance" -- single-level nesting enforcement. -->
 <!-- Source: H-34 (agent-development-standards.md [Agent Definition Schema], compound -- includes constitutional compliance sub-item b), H-01 (P-003). -->
 
-The `/user-experience` skill enforces strict single-level nesting per H-01/P-003. Only `ux-orchestrator` has Task tool access (T5 tier). All 10 sub-skill agents are workers that MUST NOT include Task in their tool list.
+The `/user-experience` skill enforces strict single-level nesting per H-01/P-003. Only `ux-orchestrator` has Agent tool access (T5 tier). All 10 sub-skill agents are workers that MUST NOT include Agent in their tool list.
 
-### UX-CI-001: Task Tool Grep
+### UX-CI-001: Agent Tool Grep
 
-<!-- Source: H-01 (P-003), H-34 (agent-development-standards.md [H-35 sub-item b] -- workers MUST NOT include Task in tools frontmatter). -->
+<!-- Source: H-01 (P-003), H-34 (agent-development-standards.md [H-35 sub-item b] -- workers MUST NOT include Agent in tools frontmatter). -->
 
-**Check:** Scan all sub-skill agent `.md` files for Task tool presence in `tools:` frontmatter.
+**Check:** Scan all sub-skill agent `.md` files for Agent tool presence in `tools:` frontmatter.
 
 **Scope:** All files matching `skills/ux-*/agents/*.md` (excludes `skills/user-experience/agents/ux-orchestrator.md`).
 
-**Pass criteria:** Zero matches for `Task` in the `tools:` YAML frontmatter field of any sub-skill agent file.
+**Pass criteria:** Zero matches for `Agent` in the `tools:` YAML frontmatter field of any sub-skill agent file.
 
 **Implementation pattern:**
 
 ```bash
-# UX-CI-001: Task Tool Grep
-# Source: H-01 (P-003), H-34(b) (constitutional compliance -- workers MUST NOT have Task)
-# Extract tools frontmatter between first two --- delimiters and check for Task
+# UX-CI-001: Agent Tool Grep
+# Source: H-01 (P-003), H-34(b) (constitutional compliance -- workers MUST NOT have Agent)
+# Extract tools frontmatter between first two --- delimiters and check for Agent
 for agent_file in skills/ux-*/agents/*.md; do
-  # Skip the orchestrator (T5, allowed to have Task)
+  # Skip the orchestrator (T5, allowed to have Agent)
   if [[ "$agent_file" == *"ux-orchestrator"* ]]; then
     continue
   fi
@@ -51,48 +51,48 @@ for agent_file in skills/ux-*/agents/*.md; do
   # Using sed to capture content between line 1 (first ---) and the next ---
   frontmatter=$(sed -n '1,/^---$/{ /^---$/!p; }' "$agent_file" | sed '1d')
   tools_line=$(echo "$frontmatter" | grep -E '^tools:' | head -1)
-  if echo "$tools_line" | grep -q 'Task'; then
-    echo "FAIL: $agent_file contains Task in tools frontmatter (P-003 violation)"
+  if echo "$tools_line" | grep -q 'Agent'; then
+    echo "FAIL: $agent_file contains Agent in tools frontmatter (P-003 violation)"
     exit 1
   fi
   # Also check multi-line tools array format
   tools_block=$(echo "$frontmatter" | sed -n '/^tools:/,/^[a-z]/p')
-  if echo "$tools_block" | grep -qE '^\s+-\s+Task\b'; then
-    echo "FAIL: $agent_file contains Task in tools array (P-003 violation)"
+  if echo "$tools_block" | grep -qE '^\s+-\s+Agent\b'; then
+    echo "FAIL: $agent_file contains Agent in tools array (P-003 violation)"
     exit 1
   fi
 done
-echo "PASS: No sub-skill agent has Task tool access"
+echo "PASS: No sub-skill agent has Agent tool access"
 ```
 
 ### UX-CI-002: disallowedTools Declaration
 
 <!-- Source: H-34(b) (agent-development-standards.md [H-35 sub-item b] -- constitutional compliance enforcement via disallowedTools). -->
 
-**Check:** All sub-skill agents declare `disallowedTools: [Task]` in their `.md` frontmatter.
+**Check:** All sub-skill agents declare `disallowedTools: [Agent]` in their `.md` frontmatter.
 
 **Scope:** All files matching `skills/ux-*/agents/*.md` (excludes `ux-orchestrator`).
 
-**Pass criteria:** Every sub-skill agent `.md` file contains `disallowedTools` with `Task` listed.
+**Pass criteria:** Every sub-skill agent `.md` file contains `disallowedTools` with `Agent` listed.
 
 **Implementation pattern:**
 
 ```bash
 # UX-CI-002: disallowedTools Declaration
-# Source: H-34(b) (constitutional compliance -- workers declare disallowedTools: [Task])
+# Source: H-34(b) (constitutional compliance -- workers declare disallowedTools: [Agent])
 for agent_file in skills/ux-*/agents/*.md; do
   if [[ "$agent_file" == *"ux-orchestrator"* ]]; then
     continue
   fi
   # Extract frontmatter between first two --- delimiters
   frontmatter=$(sed -n '1,/^---$/{ /^---$/!p; }' "$agent_file" | sed '1d')
-  # Check for disallowedTools containing Task (inline format or array format)
-  if ! echo "$frontmatter" | grep -A 5 'disallowedTools' | grep -q 'Task'; then
-    echo "FAIL: $agent_file missing disallowedTools: [Task] (P-003 enforcement)"
+  # Check for disallowedTools containing Agent (inline format or array format)
+  if ! echo "$frontmatter" | grep -A 5 'disallowedTools' | grep -q 'Agent'; then
+    echo "FAIL: $agent_file missing disallowedTools: [Agent] (P-003 enforcement)"
     exit 1
   fi
 done
-echo "PASS: All sub-skill agents declare disallowedTools: [Task]"
+echo "PASS: All sub-skill agents declare disallowedTools: [Agent]"
 ```
 
 ### UX-CI-003: Forbidden Actions P-003
@@ -714,8 +714,8 @@ echo "PASS: LOW confidence template compliance check complete"
 
 | Gate ID | Gate Name | Section | Scope | Pass Criteria | Blocking | Source |
 |---------|-----------|---------|-------|---------------|----------|--------|
-| UX-CI-001 | Task Tool Grep | [P-003 Enforcement](#p-003-enforcement) | `skills/ux-*/agents/*.md` | Zero Task matches in sub-skill tools frontmatter | Yes | H-01 (P-003), H-34(b) |
-| UX-CI-002 | disallowedTools Declaration | [P-003 Enforcement](#p-003-enforcement) | `skills/ux-*/agents/*.md` | All sub-skills declare `disallowedTools: [Task]` | Yes | H-34(b) |
+| UX-CI-001 | Agent Tool Grep | [P-003 Enforcement](#p-003-enforcement) | `skills/ux-*/agents/*.md` | Zero Agent matches in sub-skill tools frontmatter | Yes | H-01 (P-003), H-34(b) |
+| UX-CI-002 | disallowedTools Declaration | [P-003 Enforcement](#p-003-enforcement) | `skills/ux-*/agents/*.md` | All sub-skills declare `disallowedTools: [Agent]` | Yes | H-34(b) |
 | UX-CI-003 | Forbidden Actions P-003 | [P-003 Enforcement](#p-003-enforcement) | `skills/ux-*/agents/*.governance.yaml` | All governance files have >= 3 forbidden_actions entries referencing P-003, P-020, P-022 | Yes | H-34(b) |
 | UX-CI-004 | Governance YAML Schema | [Schema Validation](#schema-validation) | `skills/ux-*/agents/*.governance.yaml` | Zero schema validation errors against `agent-governance-v1.schema.json` | Yes | H-34 |
 | UX-CI-005 | Required Governance Fields | [Schema Validation](#schema-validation) | `skills/ux-*/agents/*.governance.yaml` | All required fields present with valid values | Yes | H-34 |

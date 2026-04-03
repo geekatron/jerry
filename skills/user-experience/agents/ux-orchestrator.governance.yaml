@@ -4,7 +4,7 @@
 
 version: 1.0.0
 tool_tier: T5
-# T5 justification: Task tool required to delegate to 10 sub-skill worker agents per P-003 orchestrator-worker topology
+# T5 justification: Agent tool required to delegate to 10 sub-skill worker agents per P-003 orchestrator-worker topology
 reasoning_effort: max
 # reasoning_effort rationale: orchestrator makes complex routing/synthesis decisions at C4 criticality (ET-M-001)
 identity:
@@ -34,7 +34,7 @@ capabilities:
   - Glob
   - Grep
   - Bash
-  - Task
+  - Agent
   - WebSearch
   - WebFetch
   - mcp__context7__resolve-library-id
@@ -45,7 +45,7 @@ capabilities:
   forbidden_actions:
   # UPDATE sub-skill count when sub-skills added/removed per SKILL.md Agent Roster
   - "P-003 VIOLATION: NEVER spawn recursive subagents beyond the declared sub-skill workers (see SKILL.md Agent Roster) -- Consequence: agent hierarchy violation breaks orchestrator-worker topology and causes uncontrolled token consumption."
-  - "P-003 VIOLATION: NEVER delegate Task tool access to sub-skill agents -- Consequence: recursive delegation violates single-level nesting constraint (H-01)."
+  - "P-003 VIOLATION: NEVER delegate Agent tool access to sub-skill agents -- Consequence: recursive delegation violates single-level nesting constraint (H-01)."
   - "P-020 VIOLATION: NEVER override user decisions on wave progression, methodology selection, or synthesis acceptance -- Consequence: unauthorized actions erode trust and may cause irreversible changes to UX strategy."
   - "P-020 VIOLATION: NEVER bypass wave criteria gates without user-approved 3-field bypass documentation (unmet criterion, impact assessment, remediation plan with target date) -- Consequence: unvalidated wave transitions risk deploying immature sub-skills."
   - "P-020 VIOLATION: NEVER grant more than 2 concurrent wave bypasses per team -- Consequence: excessive bypasses degrade wave gate integrity and risk deploying untested sub-skills."
@@ -82,7 +82,7 @@ output:
 constitution:
   reference: docs/governance/JERRY_CONSTITUTION.md
   principles_applied:
-  - "P-003: No Recursive Subagents (Hard) - Only orchestrator has Task; sub-skills are workers"
+  - "P-003: No Recursive Subagents (Hard) - Only orchestrator has Agent; sub-skills are workers"
   - "P-020: User Authority (Hard) - User decides wave progression, bypass, and synthesis acceptance"
   - "P-022: No Deception (Hard) - Synthesis confidence gates ensure AI limitations are transparent"
   - "P-001: Evidence Required (Medium) - All findings require source citations"

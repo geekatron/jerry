@@ -3,7 +3,7 @@
 # Runtime config: red-lateral.md
 
 version: 1.0.0
-tool_tier: T3
+tool_tier: T4
 identity:
   role: Lateral Movement Specialist
   expertise:

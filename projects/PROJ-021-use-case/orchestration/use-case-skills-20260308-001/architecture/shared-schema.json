@@ -1,0 +1,643 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jerry-framework.dev/schemas/use-case-realization/v1.0.0",
+  "title": "Jerry Use Case Realization Schema",
+  "description": "Validates YAML frontmatter for use case realization documents produced by /use-case, consumed by /test-spec and /contract-design. Shared artifact format per R-01 (phase-1-synthesis.md). Version 1.0.0: Identity/Classification/Actors/Flows blocks grounded in Cockburn (2001) and Jacobson (2011); Interactions block architecturally speculative pending Phase 3 validation gate.",
+  "type": "object",
+  "required": [
+    "id",
+    "title",
+    "work_type",
+    "version",
+    "status",
+    "goal_level",
+    "scope",
+    "primary_actor",
+    "basic_flow",
+    "created_at",
+    "created_by"
+  ],
+
+  "properties": {
+
+    "$comment_identity": {
+      "const": "=== IDENTITY BLOCK (all consumers) ==="
+    },
+
+    "id": {
+      "type": "string",
+      "pattern": "^UC-[A-Z]+-\\d{3}$",
+      "description": "Use case identifier. Format: UC-{DOMAIN}-{NNN} (e.g., UC-AUTH-001). Domain is an uppercase code (AUTH, KM, INV, etc.). (file-organization.md line 61)"
+    },
+
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "Use case title following Cockburn naming: actor goal as title, verb-noun-context form (e.g., 'Validate User Credentials'). (Cockburn Ch. 3, S-02)"
+    },
+
+    "work_type": {
+      "type": "string",
+      "const": "USE_CASE",
+      "description": "Immutable discriminator for AST H-33 compatibility. Always USE_CASE for use case realization documents. (file-organization.md line 63)"
+    },
+
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version of the artifact itself (not the schema). Increment MAJOR for breaking changes, MINOR for additions, PATCH for corrections. (file-organization.md line 64)"
+    },
+
+    "status": {
+      "type": "string",
+      "enum": ["DRAFT", "REVIEW", "APPROVED", "DEPRECATED"],
+      "description": "Artifact lifecycle status. DRAFT: initial creation. REVIEW: submitted for stakeholder review. APPROVED: accepted for implementation. DEPRECATED: superseded or abandoned. (file-organization.md line 65)"
+    },
+
+    "$comment_classification": {
+      "const": "=== CLASSIFICATION BLOCK (all consumers) ==="
+    },
+
+    "goal_level": {
+      "type": "string",
+      "enum": ["SUMMARY", "USER_GOAL", "SUBFUNCTION"],
+      "description": "Cockburn sea-metaphor goal classification. SUMMARY: Cloud/Kite level (organizational workflow). USER_GOAL: Sea Level (actor achieves measurable outcome). SUBFUNCTION: Fish/Clam level (supporting step within a user goal). 3 named levels collapse Cockburn's 5 levels for schema simplicity while preserving classification power. (Cockburn Ch. 5 p. 61, SD-02, DI-02)"
+    },
+
+    "goal_symbol": {
+      "type": "string",
+      "enum": ["+", "!", "-"],
+      "description": "Cockburn goal-level annotation symbol. '+' = summary, '!' = user goal, '-' = subfunction. Compact display companion to goal_level enum. (Cockburn Reminders p. ii, SD-02)"
+    },
+
+    "detail_level": {
+      "type": "string",
+      "enum": ["BRIEFLY_DESCRIBED", "BULLETED_OUTLINE", "ESSENTIAL_OUTLINE", "FULLY_DESCRIBED"],
+      "default": "BULLETED_OUTLINE",
+      "description": "Jacobson UC 2.0 narrative detail level. Maps 1:1 to UC 2.0 progressive elaboration stages. BRIEFLY_DESCRIBED: name + goal + brief. BULLETED_OUTLINE: + MSS bullets (default). ESSENTIAL_OUTLINE: + extensions (minimum for /test-spec and /contract-design). FULLY_DESCRIBED: + handling + sub-UCs. (S-01, S-02, SD-03, DI-01, PAT-001)"
+    },
+
+    "scope": {
+      "type": "string",
+      "description": "Design scope boundary per Cockburn (Enterprise, System, Subsystem). Identifies the system under discussion. (Cockburn Ch. 4, file-organization.md line 72)"
+    },
+
+    "domain": {
+      "type": "string",
+      "pattern": "^[A-Z]+$",
+      "description": "Short uppercase domain code (AUTH, KM, INV, etc.). Used in the id pattern and for grouping related use cases. (file-organization.md line 73)"
+    },
+
+    "$comment_actors": {
+      "const": "=== ACTORS BLOCK (all consumers) ==="
+    },
+
+    "primary_actor": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The actor whose goal the use case satisfies. Typically a human role or external system. (Cockburn Ch. 2, file-organization.md line 76)"
+    },
+
+    "supporting_actors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "type"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Supporting actor identifier."
+          },
+          "type": {
+            "type": "string",
+            "enum": ["human", "system", "timer", "external"],
+            "description": "Actor classification. human: person in a role. system: internal system component. timer: time-triggered event. external: third-party service."
+          }
+        },
+        "additionalProperties": false
+      },
+      "description": "Actors that participate in the use case but do not own the goal. cd-generator resolves supporting actor roles by cross-referencing interactions.actor_role with this array (IC-05 resolution). (file-organization.md lines 77-80, agent-decomposition-draft.md lines 142-146)"
+    },
+
+    "stakeholders": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "interest"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Stakeholder name or role."
+          },
+          "interest": {
+            "type": "string",
+            "minLength": 1,
+            "description": "What the stakeholder cares about in this use case. Per Cockburn Ch. 2: stakeholder interests define the guarantees the use case must satisfy."
+          }
+        },
+        "additionalProperties": false
+      },
+      "description": "Stakeholders with interests in the use case outcome. Optional for BRIEFLY_DESCRIBED level; SHOULD be populated at ESSENTIAL_OUTLINE+. (Cockburn Ch. 2)"
+    },
+
+    "$comment_conditions": {
+      "const": "=== CONDITIONS BLOCK ==="
+    },
+
+    "preconditions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "Conditions that must be true before the use case begins. The system does not check these -- they are assumed true. (Cockburn Ch. 6)"
+    },
+
+    "postconditions": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Conditions guaranteed to be true when the basic flow completes successfully. AKA success guarantees."
+        },
+        "failure": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Minimum conditions guaranteed to be true even when the use case fails. AKA minimal guarantees."
+        }
+      },
+      "additionalProperties": false,
+      "description": "Postconditions for success and failure paths. Cockburn distinguishes success guarantees (met when MSS completes) from minimum guarantees (met even on failure). (Cockburn Ch. 6)"
+    },
+
+    "trigger": {
+      "type": "string",
+      "description": "The event that initiates the use case. (Cockburn Ch. 6)"
+    },
+
+    "$comment_slice_lifecycle": {
+      "const": "=== SLICE LIFECYCLE BLOCK (/use-case internal, /test-spec validation) ==="
+    },
+
+    "slice_state": {
+      "type": "string",
+      "enum": ["SCOPED", "PREPARED", "ANALYZED", "IMPLEMENTED", "VERIFIED"],
+      "description": "UC 2.0 five-state slice lifecycle. SCOPED: slice identified from flows. PREPARED: test cases defined, narrative enhanced. ANALYZED: system elements identified, realization produced (Activity 5). IMPLEMENTED: software built and unit tested. VERIFIED: acceptance tests passed. Uses UC 2.0 baseline (5 states); UC 3.0 sixth state deferrable via minor schema version bump. (S-01 pp. 15-16, SD-04, DI-03, PAT-006)"
+    },
+
+    "$comment_flows": {
+      "const": "=== FLOWS BLOCK (/test-spec primary consumer) ==="
+    },
+
+    "basic_flow": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/flow_step"
+      },
+      "minItems": 3,
+      "maxItems": 9,
+      "description": "Main Success Scenario steps. Cockburn Guideline 6: 3-9 steps indicate correct abstraction level. Each step is an actor action or system response. The basic flow is the happy path. (Cockburn Ch. 7 p. 93, S-02, file-organization.md lines 89-98)"
+    },
+
+    "alternative_flows": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/alternative_flow"
+      },
+      "description": "Flows that branch from and optionally rejoin the basic flow. Each alternative represents a different way to achieve the use case goal. (Cockburn Ch. 8, file-organization.md lines 100-111)"
+    },
+
+    "extensions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/extension"
+      },
+      "description": "Step-anchored exception and error handling flows. Each extension is triggered by a condition at a specific basic_flow step. Extensions that terminate in failure become negative test scenarios in /test-spec (PAT-008, Clark 2018). (Cockburn Ch. 8, file-organization.md lines 113-124)"
+    },
+
+    "$comment_interactions": {
+      "const": "=== INTERACTIONS BLOCK (/contract-design primary consumer; produced by uc-slicer Activity 5) — ARCHITECTURALLY SPECULATIVE: Phase 3 validation gate required before production adoption. See file-organization.md 'Interactions Block Validation Gate' section. ==="
+    },
+
+    "interactions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/interaction"
+      },
+      "description": "Derived from flows by uc-slicer (Activities 4-5). Each interaction represents a system boundary crossing where a system_response step implies an API boundary. This block is the primary input for cd-generator. ARCHITECTURALLY SPECULATIVE: This block is designed for /contract-design's novel transformation algorithm (G-01, no prior art). The schema defines the structure but the block requires validation via the Phase 3 validation gate (file-organization.md 'Interactions Block Validation Gate' section) before production adoption. Validation criterion: 3 representative use cases (2+ domains, 1+ with supporting actors) must produce valid OpenAPI from this block alone without cd-generator inferring unstated structure. supporting_actor role mapping: cd-generator resolves supporting actor roles by cross-referencing interaction actor_role with the top-level supporting_actors array (IC-05 resolution). (S-01 Activity 5, file-organization.md lines 126-146, agent-decomposition-draft.md lines 288-365)"
+    },
+
+    "$comment_slicing": {
+      "const": "=== SLICING BLOCK (/use-case internal) ==="
+    },
+
+    "slices": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/slice"
+      },
+      "description": "Use case slices per Jacobson UC 2.0 Activity 2. Each slice is an implementation-ready subset of the use case containing end-to-end behavior through the concept. (S-01, DI-03, agent-decomposition-draft.md uc-slicer methodology)"
+    },
+
+    "$comment_traceability": {
+      "const": "=== TRACEABILITY BLOCK ==="
+    },
+
+    "parent_id": {
+      "type": ["string", "null"],
+      "pattern": "^UC-[A-Z]+-\\d{3}$",
+      "description": "Parent use case ID when this is a subfunction goal. Null for top-level use cases. (file-organization.md line 149)"
+    },
+
+    "related_use_cases": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^UC-[A-Z]+-\\d{3}$"
+      },
+      "description": "References to related use cases by ID. (file-organization.md line 150)"
+    },
+
+    "requirements": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "References to external requirements (e.g., REQ-001). Enables bidirectional traceability between use cases and requirements. (file-organization.md line 151)"
+    },
+
+    "slice_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^UC-[A-Z]+-\\d{3}-S\\d+$"
+      },
+      "description": "References to slice documents by ID. Format: UC-{DOMAIN}-{NNN}-S{N}. (file-organization.md line 152)"
+    },
+
+    "$comment_metadata": {
+      "const": "=== METADATA BLOCK ==="
+    },
+
+    "priority": {
+      "type": "string",
+      "enum": ["P0", "P1", "P2", "P3"],
+      "description": "Implementation priority. P0: critical path. P1: high priority. P2: medium. P3: low/deferred. (file-organization.md line 155)"
+    },
+
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 datetime of artifact creation. (file-organization.md line 156)"
+    },
+
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 datetime of last modification. (file-organization.md line 157)"
+    },
+
+    "created_by": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Agent or human author who created the artifact. (file-organization.md line 158)"
+    },
+
+    "last_modified_by": {
+      "type": "string",
+      "description": "Agent or human who last modified the artifact."
+    },
+
+    "realization_level": {
+      "type": "string",
+      "enum": ["OUTLINED", "STORY_DEFINED", "INTERACTION_DEFINED"],
+      "description": "Top-level convenience field indicating the overall realization depth. OUTLINED: flows exist but no interactions. STORY_DEFINED: slices defined with test cases. INTERACTION_DEFINED: Activity 5 realization complete with interactions block. This field is a derived summary; the authoritative state is determined by the presence and completeness of the flows, slices, and interactions blocks."
+    }
+  },
+
+  "$defs": {
+
+    "flow_step": {
+      "type": "object",
+      "required": ["step", "actor", "action", "type"],
+      "properties": {
+        "step": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Step number within the flow. Sequential, starting from 1."
+        },
+        "actor": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The actor performing this step. Must match primary_actor, a supporting_actors[].name entry, or 'System'."
+        },
+        "action": {
+          "type": "string",
+          "minLength": 1,
+          "description": "What the actor does. Verb-object form (e.g., 'submits credentials', 'validates token')."
+        },
+        "type": {
+          "type": "string",
+          "enum": ["actor_action", "system_response", "validation"],
+          "description": "Step type classification for Clark transformation. actor_action: human/external actor performs an action (maps to Gherkin When). system_response: system processes and responds (maps to Gherkin Then). validation: system validates input/state (maps to Gherkin Then with assertion). (PAT-008, SD-07, DI-05)"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "alternative_flow": {
+      "type": "object",
+      "required": ["id", "name", "branches_from_step", "condition", "steps"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^AF-\\d{2}$",
+          "description": "Alternative flow identifier. Format: AF-{NN}."
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Descriptive name of the alternative flow."
+        },
+        "branches_from_step": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Step number in basic_flow where this alternative branches."
+        },
+        "condition": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The condition that triggers this alternative path. Per Cockburn Guideline 11: 'what was detected'. (Cockburn Ch. 8)"
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/flow_step"
+          },
+          "minItems": 1,
+          "description": "Steps of the alternative flow."
+        },
+        "rejoins_at_step": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "description": "Step number in basic_flow where this alternative rejoins. Null if this flow reaches a separate exit (success or failure)."
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "extension": {
+      "type": "object",
+      "required": ["id", "name", "anchor_step", "condition", "steps", "outcome"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^EXT-\\d+[a-z]$",
+          "description": "Extension identifier using Cockburn step-anchor numbering. Format: EXT-{step}{letter} (e.g., EXT-3a). (Cockburn Ch. 8)"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Descriptive name of the extension."
+        },
+        "anchor_step": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "The basic_flow step number this extension is anchored to."
+        },
+        "condition": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The exception or error condition detected at the anchor step."
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/flow_step"
+          },
+          "minItems": 1,
+          "description": "Steps handling the extension condition."
+        },
+        "outcome": {
+          "type": "string",
+          "pattern": "^(success|failure|rejoin:\\d+)$",
+          "description": "How the extension terminates. 'success': reaches a separate successful exit. 'failure': use case fails (maps to negative test scenario in /test-spec). 'rejoin:{step}': returns to basic_flow at the specified step. Clark mapping: outcome=failure becomes negative test scenario; outcome=rejoin becomes additional scenario. (PAT-008, SD-08, DI-05)"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "interaction": {
+      "type": "object",
+      "required": [
+        "id",
+        "source_step",
+        "source_flow",
+        "actor_role",
+        "system_role",
+        "request_description",
+        "response_description"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^INT-\\d{2}$",
+          "description": "Interaction identifier. Format: INT-{NN}."
+        },
+        "source_step": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "References a step number in the source flow. Enables traceability from API contract operation back to use case step. (DI-08, R-06)"
+        },
+        "source_flow": {
+          "type": "string",
+          "pattern": "^(basic_flow|AF-\\d{2}|EXT-\\d+[a-z])$",
+          "description": "Which flow the source_step belongs to. basic_flow for main success scenario, AF-{NN} for alternatives, EXT-{anchor}{letter} for extensions. (file-organization.md line 132)"
+        },
+        "actor_role": {
+          "type": "string",
+          "enum": ["consumer", "provider"],
+          "description": "The role of the actor in this interaction. consumer: the actor initiates the request (maps to API caller). provider: the actor provides a service (maps to API server). cd-generator uses this to determine operation directionality. (R-06, agent-decomposition-draft.md actor-to-contract-role mapping)"
+        },
+        "system_role": {
+          "type": "string",
+          "enum": ["receiver", "provider"],
+          "description": "The role of the system in this interaction. receiver: system receives and processes requests. provider: system provides data/services. (file-organization.md line 134)"
+        },
+        "request_description": {
+          "type": "string",
+          "minLength": 1,
+          "description": "What the actor sends to the system. Becomes the basis for request body/parameter schemas in OpenAPI generation. (file-organization.md line 135, agent-decomposition-draft.md step 5)"
+        },
+        "response_description": {
+          "type": "string",
+          "minLength": 1,
+          "description": "What the system returns. Becomes the basis for response schemas in OpenAPI generation. (file-organization.md line 136, agent-decomposition-draft.md step 6)"
+        },
+        "preconditions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Conditions that must be true before this interaction executes. Map to request validation constraints in OpenAPI generation. (file-organization.md lines 137-138, agent-decomposition-draft.md step 5)"
+        },
+        "postconditions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Conditions guaranteed after this interaction completes. Map to response schema guarantees in OpenAPI generation. (file-organization.md lines 139-140, agent-decomposition-draft.md step 6)"
+        }
+      },
+      "additionalProperties": false,
+      "description": "A single interaction boundary identified from use case flows by uc-slicer during Activity 5. Each system_response step that implies an API boundary produces one interaction. ARCHITECTURALLY SPECULATIVE: see parent interactions array description for validation gate details."
+    },
+
+    "slice": {
+      "type": "object",
+      "required": ["slice_id", "title", "steps_included"],
+      "properties": {
+        "slice_id": {
+          "type": "string",
+          "pattern": "^UC-[A-Z]+-\\d{3}-S\\d+$",
+          "description": "Slice identifier. Format: UC-{DOMAIN}-{NNN}-S{N} (e.g., UC-AUTH-001-S1). (file-organization.md line 152)"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Descriptive title of the slice."
+        },
+        "steps_included": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["flow", "steps"],
+            "properties": {
+              "flow": {
+                "type": "string",
+                "pattern": "^(basic_flow|AF-\\d{2}|EXT-\\d+[a-z])$",
+                "description": "Which flow the steps belong to."
+              },
+              "steps": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "minItems": 1,
+                "description": "Step numbers included from the referenced flow."
+              }
+            },
+            "additionalProperties": false
+          },
+          "minItems": 1,
+          "description": "The flow steps included in this slice. Each entry references a flow and the step numbers from that flow."
+        },
+        "realization_level": {
+          "type": "string",
+          "enum": ["OUTLINED", "STORY_DEFINED", "INTERACTION_DEFINED"],
+          "description": "The depth of realization for this specific slice. OUTLINED: slice identified, flows selected. STORY_DEFINED: test cases defined, narrative at ESSENTIAL_OUTLINE. INTERACTION_DEFINED: Activity 5 complete, interactions block produced for this slice's steps."
+        },
+        "test_cases": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Acceptance test case descriptions for this slice. Required before transitioning from SCOPED to PREPARED state. (S-01 Activity 4, agent-decomposition-draft.md uc-slicer methodology step 6)"
+        },
+        "invest_assessment": {
+          "type": "object",
+          "properties": {
+            "independent": { "type": "boolean" },
+            "negotiable": { "type": "boolean" },
+            "valuable": { "type": "boolean" },
+            "estimable": { "type": "boolean" },
+            "small": { "type": "boolean" },
+            "testable": { "type": "boolean" }
+          },
+          "additionalProperties": false,
+          "description": "INVEST criteria assessment per Jacobson UC 2.0 Activity 2. Each boolean indicates whether the criterion is satisfied. (agent-decomposition-draft.md uc-slicer methodology step 3)"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+
+  "allOf": [
+    {
+      "$comment": "Cross-field constraint: interactions block is only expected at INTERACTION_DEFINED realization level",
+      "if": {
+        "properties": {
+          "realization_level": { "const": "INTERACTION_DEFINED" }
+        },
+        "required": ["realization_level"]
+      },
+      "then": {
+        "required": ["interactions"],
+        "properties": {
+          "interactions": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "$comment": "Cross-field constraint: slices expected at STORY_DEFINED or INTERACTION_DEFINED realization level",
+      "if": {
+        "properties": {
+          "realization_level": {
+            "enum": ["STORY_DEFINED", "INTERACTION_DEFINED"]
+          }
+        },
+        "required": ["realization_level"]
+      },
+      "then": {
+        "required": ["slices"],
+        "properties": {
+          "slices": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "$comment": "Cross-field constraint: goal_symbol must be consistent with goal_level",
+      "if": {
+        "properties": { "goal_level": { "const": "SUMMARY" } },
+        "required": ["goal_level", "goal_symbol"]
+      },
+      "then": {
+        "properties": { "goal_symbol": { "const": "+" } }
+      }
+    },
+    {
+      "$comment": "Cross-field constraint: goal_symbol must be consistent with goal_level",
+      "if": {
+        "properties": { "goal_level": { "const": "USER_GOAL" } },
+        "required": ["goal_level", "goal_symbol"]
+      },
+      "then": {
+        "properties": { "goal_symbol": { "const": "!" } }
+      }
+    },
+    {
+      "$comment": "Cross-field constraint: goal_symbol must be consistent with goal_level",
+      "if": {
+        "properties": { "goal_level": { "const": "SUBFUNCTION" } },
+        "required": ["goal_level", "goal_symbol"]
+      },
+      "then": {
+        "properties": { "goal_symbol": { "const": "-" } }
+      }
+    }
+  ],
+
+  "additionalProperties": true
+}

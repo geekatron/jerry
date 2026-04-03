@@ -131,7 +131,7 @@ The agent produces output at three levels per AD-M-004:
 
 ## P-003 Compliance
 
-The `/ux-behavior-design` sub-skill contains a single **worker** agent. It is invoked by the `ux-orchestrator` (T5) via the Task tool. The agent does NOT have Task tool access and MUST NOT spawn sub-agents.
+The `/ux-behavior-design` sub-skill contains a single **worker** agent. It is invoked by the `ux-orchestrator` (T5) via the Agent tool. The agent does NOT have Agent tool access and MUST NOT spawn sub-agents.
 
 ```
 MAIN CONTEXT (user request)
@@ -144,9 +144,9 @@ ux-orchestrator (T5, Opus, Integrative) -- parent orchestrator
 ```
 
 **Enforcement:**
-- `disallowedTools: [Task]` declared in `skills/ux-behavior-design/agents/ux-behavior-diagnostician.md` frontmatter
+- `disallowedTools: [Agent]` declared in `skills/ux-behavior-design/agents/ux-behavior-diagnostician.md` frontmatter
 - P-003 prohibition in `skills/ux-behavior-design/agents/ux-behavior-diagnostician.governance.yaml` `capabilities.forbidden_actions`
-- CI gate validates no sub-skill agent has Task access (documented in `skills/user-experience/rules/ci-checks.md`)
+- CI gate validates no sub-skill agent has Agent access (documented in `skills/user-experience/rules/ci-checks.md`)
 
 ---
 
@@ -172,12 +172,12 @@ This is a sub-skill invoked by the `ux-orchestrator`, not directly by users. Use
 "Have ux-behavior-diagnostician analyze B=MAP factors for the onboarding tutorial"
 ```
 
-### Via Task Tool (orchestrator internal)
+### Via Agent Tool (orchestrator internal)
 
-The `ux-orchestrator` invokes the agent via the Task tool:
+The `ux-orchestrator` invokes the agent via the Agent tool:
 
 ```python
-Task(
+Agent(
     description="ux-behavior-diagnostician: B=MAP bottleneck diagnosis for checkout abandonment",
     subagent_type="jerry:ux-behavior-diagnostician",
     prompt="""
@@ -591,7 +591,7 @@ The following CI gate criteria apply to this sub-skill (full gate definitions in
 
 | Gate | Check | Enforcement |
 |------|-------|-------------|
-| **No Task tool access** | `disallowedTools: [Task]` present in agent frontmatter; agent MUST NOT have Task in `tools` list | L5 (CI): grep agent frontmatter for Task tool presence |
+| **No Agent tool access** | `disallowedTools: [Agent]` present in agent frontmatter; agent MUST NOT have Agent in `tools` list | L5 (CI): grep agent frontmatter for Agent tool presence |
 | **P-003 forbidden action** | `capabilities.forbidden_actions` in `.governance.yaml` MUST include P-003 recursive subagent prohibition | L5 (CI): schema validation of governance YAML against `docs/schemas/agent-governance-v1.schema.json` |
 | **Output schema validation** | Agent output MUST contain all Required Output Sections (Executive Summary, Engagement Context, Behavior State Map, Bottleneck Diagnosis, Intervention Recommendations, Strategic Implications, Synthesis Judgments Summary, Handoff Data) | L4 (post-tool): section heading presence check on output artifact |
 
@@ -652,7 +652,7 @@ All agents in this sub-skill adhere to the **Jerry Constitution v1.0**:
 
 | Principle | Requirement | Consequence of Violation |
 |-----------|-------------|-------------------------|
-| P-003 | NEVER spawn recursive subagents -- worker agent, no Task tool access | Agent hierarchy violation; uncontrolled token consumption |
+| P-003 | NEVER spawn recursive subagents -- worker agent, no Agent tool access | Agent hierarchy violation; uncontrolled token consumption |
 | P-020 | NEVER override user decisions on bottleneck classification or intervention priorities | Unauthorized action; trust erosion |
 | P-022 | NEVER present bottleneck diagnoses as certain without disclosing evidence limitations; NEVER inflate factor scores without supporting evidence; NEVER omit the degraded mode disclosure when operating without behavioral data | Governance undermined; quality assessment invalidated |
 | P-001 | NEVER present factor ratings or bottleneck classifications without citing the evidence or reasoning supporting the assessment | Unreliable outputs; unfounded claims propagate downstream |
@@ -661,7 +661,7 @@ All agents in this sub-skill adhere to the **Jerry Constitution v1.0**:
 **Per-agent enforcement:** The `ux-behavior-diagnostician` agent declares:
 - `constitution.principles_applied`: P-003, P-020, P-022, P-001, P-002 in `skills/ux-behavior-design/agents/ux-behavior-diagnostician.governance.yaml`
 - `capabilities.forbidden_actions`: 3 entries in NPT-009 format referencing the constitutional triplet
-- `disallowedTools: [Task]` in `skills/ux-behavior-design/agents/ux-behavior-diagnostician.md` frontmatter
+- `disallowedTools: [Agent]` in `skills/ux-behavior-design/agents/ux-behavior-diagnostician.md` frontmatter
 
 ### AI-Augmented Analysis Limitations
 

@@ -197,12 +197,15 @@ class TestHooksJsonStructure:
         assert len(commands) == 1, f"PreToolUse should have 1 hook after #150. Found: {commands}"
         assert "hooks/pre-tool-use.py" in commands[0]
 
-    def test_subagent_stop_unchanged(self, hooks_json: dict) -> None:
-        """GIVEN hooks.json WHEN checking SubagentStop THEN still uses scripts/subagent_stop.py."""
+    def test_subagent_stop_consolidated_single_cli_path(self, hooks_json: dict) -> None:
+        """GIVEN hooks.json WHEN checking SubagentStop THEN uses single CLI path (STORY-024)."""
         assert "SubagentStop" in hooks_json["hooks"]
         subagent = hooks_json["hooks"]["SubagentStop"]
         commands = [h["command"] for entry in subagent for h in entry.get("hooks", [])]
-        assert any("scripts/subagent_stop.py" in cmd for cmd in commands)
+        assert len(commands) == 1, (
+            f"SubagentStop should have 1 hook after STORY-024. Found: {commands}"
+        )
+        assert "hooks/subagent-stop.py" in commands[0]
 
     def test_session_start_timeout(self, hooks_json: dict) -> None:
         """GIVEN hooks.json SessionStart WHEN checking timeout THEN is 10000ms."""

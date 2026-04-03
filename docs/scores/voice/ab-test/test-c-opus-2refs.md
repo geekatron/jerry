@@ -8,7 +8,7 @@
 | [Scoring Context](#scoring-context) | Text type, audience, calibration anchor |
 | [Trait Scores](#trait-scores) | Per-trait scores with evidence summary |
 | [Detailed Trait Analysis](#detailed-trait-analysis) | Evidence and improvement path per trait |
-| [Improvement Recommendations](#improvement-recommendations) | Priority-ordered actions |
+| [Improvement Recommendations](#improvement-recommendations-priority-ordered) | Priority-ordered actions |
 | [Boundary Violation Check](#boundary-violation-check) | Hard gate review |
 | [Leniency Bias Check](#leniency-bias-check) | Anti-inflation verification |
 

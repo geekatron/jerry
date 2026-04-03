@@ -50,13 +50,8 @@
     ],
     "SubagentStop": [
       {
-        "_comment": "Dual hooks: (1) orchestration handoff (scripts/) then (2) lifecycle tracking (hooks/EN-017). Both run; both are fail-open.",
+        "_comment": "STORY-024: Consolidated to single CLI path. Handoff orchestration superseded by /orchestration skill.",
         "hooks": [
-          {
-            "type": "command",
-            "command": "uv run --directory ${CLAUDE_PLUGIN_ROOT} ${CLAUDE_PLUGIN_ROOT}/scripts/subagent_stop.py",
-            "timeout": 5000
-          },
           {
             "type": "command",
             "command": "uv run --directory ${CLAUDE_PLUGIN_ROOT} ${CLAUDE_PLUGIN_ROOT}/hooks/subagent-stop.py",

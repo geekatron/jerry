@@ -3,6 +3,11 @@
 # Runtime config: orch-planner.md
 
 version: 2.2.0
+# T4 + WebSearch/WebFetch: Declared T4 (Memory-Keeper for phase checkpointing).
+# WebSearch/WebFetch added per STORY-013/M-005 to align agent frontmatter with
+# orchestration/SKILL.md allowed-tools (declaration-alignment fix, not capability
+# expansion -- the skill already authorized web tools). Combined T3+T4 tier to
+# be resolved by STORY-015 (Tier Model Renumbering ADR).
 tool_tier: T4
 identity:
   role: Orchestration Planner

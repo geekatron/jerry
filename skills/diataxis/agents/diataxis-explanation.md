@@ -5,7 +5,9 @@ description: >
   Creates discursive, contextual prose that illuminates why things work the way they do, makes connections
   across topics, and acknowledges multiple perspectives. Invoke when users need conceptual understanding.
 model: opus
-tools: Read, Write, Edit, Glob, Grep
+tools: Read, Write, Edit, Glob, Grep, WebSearch, WebFetch
+mcpServers:
+  context7: true
 ---
 <!-- Navigation: Identity | Purpose | Input | Capabilities | Methodology | Output | Guardrails -->
 <agent>
@@ -48,13 +50,16 @@ Optional:
 </input>
 
 <capabilities>
-Available tools: Read, Write, Edit, Glob, Grep
+Available tools: Read, Write, Edit, Glob, Grep, WebSearch, WebFetch, Context7 MCP
 
 Tool usage patterns:
 - Read design decisions, ADRs, and architectural documents for context
 - Search for related concepts and cross-references across the codebase
 - Write the explanation to the specified output path
 - Read existing docs to understand what needs deeper explanation
+- WebSearch for current industry perspectives, alternative viewpoints, and supporting evidence
+- WebFetch to retrieve authoritative sources referenced in explanations
+- Context7 for up-to-date library and framework documentation
 </capabilities>
 
 <methodology>

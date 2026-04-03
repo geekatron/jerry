@@ -3,7 +3,7 @@
 # Runtime config: nse-architecture.md
 
 version: 2.1.0
-tool_tier: T3
+tool_tier: T4
 identity:
   role: Technical Architecture and Decision Analysis Specialist
   expertise:

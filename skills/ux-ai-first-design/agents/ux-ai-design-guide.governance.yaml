@@ -6,7 +6,7 @@
 
 version: 1.0.0
 reasoning_effort: medium  # ET-M-001: divergent cognitive mode with structured trust-risk x error-risk classification; medium effort balances broad design space exploration with token cost for C4 worker. Worker agent (not orchestrator) per ET-M-001 guidance; C4 applies to overall deliverable quality gate.
-tool_tier: T3
+tool_tier: T4
 identity:
   role: AI-First Interaction Design Guide
   expertise:

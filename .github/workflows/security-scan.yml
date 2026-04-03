@@ -1,0 +1,90 @@
+# Jerry Framework Security Scan Pipeline
+# Scheduled supply chain security scanning independent of PR activity.
+#
+# PURPOSE:
+# The Dependabot config (#188) uses `allow: dependency-type: direct` which
+# means transitive dependency compromises do NOT generate Dependabot PRs.
+# This workflow compensates by running pip-audit on a schedule against the
+# current lockfile, catching known CVEs in transitive deps even when no
+# PR activity triggers CI.
+#
+# Without this workflow, transitive CVE detection latency is unbounded
+# during low-activity periods (no PRs = no CI = no pip-audit runs).
+# With this workflow, maximum detection latency is 24 hours.
+#
+# C4 TOURNAMENT FINDINGS that drove this workflow's creation:
+#   S-001 RT-002 (Critical): pip-audit only ran on PR-triggered CI
+#   S-004 PM-001 (Critical): pip-audit silent failure removes detection layer
+#   S-012 FM-009 (Critical, RPN 280): 7-day transitive CVE detection gap
+#   S-013 IN-001 (Major): Unbounded latency with no parent dep PR
+#
+# REFERENCES:
+#   - Dependabot config: .github/dependabot.yml (D3 CAVEAT)
+#   - Risk analysis: projects/PROJ-030-bugs/research/dependabot-risk-analysis.md
+#   - pip-audit docs: https://pypi.org/project/pip-audit/
+
+name: Security Scan (Scheduled)
+
+on:
+  schedule:
+    # Run daily at 06:00 UTC (before Monday Dependabot run at ~09:00 UTC)
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    # Manual trigger for immediate scan
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  pip-audit:
+    name: pip-audit Supply Chain Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@e06108dd0aef18192324c70427afc47652e63a82 # v7.5.0
+        with:
+          version: "0.10.9"
+
+      - name: Set up Python
+        run: uv python install 3.14
+
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      # Run pip-audit against the locked dependency tree.
+      # --strict: treat warnings as errors (e.g., packages without metadata)
+      # --desc: include vulnerability descriptions in output
+      # Exit code 1 = vulnerabilities found; exit code 0 = clean
+      - name: Run pip-audit
+        id: audit
+        run: |
+          echo "## pip-audit Results" >> "$GITHUB_STEP_SUMMARY"
+          if uv run pip-audit --strict --desc 2>&1 | tee /tmp/pip-audit-output.txt; then
+            echo "No known vulnerabilities found." >> "$GITHUB_STEP_SUMMARY"
+            echo "result=clean" >> "$GITHUB_OUTPUT"
+          else
+            echo "::error::pip-audit found vulnerabilities in the dependency tree"
+            cat /tmp/pip-audit-output.txt >> "$GITHUB_STEP_SUMMARY"
+            echo "result=vulnerable" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+
+      # PM-001 mitigation: verify pip-audit actually ran (not silent failure)
+      - name: Verify pip-audit executed
+        if: always()
+        run: |
+          if [[ ! -f /tmp/pip-audit-output.txt ]]; then
+            echo "::error::pip-audit did not produce output — possible silent failure"
+            exit 1
+          fi
+          LINE_COUNT=$(wc -l < /tmp/pip-audit-output.txt)
+          if [[ "$LINE_COUNT" -lt 1 ]]; then
+            echo "::error::pip-audit output is empty — possible silent failure"
+            exit 1
+          fi
+          echo "pip-audit executed successfully ($LINE_COUNT lines of output)"

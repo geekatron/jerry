@@ -124,13 +124,13 @@ Do NOT use for:
 
 | Agent | Role | Tier | Mode | Model | Output Location |
 |-------|------|------|------|-------|-----------------|
-| `ux-ai-design-guide` | AI-first interaction design specialist (CONDITIONAL) | T3 | Divergent | Opus | `skills/ux-ai-first-design/output/{engagement-id}/ux-ai-design-guide-{topic-slug}.md` |
+| `ux-ai-design-guide` | AI-first interaction design specialist (CONDITIONAL) | T4 | Divergent | Opus | `skills/ux-ai-first-design/output/{engagement-id}/ux-ai-design-guide-{topic-slug}.md` |
 
 **STUB:** The agent definition file (`skills/ux-ai-first-design/agents/ux-ai-design-guide.md`) is pending Wave 5 Phase 2 implementation as part of PROJ-022 EPIC-005. The SKILL.md specifies the methodology and output contract that the agent will implement.
 
 **CONDITIONAL:** This agent only activates when WSM >= 7.80 AND enabler research (FEAT-020) is complete. The `ux-orchestrator` checks these conditions before routing to this sub-skill.
 
-**Tool tier:** T3 (External) = Read, Write, Edit, Glob, Grep, Bash + WebSearch, WebFetch, Context7 MCP. T3 is required because AI design patterns evolve rapidly; WebSearch and Context7 provide access to current AI SDK documentation and interaction pattern libraries. See `.context/rules/agent-development-standards.md` [Tool Security Tiers].
+**Tool tier:** T4 (External) = Read, Write, Edit, Glob, Grep, Bash + WebSearch, WebFetch, Context7 MCP. T4 is required because AI design patterns evolve rapidly; WebSearch and Context7 provide access to current AI SDK documentation and interaction pattern libraries. See `.context/rules/agent-development-standards.md` [Tool Security Tiers].
 
 The agent produces output at three levels per AD-M-004:
 - **L0 (Executive Summary):** Trust-risk and error-risk classification; selected interaction pattern; top design recommendations; key findings for stakeholders and cross-framework synthesis input.
@@ -141,7 +141,7 @@ The agent produces output at three levels per AD-M-004:
 
 ## P-003 Compliance
 
-The `/ux-ai-first-design` sub-skill contains a single **worker** agent. It is invoked by the `ux-orchestrator` (T5) via the Task tool. The agent does NOT have Task tool access and MUST NOT spawn sub-agents.
+The `/ux-ai-first-design` sub-skill contains a single **worker** agent. It is invoked by the `ux-orchestrator` (T5) via the Agent tool. The agent does NOT have Agent tool access and MUST NOT spawn sub-agents.
 
 ```
 MAIN CONTEXT (user request)
@@ -149,14 +149,14 @@ MAIN CONTEXT (user request)
     v
 ux-orchestrator (T5, Opus, Integrative) -- parent orchestrator
     |
-    +-- ux-ai-design-guide (T3, Divergent, Opus) -- THIS sub-skill's worker [COND]
+    +-- ux-ai-design-guide (T4, Divergent, Opus) -- THIS sub-skill's worker [COND]
     +-- [other sub-skill workers...]
 ```
 
 **Enforcement:**
-- `disallowedTools: [Task]` declared in `skills/ux-ai-first-design/agents/ux-ai-design-guide.md` frontmatter
+- `disallowedTools: [Agent]` declared in `skills/ux-ai-first-design/agents/ux-ai-design-guide.md` frontmatter
 - P-003 prohibition in `skills/ux-ai-first-design/agents/ux-ai-design-guide.governance.yaml` `capabilities.forbidden_actions`
-- CI gate validates no sub-skill agent has Task access (documented in `skills/user-experience/rules/ci-checks.md`)
+- CI gate validates no sub-skill agent has Agent access (documented in `skills/user-experience/rules/ci-checks.md`)
 
 ---
 
@@ -188,12 +188,12 @@ If either condition fails, the orchestrator routes to `/ux-heuristic-eval` with 
 "Have ux-ai-design-guide classify trust-risk and error-risk for the automated approval workflow"
 ```
 
-### Via Task Tool (orchestrator internal)
+### Via Agent Tool (orchestrator internal)
 
-The `ux-orchestrator` invokes the agent via the Task tool:
+The `ux-orchestrator` invokes the agent via the Agent tool:
 
 ```python
-Task(
+Agent(
     description="ux-ai-design-guide: AI-first interaction design for recommendation engine",
     subagent_type="jerry:ux-ai-design-guide",
     prompt="""
@@ -604,7 +604,7 @@ The following CI gate criteria apply to this sub-skill (full gate definitions in
 
 | Gate | Check | Enforcement |
 |------|-------|-------------|
-| **No Task tool access** | `disallowedTools: [Task]` present in agent frontmatter; agent MUST NOT have Task in `tools` list | L5 (CI): grep agent frontmatter for Task tool presence |
+| **No Agent tool access** | `disallowedTools: [Agent]` present in agent frontmatter; agent MUST NOT have Agent in `tools` list | L5 (CI): grep agent frontmatter for Agent tool presence |
 | **P-003 forbidden action** | `capabilities.forbidden_actions` in `.governance.yaml` MUST include P-003 recursive subagent prohibition | L5 (CI): schema validation of governance YAML against `docs/schemas/agent-governance-v1.schema.json` |
 | **Output schema validation** | Agent output MUST contain all Required Output Sections (Executive Summary, Engagement Context, Trust-Risk Assessment, Error-Risk Assessment, Interaction Pattern Specification, Feedback Loop Design, Progressive Disclosure Plan, AI Transparency Assessment, Strategic Implications, Synthesis Judgments Summary, Handoff Data) | L4 (post-tool): section heading presence check on output artifact |
 
@@ -612,7 +612,7 @@ The following CI gate criteria apply to this sub-skill (full gate definitions in
 
 ## Degraded Mode Behavior
 
-The `ux-ai-design-guide` operates at T3 (External) with access to WebSearch, WebFetch, and Context7 MCP. The following degraded modes apply when external tools or MCP dependencies are unavailable.
+The `ux-ai-design-guide` operates at T4 (External) with access to WebSearch, WebFetch, and Context7 MCP. The following degraded modes apply when external tools or MCP dependencies are unavailable.
 
 ### Figma MCP Unavailable
 
@@ -683,7 +683,7 @@ All agents in this sub-skill adhere to the **Jerry Constitution v1.0**:
 
 | Principle | Requirement | Consequence of Violation |
 |-----------|-------------|-------------------------|
-| P-003 | NEVER spawn recursive subagents -- worker agent, no Task tool access | Agent hierarchy violation; uncontrolled token consumption |
+| P-003 | NEVER spawn recursive subagents -- worker agent, no Agent tool access | Agent hierarchy violation; uncontrolled token consumption |
 | P-020 | NEVER override user decisions on trust-risk classification, interaction pattern selection, or progressive disclosure stage advancement | Unauthorized action; trust erosion |
 | P-022 | NEVER present AI interaction pattern recommendations as current best practices without disclosing training data staleness risk; NEVER inflate trust-risk or error-risk classifications without supporting evidence; NEVER omit the LOW synthesis confidence disclosure on recommendations; NEVER suppress degraded mode disclosure when operating without external tools | Governance undermined; quality assessment invalidated |
 | P-001 | NEVER present trust-risk or error-risk classifications without citing the evidence or reasoning supporting the assessment | Unreliable outputs; unfounded claims propagate downstream |
@@ -692,7 +692,7 @@ All agents in this sub-skill adhere to the **Jerry Constitution v1.0**:
 **Per-agent enforcement:** The `ux-ai-design-guide` agent declares:
 - `constitution.principles_applied`: P-003, P-020, P-022, P-001, P-002 in `skills/ux-ai-first-design/agents/ux-ai-design-guide.governance.yaml`
 - `capabilities.forbidden_actions`: 3 entries in NPT-009 format referencing the constitutional triplet
-- `disallowedTools: [Task]` in `skills/ux-ai-first-design/agents/ux-ai-design-guide.md` frontmatter
+- `disallowedTools: [Agent]` in `skills/ux-ai-first-design/agents/ux-ai-design-guide.md` frontmatter
 
 ### AI Pattern Staleness Risk Disclosure (P-022)
 

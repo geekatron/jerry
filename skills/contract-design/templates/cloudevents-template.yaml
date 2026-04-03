@@ -1,0 +1,30 @@
+# CloudEvents 1.0 Contract Template -- /contract-design skill
+# Status: SCAFFOLDING (x-deferred: true)
+# Deferred per DI-07, ASM-005, G-02
+# Template version: 1.0.0
+
+# CloudEvents Specification: https://cloudevents.io/
+# CloudEvents defines a standard envelope; this template defines the
+# type registry and data schema mapping for use case-derived events.
+
+x-deferred: true
+x-deferred-reason: "G-02: multi-actor pub/sub behavior mapping unresolved"
+x-activation-prerequisite: "Resolve G-02; define interaction-to-event-type mapping rules"
+x-source-use-case: "{{UC_ID}}"
+
+event_types:
+  # Each event type derived from an interaction where the system publishes state changes
+  - type: "{{DOMAIN}}.{{UC_SLUG}}.{{EVENT_NAME}}"
+    source: "{{SYSTEM_SCOPE}}"
+    specversion: "1.0"
+    description: "{{EVENT_DESCRIPTION}}"
+    datacontenttype: "application/json"
+    dataschema: "#/schemas/{{EVENT_SCHEMA_NAME}}"
+    x-source-interaction: "{{INTERACTION_ID}}"
+    x-source-step: "{{SOURCE_STEP}}"
+
+schemas:
+  "{{EVENT_SCHEMA_NAME}}":
+    type: object
+    description: "Event data schema derived from interaction postconditions"
+    properties: {}

@@ -2,7 +2,7 @@
 name: worktracker
 description: Work item tracking and task management using the Jerry Framework hierarchy (Initiative, Epic, Feature, Story, Task, Enabler, Bug, Impediment). Manages WORKTRACKER.md manifests, tracks progress, and enforces template usage for consistent work decomposition.
 version: "1.1.0"
-allowed-tools: Read, Write, Glob, Task, Edit
+allowed-tools: Read, Write, Glob, Agent, Edit
 activation-keywords:
   - "work tracker"
   - "worktracker"

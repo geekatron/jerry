@@ -257,7 +257,7 @@ The `ux-atomic-architect` agent operates at **T3 (External)** per `agent-develop
 
 | Tool | Reason |
 |------|--------|
-| Task | Worker agent; P-003 prohibition. `disallowedTools: [Task]` in agent frontmatter. |
+| Agent | Worker agent; P-003 prohibition. `disallowedTools: [Agent]` in agent frontmatter. |
 | Memory-Keeper | No cross-session state requirement. Sub-skill state is engagement-scoped per P-002. All output persisted to `skills/ux-atomic-design/output/{engagement-id}/`. |
 
 ### Citation Requirements
@@ -316,7 +316,7 @@ Before persisting the output, the architect MUST verify MCP compliance (S-010, H
 | 7 | Context7 call limit respected per library; no unnecessary re-queries | Protocol step 3 |
 | 8 | WebSearch fallback used (not silent skip) when Context7 returns no results | MCP Failure Handling |
 | 9 | Phase 1-5 query timing followed per workflow timing map | 5-Phase Workflow table |
-| 10 | No prohibited tools used (Task, Memory-Keeper) | Tool Usage Constraints |
+| 10 | No prohibited tools used (Agent, Memory-Keeper) | Tool Usage Constraints |
 
 ---
 

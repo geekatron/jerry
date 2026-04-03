@@ -12,7 +12,8 @@
 | [Pip Tool Pinning](#pip-tool-pinning) | Version-pinned tools installed via pip in CI |
 | [Frozen Lockfile Enforcement](#frozen-lockfile-enforcement) | Lockfile enforcement across workflows |
 | [Skip-Bump Guard](#skip-bump-guard) | Infinite-loop and double-bump prevention in version-bump.yml |
-| [Dependabot Configuration](#dependabot-configuration) | Automated dependency update schedules |
+| [Dependabot Configuration](#dependabot-configuration) | Risk-tiered dependency update management |
+| [Scheduled Security Scan](#scheduled-security-scan) | Daily pip-audit for transitive CVE detection |
 | [H-05 Compliance](#h-05-compliance) | UV-only Python environment enforcement in CI |
 
 ---
@@ -250,54 +251,47 @@ This prevents shell injection via the free-form `workflow_dispatch` string input
 
 ## Dependabot Configuration
 
-Dependabot monitors two package ecosystems on a weekly schedule and opens pull requests for available updates.
+Dependabot monitors two package ecosystems with risk-tiered grouping (#188). Updates are classified by SemVer level and handled differently based on risk.
 
 **File:** `.github/dependabot.yml`
 
+**Risk-tiered update handling:**
+
+| Update Type | pip | GitHub Actions | Review Level |
+|-------------|-----|---------------|-------------|
+| Patch + Minor | Grouped (1 PR) | Grouped (1 PR) | CI green = merge |
+| Major | Individual PR | Individual PR | Manual review required |
+| Security | Individual PR | Individual PR | Priority review |
+| Transitive | Excluded (`allow: direct`) | N/A | Updates via parent dep |
+
+**Transitive dependency policy:** Dependabot only opens PRs for direct dependencies declared in `pyproject.toml`. Transitive dependencies (e.g., `gherkin-official` via `pytest-bdd`) are excluded to prevent incompatible standalone bumps. Transitive deps update when their parent direct dep is bumped and `uv.lock` is regenerated.
+
+**Compensating control:** The scheduled security scan (`.github/workflows/security-scan.yml`) runs `pip-audit` daily against the locked dependency tree, catching transitive CVEs that Dependabot will not surface.
+
 **Ecosystems configured:**
 
-| Ecosystem | Directory | Schedule | Day | Commit prefix | PR limit |
-|-----------|-----------|----------|-----|---------------|----------|
-| `github-actions` | `/` | weekly | Monday | `ci` | 10 |
-| `pip` | `/` | weekly | Monday | `deps` | 5 |
+| Ecosystem | Directory | Schedule | Day | Commit prefix | PR limit | Grouping |
+|-----------|-----------|----------|-----|---------------|----------|----------|
+| `github-actions` | `/` | weekly | Monday | `ci` | 10 | minor+patch grouped |
+| `pip` | `/` | weekly | Monday | `deps` | 10 | minor+patch grouped, direct only |
 
-**`github-actions` ecosystem:**
+**Note:** Dependabot does **not** track version pins embedded in workflow `run:` blocks (e.g., `uv tool install 'bump-my-version==1.2.7'`). Those inline pins must be updated manually.
 
-Monitors all `uses:` references in `.github/workflows/*.yml`. When a SHA-pinned action has a new version, Dependabot opens a PR updating both the SHA and the version comment. This is the primary maintenance mechanism for [SHA Pinning](#sha-pinning).
+**Note:** `ruff` uses `0.x` versioning where `0.x` to `0.(x+1)` is semantically major (new default-enabled lint rules). Dependabot classifies these as "minor" — review ruff grouped PRs with extra care.
 
-Labels applied: `dependencies`, `ci`
+## Scheduled Security Scan
 
-**`pip` ecosystem:**
+A daily scheduled workflow scans the locked dependency tree for known CVEs, independent of PR activity.
 
-Monitors `requirements.txt`, `requirements-dev.txt`, `requirements-test.txt`, and `pyproject.toml` for outdated Python dependencies.
+**File:** `.github/workflows/security-scan.yml`
 
-**Note:** Dependabot does **not** track version pins embedded in workflow `run:` blocks (e.g., `pip install "ruff==0.14.11"` in `ci.yml`). Those inline pins must be updated manually. Dependabot only detects updates for packages declared in the tracked requirements files and `pyproject.toml`.
+**Purpose:** The `allow: dependency-type: direct` Dependabot policy means transitive dependency compromises do not generate Dependabot PRs. This workflow compensates by running `pip-audit` on a schedule. Without it, transitive CVE detection latency is unbounded during low-activity periods.
 
-Labels applied: `dependencies`
+**Schedule:** Daily at 06:00 UTC (before Monday Dependabot run).
 
-**Configuration example:**
+**What it checks:** `uv run pip-audit --strict --desc` against the current `uv.lock`.
 
-```yaml
-version: 2
-updates:
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-    commit-message:
-      prefix: "ci"
-    open-pull-requests-limit: 10
-
-  - package-ecosystem: "pip"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-    commit-message:
-      prefix: "deps"
-    open-pull-requests-limit: 5
-```
+**Failure behavior:** If vulnerabilities are found, the workflow fails with exit code 1 and posts results to the job summary. A separate verification step catches `pip-audit` silent failures (empty output).
 
 ---
 

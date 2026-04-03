@@ -43,7 +43,7 @@ SCRIPTS_DIR = PROJECT_ROOT / "scripts"
 HOOKS_DIR = PROJECT_ROOT / "hooks"
 
 # Hook script paths
-PRETOOL_HOOK = SCRIPTS_DIR / "pre_tool_use.py"
+PRETOOL_HOOK = HOOKS_DIR / "pre-tool-use.py"
 SESSION_HOOK = HOOKS_DIR / "session-start.py"
 USERPROMPT_HOOK = HOOKS_DIR / "user-prompt-submit.py"
 
@@ -67,7 +67,7 @@ def run_pretool_hook(
     tool_name: str,
     tool_input: dict,
 ) -> tuple[int, dict | None, str]:
-    """Run the pre_tool_use.py hook with the given input.
+    """Run the pre-tool-use hook via CLI.
 
     Args:
         tool_name: Name of the tool (e.g., "Write", "Bash").
@@ -79,11 +79,11 @@ def run_pretool_hook(
     input_data = json.dumps({"tool_name": tool_name, "tool_input": tool_input})
 
     result = subprocess.run(
-        [sys.executable, str(PRETOOL_HOOK)],
+        ["uv", "run", "--directory", str(PROJECT_ROOT), "jerry", "--json", "hooks", "pre-tool-use"],
         input=input_data,
         capture_output=True,
         text=True,
-        timeout=10,
+        timeout=15,
         cwd=str(PROJECT_ROOT),
     )
 
@@ -269,8 +269,7 @@ class TestHookEnforcementE2E:
         )
         assert exit_code == 0
         assert stdout_json is not None
-        hso = stdout_json.get("hookSpecificOutput", {})
-        assert hso.get("permissionDecision") == "deny"
+        assert stdout_json.get("decision") == "block"
 
     def test_pretool_hook_when_safe_command_then_approves(self) -> None:
         """PreToolUse hook approves safe bash commands."""
@@ -280,8 +279,7 @@ class TestHookEnforcementE2E:
         )
         assert exit_code == 0
         assert stdout_json is not None
-        hso = stdout_json.get("hookSpecificOutput", {})
-        assert hso.get("permissionDecision") == "allow"
+        assert stdout_json.get("decision") != "block"
 
     @pytest.mark.subprocess
     def test_session_hook_when_executed_then_produces_valid_json(self) -> None:

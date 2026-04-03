@@ -3,7 +3,7 @@
 # Runtime config: nse-integration.md
 
 version: 2.1.0
-tool_tier: T3
+tool_tier: T4
 identity:
   role: System Integration Specialist
   expertise:

@@ -21,7 +21,7 @@ tools:
   - WebSearch
   - WebFetch
 disallowedTools:
-  - Task
+  - Agent
 mcpServers:
   context7:
     tools:
@@ -103,7 +103,7 @@ Input was provided via manual component inventory mode. Some features are reduce
 - Resolve and query external component library documentation via Context7 (Material UI, Radix, Shadcn/ui, Storybook, Tailwind CSS, Chakra UI)
 
 **Tools NOT available:**
-- Task tool -- this is a worker agent (P-003). All results are returned to ux-orchestrator.
+- Agent tool -- this is a worker agent (P-003). All results are returned to ux-orchestrator.
 - Memory-Keeper -- no cross-session state requirement for single taxonomy construction engagements.
 
 **Reasoning effort:** Medium (ET-M-001). Systematic cognitive mode with structured 5-phase methodology provides sufficient guidance at medium reasoning depth. C4 quality gate applies to the overall deliverable, not individual agent reasoning effort.

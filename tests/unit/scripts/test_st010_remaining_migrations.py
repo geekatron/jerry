@@ -865,9 +865,10 @@ class TestBatchValidationPerformance:
             assert valid_count == 25
             assert invalid_count == 25
 
-            # Verify performance
-            assert elapsed_ms < 500, (
-                f"50-file batch validation took {elapsed_ms:.1f}ms, expected < 500ms"
+            # Verify performance (1000ms allows for pre-commit hook concurrency;
+            # local runs typically complete in <100ms)
+            assert elapsed_ms < 1000, (
+                f"50-file batch validation took {elapsed_ms:.1f}ms, expected < 1000ms"
             )
         finally:
             _cleanup_paths(paths)
@@ -889,10 +890,10 @@ class TestBatchValidationPerformance:
             assert story_count == 25
             assert enabler_count == 25
 
-            # Verify performance (500ms allows for CI runner variability;
+            # Verify performance (1000ms allows for pre-commit hook concurrency;
             # local runs typically complete in <100ms)
-            assert elapsed_ms < 500, (
-                f"50-file frontmatter batch took {elapsed_ms:.1f}ms, expected < 500ms"
+            assert elapsed_ms < 1000, (
+                f"50-file frontmatter batch took {elapsed_ms:.1f}ms, expected < 1000ms"
             )
         finally:
             _cleanup_paths(paths)
@@ -912,10 +913,10 @@ class TestBatchValidationPerformance:
             with_frontmatter = sum(1 for r in results if r["has_frontmatter"])
             assert with_frontmatter > 0
 
-            # Verify performance (500ms allows for CI runner variability;
+            # Verify performance (1000ms allows for pre-commit hook concurrency;
             # local runs typically complete in <100ms)
-            assert elapsed_ms < 500, (
-                f"50-file parse batch took {elapsed_ms:.1f}ms, expected < 500ms"
+            assert elapsed_ms < 1000, (
+                f"50-file parse batch took {elapsed_ms:.1f}ms, expected < 1000ms"
             )
         finally:
             _cleanup_paths(paths)

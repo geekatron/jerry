@@ -308,7 +308,7 @@ A "session" in the routing context is scoped to an **engagement ID** (`UX-{NNNN}
 
 ### State Storage
 
-Session state flags are held in-memory by the ux-orchestrator agent during execution. They are not persisted to disk between separate orchestrator Task invocations. At each new Task invocation, the orchestrator re-derives state from disk artifacts:
+Session state flags are held in-memory by the ux-orchestrator agent during execution. They are not persisted to disk between separate orchestrator Agent invocations. At each new Agent invocation, the orchestrator re-derives state from disk artifacts:
 - `onboard_displayed`: set to `true` if any output file exists in the engagement directory (implies a prior invocation has already displayed the warning). Boundary condition: this heuristic assumes engagement directories are not reused across separate sessions; if output files remain from a prior engagement that was not cleaned up, the warning may be incorrectly suppressed. In practice, the engagement ID scoping (`UX-{NNNN}`) makes this collision extremely unlikely.
 - `mcp_available`: re-probed via MCP CHECK.
 - `wave_state`: re-derived from signoff file scan per [Wave State Detection](#wave-state-detection).

@@ -3,7 +3,7 @@
 # Runtime config: ux-heuristic-evaluator.md
 
 version: 0.2.0
-tool_tier: T3
+tool_tier: T4
 identity:
   role: Heuristic Evaluator
   expertise:

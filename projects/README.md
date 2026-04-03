@@ -22,6 +22,8 @@
 | PROJ-016 | documentation-writing | ACTIVE | Write user-facing Jerry documentation based on PROJ-015 audit findings |
 | PROJ-020 | feature-enhancements | ACTIVE | Feature enhancement filing and tracking for the Jerry Framework |
 | PROJ-022 | user-experience-skill | ACTIVE | /user-experience parent orchestrator skill with 10 pluggable sub-skills across 5 criteria-gated waves |
+| PROJ-021 | use-case | ACTIVE | Build use case capability: guided use case authoring, testing specifications, and contract design skills |
+| PROJ-024 | tactical-work | ACTIVE | Tactical work items — small improvements, quick fixes, and miscellaneous tasks |
 | PROJ-030 | bugs | ACTIVE | Bug fixes and defect resolution for the Jerry Framework |
 
 ## Project Lookup
@@ -42,4 +44,6 @@
 - **PROJ-016**: `projects/PROJ-016-documentation-writing/`
 - **PROJ-020**: `projects/PROJ-020-feature-enhancements/`
 - **PROJ-022**: `projects/PROJ-022-user-experience-skill/`
+- **PROJ-021**: `projects/PROJ-021-use-case/`
+- **PROJ-024**: `projects/PROJ-024-tactical-work/`
 - **PROJ-030**: `projects/PROJ-030-bugs/`

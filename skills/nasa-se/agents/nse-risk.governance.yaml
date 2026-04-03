@@ -3,7 +3,7 @@
 # Runtime config: nse-risk.md
 
 version: 2.2.0
-tool_tier: T3
+tool_tier: T4
 identity:
   role: Risk Manager
   expertise:

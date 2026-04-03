@@ -3,7 +3,7 @@
 > **Project:** PROJ-022-user-experience-skill
 > **Status:** ACTIVE
 > **Created:** 2026-03-03
-> **GitHub Issue:** [#138](https://github.com/geekatron/jerry/issues/138)
+> **GitHub Issue:** [#138](https://github.com/geekatron/jerry/issues/138) *(tracks the decision to build the skill, not implementation status; GH #138 CLOSED reflects decision approval, not implementation completion)*
 
 ## Document Sections
 
