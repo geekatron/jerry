@@ -65,7 +65,7 @@ These agents were authored before or outside the governance schema conventions e
 
 ## Acceptance Criteria
 
-- [ ] AC-1: All 12 agents have `output:` section in `.governance.yaml` with `required: true/false`, `location:`, and `filename_pattern:` fields
-- [ ] AC-2: Agents that receive caller-provided paths declare `location:` using the caller-variable pattern (e.g., `{output_path}`) with documentation that the path is caller-provided
-- [ ] AC-3: Agents with no path specification (sb-calibrator, sb-reviewer, sb-rewriter) are evaluated — either they don't produce file output (set `required: false`) or their output mechanism is documented
-- [ ] AC-4: All 12 agents pass governance schema validation after updates
+- [x] AC-1: All 12 agents have `output:` section in `.governance.yaml` with `required: true/false`, `location:`, and `filename_pattern:` fields
+- [x] AC-2: Agents that receive caller-provided paths declare `location:` using the caller-variable pattern (e.g., `{output_path}`) with documentation that the path is caller-provided
+- [x] AC-3: Agents with no path specification (sb-calibrator, sb-reviewer, sb-rewriter) are evaluated — all 3 confirmed as producing persistent file output (Write tool in frontmatter, P-002 mandates in .md body), set `required: true` with caller-provided `{output_path}`
+- [x] AC-4: All 12 agents pass YAML validation after updates
