@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- ADR-output-path-resolution-001: Unified Output Path Resolution Protocol (P1/P2/P3/P4 layered resolution chain)
+- AD-M-011 MEDIUM standard: agents SHOULD use project-relative output paths per ADR-output-path-resolution-001
+- `filename_pattern` field in agent-governance-v1.schema.json for Priority 2 base-path resolution
+- `skill-output-path-enforcement` pre-commit hook (L5 CI gate) — prevents regression to `skills/*/output/` paths
+- `.gitignore` rule for `skills/*/output/` to prevent future accumulation
+- Domain-first ADR naming convention: `ADR-{domain-slug}-{NNN}` (ADR-agent-design-001, ADR-routing-triggers-001, ADR-output-path-resolution-001)
+- Output Path Resolution section in 32 agent .md files with H-31 engagement-id fallback and Tier 1 ADR reference
+- P1/P2/P3 output path options in prompt-templates.md Templates 2 and 3
 - CHANGELOG.md using Keep a Changelog format, enforced by CI (`changelog-check` job)
 - CI enforcement: `changelog-check` job in `ci.yml` fails PRs that don't update CHANGELOG.md (exempts bots, `[skip-changelog]` escape hatch)
 - Dependabot configuration for automated GitHub Actions and pip dependency updates (`.github/dependabot.yml`)
@@ -19,6 +27,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `SecurityRules` — injectable frozen dataclass for security rule definitions
 
 ### Fixed
+- **BUG-006**: Agent output paths hardcoded to `skills/*/output/` replaced with project-relative `projects/${JERRY_PROJECT}/` paths across 107 config files, 32 agents, 13 skills per ADR-output-path-resolution-001 (#230)
+- **BUG-012**: 5 pm-pmm agents migrated from repo-root `docs/pm-pmm/` to project-relative paths (#245)
+- **BUG-013**: 2 prompt-engineering agents — `{PROJECT_ID}` placeholder replaced with `${JERRY_PROJECT}` env var (#246)
+- **BUG-014**: 12 agents across adversary/transcript/saucer-boy-fw/worktracker — governance YAML `output:` sections added (#247)
+- **BUG-007**: tspec-generator RULE-OT-04 fallback for unrecognized extension outcomes — warns instead of silent skip (#195)
+- **BUG-008**: tspec-analyst staleness detection — cross-references Feature file snapshot against live UC flow count (#197)
+- **BUG-009**: tspec-analyst aggregate coverage mode across multiple slices (#196)
+- **BUG-010**: uc-slicer Step 0 duplicate slice_id detection with H-31 clarification (#199)
+- **BUG-011**: Banned-term check uses word-boundary matching (`\b`) instead of substring matching (#198)
+- Diataxis SKILL.md plural/singular naming inconsistencies (`howto/` to `how-to/`, `explanations/` to `explanation/`)
 - **BUG-001**: Memory-keeper MCP tool names corrected across 26 governance files — `store`/`retrieve`/`search`/`list`/`delete` replaced with actual API names `context_save`/`context_get`/`context_search`/`context_session_list`/`context_batch_delete` (#111)
 - **BUG-002**: Version bump regex case sensitivity verified already implemented (src/version/ bounded context with case-insensitive regex) (#132)
 - **BUG-005**: Hook tests rewritten from `scripts/tests/` to `tests/` targeting CLI enforcement — deleted `test_hooks.py`, `test_patterns.py`, removed pytest.ini `--ignore` entries (#214)
@@ -31,6 +49,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Flaky 50-file batch performance test thresholds relaxed from 500ms to 1000ms to handle pre-commit hook concurrent load
 
 ### Changed
+- 28 stale eng-team output files removed from `skills/eng-team/output/` (600K)
+- ADR-PROJ007-001 renamed to ADR-agent-design-001 (domain-first naming convention)
+- ADR-PROJ007-002 renamed to ADR-routing-triggers-001 (domain-first naming convention)
+- quality-enforcement.md References table: added Location column with file paths for ADR-EPIC002-001/002
 - `hooks.json`: PreToolUse consolidated from dual hooks (standalone script + CLI) to single CLI path; NotebookEdit added to matcher
 - `hooks.json`: SubagentStop consolidated from dual hooks (standalone handoff script + CLI lifecycle) to single CLI path — handoff orchestration superseded by `/orchestration` skill (#178)
 - `hooks/pre-tool-use.py`: Updated wrapper with consolidation documentation
