@@ -66,7 +66,8 @@ guardrails:
 
 output:
   required: true
-  location: "docs/pm-pmm/{artifact-type}/{slug}.md"
+  location: "projects/${JERRY_PROJECT}/pm/pm-product-strategist-{topic-slug}.md"
+  filename_pattern: "pm-product-strategist-{topic-slug}.md"
   levels:
     - "L0"
     - "L1"

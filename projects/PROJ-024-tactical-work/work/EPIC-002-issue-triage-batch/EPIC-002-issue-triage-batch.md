@@ -1,7 +1,7 @@
 # EPIC-002: Issue Triage Batch — UC Pipeline Bugs, Output Path Remediation, Quick Wins
 
 > **Type:** epic
-> **Status:** in_progress
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-03-31
@@ -54,7 +54,7 @@ This Epic is the **cross-session resumption artifact**. Any session on the `feat
 | Phase 0 | Quick Wins (TASK-013, TASK-014) | completed |
 | Phase 1 | UC Pipeline Bugs (BUG-007 through BUG-011) | completed |
 | Phase 2 | Output Path Remediation (BUG-006, TASK-006 through TASK-012, TASK-015) | completed |
-| Phase 3 | Output Path Consistency Follow-on (BUG-012, BUG-013, BUG-014) | pending |
+| Phase 3 | Output Path Consistency Follow-on (BUG-012, BUG-013, BUG-014) | completed |
 
 ---
 
@@ -79,9 +79,9 @@ This Epic is the **cross-session resumption artifact**. Any session on the `feat
 | TASK-012 | Task | Fix diataxis naming inconsistencies | completed | PROJ-030 | — | 2b | — |
 | TASK-010 | Task | Add AD-M-011 standard to agent-development-standards.md | completed | PROJ-030 | — | 2c | TASK-006, TASK-007, TASK-008 |
 | **Output Path Consistency Follow-on** | | | | | | | |
-| BUG-012 | Bug | pm-pmm agents write to repo-root docs/pm-pmm/ instead of project-relative | pending | PROJ-030 | — | 3 | BUG-006 |
-| BUG-013 | Bug | prompt-engineering agents use {PROJECT_ID} instead of ${JERRY_PROJECT} | pending | PROJ-030 | — | 3 | BUG-006 |
-| BUG-014 | Bug | 12 agents lack governance YAML output section | pending | PROJ-030 | — | 3 | BUG-006 |
+| BUG-012 | Bug | pm-pmm agents write to repo-root docs/pm-pmm/ instead of project-relative | completed | PROJ-030 | — | 3 | BUG-006 |
+| BUG-013 | Bug | prompt-engineering agents use {PROJECT_ID} instead of ${JERRY_PROJECT} | completed | PROJ-030 | — | 3 | BUG-006 |
+| BUG-014 | Bug | 12 agents lack governance YAML output section | completed | PROJ-030 | — | 3 | BUG-006 |
 | **Quick Wins** | | | | | | | |
 | TASK-013 | Task | use-case SKILL.md missing Activity 5 entry | completed | PROJ-024 | #200 | 0 | — |
 | TASK-014 | Task | Orchestration scaffold cartesian product dirs | completed | PROJ-024 | #53 | 0 | — |

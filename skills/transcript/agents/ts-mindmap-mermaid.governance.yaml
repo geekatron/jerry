@@ -76,6 +76,12 @@ session_context:
   - populate_overflow_handled
   - list_mindmap_file
   - set_timestamp
+output:
+  required: true
+  location: '{output_path}'
+  filename_pattern: '{packet-id}-mindmap-mermaid.md'
+  levels:
+  - L1
 capabilities:
   forbidden_actions:
   - Spawn recursive subagents (P-003)

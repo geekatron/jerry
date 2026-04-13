@@ -7,6 +7,7 @@ description: >
   interview data, or analyze churn/retention patterns.
   Trigger keywords: persona, customer interview, journey map, VOC,
   voice of customer, churn analysis, NPS, customer discovery, pain points.
+  Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: opus
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:
@@ -80,7 +81,7 @@ All customer data (interview transcripts, survey responses, support tickets, usa
 
 **Tool usage patterns:**
 - **Read/Glob/Grep:** Load interview transcripts, survey data, analytics exports, prior persona artifacts. Search for existing customer research across the workspace.
-- **Write/Edit:** Produce artifact files to `docs/pm-pmm/{artifact-type}/{slug}.md`. Always use Write for new artifacts, Edit for updates.
+- **Write/Edit:** Produce artifact files per Output Path Resolution below. Always use Write for new artifacts, Edit for updates.
 - **Bash:** Directory creation, file operations.
 - **WebSearch/WebFetch:** Industry benchmarks for customer segments, JTBD research patterns, journey mapping best practices. All web-sourced claims must include citations.
 
@@ -288,10 +289,18 @@ delivery_sections_complete: true
 <output>
 ## Output Specification
 
-**Output location:** `docs/pm-pmm/{artifact-type}/{slug}.md`
+### Output Path Resolution
 
-Where `{artifact-type}` is one of: `personas`, `journey-maps`, `voc`
-Where `{slug}` is a kebab-case descriptor (e.g., `devops-dave`, `onboarding-journey`, `q1-2026-themes`)
+This agent follows the Unified Output Path Resolution Protocol (ADR-output-path-resolution-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/pm/pm-customer-insight-{topic-slug}.md`
+4. **Fallback** -- `work/pm-customer-insight-{topic-slug}.md` with warning
+
+If `{topic-slug}` is not derivable from context, request it via H-31 before writing output.
+
+Where `{topic-slug}` is a kebab-case descriptor (e.g., `devops-dave`, `onboarding-journey`, `q1-2026-themes`)
 
 **Output levels (progressive disclosure per AD-M-004):**
 - **L0 (Executive Summary):** Persona snapshot (name, role, top JTBD, primary pain point), journey map highlights, or VOC theme summary. For cross-functional stakeholders.
@@ -336,7 +345,7 @@ cross_refs:
 | Principle | Agent Behavior |
 |-----------|----------------|
 | P-001 (Truth/Accuracy) | All persona claims based on interview data, survey results, or behavioral analytics. No invented customer attributes. |
-| P-002 (File Persistence) | All outputs persisted to `docs/pm-pmm/` filesystem. |
+| P-002 (File Persistence) | All outputs persisted to project-relative paths per Output Path Resolution. |
 | P-003 (No Recursion) | You are a worker agent. MUST NOT use Task tool. MUST NOT invoke other agents. |
 | P-011 (Evidence-Based) | Every JTBD statement, pain point, and journey map element traced to evidence source (interview ID, survey question, analytics metric). |
 | P-020 (User Authority) | Never override user decisions on customer segment focus or persona prioritization. |

@@ -88,6 +88,12 @@ session_context:
   - populate_validation_result
   - list_output_artifacts
   - set_timestamp
+output:
+  required: true
+  location: '{output_dir}'
+  filename_pattern: '{packet-id}-canonical-transcript.json'
+  levels:
+  - L1
 capabilities:
   forbidden_actions:
   - Spawn recursive subagents (P-003)

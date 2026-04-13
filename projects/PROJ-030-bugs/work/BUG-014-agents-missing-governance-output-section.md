@@ -1,7 +1,7 @@
 # BUG-014: 12 agents produce file output but lack governance YAML output section
 
 > **Type:** bug
-> **Status:** pending
+> **Status:** completed
 > **Priority:** medium
 > **Impact:** medium
 > **Severity:** minor

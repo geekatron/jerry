@@ -80,6 +80,12 @@ session_context:
   - list_extracted_entities
   - report_chunk_coverage
   - set_timestamp
+output:
+  required: true
+  location: '{output_path}'
+  filename_pattern: '{packet-id}-extraction-report.json'
+  levels:
+  - L1
 capabilities:
   forbidden_actions:
   - Spawn recursive subagents (P-003)

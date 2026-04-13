@@ -1,7 +1,7 @@
 # BUG-012: pm-pmm agents write output to repo-root docs/pm-pmm/ instead of project-relative paths
 
 > **Type:** bug
-> **Status:** pending
+> **Status:** completed
 > **Priority:** medium
 > **Impact:** medium
 > **Severity:** minor
@@ -46,8 +46,8 @@ The `/pm-pmm` skill was contributed separately and did not reference the `projec
 
 ## Acceptance Criteria
 
-- [ ] AC-1: All 5 pm-pmm governance YAML `output.location` fields use `projects/${JERRY_PROJECT}/` prefix
-- [ ] AC-2: All 5 pm-pmm governance YAML files have `filename_pattern` field
-- [ ] AC-3: All 5 pm-pmm agent .md files have Output Path Resolution section per ADR-output-path-resolution-001
-- [ ] AC-4: pm-pmm SKILL.md agent table uses project-relative paths
-- [ ] AC-5: Zero `grep -r 'docs/pm-pmm/' skills/pm-pmm/` matches in path-specifying contexts
+- [x] AC-1: All 5 pm-pmm governance YAML `output.location` fields use `projects/${JERRY_PROJECT}/` prefix
+- [x] AC-2: All 5 pm-pmm governance YAML files have `filename_pattern` field
+- [x] AC-3: All 5 pm-pmm agent .md files have Output Path Resolution section per ADR-output-path-resolution-001
+- [x] AC-4: pm-pmm SKILL.md agent table uses project-relative paths
+- [x] AC-5: Zero `grep -r 'docs/pm-pmm/' skills/pm-pmm/` matches in path-specifying contexts

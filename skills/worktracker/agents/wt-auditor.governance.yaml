@@ -32,6 +32,12 @@ constitution:
   - 'P-010: Task Tracking Integrity (Medium) - Enforce worktracker integrity'
   - 'P-020: User Authority (Hard) - No auto-fixing without approval'
   - 'P-022: No Deception (Hard)'
+output:
+  required: true
+  location: projects/${JERRY_PROJECT}/work/{audit-scope}/wt-auditor-{topic-slug}.md
+  filename_pattern: wt-auditor-{topic-slug}.md
+  levels:
+  - L1
 enforcement:
   tier: medium
   escalation_path: Warn on issues → Generate remediation plan → Await user approval

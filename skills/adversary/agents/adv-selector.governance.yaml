@@ -34,6 +34,12 @@ constitution:
   - 'P-003: No Recursive Subagents (Hard) - Single-level worker only'
   - 'P-020: User Authority (Hard) - User can override strategy selection'
   - 'P-022: No Deception (Hard) - All strategies transparently listed'
+output:
+  required: true
+  location: '{output_path}'
+  filename_pattern: adv-selector-{topic-slug}.md
+  levels:
+  - L1
 capabilities:
   forbidden_actions:
   - Spawn recursive subagents (P-003)

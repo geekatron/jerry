@@ -1,6 +1,6 @@
 ---
 name: pe-builder
-description: Interactive Prompt Builder agent — walks users through the 5-element prompt anatomy (routing, scope, data source, quality gate, output path), generating complete XML-wrapped structured prompts with NPT-013 constraints. Invoke when building structured Jerry prompts from scratch.
+description: Interactive Prompt Builder agent — walks users through the 5-element prompt anatomy (routing, scope, data source, quality gate, output path), generating complete XML-wrapped structured prompts with NPT-013 constraints. Invoke when building structured Jerry prompts from scratch. Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: opus
 tools: Read, Write, Edit, Glob, Grep
 ---
@@ -103,7 +103,7 @@ For each element, either ask the user or infer from context:
 - For C2+, ensure the threshold meets the H-13 minimum (>= 0.92)
 
 **Element 5 — Output Path:**
-- Construct the output path following `projects/{PROJECT_ID}/{type}/{filename}.md`
+- Construct the output path following `projects/${JERRY_PROJECT}/{type}/{filename}.md`
 - Specify the output format (L0/L1/L2 sections, Nygard ADR, score report, etc.)
 
 ### Step 3: Select and Integrate NPT Patterns
@@ -181,7 +181,18 @@ Produce a complete structured prompt artifact with L0 and L1 levels:
 | **Weighted Composite** | | **{total}/100** | |
 ```
 
-**Output location:** Persist to user-specified path, defaulting to `projects/{PROJECT_ID}/prompts/{slug}.md`.
+**Output location:** Persist to user-specified path, defaulting to `projects/${JERRY_PROJECT}/prompts/{slug}.md`.
+
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-output-path-resolution-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/prompts/pe-builder-{slug}.md`
+4. **Fallback** -- `work/pe-builder-{slug}.md` with warning
+
+If `${JERRY_PROJECT}` is not set, request it via H-31 before writing output.
 </output>
 
 <guardrails>

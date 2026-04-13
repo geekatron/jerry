@@ -1,7 +1,7 @@
 # BUG-013: prompt-engineering agents use {PROJECT_ID} instead of ${JERRY_PROJECT} env var
 
 > **Type:** bug
-> **Status:** pending
+> **Status:** completed
 > **Priority:** medium
 > **Impact:** low
 > **Severity:** minor
@@ -46,7 +46,7 @@ The prompt-engineering agents were authored using a different variable naming co
 
 ## Acceptance Criteria
 
-- [ ] AC-1: Both agents' governance YAML `output.location` use `projects/${JERRY_PROJECT}/` prefix
-- [ ] AC-2: Both agents' governance YAML files have `filename_pattern` field
-- [ ] AC-3: Both agents' .md files have Output Path Resolution section per ADR-output-path-resolution-001
-- [ ] AC-4: Zero `{PROJECT_ID}` references remain in prompt-engineering governance/agent files (replaced with `${JERRY_PROJECT}`)
+- [x] AC-1: Both agents' governance YAML `output.location` use `projects/${JERRY_PROJECT}/` prefix
+- [x] AC-2: Both agents' governance YAML files have `filename_pattern` field
+- [x] AC-3: Both agents' .md files have Output Path Resolution section per ADR-output-path-resolution-001
+- [x] AC-4: Zero `{PROJECT_ID}` references remain in prompt-engineering governance/agent files (replaced with `${JERRY_PROJECT}`)
