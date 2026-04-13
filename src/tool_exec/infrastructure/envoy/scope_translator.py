@@ -16,6 +16,7 @@ from __future__ import annotations
 import copy
 import logging
 import re
+import socket
 from pathlib import Path
 from typing import Any
 
@@ -237,54 +238,163 @@ def generate_envoy_config(
     return output_path
 
 
+def _resolve_scope_to_cidrs(scope_domains: list[str]) -> list[dict[str, Any]]:
+    """Resolve scope domains/IPs to CIDR prefix_ranges for Envoy filter chain matching.
+
+    For plain TCP connections (non-TLS), Envoy's server_names filter chain match
+    does not work because there is no TLS SNI. The original_dst listener filter
+    restores the destination IP, and prefix_ranges matches against that restored
+    destination. This function resolves all scope entries to /32 CIDRs.
+
+    Args:
+        scope_domains: Engagement scope entries (mix of domains, IPs, domain:443).
+
+    Returns:
+        Deduplicated list of Envoy CidrRange dicts: {"address_prefix": ip, "prefix_len": 32}.
+    """
+    resolved_ips: set[str] = set()
+
+    for entry in scope_domains:
+        # Strip :443 port suffix if present (used by HTTP CONNECT, not relevant for IP)
+        host = entry.split(":")[0] if ":" in entry else entry
+
+        if not host or host.startswith("*"):
+            # Wildcard domains cannot be resolved to IPs; skip for prefix_ranges.
+            # They are still matched via server_names for TLS connections.
+            logger.debug("Skipping wildcard/empty entry for IP resolution: %s", entry)
+            continue
+
+        if _IPV4_PATTERN.match(host):
+            resolved_ips.add(host)
+        else:
+            # DNS-resolve domain to IP(s) at config generation time.
+            # For pentest engagements, scope targets are fixed for the
+            # engagement duration. Re-generate config if targets change.
+            try:
+                addrs = socket.getaddrinfo(host, None, socket.AF_INET, socket.SOCK_STREAM)
+                for addr_info in addrs:
+                    ip = str(addr_info[4][0])
+                    resolved_ips.add(ip)
+                    logger.debug("Resolved %s -> %s", host, ip)
+            except socket.gaierror:
+                logger.warning(
+                    "DNS resolution failed for scope domain '%s'; "
+                    "plain TCP connections to this target will be denied by Envoy. "
+                    "TLS connections with SNI will still match via server_names.",
+                    host,
+                )
+
+    cidrs = [{"address_prefix": ip, "prefix_len": 32} for ip in sorted(resolved_ips)]
+    logger.info(
+        "Resolved %d scope entries to %d unique IPs for transparent TCP prefix_ranges",
+        len(scope_domains),
+        len(cidrs),
+    )
+    return cidrs
+
+
+def _extract_server_names(scope_domains: list[str]) -> list[str]:
+    """Extract domain names (including wildcards) for TLS SNI matching.
+
+    Filters scope_domains to entries suitable for Envoy RBAC
+    ``requested_server_name`` matching. Includes wildcards (``*.example.com``)
+    which cannot be DNS-resolved but CAN be matched via TLS SNI.
+
+    Strips ``:443`` port suffixes and deduplicates.
+
+    Args:
+        scope_domains: Engagement scope entries (mix of domains, IPs, domain:443).
+
+    Returns:
+        Deduplicated list of domain strings for ``requested_server_name``.
+    """
+    names: set[str] = set()
+    for entry in scope_domains:
+        host = entry.split(":")[0] if ":" in entry else entry
+        if not host:
+            continue
+        # IPs are not valid server_names; only domains and wildcards
+        if _IPV4_PATTERN.match(host):
+            continue
+        names.add(host)
+    return sorted(names)
+
+
 def _add_transparent_tcp_listener(
     config: dict[str, Any],
     scope_domains: list[str],
 ) -> None:
-    """Add a transparent TCP listener with scope-enforced filter chains.
+    """Add a transparent TCP listener with hybrid RBAC scope enforcement.
 
-    EN-023-010: This listener recovers the original destination from
-    BPF-redirected connections and enforces engagement scope via filter
-    chain matching. Coexists with the HTTP forward proxy on port 3128.
-    Port 15001 is reserved for Envoy transparent TCP (C8).
+    EN-023-010 + BUG-023-002: This listener recovers the original destination
+    from BPF-redirected connections and enforces engagement scope using a
+    hybrid RBAC policy that handles both TLS and plain TCP connections.
 
-    Filter chain structure:
-      1. Scope-allowed chain: server_names match engagement scope domains.
-         Routes to original_dst_cluster for transparent proxying.
-      2. Deny-all chain: catch-all (no match criteria). Routes to
-         deny_all_tcp cluster which has no endpoints, causing immediate
-         connection close for out-of-scope destinations.
+    Listener filters (order matters):
+      1. ``tls_inspector``: Detects TLS ClientHello and extracts SNI without
+         terminating TLS. Passthrough — does not decrypt traffic.
+      2. ``original_dst``: Recovers the BPF-rewritten original destination IP.
+
+    RBAC scope enforcement (hybrid policy):
+      - ``requested_server_name``: Matches TLS SNI hostname. Supports wildcards
+        (``*.example.com``). Only fires when tls_inspector detected a ClientHello.
+      - ``destination_ip``: Matches restored destination IP from original_dst.
+        Works for ALL TCP (plain and TLS). Domains DNS-resolved at config gen time.
+
+    Combined with OR semantics: a connection passes if it matches EITHER the
+    SNI policy (TLS with authorized hostname/wildcard) OR the IP policy
+    (any TCP to authorized IP).
 
     Args:
         config: Mutable Envoy config dict to add the listener to.
         scope_domains: Engagement scope domains (same set used by HTTP listener).
     """
-    # Scope-allowed filter chain: matches engagement scope domains via SNI
+    # Resolve scope to CIDRs for destination IP matching (plain TCP + TLS fallback)
+    cidrs = _resolve_scope_to_cidrs(scope_domains)
+
+    # Extract domain names (including wildcards) for TLS SNI matching
+    server_names = _extract_server_names(scope_domains)
+
+    # Build hybrid RBAC permissions: destination_ip OR requested_server_name.
+    # The "or_rules" wrapper provides OR semantics across permission types.
+    ip_permissions = [{"destination_ip": cidr} for cidr in cidrs]
+    sni_permissions = [
+        {"requested_server_name": {"exact": name}}
+        if not name.startswith("*.")
+        else {"requested_server_name": {"suffix": name[1:]}}  # *.example.com → suffix .example.com
+        for name in server_names
+    ]
+
+    all_permissions = ip_permissions + sni_permissions
+    if not all_permissions:
+        # No scope entries resolved — deny all (fail-closed)
+        logger.warning("No RBAC permissions generated from scope; all TCP will be denied")
+        all_permissions = [{"not_rule": {"any": True}}]
+
     scope_chain: dict[str, Any] = {
-        "filter_chain_match": {
-            "server_names": list(scope_domains),
-        },
         "filters": [
+            {
+                "name": "envoy.filters.network.rbac",
+                "typed_config": {
+                    "@type": "type.googleapis.com/envoy.extensions.filters.network.rbac.v3.RBAC",
+                    "stat_prefix": "transparent_tcp_scope",
+                    "rules": {
+                        "action": "ALLOW",
+                        "policies": {
+                            "engagement_scope": {
+                                "permissions": [{"or_rules": {"rules": all_permissions}}],
+                                "principals": [{"any": True}],
+                            },
+                        },
+                    },
+                },
+            },
             {
                 "name": "envoy.filters.network.tcp_proxy",
                 "typed_config": {
                     "@type": "type.googleapis.com/envoy.extensions.filters.network.tcp_proxy.v3.TcpProxy",
                     "stat_prefix": "transparent_tcp",
                     "cluster": "original_dst_cluster",
-                },
-            },
-        ],
-    }
-
-    # Deny-all catch-all: no filter_chain_match means it catches everything
-    deny_chain: dict[str, Any] = {
-        "filters": [
-            {
-                "name": "envoy.filters.network.tcp_proxy",
-                "typed_config": {
-                    "@type": "type.googleapis.com/envoy.extensions.filters.network.tcp_proxy.v3.TcpProxy",
-                    "stat_prefix": "transparent_tcp_denied",
-                    "cluster": "deny_all_tcp",
                 },
             },
         ],
@@ -297,18 +407,28 @@ def _add_transparent_tcp_listener(
         },
         "listener_filters": [
             {
+                # tls_inspector MUST come before original_dst. It detects TLS
+                # ClientHello and extracts SNI for requested_server_name matching.
+                # Passthrough only — does not terminate or decrypt TLS.
+                "name": "envoy.filters.listener.tls_inspector",
+                "typed_config": {
+                    "@type": "type.googleapis.com/envoy.extensions.filters.listener.tls_inspector.v3.TlsInspector",
+                },
+            },
+            {
                 "name": "envoy.filters.listener.original_dst",
                 "typed_config": {
                     "@type": "type.googleapis.com/envoy.extensions.filters.listener.original_dst.v3.OriginalDst",
                 },
             },
         ],
-        "filter_chains": [scope_chain, deny_chain],
+        "filter_chains": [scope_chain],
     }
     config["static_resources"]["listeners"].append(transparent_listener)
     logger.info(
-        "Added transparent_tcp listener on port 15001 with %d scope domains",
-        len(scope_domains),
+        "Added transparent_tcp listener on port 15001: %d IP CIDRs + %d SNI names",
+        len(cidrs),
+        len(server_names),
     )
 
 

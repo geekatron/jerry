@@ -1,0 +1,53 @@
+# Dockerfile.unified-bpf -- EN-023-010 unified 3-program BPF + Envoy test container
+#
+# Builds all 3 BPF programs (connect4, sockops, getsockopt) and provides a
+# runtime environment with bpftool, nc, curl for E2E testing.
+#
+# Envoy runs as a SEPARATE container sharing this container's network namespace
+# (network_mode: "service:exploit-ops") so that BPF's 127.0.0.1:15001 redirect
+# reaches Envoy's transparent_tcp listener.
+#
+# EN-023-009 + EN-023-010 PROJ-023-exploit-framework
+
+FROM ubuntu:24.04 AS build
+
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    clang llvm libbpf-dev linux-libc-dev linux-tools-common linux-tools-generic \
+    build-essential dpkg-dev pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
+# Compile all 3 BPF programs (C7: maps.h shared header)
+WORKDIR /build
+COPY src/proxy_infra/ebpf_poc/connect4.bpf.c \
+     src/proxy_infra/ebpf_poc/sockops.bpf.c \
+     src/proxy_infra/ebpf_poc/getsockopt.bpf.c \
+     src/proxy_infra/ebpf_poc/maps.h \
+     src/proxy_infra/ebpf_poc/Makefile \
+     ./
+RUN GNU_TRIPLE=$(dpkg-architecture -qDEB_HOST_GNU_TYPE) && \
+    ln -sf /usr/include/${GNU_TRIPLE}/asm /usr/include/asm && \
+    make
+
+# Runtime stage — tool container + bpf-init shared image.
+# Production topology (DEC-023-001): Envoy runs in a SEPARATE container.
+# bpf-init handles split-cgroup attachment (getsockopt → Envoy cgroup).
+FROM ubuntu:24.04
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    linux-tools-common linux-tools-generic libbpf1 iproute2 curl \
+    netcat-openbsd bash ca-certificates docker.io \
+    && rm -rf /var/lib/apt/lists/*
+
+# Symlink actual bpftool binary (bypass version-checking wrapper)
+COPY --from=build /usr/lib/linux-tools/*/bpftool /usr/local/bin/bpftool
+RUN chmod +x /usr/local/bin/bpftool
+
+# Copy compiled BPF objects
+COPY --from=build /build/connect4.bpf.o /opt/ebpf/connect4.bpf.o
+COPY --from=build /build/sockops.bpf.o /opt/ebpf/sockops.bpf.o
+COPY --from=build /build/getsockopt.bpf.o /opt/ebpf/getsockopt.bpf.o
+
+COPY tests/e2e/proxy_infra/entrypoint-bpf-init.sh /entrypoint-bpf-init.sh
+RUN chmod +x /entrypoint-bpf-init.sh
+
+# Default: tool container mode (sleep infinity). bpf-init overrides entrypoint.
+ENTRYPOINT ["sleep", "infinity"]

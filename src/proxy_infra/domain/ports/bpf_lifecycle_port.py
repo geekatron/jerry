@@ -35,11 +35,21 @@ class IBpfLifecyclePort(Protocol):
         3. detach_and_cleanup() — Unpin and detach all programs on teardown
     """
 
-    def load_and_attach(self, container_id: str) -> None:
-        """Load BPF programs and attach to the specified container's cgroup.
+    def load_and_attach(
+        self,
+        container_id: str,
+        envoy_container_id: str | None = None,
+    ) -> None:
+        """Load BPF programs and attach to appropriate cgroups.
+
+        BUG-023-001 split-cgroup attachment:
+          - connect4 + sockops → tool container cgroup
+          - getsockopt → envoy container cgroup (or tool cgroup if sidecar)
 
         Args:
-            container_id: Docker container ID (short or full).
+            container_id: Tool container Docker ID (short or full).
+            envoy_container_id: Envoy container Docker ID. If None,
+                getsockopt attaches to tool container cgroup (sidecar mode).
 
         Raises:
             RuntimeError: If BPF load, pin, or attachment fails.

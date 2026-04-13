@@ -126,25 +126,46 @@ class BpfManager:
         self._bridge_port = bridge_port
         self._map_dir = Path(map_dir) if map_dir else _DEFAULT_MAP_DIR
         self._attached_cgroup: str | None = None
+        self._envoy_cgroup: str | None = None
         self._loaded_programs: list[_BpfProgramDef] = []
 
     # ------------------------------------------------------------------
     # Public lifecycle API
     # ------------------------------------------------------------------
 
-    def load_and_attach(self, container_id: str) -> None:
-        """Load all 3 BPF programs, detach stale root, then attach to container.
+    def load_and_attach(
+        self,
+        container_id: str,
+        envoy_container_id: str | None = None,
+    ) -> None:
+        """Load all 3 BPF programs and attach to appropriate cgroups.
+
+        BPF cgroup programs fire only for processes in the attached cgroup.
+        Split-cgroup attachment (BUG-023-001):
+          - connect4 + sockops: attached to TOOL container cgroup
+            (intercept tool process connect() and TCP ESTABLISHED events)
+          - getsockopt: attached to ENVOY container cgroup
+            (intercept Envoy's getsockopt(SO_ORIGINAL_DST) calls)
+
+        Maps (dst_lookup, port_cookie) are pinned on bpffs and shared across
+        all 3 programs regardless of cgroup attachment.
+
+        If envoy_container_id is None, all 3 programs attach to the tool
+        container cgroup (sidecar mode: Envoy runs inside tool container).
 
         Steps:
           1. Load all 3 BPF objects and pin programs + maps to bpffs (C5).
              If any program fails, rollback all previously loaded programs.
           2. Detach any stale BPF from root cgroup (EN-023-001 F-2).
-          3. Find container cgroup path (EN-023-001 F-3).
-          4. Create jerry-intercept as CHILD of container cgroup (F-8).
-          5. Attach the pinned connect4 program to the container cgroup.
+          3. Find container cgroup paths (tool + optional envoy).
+          4. Create jerry-intercept as CHILD of tool container cgroup (F-8).
+          5. Attach connect4 + sockops to tool container cgroup.
+          6. Attach getsockopt to envoy container cgroup (or tool cgroup if sidecar).
 
         Args:
-            container_id: Docker container ID (short or full).
+            container_id: Tool container Docker ID (short or full).
+            envoy_container_id: Envoy container Docker ID. If None, getsockopt
+                attaches to tool container cgroup (sidecar mode).
 
         Raises:
             RuntimeError: If any BPF load, pin, or attachment fails.
@@ -168,14 +189,44 @@ class BpfManager:
 
         self._detach_root_cgroup()
 
-        container_cgroup = self.get_container_cgroup(container_id)
-        logger.info("Container cgroup resolved: %s", container_cgroup)
+        tool_cgroup = self.get_container_cgroup(container_id)
+        logger.info("Tool container cgroup resolved: %s", tool_cgroup)
 
-        self.create_intercept_cgroup(container_cgroup)
+        self.create_intercept_cgroup(tool_cgroup)
 
-        logger.info("Attaching BPF connect4 to container cgroup %s", container_cgroup)
-        self._attach_to_cgroup(container_cgroup)
-        self._attached_cgroup = container_cgroup
+        # Determine getsockopt cgroup: Envoy container or tool container (sidecar)
+        if envoy_container_id:
+            envoy_cgroup = self.get_container_cgroup(envoy_container_id)
+            logger.info("Envoy container cgroup resolved: %s", envoy_cgroup)
+        else:
+            envoy_cgroup = tool_cgroup
+            logger.info("Sidecar mode: getsockopt attaches to tool cgroup")
+
+        # Attach connect4 + sockops to tool container cgroup
+        logger.info("Attaching connect4 + sockops to tool cgroup %s", tool_cgroup)
+        self._attach_program_to_cgroup(
+            tool_cgroup,
+            _PROGRAMS[0],  # connect4
+        )
+        self._attach_program_to_cgroup(
+            tool_cgroup,
+            _PROGRAMS[1],  # sockops
+        )
+
+        # Attach getsockopt to envoy cgroup (or tool cgroup in sidecar mode)
+        logger.info(
+            "Attaching getsockopt to %s cgroup %s",
+            "envoy" if envoy_container_id else "tool (sidecar)",
+            envoy_cgroup,
+        )
+        self._attach_program_to_cgroup(
+            envoy_cgroup,
+            _PROGRAMS[2],  # getsockopt
+        )
+
+        # Track both cgroups for cleanup
+        self._attached_cgroup = tool_cgroup
+        self._envoy_cgroup = envoy_cgroup
 
     def detach_and_cleanup(self) -> None:
         """Detach and unpin all 3 BPF programs from cgroup and bpffs.
@@ -185,10 +236,16 @@ class BpfManager:
         Constraint B3: NEVER leave programs attached/pinned after teardown.
         """
         if self._attached_cgroup:
-            for prog in _PROGRAMS:
-                logger.info("Detaching %s from cgroup %s", prog.name, self._attached_cgroup)
+            # Detach connect4 + sockops from tool cgroup
+            for prog in _PROGRAMS[:2]:  # connect4, sockops
+                logger.info("Detaching %s from tool cgroup %s", prog.name, self._attached_cgroup)
                 self._detach_program_from_cgroup(self._attached_cgroup, prog)
+            # Detach getsockopt from envoy cgroup (or tool cgroup in sidecar mode)
+            getsockopt_cgroup = self._envoy_cgroup or self._attached_cgroup
+            logger.info("Detaching getsockopt from cgroup %s", getsockopt_cgroup)
+            self._detach_program_from_cgroup(getsockopt_cgroup, _PROGRAMS[2])
             self._attached_cgroup = None
+            self._envoy_cgroup = None
         else:
             logger.debug("No attached cgroup recorded; skipping detach")
 
@@ -328,11 +385,20 @@ class BpfManager:
                 result.stderr.strip(),
             )
 
-    def _attach_to_cgroup(self, cgroup_path: str) -> None:
-        """Attach the pinned connect4 BPF program to the specified cgroup.
+    def _attach_program_to_cgroup(
+        self,
+        cgroup_path: str,
+        prog: _BpfProgramDef,
+    ) -> None:
+        """Attach a single pinned BPF program to a specific cgroup.
+
+        BUG-023-001: Programs are attached to different cgroups based on
+        where they need to fire. connect4+sockops go to the tool container
+        cgroup; getsockopt goes to the Envoy container cgroup.
 
         Args:
             cgroup_path: Absolute path to the target cgroup directory.
+            prog: Program definition specifying attach_type and pin_name.
 
         Raises:
             RuntimeError: If bpftool cgroup attach fails.
@@ -343,9 +409,9 @@ class BpfManager:
                 "cgroup",
                 "attach",
                 cgroup_path,
-                "connect4",
+                prog.attach_type,
                 "pinned",
-                str(_BPFFS_ROOT / "rainbow_connect4"),
+                str(_BPFFS_ROOT / prog.pin_name),
             ],
             check=True,
         )

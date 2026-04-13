@@ -108,21 +108,25 @@ nav:
     - Orchestration: playbooks/orchestration.md
     - Transcript Processing: playbooks/transcript.md
     - Plugin Development: playbooks/PLUGIN-DEVELOPMENT.md
+    - Add BPF to a Tool Container: playbooks/ebpf-tool-container.md
   - Tutorials:
     - Proxy Credential Setup: tutorials/proxy-credential-setup.md
     - Purple Team Engagement: tutorials/purple-team-engagement.md
     - Split Team Engagement: tutorials/split-team-engagement.md
     - Single-Team Engagement: tutorials/single-team-engagement.md
+    - eBPF Engagement Walkthrough: tutorials/ebpf-engagement-walkthrough.md
   - Reference:
     - CLAUDE.md Guide: CLAUDE-MD-GUIDE.md
     - Credential Naming Convention: reference/credential-naming-convention.md
     - Engagement Config Schema: reference/engagement-config-schema.md
+    - eBPF Transparent Proxy: reference/ebpf-transparent-proxy.md
     - Schema Versioning: schemas/SCHEMA_VERSIONING.md
     - Session Context Schema: schemas/SESSION_CONTEXT_GUIDE.md
   - Articles:
     - blog/index.md
   - Research:
     - Overview: research/index.md
+    - eBPF Architecture Decision: research/ebpf-architecture-decision.md
     - Single vs. Multi-Agent Analysis: research/single-vs-multi-agent.md
     - Adversarial Strategy Catalog: research/adversarial-strategy-catalog.md
     - Strategy Selection & Enforcement (ADRs): research/strategy-selection-enforcement.md

@@ -170,31 +170,31 @@ class TestTransparentTcpScopeEnforcement:
     """AC-2: transparent_tcp listener must deny out-of-scope destinations."""
 
     def test_transparent_tcp_denies_out_of_scope(self, generated_config: dict) -> None:
-        """Transparent TCP listener has a deny-all default filter chain.
+        """Transparent TCP listener uses RBAC to deny out-of-scope destinations.
 
-        The last filter chain has no filter_chain_match (catch-all) and routes
-        to a deny cluster, blocking all TCP destinations not in engagement scope.
+        BUG-023-002/DEC-023-002: RBAC network filter with ALLOW policy replaces
+        the old server_names filter chain match + deny-all catch-all. Connections
+        to destinations NOT in the RBAC policy are denied by RBAC before reaching
+        the tcp_proxy filter.
         """
         listener = _find_listener(generated_config, "transparent_tcp")
         assert listener is not None, "transparent_tcp listener not found"
 
         filter_chains = listener.get("filter_chains", [])
-        assert len(filter_chains) >= 2, (
-            "transparent_tcp must have at least 2 filter chains "
-            "(scope-allowed + deny-all catch-all)"
+        assert len(filter_chains) >= 1, "transparent_tcp must have at least 1 filter chain"
+
+        # First filter chain must have RBAC as the first filter
+        scope_chain = filter_chains[0]
+        rbac_filter = scope_chain["filters"][0]
+        assert "rbac" in rbac_filter["name"], (
+            f"First filter must be RBAC, got {rbac_filter['name']}"
         )
 
-        # Last filter chain is the deny-all catch-all (no filter_chain_match)
-        deny_chain = filter_chains[-1]
-        assert "filter_chain_match" not in deny_chain, (
-            "Deny-all filter chain must not have filter_chain_match (catch-all)"
-        )
-
-        # Deny chain routes to deny_all_tcp cluster
-        tcp_proxy = deny_chain["filters"][0]
-        tcp_proxy_config = tcp_proxy["typed_config"]
-        assert tcp_proxy_config["cluster"] == "deny_all_tcp", (
-            f"Deny chain must route to deny_all_tcp cluster, got {tcp_proxy_config.get('cluster')}"
+        # RBAC must use ALLOW action (deny everything not matched)
+        rbac_config = rbac_filter["typed_config"]
+        rules = rbac_config.get("rules", {})
+        assert rules.get("action") == "ALLOW", (
+            f"RBAC must use ALLOW action (implicit deny), got {rules.get('action')}"
         )
 
 
@@ -229,11 +229,12 @@ class TestBothListenersFromSameScope:
     """AC-4: Both listeners derive allowed destinations from the same scope."""
 
     def test_both_listeners_generated_from_same_scope(self, generated_config: dict) -> None:
-        """Both egress_proxy and transparent_tcp reference the same engagement scope domains.
+        """Both egress_proxy and transparent_tcp derive from the same engagement scope.
 
-        The HTTP forward proxy uses virtual_host domains. The transparent TCP
-        listener uses filter_chain_match server_names. Both must contain the
-        same set of scope-derived domains.
+        BUG-023-002/DEC-023-002: The HTTP forward proxy uses virtual_host domains.
+        The transparent TCP listener uses RBAC with hybrid permissions
+        (requested_server_name for TLS + destination_ip for plain TCP).
+        Both must contain scope-derived entries from the same scope document.
         """
         # Extract HTTP virtual_host domains (excluding deny_all)
         egress = _find_listener(generated_config, "egress_proxy")
@@ -245,20 +246,42 @@ class TestBothListenersFromSameScope:
             if vh.get("name") != "deny_all":
                 http_domains.update(vh.get("domains", []))
 
-        # Extract TCP filter chain server_names (excluding deny-all catch-all)
+        # Extract TCP RBAC scope entries (requested_server_name + destination_ip)
         tcp = _find_listener(generated_config, "transparent_tcp")
         assert tcp is not None
-        tcp_domains: set[str] = set()
-        for chain in tcp.get("filter_chains", []):
-            match = chain.get("filter_chain_match", {})
-            server_names = match.get("server_names", [])
-            tcp_domains.update(server_names)
+        rbac_filter = tcp["filter_chains"][0]["filters"][0]
+        rbac_config = rbac_filter["typed_config"]
+        policies = rbac_config.get("rules", {}).get("policies", {})
+        scope_policy = policies.get("engagement_scope", {})
+        permissions = scope_policy.get("permissions", [])
 
-        # Both must reference the same scope domains
+        # RBAC uses or_rules containing both server_name and IP entries
+        tcp_scope_entries: set[str] = set()
+        for perm in permissions:
+            or_rules = perm.get("or_rules", {}).get("rules", [])
+            for rule in or_rules:
+                if "requested_server_name" in rule:
+                    sni = rule["requested_server_name"]
+                    name = sni.get("exact", sni.get("suffix", ""))
+                    if name:
+                        tcp_scope_entries.add(name)
+                if "destination_ip" in rule:
+                    ip = rule["destination_ip"].get("address_prefix", "")
+                    if ip:
+                        tcp_scope_entries.add(ip)
+
+        # Both must have scope-derived entries
         assert len(http_domains) > 0, "No HTTP scope domains found"
-        assert len(tcp_domains) > 0, "No TCP scope domains found"
-        assert http_domains == tcp_domains, (
-            f"HTTP and TCP scope domains differ.\n"
-            f"HTTP: {sorted(http_domains)}\n"
-            f"TCP:  {sorted(tcp_domains)}"
+        assert len(tcp_scope_entries) > 0, "No TCP RBAC scope entries found"
+
+        # The TCP entries should contain server names that overlap with HTTP domains
+        # (stripped of :443 suffixes). Not an exact match because TCP also has IPs.
+        http_bare_domains = {d.split(":")[0] for d in http_domains}
+        tcp_names = {e.lstrip(".") for e in tcp_scope_entries if not e[0].isdigit()}
+        overlap = http_bare_domains & tcp_names
+        assert len(overlap) > 0, (
+            f"No overlap between HTTP domains and TCP SNI names.\n"
+            f"HTTP domains: {sorted(http_bare_domains)}\n"
+            f"TCP SNI names: {sorted(tcp_names)}\n"
+            "Both listeners should derive from the same engagement scope."
         )

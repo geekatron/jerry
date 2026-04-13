@@ -1,0 +1,150 @@
+# docker-compose.unified-bpf.yml -- EN-023-010 unified 3-program BPF + Envoy E2E test
+#
+# PRODUCTION-ALIGNED TOPOLOGY (DEC-023-001):
+#   exploit-ops    -- tool container (non-privileged, read-only bpffs)
+#   envoy-unified  -- separate Envoy container, shares exploit-ops network namespace
+#   bpf-init       -- privileged init sidecar: loads BPF, split-cgroup attachment
+#   tcp-target     -- nginx plain TCP (authorized target)
+#   tls-target     -- nginx TLS with self-signed cert (authorized TLS target)
+#
+# Split-cgroup attachment (BUG-023-001):
+#   bpf-init discovers BOTH container cgroups via Docker socket, then:
+#     connect4 + sockops → tool container cgroup
+#     getsockopt → Envoy container cgroup
+#   Maps shared via pinned bpffs.
+#
+# Envoy shares exploit-ops network namespace (network_mode: service:exploit-ops)
+# because BPF redirects to 127.0.0.1:15001 (loopback).
+#
+# Hybrid RBAC scope enforcement (BUG-023-002, DEC-023-002):
+#   tls_inspector extracts SNI → requested_server_name for TLS (wildcards OK)
+#   destination_ip for plain TCP (resolved CIDRs)
+#
+# EN-023-009 + EN-023-010 PROJ-023-exploit-framework
+name: unified-bpf-e2e
+
+services:
+
+  # Tool container: non-privileged, read-only bpffs (DC-2)
+  exploit-ops:
+    build:
+      context: ../../..
+      dockerfile: tests/e2e/proxy_infra/Dockerfile.unified-bpf
+    container_name: unified-bpf-exploit-ops
+    entrypoint: ["sleep", "infinity"]
+    volumes:
+      - /sys/fs/bpf:/sys/fs/bpf:ro
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - bpf-objects:/opt/ebpf:ro
+    networks:
+      unified-bpf-net:
+        ipv4_address: 172.31.2.2
+    sysctls:
+      net.ipv6.conf.all.disable_ipv6: 1
+    security_opt:
+      - no-new-privileges:true
+
+  # Envoy: separate container, shares exploit-ops network namespace.
+  # BPF getsockopt attached to THIS container's cgroup by bpf-init.
+  envoy-unified:
+    image: envoyproxy/envoy:v1.31-latest
+    container_name: unified-bpf-envoy
+    network_mode: "service:exploit-ops"
+    volumes:
+      - ./envoy-unified-bpf-test.yaml:/etc/envoy/envoy.yaml:ro
+    depends_on:
+      exploit-ops:
+        condition: service_started
+    # Envoy needs CAP_NET_ADMIN for SO_MARK=100 (C2 loop prevention).
+    # The official image entrypoint drops to uid 101 via su-exec, losing caps.
+    # ENVOY_UID=0 keeps the process as root to retain NET_ADMIN.
+    environment:
+      ENVOY_UID: "0"
+    cap_add:
+      - NET_ADMIN
+
+  # BPF init sidecar: privileged, loads programs, split-cgroup attachment.
+  # Discovers both container cgroups via Docker socket.
+  # Exits after attachment — DC-2 pattern (capabilities only in init).
+  bpf-init:
+    build:
+      context: ../../..
+      dockerfile: tests/e2e/proxy_infra/Dockerfile.unified-bpf
+    container_name: unified-bpf-init
+    entrypoint: ["/bin/bash", "/entrypoint-bpf-init.sh"]
+    privileged: true
+    volumes:
+      - /sys/fs/bpf:/sys/fs/bpf
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - bpf-objects:/opt/ebpf
+      - ./entrypoint-bpf-init.sh:/entrypoint-bpf-init.sh:ro
+    environment:
+      TOOL_CONTAINER: unified-bpf-exploit-ops
+      ENVOY_CONTAINER: unified-bpf-envoy
+    depends_on:
+      exploit-ops:
+        condition: service_started
+      envoy-unified:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "test -f /sys/fs/bpf/rainbow_connect4 && test -f /sys/fs/bpf/rainbow_sockops && test -f /sys/fs/bpf/rainbow_getsockopt"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+      start_period: 5s
+
+  # Plain TCP target (authorized in scope)
+  tcp-target:
+    image: nginx:1.27-alpine
+    container_name: unified-bpf-tcp-target
+    networks:
+      unified-bpf-net:
+        ipv4_address: 172.31.2.20
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+      - /tmp
+
+  # TLS target with self-signed cert (authorized in scope for SNI matching)
+  tls-target:
+    image: nginx:1.27-alpine
+    container_name: unified-bpf-tls-target
+    networks:
+      unified-bpf-net:
+        ipv4_address: 172.31.2.30
+    volumes:
+      - ./tls-target.conf:/etc/nginx/conf.d/default.conf:ro
+      - tls-certs:/etc/nginx/certs:ro
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+      - /tmp
+    depends_on:
+      tls-cert-gen:
+        condition: service_completed_successfully
+
+  # Generate self-signed TLS cert for tls-target
+  tls-cert-gen:
+    image: alpine/openssl:latest
+    container_name: unified-bpf-tls-cert-gen
+    volumes:
+      - tls-certs:/certs
+    command: >
+      req -x509 -newkey rsa:2048 -keyout /certs/server.key
+      -out /certs/server.crt -days 1 -nodes
+      -subj "/CN=tls-target"
+      -addext "subjectAltName=DNS:tls-target,IP:172.31.2.30"
+
+networks:
+  unified-bpf-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.31.2.0/24
+
+volumes:
+  bpf-objects:
+  tls-certs:
