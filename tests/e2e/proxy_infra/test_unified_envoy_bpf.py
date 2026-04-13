@@ -1010,7 +1010,7 @@ class TestThreeProgramsCgroup:
 class TestTlsSniBpfChain:
     """Scenario: TLS connection from tool container is BPF-intercepted and
     routed through Envoy, with SNI-based scope enforcement via RBAC
-    requested_server_name (BUG-023-002, DEC-023-002).
+    requested_server_name (BUG-023-005, DEC-023-002).
 
     Given the unified Envoy BPF stack is running with tls_inspector + hybrid RBAC
     And tls-target is an authorized TLS endpoint in the scope

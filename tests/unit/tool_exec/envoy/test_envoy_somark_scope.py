@@ -172,7 +172,7 @@ class TestTransparentTcpScopeEnforcement:
     def test_transparent_tcp_denies_out_of_scope(self, generated_config: dict) -> None:
         """Transparent TCP listener uses RBAC to deny out-of-scope destinations.
 
-        BUG-023-002/DEC-023-002: RBAC network filter with ALLOW policy replaces
+        BUG-023-005/DEC-023-002: RBAC network filter with ALLOW policy replaces
         the old server_names filter chain match + deny-all catch-all. Connections
         to destinations NOT in the RBAC policy are denied by RBAC before reaching
         the tcp_proxy filter.
@@ -231,7 +231,7 @@ class TestBothListenersFromSameScope:
     def test_both_listeners_generated_from_same_scope(self, generated_config: dict) -> None:
         """Both egress_proxy and transparent_tcp derive from the same engagement scope.
 
-        BUG-023-002/DEC-023-002: The HTTP forward proxy uses virtual_host domains.
+        BUG-023-005/DEC-023-002: The HTTP forward proxy uses virtual_host domains.
         The transparent TCP listener uses RBAC with hybrid permissions
         (requested_server_name for TLS + destination_ip for plain TCP).
         Both must contain scope-derived entries from the same scope document.

@@ -326,7 +326,7 @@ def _add_transparent_tcp_listener(
 ) -> None:
     """Add a transparent TCP listener with hybrid RBAC scope enforcement.
 
-    EN-023-010 + BUG-023-002: This listener recovers the original destination
+    EN-023-010 + BUG-023-005: This listener recovers the original destination
     from BPF-redirected connections and enforces engagement scope using a
     hybrid RBAC policy that handles both TLS and plain TCP connections.
 

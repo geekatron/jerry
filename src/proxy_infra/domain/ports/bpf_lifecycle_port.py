@@ -42,7 +42,7 @@ class IBpfLifecyclePort(Protocol):
     ) -> None:
         """Load BPF programs and attach to appropriate cgroups.
 
-        BUG-023-001 split-cgroup attachment:
+        BUG-023-004 split-cgroup attachment:
           - connect4 + sockops → tool container cgroup
           - getsockopt → envoy container cgroup (or tool cgroup if sidecar)
 

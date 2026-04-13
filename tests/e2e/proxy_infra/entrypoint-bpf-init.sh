@@ -1,14 +1,14 @@
 #!/bin/bash
 # entrypoint-bpf-init.sh -- Production-aligned BPF init sidecar
 #
-# Split-cgroup attachment (BUG-023-001, DEC-023-001):
+# Split-cgroup attachment (BUG-023-004, DEC-023-001):
 #   connect4 + sockops → tool container cgroup
 #   getsockopt → Envoy container cgroup
 #
 # Discovers cgroups via Docker socket. Loads all 3 BPF programs from
 # compiled .bpf.o files. Maps shared via pinned bpffs.
 #
-# EN-023-009 + EN-023-010 + BUG-023-001 PROJ-023-exploit-framework
+# EN-023-009 + EN-023-010 + BUG-023-004 PROJ-023-exploit-framework
 set -eu
 
 BPF_DIR=/opt/ebpf
@@ -118,7 +118,7 @@ bpftool cgroup detach /sys/fs/cgroup connect4 pinned "${PIN_ROOT}/rainbow_connec
 bpftool cgroup detach /sys/fs/cgroup sock_ops pinned "${PIN_ROOT}/rainbow_sockops" 2>/dev/null || true
 bpftool cgroup detach /sys/fs/cgroup getsockopt pinned "${PIN_ROOT}/rainbow_getsockopt" 2>/dev/null || true
 
-# --- 6. Split-cgroup attachment (BUG-023-001, DEC-023-001) ---
+# --- 6. Split-cgroup attachment (BUG-023-004, DEC-023-001) ---
 # connect4 + sockops → tool cgroup (intercept tool process syscalls)
 echo "[INFO] Attaching connect4 + sockops to tool cgroup"
 bpftool cgroup attach "${TOOL_CGROUP}" connect4 pinned "${PIN_ROOT}/rainbow_connect4"

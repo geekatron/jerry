@@ -7,7 +7,7 @@
 #   tcp-target     -- nginx plain TCP (authorized target)
 #   tls-target     -- nginx TLS with self-signed cert (authorized TLS target)
 #
-# Split-cgroup attachment (BUG-023-001):
+# Split-cgroup attachment (BUG-023-004):
 #   bpf-init discovers BOTH container cgroups via Docker socket, then:
 #     connect4 + sockops → tool container cgroup
 #     getsockopt → Envoy container cgroup
@@ -16,7 +16,7 @@
 # Envoy shares exploit-ops network namespace (network_mode: service:exploit-ops)
 # because BPF redirects to 127.0.0.1:15001 (loopback).
 #
-# Hybrid RBAC scope enforcement (BUG-023-002, DEC-023-002):
+# Hybrid RBAC scope enforcement (BUG-023-005, DEC-023-002):
 #   tls_inspector extracts SNI → requested_server_name for TLS (wildcards OK)
 #   destination_ip for plain TCP (resolved CIDRs)
 #

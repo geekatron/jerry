@@ -141,7 +141,7 @@ class BpfManager:
         """Load all 3 BPF programs and attach to appropriate cgroups.
 
         BPF cgroup programs fire only for processes in the attached cgroup.
-        Split-cgroup attachment (BUG-023-001):
+        Split-cgroup attachment (BUG-023-004):
           - connect4 + sockops: attached to TOOL container cgroup
             (intercept tool process connect() and TCP ESTABLISHED events)
           - getsockopt: attached to ENVOY container cgroup
@@ -392,7 +392,7 @@ class BpfManager:
     ) -> None:
         """Attach a single pinned BPF program to a specific cgroup.
 
-        BUG-023-001: Programs are attached to different cgroups based on
+        BUG-023-004: Programs are attached to different cgroups based on
         where they need to fire. connect4+sockops go to the tool container
         cgroup; getsockopt goes to the Envoy container cgroup.
 
