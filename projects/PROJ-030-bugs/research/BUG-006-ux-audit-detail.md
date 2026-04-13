@@ -142,6 +142,12 @@ Each of the 11 UX sub-skills was audited by an exploration agent that:
 
 ---
 
+## Composition YAML Note
+
+UX sub-skills do **not** have composition YAML files (`*.agent.yaml`). Only eng-team (10 files) and red-team (11 files) use the composition YAML pattern. This is an intentional architectural difference, not a gap in the audit. The UX audit covers governance YAML (11 files), agent .md (11 files), SKILL.md (11 files), templates (12 files), and rules (15 files) — 60 files total.
+
+---
+
 ## Verification
 
 **File count verification:**

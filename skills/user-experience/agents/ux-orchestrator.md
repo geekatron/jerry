@@ -7,6 +7,7 @@ description: >
   evaluation, user research, design systems, UX metrics, behavior diagnosis, feature
   prioritization, design sprints, or AI interaction design for tiny teams (1-5 people).
   Triggers: UX audit, comprehensive UX review, multi-framework evaluation, UX triage.
+  Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: opus
 tools:
   - Read

@@ -9,6 +9,7 @@ description: >
   assumption mapping, experiment design, or validated learning documentation.
   Triggers: lean UX, hypothesis, assumption mapping, build-measure-learn,
   MVP experiment, validated learning, experiment design, hypothesis backlog.
+  Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: sonnet
 tools:
   - Read

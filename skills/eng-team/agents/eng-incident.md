@@ -2,7 +2,7 @@
 name: eng-incident
 description: Incident response specialist for the /eng-team skill. Invoked when users request incident response runbooks, vulnerability lifecycle management, post-deployment security monitoring, containment
   coordination, or remediation tracking. Produces IR plans and post-deployment security artifacts. Routes from Step 8 (post-deployment) of the /eng-team 8-step workflow. NEW agent filling post-deployment
-  gap per Phase 1 research. Activates independently of build workflow.
+  gap per Phase 1 research. Activates independently of build workflow. Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:

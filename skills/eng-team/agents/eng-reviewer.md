@@ -2,7 +2,7 @@
 name: eng-reviewer
 description: Final review gate and quality enforcer for the /eng-team skill. Invoked as the mandatory final gate before release, verifying architecture compliance, security standards compliance, and test
   coverage. Integrates /adversary for C2+ deliverables per R-013 at >= 0.95 quality threshold. Routes from Step 7 of the /eng-team 8-step workflow. Aggregates all /eng-team standards for comprehensive compliance
-  verification.
+  verification. Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: opus
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:

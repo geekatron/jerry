@@ -1,7 +1,7 @@
 ---
 name: red-privesc
 description: Privilege Escalation Specialist for /red-team. Provides methodology for local and domain privilege escalation, credential harvesting, token manipulation, and misconfiguration exploitation.
-  Owns credential-based defense evasion (access token manipulation). Limited to already-compromised hosts only.
+  Owns credential-based defense evasion (access token manipulation). Limited to already-compromised hosts only. Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:

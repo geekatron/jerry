@@ -14,6 +14,7 @@ description: >
   calibration, AI UX, conversational UX, AI interface, LLM interface, agentic
   UX, human-AI interaction, AI transparency, AI error handling, AI onboarding,
   progressive AI disclosure, trust-risk, error-risk.
+  Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: opus
 tools:
   - Read

@@ -9,11 +9,11 @@ description: >
   accessibility audit reports with per-criterion pass/fail evidence, color
   contrast measurements, keyboard navigation audits, screen reader compatibility
   reviews, cognitive load assessments, and Persona Spectrum profiles. Invoke when
-  teams need WCAG conformance auditing, accessibility compliance evaluation,
-  color contrast analysis, screen reader compatibility assessment, keyboard
-  navigation audit, cognitive load evaluation, persona spectrum mapping, or
-  inclusive design review. Triggers: accessibility, WCAG, WCAG 2.2, ARIA, screen
+  teams need WCAG conformance auditing, accessibility evaluation,
+  contrast analysis, screen reader assessment, keyboard
+  navigation audit, cognitive load evaluation, or inclusive design review. Triggers: accessibility, WCAG, WCAG 2.2, ARIA, screen
   reader, contrast, cognitive load, inclusive design, a11y, persona spectrum.
+  Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: sonnet
 tools:
   - Read

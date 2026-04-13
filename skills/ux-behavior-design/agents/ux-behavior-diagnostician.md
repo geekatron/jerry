@@ -13,6 +13,7 @@ description: >
   B=MAP, Fogg model, behavior bottleneck, motivation analysis, ability
   analysis, prompt design, why users don't, user inaction, behavior diagnosis,
   tiny habits, action threshold.
+  Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: sonnet
 tools:
   - Read

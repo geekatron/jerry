@@ -14,6 +14,7 @@ description: >
   build. Triggers: design sprint, GV sprint, rapid prototyping, sprint week,
   map sketch decide test, 4-day sprint, design sprint 2.0, AJ Smart sprint,
   validate prototype, test with users, sprint facilitation.
+  Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: opus
 tools:
   - Read

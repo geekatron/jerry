@@ -1,7 +1,7 @@
 ---
 name: red-persist
 description: Persistence Specialist for /red-team. RoE-GATED -- requires explicit authorization in Rules of Engagement. Provides methodology for backdoor placement, scheduled tasks, service manipulation,
-  and rootkit methodology. Owns persistence-phase defense evasion (indicator removal, timestomping). Operates only on already-compromised hosts within authorized scope.
+  and rootkit methodology. Owns persistence-phase defense evasion (indicator removal, timestomping). Operates only on already-compromised hosts within authorized scope. Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:

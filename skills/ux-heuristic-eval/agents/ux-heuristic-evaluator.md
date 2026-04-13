@@ -8,6 +8,7 @@ description: >
   review against established usability principles. Escalates to Sonnet when
   critical finding count >= 3, Figma benchmark fails, or evaluation spans > 50 screens.
   Triggers: heuristic evaluation, usability audit, Nielsen heuristics, interface review.
+  Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: haiku
 tools:
   - Read

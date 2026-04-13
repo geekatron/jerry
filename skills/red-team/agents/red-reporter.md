@@ -2,7 +2,7 @@
 name: red-reporter
 description: Engagement Reporter & Documentation Specialist for /red-team. Generates comprehensive engagement reports with finding documentation, risk scoring, remediation recommendations, executive summaries,
   Impact risk communication (TA0040 documentation), and scope compliance attestation. Can be invoked without active scope for report generation from existing findings. Read-only access to all engagement
-  data.
+  data. Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: opus
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:

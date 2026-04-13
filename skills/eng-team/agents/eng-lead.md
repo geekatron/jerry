@@ -2,7 +2,7 @@
 name: eng-lead
 description: Engineering lead and standards enforcer for the /eng-team skill. Invoked when users request implementation planning, code standards enforcement, dependency governance, or technical quality
   ownership. Produces implementation plans, standards mappings, and dependency decisions. Routes from Step 2 of the /eng-team 8-step workflow. Integrates MS SDL Requirements phase and NIST SSDF Prepare
-  Organization and Protect Software practices.
+  Organization and Protect Software practices. Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:

@@ -7,13 +7,12 @@ description: >
   (Berger et al., 1993), priority matrix construction (Better vs. |Worse| scatter),
   and feature lifecycle dynamics (Attractive -> Performance -> Must-be). Produces
   feature classification reports, survey questionnaires, CS coefficient analyses,
-  priority matrices, and split classification resolution prompts. Sample size
-  calibrated: 5-8 respondents = MEDIUM confidence directional; 20+ = HIGH
-  statistical (Berger et al., 1993). Invoke when users need feature classification
+  priority matrices, and split classification resolution prompts. Invoke when users need feature classification
   by satisfaction impact, Kano survey design, CS coefficient analysis, feature
   prioritization, or feature lifecycle assessment. Triggers: Kano, must-be,
   attractive, one-dimensional, performance feature, feature classification, feature
   prioritization, delighter, CS coefficient, satisfaction coefficient.
+  Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: sonnet
 tools:
   - Read

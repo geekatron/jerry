@@ -9,6 +9,7 @@ description: >
   metrics definition, GSM process execution, or metric dashboard specification.
   Triggers: HEART metrics, GSM, goals signals metrics, UX metrics, measurement,
   dashboard metrics, baseline measurement, metric threshold.
+  Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: sonnet
 tools:
   - Read

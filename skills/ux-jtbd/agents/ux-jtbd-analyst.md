@@ -6,6 +6,7 @@ description: >
   produces job maps with outcome expectations. Invoke when users need to understand
   user motivations, map jobs to be done, or conduct switch interview analysis.
   Triggers: JTBD, jobs to be done, switch interview, job mapping, user motivation.
+  Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: sonnet
 tools:
   - Read

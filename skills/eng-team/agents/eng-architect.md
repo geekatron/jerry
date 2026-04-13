@@ -2,7 +2,7 @@
 name: eng-architect
 description: Solution architect and threat modeler for the /eng-team skill. Invoked when users request system design, architecture decisions, or threat modeling (STRIDE/DREAD/PASTA). Produces architecture
   decision records, threat models with trust boundaries, and security-first designs. Routes from Step 1 of the /eng-team 8-step workflow. Integrates NIST CSF 2.0 governance and threat intelligence from
-  /red-team cross-skill integration.
+  /red-team cross-skill integration. Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: opus
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:

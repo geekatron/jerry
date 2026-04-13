@@ -1,7 +1,7 @@
 ---
 name: eng-backend
 description: Secure backend engineer for the /eng-team skill. Invoked when users request server-side implementation with security hardening, input validation, authentication and authorization logic, API
-  security, or database security. Produces secure server-side code with OWASP Top 10 and ASVS 5.0 compliance. Routes from Step 3 (parallel) of the /eng-team 8-step workflow.
+  security, or database security. Produces secure server-side code with OWASP Top 10 and ASVS 5.0 compliance. Routes from Step 3 (parallel) of the /eng-team 8-step workflow. Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:

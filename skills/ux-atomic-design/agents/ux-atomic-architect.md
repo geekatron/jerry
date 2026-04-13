@@ -11,6 +11,7 @@ description: >
   reuse auditing. Triggers: atomic design, component taxonomy, design tokens,
   Storybook, atoms molecules organisms, design system, component inventory,
   component library.
+  Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: sonnet
 tools:
   - Read

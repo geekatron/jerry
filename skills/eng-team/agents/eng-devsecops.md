@@ -2,7 +2,7 @@
 name: eng-devsecops
 description: DevSecOps pipeline engineer for the /eng-team skill. Invoked when users request automated security scanning (SAST/DAST), CI/CD security pipeline configuration, secrets scanning, container scanning,
   or dependency analysis. Produces pipeline configurations and scan result reports. Routes from Step 4 of the /eng-team 8-step workflow. NEW agent absorbing automated tooling from eng-security per Phase
-  1 research. Integrates DevSecOps patterns and Google SLSA build automation.
+  1 research. Integrates DevSecOps patterns and Google SLSA build automation. Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:

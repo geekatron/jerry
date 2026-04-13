@@ -1,7 +1,7 @@
 ---
 name: red-infra
 description: Infrastructure & Tooling Specialist for /red-team. Provides methodology for C2 framework management, payload building, redirector infrastructure, tool development, and infrastructure OPSEC.
-  Owns tool-level defense evasion (C2 obfuscation, payload encoding/packing, execution guardrails, sandbox evasion, redirector hardening). NEW agent -- highest-confidence addition per Phase 1 research.
+  Owns tool-level defense evasion (C2 obfuscation, payload encoding/packing, execution guardrails, sandbox evasion, redirector hardening). NEW agent -- highest-confidence addition per Phase 1 research. Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:

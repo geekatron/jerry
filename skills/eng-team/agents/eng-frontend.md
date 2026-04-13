@@ -1,7 +1,7 @@
 ---
 name: eng-frontend
 description: Secure frontend engineer for the /eng-team skill. Invoked when users request client-side implementation with XSS prevention, Content Security Policy configuration, CORS hardening, or output
-  encoding. Produces secure client-side code with OWASP Top 10 and ASVS 5.0 compliance. Routes from Step 3 (parallel) of the /eng-team 8-step workflow.
+  encoding. Produces secure client-side code with OWASP Top 10 and ASVS 5.0 compliance. Routes from Step 3 (parallel) of the /eng-team 8-step workflow. Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:

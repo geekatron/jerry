@@ -1,7 +1,7 @@
 ---
 name: eng-security
 description: 'Security code review specialist for the /eng-team skill. Invoked when users request manual secure code review, security requirements verification, or architecture security review. Produces
-  finding reports with CWE classifications and OWASP ASVS 5.0 verification results. Routes from Step 6 of the /eng-team 8-step workflow. Narrowed scope: automated tooling moved to eng-devsecops.'
+  finding reports with CWE classifications and OWASP ASVS 5.0 verification results. Routes from Step 6 of the /eng-team 8-step workflow. Narrowed scope: automated tooling moved to eng-devsecops. Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).'
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:
