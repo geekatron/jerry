@@ -42,20 +42,20 @@
 
 ## Affected Agents
 
-| Agent | Skill | Output Mechanism | Path Source |
-|-------|-------|-----------------|-------------|
-| adv-executor | adversary | Write tool, P-002 | Caller-provided `{output_path}` |
-| adv-scorer | adversary | Write tool, P-002 | Caller-provided `{output_path}` |
-| adv-selector | adversary | Write tool, P-002 | Caller-provided `{output_path}` |
-| ts-parser | transcript | Write tool, P-002 | Caller-provided `{output_dir}` |
-| ts-extractor | transcript | Write tool, P-002 | Caller-provided `{output_path}` |
-| ts-formatter | transcript | Write tool, P-002 | Caller-provided `{output_directory}` |
-| ts-mindmap-ascii | transcript | Write tool, P-002 | Caller-provided `{output_path}` |
-| ts-mindmap-mermaid | transcript | Write tool, P-002 | Caller-provided `{output_path}` |
-| sb-calibrator | saucer-boy-framework-voice | Write tool, P-002 | No path specification |
-| sb-reviewer | saucer-boy-framework-voice | Write tool, P-002 | No path specification |
-| sb-rewriter | saucer-boy-framework-voice | Write tool, P-002 | No path specification |
-| wt-auditor | worktracker | Write tool, P-002 | `projects/${JERRY_PROJECT}/` in .md body |
+| Agent | Skill | Governance YAML File | Path Source |
+|-------|-------|---------------------|-------------|
+| adv-executor | adversary | `skills/adversary/agents/adv-executor.governance.yaml` | Caller-provided `{output_path}` |
+| adv-scorer | adversary | `skills/adversary/agents/adv-scorer.governance.yaml` | Caller-provided `{output_path}` |
+| adv-selector | adversary | `skills/adversary/agents/adv-selector.governance.yaml` | Caller-provided `{output_path}` |
+| ts-parser | transcript | `skills/transcript/agents/ts-parser.governance.yaml` | Caller-provided `{output_dir}` |
+| ts-extractor | transcript | `skills/transcript/agents/ts-extractor.governance.yaml` | Caller-provided `{output_path}` |
+| ts-formatter | transcript | `skills/transcript/agents/ts-formatter.governance.yaml` | Caller-provided `{output_directory}` |
+| ts-mindmap-ascii | transcript | `skills/transcript/agents/ts-mindmap-ascii.governance.yaml` | Caller-provided `{output_path}` |
+| ts-mindmap-mermaid | transcript | `skills/transcript/agents/ts-mindmap-mermaid.governance.yaml` | Caller-provided `{output_path}` |
+| sb-calibrator | saucer-boy-framework-voice | `skills/saucer-boy-framework-voice/agents/sb-calibrator.governance.yaml` | Caller-provided `{output_path}` |
+| sb-reviewer | saucer-boy-framework-voice | `skills/saucer-boy-framework-voice/agents/sb-reviewer.governance.yaml` | Caller-provided `{output_path}` |
+| sb-rewriter | saucer-boy-framework-voice | `skills/saucer-boy-framework-voice/agents/sb-rewriter.governance.yaml` | Caller-provided `{output_path}` |
+| wt-auditor | worktracker | `skills/worktracker/agents/wt-auditor.governance.yaml` | `projects/${JERRY_PROJECT}/work/` |
 
 ## Root Cause Analysis
 
@@ -68,4 +68,4 @@ These agents were authored before or outside the governance schema conventions e
 - [x] AC-1: All 12 agents have `output:` section in `.governance.yaml` with `required: true/false`, `location:`, and `filename_pattern:` fields
 - [x] AC-2: Agents that receive caller-provided paths declare `location:` using the caller-variable pattern (e.g., `{output_path}`) with documentation that the path is caller-provided
 - [x] AC-3: Agents with no path specification (sb-calibrator, sb-reviewer, sb-rewriter) are evaluated — all 3 confirmed as producing persistent file output (Write tool in frontmatter, P-002 mandates in .md body), set `required: true` with caller-provided `{output_path}`
-- [x] AC-4: All 12 agents pass YAML validation after updates
+- [x] AC-4: All 12 agents pass YAML validation after updates — verified via `check yaml` pre-commit hook (commit `407dbcda`, 2026-04-13) and independent `python3 -c "import yaml; yaml.safe_load(open(f))"` on all 12 files
