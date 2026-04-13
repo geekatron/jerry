@@ -31,6 +31,9 @@
 | BUG-009 | Bug | tspec-analyst has no cross-slice aggregate coverage (#196) | completed | PROJ-030-bugs |
 | BUG-010 | Bug | uc-slicer lacks duplicate slice_id conflict detection (#199) | completed | PROJ-030-bugs |
 | BUG-011 | Bug | cd-generator banned-term false positives under 60 chars (#198) | completed | PROJ-030-bugs |
+| BUG-012 | Bug | pm-pmm agents write output to repo-root docs/pm-pmm/ instead of project-relative paths | pending | PROJ-030-bugs |
+| BUG-013 | Bug | prompt-engineering agents use {PROJECT_ID} instead of ${JERRY_PROJECT} env var | pending | PROJ-030-bugs |
+| BUG-014 | Bug | 12 agents produce file output but lack governance YAML output section | pending | PROJ-030-bugs |
 
 ## Completed
 
