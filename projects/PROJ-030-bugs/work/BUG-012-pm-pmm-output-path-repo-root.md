@@ -9,6 +9,7 @@
 > **Parent:** PROJ-030-bugs
 > **Owner:** unassigned
 > **Found In:** 0.30.0
+> **GitHub Issue:** [#245](https://github.com/geekatron/jerry/issues/245)
 
 ---
 

@@ -224,5 +224,8 @@ Find the next pending item and execute it.
 | [#199](https://github.com/geekatron/jerry/issues/199) | BUG-010 (PROJ-030) | completed |
 | [#200](https://github.com/geekatron/jerry/issues/200) | TASK-013 (PROJ-024) | completed |
 | [#53](https://github.com/geekatron/jerry/issues/53) | TASK-014 (PROJ-024) | completed |
-| [#230](https://github.com/geekatron/jerry/issues/230) | BUG-006 (PROJ-030) | pending |
+| [#230](https://github.com/geekatron/jerry/issues/230) | BUG-006 (PROJ-030) | completed |
+| [#245](https://github.com/geekatron/jerry/issues/245) | BUG-012 (PROJ-030) | completed |
+| [#246](https://github.com/geekatron/jerry/issues/246) | BUG-013 (PROJ-030) | completed |
+| [#247](https://github.com/geekatron/jerry/issues/247) | BUG-014 (PROJ-030) | completed |
 | [#231](https://github.com/geekatron/jerry/issues/231) | Future: deterministic CLI resolver | pending |
