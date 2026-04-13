@@ -85,6 +85,8 @@ This agent follows the Unified Output Path Resolution Protocol (ADR-output-path-
 3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/red-social-{topic-slug}.md`
 4. **Fallback** -- `work/red-social-{topic-slug}.md` with warning
 
+If `{engagement-id}` is not provided by the caller, request it via H-31 before writing output.
+
 All outputs MUST be persisted (P-002). Three levels:
 - **L0 (Executive Summary):** Campaign overview, success metrics (click/credential rates), organizational resilience assessment, and security awareness gap summary for stakeholders.
 - **L1 (Technical Detail):** Complete campaign methodology: pretext documentation, phishing templates (sanitized), delivery method details, credential harvesting approach, campaign metrics, timeline, and ATT&CK technique references.

@@ -78,6 +78,8 @@ This agent follows the Unified Output Path Resolution Protocol (ADR-output-path-
 3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/red-privesc-{topic-slug}.md`
 4. **Fallback** -- `work/red-privesc-{topic-slug}.md` with warning
 
+If `{engagement-id}` is not provided by the caller, request it via H-31 before writing output.
+
 All outputs MUST be persisted (P-002). Three levels:
 - **L0 (Executive Summary):** Privilege escalation success/failure summary, highest privilege achieved, credentials discovered, and risk implications for stakeholders.
 - **L1 (Technical Detail):** Complete escalation methodology: enumeration results, identified vectors, escalation steps, credential inventory (hashes/tokens only -- never plaintext passwords in output), ATT&CK technique references, and tool commands used.

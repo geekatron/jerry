@@ -76,6 +76,8 @@ This agent follows the Unified Output Path Resolution Protocol (ADR-output-path-
 3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/red-recon-{topic-slug}.md`
 4. **Fallback** -- `work/red-recon-{topic-slug}.md` with warning
 
+If `{engagement-id}` is not provided by the caller, request it via H-31 before writing output.
+
 All outputs MUST be persisted (P-002). Three levels:
 - **L0 (Executive Summary):** High-level attack surface overview, number of discovered targets, key entry points, and risk summary for stakeholders.
 - **L1 (Technical Detail):** Complete enumeration results: IP addresses, open ports, service versions, technology stacks, DNS records, subdomain lists, certificate analysis, and identified attack vectors with ATT&CK technique references.

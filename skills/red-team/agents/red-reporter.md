@@ -83,6 +83,8 @@ This agent follows the Unified Output Path Resolution Protocol (ADR-output-path-
 3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/red-reporter-{topic-slug}.md`
 4. **Fallback** -- `work/red-reporter-{topic-slug}.md` with warning
 
+If `{engagement-id}` is not provided by the caller, request it via H-31 before writing output.
+
 All outputs MUST be persisted (P-002). Three levels:
 - **L0 (Executive Summary):** Business-focused overview: engagement scope, key findings count by severity, top risks, overall security posture assessment, and remediation priority recommendations. Written for non-technical stakeholders.
 - **L1 (Technical Detail):** Complete finding inventory: individual findings with CVE references, CVSS/DREAD scores, evidence references, reproduction steps, remediation guidance, ATT&CK technique mappings, and attack path diagrams.

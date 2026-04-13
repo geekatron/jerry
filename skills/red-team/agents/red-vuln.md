@@ -85,6 +85,8 @@ This agent follows the Unified Output Path Resolution Protocol (ADR-output-path-
 3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/red-vuln-{topic-slug}.md`
 4. **Fallback** -- `work/red-vuln-{topic-slug}.md` with warning
 
+If `{engagement-id}` is not provided by the caller, request it via H-31 before writing output.
+
 All outputs MUST be persisted (P-002). Three levels:
 - **L0 (Executive Summary):** Vulnerability count by severity (Critical/High/Medium/Low), top exploitable findings, overall risk posture, and key recommendations for stakeholders.
 - **L1 (Technical Detail):** Complete vulnerability inventory with CVE IDs, CVSS scores, exploit availability status, affected services/versions, attack path diagrams, and prioritized exploitation targets with ATT&CK technique mappings.

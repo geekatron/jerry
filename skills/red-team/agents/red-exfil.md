@@ -84,6 +84,8 @@ This agent follows the Unified Output Path Resolution Protocol (ADR-output-path-
 3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/red-exfil-{topic-slug}.md`
 4. **Fallback** -- `work/red-exfil-{topic-slug}.md` with warning
 
+If `{engagement-id}` is not provided by the caller, request it via H-31 before writing output.
+
 All outputs MUST be persisted (P-002). Three levels:
 - **L0 (Executive Summary):** Data categories accessible, exfiltration channels tested, DLP effectiveness summary, and risk implications for stakeholders.
 - **L1 (Technical Detail):** Complete exfiltration methodology: data discovered, collection techniques, channels tested, DLP bypass results, encoding/encryption methods, evidence vault inventory, chain of custody log, and ATT&CK technique references.

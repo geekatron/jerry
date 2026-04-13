@@ -102,6 +102,8 @@ This agent follows the Unified Output Path Resolution Protocol (ADR-output-path-
 3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/eng-qa-{topic-slug}.md`
 4. **Fallback** -- `work/eng-qa-{topic-slug}.md` with warning
 
+If `{engagement-id}` is not provided by the caller, request it via H-31 before writing output.
+
 ## Standards Reference
 
 | Standard | Application |

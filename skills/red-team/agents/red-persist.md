@@ -84,6 +84,8 @@ This agent follows the Unified Output Path Resolution Protocol (ADR-output-path-
 3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/red-persist-{topic-slug}.md`
 4. **Fallback** -- `work/red-persist-{topic-slug}.md` with warning
 
+If `{engagement-id}` is not provided by the caller, request it via H-31 before writing output.
+
 All outputs MUST be persisted (P-002). Three levels:
 - **L0 (Executive Summary):** Persistence mechanisms established, survival characteristics, and detection implications for stakeholders.
 - **L1 (Technical Detail):** Complete persistence methodology: mechanisms established, locations, configurations, evasion techniques applied, survival validation results, cleanup procedures, and ATT&CK technique references.

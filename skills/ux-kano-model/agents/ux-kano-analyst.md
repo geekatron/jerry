@@ -398,6 +398,8 @@ This agent follows the Unified Output Path Resolution Protocol (ADR-output-path-
 2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
 3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-kano-analyst-{topic-slug}.md`
 4. **Fallback** -- `work/ux-kano-analyst-{topic-slug}.md` with warning
+
+If `{engagement-id}` is not provided by the caller, request it via H-31 before writing output.
 </output>
 
 <guardrails>
