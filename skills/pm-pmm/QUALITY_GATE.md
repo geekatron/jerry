@@ -102,7 +102,7 @@ All 5 agents invoked with smoke test prompts. Each produced structured output.
 | Principle | Status | Evidence |
 |-----------|--------|----------|
 | P-001 (Truth/Accuracy) | COMPLIANT | All claims require evidence or hypothesis marking |
-| P-002 (File Persistence) | COMPLIANT | All agents output to `docs/pm-pmm/{artifact-type}/` |
+| P-002 (File Persistence) | COMPLIANT | All agents output to project-relative paths per ADR-output-path-resolution-001 |
 | P-003 (No Recursive Subagents) | COMPLIANT | No agent has Task tool; hierarchy diagram in SKILL.md |
 | P-011 (Evidence-Based) | COMPLIANT | Confidence levels required; financial data has sensitivity analysis |
 | P-020 (User Authority) | COMPLIANT | Conflict resolution surfaces both sides; user decides |

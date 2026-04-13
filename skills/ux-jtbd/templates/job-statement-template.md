@@ -345,7 +345,7 @@ success_criteria:
   - "Switch forces assessed with Moesta four forces model"
   - "All findings cite evidence sources with tier classification"
 artifacts:
-  - "skills/ux-jtbd/output/{{ENGAGEMENT_ID}}/ux-jtbd-analyst-{{TOPIC_SLUG}}.md"
+  - "projects/${JERRY_PROJECT}/engagements/{{ENGAGEMENT_ID}}/ux-jtbd-analyst-{{TOPIC_SLUG}}.md"
 key_findings:
   - "{{KEY_FINDING_1}}"
   - "{{KEY_FINDING_2}}"

@@ -64,5 +64,9 @@ htmlcov/
 projects/*/.jerry/
 logs/hook-errors.log
 
+# Skill agent output directories (outputs belong in projects/, not skills/)
+# See ADR-EPIC002-001 and BUG-006
+skills/*/output/
+
 # Claude Code worktrees (local-only, should not be committed)
 .claude/worktrees/

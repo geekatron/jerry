@@ -119,6 +119,11 @@ Review/implementation dimensions:
 Output: projects/{{PROJECT_ID}}/{{OUTPUT_PATH}} with {{SEVERITY_OR_FORMAT}} per finding.
 ```
 
+**Output path options (per ADR-output-path-resolution-001):**
+- **Explicit (P1):** `Create file at: projects/PROJ-NNN/path/to/artifact.md` in a P-002 block
+- **Base path (P2):** `Base Path: projects/PROJ-NNN/work/TASK-001/` in an OUTPUT CONTEXT block
+- **Default (P3):** Omit path -- agent uses `projects/${JERRY_PROJECT}/` default
+
 ### Example — Code Review
 
 ```
@@ -168,6 +173,11 @@ Include ps-critic adversarial critique after each phase.
 Quality threshold: >= {{QUALITY_THRESHOLD}} per phase before proceeding to the next.
 Output orchestration plan: projects/{{PROJECT_ID}}/orchestration/{{WORKFLOW_ID}}/ORCHESTRATION_PLAN.md.
 ```
+
+**Output path options (per ADR-output-path-resolution-001):**
+- **Explicit (P1):** `Create file at: projects/PROJ-NNN/path/to/artifact.md` in a P-002 block
+- **Base path (P2):** `Base Path: projects/PROJ-NNN/work/TASK-001/` in an OUTPUT CONTEXT block
+- **Default (P3):** Omit path -- agent uses `projects/${JERRY_PROJECT}/` default
 
 ### Example
 

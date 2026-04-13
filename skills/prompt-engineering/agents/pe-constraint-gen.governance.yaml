@@ -46,7 +46,8 @@ constitution:
   - 'P-004: Source Attribution (Medium) - Generated constraints MUST cite source principle'
 output:
   required: true
-  location: projects/{PROJECT_ID}/constraints/{slug}.md
+  location: "projects/${JERRY_PROJECT}/constraints/{slug}.md"
+  filename_pattern: "pe-constraint-gen-{slug}.md"
   levels:
   - L1
   # L0/L2 excluded: constraint output is inherently technical detail (L1 content); an executive summary

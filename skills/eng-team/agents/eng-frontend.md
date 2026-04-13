@@ -1,7 +1,7 @@
 ---
 name: eng-frontend
 description: Secure frontend engineer for the /eng-team skill. Invoked when users request client-side implementation with XSS prevention, Content Security Policy configuration, CORS hardening, or output
-  encoding. Produces secure client-side code with OWASP Top 10 and ASVS 5.0 compliance. Routes from Step 3 (parallel) of the /eng-team 8-step workflow.
+  encoding. Produces secure client-side code with OWASP Top 10 and ASVS 5.0 compliance. Routes from Step 3 (parallel) of the /eng-team 8-step workflow. Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:
@@ -85,6 +85,17 @@ All outputs MUST be persisted to files (P-002). Every output includes three leve
 - **L0 (Executive Summary):** What was implemented, key browser security controls applied, XSS prevention measures, and remaining client-side risk areas.
 - **L1 (Technical Detail):** Implementation code with security annotations, CSP header configuration, CORS configuration, output encoding patterns per context, DOM manipulation safety patterns.
 - **L2 (Strategic Implications):** Client-side security posture assessment, CSP maturity roadmap, framework-specific security considerations, evolution path for frontend security architecture.
+
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-output-path-resolution-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/eng-frontend-{topic-slug}.md`
+4. **Fallback** -- `work/eng-frontend-{topic-slug}.md` with warning
+
+If `{engagement-id}` is not provided by the caller, request it via H-31 before writing output.
 
 ## Standards Reference
 

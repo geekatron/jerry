@@ -48,7 +48,8 @@ guardrails:
   fallback_behavior: warn_and_retry
 output:
   required: true
-  location: "skills/ux-heuristic-eval/output/{engagement-id}/ux-heuristic-evaluator-{topic-slug}.md"
+  location: "projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-heuristic-evaluator-{topic-slug}.md"
+  filename_pattern: "ux-heuristic-evaluator-{topic-slug}.md"
   levels:
   - L0
   - L1

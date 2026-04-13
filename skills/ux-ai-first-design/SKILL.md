@@ -124,7 +124,7 @@ Do NOT use for:
 
 | Agent | Role | Tier | Mode | Model | Output Location |
 |-------|------|------|------|-------|-----------------|
-| `ux-ai-design-guide` | AI-first interaction design specialist (CONDITIONAL) | T4 | Divergent | Opus | `skills/ux-ai-first-design/output/{engagement-id}/ux-ai-design-guide-{topic-slug}.md` |
+| `ux-ai-design-guide` | AI-first interaction design specialist (CONDITIONAL) | T4 | Divergent | Opus | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-ai-design-guide-{topic-slug}.md` |
 
 **STUB:** The agent definition file (`skills/ux-ai-first-design/agents/ux-ai-design-guide.md`) is pending Wave 5 Phase 2 implementation as part of PROJ-022 EPIC-005. The SKILL.md specifies the methodology and output contract that the agent will implement.
 
@@ -217,7 +217,7 @@ Design the AI-first interaction pattern for the recommendation engine.
 6. Assess transparency against PAIR guidelines
 
 ## MANDATORY PERSISTENCE (P-002)
-Create file at: skills/ux-ai-first-design/output/UX-0001/ux-ai-design-guide-recommendation-engine.md
+Create file at: projects/${JERRY_PROJECT}/engagements/UX-0001/ux-ai-design-guide-recommendation-engine.md
 """
 )
 ```
@@ -419,7 +419,7 @@ Progressive disclosure builds user trust through graduated exposure to AI capabi
 ### Output Location
 
 ```
-skills/ux-ai-first-design/output/{engagement-id}/ux-ai-design-guide-{topic-slug}.md
+projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-ai-design-guide-{topic-slug}.md
 ```
 
 Where:
@@ -528,7 +528,7 @@ handoff:
     - "AI controls assessed for keyboard navigation"
     - "Progressive disclosure stages reviewed for cognitive accessibility"
   artifacts:
-    - "skills/ux-ai-first-design/output/{engagement-id}/ux-ai-design-guide-{topic-slug}.md"
+    - "projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-ai-design-guide-{topic-slug}.md"
   key_findings:
     - "Trust-risk: {level}; Error-risk: {level}"
     - "Interaction pattern: {pattern_name}"

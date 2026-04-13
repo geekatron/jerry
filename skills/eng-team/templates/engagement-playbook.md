@@ -186,7 +186,7 @@ This playbook codifies the /eng-team's 8-step sequential phase-gate workflow int
 3. [ ] Determine criticality level (C1-C4) per quality-enforcement.md
 4. [ ] Select applicable compliance frameworks
 5. [ ] Configure rule set parameters (R-011)
-6. [ ] Create output directory: `skills/eng-team/output/{engagement-id}/`
+6. [ ] Output will be written to `projects/${JERRY_PROJECT}/engagements/{engagement-id}/` per ADR-output-path-resolution-001
 7. [ ] Begin with Step 1 (eng-architect)
 
 ### Engagement ID Format

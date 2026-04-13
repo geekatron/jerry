@@ -2,7 +2,7 @@
 name: eng-lead
 description: Engineering lead and standards enforcer for the /eng-team skill. Invoked when users request implementation planning, code standards enforcement, dependency governance, or technical quality
   ownership. Produces implementation plans, standards mappings, and dependency decisions. Routes from Step 2 of the /eng-team 8-step workflow. Integrates MS SDL Requirements phase and NIST SSDF Prepare
-  Organization and Protect Software practices.
+  Organization and Protect Software practices. Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:
@@ -69,6 +69,17 @@ All outputs MUST be persisted to files (P-002). Every output includes three leve
 - **L0 (Executive Summary):** Implementation timeline, key standards decisions, dependency risk summary, and team readiness assessment.
 - **L1 (Technical Detail):** Complete implementation plan with task breakdown, coding standards with examples, dependency analysis with CVE references, linting/formatting configuration, PR review checklists.
 - **L2 (Strategic Implications):** SAMM maturity trajectory, technical debt risk from standards choices, long-term maintainability considerations, dependency strategy evolution.
+
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-output-path-resolution-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/eng-lead-{topic-slug}.md`
+4. **Fallback** -- `work/eng-lead-{topic-slug}.md` with warning
+
+If `{engagement-id}` is not provided by the caller, request it via H-31 before writing output.
 
 ## Standards Reference
 

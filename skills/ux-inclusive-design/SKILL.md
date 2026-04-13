@@ -123,7 +123,7 @@ Do NOT use for:
 
 | Agent | Role | Tier | Mode | Model | Output Location |
 |-------|------|------|------|-------|-----------------|
-| `ux-inclusive-evaluator` | Inclusive design and WCAG 2.2 accessibility auditor | T4 | Systematic | Sonnet | `skills/ux-inclusive-design/output/{engagement-id}/ux-inclusive-evaluator-{topic-slug}.md` |
+| `ux-inclusive-evaluator` | Inclusive design and WCAG 2.2 accessibility auditor | T4 | Systematic | Sonnet | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-inclusive-evaluator-{topic-slug}.md` |
 
 **STUB:** The agent definition file (`skills/ux-inclusive-design/agents/ux-inclusive-evaluator.md`) is planned for creation during Wave 3 implementation of PROJ-022 EPIC-004. The SKILL.md specifies the methodology and output contract that the agent will implement. Agent definition file and governance YAML will contain frontmatter, identity, purpose, guardrails, and full body sections (`<input>`, `<capabilities>`, `<methodology>`, `<output>`).
 
@@ -212,7 +212,7 @@ Perform an inclusive design evaluation of the checkout flow.
 6. Provide remediation recommendations with WCAG success criteria references
 
 ## MANDATORY PERSISTENCE (P-002)
-Create file at: skills/ux-inclusive-design/output/UX-0001/ux-inclusive-evaluator-checkout-flow.md
+Create file at: projects/${JERRY_PROJECT}/engagements/UX-0001/ux-inclusive-evaluator-checkout-flow.md
 """
 )
 ```
@@ -443,7 +443,7 @@ Protocol: call `mcp__context7__resolve-library-id` with the framework name, then
 ### Output Location
 
 ```
-skills/ux-inclusive-design/output/{engagement-id}/ux-inclusive-evaluator-{topic-slug}.md
+projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-inclusive-evaluator-{topic-slug}.md
 ```
 
 Where:

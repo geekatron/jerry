@@ -6,6 +6,7 @@ description: >
   produces job maps with outcome expectations. Invoke when users need to understand
   user motivations, map jobs to be done, or conduct switch interview analysis.
   Triggers: JTBD, jobs to be done, switch interview, job mapping, user motivation.
+  Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: sonnet
 tools:
   - Read
@@ -86,7 +87,7 @@ When invoked by the ux-orchestrator, expect a structured context block:
 **On receive processing (AD-M-007):**
 1. **Validate engagement ID present** -- confirm `UX-{NNNN}` format in the context block; halt if missing
 2. **Validate product context present** -- confirm Product and Target Users fields are non-empty; escalate if absent
-3. **Load prior JTBD findings if exists** -- check for prior output at `skills/ux-jtbd/output/{engagement-id}/` and incorporate as baseline context if available
+3. **Load prior JTBD findings if exists** -- check for prior output at `projects/${JERRY_PROJECT}/engagements/{engagement-id}/` and incorporate as baseline context if available
 
 </input>
 
@@ -312,7 +313,7 @@ Before producing the final output artifact, verify:
 
 **Output location:**
 ```
-skills/ux-jtbd/output/{engagement-id}/ux-jtbd-analyst-{topic-slug}.md
+projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-jtbd-analyst-{topic-slug}.md
 ```
 Where `{engagement-id}` follows the `UX-{NNNN}` pattern from the ux-orchestrator and `{topic-slug}` is a kebab-case descriptor of the analysis topic.
 
@@ -346,7 +347,7 @@ Where `{engagement-id}` follows the `UX-{NNNN}` pattern from the ux-orchestrator
 ```yaml
 from_agent: ux-jtbd-analyst
 engagement_id: "{UX-NNNN}"
-output_artifact: "skills/ux-jtbd/output/{engagement-id}/ux-jtbd-analyst-{topic-slug}.md"
+output_artifact: "projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-jtbd-analyst-{topic-slug}.md"
 confidence: MEDIUM  # default for secondary research synthesis
 key_findings:
   - "{top functional job statement}"
@@ -357,6 +358,17 @@ job_count: {number of jobs identified}
 top_opportunity_score: {highest ODI score}
 blockers: []  # or list of blocking issues encountered
 ```
+
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-output-path-resolution-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-jtbd-analyst-{topic-slug}.md`
+4. **Fallback** -- `work/ux-jtbd-analyst-{topic-slug}.md` with warning
+
+If `{engagement-id}` is not provided by the caller, request it via H-31 before writing output.
 
 </output>
 
@@ -370,7 +382,7 @@ blockers: []  # or list of blocking issues encountered
 | P-020 | User decides which job statements to adopt, which to discard, and whether to validate MEDIUM-confidence outputs. |
 | P-022 | AI-synthesized job statements transparently classified as MEDIUM confidence. Synthesis Judgments Summary enumerates all AI judgment calls. |
 | P-001 | All job statements cite secondary research sources (product reviews, competitor analysis, domain literature). No unsourced claims. |
-| P-002 | All outputs persisted to `skills/ux-jtbd/output/{engagement-id}/`. No findings remain only in transient context. |
+| P-002 | All outputs persisted to `projects/${JERRY_PROJECT}/engagements/{engagement-id}/`. No findings remain only in transient context. |
 
 ## Forbidden Actions
 

@@ -1,7 +1,7 @@
 ---
 name: red-lead
 description: Engagement Lead & Scope Authority for /red-team. Creates and manages scope documents, Rules of Engagement, and authorization verification for all penetration testing and red team engagements.
-  MANDATORY FIRST agent -- no other agent operates without an active scope. Covers methodology selection, team coordination, operational OPSEC enforcement, findings QA, and methodology adaptation.
+  MANDATORY FIRST agent -- no other agent operates without an active scope. Covers methodology selection, team coordination, operational OPSEC enforcement, findings QA, and methodology adaptation. Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: opus
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:
@@ -89,6 +89,17 @@ scope:
 **Circuit Breaker:** red-lead IS the circuit breaker authority. When other agents flag SCOPE_REVIEW_REQUIRED, the orchestrator routes to red-lead for assessment.
 
 ## Output Requirements
+
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-output-path-resolution-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/red-lead-{topic-slug}.md`
+4. **Fallback** -- `work/red-lead-{topic-slug}.md` with warning
+
+If `{engagement-id}` is not provided by the caller, request it via H-31 before writing output.
 
 All outputs MUST be persisted (P-002). Three levels:
 - **L0 (Executive Summary):** Engagement overview, scope boundaries in plain language, authorized activities, timeline, and risk summary for stakeholders.

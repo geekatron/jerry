@@ -36,6 +36,12 @@ constitution:
   - 'P-004: Explicit Provenance — Evidence cited for each trait'
   - 'P-022: No Deception — Scores not inflated, quality issues exposed'
   - 'P-020: User Authority (Hard)'
+output:
+  required: true
+  location: '{output_path}'
+  filename_pattern: sb-calibrator-{text-type}-{topic-slug}.md
+  levels:
+  - L1
 capabilities:
   forbidden_actions:
   - Spawn recursive subagents (P-003)

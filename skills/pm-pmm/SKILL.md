@@ -486,7 +486,7 @@ All agents adhere to the **Jerry Constitution v1.0**:
 | Principle | Requirement |
 |-----------|-------------|
 | P-001: Truth and Accuracy | Framework application produces canonical structures. Claims based on evidence. |
-| P-002: File Persistence | All outputs persisted to `docs/pm-pmm/` filesystem. |
+| P-002: File Persistence | All outputs persisted to project-relative paths per ADR-output-path-resolution-001. |
 | P-003: No Recursive Subagents | All agents are workers. No agent has the Task tool. Main context orchestrates. |
 | P-011: Evidence-Based | All claims tied to data, citations, or stated as hypotheses with confidence levels. |
 | P-020: User Authority | Conflicting recommendations surface both sides. User decides. Never override. |

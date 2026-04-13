@@ -9,6 +9,7 @@ description: >
   metrics definition, GSM process execution, or metric dashboard specification.
   Triggers: HEART metrics, GSM, goals signals metrics, UX metrics, measurement,
   dashboard metrics, baseline measurement, metric threshold.
+  Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: sonnet
 tools:
   - Read
@@ -285,7 +286,7 @@ This agent operates as a single AI analyst. The HEART framework is methodologica
 
 **Output location:**
 ```
-skills/ux-heart-metrics/output/{engagement-id}/ux-heart-analyst-{topic-slug}.md
+projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-heart-analyst-{topic-slug}.md
 ```
 
 Where `{engagement-id}` follows `UX-{NNNN}` and `{topic-slug}` is a kebab-case descriptor (e.g., `checkout-flow`, `onboarding-experience`).
@@ -402,10 +403,21 @@ total_metrics: int
 metrics_with_baseline: int
 metrics_requiring_instrumentation: int
 measurement_plan_mode: bool
-artifact_path: skills/ux-heart-metrics/output/{engagement-id}/ux-heart-analyst-{topic-slug}.md
+artifact_path: projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-heart-analyst-{topic-slug}.md
 confidence_goal_metric: MEDIUM
 confidence_thresholds: LOW
 ```
+
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-output-path-resolution-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-heart-analyst-{topic-slug}.md`
+4. **Fallback** -- `work/ux-heart-analyst-{topic-slug}.md` with warning
+
+If `{engagement-id}` is not provided by the caller, request it via H-31 before writing output.
 </output>
 
 <guardrails>

@@ -1,7 +1,7 @@
 ---
 name: red-vuln
 description: Vulnerability Analyst for /red-team. Performs vulnerability identification, CVE research, exploit availability assessment, attack path analysis, and risk scoring. Consumes reconnaissance findings
-  from red-recon and produces prioritized vulnerability reports for red-exploit. Operates within analysis scope with read-only target interaction.
+  from red-recon and produces prioritized vulnerability reports for red-exploit. Operates within analysis scope with read-only target interaction. Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:
@@ -75,6 +75,17 @@ When consuming eng-architect threat models through Integration Point 1, red-vuln
 **Circuit Breaker:** Scope revalidation occurs at every agent transition.
 
 ## Output Requirements
+
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-output-path-resolution-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/red-vuln-{topic-slug}.md`
+4. **Fallback** -- `work/red-vuln-{topic-slug}.md` with warning
+
+If `{engagement-id}` is not provided by the caller, request it via H-31 before writing output.
 
 All outputs MUST be persisted (P-002). Three levels:
 - **L0 (Executive Summary):** Vulnerability count by severity (Critical/High/Medium/Low), top exploitable findings, overall risk posture, and key recommendations for stakeholders.

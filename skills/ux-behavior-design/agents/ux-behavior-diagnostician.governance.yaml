@@ -50,7 +50,8 @@ guardrails:
   fallback_behavior: warn_and_retry
 output:
   required: true
-  location: "skills/ux-behavior-design/output/{engagement-id}/ux-behavior-diagnostician-{topic-slug}.md"
+  location: "projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-behavior-diagnostician-{topic-slug}.md"
+  filename_pattern: "ux-behavior-diagnostician-{topic-slug}.md"
   template: "skills/ux-behavior-design/templates/bmap-diagnosis-template.md"
   levels:
   - L0

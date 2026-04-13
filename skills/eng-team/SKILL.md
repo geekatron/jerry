@@ -116,16 +116,16 @@ Activate when:
 
 | Agent | Role | Output Location |
 |-------|------|-----------------|
-| `eng-architect` | Solution Architect and Threat Modeler | `skills/eng-team/output/{engagement-id}/eng-architect-{topic-slug}.md` |
-| `eng-lead` | Engineering Lead and Standards Enforcer | `skills/eng-team/output/{engagement-id}/eng-lead-{topic-slug}.md` |
-| `eng-backend` | Secure Backend Engineer | `skills/eng-team/output/{engagement-id}/eng-backend-{topic-slug}.md` |
-| `eng-frontend` | Secure Frontend Engineer | `skills/eng-team/output/{engagement-id}/eng-frontend-{topic-slug}.md` |
-| `eng-infra` | Secure Infrastructure Engineer | `skills/eng-team/output/{engagement-id}/eng-infra-{topic-slug}.md` |
-| `eng-devsecops` | DevSecOps Pipeline Engineer | `skills/eng-team/output/{engagement-id}/eng-devsecops-{topic-slug}.md` |
-| `eng-qa` | Security QA Engineer | `skills/eng-team/output/{engagement-id}/eng-qa-{topic-slug}.md` |
-| `eng-security` | Security Code Review Specialist | `skills/eng-team/output/{engagement-id}/eng-security-{topic-slug}.md` |
-| `eng-reviewer` | Final Review Gate and Quality Enforcer | `skills/eng-team/output/{engagement-id}/eng-reviewer-{topic-slug}.md` |
-| `eng-incident` | Incident Response Specialist | `skills/eng-team/output/{engagement-id}/eng-incident-{topic-slug}.md` |
+| `eng-architect` | Solution Architect and Threat Modeler | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/eng-architect-{topic-slug}.md` |
+| `eng-lead` | Engineering Lead and Standards Enforcer | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/eng-lead-{topic-slug}.md` |
+| `eng-backend` | Secure Backend Engineer | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/eng-backend-{topic-slug}.md` |
+| `eng-frontend` | Secure Frontend Engineer | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/eng-frontend-{topic-slug}.md` |
+| `eng-infra` | Secure Infrastructure Engineer | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/eng-infra-{topic-slug}.md` |
+| `eng-devsecops` | DevSecOps Pipeline Engineer | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/eng-devsecops-{topic-slug}.md` |
+| `eng-qa` | Security QA Engineer | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/eng-qa-{topic-slug}.md` |
+| `eng-security` | Security Code Review Specialist | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/eng-security-{topic-slug}.md` |
+| `eng-reviewer` | Final Review Gate and Quality Enforcer | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/eng-reviewer-{topic-slug}.md` |
+| `eng-incident` | Incident Response Specialist | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/eng-incident-{topic-slug}.md` |
 
 All agents produce output at three levels:
 - **L0 (Executive Summary):** Accessible summary for non-technical stakeholders. Answers "What does this mean for the project?"
@@ -258,7 +258,7 @@ All agents MUST persist their output to files. This ensures:
 ### Output Structure
 
 ```
-skills/eng-team/output/
+projects/${JERRY_PROJECT}/engagements/
 └── {engagement-id}/
     ├── eng-architect-{topic-slug}.md
     ├── eng-lead-{topic-slug}.md

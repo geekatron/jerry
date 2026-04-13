@@ -25,6 +25,7 @@ identity:
     - "7 Cs quality framework application to BDD test specifications (C1 Coverage as primary, C2-C7 as supporting quality indicators)"
     - "Use case flow-to-scenario traceability analysis (cross-referencing scenario Given/When/Then clauses against source basic_flow, alternative_flows, and extensions)"
     - "Test coverage gap identification and prioritized remediation recommendation"
+    - "Cross-slice aggregate coverage analysis (union coverage computation, cross-slice gap detection for extension branches spanning multiple UC 2.0 slices)"
   cognitive_mode: "convergent"
 
 persona:
@@ -45,8 +46,8 @@ capabilities:
 
 guardrails:
   input_validation:
-    - "Feature file must exist at expected path and contain Gherkin Scenario blocks"
-    - "Feature file YAML frontmatter must contain source_use_case field (cross-reference prerequisite: used to locate and validate source artifact when artifact_path is not explicitly provided)"
+    - "Feature file(s) must exist at expected path(s) and contain Gherkin Scenario blocks; accepts one file for single-file analysis or multiple files sharing the same source_use_case for aggregate cross-slice analysis"
+    - "Feature file YAML frontmatter must contain source_use_case field (cross-reference prerequisite: used to locate and validate source artifact when artifact_path is not explicitly provided; also used to group multiple Feature files for aggregate coverage mode)"
     - "Source use case artifact must exist; load the full artifact to verify $.work_type = USE_CASE in YAML frontmatter (cross-reference prerequisite: full UC file must be loaded before coverage baseline can be established)"
     - "Source use case must have $.basic_flow (minimum for coverage baseline); reject if absent with actionable error"
     - "Source use case must have $.extensions (required for coverage formula denominator to include error scenario coverage); warn if absent"
@@ -85,15 +86,18 @@ validation:
     - "verify_every_basic_flow_step_is_accounted_for"
     - "verify_every_extension_is_accounted_for"
     - "verify_gaps_cite_specific_flow_elements"
+    - "verify_aggregate_coverage_report_created_when_multiple_slices_provided"
+    - "verify_union_coverage_percentage_is_computed_in_aggregate_mode"
+    - "verify_cross_slice_gaps_cite_flow_element_and_slice_ids"
 
 session_context:
   on_receive:
-    - "Load Feature file and source use case artifact"
+    - "Load Feature file(s) and source use case artifact; when multiple Feature files share the same source_use_case, activate aggregate cross-slice coverage mode"
     - "Count total mappable flow elements: basic_flow steps + alternative_flows + extensions"
-    - "Parse Feature file scenario list"
+    - "Parse Feature file scenario list (per-slice and union when in aggregate mode)"
   on_send:
-    - "Report coverage percentage and gap count"
-    - "List key findings: mapped flows, unmapped flows, highest-priority gaps"
+    - "Report coverage percentage and gap count (per-slice and aggregate union when in aggregate mode)"
+    - "List key findings: mapped flows, unmapped flows, highest-priority gaps, cross-slice gaps (aggregate mode)"
     - "Flag if coverage is below acceptable threshold for the goal level"
 
 enforcement:

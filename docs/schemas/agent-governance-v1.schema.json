@@ -132,6 +132,10 @@
           "type": "string",
           "description": "Artifact file path template with variables. (AR-010)"
         },
+        "filename_pattern": {
+          "type": "string",
+          "description": "Filename template for Priority 2 base-path resolution (ADR-EPIC002-001). Interpolated with agent variables when caller provides OUTPUT CONTEXT.base_path."
+        },
         "template": {
           "type": "string",
           "description": "Output template reference."

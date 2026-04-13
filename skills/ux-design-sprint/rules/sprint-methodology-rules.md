@@ -34,7 +34,7 @@ Wave 5 (Process Intensives) requires Wave 4 completion before standard deploymen
 
 | Entry Condition | Evidence Required |
 |-----------------|-------------------|
-| **Standard entry** | Wave 4 completed: 30+ users for Kano survey OR 1 B=MAP bottleneck diagnosed. Check for `WAVE-4-SIGNOFF.md` artifact in `skills/user-experience/output/`. |
+| **Standard entry** | Wave 4 completed: 30+ users for Kano survey OR 1 B=MAP bottleneck diagnosed. Check for `WAVE-4-SIGNOFF.md` artifact in `projects/${JERRY_PROJECT}/engagements/`. |
 | **Bypass condition** | Team at product inception with existing user research -- minimum 5 user interviews OR 30+ survey responses documented in engagement context. |
 
 If neither condition is met, ask the orchestrator for clarification per H-31 before proceeding.

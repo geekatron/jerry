@@ -105,7 +105,7 @@
 
 **Below threshold:** Deliverable REJECTED; revision required per H-13.
 
-**Scoring mechanism:** S-014 (LLM-as-Judge) with dimension-level rubrics (ADR-EPIC002-001)
+**Scoring mechanism:** S-014 (LLM-as-Judge) with dimension-level rubrics (ADR-EPIC002-001; `projects/PROJ-001-oss-release/decisions/ADR-EPIC002-001-strategy-selection.md`)
 
 | Dimension | Weight |
 |-----------|--------|
@@ -272,7 +272,7 @@ Temporary ceiling expansion is permitted under controlled conditions:
 
 ## Strategy Catalog
 
-**Selected** (10 active strategies, ranked by composite score from ADR-EPIC002-001):
+**Selected** (10 active strategies, ranked by composite score from ADR-EPIC002-001; `projects/PROJ-001-oss-release/decisions/ADR-EPIC002-001-strategy-selection.md`):
 
 | ID | Strategy | Score | Family |
 |----|----------|-------|--------|
@@ -287,7 +287,7 @@ Temporary ceiling expansion is permitted under controlled conditions:
 | S-011 | Chain-of-Verification | 3.75 | Structured Decomposition |
 | S-001 | Red Team Analysis | 3.35 | Role-Based Adversarialism |
 
-**Excluded** (reconsideration conditions in ADR-EPIC002-001):
+**Excluded** (reconsideration conditions in ADR-EPIC002-001; `projects/PROJ-001-oss-release/decisions/ADR-EPIC002-001-strategy-selection.md`):
 
 | ID | Strategy | Exclusion Reason |
 |----|----------|------------------|
@@ -345,8 +345,8 @@ Use this table to determine which skill or agent handles a given quality request
 
 ## References
 
-| Source | Content |
-|--------|---------|
-| ADR-EPIC002-001 | Strategy selection, composite scores, exclusion rationale |
-| ADR-EPIC002-002 | 5-layer enforcement architecture, token budgets |
-| EPIC-002 Final Synthesis | Consolidated design, auto-escalation rules, per-criticality sets |
+| Source | Content | Location |
+|--------|---------|----------|
+| ADR-EPIC002-001 | Strategy selection, composite scores, exclusion rationale | `projects/PROJ-001-oss-release/decisions/ADR-EPIC002-001-strategy-selection.md` |
+| ADR-EPIC002-002 | 5-layer enforcement architecture, token budgets | `projects/PROJ-001-oss-release/decisions/ADR-EPIC002-002-enforcement-architecture.md` |
+| EPIC-002 Final Synthesis | Consolidated design, auto-escalation rules, per-criticality sets | — |

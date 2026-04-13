@@ -37,6 +37,12 @@ constitution:
   - 'P-004: Explicit Provenance — Evidence cited for each test'
   - 'P-022: No Deception — Boundary violations honestly reported'
   - 'P-020: User Authority (Hard)'
+output:
+  required: true
+  location: '{output_path}'
+  filename_pattern: sb-reviewer-{text-type}-{topic-slug}.md
+  levels:
+  - L1
 capabilities:
   forbidden_actions:
   - Spawn recursive subagents (P-003)

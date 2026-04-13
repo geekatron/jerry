@@ -118,9 +118,9 @@ If a writer agent produces the wrong document type:
 | Agent | Role | Cognitive Mode | Model | Tier | Output Location |
 |-------|------|---------------|-------|------|----------------|
 | `diataxis-tutorial` | Tutorial Writer (learning-oriented) | systematic | sonnet | T2 | `projects/${JERRY_PROJECT}/docs/tutorials/` |
-| `diataxis-howto` | How-to Guide Writer (goal-oriented) | systematic | sonnet | T2 | `projects/${JERRY_PROJECT}/docs/howto/` |
+| `diataxis-howto` | How-to Guide Writer (goal-oriented) | systematic | sonnet | T2 | `projects/${JERRY_PROJECT}/docs/how-to/` |
 | `diataxis-reference` | Reference Writer (information-oriented) | systematic | sonnet | T2 | `projects/${JERRY_PROJECT}/docs/reference/` |
-| `diataxis-explanation` | Explanation Writer (understanding-oriented) | divergent | opus | T2 | `projects/${JERRY_PROJECT}/docs/explanations/` |
+| `diataxis-explanation` | Explanation Writer (understanding-oriented) | divergent | opus | T2 | `projects/${JERRY_PROJECT}/docs/explanation/` |
 | `diataxis-classifier` | Documentation Classifier | convergent | haiku | T1 | Inline result (no file output) |
 | `diataxis-auditor` | Documentation Auditor | systematic | sonnet | T1 | Inline result; orchestrator persists to `projects/${JERRY_PROJECT}/audits/` |
 
@@ -222,9 +222,9 @@ All agents comply with:
 | Need | Agent | Example | Output Location |
 |------|-------|---------| ------|
 | Write a tutorial | `diataxis-tutorial` | "Write a tutorial for setting up X" | `projects/${JERRY_PROJECT}/docs/tutorials/` |
-| Write a how-to guide | `diataxis-howto` | "Write a how-to guide for deploying Y" | `projects/${JERRY_PROJECT}/docs/howto/` |
+| Write a how-to guide | `diataxis-howto` | "Write a how-to guide for deploying Y" | `projects/${JERRY_PROJECT}/docs/how-to/` |
 | Write reference docs | `diataxis-reference` | "Document the API for Z" | `projects/${JERRY_PROJECT}/docs/reference/` |
-| Write an explanation | `diataxis-explanation` | "Explain why we chose architecture A" | `projects/${JERRY_PROJECT}/docs/explanations/` |
+| Write an explanation | `diataxis-explanation` | "Explain why we chose architecture A" | `projects/${JERRY_PROJECT}/docs/explanation/` |
 | Classify a doc request | `diataxis-classifier` | "What type of doc should 'Getting Started' be?" | Inline result (no file output) |
 | Audit existing docs | `diataxis-auditor` | "Audit these files for quadrant mixing" | `projects/${JERRY_PROJECT}/audits/` |
 

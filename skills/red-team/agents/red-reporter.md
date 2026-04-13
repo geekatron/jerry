@@ -2,7 +2,7 @@
 name: red-reporter
 description: Engagement Reporter & Documentation Specialist for /red-team. Generates comprehensive engagement reports with finding documentation, risk scoring, remediation recommendations, executive summaries,
   Impact risk communication (TA0040 documentation), and scope compliance attestation. Can be invoked without active scope for report generation from existing findings. Read-only access to all engagement
-  data.
+  data. Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: opus
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:
@@ -73,6 +73,17 @@ This agent provides METHODOLOGY GUIDANCE for engagement reporting, not autonomou
 **Circuit Breaker:** Scope revalidation occurs at every agent transition (waived for report-only invocation from existing findings).
 
 ## Output Requirements
+
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-output-path-resolution-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/red-reporter-{topic-slug}.md`
+4. **Fallback** -- `work/red-reporter-{topic-slug}.md` with warning
+
+If `{engagement-id}` is not provided by the caller, request it via H-31 before writing output.
 
 All outputs MUST be persisted (P-002). Three levels:
 - **L0 (Executive Summary):** Business-focused overview: engagement scope, key findings count by severity, top risks, overall security posture assessment, and remediation priority recommendations. Written for non-technical stakeholders.

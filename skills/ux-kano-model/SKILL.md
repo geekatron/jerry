@@ -117,7 +117,7 @@ Do NOT use for:
 
 | Agent | Role | Tier | Mode | Model | Wave | Output Location |
 |-------|------|------|------|-------|------|-----------------|
-| `ux-kano-analyst` | Kano model feature classification and prioritization | T2 | Convergent | Sonnet | 4 | `skills/ux-kano-model/output/{engagement-id}/ux-kano-analyst-{topic-slug}.md` |
+| `ux-kano-analyst` | Kano model feature classification and prioritization | T2 | Convergent | Sonnet | 4 | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-kano-analyst-{topic-slug}.md` |
 
 **Tool tier:** T2 = Read-Write (Read, Write, Edit, Glob, Grep, Bash). This agent operates on user-provided data only -- it does NOT have WebSearch, WebFetch, or Context7 MCP tools. The T2 assignment follows the principle of least privilege (AR-006): the agent reads feature lists and survey data provided by the user, performs classification analysis, and writes output reports. No external research is required because the Kano methodology is self-contained within the agent's training knowledge.
 
@@ -190,7 +190,7 @@ Perform Kano model feature classification. Classify features using evaluation
 table, compute CS coefficients, produce priority matrix, flag split classifications.
 
 ## MANDATORY PERSISTENCE (P-002)
-Create file at: skills/ux-kano-model/output/UX-0001/ux-kano-analyst-dashboard-features.md
+Create file at: projects/${JERRY_PROJECT}/engagements/UX-0001/ux-kano-analyst-dashboard-features.md
 """
 )
 ```
@@ -400,7 +400,7 @@ The agent executes a 5-phase procedure. Phase flow depends on whether survey dat
 4. Prepare handoff data: `feature_classifications`, `cs_coefficients`, `priority_matrix`, `split_classifications`, `sample_size_disclosure`, `synthesis_judgments`
 5. Persist output to designated path per P-002
 
-**Outputs:** Complete Kano analysis report at `skills/ux-kano-model/output/{engagement-id}/ux-kano-analyst-{topic-slug}.md`.
+**Outputs:** Complete Kano analysis report at `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-kano-analyst-{topic-slug}.md`.
 
 ---
 
@@ -409,7 +409,7 @@ The agent executes a 5-phase procedure. Phase flow depends on whether survey dat
 ### Output Location
 
 ```
-skills/ux-kano-model/output/{engagement-id}/ux-kano-analyst-{topic-slug}.md
+projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-kano-analyst-{topic-slug}.md
 ```
 
 Where:

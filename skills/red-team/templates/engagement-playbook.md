@@ -78,7 +78,7 @@ Real engagements are iterative. Common cycling patterns:
 7. [ ] Agent authorizations confirmed
 8. [ ] Evidence handling plan established
 9. [ ] User provides authorization signature
-10. [ ] Scope document persisted to `skills/red-team/output/{engagement-id}/`
+10. [ ] Scope document persisted per ADR-output-path-resolution-001 resolution protocol (default: `projects/${JERRY_PROJECT}/engagements/{engagement-id}/`)
 
 ### What Happens Without Authorization
 

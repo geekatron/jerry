@@ -70,10 +70,11 @@ guardrails:
   fallback_behavior: escalate_to_user
 output:
   required: true
-  # Output paths: synthesis at skills/user-experience/output/{engagement-id}/ux-orchestrator-synthesis.md
-  #               CRISIS at skills/user-experience/output/{engagement-id}/ux-orchestrator-crisis.md
-  #               wave bypass at skills/user-experience/output/{engagement-id}/wave-bypass-{wave-N}.md
-  location: "skills/user-experience/output/{engagement-id}/ux-orchestrator-{type}.md"
+  # Output paths: synthesis at projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-orchestrator-synthesis.md
+  #               CRISIS at projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-orchestrator-crisis.md
+  #               wave bypass at projects/${JERRY_PROJECT}/engagements/{engagement-id}/wave-bypass-{wave-N}.md
+  location: "projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-orchestrator-{type}.md"
+  filename_pattern: "ux-orchestrator-{type}.md"
   # L0/L1/L2 applies to persisted synthesis and CRISIS outputs; routing decisions are inline session context
   levels:
   - L0

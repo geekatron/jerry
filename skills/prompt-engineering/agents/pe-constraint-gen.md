@@ -1,6 +1,6 @@
 ---
 name: pe-constraint-gen
-description: NPT Constraint Generator agent — takes user intent descriptions and produces properly formatted NPT-009/NPT-013 constraints with XML wrapping for agent definitions, rule files, and skill documentation. Invoke when generating forbidden actions or behavioral constraints.
+description: NPT Constraint Generator agent — takes user intent descriptions and produces properly formatted NPT-009/NPT-013 constraints with XML wrapping for agent definitions, rule files, and skill documentation. Invoke when generating forbidden actions or behavioral constraints. Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep
 ---
@@ -196,7 +196,18 @@ NEVER {action} -- Consequence: {impact}. Instead: {alternative}.
 | Alternative | {alternative} | {why this is achievable and sufficient} |
 ```
 
-**Output location:** Persist to user-specified path, defaulting to `projects/{PROJECT_ID}/constraints/{slug}.md`.
+**Output location:** Persist to user-specified path, defaulting to `projects/${JERRY_PROJECT}/constraints/{slug}.md`.
+
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-output-path-resolution-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/constraints/pe-constraint-gen-{slug}.md`
+4. **Fallback** -- `work/pe-constraint-gen-{slug}.md` with warning
+
+If `${JERRY_PROJECT}` is not set, request it via H-31 before writing output.
 </output>
 
 <guardrails>

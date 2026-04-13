@@ -131,7 +131,7 @@ Source: `skills/user-experience/rules/ux-routing-rules.md` [Stage Routing Table]
 
 | Agent | Role | Tier | Mode | Model | Output Location |
 |-------|------|------|------|-------|-----------------|
-| `ux-jtbd-analyst` | JTBD research and analysis specialist | T4 | Divergent | Sonnet | `skills/ux-jtbd/output/{engagement-id}/ux-jtbd-analyst-{topic-slug}.md` |
+| `ux-jtbd-analyst` | JTBD research and analysis specialist | T4 | Divergent | Sonnet | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-jtbd-analyst-{topic-slug}.md` |
 
 **Single-agent sub-skill.** The `ux-jtbd-analyst` handles the full JTBD methodology -- from context gathering through job statement synthesis. Complex multi-job engagements are decomposed into multiple invocations by the `ux-orchestrator`, each targeting a specific job domain.
 
@@ -409,7 +409,7 @@ When Miro MCP becomes available (post-PROJ-022), the analyst will use it for col
 ### Output Location
 
 ```
-skills/ux-jtbd/output/{engagement-id}/ux-jtbd-analyst-{topic-slug}.md
+projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-jtbd-analyst-{topic-slug}.md
 ```
 
 Where `{engagement-id}` follows the `UX-{NNNN}` pattern established by the `ux-orchestrator` and `{topic-slug}` is a kebab-case descriptor of the analysis topic.
@@ -626,7 +626,7 @@ Validation sources that advance MEDIUM to HIGH confidence:
 | P-020 | NEVER override user intent | User decides which job statements to adopt, which to discard, and whether to validate MEDIUM-confidence outputs. |
 | P-022 | NEVER deceive about actions, capabilities, or confidence | AI-synthesized job statements transparently classified as MEDIUM confidence. Synthesis Judgments Summary enumerates all AI judgment calls. |
 | P-001 | NEVER present findings without evidence or source citations | All job statements cite secondary research sources (product reviews, competitor analysis, domain literature). |
-| P-002 | NEVER leave outputs in transient context only | All outputs persisted to `skills/ux-jtbd/output/{engagement-id}/`. |
+| P-002 | NEVER leave outputs in transient context only | All outputs persisted to `projects/${JERRY_PROJECT}/engagements/{engagement-id}/`. |
 
 ---
 

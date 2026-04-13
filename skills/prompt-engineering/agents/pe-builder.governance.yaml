@@ -45,7 +45,8 @@ constitution:
   - 'P-004: Source Attribution (Medium) - Prompt construction traces to template/rubric source'
 output:
   required: true
-  location: projects/{PROJECT_ID}/prompts/{slug}.md
+  location: "projects/${JERRY_PROJECT}/prompts/{slug}.md"
+  filename_pattern: "pe-builder-{slug}.md"
   levels:
   - L0
   - L1

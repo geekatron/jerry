@@ -219,7 +219,7 @@ success_criteria:                                      # [handoff-v2]
   - "Priority matrix with 4 quadrants labeled"
   - "Sample size disclosure with confidence tier"
 artifacts:                                             # [handoff-v2]
-  - "skills/ux-kano-model/output/{{ENGAGEMENT_ID}}/ux-kano-analyst-{{TOPIC_SLUG}}.md"
+  - "projects/${JERRY_PROJECT}/engagements/{{ENGAGEMENT_ID}}/ux-kano-analyst-{{TOPIC_SLUG}}.md"
 key_findings:                                          # [handoff-v2]
   - "{{finding 1}}"
   - "{{finding 2}}"
@@ -242,7 +242,7 @@ split_count: {{N}}                                     # [ux-ext]
 conflict_count: {{N}}                                  # [ux-ext]
 sample_size_confidence: "{{HIGH|MEDIUM|LOW}}"          # [ux-ext]
 lifecycle_features_assessed: {{N}}                     # [ux-ext]
-artifact_path: "skills/ux-kano-model/output/{{ENGAGEMENT_ID}}/ux-kano-analyst-{{TOPIC_SLUG}}.md"
+artifact_path: "projects/${JERRY_PROJECT}/engagements/{{ENGAGEMENT_ID}}/ux-kano-analyst-{{TOPIC_SLUG}}.md"
 handoff_features_count: {{N}}                          # [ux-ext]
 feature_classifications:                               # [ux-ext] per-feature detail per SKILL.md Handoff Data
   - feature: "{{FEATURE_NAME}}"                        # REPEATABLE per classified feature

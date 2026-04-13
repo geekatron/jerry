@@ -6,6 +6,7 @@ description: >
   using RICE/Kano/WSJF, create product requirements, or define product strategy.
   Trigger keywords: PRD, product requirements, roadmap, prioritize, RICE,
   product vision, strategy, "what to build", opportunity assessment, north star.
+  Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: opus
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 ---
@@ -76,7 +77,7 @@ When invoked, expect context in this structure:
 
 **Tool usage patterns:**
 - **Read/Glob/Grep:** Load existing artifacts, templates, and cross-referenced files. Search for prior work on the same topic via artifact frontmatter. Load persona and VOC data from pm-customer-insight outputs.
-- **Write/Edit:** Produce artifact files to `docs/pm-pmm/{artifact-type}/{slug}.md`. Always use Write for new artifacts, Edit for updates to existing artifacts.
+- **Write/Edit:** Produce artifact files per Output Path Resolution below. Always use Write for new artifacts, Edit for updates to existing artifacts.
 - **Bash:** Directory creation (`mkdir -p`), file existence checks.
 - **WebSearch/WebFetch:** Market research for product strategy context, framework reference lookups, industry benchmark data. All web-sourced claims MUST include citation or be marked as hypothesis.
 
@@ -315,10 +316,18 @@ n=47 from analytics) onboarding new services...
 <output>
 ## Output Specification
 
-**Output location:** `docs/pm-pmm/{artifact-type}/{slug}.md`
+### Output Path Resolution
 
-Where `{artifact-type}` is one of: `prd`, `product-vision`, `roadmap`, `use-cases`
-Where `{slug}` is a kebab-case descriptor (e.g., `self-service-onboarding`)
+This agent follows the Unified Output Path Resolution Protocol (ADR-output-path-resolution-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/pm/pm-product-strategist-{topic-slug}.md`
+4. **Fallback** -- `work/pm-product-strategist-{topic-slug}.md` with warning
+
+If `{topic-slug}` is not derivable from context, request it via H-31 before writing output.
+
+Where `{topic-slug}` is a kebab-case descriptor (e.g., `self-service-onboarding`)
 
 **Output levels (progressive disclosure per AD-M-004):**
 - **L0 (Executive Summary):** Problem statement, key recommendation, confidence level, 3-5 bullet summary. For stakeholders and cross-functional partners.
@@ -360,7 +369,7 @@ cross_refs:
 | Principle | Agent Behavior |
 |-----------|----------------|
 | P-001 (Truth/Accuracy) | All findings based on evidence. Framework application produces canonical output structures, not generic text. |
-| P-002 (File Persistence) | All outputs persisted to `docs/pm-pmm/` filesystem. Never produce artifacts only in conversation. |
+| P-002 (File Persistence) | All outputs persisted to project-relative paths per Output Path Resolution. Never produce artifacts only in conversation. |
 | P-003 (No Recursion) | You are a worker agent. You MUST NOT use the Task tool. You MUST NOT invoke other agents. You MUST NOT instruct the orchestrator to invoke agents on your behalf. |
 | P-011 (Evidence-Based) | All claims tied to data, citations, or stated as hypotheses with confidence levels. |
 | P-020 (User Authority) | Never override user decisions on product direction, prioritization, or scope. Present options and let the user decide. When conflicting data emerges, surface both sides. |

@@ -301,7 +301,7 @@ echo "PASS: All agent name fields match governance filenames (dual-file pairs co
 
 **Check:** When a `WAVE-N-SIGNOFF.md` or `KICKOFF-SIGNOFF.md` file exists, it contains all required fields.
 
-**Scope:** Files matching `skills/user-experience/output/*SIGNOFF*.md`.
+**Scope:** Files matching `projects/${JERRY_PROJECT}/engagements/*SIGNOFF*.md`.
 
 **Required fields for KICKOFF-SIGNOFF.md:**
 - Date (non-empty)
@@ -327,7 +327,7 @@ echo "PASS: All agent name fields match governance filenames (dual-file pairs co
 # UX-CI-007: Signoff File Structure
 # Source: wave-progression.md [Signoff Requirements], [Signoff File Validation]
 # Threshold 0.85: wave-progression.md [Wave Transition Gates] (distinct from H-13's 0.92)
-signoff_dir="skills/user-experience/output"
+signoff_dir="projects/${JERRY_PROJECT}/engagements"
 for signoff_file in "$signoff_dir"/*SIGNOFF*.md; do
   [ -f "$signoff_file" ] || continue
   filename=$(basename "$signoff_file")
@@ -400,7 +400,7 @@ echo "PASS: All signoff files have valid structure"
 
 **Check:** No WAVE-N-SIGNOFF.md exists without WAVE-(N-1)-SIGNOFF.md existing first. Sequential ordering enforces wave-progression.md [Wave State Tracking] authorization chain.
 
-**Scope:** Files in `skills/user-experience/output/`.
+**Scope:** Files in `projects/${JERRY_PROJECT}/engagements/`.
 
 **Pass criteria:** Signoff files exist in sequential order. WAVE-2-SIGNOFF.md cannot exist without WAVE-1-SIGNOFF.md.
 
@@ -412,7 +412,7 @@ echo "PASS: All signoff files have valid structure"
 # UX-CI-008: Signoff Ordering
 # Source: wave-progression.md [Wave State Tracking] -- sequential authorization chain
 # Bypass: wave-progression.md [Bypass Mechanism]
-signoff_dir="skills/user-experience/output"
+signoff_dir="projects/${JERRY_PROJECT}/engagements"
 for wave in 2 3 4 5; do
   prev_wave=$((wave - 1))
   current_file="$signoff_dir/WAVE-${wave}-SIGNOFF.md"
@@ -567,7 +567,7 @@ fi
 
 **Check:** All synthesis output files contain confidence classifications for every finding.
 
-**Scope:** Files matching `skills/user-experience/output/*/ux-orchestrator-synthesis.md` and `skills/user-experience/output/*/ux-orchestrator-crisis.md`.
+**Scope:** Files matching `projects/${JERRY_PROJECT}/engagements/*/ux-orchestrator-synthesis.md` and `projects/${JERRY_PROJECT}/engagements/*/ux-orchestrator-crisis.md`.
 
 **Pass criteria:** Every finding row in the output (matching pattern `| {PREFIX}-{NNN}`) includes a confidence classification (HIGH, MEDIUM, or LOW) per synthesis-validation.md [Confidence Classification].
 
@@ -577,8 +577,8 @@ fi
 # UX-CI-011: Confidence Classification Presence
 # Source: synthesis-validation.md [Confidence Classification] -- P-022 compliance
 # Finding ID format: {PREFIX}-{NNN} per synthesis-validation.md [Required Traceability]
-for synthesis_file in skills/user-experience/output/*/ux-orchestrator-synthesis.md \
-                      skills/user-experience/output/*/ux-orchestrator-crisis.md; do
+for synthesis_file in projects/${JERRY_PROJECT}/engagements/*/ux-orchestrator-synthesis.md \
+                      projects/${JERRY_PROJECT}/engagements/*/ux-orchestrator-crisis.md; do
   [ -f "$synthesis_file" ] || continue
   # Count finding rows (table rows containing finding IDs like HE-001, BD-002, CONTRA-001)
   finding_count=$(grep -cE '^\|.*[A-Z]{2,}-[0-9]{3}' "$synthesis_file" || true)
@@ -603,7 +603,7 @@ echo "PASS: Confidence classification check complete"
 
 **Check:** All findings in synthesis outputs trace back to a source sub-skill and include a source finding ID.
 
-**Scope:** Files matching `skills/user-experience/output/*/ux-orchestrator-synthesis.md` and `skills/user-experience/output/*/ux-orchestrator-crisis.md`.
+**Scope:** Files matching `projects/${JERRY_PROJECT}/engagements/*/ux-orchestrator-synthesis.md` and `projects/${JERRY_PROJECT}/engagements/*/ux-orchestrator-crisis.md`.
 
 **Pass criteria:** Every finding row includes a source sub-skill name (matching `/ux-*` pattern) and a source finding ID (matching `{PREFIX}-{NNN}` pattern, e.g., `HE-003`, `BD-001`, `CONTRA-001` per synthesis-validation.md [Required Traceability]).
 
@@ -623,8 +623,8 @@ The traceability check uses a two-pass column-aware approach to avoid the tautol
 #           (the row's own synthesis ID + at least one source finding ID)
 #   This avoids the tautological check where row selection and verification
 #   use the same regex (which always yields 0 missing).
-for synthesis_file in skills/user-experience/output/*/ux-orchestrator-synthesis.md \
-                      skills/user-experience/output/*/ux-orchestrator-crisis.md; do
+for synthesis_file in projects/${JERRY_PROJECT}/engagements/*/ux-orchestrator-synthesis.md \
+                      projects/${JERRY_PROJECT}/engagements/*/ux-orchestrator-crisis.md; do
   [ -f "$synthesis_file" ] || continue
   # Extract finding rows (table rows containing finding IDs)
   finding_lines=$(grep -E '^\|.*[A-Z]{2,}-[0-9]{3}' "$synthesis_file" || true)
@@ -669,7 +669,7 @@ echo "PASS: Traceability check complete"
 
 **Check:** Findings classified as LOW do not contain design recommendations. Sections tagged `[REFERENCE-ONLY]` must not contain subsections named "Design Recommendations" or "Recommended Actions".
 
-**Scope:** Files matching `skills/user-experience/output/*/ux-orchestrator-synthesis.md` and `skills/user-experience/output/*/ux-orchestrator-crisis.md`.
+**Scope:** Files matching `projects/${JERRY_PROJECT}/engagements/*/ux-orchestrator-synthesis.md` and `projects/${JERRY_PROJECT}/engagements/*/ux-orchestrator-crisis.md`.
 
 **Pass criteria:** Sections tagged `[REFERENCE-ONLY]` do not contain subsections named "Design Recommendations" or "Recommended Actions" (per synthesis-validation.md LOW gate enforcement).
 
@@ -681,8 +681,8 @@ echo "PASS: Traceability check complete"
 #   "Output permanently labeled reference-only; design recommendation section structurally omitted."
 # Source: synthesis-validation.md [Gate Enforcement Mechanisms] LOW gate --
 #   "Output template structurally omits the design recommendation section. Title tagged with [REFERENCE-ONLY]."
-for synthesis_file in skills/user-experience/output/*/ux-orchestrator-synthesis.md \
-                      skills/user-experience/output/*/ux-orchestrator-crisis.md; do
+for synthesis_file in projects/${JERRY_PROJECT}/engagements/*/ux-orchestrator-synthesis.md \
+                      projects/${JERRY_PROJECT}/engagements/*/ux-orchestrator-crisis.md; do
   [ -f "$synthesis_file" ] || continue
   # Extract content within [REFERENCE-ONLY] sections
   # The awk range terminates at ANY heading level (##, ###, or deeper) to correctly
@@ -720,8 +720,8 @@ echo "PASS: LOW confidence template compliance check complete"
 | UX-CI-004 | Governance YAML Schema | [Schema Validation](#schema-validation) | `skills/ux-*/agents/*.governance.yaml` | Zero schema validation errors against `agent-governance-v1.schema.json` | Yes | H-34 |
 | UX-CI-005 | Required Governance Fields | [Schema Validation](#schema-validation) | `skills/ux-*/agents/*.governance.yaml` | All required fields present with valid values | Yes | H-34 |
 | UX-CI-006 | Frontmatter-Governance Consistency | [Schema Validation](#schema-validation) | Agent dual-file pairs | `.md` name field matches `.governance.yaml` filename | Yes | H-34 |
-| UX-CI-007 | Signoff File Structure | [Wave Gate Compliance](#wave-gate-compliance) | `skills/user-experience/output/*SIGNOFF*.md` | All required fields non-empty; score >= 0.85; MCP ownership in kickoff | Yes | wave-progression.md |
-| UX-CI-008 | Signoff Ordering | [Wave Gate Compliance](#wave-gate-compliance) | `skills/user-experience/output/` | Sequential signoff file existence | Yes | wave-progression.md |
+| UX-CI-007 | Signoff File Structure | [Wave Gate Compliance](#wave-gate-compliance) | `projects/${JERRY_PROJECT}/engagements/*SIGNOFF*.md` | All required fields non-empty; score >= 0.85; MCP ownership in kickoff | Yes | wave-progression.md |
+| UX-CI-008 | Signoff Ordering | [Wave Gate Compliance](#wave-gate-compliance) | `projects/${JERRY_PROJECT}/engagements/` | Sequential signoff file existence | Yes | wave-progression.md |
 | UX-CI-009 | Keyword Collision Check | [Trigger Map Validation](#trigger-map-validation) | `mandatory-skill-usage.md` Detected Keywords column (column 2) | Zero unmitigated collisions in trigger map keyword columns | Warning | RT-M-004 |
 | UX-CI-010 | Negative Keyword Coverage | [Trigger Map Validation](#trigger-map-validation) | `mandatory-skill-usage.md` | Non-empty negative keywords for /user-experience row | Warning | RT-M-001 |
 | UX-CI-011 | Confidence Classification | [Output Quality Checks](#output-quality-checks) | Synthesis output files | All findings have HIGH/MEDIUM/LOW confidence | Warning | synthesis-validation.md, P-022 |

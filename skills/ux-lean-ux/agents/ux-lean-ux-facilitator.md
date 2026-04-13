@@ -9,6 +9,7 @@ description: >
   assumption mapping, experiment design, or validated learning documentation.
   Triggers: lean UX, hypothesis, assumption mapping, build-measure-learn,
   MVP experiment, validated learning, experiment design, hypothesis backlog.
+  Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: sonnet
 tools:
   - Read
@@ -300,7 +301,7 @@ This agent operates as a single AI facilitator. Lean UX methodology recommends c
 
 **Output location:**
 ```
-skills/ux-lean-ux/output/{engagement-id}/ux-lean-ux-facilitator-{topic-slug}.md
+projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-lean-ux-facilitator-{topic-slug}.md
 ```
 
 Where `{engagement-id}` follows `UX-{NNNN}` and `{topic-slug}` is a kebab-case descriptor (e.g., `checkout-flow`, `onboarding-redesign`).
@@ -416,9 +417,20 @@ q1_assumptions: int  # highest-risk unknowns
 experiments_designed: int
 cycles_completed: int
 degraded_mode: bool
-artifact_path: skills/ux-lean-ux/output/{engagement-id}/ux-lean-ux-facilitator-{topic-slug}.md
+artifact_path: projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-lean-ux-facilitator-{topic-slug}.md
 handoff_hypotheses_count: int  # VALIDATED + INVALIDATED hypotheses for downstream
 ```
+
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-output-path-resolution-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-lean-ux-facilitator-{topic-slug}.md`
+4. **Fallback** -- `work/ux-lean-ux-facilitator-{topic-slug}.md` with warning
+
+If `{engagement-id}` is not provided by the caller, request it via H-31 before writing output.
 </output>
 
 <guardrails>

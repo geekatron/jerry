@@ -395,7 +395,7 @@ success_criteria:                                  # [handoff-v2] required, min 
   - "Every experiment design has measurable success criteria"
   - "ICE scores present for all backlog hypotheses"
 artifacts:                                         # [handoff-v2] required
-  - "skills/ux-lean-ux/output/{{ENGAGEMENT_ID}}/ux-lean-ux-facilitator-{{TOPIC_SLUG}}.md"
+  - "projects/${JERRY_PROJECT}/engagements/{{ENGAGEMENT_ID}}/ux-lean-ux-facilitator-{{TOPIC_SLUG}}.md"
 key_findings:                                      # [handoff-v2] required, 3-5 entries per CB-04
   - "{{top finding 1 summary}}"
   - "{{top finding 2 summary}}"
@@ -418,7 +418,7 @@ q1_assumptions: {{Q1_COUNT}}                         # [ux-ext] highest-risk unk
 experiments_designed: {{TOTAL_EXPERIMENTS}}           # [ux-ext]
 cycles_completed: {{CYCLE_COUNT}}                    # [ux-ext]
 degraded_mode: {{true / false}}                      # [ux-ext]
-artifact_path: "skills/ux-lean-ux/output/{{ENGAGEMENT_ID}}/ux-lean-ux-facilitator-{{TOPIC_SLUG}}.md"  # [ux-ext]
+artifact_path: "projects/${JERRY_PROJECT}/engagements/{{ENGAGEMENT_ID}}/ux-lean-ux-facilitator-{{TOPIC_SLUG}}.md"  # [ux-ext]
 handoff_hypotheses_count: {{HANDOFF_COUNT}}          # [ux-ext] VALIDATED + INVALIDATED count
 ```
 

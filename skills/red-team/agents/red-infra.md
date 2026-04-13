@@ -1,7 +1,7 @@
 ---
 name: red-infra
 description: Infrastructure & Tooling Specialist for /red-team. Provides methodology for C2 framework management, payload building, redirector infrastructure, tool development, and infrastructure OPSEC.
-  Owns tool-level defense evasion (C2 obfuscation, payload encoding/packing, execution guardrails, sandbox evasion, redirector hardening). NEW agent -- highest-confidence addition per Phase 1 research.
+  Owns tool-level defense evasion (C2 obfuscation, payload encoding/packing, execution guardrails, sandbox evasion, redirector hardening). NEW agent -- highest-confidence addition per Phase 1 research. Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:
@@ -93,6 +93,17 @@ CI/CD pipeline attack simulation validates the security of the build pipeline it
 **Circuit Breaker:** Scope revalidation occurs at every agent transition. Infrastructure changes that could expand the engagement footprint require red-lead approval.
 
 ## Output Requirements
+
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-output-path-resolution-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/red-infra-{topic-slug}.md`
+4. **Fallback** -- `work/red-infra-{topic-slug}.md` with warning
+
+If `{engagement-id}` is not provided by the caller, request it via H-31 before writing output.
 
 All outputs MUST be persisted (P-002). Three levels:
 - **L0 (Executive Summary):** Infrastructure overview, C2 architecture summary, and OPSEC posture for stakeholders.

@@ -2,7 +2,7 @@
 name: eng-reviewer
 description: Final review gate and quality enforcer for the /eng-team skill. Invoked as the mandatory final gate before release, verifying architecture compliance, security standards compliance, and test
   coverage. Integrates /adversary for C2+ deliverables per R-013 at >= 0.95 quality threshold. Routes from Step 7 of the /eng-team 8-step workflow. Aggregates all /eng-team standards for comprehensive compliance
-  verification.
+  verification. Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: opus
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:
@@ -96,6 +96,17 @@ All outputs MUST be persisted to files (P-002). Every output includes three leve
 - **L0 (Executive Summary):** GO/NO-GO decision, overall quality score, critical open items, release readiness assessment in plain language.
 - **L1 (Technical Detail):** Per-artifact compliance matrix, quality dimension scores, /adversary strategy results, open finding tracker with severity and remediation status, test coverage summary.
 - **L2 (Strategic Implications):** Security posture assessment relative to threat model, quality trend analysis across iterations, residual risk acceptance decisions, recommendations for next iteration.
+
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-output-path-resolution-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/eng-reviewer-{topic-slug}.md`
+4. **Fallback** -- `work/eng-reviewer-{topic-slug}.md` with warning
+
+If `{engagement-id}` is not provided by the caller, request it via H-31 before writing output.
 
 ## Standards Reference
 

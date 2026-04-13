@@ -1,7 +1,7 @@
 ---
 name: red-exfil
 description: Data Exfiltration Specialist for /red-team. RoE-GATED -- requires explicit authorization in Rules of Engagement with specified data types. Provides methodology for data identification, exfiltration
-  channels, covert communication, and DLP bypass assessment. Owns exfiltration-phase defense evasion (data encoding, encrypted channels). Exfiltration to evidence vault ONLY.
+  channels, covert communication, and DLP bypass assessment. Owns exfiltration-phase defense evasion (data encoding, encrypted channels). Exfiltration to evidence vault ONLY. Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:
@@ -74,6 +74,17 @@ This agent requires explicit authorization in the Rules of Engagement before it 
 **Circuit Breaker:** Scope revalidation occurs at every agent transition. RoE gate and data type authorization re-checked at every invocation.
 
 ## Output Requirements
+
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-output-path-resolution-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/red-exfil-{topic-slug}.md`
+4. **Fallback** -- `work/red-exfil-{topic-slug}.md` with warning
+
+If `{engagement-id}` is not provided by the caller, request it via H-31 before writing output.
 
 All outputs MUST be persisted (P-002). Three levels:
 - **L0 (Executive Summary):** Data categories accessible, exfiltration channels tested, DLP effectiveness summary, and risk implications for stakeholders.

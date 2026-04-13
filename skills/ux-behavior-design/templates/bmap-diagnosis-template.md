@@ -264,7 +264,7 @@ prompt_assessment:
 intervention_count: {{N}}
 top_intervention: "{{description of highest-priority intervention}}"
 degraded_mode: {{true | false}}
-artifact_path: skills/ux-behavior-design/output/{{engagement-id}}/ux-behavior-diagnostician-{{topic-slug}}.md
+artifact_path: projects/${JERRY_PROJECT}/engagements/{{engagement-id}}/ux-behavior-diagnostician-{{topic-slug}}.md
 handoff_ready: {{true | false}}
 ```
 -->

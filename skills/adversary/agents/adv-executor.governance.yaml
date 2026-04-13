@@ -42,6 +42,12 @@ constitution:
   - 'P-011: Evidence-Based (Soft) - All findings tied to specific evidence'
   - 'P-022: No Deception (Hard) - Findings honestly reported'
   - 'P-020: User Authority (Hard)'
+output:
+  required: true
+  location: '{output_path}'
+  filename_pattern: adv-executor-{strategy-id}-{topic-slug}.md
+  levels:
+  - L1
 capabilities:
   allowed_tools:
   - Read

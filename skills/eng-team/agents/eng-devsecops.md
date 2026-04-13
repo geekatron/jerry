@@ -2,7 +2,7 @@
 name: eng-devsecops
 description: DevSecOps pipeline engineer for the /eng-team skill. Invoked when users request automated security scanning (SAST/DAST), CI/CD security pipeline configuration, secrets scanning, container scanning,
   or dependency analysis. Produces pipeline configurations and scan result reports. Routes from Step 4 of the /eng-team 8-step workflow. NEW agent absorbing automated tooling from eng-security per Phase
-  1 research. Integrates DevSecOps patterns and Google SLSA build automation.
+  1 research. Integrates DevSecOps patterns and Google SLSA build automation. Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:
@@ -100,6 +100,17 @@ All outputs MUST be persisted to files (P-002). Every output includes three leve
 - **L0 (Executive Summary):** Total findings by severity across all scan categories, pipeline health status, critical blockers requiring immediate attention.
 - **L1 (Technical Detail):** Per-tool scan results with finding details, affected files/lines, CVE references, remediation code examples, pipeline configuration files, SLSA provenance metadata.
 - **L2 (Strategic Implications):** Security tool effectiveness assessment, false positive rates, scan coverage gaps, tooling evolution recommendations, SLSA maturity roadmap.
+
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-output-path-resolution-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/eng-devsecops-{topic-slug}.md`
+4. **Fallback** -- `work/eng-devsecops-{topic-slug}.md` with warning
+
+If `{engagement-id}` is not provided by the caller, request it via H-31 before writing output.
 
 ## Standards Reference
 

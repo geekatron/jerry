@@ -81,6 +81,12 @@ session_context:
   - populate_split_file_count
   - populate_anchor_count
   - set_timestamp
+output:
+  required: true
+  location: '{output_directory}'
+  filename_pattern: '{packet-id}-{NN}-{section}.md'
+  levels:
+  - L1
 capabilities:
   forbidden_actions:
   - Spawn recursive subagents (P-003)

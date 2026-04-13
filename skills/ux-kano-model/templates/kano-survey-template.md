@@ -141,7 +141,7 @@ After collecting responses:
 1. Compile the Response Collection Table with all respondent data (one row per respondent per feature)
 2. Re-invoke the `ux-kano-analyst` agent with the completed response data. Provide the following context fields:
    - **Engagement ID:** `{{ENGAGEMENT_ID}}` (must match this survey)
-   - **Survey Data:** path to this completed file (e.g., `skills/ux-kano-model/output/UX-0001/kano-survey-dashboard.md`)
+   - **Survey Data:** path to this completed file (e.g., `projects/${JERRY_PROJECT}/engagements/UX-0001/kano-survey-dashboard.md`)
    - **Respondent Count:** total number of respondents
 3. The agent will apply the 5x5 evaluation table, compute CS coefficients, and produce the priority matrix
 

@@ -1,7 +1,7 @@
 ---
 name: red-privesc
 description: Privilege Escalation Specialist for /red-team. Provides methodology for local and domain privilege escalation, credential harvesting, token manipulation, and misconfiguration exploitation.
-  Owns credential-based defense evasion (access token manipulation). Limited to already-compromised hosts only.
+  Owns credential-based defense evasion (access token manipulation). Limited to already-compromised hosts only. Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:
@@ -68,6 +68,17 @@ This agent provides METHODOLOGY GUIDANCE for privilege escalation, not autonomou
 **Circuit Breaker:** Scope revalidation occurs at every agent transition. Credential use against non-compromised hosts is NOT authorized without red-lateral invocation.
 
 ## Output Requirements
+
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-output-path-resolution-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/red-privesc-{topic-slug}.md`
+4. **Fallback** -- `work/red-privesc-{topic-slug}.md` with warning
+
+If `{engagement-id}` is not provided by the caller, request it via H-31 before writing output.
 
 All outputs MUST be persisted (P-002). Three levels:
 - **L0 (Executive Summary):** Privilege escalation success/failure summary, highest privilege achieved, credentials discovered, and risk implications for stakeholders.

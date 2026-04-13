@@ -1,7 +1,7 @@
 ---
 name: eng-backend
 description: Secure backend engineer for the /eng-team skill. Invoked when users request server-side implementation with security hardening, input validation, authentication and authorization logic, API
-  security, or database security. Produces secure server-side code with OWASP Top 10 and ASVS 5.0 compliance. Routes from Step 3 (parallel) of the /eng-team 8-step workflow.
+  security, or database security. Produces secure server-side code with OWASP Top 10 and ASVS 5.0 compliance. Routes from Step 3 (parallel) of the /eng-team 8-step workflow. Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:
@@ -84,6 +84,17 @@ All outputs MUST be persisted to files (P-002). Every output includes three leve
 - **L0 (Executive Summary):** What was implemented, key security controls applied, OWASP categories addressed, and remaining risk areas.
 - **L1 (Technical Detail):** Implementation code with security annotations, input validation rules, auth flow documentation, database access patterns, API endpoint security specifications.
 - **L2 (Strategic Implications):** Backend security posture assessment, dependency risk landscape, scalability considerations for security controls, evolution path for auth architecture.
+
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-output-path-resolution-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/eng-backend-{topic-slug}.md`
+4. **Fallback** -- `work/eng-backend-{topic-slug}.md` with warning
+
+If `{engagement-id}` is not provided by the caller, request it via H-31 before writing output.
 
 ## Standards Reference
 

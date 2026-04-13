@@ -112,7 +112,7 @@ Do NOT use for:
 
 | Agent | Role | Tier | Mode | Model | Output Location |
 |-------|------|------|------|-------|-----------------|
-| `ux-lean-ux-facilitator` | Lean UX hypothesis and experiment facilitation specialist | T4 | Systematic | Sonnet | `skills/ux-lean-ux/output/{engagement-id}/ux-lean-ux-facilitator-{topic-slug}.md` |
+| `ux-lean-ux-facilitator` | Lean UX hypothesis and experiment facilitation specialist | T4 | Systematic | Sonnet | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-lean-ux-facilitator-{topic-slug}.md` |
 
 **STUB:** The agent definition file (`skills/ux-lean-ux/agents/ux-lean-ux-facilitator.md`) currently contains frontmatter, identity, purpose, and guardrails sections only. Full agent body implementation (`<input>`, `<capabilities>`, `<methodology>`, `<output>` sections) is pending Wave 2 completion of PROJ-022 EPIC-003. The SKILL.md specifies the methodology and output contract that the agent will implement.
 
@@ -196,7 +196,7 @@ Facilitate a Lean UX hypothesis cycle for the checkout flow redesign.
 4. Document validated learning from any completed experiments
 
 ## MANDATORY PERSISTENCE (P-002)
-Create file at: skills/ux-lean-ux/output/UX-0001/ux-lean-ux-facilitator-checkout-flow.md
+Create file at: projects/${JERRY_PROJECT}/engagements/UX-0001/ux-lean-ux-facilitator-checkout-flow.md
 """
 )
 ```
@@ -421,7 +421,7 @@ Protocol: call `mcp__context7__resolve-library-id` with the framework name, then
 ### Output Location
 
 ```
-skills/ux-lean-ux/output/{engagement-id}/ux-lean-ux-facilitator-{topic-slug}.md
+projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-lean-ux-facilitator-{topic-slug}.md
 ```
 
 Where:

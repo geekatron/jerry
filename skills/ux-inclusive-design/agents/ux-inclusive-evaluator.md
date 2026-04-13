@@ -9,11 +9,11 @@ description: >
   accessibility audit reports with per-criterion pass/fail evidence, color
   contrast measurements, keyboard navigation audits, screen reader compatibility
   reviews, cognitive load assessments, and Persona Spectrum profiles. Invoke when
-  teams need WCAG conformance auditing, accessibility compliance evaluation,
-  color contrast analysis, screen reader compatibility assessment, keyboard
-  navigation audit, cognitive load evaluation, persona spectrum mapping, or
-  inclusive design review. Triggers: accessibility, WCAG, WCAG 2.2, ARIA, screen
+  teams need WCAG conformance auditing, accessibility evaluation,
+  contrast analysis, screen reader assessment, keyboard
+  navigation audit, cognitive load evaluation, or inclusive design review. Triggers: accessibility, WCAG, WCAG 2.2, ARIA, screen
   reader, contrast, cognitive load, inclusive design, a11y, persona spectrum.
+  Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: sonnet
 tools:
   - Read
@@ -355,7 +355,7 @@ This agent operates as a single AI evaluator. Full WCAG 2.2 compliance testing r
 
 **Output location:**
 ```
-skills/ux-inclusive-design/output/{engagement-id}/ux-inclusive-evaluator-{topic-slug}.md
+projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-inclusive-evaluator-{topic-slug}.md
 ```
 
 Where `{engagement-id}` follows `UX-{NNNN}` and `{topic-slug}` is a kebab-case descriptor (e.g., `checkout-flow`, `form-components`, `navigation-system`).
@@ -484,9 +484,20 @@ major_violations: int     # severity 3
 persona_spectrums_produced: int
 interaction_patterns_evaluated: int
 degraded_mode: bool
-artifact_path: skills/ux-inclusive-design/output/{engagement-id}/ux-inclusive-evaluator-{topic-slug}.md
+artifact_path: projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-inclusive-evaluator-{topic-slug}.md
 synthesis_judgments_count: int
 ```
+
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-output-path-resolution-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-inclusive-evaluator-{topic-slug}.md`
+4. **Fallback** -- `work/ux-inclusive-evaluator-{topic-slug}.md` with warning
+
+If `{engagement-id}` is not provided by the caller, request it via H-31 before writing output.
 </output>
 
 <guardrails>

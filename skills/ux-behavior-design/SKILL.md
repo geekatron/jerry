@@ -116,7 +116,7 @@ Do NOT use for:
 
 | Agent | Role | Tier | Mode | Model | Output Location |
 |-------|------|------|------|-------|-----------------|
-| `ux-behavior-diagnostician` | Fogg B=MAP behavior bottleneck diagnostician | T2 | Convergent | Sonnet | `skills/ux-behavior-design/output/{engagement-id}/ux-behavior-diagnostician-{topic-slug}.md` |
+| `ux-behavior-diagnostician` | Fogg B=MAP behavior bottleneck diagnostician | T2 | Convergent | Sonnet | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-behavior-diagnostician-{topic-slug}.md` |
 
 **STUB:** The agent definition file (`skills/ux-behavior-design/agents/ux-behavior-diagnostician.md`) is pending Wave 4 Phase 2 implementation as part of PROJ-022 EPIC-004. The SKILL.md specifies the methodology and output contract that the agent will implement.
 
@@ -200,7 +200,7 @@ Diagnose the behavioral bottleneck preventing users from completing checkout.
 6. Recommend targeted interventions for the diagnosed bottleneck
 
 ## MANDATORY PERSISTENCE (P-002)
-Create file at: skills/ux-behavior-design/output/UX-0001/ux-behavior-diagnostician-checkout-abandonment.md
+Create file at: projects/${JERRY_PROJECT}/engagements/UX-0001/ux-behavior-diagnostician-checkout-abandonment.md
 """
 )
 ```
@@ -348,7 +348,7 @@ The diagnostician follows a 5-phase sequential workflow. Each phase produces int
 
 **Activities:**
 1. Identify the product domain, target users, and the specific action users should take but are not taking. Define the target behavior using Fogg's statement format: "After [CONTEXT], I will [SPECIFIC BEHAVIOR]" (Fogg, 2020, Chapters 14-15)
-2. Confirm Wave 4 entry criteria are met: Wave 3 completed (Storybook with 5+ Atom stories AND 1 Persona Spectrum review), OR bypass condition satisfied (existing user base with analytics). *(Verification: check for `WAVE-3-SIGNOFF.md` in `skills/user-experience/output/`; if absent, ask user per H-31.)*
+2. Confirm Wave 4 entry criteria are met: Wave 3 completed (Storybook with 5+ Atom stories AND 1 Persona Spectrum review), OR bypass condition satisfied (existing user base with analytics). *(Verification: check for `WAVE-3-SIGNOFF.md` in `projects/${JERRY_PROJECT}/engagements/`; if absent, ask user per H-31.)*
 3. Catalog upstream inputs: check for `/ux-heuristic-eval` severity-rated findings (severity >= 2); if present, import finding IDs for bottleneck context
 4. Catalog available behavioral evidence: abandonment rates, funnel data, session recordings, support tickets, interview excerpts. Classify as strong (quantitative), moderate (qualitative), or weak (anecdotal)
 5. Establish observation scope: screens, flows, or interaction sequences containing the target behavior; current conversion rate (if known)
@@ -423,7 +423,7 @@ The diagnostician follows a 5-phase sequential workflow. Each phase produces int
 ### Output Location
 
 ```
-skills/ux-behavior-design/output/{engagement-id}/ux-behavior-diagnostician-{topic-slug}.md
+projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-behavior-diagnostician-{topic-slug}.md
 ```
 
 Where:
@@ -522,7 +522,7 @@ handoff:
     - "Metric baselines established for affected HEART dimension"
     - "Target thresholds set for post-intervention measurement"
   artifacts:
-    - "skills/ux-behavior-design/output/{engagement-id}/ux-behavior-diagnostician-{topic-slug}.md"
+    - "projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-behavior-diagnostician-{topic-slug}.md"
   key_findings:
     - "Primary bottleneck: {factor} ({severity})"
     - "Limiting simplicity factor: {factor_name} (score: {N}/5)"

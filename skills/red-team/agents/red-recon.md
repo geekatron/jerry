@@ -1,7 +1,7 @@
 ---
 name: red-recon
 description: Reconnaissance Specialist for /red-team. Performs OSINT, network enumeration, service discovery, technology fingerprinting, and attack surface mapping. Feeds adversary TTPs to eng-architect
-  via Cross-Skill Integration Point 1 (Threat-Informed Architecture). Operates within reconnaissance scope of the authorized target allowlist.
+  via Cross-Skill Integration Point 1 (Threat-Informed Architecture). Operates within reconnaissance scope of the authorized target allowlist. Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:
@@ -66,6 +66,17 @@ This agent provides METHODOLOGY GUIDANCE for reconnaissance operations, not auto
 **Circuit Breaker:** Scope revalidation occurs at every agent transition. If red-recon discovers targets that may be outside scope, it flags SCOPE_REVIEW_REQUIRED for red-lead assessment.
 
 ## Output Requirements
+
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-output-path-resolution-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/red-recon-{topic-slug}.md`
+4. **Fallback** -- `work/red-recon-{topic-slug}.md` with warning
+
+If `{engagement-id}` is not provided by the caller, request it via H-31 before writing output.
 
 All outputs MUST be persisted (P-002). Three levels:
 - **L0 (Executive Summary):** High-level attack surface overview, number of discovered targets, key entry points, and risk summary for stakeholders.

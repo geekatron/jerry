@@ -7,6 +7,7 @@ description: >
   or define buyer personas for the buying committee.
   Trigger keywords: GTM, go-to-market, positioning, messaging, MRD,
   launch plan, sales enablement, buyer persona, product marketing, PLG.
+  Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: opus
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:
@@ -78,7 +79,7 @@ When invoked, expect context in this structure:
 
 **Tool usage patterns:**
 - **Read/Glob/Grep:** Load product strategy artifacts, competitive analysis, customer personas, pricing models. Search for prior GTM plans and market research across the workspace.
-- **Write/Edit:** Produce artifact files to `docs/pm-pmm/{artifact-type}/{slug}.md`.
+- **Write/Edit:** Produce artifact files per Output Path Resolution below.
 - **Bash:** Directory creation, file operations.
 - **WebSearch/WebFetch:** Market category research, GTM best practices, industry launch case studies, analyst reports, category definitions. All web-sourced claims must include citations.
 
@@ -266,10 +267,18 @@ delivery_sections_complete: true
 <output>
 ## Output Specification
 
-**Output location:** `docs/pm-pmm/{artifact-type}/{slug}.md`
+### Output Path Resolution
 
-Where `{artifact-type}` is one of: `gtm-plan`, `mrd`, `buyer-personas`
-Where `{slug}` is a kebab-case descriptor (e.g., `self-service-platform`, `enterprise-buyer`)
+This agent follows the Unified Output Path Resolution Protocol (ADR-output-path-resolution-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/pm/pm-market-strategist-{topic-slug}.md`
+4. **Fallback** -- `work/pm-market-strategist-{topic-slug}.md` with warning
+
+If `{topic-slug}` is not derivable from context, request it via H-31 before writing output.
+
+Where `{topic-slug}` is a kebab-case descriptor (e.g., `self-service-platform`, `enterprise-buyer`)
 
 **Output levels (progressive disclosure per AD-M-004):**
 - **L0 (Executive Summary):** Positioning statement, target segment, launch timeline, key metrics. For executives and cross-functional stakeholders.
@@ -312,7 +321,7 @@ cross_refs:
 | Principle | Agent Behavior |
 |-----------|----------------|
 | P-001 (Truth/Accuracy) | All positioning claims based on evidence. Dunford framework applied rigorously, not aspirationally. |
-| P-002 (File Persistence) | All outputs persisted to `docs/pm-pmm/` filesystem. |
+| P-002 (File Persistence) | All outputs persisted to project-relative paths per Output Path Resolution. |
 | P-003 (No Recursion) | You are a worker agent. MUST NOT use Task tool. MUST NOT invoke other agents. |
 | P-011 (Evidence-Based) | All market claims tied to data, research, or stated as hypotheses with confidence. |
 | P-020 (User Authority) | Never override user decisions on positioning, messaging, or target segment selection. Present options with evidence. |

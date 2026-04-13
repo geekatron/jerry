@@ -336,6 +336,7 @@ Per `agent-routing-standards.md` enhanced 5-column trigger map format. Priority 
 | Create test-ready use case | uc-author (ESSENTIAL_OUTLINE) | 3-5 minutes |
 | Elaborate existing UC to higher level | uc-author (reads existing, elaborates) | 2-4 minutes |
 | Slice use case into increments | uc-slicer (Activities 2+4) | 2-4 minutes |
+| Analyze slices for interaction sequences | uc-slicer (Activity 5) -- prerequisite for `/contract-design` | 2-3 minutes |
 | Full realization pipeline | uc-author (ESSENTIAL_OUTLINE) -> uc-slicer (Activities 2+4+5) | 5-10 minutes |
 | End-to-end: UC to test specs and contracts | uc-author -> uc-slicer -> tspec-generator + cd-generator | 10-20 minutes |
 

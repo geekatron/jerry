@@ -374,7 +374,7 @@ success_criteria:                            # [handoff-v2] required, min 1
   - "Q1 and Q2 assumptions scored with ICE and linked to hypotheses"
   - "Quadrant distribution summary matches actual placements"
 artifacts:                                   # [handoff-v2] required
-  - "skills/ux-lean-ux/output/{{ENGAGEMENT_ID}}/assumption-map-{{TOPIC_SLUG}}.md"
+  - "projects/${JERRY_PROJECT}/engagements/{{ENGAGEMENT_ID}}/assumption-map-{{TOPIC_SLUG}}.md"
 key_findings:                                # [handoff-v2] required, 3-5 entries per CB-04
   - "{{top Q1 assumption summary}}"
   - "{{second Q1 assumption summary}}"

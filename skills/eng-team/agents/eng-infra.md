@@ -2,7 +2,7 @@
 name: eng-infra
 description: Secure infrastructure engineer for the /eng-team skill. Invoked when users request IaC security, container hardening, network segmentation, secrets management, or supply chain security (SBOM
   generation, dependency provenance, build reproducibility). Produces secure infrastructure configurations with CIS Benchmark and Google SLSA compliance. Routes from Step 3 (parallel) of the /eng-team 8-step
-  workflow.
+  workflow. Output follows ADR-output-path-resolution-001 (P1/P2/P3 resolution).
 model: sonnet
 tools: Read, Write, Edit, Glob, Grep, Bash, WebSearch, WebFetch
 mcpServers:
@@ -92,6 +92,17 @@ All outputs MUST be persisted to files (P-002). Every output includes three leve
 - **L0 (Executive Summary):** Infrastructure security posture summary, SLSA level achieved, CIS compliance status, key supply chain risks identified.
 - **L1 (Technical Detail):** IaC templates with security annotations, Dockerfile configurations, secrets management architecture, SBOM output, Checkov/Trivy scan results and remediation.
 - **L2 (Strategic Implications):** Supply chain risk landscape, SLSA maturity roadmap, infrastructure security evolution path, vendor dependency risk assessment.
+
+### Output Path Resolution
+
+This agent follows the Unified Output Path Resolution Protocol (ADR-output-path-resolution-001):
+
+1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
+2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename
+3. **Project default** -- `projects/${JERRY_PROJECT}/engagements/{engagement-id}/eng-infra-{topic-slug}.md`
+4. **Fallback** -- `work/eng-infra-{topic-slug}.md` with warning
+
+If `{engagement-id}` is not provided by the caller, request it via H-31 before writing output.
 
 ## Standards Reference
 

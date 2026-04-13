@@ -116,7 +116,7 @@ Do NOT use for:
 
 | Agent | Role | Tier | Mode | Model | Output Location |
 |-------|------|------|------|-------|-----------------|
-| `ux-sprint-facilitator` | AJ&Smart Design Sprint 2.0 facilitation | T4 | Systematic | Opus | `skills/ux-design-sprint/output/{engagement-id}/ux-sprint-facilitator-{topic-slug}.md` |
+| `ux-sprint-facilitator` | AJ&Smart Design Sprint 2.0 facilitation | T4 | Systematic | Opus | `projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-sprint-facilitator-{topic-slug}.md` |
 
 **STUB:** The agent definition file (`skills/ux-design-sprint/agents/ux-sprint-facilitator.md`) is pending Wave 5 Phase 2 implementation as part of PROJ-022 EPIC-005. The SKILL.md specifies the methodology and output contract that the agent will implement.
 
@@ -199,7 +199,7 @@ Facilitate a complete AJ&Smart Design Sprint 2.0 for mobile navigation redesign.
 4. Day 4 (Test): Specify realistic prototype, structure interviews with 5 users, analyze patterns, synthesize findings
 
 ## MANDATORY PERSISTENCE (P-002)
-Create file at: skills/ux-design-sprint/output/UX-0012/ux-sprint-facilitator-mobile-navigation.md
+Create file at: projects/${JERRY_PROJECT}/engagements/UX-0012/ux-sprint-facilitator-mobile-navigation.md
 """
 )
 ```
@@ -354,7 +354,7 @@ The facilitator follows a 5-phase sequential workflow corresponding to the sprin
 **Purpose:** Establish sprint context, confirm wave entry criteria, and execute Day 1 activities.
 
 **Activities:**
-1. Confirm Wave 5 entry criteria are met: Wave 4 completed (30+ users for Kano survey OR 1 B=MAP bottleneck diagnosed), OR bypass condition satisfied (team at product inception with existing user research). *(Verification: check for `WAVE-4-SIGNOFF.md` in `skills/user-experience/output/`; if absent, ask user per H-31.)*
+1. Confirm Wave 5 entry criteria are met: Wave 4 completed (30+ users for Kano survey OR 1 B=MAP bottleneck diagnosed), OR bypass condition satisfied (team at product inception with existing user research). *(Verification: check for `WAVE-4-SIGNOFF.md` in `projects/${JERRY_PROJECT}/engagements/`; if absent, ask user per H-31.)*
 2. Catalog upstream inputs: check for `/ux-jtbd` job statements (job statement + switch forces feed the challenge statement); check for `/ux-heuristic-eval` findings (severity-rated findings provide problem context)
 3. Execute Day 1 activities: challenge definition, long-term goal, sprint questions, user journey map, target selection, expert interviews, HMW clustering
 4. Produce Day 1 output artifact: challenge map document
@@ -419,7 +419,7 @@ The facilitator follows a 5-phase sequential workflow corresponding to the sprin
 ### Output Location
 
 ```
-skills/ux-design-sprint/output/{engagement-id}/ux-sprint-facilitator-{topic-slug}.md
+projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-sprint-facilitator-{topic-slug}.md
 ```
 
 Where:
@@ -519,7 +519,7 @@ handoff:
     - "Hypotheses generated for each validated and invalidated sprint assumption"
     - "Experiment designs prioritize assumptions that were partially validated"
   artifacts:
-    - "skills/ux-design-sprint/output/{engagement-id}/ux-sprint-facilitator-{topic-slug}.md"
+    - "projects/${JERRY_PROJECT}/engagements/{engagement-id}/ux-sprint-facilitator-{topic-slug}.md"
   key_findings:
     - "Sprint verdict: {pass/fail/partial} on {N} sprint questions"
     - "Strong themes (>= 3/5 users): {theme_count} findings"
