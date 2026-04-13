@@ -39,6 +39,10 @@ dependencies = [
     "pyyaml>=6.0",  # EN-005: StalenessDetector ORCHESTRATION.yaml parsing
     "keyring>=25.7.0",
     "pydo>=0.29.0",
+    "cryptography>=46.0.7",
+    "pygments>=2.20.0",
+    "pytest>=9.0.3",
+    "requests>=2.33.1",
 ]
 
 [project.optional-dependencies]
