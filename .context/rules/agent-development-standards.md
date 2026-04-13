@@ -1,6 +1,6 @@
 # Agent Development Standards
 
-<!-- VERSION: 1.3.0 | DATE: 2026-03-28 | SOURCE: ADR-PROJ007-001, ADR-STORY015-001, STORY-017 | REVISION: STORY-017 tier model renumbering (T3=Persistent, T4=External, T5=Orchestration) -->
+<!-- VERSION: 1.3.0 | DATE: 2026-03-28 | SOURCE: ADR-agent-design-001, ADR-STORY015-001, STORY-017 | REVISION: STORY-017 tier model renumbering (T3=Persistent, T4=External, T5=Orchestration) -->
 
 > Canonical standards for agent definition format, structural patterns, behavioral constraints, and handoff protocols within the Jerry Framework. All agent definitions MUST reference this file.
 
@@ -442,7 +442,7 @@ Each standard maps to an enforcement layer for compliance checking.
 
 | Source | Content | Location |
 |--------|---------|----------|
-| ADR-PROJ007-001 | Agent definition format, JSON Schema, tool tiers, cognitive modes, progressive disclosure, guardrails template | `projects/PROJ-007-agent-patterns/orchestration/agent-patterns-20260221-001/ps/phase-3-synthesis/ps-architect-001/` |
+| ADR-agent-design-001 | Agent definition format, JSON Schema, tool tiers, cognitive modes, progressive disclosure, guardrails template | `docs/design/ADR-agent-design-001.md` |
 | Phase 3 Synthesis | Unified pattern taxonomy (66 patterns, 8 families), gap closure roadmap, maturity assessment | `projects/PROJ-007-agent-patterns/orchestration/agent-patterns-20260221-001/ps/phase-3-synthesis/ps-synthesizer-001/` |
 | V&V Plan | Verification methods, pass/fail criteria, gap closure tests, FMEA reduction targets | `projects/PROJ-007-agent-patterns/orchestration/agent-patterns-20260221-001/nse/phase-3-synthesis/nse-verification-001/` |
 | Integration Patterns | Handoff Protocol v2, quality gate integration, context passing conventions | `projects/PROJ-007-agent-patterns/orchestration/agent-patterns-20260221-001/nse/phase-3-synthesis/nse-integration-001/` |
@@ -468,6 +468,6 @@ Each standard maps to an enforcement layer for compliance checking.
 <!-- VERSION: 1.3.0 | DATE: 2026-03-28 | SOURCE: ADR-STORY015-001, STORY-017 | REVISION: STORY-017 tier model renumbering: T3=Persistent, T4=External, T5=Orchestration -->
 *Standards Version: 1.3.0*
 *SSOT: `.context/rules/quality-enforcement.md` (H-34 compound registered, H-35 retired as sub-item)*
-*Source: PROJ-007 Agent Patterns -- ADR-PROJ007-001, Phase 3 Synthesis, V&V Plan, Integration Patterns; ADR-STORY015-001 (tier renumbering)*
+*Source: PROJ-007 Agent Patterns -- ADR-agent-design-001, Phase 3 Synthesis, V&V Plan, Integration Patterns; ADR-STORY015-001 (tier renumbering)*
 *Created: 2026-02-21*
 *Agent: ps-architect-003*

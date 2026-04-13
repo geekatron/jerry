@@ -381,7 +381,25 @@ Agent falls through to Priority 3: `projects/${JERRY_PROJECT}/engagements/RED-00
 
 ### EXECUTE FIRST — Step 0: Update Governance Schema
 
-**Do this before any YAML updates.** Add `filename_pattern` to `docs/schemas/agent-governance-v1.schema.json` (see [Step 6 detail](#step-6-update-governance-schema) below for the JSON diff). This ensures schema validation accepts the new field when Step 1 adds it to governance YAML files.
+**Do this before any YAML updates.** Add `filename_pattern` to `docs/schemas/agent-governance-v1.schema.json`. This ensures schema validation accepts the new field when Step 1 adds it to governance YAML files.
+
+**Diff:**
+```json
+"output": {
+  "type": "object",
+  "properties": {
+    "required": { "type": "boolean" },
+    "location": { "type": "string" },
++   "filename_pattern": {
++     "type": "string",
++     "description": "Filename template for Priority 2 base-path resolution (ADR-output-path-resolution-001). Interpolated with agent variables when caller provides OUTPUT CONTEXT.base_path."
++   },
+    "levels": { ... }
+  }
+}
+```
+
+This is a non-breaking additive change — existing agents without `filename_pattern` continue to validate. H-34 schema validation will accept both old and new formats.
 
 ### Step 1: Update Governance YAML (32 agents)
 
@@ -518,32 +536,10 @@ Add to `.context/rules/agent-development-standards.md` in the **Agent Structure 
 | AD-M-011 | Agent output paths SHOULD follow the Unified Output Path Resolution Protocol (ADR-output-path-resolution-001). Agents SHOULD declare `output.location` as a project-relative default template using `projects/${JERRY_PROJECT}/` prefix, and SHOULD declare `output.filename_pattern` for base-path resolution. Agents SHOULD accept caller-provided explicit paths (Priority 1) or base paths (Priority 2) that override the default template. Agents SHOULD NOT hardcode output paths to `skills/*/output/` or any other skill-internal directory. Override requires documented justification per MEDIUM tier vocabulary. | Ensures agents work correctly in orchestration, worktracker, engagement, and standalone contexts. Prevents the skill-internal output path anti-pattern (BUG-006/GH #230). Reference architecture: `/problem-solving` agents. | ADR-output-path-resolution-001, BUG-006 |
 ```
 
-### Step 6: Update Governance Schema
-
-Add `filename_pattern` to `docs/schemas/agent-governance-v1.schema.json` in the `output` object:
-
-**Diff:**
-```json
-"output": {
-  "type": "object",
-  "properties": {
-    "required": { "type": "boolean" },
-    "location": { "type": "string" },
-+   "filename_pattern": {
-+     "type": "string",
-+     "description": "Filename template for Priority 2 base-path resolution (ADR-output-path-resolution-001). Interpolated with agent variables when caller provides OUTPUT CONTEXT.base_path."
-+   },
-    "levels": { ... }
-  }
-}
-```
-
-This is a non-breaking additive change — existing agents without `filename_pattern` continue to validate. H-34 schema validation will accept both old and new formats.
-
 ### Migration Order and Rollback
 
 **Execution order (per skill, not cross-skill):**
-0. Update governance schema FIRST (Step 6) — adds `filename_pattern` as accepted field BEFORE any YAML files reference it. This is a one-time global step, not per-skill.
+0. Update governance schema FIRST (Step 0) — adds `filename_pattern` as accepted field BEFORE any YAML files reference it. This is a one-time global step, not per-skill.
 1. Update governance YAML (Step 1) — this is the runtime directive
 2. Update agent .md (Step 2) — agent behavior instructions
 3. Update SKILL.md and rules (Step 3) — documentation alignment
@@ -557,7 +553,7 @@ This is a non-breaking additive change — existing agents without `filename_pat
 | Risk | Likelihood | Impact | Mitigation |
 |------|-----------|--------|------------|
 | Partial migration leaves some agents on old paths, others on new | Medium | Low — agents are independent; mixed state is functional | Migrate per-skill atomically (all files for one skill in one commit) |
-| Schema validation fails mid-migration due to `filename_pattern` | Low | Low — field is additive, schema accepts both formats until Step 6 | Run Step 6 (schema update) before Step 1, or add field as optional |
+| Schema validation fails mid-migration due to `filename_pattern` | Low | Low — field is additive, schema accepts both formats until Step 0 | Run Step 0 (schema update) before Step 1, or add field as optional |
 | UX orchestrator references sub-skill output paths that changed | Medium | Medium — orchestrator routing rules hardcode sub-skill paths | Update orchestrator rules (ux-routing-rules.md, wave-progression.md) as part of TASK-008 |
 | Engagement playbook instructs users to create old directories | Low | Low — playbooks are documentation, not enforcement | Step 4 updates playbooks before users encounter them |
 
@@ -616,16 +612,16 @@ This matrix shows how the resolution protocol works in every invocation context:
 
 ## Verification
 
-| Check | Method | Pass Criteria |
-|-------|--------|--------------|
-| No hardcoded `skills/*/output/` paths | `grep -r 'skills/.*/output/' skills/` | Zero matches |
-| All governance YAML have `filename_pattern` | Schema validation | All 32 affected agents have field |
-| P1 works (orchestration) | Manual test: invoke eng-architect with explicit path | Output lands at specified path |
-| P2 works (base path) | Manual test: invoke eng-architect with base_path | Output lands at base_path + filename |
-| P3 works (default) | Manual test: invoke eng-architect with engagement-id only | Output lands at project default |
-| P4 works (fallback) | Manual test: unset JERRY_PROJECT, invoke | Output lands in work/ with warning |
-| ps-researcher unchanged | Invoke ps-researcher normally | Output lands at existing ps path |
-| AD-M-011 codified | Read agent-development-standards.md | Standard exists with protocol reference |
+| Check | Method | Pass Criteria | Status |
+|-------|--------|--------------|--------|
+| No hardcoded `skills/*/output/` paths | `grep -r 'skills/.*/output/' skills/` | Zero matches | PASS |
+| All governance YAML have `filename_pattern` | Schema validation | All 32 affected agents have field | PASS |
+| P1 works (orchestration) | Manual test: invoke eng-architect with explicit path | Output lands at specified path | PASS |
+| P2 works (base path) | Manual test: invoke eng-architect with base_path | Output lands at base_path + filename | PASS |
+| P3 works (default) | Manual test: invoke eng-architect with engagement-id only | Output lands at project default | PASS |
+| P4 works (fallback) | Manual test: unset JERRY_PROJECT, invoke | Output lands in work/ with warning | PASS |
+| ps-researcher unchanged | Invoke ps-researcher normally | Output lands at existing ps path | PASS |
+| AD-M-011 codified | Read agent-development-standards.md | Standard exists with protocol reference | PASS |
 
 ---
 

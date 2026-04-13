@@ -1,6 +1,6 @@
 # Agent Routing Standards
 
-<!-- VERSION: 1.1.0 | DATE: 2026-02-21 | SOURCE: ADR-PROJ007-002, PROJ-007 Phase 3 Synthesis, V&V Plan | REVISION: Barrier 4 quality gate revisions (7 items) -- derivations for H-36, H-37, priority ordering, 2-level gap; migration path; failure propagation; FMEA measurability status -->
+<!-- VERSION: 1.1.0 | DATE: 2026-02-21 | SOURCE: ADR-routing-triggers-001, PROJ-007 Phase 3 Synthesis, V&V Plan | REVISION: Barrier 4 quality gate revisions (7 items) -- derivations for H-36, H-37, priority ordering, 2-level gap; migration path; failure propagation; FMEA measurability status -->
 
 > Canonical standards for agent routing, trigger map design, circuit breakers, multi-skill combination, anti-pattern prevention, and routing observability within the Jerry Framework. All routing decisions MUST reference this file.
 
@@ -536,7 +536,7 @@ Each standard maps to an enforcement layer for compliance checking.
 
 | Source | Content | Location |
 |--------|---------|----------|
-| ADR-PROJ007-002 | Layered routing architecture, enhanced trigger map, circuit breaker, anti-patterns, scaling roadmap | `projects/PROJ-007-agent-patterns/orchestration/agent-patterns-20260221-001/ps/phase-3-synthesis/ps-architect-002/` |
+| ADR-routing-triggers-001 | Layered routing architecture, enhanced trigger map, circuit breaker, anti-patterns, scaling roadmap | `docs/design/ADR-routing-triggers-001.md` |
 | Phase 3 Synthesis | Unified pattern taxonomy (WF-02, DL-04, SF-09, IN-05, IN-07), consensus findings #4 (keyword-first routing superiority at current scale), #8 (3-hop circuit breaker necessity from error amplification analysis) | `projects/PROJ-007-agent-patterns/orchestration/agent-patterns-20260221-001/ps/phase-3-synthesis/ps-synthesizer-001/` |
 | V&V Plan | Anti-pattern detection heuristics (RAP-01 through RAP-08), FMEA monitoring thresholds, circuit breaker specifications | `projects/PROJ-007-agent-patterns/orchestration/agent-patterns-20260221-001/nse/phase-3-synthesis/nse-verification-001/` |
 | Integration Patterns | Enhanced routing format, routing resolution algorithm, multi-skill combination protocol, context passing conventions | `projects/PROJ-007-agent-patterns/orchestration/agent-patterns-20260221-001/nse/phase-3-synthesis/nse-integration-001/` |
@@ -547,9 +547,9 @@ Each standard maps to an enforcement layer for compliance checking.
 
 ---
 
-<!-- VERSION: 1.1.0 | DATE: 2026-02-21 | SOURCE: ADR-PROJ007-002, PROJ-007 Phase 3 Synthesis | REVISION: Barrier 4 QG revisions -->
+<!-- VERSION: 1.1.0 | DATE: 2026-02-21 | SOURCE: ADR-routing-triggers-001, PROJ-007 Phase 3 Synthesis | REVISION: Barrier 4 QG revisions -->
 *Standards Version: 1.1.0*
 *SSOT: `.context/rules/quality-enforcement.md` (H-36 compound registered, H-37 retired as sub-item)*
-*Source: PROJ-007 Agent Patterns -- ADR-PROJ007-002, Phase 3 Synthesis, V&V Plan, Integration Patterns*
+*Source: PROJ-007 Agent Patterns -- ADR-routing-triggers-001, Phase 3 Synthesis, V&V Plan, Integration Patterns*
 *Created: 2026-02-21*
 *Agent: ps-architect-003*

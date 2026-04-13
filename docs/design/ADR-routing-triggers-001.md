@@ -1,4 +1,4 @@
-# ADR-PROJ007-002: Agent Routing and Trigger Framework
+# ADR-routing-triggers-001: Agent Routing and Trigger Framework
 
 <!-- VERSION: 1.2.0 | DATE: 2026-02-22 | PS-ID: PROJ-007 | AGENT: ps-architect-002 | CRITICALITY: C4 | REVISION: Barrier 3 revision — 5 scorer findings addressed (F-001 through F-005) -->
 
@@ -707,7 +707,7 @@ The migration from the current `mandatory-skill-usage.md` to the enhanced format
 |------|--------|-----------|--------|
 | 1 | Add `Negative Keywords`, `Priority`, and `Compound Triggers` columns to the trigger map table | No -- agents that do not parse the new columns continue to function using positive keywords only | Low |
 | 2 | Add new positive keywords (synonyms) per Section 2.2 expanded list | No -- strictly additive; more requests are matched | Low |
-| 3 | Update behavior rules to reference the priority ordering and negative keyword algorithm. Proposed text for behavior rule 2: "COMBINE skills per the multi-skill combination protocol: /orchestration first, research before design, content before quality (ADR-PROJ007-002 Section 4)." | No -- enhances existing behavior rule 2 ("COMBINE skills when appropriate") with structured combination protocol | Low |
+| 3 | Update behavior rules to reference the priority ordering and negative keyword algorithm. Proposed text for behavior rule 2: "COMBINE skills per the multi-skill combination protocol: /orchestration first, research before design, content before quality (ADR-routing-triggers-001 Section 4)." | No -- enhances existing behavior rule 2 ("COMBINE skills when appropriate") with structured combination protocol | Low |
 
 **Total migration effort:** Low. All changes are to a single file (`mandatory-skill-usage.md`) and its corresponding reference in `CLAUDE.md`.
 
@@ -821,7 +821,7 @@ Applied S-010 Self-Refine before finalizing. The following checklist verifies co
 
 | Nygard Format Element | Present | Notes |
 |----------------------|---------|-------|
-| Title | Yes | ADR-PROJ007-002 |
+| Title | Yes | ADR-routing-triggers-001 |
 | Status | Yes | Proposed |
 | Context | Yes | Current state, limitations, scaling trajectory, trade study basis |
 | Decision | Yes | 7 subsections covering all required content |

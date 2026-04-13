@@ -1,4 +1,4 @@
-# ADR-PROJ007-001: Agent Definition Format and Design Patterns
+# ADR-agent-design-001: Agent Definition Format and Design Patterns
 
 <!-- PS-ID: PROJ-007 | ENTRY: e-004 | AGENT: ps-architect-001 | DATE: 2026-02-21 -->
 <!-- CRITICALITY: C4 (new ADR, AE-003 auto-C3+; will be baselined, AE-004 applies on modification) -->
@@ -110,7 +110,7 @@ This template consolidates requirements AR-001 through AR-012 (agent structure) 
 # ============================================================
 # CANONICAL AGENT DEFINITION TEMPLATE
 # Version: 1.0.0
-# Standard: ADR-PROJ007-001
+# Standard: ADR-agent-design-001
 # ============================================================
 
 # --- IDENTIFICATION (AR-001, AR-007, AR-008, AR-009) ---
@@ -371,7 +371,7 @@ This JSON Schema (Draft 2020-12) validates the YAML frontmatter of agent definit
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://jerry-framework.dev/schemas/agent-definition/v1.0.0",
   "title": "Jerry Agent Definition Schema",
-  "description": "Validates YAML frontmatter of Jerry Framework agent definition files. ADR-PROJ007-001.",
+  "description": "Validates YAML frontmatter of Jerry Framework agent definition files. ADR-agent-design-001.",
   "type": "object",
   "required": [
     "name",

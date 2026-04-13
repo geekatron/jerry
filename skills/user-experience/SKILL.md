@@ -48,7 +48,7 @@ activation-keywords:
 > **Version:** 1.0.0
 > **Framework:** Jerry User-Experience
 > **Constitutional Compliance:** Jerry Constitution v1.0
-> **SSOT References:** GitHub Issue #138 (Architecture Spec), PROJ-022 PLAN.md, ADR-PROJ007-001 (Agent Definition Format)
+> **SSOT References:** GitHub Issue #138 (Architecture Spec), PROJ-022 PLAN.md, ADR-agent-design-001 (Agent Definition Format)
 > **Project:** PROJ-022 User Experience Skill | GitHub Issue [#138](https://github.com/geekatron/jerry/issues/138)
 
 ## Document Sections
