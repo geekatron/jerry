@@ -5,13 +5,13 @@
 > **Priority:** high
 > **Created:** 2026-03-31
 > **Parent:** BUG-006
-> **ADR:** [ADR-EPIC002-001](../../../docs/design/ADR-EPIC002-001-unified-output-path-resolution.md)
+> **ADR:** [ADR-output-path-resolution-001](../../../docs/design/ADR-output-path-resolution-001.md)
 
 ---
 
 ## Summary
 
-Implement the Unified Output Path Resolution Protocol (ADR-EPIC002-001) across 22 eng-team config files. This is not a simple path replacement — each file type requires different changes per the ADR migration guide.
+Implement the Unified Output Path Resolution Protocol (ADR-output-path-resolution-001) across 22 eng-team config files. This is not a simple path replacement — each file type requires different changes per the ADR migration guide.
 
 ## Changes Per File Category
 
@@ -45,7 +45,7 @@ Add to each agent's `<output>` block:
 ```markdown
 ### Output Path Resolution
 
-This agent follows the Unified Output Path Resolution Protocol (ADR-EPIC002-001):
+This agent follows the Unified Output Path Resolution Protocol (ADR-output-path-resolution-001):
 
 1. **Explicit path** — If the caller provides a path in the P-002 block, write there
 2. **Base path** — If the caller provides `OUTPUT CONTEXT.base_path`, append filename

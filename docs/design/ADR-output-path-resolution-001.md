@@ -1,7 +1,7 @@
-# ADR-EPIC002-001: Unified Output Path Resolution Standard
+# ADR-output-path-resolution-001: Unified Output Path Resolution Standard
 
 > **Type:** adr
-> **Status:** proposed
+> **Status:** accepted
 > **Priority:** high
 > **Impact:** critical
 > **Created:** 2026-03-31
@@ -249,9 +249,12 @@ function resolve_output_path(prompt_context, agent_config):
     # Priority 2: Base path + agent suffix
     if prompt_context.has("OUTPUT CONTEXT.base_path"):
         base = prompt_context.base_path
-        # compute_filename interpolates output.filename_pattern with variables
-        # e.g., "eng-architect-{topic-slug}.md" + {topic-slug: "threat-model"} → "eng-architect-threat-model.md"
-        suffix = agent_config.output.filename_pattern.interpolate(prompt_context.variables)
+        # Agent derives filename from its .md Output Path Resolution instructions
+        # (NOT from governance YAML lookup — LLM agents cannot perform YAML lookups at runtime).
+        # The filename is hardcoded in the agent's .md system prompt, e.g.,
+        # "append eng-architect-{topic-slug}.md". governance.yaml filename_pattern is
+        # a declarative documentation field that SHOULD match the .md instructions.
+        suffix = agent.md_instructions.filename.interpolate(prompt_context.variables)
         return join(base, suffix)
 
     # Priority 3: Project default template
@@ -261,7 +264,7 @@ function resolve_output_path(prompt_context, agent_config):
 
     # Priority 4: Fallback
     warn("JERRY_PROJECT not set — using work/ fallback")
-    suffix = agent_config.output.filename_pattern.interpolate(prompt_context.variables)
+    suffix = agent.md_instructions.filename.interpolate(prompt_context.variables)
     return join("work/", suffix)
 ```
 
@@ -284,20 +287,26 @@ Agents detect which priority level applies by scanning for specific markdown sec
 
 ### Governance YAML Changes
 
-The `output.location` field becomes the **Priority 3 default template**, not the only path. Add a new `output.filename_pattern` field for Priority 2 resolution:
+The `output.location` field becomes the **Priority 3 default template**, not the only path. Add a new `output.filename_pattern` field as **declarative documentation** of the filename used in Priority 2 resolution:
 
 ```yaml
 output:
   required: true
   # Priority 3: Default template (used when no caller override)
   location: "projects/${JERRY_PROJECT}/engagements/{engagement-id}/{agent}-{topic-slug}.md"
-  # Priority 2: Filename pattern (appended to caller-provided base_path)
+  # Declarative documentation: filename pattern for Priority 2 base-path resolution.
+  # This field is NOT read by agents at runtime (LLM agents cannot perform YAML lookups).
+  # The actual P2 filename is specified in the agent's .md Output Path Resolution instructions.
+  # This field SHOULD match the filename hardcoded in the .md instructions.
+  # Used for: schema validation, tooling, documentation.
   filename_pattern: "{agent}-{topic-slug}.md"
   levels:
     - L0
     - L1
     - L2
 ```
+
+**Runtime mechanism clarification:** Claude Code agents are LLM subprocesses that receive their `.md` file as system prompt content. They do **not** automatically have access to their `.governance.yaml` file at runtime. The actual P2 filename resolution works through the text instructions in each agent's `.md` Output Path Resolution section (e.g., "append `eng-architect-{topic-slug}.md`"). The `filename_pattern` field in governance YAML is a parallel declaration that documents the same value for schema validation and future tooling — it is not the runtime mechanism.
 
 ### Agent Definition (.md) Changes
 
@@ -307,7 +316,7 @@ Add an OUTPUT PATH RESOLUTION section to the `<output>` block explaining the pre
 <output>
 ### Output Path Resolution
 
-This agent follows the Unified Output Path Resolution Protocol (ADR-EPIC002-001):
+This agent follows the Unified Output Path Resolution Protocol (ADR-output-path-resolution-001):
 
 1. **Explicit path** — If the caller provides a path in the P-002 block, write there
 2. **Base path** — If the caller provides `OUTPUT CONTEXT.base_path`, append `{agent}-{topic-slug}.md`
@@ -440,7 +449,7 @@ skills/eng-team/output/{engagement-id}/eng-architect-{topic-slug}.md
 <output>
 ### Output Path Resolution
 
-This agent follows the Unified Output Path Resolution Protocol (ADR-EPIC002-001):
+This agent follows the Unified Output Path Resolution Protocol (ADR-output-path-resolution-001):
 
 1. **Explicit path** — If the caller provides a path in the P-002 block, write there
 2. **Base path** — If the caller provides `OUTPUT CONTEXT.base_path`, append filename
@@ -472,7 +481,7 @@ Replace agent table output column. Also update any examples, P-002 sections, and
 
 **After:**
 ```markdown
-6. [ ] Output will be written to `projects/${JERRY_PROJECT}/engagements/{engagement-id}/` per ADR-EPIC002-001
+6. [ ] Output will be written to `projects/${JERRY_PROJECT}/engagements/{engagement-id}/` per ADR-output-path-resolution-001
 ```
 
 **red-team engagement-playbook.md (line 81):**
@@ -480,7 +489,7 @@ Replace agent table output column. Also update any examples, P-002 sections, and
 # Before:
 10. [ ] Scope document persisted to `skills/red-team/output/{engagement-id}/`
 # After:
-10. [ ] Scope document persisted per ADR-EPIC002-001 resolution protocol (default: `projects/${JERRY_PROJECT}/engagements/{engagement-id}/`)
+10. [ ] Scope document persisted per ADR-output-path-resolution-001 resolution protocol (default: `projects/${JERRY_PROJECT}/engagements/{engagement-id}/`)
 ```
 
 **red-team pentest-engagement.md (line 151):**
@@ -506,7 +515,7 @@ artifact_path: projects/${JERRY_PROJECT}/engagements/{{ENGAGEMENT_ID}}/hypothesi
 Add to `.context/rules/agent-development-standards.md` in the **Agent Structure Standards** table (after AD-M-010):
 
 ```markdown
-| AD-M-011 | Agent output paths SHOULD follow the Unified Output Path Resolution Protocol (ADR-EPIC002-001). Agents SHOULD declare `output.location` as a project-relative default template using `projects/${JERRY_PROJECT}/` prefix, and SHOULD declare `output.filename_pattern` for base-path resolution. Agents SHOULD accept caller-provided explicit paths (Priority 1) or base paths (Priority 2) that override the default template. Agents SHOULD NOT hardcode output paths to `skills/*/output/` or any other skill-internal directory. Override requires documented justification per MEDIUM tier vocabulary. | Ensures agents work correctly in orchestration, worktracker, engagement, and standalone contexts. Prevents the skill-internal output path anti-pattern (BUG-006/GH #230). Reference architecture: `/problem-solving` agents. | ADR-EPIC002-001, BUG-006 |
+| AD-M-011 | Agent output paths SHOULD follow the Unified Output Path Resolution Protocol (ADR-output-path-resolution-001). Agents SHOULD declare `output.location` as a project-relative default template using `projects/${JERRY_PROJECT}/` prefix, and SHOULD declare `output.filename_pattern` for base-path resolution. Agents SHOULD accept caller-provided explicit paths (Priority 1) or base paths (Priority 2) that override the default template. Agents SHOULD NOT hardcode output paths to `skills/*/output/` or any other skill-internal directory. Override requires documented justification per MEDIUM tier vocabulary. | Ensures agents work correctly in orchestration, worktracker, engagement, and standalone contexts. Prevents the skill-internal output path anti-pattern (BUG-006/GH #230). Reference architecture: `/problem-solving` agents. | ADR-output-path-resolution-001, BUG-006 |
 ```
 
 ### Step 6: Update Governance Schema
@@ -522,7 +531,7 @@ Add `filename_pattern` to `docs/schemas/agent-governance-v1.schema.json` in the 
     "location": { "type": "string" },
 +   "filename_pattern": {
 +     "type": "string",
-+     "description": "Filename template for Priority 2 base-path resolution (ADR-EPIC002-001). Interpolated with agent variables when caller provides OUTPUT CONTEXT.base_path."
++     "description": "Filename template for Priority 2 base-path resolution (ADR-output-path-resolution-001). Interpolated with agent variables when caller provides OUTPUT CONTEXT.base_path."
 +   },
     "levels": { ... }
   }

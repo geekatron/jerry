@@ -24,7 +24,7 @@ Copy everything inside the fence below into a fresh Claude Code session on branc
 Resume EPIC-002 Phase 2 (Output Path Remediation). This session executes the full phase.
 
 Read these context files first:
-1. docs/design/ADR-EPIC002-001-unified-output-path-resolution.md — sections: Migration Guide (Steps 0-5), Agent Integration Specification
+1. docs/design/ADR-output-path-resolution-001.md — sections: Migration Guide (Steps 0-5), Agent Integration Specification
 2. projects/PROJ-024-tactical-work/work/EPIC-002-issue-triage-batch/EPIC-002-issue-triage-batch.md — sections: Work Items, Dependency Graph, Execution Phases
 3. projects/PROJ-030-bugs/work/BUG-006-skill-output-path-hardcoded.md — sections: Acceptance Criteria (AC-1 through AC-7)
 4. projects/PROJ-030-bugs/research/BUG-006-eng-audit-detail.md — 22 files with line numbers
@@ -64,7 +64,7 @@ Execute EPIC-002 Phase 2 (Output Path Remediation) — implement ADR-EPIC002-001
 
 Read the following files in order. These provide the migration specification, coordination state, and line-level audit citations:
 
-1. **ADR (migration spec):** `docs/design/ADR-EPIC002-001-unified-output-path-resolution.md`
+1. **ADR (migration spec):** `docs/design/ADR-output-path-resolution-001.md`
    - Sections needed: Migration Guide (Steps 0-5), Agent Integration Specification, Verification
 2. **Coordination epic:** `projects/PROJ-024-tactical-work/work/EPIC-002-issue-triage-batch/EPIC-002-issue-triage-batch.md`
    - Sections needed: Work Items table, Dependency Graph, Execution Phases (Phase 2)

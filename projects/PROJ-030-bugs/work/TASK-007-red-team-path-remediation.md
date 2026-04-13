@@ -5,13 +5,13 @@
 > **Priority:** high
 > **Created:** 2026-03-31
 > **Parent:** BUG-006
-> **ADR:** [ADR-EPIC002-001](../../../docs/design/ADR-EPIC002-001-unified-output-path-resolution.md)
+> **ADR:** [ADR-output-path-resolution-001](../../../docs/design/ADR-output-path-resolution-001.md)
 
 ---
 
 ## Summary
 
-Implement the Unified Output Path Resolution Protocol (ADR-EPIC002-001) across 25 red-team config files. Each file type requires different changes per the ADR migration guide.
+Implement the Unified Output Path Resolution Protocol (ADR-output-path-resolution-001) across 25 red-team config files. Each file type requires different changes per the ADR migration guide.
 
 ## Changes Per File Category
 

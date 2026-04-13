@@ -422,7 +422,7 @@ handoff_hypotheses_count: int  # VALIDATED + INVALIDATED hypotheses for downstre
 
 ### Output Path Resolution
 
-This agent follows the Unified Output Path Resolution Protocol (ADR-EPIC002-001):
+This agent follows the Unified Output Path Resolution Protocol (ADR-output-path-resolution-001):
 
 1. **Explicit path** -- If the caller provides a path in the P-002 block, write there
 2. **Base path** -- If the caller provides `OUTPUT CONTEXT.base_path`, append filename

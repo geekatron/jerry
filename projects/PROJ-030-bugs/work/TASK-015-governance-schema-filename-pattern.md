@@ -5,7 +5,7 @@
 > **Priority:** high
 > **Created:** 2026-03-31
 > **Parent:** BUG-006
-> **ADR:** [ADR-EPIC002-001](../../../docs/design/ADR-EPIC002-001-unified-output-path-resolution.md)
+> **ADR:** [ADR-output-path-resolution-001](../../../docs/design/ADR-output-path-resolution-001.md)
 
 ---
 
@@ -23,7 +23,7 @@ Add `filename_pattern` as an optional field to the `output` object in `docs/sche
     "location": { "type": "string" },
     "filename_pattern": {
       "type": "string",
-      "description": "Filename template for Priority 2 base-path resolution (ADR-EPIC002-001). Interpolated with agent variables when caller provides OUTPUT CONTEXT.base_path."
+      "description": "Filename template for Priority 2 base-path resolution (ADR-output-path-resolution-001). Interpolated with agent variables when caller provides OUTPUT CONTEXT.base_path."
     },
     "levels": { ... }
   }

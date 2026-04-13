@@ -157,7 +157,7 @@ All 5 bugs are in agent definition `.md` files and transformation rule files —
 
 ### Phase 2: Output Path Remediation (~2-3 sessions)
 
-Per [ADR-EPIC002-001](../../../docs/design/ADR-EPIC002-001-unified-output-path-resolution.md) migration guide:
+Per [ADR-output-path-resolution-001](../../../docs/design/ADR-output-path-resolution-001.md) migration guide:
 
 **2-pre (schema):** TASK-015 — add `filename_pattern` to governance schema. MUST execute first so YAML validation accepts the new field.
 

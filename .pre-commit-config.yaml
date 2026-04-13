@@ -123,6 +123,21 @@ repos:
         stages: [pre-commit]
 
   # =============================================================================
+  # Skill Output Path Enforcement (BUG-006, ADR-output-path-resolution-001 AD-M-011)
+  # Prevents hardcoded skills/*/output/ paths that violate the Unified Output
+  # Path Resolution Protocol. Agents MUST use project-relative output paths.
+  # =============================================================================
+  - repo: local
+    hooks:
+      - id: skill-output-path-enforcement
+        name: skill output path enforcement (BUG-006)
+        entry: "bash -c 'if grep -r \"skills/.*/output/\" skills/ 2>/dev/null; then echo \"ERROR: Hardcoded skills/*/output/ paths detected. Use project-relative paths per ADR-output-path-resolution-001 AD-M-011.\" >&2; exit 1; fi'"
+        language: system
+        files: ^skills/
+        pass_filenames: false
+        stages: [pre-commit]
+
+  # =============================================================================
   # Test Suite (configurable stage)
   # Uses uv run to ensure correct dependency management (DISC-008)
   # =============================================================================
