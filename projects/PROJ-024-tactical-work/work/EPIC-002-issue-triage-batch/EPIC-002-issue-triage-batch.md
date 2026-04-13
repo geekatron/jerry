@@ -42,7 +42,7 @@ This Epic is the **cross-session resumption artifact**. Any session on the `feat
 | Work Stream | Items | Project | Description |
 |-------------|-------|---------|-------------|
 | UC Pipeline Bugs | BUG-007, BUG-008, BUG-009, BUG-010, BUG-011 | PROJ-030 | 5 bugs in tspec-generator, tspec-analyst, uc-slicer, cd-generator |
-| Output Path Remediation | BUG-006, TASK-006, TASK-007, TASK-008, TASK-009, TASK-010, TASK-011, TASK-012 | PROJ-030 | 1 bug + 7 tasks remediating hardcoded `skills/*/output/` paths across 13 skills |
+| Output Path Remediation | BUG-006, TASK-006, TASK-007, TASK-008, TASK-009, TASK-010, TASK-011, TASK-012, TASK-015, BUG-012, BUG-013, BUG-014 | PROJ-030 | 1 bug + 7 tasks + 1 schema task remediating hardcoded `skills/*/output/` paths across 13 skills; 3 follow-on bugs for pm-pmm paths, prompt-engineering variable, governance completeness |
 | Quick Wins | TASK-013, TASK-014 | PROJ-024 | 2 low-effort tasks with immediate value |
 
 ---
@@ -53,7 +53,8 @@ This Epic is the **cross-session resumption artifact**. Any session on the `feat
 |-------|-------------|--------|
 | Phase 0 | Quick Wins (TASK-013, TASK-014) | completed |
 | Phase 1 | UC Pipeline Bugs (BUG-007 through BUG-011) | completed |
-| Phase 2 | Output Path Remediation (BUG-006, TASK-006 through TASK-012) | completed |
+| Phase 2 | Output Path Remediation (BUG-006, TASK-006 through TASK-012, TASK-015) | completed |
+| Phase 3 | Output Path Consistency Follow-on (BUG-012, BUG-013, BUG-014) | pending |
 
 ---
 
@@ -77,6 +78,10 @@ This Epic is the **cross-session resumption artifact**. Any session on the `feat
 | TASK-008 | Task | UX: governance YAML + agent .md + SKILL.md + templates + rules (60 files) | completed | PROJ-030 | — | 2b | TASK-015 |
 | TASK-012 | Task | Fix diataxis naming inconsistencies | completed | PROJ-030 | — | 2b | — |
 | TASK-010 | Task | Add AD-M-011 standard to agent-development-standards.md | completed | PROJ-030 | — | 2c | TASK-006, TASK-007, TASK-008 |
+| **Output Path Consistency Follow-on** | | | | | | | |
+| BUG-012 | Bug | pm-pmm agents write to repo-root docs/pm-pmm/ instead of project-relative | pending | PROJ-030 | — | 3 | BUG-006 |
+| BUG-013 | Bug | prompt-engineering agents use {PROJECT_ID} instead of ${JERRY_PROJECT} | pending | PROJ-030 | — | 3 | BUG-006 |
+| BUG-014 | Bug | 12 agents lack governance YAML output section | pending | PROJ-030 | — | 3 | BUG-006 |
 | **Quick Wins** | | | | | | | |
 | TASK-013 | Task | use-case SKILL.md missing Activity 5 entry | completed | PROJ-024 | #200 | 0 | — |
 | TASK-014 | Task | Orchestration scaffold cartesian product dirs | completed | PROJ-024 | #53 | 0 | — |
@@ -121,6 +126,12 @@ graph TD
         T10["TASK-010<br/>AD-M-011 standard"]
     end
 
+    subgraph "Phase 3: Output Path Consistency Follow-on (parallel)"
+        B12["BUG-012<br/>pm-pmm repo-root paths<br/>5 agents"]
+        B13["BUG-013<br/>prompt-eng {PROJECT_ID}<br/>2 agents"]
+        B14["BUG-014<br/>missing governance output<br/>12 agents"]
+    end
+
     T15 --> T06
     T15 --> T07
     T15 --> T08
@@ -128,6 +139,9 @@ graph TD
     T06 --> T10
     T07 --> T10
     T08 --> T10
+    T10 --> B12
+    T10 --> B13
+    T10 --> B14
 ```
 
 ---
@@ -166,6 +180,16 @@ Per [ADR-output-path-resolution-001](../../../docs/design/ADR-output-path-resolu
 **2b (fix):** TASK-006 (eng, 22 files), TASK-007 (red, 25 files), TASK-008 (UX, 60 files), TASK-012 (diataxis) — each task now covers governance YAML + agent .md + SKILL.md + templates per ADR Steps 1-4. Can parallelize across sessions.
 
 **2c (standard):** TASK-010 — codify AD-M-011 in agent-development-standards.md after all path fixes validated.
+
+### Phase 3: Output Path Consistency Follow-on (~1-2 sessions)
+
+Discovered during BUG-006 full 89-agent audit. All three are independent and can be parallelized.
+
+| Item | Effort | Notes |
+|------|--------|-------|
+| BUG-012 | Medium | 5 pm-pmm agents: replace `docs/pm-pmm/` with `projects/${JERRY_PROJECT}/` pattern. Same remediation steps as BUG-006 TASK-006/007/008. |
+| BUG-013 | Small | 2 prompt-engineering agents: replace `{PROJECT_ID}` placeholder with `${JERRY_PROJECT}` env var. Governance YAML + agent .md updates. |
+| BUG-014 | Medium | 12 agents across 4 skills (adversary, transcript, saucer-boy-framework-voice, worktracker): add `output:` section to governance YAML with `required`, `location`, `filename_pattern` fields. |
 
 ---
 
