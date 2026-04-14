@@ -5,7 +5,7 @@
 Integration tests for Jerry CLI via subprocess execution.
 
 These tests execute the actual `jerry` command via `uv run` to validate:
-- Plugin mode execution (no `pip install -e .` required)
+- Plugin mode execution (runs via `uv run` without editable install)
 - CLI argument parsing
 - JSON output format
 - Exit codes
@@ -598,14 +598,14 @@ class TestJsonOutput:
 
 
 class TestPluginModeExecution:
-    """Tests validating plugin mode execution (no pip install -e . required)."""
+    """Tests validating plugin mode execution (runs via uv run, no editable install)."""
 
     def test_cli_executes_without_pip_install(
         self,
         project_root: Path,
         env_with_pythonpath: dict[str, str],
     ) -> None:
-        """CLI executes via uv run without pip install."""
+        """CLI executes via uv run without editable install."""
         result = run_jerry(
             ["--version"],
             project_root=project_root,

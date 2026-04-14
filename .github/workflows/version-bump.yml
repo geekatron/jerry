@@ -66,7 +66,7 @@ on:
       - 'runbooks/**'
       - '.pre-commit-config.yaml'
       - 'pytest.ini'
-      - 'requirements-*.txt'
+      # requirements-*.txt removed — uv-only per H-05
       # --- Community/legal (no behavioral impact) ---
       - 'CODE_OF_CONDUCT.md'
       - 'CONTRIBUTING.md'

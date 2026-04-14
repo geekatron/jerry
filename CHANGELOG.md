@@ -7,8 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+- Delete `requirements.txt`, `requirements-dev.txt`, `requirements-test.txt` — dead pip artifacts that triggered broken Dependabot PRs (#251); uv-only per H-05
+- Remove pip fallback from release archive — `release.yml` no longer bundles requirements files
+- Remove all `pip install` instructions from docs, error messages, and CI comments — replaced with `uv add`/`uv tool install`/`uv run`
+
 ### Fixed
 - Migrate 7 enum classes from `(str, Enum)` to `StrEnum` in `docs/schemas/types/session_context.py` — Python 3.11+ modernization, unblocks ruff 0.15.10 UP042 rule
+- **fix(ci):** replace bare `python3 -m py_compile` with `uv run python -m py_compile` in plugin-validation — closes last H-05 violation
 - **fix(ci):** scope `pull-requests:write` to `coverage-report` job only — eliminates PR write blast radius for 14 jobs (TASK-021)
 - **fix(ci):** restrict push triggers to `main`/`master` branches — closes untrusted-branch CI trigger attack surface (TASK-022)
 - **fix(ci):** migrate lint, type-check, security jobs to `uv sync --frozen` — eliminates 4 H-05 violations and closes supply chain gap (TASK-017)
