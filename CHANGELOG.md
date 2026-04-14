@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
+- Migrate 7 enum classes from `(str, Enum)` to `StrEnum` in `docs/schemas/types/session_context.py` — Python 3.11+ modernization, unblocks ruff 0.15.10 UP042 rule
 - **fix(ci):** scope `pull-requests:write` to `coverage-report` job only — eliminates PR write blast radius for 14 jobs (TASK-021)
 - **fix(ci):** restrict push triggers to `main`/`master` branches — closes untrusted-branch CI trigger attack surface (TASK-022)
 - **fix(ci):** migrate lint, type-check, security jobs to `uv sync --frozen` — eliminates 4 H-05 violations and closes supply chain gap (TASK-017)
