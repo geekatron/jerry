@@ -8,7 +8,7 @@
 #
 # Jobs:
 #   validate  — extract version from tag, verify against pyproject.toml
-#   ci        — lint, format, type check, test (pre-release gate)
+#   ci        — static analysis + tests (pre-release gate)
 #   build     — create plugin archives (.tar.gz, .zip) with checksums
 #   release   — create GitHub Release with auto-generated notes
 

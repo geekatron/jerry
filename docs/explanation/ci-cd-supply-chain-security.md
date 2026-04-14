@@ -132,7 +132,7 @@ The EN-001 enabler that resulted from this investigation addressed all five find
 
 This topic connects to several other areas of the Jerry Framework:
 
-- **H-05 (UV-only Python environment):** The CI pipeline's use of `uv sync --frozen` is the CI-side enforcement of the same principle that H-05 mandates for local development. H-05 prohibits direct `python` and `pip` invocations; the pipeline enforces this by using `uv run` for all project Python execution. As of EPIC-003, all CI jobs use `uv sync --frozen` for dependency installation and `uv run` for tool execution — there are zero `pip install` commands in the pipeline. The security job audits the full dependency tree via `uv export --all-extras --no-emit-project` piped to `pip-audit`, ensuring every direct and transitive dependency is scanned against the PyPI advisory database.
+- **H-05 (UV-only Python environment):** The CI pipeline's use of `uv sync --frozen` is the CI-side enforcement of the same principle that H-05 mandates for local development. H-05 prohibits direct `python` and `pip` invocations; the pipeline enforces this by using `uv run` for all project Python execution. All CI jobs use `uv sync --frozen` for dependency installation and `uv run` for tool execution — there are zero `pip install` commands in the pipeline. The security job audits the full dependency tree via `uv export --all-extras --no-emit-project` piped to `pip-audit`, ensuring every direct and transitive dependency is scanned against the PyPI advisory database.
 
 - **The version-bump pipeline's relationship to the release pipeline:** The version-bump workflow creates a commit and a tag. The tag push triggers the release workflow. This is a two-stage chain where the security of the release depends on the integrity of the version bump. A compromised version-bump commit could inject malicious content that the release workflow then packages and publishes. This is why the version-bump job has the most stringent security controls -- it is the pipeline's highest-privilege execution context.
 
@@ -157,6 +157,7 @@ There is also a broader question about how much security investment is appropria
 ## Related
 
 - **Reference:** [CI/CD Pipeline Security Controls](../reference/ci-cd-pipeline-security.md) -- Exact configurations, SHA-to-version mappings, and per-workflow control inventory
+- **How-to:** [Add a New CI Job](../howto/add-ci-job.md) -- Step-by-step procedure for adding a job that meets all security controls
 - **Work Item:** EN-001: CI Pipeline Hardening (`projects/PROJ-030-bugs/work/EN-001-ci-pipeline-hardening.md`) -- The enabler that drove this work
 - **Work Item:** BUG-003: Version Bump uv.lock Dirty (`projects/PROJ-030-bugs/work/BUG-003-version-bump-uv-lock-dirty.md`) -- The bug that started the investigation
 - **Security Review:** EN-001 DevSecOps Security Review (`projects/PROJ-030-bugs/reviews/en-001-devsecops-security-review.md`) -- Full security assessment with per-file findings

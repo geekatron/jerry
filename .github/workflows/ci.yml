@@ -1,6 +1,7 @@
 # Jerry Framework CI Pipeline
 # ADR: projects/PROJ-001-plugin-cleanup/decisions/ADR-CI-001-cicd-pipeline.md
 # Security ref: docs/reference/ci-cd-pipeline-security.md
+# How-to guide: docs/howto/add-ci-job.md
 #
 # Triggers: push to main/master | PRs to main/master/claude/**
 # Permissions: contents:read (top-level); pull-requests:write (coverage-report only)
