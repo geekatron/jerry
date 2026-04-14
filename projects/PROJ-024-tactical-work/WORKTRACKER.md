@@ -12,6 +12,14 @@
 | EPIC-002 | Epic | Issue Triage Batch — UC Pipeline Bugs, Output Paths, Quick Wins | in_progress | PROJ-024 |
 | TASK-013 | Task | use-case SKILL.md missing Activity 5 entry (#200) | completed | EPIC-002 |
 | TASK-014 | Task | Orchestration scaffold cartesian product dirs (#53) | completed | EPIC-002 |
+| EPIC-003 | Epic | CI Pipeline Optimization — Remove Pip Matrix, Fix Supply Chain Gaps, Consolidate Jobs | completed | PROJ-024 |
+| TASK-016 | Task | Remove pip test matrix (8 jobs) | completed | EPIC-003 |
+| TASK-017 | Task | Migrate lint, type-check, security to uv | completed | EPIC-003 |
+| TASK-018 | Task | Fix pip-audit to scan full dependency tree | completed | EPIC-003 |
+| TASK-019 | Task | Consolidate 6 validation jobs into 1 | completed | EPIC-003 |
+| TASK-020 | Task | Merge lint + type-check into static-analysis | completed | EPIC-003 |
+| TASK-021 | Task | Scope pull-requests:write to coverage-report only | completed | EPIC-003 |
+| TASK-022 | Task | Restrict push trigger to protected branches only | completed | EPIC-003 |
 
 ## Completed
 

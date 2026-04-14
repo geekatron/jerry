@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **fix(ci):** scope `pull-requests:write` to `coverage-report` job only — eliminates PR write blast radius for 14 jobs (TASK-021)
+- **fix(ci):** restrict push triggers to `main`/`master` branches — closes untrusted-branch CI trigger attack surface (TASK-022)
+- **fix(ci):** migrate lint, type-check, security jobs to `uv sync --frozen` — eliminates 4 H-05 violations and closes supply chain gap (TASK-017)
+- **fix(ci):** scan full dependency tree via `uv export --all-extras` for pip-audit — replaces 3-package hand-picked list with complete lockfile audit (TASK-018)
+
+### Changed
+- **refactor(ci):** remove redundant `test-pip` job (8 matrix cells) — uv test matrix provides equivalent coverage (TASK-016)
+- **refactor(ci):** consolidate 6 validation jobs (`lockfile-check`, `template-validation`, `frontmatter-validation`, `license-headers`, `version-sync`, `hard-rule-ceiling`) into single `validation` job (TASK-019)
+- **refactor(ci):** merge `lint` and `type-check` into `static-analysis` job with shared `uv sync --frozen --extra dev` (TASK-020)
+
 ### Added
 - ADR-output-path-resolution-001: Unified Output Path Resolution Protocol (P1/P2/P3/P4 layered resolution chain)
 - AD-M-011 MEDIUM standard: agents SHOULD use project-relative output paths per ADR-output-path-resolution-001

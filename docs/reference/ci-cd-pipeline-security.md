@@ -7,10 +7,13 @@
 | Section | Purpose |
 |---------|---------|
 | [Overview](#overview) | Workflows covered and control taxonomy |
+| [Pipeline Job Structure](#pipeline-job-structure) | Jobs in `ci.yml` with purpose and trigger conditions |
+| [Permission Model](#permission-model) | Top-level and job-level GitHub Actions permissions |
+| [Push Trigger Scope](#push-trigger-scope) | Branch filter applied to push and pull_request events |
 | [SHA Pinning](#sha-pinning) | GitHub Actions pinned to commit SHAs |
 | [UV Binary Pinning](#uv-binary-pinning) | `astral-sh/setup-uv` version pinning |
-| [Pip Tool Pinning](#pip-tool-pinning) | Version-pinned tools installed via pip in CI |
 | [Frozen Lockfile Enforcement](#frozen-lockfile-enforcement) | Lockfile enforcement across workflows |
+| [Dependency Audit](#dependency-audit) | pip-audit scan via exported lockfile |
 | [Skip-Bump Guard](#skip-bump-guard) | Infinite-loop and double-bump prevention in version-bump.yml |
 | [Dependabot Configuration](#dependabot-configuration) | Risk-tiered dependency update management |
 | [Scheduled Security Scan](#scheduled-security-scan) | Daily pip-audit for transitive CVE detection |
@@ -20,13 +23,13 @@
 
 ## Overview
 
-The Jerry Framework CI/CD pipeline spans five GitHub Actions workflow files and one Dependabot configuration. The security controls documented here apply to supply chain integrity, reproducible builds, and workflow loop prevention.
+The Jerry Framework CI/CD pipeline spans five GitHub Actions workflow files and one Dependabot configuration. The security controls documented here apply to supply chain integrity, reproducible builds, permission scoping, and workflow loop prevention.
 
 **Workflow files covered:**
 
 | File | Purpose |
 |------|---------|
-| `.github/workflows/ci.yml` | Main CI pipeline: lint, type-check, security, test matrix, validation jobs |
+| `.github/workflows/ci.yml` | Main CI pipeline: static analysis, security, validation, plugin checks, CLI integration, test matrix |
 | `.github/workflows/version-bump.yml` | Automated version bump on push to main |
 | `.github/workflows/release.yml` | GitHub Release creation on `v*` tag push |
 | `.github/workflows/docs.yml` | MkDocs deployment to GitHub Pages |
@@ -35,55 +38,220 @@ The Jerry Framework CI/CD pipeline spans five GitHub Actions workflow files and 
 
 ---
 
+## Pipeline Job Structure
+
+All jobs are defined in `.github/workflows/ci.yml`.
+
+**Job summary:**
+
+| Job | Trigger | Runs on | Purpose |
+|-----|---------|---------|---------|
+| `static-analysis` | push, pull_request | ubuntu-latest | ruff check, ruff format --check, pyright |
+| `security` | push, pull_request | ubuntu-latest | pip-audit full lockfile scan, banned YAML API check |
+| `validation` | push, pull_request | ubuntu-latest | lockfile freshness, HARD rule ceiling, version sync, SPDX headers, adversarial templates, agent frontmatter |
+| `plugin-validation` | push, pull_request | ubuntu-latest | plugin manifests, hook wrapper syntax, hook script syntax, plugin.json agent sync |
+| `cli-integration` | push, pull_request | ubuntu-latest | subprocess CLI tests, MkDocs e2e validation, `jerry --help`, `jerry --version` |
+| `test-uv` | push, pull_request | ubuntu/windows/macos x Python 3.11–3.14 (8 cells) | pytest suite with coverage |
+| `coverage-report` | pull_request only | ubuntu-latest | Posts coverage comment to PR |
+| `changelog-check` | pull_request only | ubuntu-latest | Validates CHANGELOG.md updated in PR |
+| `ci-success` | always (gate) | ubuntu-latest | Aggregates all required job results; branch protection target |
+
+**`ci-success` required jobs:**
+
+`static-analysis`, `security`, `validation`, `plugin-validation`, `cli-integration`, `test-uv`, `changelog-check`
+
+`changelog-check` result of `skipped` is treated as passing (it only runs on pull_request events; push events skip it).
+
+**`coverage-report` is not in `ci-success`'s `needs` list.** It runs as a PR annotation step only and does not gate the branch protection check.
+
+### `static-analysis` job
+
+Merged replacement for the former `lint` and `type-check` jobs.
+
+| Step | Command |
+|------|---------|
+| Check linting | `uv run ruff check . --config=pyproject.toml` |
+| Check formatting | `uv run ruff format --check . --config=pyproject.toml` |
+| Run type check | `uv run pyright src/` |
+
+Dependencies installed via: `uv sync --frozen --extra dev`
+
+### `security` job
+
+| Step | Command |
+|------|---------|
+| Export dependencies | `uv export --no-hashes --frozen --all-extras --no-emit-project > /tmp/requirements.txt` |
+| Audit dependencies | `uv run pip-audit --requirement /tmp/requirements.txt --strict --desc` |
+| Check for banned YAML APIs | `grep -rn 'yaml\.load\('` and `yaml\.unsafe_load\(` in `src/` |
+
+The banned YAML API check enforces M-04b: `yaml.load()` and `yaml.unsafe_load()` are prohibited; `yaml.safe_load()` is the required alternative. Exit code 1 on any match.
+
+### `validation` job
+
+Consolidates six formerly independent single-script jobs into one runner. Each former job is a named step.
+
+| Step | Former job | Validation |
+|------|-----------|------------|
+| Verify uv.lock is fresh | `lockfile-check` | `uv lock --check` |
+| Check HARD rule ceiling | `hard-rule-ceiling` | `uv run python scripts/check_hard_rule_ceiling.py` |
+| Validate version consistency | `version-sync` | `uv run python scripts/sync_versions.py --check` |
+| Validate SPDX license headers | `license-headers` | `uv run python scripts/check_spdx_headers.py` |
+| Validate adversarial strategy templates | `template-validation` | `uv run python scripts/validate_templates.py --verbose` |
+| Validate agent and skill frontmatter | `frontmatter-validation` | `uv run jerry agents validate-frontmatter` |
+
+Dependencies installed via: `uv sync --frozen`
+
+### `plugin-validation` job
+
+| Step | Command |
+|------|---------|
+| Validate plugin manifests | `uv run python scripts/validate_plugin_manifests.py` |
+| Validate hook wrappers syntax | `python3 -m py_compile hooks/session-start.py hooks/pre-compact.py hooks/pre-tool-use.py hooks/user-prompt-submit.py` |
+| Validate hook scripts syntax | `uv run python -m py_compile` for each `.py` in `hooks/` and `scripts/` |
+| Validate plugin.json agent sync | `uv run python scripts/check_plugin_agent_sync.py` |
+
+Dependencies installed via: `uv sync --frozen --extra dev`
+
+### `cli-integration` job
+
+| Step | Command |
+|------|---------|
+| Run CLI subprocess tests | `uv run pytest tests/integration/cli/test_jerry_cli_subprocess.py -v --tb=short` |
+| Run MkDocs e2e validation tests | `uv run pytest tests/e2e/test_mkdocs_research_validation.py -v --tb=short` |
+| Verify jerry --help works | `PYTHONPATH="." uv run jerry --help` |
+| Verify jerry --version works | `PYTHONPATH="." uv run jerry --version` |
+
+Dependencies installed via: `uv sync --frozen --extra dev --extra test`
+
+### `test-uv` job
+
+| Parameter | Value |
+|-----------|-------|
+| OS matrix | `ubuntu-latest`, `windows-latest`, `macos-latest` |
+| Python matrix | `3.11`, `3.12`, `3.13`, `3.14` |
+| Excluded cells | windows+3.11, windows+3.12, macos+3.11, macos+3.12 |
+| Active cells | 8 |
+| `fail-fast` | `false` |
+| Coverage threshold | `--cov-fail-under=80` |
+| Skip marker | `[skip-coverage]` in commit message disables `--cov-fail-under` |
+| Excluded test markers | `llm`, `subprocess` |
+
+Coverage artifact upload and Codecov upload occur only for the `ubuntu-latest` + `3.14` cell.
+
+### `coverage-report` job
+
+| Parameter | Value |
+|-----------|-------|
+| Trigger | `pull_request` events only |
+| `needs` | `test-uv` |
+| `permissions.pull-requests` | `write` (only job with this permission) |
+| Action | `MishaKav/pytest-coverage-comment` |
+| Coverage input | `coverage.xml` from `coverage-report-uv` artifact |
+| JUnit input | `junit-uv-3.14.xml` from `coverage-report-uv` artifact |
+
+### `changelog-check` job
+
+| Parameter | Value |
+|-----------|-------|
+| Trigger | `pull_request` events only |
+| Exempt actors | `dependabot[bot]`, `github-actions[bot]` |
+| Exempt marker | `[skip-changelog]` in PR title |
+| Validation | CHANGELOG.md must appear in `git diff --name-only BASE...HEAD` and contain new content under `[Unreleased]` |
+| Shell injection prevention | PR title passed via `env:` block (CLCHK-001), not inline `${{ }}` expansion |
+
+### `ci-success` job
+
+| Parameter | Value |
+|-----------|-------|
+| `if` condition | `always()` |
+| Required results | `success` for all jobs except `changelog-check` |
+| `changelog-check` accepted results | `success` or `skipped` |
+
+---
+
+## Permission Model
+
+**Top-level permissions in `ci.yml`:**
+
+```yaml
+permissions:
+  contents: read
+```
+
+All jobs inherit `contents: read` unless overridden at the job level.
+
+**Job-level permission overrides:**
+
+| Job | `contents` | `pull-requests` | Rationale |
+|-----|-----------|-----------------|-----------|
+| `coverage-report` | `read` (inherited) | `write` | Required to post PR comment via `MishaKav/pytest-coverage-comment` |
+| All other jobs | `read` (inherited) | not granted | No PR write access needed |
+
+`pull-requests: write` is scoped exclusively to `coverage-report`. No other job receives write permissions to the repository or pull requests.
+
+---
+
+## Push Trigger Scope
+
+**`ci.yml` trigger configuration:**
+
+```yaml
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master, "claude/**"]
+```
+
+Push events trigger CI only on `main` and `master`. The wildcard `"**"` is not used. This prevents CI from running on every developer branch push.
+
+Pull request events trigger CI for PRs targeting `main`, `master`, or any `claude/**` branch.
+
+---
+
 ## SHA Pinning
 
-GitHub Actions can be referenced by floating version tag (e.g., `@v5`) or by immutable commit SHA. Tag references are mutable: a maintainer or attacker can force-push a tag to point to a different commit, causing the CI pipeline to execute arbitrary code. SHA references resolve to exactly one commit and cannot be redirected.
+GitHub Actions referenced by immutable commit SHA rather than floating version tag. A human-readable version comment accompanies each SHA.
 
-All GitHub Actions across the Jerry CI/CD pipeline are pinned to commit SHAs. A human-readable version comment accompanies each SHA.
-
-**SHA-to-version mapping (as of v0.25.0):**
+**SHA-to-version mapping (current):**
 
 | Action | SHA | Version |
 |--------|-----|---------|
-| `actions/checkout` | `08c6903cd8c0fde910a37f88322edcfb5dd907a8` | v5.0.0 |
-| `actions/setup-python` | `8d9ed9ac5c53483de85588cdf95a591a75ab9f55` | v5.5.0 |
-| `astral-sh/setup-uv` | `d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86` | v5.4.2 |
-| `actions/upload-artifact` | `ea165f8d65b6e75b540449e92b4886f43607fa02` | v4.6.2 |
-| `actions/download-artifact` | `95815c38cf2ff2164869cbab79da8d1f422bc89e` | v4.2.1 |
-| `codecov/codecov-action` | `4650159d642e33fdc30954ca22638caf0df6cac8` | v5.4.3 |
-| `softprops/action-gh-release` | `da05d552573ad5aba039eaac05058a918a7bf631` | v2.2.2 |
-| `actions/github-script` | `60a0d83039c74a4aee543508d2ffcb1c3799cdea` | v7.0.1 |
-| `MishaKav/pytest-coverage-comment` | `26f986d2599c288bb62f623d29c2da98609e9cd4` | main (2026-03-09) |
+| `actions/checkout` | `de0fac2e4500dabe0009e67214ff5f5447ce83dd` | v6.0.2 |
+| `astral-sh/setup-uv` | `cec208311dfd045dd5311c1add060b2062131d57` | v8.0.0 |
+| `actions/upload-artifact` | `043fb46d1a93c77aae656e7c1c64a875d1fc6a0a` | v7.0.1 |
+| `actions/download-artifact` | `3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c` | v8.0.1 |
+| `codecov/codecov-action` | `57e3a136b779b570ffcdbf80b3bdc90e7fab3de2` | v6.0.0 |
+| `softprops/action-gh-release` | `b4309332981a82ec1c5618f44dd2e27cc8bfbfda` | v3.0.0 |
+| `actions/github-script` | `3a2844b7e9c422d3c10d287c895573f7108da1b3` | v9.0.0 |
+| `MishaKav/pytest-coverage-comment` | `287292879eaaff04116f36d3eb1a670f6e5df1a4` | main (2026-03-09) |
 
 **Workflows where SHA-pinned actions appear:**
 
 | Action | ci.yml | version-bump.yml | release.yml | docs.yml | pat-monitor.yml |
 |--------|--------|------------------|-------------|----------|-----------------|
 | `actions/checkout` | Yes | Yes | Yes | Yes | No |
-| `actions/setup-python` | Yes (lint, type-check, security) | No | No | No | No |
-| `astral-sh/setup-uv` | Yes (uv-dependent jobs) | Yes | Yes | Yes | No |
-| `actions/upload-artifact` | Yes | No | Yes | No | No |
-| `actions/download-artifact` | Yes | No | Yes | No | No |
-| `codecov/codecov-action` | Yes | No | No | No | No |
+| `astral-sh/setup-uv` | Yes (all uv jobs) | No | Yes | Yes | No |
+| `actions/upload-artifact` | Yes (test-uv) | No | Yes | No | No |
+| `actions/download-artifact` | Yes (coverage-report) | No | Yes | No | No |
+| `codecov/codecov-action` | Yes (test-uv) | No | No | No | No |
 | `softprops/action-gh-release` | No | No | Yes | No | No |
 | `actions/github-script` | No | No | No | No | Yes |
-| `MishaKav/pytest-coverage-comment` | Yes (coverage-report job) | No | No | No | No |
+| `MishaKav/pytest-coverage-comment` | Yes (coverage-report) | No | No | No | No |
 
 **Maintenance:** Dependabot monitors the `github-actions` ecosystem and opens pull requests when new versions of pinned actions are available. See [Dependabot Configuration](#dependabot-configuration).
 
 **Syntax example:**
 
 ```yaml
-- uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+- uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 ```
 
 ---
 
 ## UV Binary Pinning
 
-The `astral-sh/setup-uv` action accepts a `version` parameter. When set to `"latest"`, the action downloads whatever version of `uv` is current at the time the job runs. This partially defeats SHA pinning: even if the action itself is SHA-pinned, a change in the `uv` binary can alter dependency resolution behavior, produce different `uv.lock` outputs, or introduce regressions.
-
-All workflows that install `uv` specify `version: "0.10.9"`.
+The `astral-sh/setup-uv` action accepts a `version` parameter. All workflows that install `uv` specify `version: "0.10.9"`.
 
 **Value:** `"0.10.9"`
 
@@ -91,7 +259,7 @@ All workflows that install `uv` specify `version: "0.10.9"`.
 
 | Workflow | Job(s) |
 |----------|--------|
-| `ci.yml` | plugin-validation, template-validation, license-headers, cli-integration, test-uv, version-sync, hard-rule-ceiling |
+| `ci.yml` | static-analysis, security, validation, plugin-validation, cli-integration, test-uv |
 | `version-bump.yml` | bump |
 | `release.yml` | validate, ci |
 | `docs.yml` | deploy |
@@ -100,56 +268,16 @@ All workflows that install `uv` specify `version: "0.10.9"`.
 
 ```yaml
 - name: Install uv
-  uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5.4.2
+  uses: astral-sh/setup-uv@cec208311dfd045dd5311c1add060b2062131d57 # v8.0.0
   with:
     version: "0.10.9"
 ```
 
 ---
 
-## Pip Tool Pinning
-
-Several tools in `ci.yml` are installed via `pip install` with exact version pins. These tools run outside the `uv`-managed virtual environment. Pinning prevents PyPI package compromise or unexpected behavioral changes from affecting CI outcomes.
-
-**Pinned pip-installed tools:**
-
-| Tool | Pinned Version | Job | Purpose |
-|------|---------------|-----|---------|
-| `ruff` | `0.14.11` | lint, security | Linting and format checking |
-| `pyright` | `1.1.408` | type-check | Static type analysis |
-| `pip-audit` | `2.10.0` | security | Vulnerability scanning of installed packages |
-| `filelock` | `3.20.3` | security | Dependency of audited packages; pinned to prevent drift |
-| `mypy` | `1.19.1` | security | Audited alongside other packages |
-
-**Note:** The `lint` job installs `ruff` via `pip install "ruff==0.14.11"`. The `security` job independently installs `filelock`, `mypy`, and `ruff` at the same pinned versions before running `pip-audit --strict`, ensuring the audit covers the exact set of packages used in other jobs.
-
-**Configuration example (security job):**
-
-```yaml
-- name: Install and audit dependencies
-  run: |
-    pip install "filelock==3.20.3" "mypy==1.19.1" "ruff==0.14.11"
-    pip-audit --strict
-```
-
-**`bump-my-version` pinning (version-bump.yml):**
-
-`bump-my-version` is installed via `uv tool install` rather than `pip install`, but is also version-pinned:
-
-| Tool | Pinned Version | Workflow | Purpose |
-|------|---------------|----------|---------|
-| `bump-my-version` | `1.2.7` | version-bump.yml | Version string update across all project files |
-
-```yaml
-- name: Install bump-my-version
-  run: uv tool install 'bump-my-version==1.2.7'
-```
-
----
-
 ## Frozen Lockfile Enforcement
 
-`uv sync` resolves the project's dependencies from scratch, potentially updating `uv.lock` when the resolver produces different output for a given Python version or platform. `uv sync --frozen` reads the existing `uv.lock` without modification. If the lockfile is inconsistent with `pyproject.toml`, `--frozen` exits with an error rather than silently updating the lockfile.
+`uv sync --frozen` reads the existing `uv.lock` without modification. If the lockfile is inconsistent with `pyproject.toml`, `--frozen` exits with an error rather than silently updating the lockfile.
 
 **Effect of `--frozen` in CI:**
 
@@ -160,19 +288,16 @@ Several tools in `ci.yml` are installed via `pip install` with exact version pin
 | Working tree state | May become dirty | Remains clean |
 | `bump-my-version` compatibility | Fails if working tree is dirty | Passes |
 
-The version-bump workflow uses `allow_dirty = false` (bump-my-version default). A dirty working tree caused by `uv.lock` modification aborts the version bump with an error. The `--frozen` flag prevents this condition.
-
 **Workflows and jobs using `uv sync --frozen`:**
 
 | Workflow | Job | Command |
 |----------|-----|---------|
+| `ci.yml` | static-analysis | `uv sync --frozen --extra dev` |
+| `ci.yml` | security | `uv sync --frozen` |
+| `ci.yml` | validation | `uv sync --frozen` |
 | `ci.yml` | plugin-validation | `uv sync --frozen --extra dev` |
-| `ci.yml` | template-validation | `uv sync --frozen` |
-| `ci.yml` | license-headers | `uv sync --frozen` |
 | `ci.yml` | cli-integration | `uv sync --frozen --extra dev --extra test` |
 | `ci.yml` | test-uv | `uv sync --frozen --extra test` |
-| `ci.yml` | version-sync | `uv sync --frozen` |
-| `ci.yml` | hard-rule-ceiling | `uv sync --frozen` |
 | `version-bump.yml` | bump (Install project dependencies) | `uv sync --frozen` |
 | `version-bump.yml` | bump (Validate version sync) | `uv sync --frozen` |
 | `release.yml` | validate | `uv sync --frozen` |
@@ -194,17 +319,50 @@ After `uv sync --frozen` but before applying the version bump, `version-bump.yml
     fi
 ```
 
-This guard fails loudly when the tree is dirty, requiring a human to investigate rather than silently committing unreviewed changes.
+**`validation` job lockfile freshness check:**
+
+The `validation` job runs `uv lock --check` (the `lockfile-check` step) before installing dependencies. This verifies the lockfile is consistent with `pyproject.toml` without modifying it.
+
+---
+
+## Dependency Audit
+
+The `security` job scans the full locked dependency tree for known CVEs via pip-audit.
+
+**Export command:**
+
+```yaml
+uv export --no-hashes --frozen --all-extras --no-emit-project > /tmp/requirements.txt
+```
+
+| Flag | Effect |
+|------|--------|
+| `--no-hashes` | Produces pip-compatible requirements format without hash directives |
+| `--frozen` | Reads the existing lockfile; does not re-resolve |
+| `--all-extras` | Includes all optional dependency groups (`dev`, `test`, etc.) |
+| `--no-emit-project` | Excludes the project package itself from the output |
+
+**Audit command:**
+
+```yaml
+uv run pip-audit --requirement /tmp/requirements.txt --strict --desc
+```
+
+| Flag | Effect |
+|------|--------|
+| `--requirement` | Audits the specified requirements file rather than the active environment |
+| `--strict` | Exits non-zero if any package cannot be audited |
+| `--desc` | Includes vulnerability descriptions in output |
+
+The `security` job does not install standalone tools via `pip install`. All execution is via `uv run` within the project virtual environment.
 
 ---
 
 ## Skip-Bump Guard
 
-The version-bump workflow (`version-bump.yml`) runs on every push to `main`. Without a guard, the workflow would trigger on its own version-bump commits, creating an infinite loop. A secondary risk is double-bumping: manually dispatching the workflow for a commit that already carries a `[skip-bump]` marker.
+The version-bump workflow (`version-bump.yml`) runs on every push to `main`. The job-level `if` expression prevents infinite loops and double-bumping.
 
 **Guard conditions:**
-
-The job-level `if` expression evaluates two branches:
 
 | Trigger | Condition for job to run |
 |---------|--------------------------|
@@ -213,11 +371,11 @@ The job-level `if` expression evaluates two branches:
 
 **`[skip-bump]` marker:**
 
-When a commit message contains the string `[skip-bump]`, the version-bump job does not run for that commit, regardless of how the workflow was triggered. This prevents `workflow_dispatch` from re-bumping a commit already marked to skip.
+When a commit message contains the string `[skip-bump]`, the version-bump job does not run for that commit, regardless of how the workflow was triggered.
 
 **`github.actor` check:**
 
-The `github.actor` field is the authenticated identity set by GitHub from the token used to push the commit. It is not the `git config user.name` value. The version-bump commit is pushed using `github-actions[bot]` as the actor. Checking `github.actor` rather than the commit author name prevents spoofing via `git config user.name "github-actions[bot]"`.
+`github.actor` is the authenticated identity set by GitHub from the token used to push the commit. It is not the `git config user.name` value. The version-bump commit is pushed using `github-actions[bot]` as the actor. Checking `github.actor` rather than the commit author name prevents spoofing via `git config user.name "github-actions[bot]"`.
 
 **Complete `if` expression:**
 
@@ -245,15 +403,13 @@ if [[ -n "$PRERELEASE" && ! "$PRERELEASE" =~ ^[a-zA-Z0-9]+$ ]]; then
 fi
 ```
 
-This prevents shell injection via the free-form `workflow_dispatch` string input.
-
 ---
 
 ## Dependabot Configuration
 
-Dependabot monitors two package ecosystems with risk-tiered grouping (#188). Updates are classified by SemVer level and handled differently based on risk.
-
 **File:** `.github/dependabot.yml`
+
+Dependabot monitors two package ecosystems with risk-tiered grouping.
 
 **Risk-tiered update handling:**
 
@@ -264,9 +420,9 @@ Dependabot monitors two package ecosystems with risk-tiered grouping (#188). Upd
 | Security | Individual PR | Individual PR | Priority review |
 | Transitive | Excluded (`allow: direct`) | N/A | Updates via parent dep |
 
-**Transitive dependency policy:** Dependabot only opens PRs for direct dependencies declared in `pyproject.toml`. Transitive dependencies (e.g., `gherkin-official` via `pytest-bdd`) are excluded to prevent incompatible standalone bumps. Transitive deps update when their parent direct dep is bumped and `uv.lock` is regenerated.
+**Transitive dependency policy:** Dependabot only opens PRs for direct dependencies declared in `pyproject.toml`. Transitive dependencies are excluded to prevent incompatible standalone bumps.
 
-**Compensating control:** The scheduled security scan (`.github/workflows/security-scan.yml`) runs `pip-audit` daily against the locked dependency tree, catching transitive CVEs that Dependabot will not surface.
+**Compensating control:** The scheduled security scan runs `pip-audit` daily against the locked dependency tree, catching transitive CVEs that Dependabot does not surface.
 
 **Ecosystems configured:**
 
@@ -275,39 +431,37 @@ Dependabot monitors two package ecosystems with risk-tiered grouping (#188). Upd
 | `github-actions` | `/` | weekly | Monday | `ci` | 10 | minor+patch grouped |
 | `pip` | `/` | weekly | Monday | `deps` | 10 | minor+patch grouped, direct only |
 
-**Note:** Dependabot does **not** track version pins embedded in workflow `run:` blocks (e.g., `uv tool install 'bump-my-version==1.2.7'`). Those inline pins must be updated manually.
+**Note:** Dependabot does not track version pins embedded in workflow `run:` blocks (e.g., `uv tool install 'bump-my-version==1.2.7'`). Those inline pins must be updated manually.
 
-**Note:** `ruff` uses `0.x` versioning where `0.x` to `0.(x+1)` is semantically major (new default-enabled lint rules). Dependabot classifies these as "minor" — review ruff grouped PRs with extra care.
+**Note:** `ruff` uses `0.x` versioning where `0.x` to `0.(x+1)` is semantically equivalent to a major release (new default-enabled lint rules). Dependabot classifies these as "minor."
+
+---
 
 ## Scheduled Security Scan
 
-A daily scheduled workflow scans the locked dependency tree for known CVEs, independent of PR activity.
-
 **File:** `.github/workflows/security-scan.yml`
 
-**Purpose:** The `allow: dependency-type: direct` Dependabot policy means transitive dependency compromises do not generate Dependabot PRs. This workflow compensates by running `pip-audit` on a schedule. Without it, transitive CVE detection latency is unbounded during low-activity periods.
-
-**Schedule:** Daily at 06:00 UTC (before Monday Dependabot run).
+**Schedule:** Daily at 06:00 UTC.
 
 **What it checks:** `uv run pip-audit --strict --desc` against the current `uv.lock`.
 
-**Failure behavior:** If vulnerabilities are found, the workflow fails with exit code 1 and posts results to the job summary. A separate verification step catches `pip-audit` silent failures (empty output).
+**Failure behavior:** Vulnerabilities found causes the workflow to fail with exit code 1 and posts results to the job summary. A separate verification step catches `pip-audit` silent failures (empty output).
 
 ---
 
 ## H-05 Compliance
 
-H-05 requires that all Python execution in the Jerry project uses `uv run` and that dependencies are managed with `uv add`. Direct invocation of `python`, `pip`, or `pip3` is prohibited.
+H-05 requires that all Python execution uses `uv run` and that dependencies are managed with `uv add`. Direct invocation of `python`, `pip`, or `pip3` is prohibited.
 
 **Application in CI:**
 
-Jobs that use the project's virtual environment use `uv sync --frozen` to install dependencies and `uv run` to execute Python. Jobs that install standalone tools (linters, type checkers, auditors) may use `pip install` within the runner's system Python environment, outside the project's virtual environment. This is a distinct context: the runner system Python is not the project's managed environment.
+All jobs in `ci.yml` use `uv sync --frozen` to install dependencies and `uv run` to execute Python. No job uses `pip install` to install tools into the runner's system Python environment. The `security` job previously used standalone pip-installed tools; after EPIC-003, it uses `uv run pip-audit` exclusively.
 
 **Compliant pattern (uv-managed environment):**
 
 ```yaml
 - name: Install uv
-  uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5.4.2
+  uses: astral-sh/setup-uv@cec208311dfd045dd5311c1add060b2062131d57 # v8.0.0
   with:
     version: "0.10.9"
 - name: Set up Python
@@ -318,20 +472,9 @@ Jobs that use the project's virtual environment use `uv sync --frozen` to instal
   run: uv run python scripts/example.py
 ```
 
-**Tool installation context (outside uv-managed environment):**
-
-The `lint`, `type-check`, and `security` jobs use the runner's system Python to install standalone tools via `pip install`. These tools do not interact with the project's `uv.lock` or virtual environment:
-
-```yaml
-- name: Install ruff
-  run: pip install "ruff==0.14.11"
-- name: Check linting
-  run: ruff check . --config=pyproject.toml
-```
-
 **`release.yml` H-05 compliance note:**
 
-`release.yml` previously used a pip fallback for dependency installation. As of v0.25.0, it uses `uv sync --frozen` and `uv run` exclusively. The comment `# EN-001/F-001: Use uv directly (H-05 compliance). No pip fallback.` marks this migration.
+`release.yml` uses `uv sync --frozen` and `uv run` exclusively. The comment `# EN-001/F-001: Use uv directly (H-05 compliance). No pip fallback.` marks this migration.
 
 **VERSION_BUMP_PAT (pat-monitor.yml):**
 
@@ -345,6 +488,6 @@ The version-bump workflow checks out with a personal access token (`VERSION_BUMP
 
 ## Related
 
-- **How-To Guide:** Update a SHA-pinned GitHub Action when Dependabot opens a PR
-- **Explanation:** About the Jerry Framework supply chain security model (EN-001)
+- **Explanation:** `docs/explanation/ci-cd-supply-chain-security.md` — Supply chain security model
 - **Reference:** `pyproject.toml` — Python dependency declarations and tool configuration
+- **Source:** `.github/workflows/ci.yml` — Authoritative pipeline definition

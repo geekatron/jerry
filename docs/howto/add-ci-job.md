@@ -23,11 +23,11 @@ Add the job block to `.github/workflows/ci.yml` inside the `jobs:` key. Use a ke
     runs-on: ubuntu-latest
 ```
 
-### 2. Declare job-level permissions (mandatory)
+### 2. Understand the permission model
 
-The workflow-level `permissions:` block in `ci.yml` includes `pull-requests: write`. Any job that omits its own `permissions:` block inherits this silently. Always declare a job-level `permissions:` block to override the workflow default.
+The workflow-level `permissions:` block in `ci.yml` grants only `contents: read`. Jobs inherit this default automatically — no job-level override is needed for read-only jobs.
 
-For jobs that only read the repository and produce no GitHub API side effects:
+If your job needs elevated permissions (e.g., writing PR comments), declare them at job level:
 
 ```yaml
   my-new-job:
@@ -35,9 +35,10 @@ For jobs that only read the repository and produce no GitHub API side effects:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      pull-requests: write
 ```
 
-If the job writes PR comments, add `pull-requests: write`. Grant no other permissions.
+Currently only `coverage-report` has `pull-requests: write`. Grant the minimum permissions your job requires.
 
 ### 3. SHA-pin every GitHub Action used in the job
 
@@ -45,7 +46,7 @@ For each `uses:` line, replace the floating tag with the commit SHA and add a ve
 
 ```yaml
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 ```
 
 Do not use floating tags such as `@v5` or `@main`.
@@ -56,7 +57,7 @@ If the job installs dependencies or runs Python via `uv`, install `uv` with the 
 
 ```yaml
       - name: Install uv
-        uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5.4.2
+        uses: astral-sh/setup-uv@cec208311dfd045dd5311c1add060b2062131d57 # v8.0.0
         with:
           version: "0.10.9"
 
@@ -129,7 +130,7 @@ Open the `ci-success` job at the bottom of `ci.yml`. Add your job ID to two plac
   ci-success:
     name: CI Success
     runs-on: ubuntu-latest
-    needs: [lint, type-check, security, ..., my-new-job]
+    needs: [static-analysis, security, validation, plugin-validation, cli-integration, test-uv, ..., my-new-job, changelog-check]
     if: always()
 ```
 
@@ -138,7 +139,7 @@ Open the `ci-success` job at the bottom of `ci.yml`. Add your job ID to two plac
 For a job that runs on all events, add a failure branch alongside the existing ones. The `${{ needs.*.result }}` values are GitHub-controlled enums (`success`, `failure`, `cancelled`, `skipped`) and cannot carry user content, so inlining them in `run:` is safe — unlike `github.event.*` values from step 6.
 
 ```yaml
-          if [[ "${{ needs.lint.result }}" != "success" ]] || \
+          if [[ "${{ needs.static-analysis.result }}" != "success" ]] || \
              ...
              [[ "${{ needs.my-new-job.result }}" != "success" ]]; then
 ```
@@ -165,9 +166,11 @@ And update the echo line to show the dynamic result:
           echo "  - My new check: ${MY_NEW_JOB_RESULT}"
 ```
 
-### 9. Update the security reference tables
+### 9. Update documentation
 
-Open `docs/reference/ci-cd-pipeline-security.md` and update two tables:
+**Update the `ci.yml` header comment** (lines 8-17) to include your new job in the Jobs list.
+
+**Update `docs/reference/ci-cd-pipeline-security.md`** — open the reference doc and update two tables:
 
 - **SHA Pinning — "Workflows where SHA-pinned actions appear"**: Add a column or row entry for `ci.yml` next to each action your job uses.
 - **UV Binary Pinning — "Workflows that apply this pin"**: Add your job name to the `ci.yml` row if the job uses `uv`.

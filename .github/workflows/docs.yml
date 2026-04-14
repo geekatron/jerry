@@ -1,3 +1,12 @@
+# Jerry Framework Documentation Pipeline
+# Deploys MkDocs site to GitHub Pages on push to main.
+#
+# Trigger: push to main when docs/, mkdocs.yml, or overrides/ change
+# Permissions: contents:write (required for gh-pages branch push)
+# Jobs: deploy (single job — builds and deploys MkDocs via uv run)
+#
+# Security ref: docs/reference/ci-cd-pipeline-security.md
+
 name: docs
 
 on:

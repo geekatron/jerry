@@ -149,6 +149,33 @@ SKIP=pytest git commit -m "message"
 git commit --no-verify -m "message"
 ```
 
+### Understanding CI Checks
+
+When you open a PR, ~17 status checks appear in the GitHub checks panel. Here is what each one does:
+
+| Check | What it validates |
+|-------|-------------------|
+| **Static Analysis** | Linting (ruff), formatting (ruff format), type checking (pyright) |
+| **Security Scan** | pip-audit against full locked dependency tree + banned YAML API check |
+| **Validation Checks** | Lockfile freshness, HARD rule ceiling, version sync, SPDX headers, templates, frontmatter |
+| **Plugin Validation** | Plugin manifests, hook wrapper syntax, plugin.json agent sync |
+| **CLI Integration Tests** | Subprocess CLI tests, MkDocs e2e validation, `jerry --help`/`--version` |
+| **Test uv** (8 variants) | Full pytest suite across 3 OSes (ubuntu, macOS, Windows) x Python 3.11-3.14 |
+| **Coverage Report** | Posts a coverage summary comment on the PR (PR-only) |
+| **Changelog Entry** | Validates CHANGELOG.md was updated (PR-only; skip with `[skip-changelog]` in PR title) |
+| **CI Success** | Gate job — aggregates all required checks; this is the branch protection target |
+
+**If a check fails:**
+
+- Click the failed check's "Details" link to see the GitHub Actions log.
+- The **Validation Checks** job runs 6 steps sequentially; the step name tells you which validation failed.
+- The **Static Analysis** job runs linting before type checking; fix lint errors first.
+- For `Changelog Entry` failures, add an entry under `[Unreleased]` in CHANGELOG.md using [Keep a Changelog](https://keepachangelog.com/) format.
+
+**Adding a new CI job?** See the [How to Add a New CI Job](docs/howto/add-ci-job.md) guide for the step-by-step procedure.
+
+**Security model:** The pipeline runs with read-only permissions (`contents: read`) at the workflow level. Only the Coverage Report job has `pull-requests: write` (to post the coverage comment). Push triggers fire only on `main`/`master` branches; PRs target `main`, `master`, or `claude/**`. See [CI/CD Pipeline Security Controls](docs/reference/ci-cd-pipeline-security.md) for the full security reference.
+
 ## Code Standards
 
 - See `.context/rules/coding-standards.md` for detailed standards
