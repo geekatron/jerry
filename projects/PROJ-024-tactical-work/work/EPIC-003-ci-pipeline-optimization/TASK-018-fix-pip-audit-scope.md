@@ -1,7 +1,7 @@
 # TASK-018: Fix Pip-Audit to Scan Full Dependency Tree
 
 > **Type:** task
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Created:** 2026-04-13
 > **Parent:** EPIC-003
@@ -24,6 +24,6 @@ The security job audits 3 hand-picked packages instead of the full project depen
 
 ## Acceptance Criteria
 
-- [ ] `pip-audit` runs against `uv export --frozen --format requirements-txt --all-extras`
-- [ ] All direct and transitive deps are covered
-- [ ] Hand-picked package list removed
+- [x] `pip-audit` runs against `uv export --frozen --format requirements-txt --all-extras`
+- [x] All direct and transitive deps are covered
+- [x] Hand-picked package list removed

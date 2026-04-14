@@ -1,7 +1,7 @@
 # TASK-017: Migrate Lint, Type-Check, Security to UV
 
 > **Type:** task
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Created:** 2026-04-13
 > **Parent:** EPIC-003
@@ -26,7 +26,7 @@ This task is a prerequisite for TASK-016 (remove pip matrix) and TASK-020 (merge
 
 ## Acceptance Criteria
 
-- [ ] lint job uses `uv run ruff` instead of `pip install ruff`
-- [ ] type-check job uses `uv sync --frozen --extra dev` + `uv run pyright`
-- [ ] security job uses `uv export` + `pip-audit` against full lockfile
-- [ ] Zero `pip install` commands remain in ci.yml (except test-pip if kept as smoke test)
+- [x] lint job uses `uv run ruff` instead of `pip install ruff`
+- [x] type-check job uses `uv sync --frozen --extra dev` + `uv run pyright`
+- [x] security job uses `uv export` + `pip-audit` against full lockfile
+- [x] Zero `pip install` commands remain in ci.yml (except test-pip if kept as smoke test)

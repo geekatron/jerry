@@ -1,7 +1,7 @@
 # TASK-022: Restrict Push Trigger to Protected Branches Only
 
 > **Type:** task
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Created:** 2026-04-13
 > **Parent:** EPIC-003
@@ -24,6 +24,6 @@
 
 ## Acceptance Criteria
 
-- [ ] `on: push: branches: [main, master]`
-- [ ] `on: pull_request: branches: [main, master, "claude/**"]` unchanged
-- [ ] Feature branch pushes only trigger CI via PR
+- [x] `on: push: branches: [main, master]`
+- [x] `on: pull_request: branches: [main, master, "claude/**"]` unchanged
+- [x] Feature branch pushes only trigger CI via PR

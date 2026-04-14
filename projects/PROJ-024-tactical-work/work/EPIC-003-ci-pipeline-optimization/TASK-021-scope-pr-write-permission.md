@@ -1,7 +1,7 @@
 # TASK-021: Scope pull-requests:write to Coverage-Report Only
 
 > **Type:** task
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Created:** 2026-04-13
 > **Parent:** EPIC-003
@@ -24,6 +24,6 @@
 
 ## Acceptance Criteria
 
-- [ ] Top-level permissions: `contents: read` only
-- [ ] `coverage-report` job declares its own `permissions: pull-requests: write`
-- [ ] All other jobs have read-only access
+- [x] Top-level permissions: `contents: read` only
+- [x] `coverage-report` job declares its own `permissions: pull-requests: write`
+- [x] All other jobs have read-only access

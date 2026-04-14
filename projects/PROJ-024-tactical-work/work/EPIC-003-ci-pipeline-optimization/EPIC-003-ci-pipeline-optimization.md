@@ -1,7 +1,7 @@
 # EPIC-003: CI Pipeline Optimization — Remove Pip Matrix, Fix Supply Chain Gaps, Consolidate Jobs
 
 > **Type:** epic
-> **Status:** pending
+> **Status:** in_progress
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-04-13
@@ -51,7 +51,7 @@ The Jerry CI pipeline has 29 jobs per PR run. A cross-skill assessment (eng-devs
 
 | Phase | Tasks | Status |
 |-------|-------|--------|
-| Phase 1 — Security Hardening | TASK-017, TASK-018, TASK-021, TASK-022 | pending |
+| Phase 1 — Security Hardening | TASK-017, TASK-018, TASK-021, TASK-022 | completed |
 | Phase 2 — Consolidation | TASK-016, TASK-019, TASK-020 | pending |
 
 ---
@@ -61,12 +61,12 @@ The Jerry CI pipeline has 29 jobs per PR run. A cross-skill assessment (eng-devs
 | ID | Type | Title | Status | Phase | Dependencies |
 |----|------|-------|--------|-------|--------------|
 | TASK-016 | Task | Remove pip test matrix (8 jobs) | pending | 2 | TASK-017 |
-| TASK-017 | Task | Migrate lint, type-check, security to uv | pending | 1 | -- |
-| TASK-018 | Task | Fix pip-audit to scan full dependency tree | pending | 1 | -- |
+| TASK-017 | Task | Migrate lint, type-check, security to uv | completed | 1 | -- |
+| TASK-018 | Task | Fix pip-audit to scan full dependency tree | completed | 1 | -- |
 | TASK-019 | Task | Consolidate 6 validation jobs into 1 | pending | 2 | -- |
 | TASK-020 | Task | Merge lint + type-check into static-analysis | pending | 2 | TASK-017 |
-| TASK-021 | Task | Scope pull-requests:write to coverage-report only | pending | 1 | -- |
-| TASK-022 | Task | Restrict push trigger to protected branches only | pending | 1 | -- |
+| TASK-021 | Task | Scope pull-requests:write to coverage-report only | completed | 1 | -- |
+| TASK-022 | Task | Restrict push trigger to protected branches only | completed | 1 | -- |
 
 ---
 
