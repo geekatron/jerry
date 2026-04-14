@@ -3,16 +3,8 @@
   "permissions": {
     "allow": [
       "Read",
-      "Write",
-      "Edit",
-      "MultiEdit",
       "Glob",
-      "Grep",
-      "Bash",
-      "Task",
-      "WebSearch",
-      "WebFetch",
-      "TodoWrite"
+      "Grep"
     ],
     "ask": [
       "Bash(git push *)"

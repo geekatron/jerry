@@ -70,3 +70,6 @@ skills/*/output/
 
 # Claude Code worktrees (local-only, should not be committed)
 .claude/worktrees/
+
+# Claude Code local settings (developer-local, not distributed with plugin)
+.claude/settings.local.json

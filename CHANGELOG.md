@@ -5,6 +5,11 @@ All notable changes to the Jerry Framework will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.32.0] - 2026-04-13
+
+### Security
+- **GH-244**: Plugin no longer auto-approves Write/Edit/MultiEdit/Bash tool calls. `settings.json` `permissions.allow` scoped to read-only tools (`Read`, `Glob`, `Grep`). Removed `Bash(rm *)` and `permissionDecision: "allow"` hook from `settings.local.json`. Added `settings.local.json` to `.gitignore` to prevent distribution of developer-local permissions. Version bump invalidates VS Code plugin cache.
+
 ## [Unreleased]
 
 ### Fixed
