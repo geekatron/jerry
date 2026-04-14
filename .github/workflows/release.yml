@@ -1,9 +1,16 @@
 # Jerry Framework Release Pipeline
 # ADR: projects/PROJ-001-plugin-cleanup/decisions/ADR-RELEASE-001-github-releases.md
+# Security ref: docs/reference/ci-cd-pipeline-security.md
 #
-# Triggers: v* tags (e.g., v0.0.1, v1.0.0)
+# Trigger: v* tag push (e.g., v0.0.1, v1.0.0)
+# Permissions: contents:write (required for GitHub Release creation)
 # Artifacts: jerry-plugin-{version}.tar.gz, jerry-plugin-{version}.zip
-# Creates: GitHub Release with auto-generated notes
+#
+# Jobs:
+#   validate  — extract version from tag, verify against pyproject.toml
+#   ci        — lint, format, type check, test (pre-release gate)
+#   build     — create plugin archives (.tar.gz, .zip) with checksums
+#   release   — create GitHub Release with auto-generated notes
 
 name: Release
 
@@ -104,7 +111,7 @@ jobs:
       - name: Run tests
         run: |
           # Exclude subprocess tests (require uv) and llm tests (require API keys)
-          # Matches ci.yml test-pip job marker exclusions
+          # Matches ci.yml test-uv job marker exclusions
           uv run pytest -m "not subprocess and not llm" -v --tb=short
 
   # ===========================================================================

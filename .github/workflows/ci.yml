@@ -1,8 +1,20 @@
 # Jerry Framework CI Pipeline
 # ADR: projects/PROJ-001-plugin-cleanup/decisions/ADR-CI-001-cicd-pipeline.md
+# Security ref: docs/reference/ci-cd-pipeline-security.md
 #
-# Triggers: All pushes + PRs to main/master/claude/* branches
-# Jobs: lint, type-check, security, test (matrix), coverage-report
+# Triggers: push to main/master | PRs to main/master/claude/**
+# Permissions: contents:read (top-level); pull-requests:write (coverage-report only)
+#
+# Jobs (9 definitions, ~17 on PR with matrix expansion):
+#   static-analysis    — ruff check, ruff format, pyright (merged lint + type-check)
+#   security           — pip-audit full lockfile + banned YAML API check
+#   validation         — lockfile, rules, versions, headers, templates, frontmatter (6-in-1)
+#   plugin-validation  — plugin manifests, hook syntax, agent sync
+#   cli-integration    — subprocess tests, mkdocs e2e, jerry --help/--version
+#   test-uv            — pytest matrix: 3 OS x 4 Python (8 cells)
+#   coverage-report    — PR comment with coverage (PR-only)
+#   changelog-check    — CHANGELOG.md updated (PR-only)
+#   ci-success         — gate: aggregates all required job results
 
 name: CI
 
