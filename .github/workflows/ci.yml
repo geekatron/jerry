@@ -71,7 +71,7 @@ jobs:
         run: uv sync --frozen
 
       - name: Export dependencies
-        run: uv export --no-hashes --frozen --all-extras > /tmp/requirements.txt
+        run: uv export --no-hashes --frozen --all-extras --no-emit-project > /tmp/requirements.txt
 
       - name: Audit dependencies
         run: uv run pip-audit --requirement /tmp/requirements.txt --strict --desc
