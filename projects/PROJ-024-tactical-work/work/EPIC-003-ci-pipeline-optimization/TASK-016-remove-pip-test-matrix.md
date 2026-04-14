@@ -1,7 +1,7 @@
 # TASK-016: Remove Pip Test Matrix (8 Jobs)
 
 > **Type:** task
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Created:** 2026-04-13
 > **Parent:** EPIC-003
@@ -26,7 +26,7 @@ Remove the `test-pip` job (8 matrix cells) from the CI pipeline. Jerry mandates 
 
 ## Acceptance Criteria
 
-- [ ] `test-pip` job removed from ci.yml
-- [ ] `ci-success` gate updated to remove `test-pip` from `needs:`
-- [ ] `coverage-report` updated if it references `test-pip`
-- [ ] uv test matrix (8 cells) unchanged
+- [x] `test-pip` job removed from ci.yml
+- [x] `ci-success` gate updated to remove `test-pip` from `needs:`
+- [x] `coverage-report` updated if it references `test-pip`
+- [x] uv test matrix (8 cells) unchanged

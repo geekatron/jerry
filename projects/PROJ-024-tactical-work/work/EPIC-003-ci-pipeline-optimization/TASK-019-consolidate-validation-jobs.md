@@ -1,7 +1,7 @@
 # TASK-019: Consolidate 6 Validation Jobs into 1
 
 > **Type:** task
-> **Status:** pending
+> **Status:** completed
 > **Priority:** medium
 > **Created:** 2026-04-13
 > **Parent:** EPIC-003
@@ -24,7 +24,7 @@ Merge lockfile-check, template-validation, frontmatter-validation, license-heade
 
 ## Acceptance Criteria
 
-- [ ] Single `validations` job with 6 named steps
-- [ ] Each step failure clearly identifies which validation failed
-- [ ] `ci-success` gate references `validations` instead of 6 individual jobs
-- [ ] Same pass/fail behavior per check
+- [x] Single `validation` job with 6 named steps
+- [x] Each step failure clearly identifies which validation failed
+- [x] `ci-success` gate references `validation` instead of 6 individual jobs
+- [x] Same pass/fail behavior per check

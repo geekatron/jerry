@@ -1,7 +1,7 @@
 # TASK-020: Merge Lint + Type-Check into Static-Analysis
 
 > **Type:** task
-> **Status:** pending
+> **Status:** completed
 > **Priority:** medium
 > **Created:** 2026-04-13
 > **Parent:** EPIC-003
@@ -26,6 +26,6 @@ Both lint and type-check are single-OS, single-Python static analysis jobs. Comb
 
 ## Acceptance Criteria
 
-- [ ] Single `static-analysis` job runs ruff check, ruff format, and pyright
-- [ ] Uses `uv sync --frozen --extra dev` (from TASK-017)
-- [ ] `ci-success` gate references `static-analysis`
+- [x] Single `static-analysis` job runs ruff check, ruff format, and pyright
+- [x] Uses `uv sync --frozen --extra dev` (from TASK-017)
+- [x] `ci-success` gate references `static-analysis`
