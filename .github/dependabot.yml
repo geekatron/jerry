@@ -167,9 +167,11 @@ updates:
     # Each gets its own PR for individual review of breaking changes.
 
   # ==================================================================
-  # pip -- weekly check for Python dependency updates
+  # uv -- weekly check for Python dependency updates
   # ==================================================================
-  - package-ecosystem: "pip"
+  # Uses uv ecosystem (not pip) so Dependabot updates both pyproject.toml
+  # AND uv.lock together, preventing lockfile drift.
+  - package-ecosystem: "uv"
     directory: "/"
     schedule:
       interval: "weekly"
