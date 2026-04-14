@@ -47,8 +47,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Deprecated Bash command patterns (`/bin/bash`, `bash -c`) replaced with direct command syntax in all settings permission entries (#182)
 - `pymdown-extensions` upgraded to 10.21.2 — fixes `filename=None` crash with Pygments 2.20.0 in mkdocs code block rendering
 - Flaky 50-file batch performance test thresholds relaxed from 500ms to 1000ms to handle pre-commit hook concurrent load
+- `uv.lock` regenerated after Dependabot pip updates caused lockfile drift — unblocks CI on main
 
 ### Changed
+- Dependabot `package-ecosystem` switched from `pip` to `uv` — updates both `pyproject.toml` and `uv.lock` together, preventing future lockfile drift
+- Added `uv lock --check` CI job for lockfile freshness verification at PR time
 - 28 stale eng-team output files removed from `skills/eng-team/output/` (600K)
 - ADR-PROJ007-001 renamed to ADR-agent-design-001 (domain-first naming convention)
 - ADR-PROJ007-002 renamed to ADR-routing-triggers-001 (domain-first naming convention)
