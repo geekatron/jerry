@@ -26,7 +26,7 @@ pluggy==1.6.0
     #   pytest-cov
 pygments==2.20.0
     # via pytest
-pytest==9.0.2
+pytest==9.0.3
     # via
     #   jerry (pyproject.toml)
     #   pytest-archon
