@@ -14,7 +14,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 # ============================================================================
@@ -22,7 +22,7 @@ from typing import Any
 # ============================================================================
 
 
-class AgentFamily(str, Enum):
+class AgentFamily(StrEnum):
     """Agent family for cross-skill handoff detection."""
 
     PS = "ps"
@@ -30,7 +30,7 @@ class AgentFamily(str, Enum):
     ORCH = "orch"
 
 
-class CognitiveMode(str, Enum):
+class CognitiveMode(StrEnum):
     """Agent's cognitive mode (affects output expectations)."""
 
     CONVERGENT = "convergent"
@@ -38,7 +38,7 @@ class CognitiveMode(str, Enum):
     MIXED = "mixed"
 
 
-class ModelType(str, Enum):
+class ModelType(StrEnum):
     """LLM model used by the agent."""
 
     OPUS = "opus"
@@ -47,7 +47,7 @@ class ModelType(str, Enum):
     AUTO = "auto"
 
 
-class Severity(str, Enum):
+class Severity(StrEnum):
     """Severity level for prioritization."""
 
     LOW = "low"
@@ -56,7 +56,7 @@ class Severity(str, Enum):
     CRITICAL = "critical"
 
 
-class FindingCategory(str, Enum):
+class FindingCategory(StrEnum):
     """Finding category for filtering."""
 
     INSIGHT = "insight"
@@ -67,7 +67,7 @@ class FindingCategory(str, Enum):
     RECOMMENDATION = "recommendation"
 
 
-class ArtifactType(str, Enum):
+class ArtifactType(StrEnum):
     """Artifact type for consumer."""
 
     REQUIREMENT = "requirement"
@@ -82,7 +82,7 @@ class ArtifactType(str, Enum):
     SYNTHESIS = "synthesis"
 
 
-class ArtifactFormat(str, Enum):
+class ArtifactFormat(StrEnum):
     """File format."""
 
     MARKDOWN = "markdown"
