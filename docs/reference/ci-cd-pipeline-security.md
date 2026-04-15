@@ -413,7 +413,7 @@ Dependabot monitors two package ecosystems with risk-tiered grouping.
 
 **Risk-tiered update handling:**
 
-| Update Type | pip | GitHub Actions | Review Level |
+| Update Type | uv | GitHub Actions | Review Level |
 |-------------|-----|---------------|-------------|
 | Patch + Minor | Grouped (1 PR) | Grouped (1 PR) | CI green = merge |
 | Major | Individual PR | Individual PR | Manual review required |
@@ -429,7 +429,7 @@ Dependabot monitors two package ecosystems with risk-tiered grouping.
 | Ecosystem | Directory | Schedule | Day | Commit prefix | PR limit | Grouping |
 |-----------|-----------|----------|-----|---------------|----------|----------|
 | `github-actions` | `/` | weekly | Monday | `ci` | 10 | minor+patch grouped |
-| `pip` | `/` | weekly | Monday | `deps` | 10 | minor+patch grouped, direct only |
+| `uv` | `/` | weekly | Monday | `deps` | 10 | minor+patch grouped, direct only |
 
 **Note:** Dependabot does not track version pins embedded in workflow `run:` blocks (e.g., `uv tool install 'bump-my-version==1.2.7'`). Those inline pins must be updated manually.
 
