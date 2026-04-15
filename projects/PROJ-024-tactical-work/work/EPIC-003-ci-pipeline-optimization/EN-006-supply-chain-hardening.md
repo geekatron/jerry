@@ -53,56 +53,85 @@ EPIC-003 closed the major CI supply chain gaps (pip removal, permission scoping,
 
 ## Children (Tasks)
 
-| ID | Title | Status | Severity | Dependencies |
-|----|-------|--------|----------|--------------|
-| TASK-023 | Supply chain audit (eng-devsecops + red-recon) | completed | -- | -- |
-| TASK-024 | Pin pre-commit hooks to SHAs | pending | HIGH | -- |
-| TASK-025 | Add SLSA build provenance to release pipeline | pending | HIGH | -- |
-| TASK-026 | Fix pip-audit coverage gap in scheduled scan | pending | HIGH | -- |
-| TASK-027 | Evaluate replacing MishaKav coverage comment action | pending | MEDIUM | -- |
-| TASK-028 | Evaluate replacing softprops release action with gh CLI | pending | MEDIUM | -- |
-| TASK-029 | Add SBOM generation to release pipeline | pending | MEDIUM | TASK-025 |
-| TASK-030 | Track bump-my-version in Dependabot or scheduled check | pending | MEDIUM | -- |
-| TASK-031 | Remove unused security-events:write from security-scan | pending | MEDIUM | -- |
-| TASK-032 | Add CODEOWNERS for workflow files | pending | MEDIUM | -- |
-| TASK-033 | Evaluate docs.yml deploy-pages migration | pending | LOW | -- |
-| TASK-034 | Add Dependabot pre-commit ecosystem entry | pending | LOW | TASK-024 |
+| ID | Title | Status | Severity | Wave | Dependencies |
+|----|-------|--------|----------|------|--------------|
+| TASK-023 | Supply chain audit (eng-devsecops + red-recon) | completed | -- | -- | -- |
+| TASK-026 | Fix pip-audit coverage gap in scheduled scan | pending | HIGH | 1 | -- |
+| TASK-031 | Remove unused security-events:write from security-scan | pending | MEDIUM | 1 | -- |
+| TASK-032 | Add CODEOWNERS for workflow files | pending | MEDIUM | 1 | -- |
+| TASK-024 | Pin pre-commit hooks to SHAs | pending | HIGH | 2 | -- |
+| TASK-025 | Add SLSA build provenance to release pipeline | pending | HIGH | 2 | -- |
+| TASK-027 | Evaluate replacing MishaKav coverage comment action | pending | MEDIUM | 3 | -- |
+| TASK-028 | Evaluate replacing softprops release action with gh CLI | pending | MEDIUM | 3 | -- |
+| TASK-030 | Track bump-my-version in Dependabot or scheduled check | pending | MEDIUM | 3 | -- |
+| TASK-033 | Evaluate docs.yml deploy-pages migration | pending | LOW | 3 | -- |
+| TASK-029 | Add SBOM generation to release pipeline | pending | MEDIUM | 4 | TASK-025, TASK-028 |
+| TASK-034 | Add Dependabot pre-commit ecosystem entry | pending | LOW | 4 | TASK-024 |
 
 ---
 
 ## Dependency Graph
 
+Technical dependencies only — not "was researched by" relationships.
+
+**Independent (can start immediately, any order):**
+- TASK-024, TASK-025, TASK-026, TASK-027, TASK-030, TASK-031, TASK-032, TASK-033
+
+**Has real dependencies:**
+- TASK-029 (SBOM) → depends on TASK-025 (provenance must exist to cover SBOM artifact) AND TASK-028 (release mechanism decision affects how SBOM is attached)
+- TASK-034 (Dependabot pre-commit) → depends on TASK-024 (SHA pins must be in place before Dependabot tracks them, otherwise floating tags produce noisy PRs)
+
+**Recommended execution order (respecting deps + severity):**
+
+| Wave | Tasks | Rationale |
+|------|-------|-----------|
+| 1 (quick wins) | TASK-026, TASK-031, TASK-032 | Single-line changes, no evaluation needed |
+| 2 (HIGH hardening) | TASK-024, TASK-025 | Pre-commit SHAs + SLSA provenance |
+| 3 (evaluations) | TASK-027, TASK-028, TASK-030, TASK-033 | Each requires a decision: replace or keep |
+| 4 (depends on wave 2-3) | TASK-029, TASK-034 | SBOM needs provenance + release decision; Dependabot pre-commit needs SHA pins |
+
 ```mermaid
 graph TD
-    TASK-023[TASK-023: Supply chain audit ✅] --> TASK-024[TASK-024: Pin pre-commit SHAs]
-    TASK-023 --> TASK-025[TASK-025: SLSA provenance]
-    TASK-023 --> TASK-026[TASK-026: Fix audit coverage gap]
-    TASK-023 --> TASK-027[TASK-027: Replace MishaKav action]
-    TASK-023 --> TASK-028[TASK-028: Replace softprops action]
+    %% Wave 1: Quick wins (independent)
+    TASK-026[TASK-026: Fix audit gap ⚡]
+    TASK-031[TASK-031: Remove unused perm ⚡]
+    TASK-032[TASK-032: Add CODEOWNERS ⚡]
+
+    %% Wave 2: HIGH hardening (independent)
+    TASK-024[TASK-024: Pin pre-commit SHAs]
+    TASK-025[TASK-025: SLSA provenance]
+
+    %% Wave 3: Evaluations (independent)
+    TASK-027[TASK-027: Replace MishaKav?]
+    TASK-028[TASK-028: Replace softprops?]
+    TASK-030[TASK-030: Track bump-my-version]
+    TASK-033[TASK-033: deploy-pages?]
+
+    %% Wave 4: Dependent tasks
     TASK-025 --> TASK-029[TASK-029: SBOM generation]
-    TASK-023 --> TASK-030[TASK-030: Track bump-my-version]
-    TASK-023 --> TASK-031[TASK-031: Remove unused permission]
-    TASK-023 --> TASK-032[TASK-032: Add CODEOWNERS]
-    TASK-023 --> TASK-033[TASK-033: deploy-pages migration]
+    TASK-028 --> TASK-029
     TASK-024 --> TASK-034[TASK-034: Dependabot pre-commit]
 
-    subgraph "HIGH Priority"
-        TASK-024
-        TASK-025
+    subgraph "Wave 1 — Quick Wins"
         TASK-026
-    end
-
-    subgraph "MEDIUM Priority"
-        TASK-027
-        TASK-028
-        TASK-029
-        TASK-030
         TASK-031
         TASK-032
     end
 
-    subgraph "LOW Priority"
+    subgraph "Wave 2 — HIGH Hardening"
+        TASK-024
+        TASK-025
+    end
+
+    subgraph "Wave 3 — Evaluations"
+        TASK-027
+        TASK-028
+        TASK-030
         TASK-033
+    end
+
+    subgraph "Wave 4 — Dependent"
+        TASK-029
         TASK-034
     end
 ```

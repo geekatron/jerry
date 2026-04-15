@@ -21,7 +21,9 @@
 No Software Bill of Materials is generated during build or release. Consumers cannot programmatically enumerate the dependency tree. Add CycloneDX SBOM generation via `anchore/sbom-action` or `uv export --format cyclonedx` and attach as a release artifact.
 
 **Finding:** eng-devsecops Finding 6 (MEDIUM), `release.yml` entire file
-**Dependency:** TASK-025 (SLSA provenance should cover SBOM artifact too)
+**Dependencies:**
+- TASK-025: SLSA provenance must exist first so attestation covers SBOM artifact
+- TASK-028: Release mechanism decision (softprops vs gh CLI) affects how SBOM is attached
 
 ---
 
