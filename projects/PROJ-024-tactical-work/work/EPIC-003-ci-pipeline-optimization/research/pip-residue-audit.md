@@ -321,7 +321,7 @@ Four comments reference `test-pip` CI job that no longer exists (removed by EPIC
 
 #### T2: `tests/integration/cli/test_jerry_cli_subprocess.py` (lines 601, 603, 608)
 
-Class `TestPluginModeExecution` and method `test_cli_executes_without_pip_install` reference pip in names/docstrings to clarify what the test validates (that pip is NOT needed).
+Class `TestPluginModeExecution` and method `test_cli_executes_via_uv_run` reference pip in names/docstrings to clarify what the test validates (that pip is NOT needed).
 
 | Property | Value |
 |----------|-------|

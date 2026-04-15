@@ -600,7 +600,7 @@ class TestJsonOutput:
 class TestPluginModeExecution:
     """Tests validating plugin mode execution (runs via uv run, no editable install)."""
 
-    def test_cli_executes_without_pip_install(
+    def test_cli_executes_via_uv_run(
         self,
         project_root: Path,
         env_with_pythonpath: dict[str, str],
