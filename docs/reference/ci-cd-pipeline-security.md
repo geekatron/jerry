@@ -11,10 +11,12 @@
 | [Permission Model](#permission-model) | Top-level and job-level GitHub Actions permissions |
 | [Push Trigger Scope](#push-trigger-scope) | Branch filter applied to push and pull_request events |
 | [SHA Pinning](#sha-pinning) | GitHub Actions pinned to commit SHAs |
+| [Pre-Commit Hook Pinning](#pre-commit-hook-pinning) | External pre-commit hooks pinned to full SHAs |
 | [UV Binary Pinning](#uv-binary-pinning) | `astral-sh/setup-uv` version pinning |
 | [Frozen Lockfile Enforcement](#frozen-lockfile-enforcement) | Lockfile enforcement across workflows |
 | [Dependency Audit](#dependency-audit) | pip-audit scan via exported lockfile |
 | [Skip-Bump Guard](#skip-bump-guard) | Infinite-loop and double-bump prevention in version-bump.yml |
+| [SLSA Build Provenance](#slsa-build-provenance) | Artifact attestation via `actions/attest-build-provenance` |
 | [Dependabot Configuration](#dependabot-configuration) | Risk-tiered dependency update management |
 | [Scheduled Security Scan](#scheduled-security-scan) | Daily pip-audit for transitive CVE detection |
 | [CODEOWNERS](#codeowners) | Required-review paths for security-sensitive files |
@@ -179,9 +181,9 @@ permissions:
   contents: read
 ```
 
-All jobs inherit `contents: read` unless overridden at the job level.
+All jobs in `ci.yml` inherit `contents: read` unless overridden at the job level.
 
-**Job-level permission overrides:**
+**Job-level permission overrides in `ci.yml`:**
 
 | Job | `contents` | `pull-requests` | Rationale |
 |-----|-----------|-----------------|-----------|
@@ -189,6 +191,31 @@ All jobs inherit `contents: read` unless overridden at the job level.
 | All other jobs | `read` (inherited) | not granted | No PR write access needed |
 
 `pull-requests: write` is scoped exclusively to `coverage-report`. No other job receives write permissions to the repository or pull requests.
+
+**Workflow-level permissions in `release.yml`:**
+
+```yaml
+permissions:
+  contents: write
+```
+
+**Job-level permissions on `release` job:**
+
+```yaml
+release:
+  permissions:
+    contents: write
+    id-token: write
+    attestations: write
+```
+
+| Permission | Scope | Value | Rationale |
+|------------|-------|-------|-----------|
+| `contents` | workflow | `write` | Required to create the GitHub Release and upload release artifacts via `softprops/action-gh-release` |
+| `id-token` | `release` job only | `write` | Required by `actions/attest-build-provenance` to request an OIDC token from GitHub's identity provider for signing the attestation |
+| `attestations` | `release` job only | `write` | Required by `actions/attest-build-provenance` to write the signed attestation to the repository's attestation store |
+
+The `id-token: write` and `attestations: write` permissions are scoped to the `release` job only. The `validate`, `ci`, and `build` jobs inherit only `contents: write` from the workflow-level block.
 
 ---
 
@@ -226,6 +253,7 @@ GitHub Actions referenced by immutable commit SHA rather than floating version t
 | `softprops/action-gh-release` | `b4309332981a82ec1c5618f44dd2e27cc8bfbfda` | v3.0.0 |
 | `actions/github-script` | `3a2844b7e9c422d3c10d287c895573f7108da1b3` | v9.0.0 |
 | `MishaKav/pytest-coverage-comment` | `287292879eaaff04116f36d3eb1a670f6e5df1a4` | main (2026-03-09) |
+| `actions/attest-build-provenance` | `e8998f949152b193b063cb0ec769d69d929409be` | v2 |
 
 **Workflows where SHA-pinned actions appear:**
 
@@ -239,6 +267,7 @@ GitHub Actions referenced by immutable commit SHA rather than floating version t
 | `softprops/action-gh-release` | No | No | Yes | No | No |
 | `actions/github-script` | No | No | No | No | Yes |
 | `MishaKav/pytest-coverage-comment` | Yes (coverage-report) | No | No | No | No |
+| `actions/attest-build-provenance` | No | No | Yes (release) | No | No |
 
 **Maintenance:** Dependabot monitors the `github-actions` ecosystem and opens pull requests when new versions of pinned actions are available. See [Dependabot Configuration](#dependabot-configuration).
 
@@ -247,6 +276,31 @@ GitHub Actions referenced by immutable commit SHA rather than floating version t
 ```yaml
 - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 ```
+
+---
+
+## Pre-Commit Hook Pinning
+
+External hooks declared in `.pre-commit-config.yaml` are pinned to full commit SHAs in the `rev` field. Local hooks (`repo: local`) execute scripts from the repository and are not subject to this pinning requirement.
+
+**External hook SHA-to-version mapping (current):**
+
+| Hook repository | SHA | Version |
+|----------------|-----|---------|
+| `pre-commit/pre-commit-hooks` | `cef0300fd0fc4d2a87a85fa2093c6b283ea36f4b` | v5.0.0 |
+| `astral-sh/ruff-pre-commit` | `73413df07b4ab0bf103ca1ae73c7cec5c0ace593` | v0.9.2 |
+| `commitizen-tools/commitizen` | `b494c556437473519f8ab69020c7256ba84714c1` | v4.4.1 |
+
+A human-readable version comment accompanies each SHA in `.pre-commit-config.yaml`.
+
+**Syntax example:**
+
+```yaml
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: cef0300fd0fc4d2a87a85fa2093c6b283ea36f4b  # v5.0.0
+```
+
+**Maintenance:** Dependabot does not monitor `.pre-commit-config.yaml`. SHA updates for external hooks require manual review. The `.pre-commit-config.yaml` file is protected by CODEOWNERS (see [CODEOWNERS](#codeowners)), requiring `@geekatron` review before any change is merged.
 
 ---
 
@@ -403,6 +457,46 @@ if [[ -n "$PRERELEASE" && ! "$PRERELEASE" =~ ^[a-zA-Z0-9]+$ ]]; then
   echo "::error::Invalid prerelease label '$PRERELEASE'. Must be alphanumeric (e.g., alpha, beta, rc)."
   exit 1
 fi
+```
+
+---
+
+## SLSA Build Provenance
+
+**SLSA Level:** 2
+
+**Workflow:** `release.yml`, `release` job
+
+**Action:** `actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be` (v2)
+
+The `release` job generates a signed SLSA provenance attestation for all release artifacts before creating the GitHub Release. The attestation is written to GitHub's attestation store and associates each artifact with the exact workflow run, repository, and commit SHA that produced it.
+
+**Attested artifacts:**
+
+| Artifact pattern | Description |
+|-----------------|-------------|
+| `dist/*.tar.gz` | Plugin archive (tar format) |
+| `dist/*.zip` | Plugin archive (zip format) |
+| `dist/checksums.sha256` | SHA-256 checksums for both archives |
+
+**Action configuration:**
+
+```yaml
+- name: Generate SLSA provenance attestation
+  uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2
+  with:
+    subject-path: |
+      dist/*.tar.gz
+      dist/*.zip
+      dist/checksums.sha256
+```
+
+**Required permissions:** `id-token: write` and `attestations: write` are scoped to the `release` job level. See [Permission Model](#permission-model).
+
+**Verification:** Consumers can verify release artifact attestations using the GitHub CLI:
+
+```bash
+gh attestation verify <artifact-file> --repo geekatron/jerry
 ```
 
 ---

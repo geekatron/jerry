@@ -22,8 +22,8 @@
 | TASK-022 | Task | Restrict push trigger to protected branches only | completed | EPIC-003 |
 | EN-006 | Enabler | Supply Chain Hardening — Post-EPIC-003 Residual Risks | in_progress | EPIC-003 |
 | TASK-023 | Task | Supply chain audit (eng-devsecops + red-recon) | completed | EN-006 |
-| TASK-024 | Task | Pin pre-commit hooks to SHAs | pending | EN-006 |
-| TASK-025 | Task | Add SLSA build provenance to release pipeline | pending | EN-006 |
+| TASK-024 | Task | Pin pre-commit hooks to SHAs | completed | EN-006 |
+| TASK-025 | Task | Add SLSA build provenance to release pipeline | completed | EN-006 |
 | TASK-026 | Task | Fix pip-audit coverage gap in scheduled scan | completed | EN-006 |
 | TASK-027 | Task | Evaluate replacing MishaKav coverage comment action | pending | EN-006 |
 | TASK-028 | Task | Evaluate replacing softprops release action with gh CLI | pending | EN-006 |
