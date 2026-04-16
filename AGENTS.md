@@ -149,6 +149,19 @@ These agents implement NASA Systems Engineering processes per NPR 7123.1D.
 
 ---
 
+## Nuclear SOP Skill Agents
+
+These agents implement nuclear-inspired procedural execution with STAR self-checking, hold points, and operating experience capture.
+
+| Agent | File | Role | Cognitive Mode |
+|-------|------|------|----------------|
+| `sop-brief` | `skills/nuclear-sop/agents/sop-brief.md` | Pre-job briefing: context load, prerequisite check, OE history review, error trap identification | systematic |
+| `sop-executor` | `skills/nuclear-sop/agents/sop-executor.md` | Step-by-step execution with STAR self-checking, place-keeping, hold point activation | systematic |
+| `sop-verifier` | `skills/nuclear-sop/agents/sop-verifier.md` | Context-isolated independent verification (T1 read-only, fresh context via Task tool) | convergent |
+| `sop-capture` | `skills/nuclear-sop/agents/sop-capture.md` | Post-job OE capture with schema-enforced mandatory fields, deviation classification | systematic |
+
+---
+
 ## Orchestration Skill Agents
 
 These agents manage multi-agent workflow orchestration and state tracking.
