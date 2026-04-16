@@ -201,7 +201,7 @@ jobs:
           uv run --with cyclonedx-bom \
             cyclonedx-py environment \
             --of JSON \
-            --outfile dist/sbom.cyclonedx.json
+            -o dist/sbom.cyclonedx.json
           echo "SBOM generated:"
           head -5 dist/sbom.cyclonedx.json
 

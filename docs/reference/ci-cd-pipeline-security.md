@@ -494,7 +494,7 @@ The `release` job generates a CycloneDX JSON SBOM for the project's locked depen
 **Generation command:**
 
 ```yaml
-uv run --with cyclonedx-bom cyclonedx-py environment --of JSON --outfile dist/sbom.cyclonedx.json
+uv run --with cyclonedx-bom cyclonedx-py environment --of JSON -o dist/sbom.cyclonedx.json
 ```
 
 **Attested artifact:**
