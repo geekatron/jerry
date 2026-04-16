@@ -69,6 +69,7 @@ The Jerry CI pipeline has 29 jobs per PR run. A cross-skill assessment (eng-devs
 | TASK-020 | Task | Merge lint + type-check into static-analysis | completed | 2 | TASK-017 |
 | TASK-021 | Task | Scope pull-requests:write to coverage-report only | completed | 1 | -- |
 | TASK-022 | Task | Restrict push trigger to protected branches only | completed | 1 | -- |
+| EN-006 | Enabler | Supply Chain Hardening — Post-EPIC-003 Residual Risks | completed | 3 | -- |
 
 ---
 

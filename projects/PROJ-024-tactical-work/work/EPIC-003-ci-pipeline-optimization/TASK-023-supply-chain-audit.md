@@ -13,6 +13,7 @@
 |---------|---------|
 | [Summary](#summary) | Task scope and rationale |
 | [Acceptance Criteria](#acceptance-criteria) | Verifiable completion criteria |
+| [Evidence](#evidence) | Delivery artifacts and verification |
 
 ---
 
@@ -28,3 +29,11 @@ Run eng-devsecops supply chain audit and red-recon attack surface analysis on th
 - [x] red-recon attack surface analysis covers 4 threat actor profiles across 7 focus areas
 - [x] Both reports persisted to `research/` directory
 - [x] 11 actionable findings identified, classified by severity, with remediation recommendations
+
+## Evidence
+
+| Verification | Agent | Result |
+|-------------|-------|--------|
+| Supply chain audit (14 findings across 10 dimensions) | eng-devsecops | `research/post-cleanup-supply-chain-audit.md` — 3 HIGH, 5 MEDIUM, 3 LOW, 3 INFO |
+| Attack surface analysis (4 threat actors x 7 focus areas) | red-recon | `research/post-cleanup-attack-surface.md` — 2 residual risk concentrations, 6 detailed findings |
+| Both reports persisted | P-002 | Files exist in `research/` directory within EPIC-003 |
