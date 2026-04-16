@@ -24,13 +24,13 @@
 | TASK-023 | Task | Supply chain audit (eng-devsecops + red-recon) | completed | EN-006 |
 | TASK-024 | Task | Pin pre-commit hooks to SHAs | pending | EN-006 |
 | TASK-025 | Task | Add SLSA build provenance to release pipeline | pending | EN-006 |
-| TASK-026 | Task | Fix pip-audit coverage gap in scheduled scan | pending | EN-006 |
+| TASK-026 | Task | Fix pip-audit coverage gap in scheduled scan | completed | EN-006 |
 | TASK-027 | Task | Evaluate replacing MishaKav coverage comment action | pending | EN-006 |
 | TASK-028 | Task | Evaluate replacing softprops release action with gh CLI | pending | EN-006 |
 | TASK-029 | Task | Add SBOM generation to release pipeline | pending | EN-006 |
 | TASK-030 | Task | Track bump-my-version in Dependabot or scheduled check | pending | EN-006 |
-| TASK-031 | Task | Remove unused security-events:write from security-scan | pending | EN-006 |
-| TASK-032 | Task | Add CODEOWNERS for workflow files | pending | EN-006 |
+| TASK-031 | Task | Remove unused security-events:write from security-scan | completed | EN-006 |
+| TASK-032 | Task | Add CODEOWNERS for workflow files | completed | EN-006 |
 | TASK-033 | Task | Evaluate docs.yml deploy-pages migration | pending | EN-006 |
 | TASK-034 | Task | Add Dependabot pre-commit ecosystem entry | pending | EN-006 |
 

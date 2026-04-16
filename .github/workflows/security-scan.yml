@@ -34,7 +34,6 @@ on:
 
 permissions:
   contents: read
-  security-events: write
 
 jobs:
   pip-audit:
@@ -54,7 +53,7 @@ jobs:
         run: uv python install 3.14
 
       - name: Install dependencies
-        run: uv sync --frozen
+        run: uv sync --frozen --all-extras
 
       # Run pip-audit against the locked dependency tree.
       # --strict: treat warnings as errors (e.g., packages without metadata)

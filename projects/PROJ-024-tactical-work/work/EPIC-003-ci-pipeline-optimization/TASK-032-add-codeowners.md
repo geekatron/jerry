@@ -1,7 +1,7 @@
 # TASK-032: Add CODEOWNERS for Workflow Files
 
 > **Type:** task
-> **Status:** pending
+> **Status:** completed
 > **Priority:** medium
 > **Created:** 2026-04-15
 > **Parent:** EN-006
@@ -26,7 +26,16 @@ No CODEOWNERS file exists. Workflow files (`.github/workflows/`) can be modified
 
 ## Acceptance Criteria
 
-- [ ] `.github/CODEOWNERS` file created
-- [ ] `.github/workflows/` requires review from designated maintainer(s)
-- [ ] `.github/dependabot.yml` requires review from designated maintainer(s)
-- [ ] Branch protection rules enforce CODEOWNERS review
+- [x] `.github/CODEOWNERS` file created
+- [x] `.github/workflows/` requires review from designated maintainer(s)
+- [x] `.github/dependabot.yml` requires review from designated maintainer(s)
+- [x] Branch protection rules enforce CODEOWNERS review — ruleset "Don't fuck with main" updated: `require_code_owner_review: true`, `enforcement: active`, `current_user_can_bypass: never`
+
+## Evidence
+
+| Verification | Agent | Result |
+|-------------|-------|--------|
+| Pattern syntax valid | eng-devsecops | PASS — directory trailing `/`, exact file paths, all correct |
+| Attack surface closed | red-recon | CLOSED — ruleset "Don't fuck with main" enforces `require_code_owner_review: true` with `current_user_can_bypass: never` |
+| DX impact assessed | ux-heuristic-evaluator | F-001 (Sev 3) fixed: CONTRIBUTING.md updated with Required Reviewers section |
+| Reference doc updated | diataxis-reference | CODEOWNERS section added to ci-cd-pipeline-security.md |

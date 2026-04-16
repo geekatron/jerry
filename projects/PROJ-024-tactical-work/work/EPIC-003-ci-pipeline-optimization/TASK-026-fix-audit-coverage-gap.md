@@ -1,7 +1,7 @@
 # TASK-026: Fix pip-audit Coverage Gap in Scheduled Scan
 
 > **Type:** task
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Created:** 2026-04-15
 > **Parent:** EN-006
@@ -26,6 +26,14 @@ CI pip-audit uses `uv export --all-extras` (covers dev, test, transcript deps). 
 
 ## Acceptance Criteria
 
-- [ ] `security-scan.yml` install step uses `uv sync --frozen --all-extras`
-- [ ] Scheduled scan covers the same dependency scope as CI scan
-- [ ] Both invocations produce equivalent audit coverage
+- [x] `security-scan.yml` install step uses `uv sync --frozen --all-extras`
+- [x] Scheduled scan covers the same dependency scope as CI scan
+- [x] Both invocations produce equivalent audit coverage
+
+## Evidence
+
+| Verification | Agent | Result |
+|-------------|-------|--------|
+| Audit coverage parity | eng-devsecops | PASS — `--all-extras` matches CI's `uv export --all-extras` scope |
+| Attack surface closed | red-recon | CLOSED — dev/test/transcript CVEs now visible in daily scan |
+| Reference doc updated | diataxis-reference | Scheduled Security Scan section rewritten with `--all-extras` |

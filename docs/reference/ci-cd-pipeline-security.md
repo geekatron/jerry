@@ -17,6 +17,7 @@
 | [Skip-Bump Guard](#skip-bump-guard) | Infinite-loop and double-bump prevention in version-bump.yml |
 | [Dependabot Configuration](#dependabot-configuration) | Risk-tiered dependency update management |
 | [Scheduled Security Scan](#scheduled-security-scan) | Daily pip-audit for transitive CVE detection |
+| [CODEOWNERS](#codeowners) | Required-review paths for security-sensitive files |
 | [H-05 Compliance](#h-05-compliance) | UV-only Python environment enforcement in CI |
 
 ---
@@ -293,7 +294,7 @@ The `astral-sh/setup-uv` action accepts a `version` parameter. All workflows tha
 | Workflow | Job | Command |
 |----------|-----|---------|
 | `ci.yml` | static-analysis | `uv sync --frozen --extra dev` |
-| `ci.yml` | security | `uv sync --frozen` |
+| `ci.yml` | security | `uv sync --frozen` (dependency export only; see [Dependency Audit](#dependency-audit)) |
 | `ci.yml` | validation | `uv sync --frozen` |
 | `ci.yml` | plugin-validation | `uv sync --frozen --extra dev` |
 | `ci.yml` | cli-integration | `uv sync --frozen --extra dev --extra test` |
@@ -303,6 +304,7 @@ The `astral-sh/setup-uv` action accepts a `version` parameter. All workflows tha
 | `release.yml` | validate | `uv sync --frozen` |
 | `release.yml` | ci | `uv sync --frozen --extra dev --extra test` |
 | `docs.yml` | deploy | `uv sync --frozen --extra dev` |
+| `security-scan.yml` | pip-audit | `uv sync --frozen --all-extras` |
 
 **Clean working tree guard (version-bump.yml):**
 
@@ -443,9 +445,44 @@ Dependabot monitors two package ecosystems with risk-tiered grouping.
 
 **Schedule:** Daily at 06:00 UTC.
 
-**What it checks:** `uv run pip-audit --strict --desc` against the current `uv.lock`.
+**Permissions:**
+
+| Permission | Value | Rationale |
+|------------|-------|-----------|
+| `contents` | `read` | Checkout only; no write operations |
+
+**Job steps:**
+
+| Step | Command |
+|------|---------|
+| Install dependencies | `uv sync --frozen --all-extras` |
+| Run pip-audit | `uv run pip-audit --strict --desc` |
+| Verify pip-audit executed | Checks `/tmp/pip-audit-output.txt` for non-empty output |
+
+`--all-extras` installs all optional dependency groups (`dev`, `test`, `transcript`) before scanning. This matches the coverage of the `security` job in `ci.yml`, which exports with `--all-extras` before auditing. Without `--all-extras`, optional dependencies declared only in extras groups would be absent from the scheduled scan's virtual environment, leaving their transitive chains unaudited.
 
 **Failure behavior:** Vulnerabilities found causes the workflow to fail with exit code 1 and posts results to the job summary. A separate verification step catches `pip-audit` silent failures (empty output).
+
+---
+
+## CODEOWNERS
+
+**File:** `.github/CODEOWNERS`
+
+Defines required reviewers for paths containing security-sensitive files. GitHub enforces at least one approval from a listed owner before a pull request targeting those paths can be merged, subject to branch protection rules.
+
+**Pattern evaluation:** GitHub evaluates CODEOWNERS entries top-to-bottom; the last matching pattern wins.
+
+**Protected paths:**
+
+| Path pattern | Owner | Scope |
+|--------------|-------|-------|
+| `.github/workflows/` | `@geekatron` | All CI/CD workflow files |
+| `.github/dependabot.yml` | `@geekatron` | Dependabot configuration |
+| `.github/CODEOWNERS` | `@geekatron` | The CODEOWNERS file itself |
+| `.pre-commit-config.yaml` | `@geekatron` | Pre-commit hook configuration |
+| `.context/rules/` | `@geekatron` | Framework constraint rule files |
+| `docs/governance/` | `@geekatron` | Governance documents |
 
 ---
 

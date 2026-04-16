@@ -56,9 +56,9 @@ EPIC-003 closed the major CI supply chain gaps (pip removal, permission scoping,
 | ID | Title | Status | Severity | Wave | Dependencies |
 |----|-------|--------|----------|------|--------------|
 | TASK-023 | Supply chain audit (eng-devsecops + red-recon) | completed | -- | -- | -- |
-| TASK-026 | Fix pip-audit coverage gap in scheduled scan | pending | HIGH | 1 | -- |
-| TASK-031 | Remove unused security-events:write from security-scan | pending | MEDIUM | 1 | -- |
-| TASK-032 | Add CODEOWNERS for workflow files | pending | MEDIUM | 1 | -- |
+| TASK-026 | Fix pip-audit coverage gap in scheduled scan | completed | HIGH | 1 | -- |
+| TASK-031 | Remove unused security-events:write from security-scan | completed | MEDIUM | 1 | -- |
+| TASK-032 | Add CODEOWNERS for workflow files | completed | MEDIUM | 1 | -- |
 | TASK-024 | Pin pre-commit hooks to SHAs | pending | HIGH | 2 | -- |
 | TASK-025 | Add SLSA build provenance to release pipeline | pending | HIGH | 2 | -- |
 | TASK-027 | Evaluate replacing MishaKav coverage comment action | pending | MEDIUM | 3 | -- |
