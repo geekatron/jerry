@@ -66,7 +66,7 @@ on:
       - 'runbooks/**'
       - '.pre-commit-config.yaml'
       - 'pytest.ini'
-      - 'requirements-*.txt'
+      # requirements-*.txt removed — uv-only per H-05
       # --- Community/legal (no behavioral impact) ---
       - 'CODE_OF_CONDUCT.md'
       - 'CONTRIBUTING.md'
@@ -222,13 +222,9 @@ jobs:
       - name: Set up Python
         run: uv python install 3.14
 
-      # BUG-003/RISK-01: Pin bump-my-version to exact version to prevent
-      # supply chain attacks via PyPI package compromise.
-      # NOTE: Dependabot does NOT track `uv tool install` version pins
-      # (only `uses:` action pins and requirements files). This pin must
-      # be updated manually. Check PyPI for new releases quarterly.
-      - name: Install bump-my-version
-        run: uv tool install 'bump-my-version==1.2.7'
+      # bump-my-version is in [dependency-groups] dev in pyproject.toml.
+      # Dependabot tracks it via pyproject.toml; uv.lock provides hash verification.
+      # Previously installed via `uv tool install` which was untracked (TASK-030).
 
       # ------------------------------------------------------------------
       # Install project dependencies for bump detection
@@ -303,10 +299,10 @@ jobs:
 
           if [[ -n "$PRERELEASE" ]]; then
             echo "Pre-release: $PRERELEASE"
-            bump-my-version bump "$BUMP_TYPE" --no-tag
-            bump-my-version bump pre_l --no-commit --no-tag --new-version "$(grep -oP 'version = "\K[^"]+' pyproject.toml | head -1)-${PRERELEASE}.1"
+            uv run bump-my-version bump "$BUMP_TYPE" --no-tag
+            uv run bump-my-version bump pre_l --no-commit --no-tag --new-version "$(grep -oP 'version = "\K[^"]+' pyproject.toml | head -1)-${PRERELEASE}.1"
           else
-            bump-my-version bump "$BUMP_TYPE"
+            uv run bump-my-version bump "$BUMP_TYPE"
           fi
 
           # BUG-003/FIX: Regenerate uv.lock after version bump.

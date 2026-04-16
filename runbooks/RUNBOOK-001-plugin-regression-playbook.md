@@ -474,7 +474,7 @@ And added PEP 723 metadata to `session_start.py`:
 |--------|------------|
 | Don't assume pip is available | Use uv run + PEP 723 |
 | Don't fail silently | Always print errors to stderr |
-| Test plugin mode | Run without `pip install -e .` |
+| Test plugin mode | Run via `uv run` without editable install |
 | Automate validation | CI job validates hook execution |
 
 ## Detection Improvements

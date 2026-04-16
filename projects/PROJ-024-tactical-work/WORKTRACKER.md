@@ -20,6 +20,19 @@
 | TASK-020 | Task | Merge lint + type-check into static-analysis | completed | EPIC-003 |
 | TASK-021 | Task | Scope pull-requests:write to coverage-report only | completed | EPIC-003 |
 | TASK-022 | Task | Restrict push trigger to protected branches only | completed | EPIC-003 |
+| EN-006 | Enabler | Supply Chain Hardening — Post-EPIC-003 Residual Risks | completed | EPIC-003 |
+| TASK-023 | Task | Supply chain audit (eng-devsecops + red-recon) | completed | EN-006 |
+| TASK-024 | Task | Pin pre-commit hooks to SHAs | completed | EN-006 |
+| TASK-025 | Task | Add SLSA build provenance to release pipeline | completed | EN-006 |
+| TASK-026 | Task | Fix pip-audit coverage gap in scheduled scan | completed | EN-006 |
+| TASK-027 | Task | Evaluate replacing MishaKav coverage comment action | completed | EN-006 |
+| TASK-028 | Task | Evaluate replacing softprops release action with gh CLI | completed | EN-006 |
+| TASK-029 | Task | Add SBOM generation to release pipeline | completed | EN-006 |
+| TASK-030 | Task | Track bump-my-version in Dependabot or scheduled check | completed | EN-006 |
+| TASK-031 | Task | Remove unused security-events:write from security-scan | completed | EN-006 |
+| TASK-032 | Task | Add CODEOWNERS for workflow files | completed | EN-006 |
+| TASK-033 | Task | Evaluate docs.yml deploy-pages migration | completed | EN-006 |
+| TASK-034 | Task | Add Dependabot pre-commit ecosystem entry | completed | EN-006 |
 
 ## Completed
 

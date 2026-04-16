@@ -21,7 +21,7 @@ repos:
   # Basic File Hygiene
   # =============================================================================
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: cef0300fd0fc4d2a87a85fa2093c6b283ea36f4b  # v5.0.0
     hooks:
       - id: trailing-whitespace
         exclude: ^\.claude/
@@ -39,7 +39,7 @@ repos:
   # Ruff: Fast Linting and Formatting (replaces flake8, black, isort)
   # =============================================================================
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.9.2
+    rev: 73413df07b4ab0bf103ca1ae73c7cec5c0ace593  # v0.9.2
     hooks:
       # Linter - runs first, can auto-fix
       - id: ruff
@@ -202,7 +202,7 @@ repos:
   # Conventional Commit Message Linting (EN-108)
   # =============================================================================
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v4.4.1
+    rev: b494c556437473519f8ab69020c7256ba84714c1  # v4.4.1
     hooks:
       - id: commitizen
         stages: [commit-msg]

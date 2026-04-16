@@ -1229,15 +1229,15 @@ class TestDomainLayerArchitecture:
 
 **`.github/workflows/ci.yml`** -- Coverage enforcement:
 ```yaml
-# (From: .github/workflows/ci.yml, lines 239-251)
-pytest \
-  -m "not subprocess and not llm" \
+# (From: .github/workflows/ci.yml, test-uv job)
+uv run pytest \
+  -m "not llm and not subprocess" \
   --cov=src \
+  --cov-branch \
   --cov-report=xml \
-  --cov-report=html \
   --cov-report=term-missing \
   --cov-fail-under=80 \
-  --junitxml=junit-pip-${{ matrix.python-version }}.xml \
+  --junitxml=junit-uv-${{ matrix.python-version }}.xml \
   -v
 ```
 

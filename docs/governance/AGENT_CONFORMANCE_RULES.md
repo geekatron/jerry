@@ -127,7 +127,7 @@ Install and run pre-commit:
 
 ```bash
 # Install pre-commit (one-time)
-pip install pre-commit
+uv tool install pre-commit
 pre-commit install
 
 # Run all hooks manually

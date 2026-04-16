@@ -1,0 +1,15 @@
+# CODEOWNERS — Require review for security-sensitive files
+#
+# GitHub evaluates CODEOWNERS top-to-bottom; last matching pattern wins.
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# CI/CD pipeline files — changes to workflows, Dependabot, or pre-commit
+# require review from a maintainer with security context.
+.github/workflows/     @geekatron
+.github/dependabot.yml @geekatron
+.github/CODEOWNERS     @geekatron
+.pre-commit-config.yaml @geekatron
+
+# Governance and rule files — changes to framework constraints
+.context/rules/        @geekatron
+docs/governance/       @geekatron

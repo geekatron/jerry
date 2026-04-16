@@ -3,9 +3,8 @@
 
 """Pytest configuration for Jerry Framework tests.
 
-Note: Path manipulation removed - the editable install (`pip install -e .` or
-`uv pip install -e .`) makes the `src` package available. No additional sys.path
-manipulation is needed.
+Note: Path manipulation removed - `uv sync` makes the `src` package available
+via the project virtual environment. No additional sys.path manipulation is needed.
 
 See: BUG-001 in projects/PROJ-003-agents-cleanup/WORKTRACKER.md
 """

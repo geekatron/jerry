@@ -35,13 +35,13 @@ def _find_jerry_executable() -> str:
     if venv_jerry.exists():
         return str(venv_jerry)
 
-    # Try system path (CI environment with pip install -e .)
+    # Try system path (CI environment)
     system_jerry = shutil.which("jerry")
     if system_jerry:
         return system_jerry
 
     # Fallback: use python -m src.interface.cli.main
-    pytest.skip("jerry executable not found - run 'uv sync' or 'pip install -e .'")
+    pytest.skip("jerry executable not found - run 'uv sync'")
     return ""  # Never reached
 
 

@@ -715,7 +715,7 @@ Jerry currently has these bounded contexts under `src/`:
 
 ### CI Pipeline Enforcement
 
-**`.github/workflows/ci.yml`** runs architecture tests as part of the `test-pip` and `test-uv` jobs (lines 239-251 and 325-336). Architecture test failures block merge to main.
+**`.github/workflows/ci.yml`** runs architecture tests as part of the `test-uv` job. Architecture test failures block merge to main.
 
 ---
 

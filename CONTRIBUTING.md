@@ -176,6 +176,21 @@ When you open a PR, ~17 status checks appear in the GitHub checks panel. Here is
 
 **Security model:** The pipeline runs with read-only permissions (`contents: read`) at the workflow level. Only the Coverage Report job has `pull-requests: write` (to post the coverage comment). Push triggers fire only on `main`/`master` branches; PRs target `main`, `master`, or `claude/**`. See [CI/CD Pipeline Security Controls](docs/reference/ci-cd-pipeline-security.md) for the full security reference.
 
+### Required Reviewers (CODEOWNERS)
+
+Certain paths require review from `@geekatron` before merging. If your PR touches any of these paths, GitHub will automatically request a review:
+
+| Protected Path | Why |
+|---------------|-----|
+| `.github/workflows/` | CI/CD pipeline integrity |
+| `.github/dependabot.yml` | Dependency update policy |
+| `.github/CODEOWNERS` | Review requirement self-protection |
+| `.pre-commit-config.yaml` | Developer-machine hook security |
+| `.context/rules/` | Framework governance constraints |
+| `docs/governance/` | Constitutional governance docs |
+
+This is intentional — these files control the security and governance posture of the project. If your change is a minor fix (e.g., typo in a rule file), it will still be reviewed promptly. See `.github/CODEOWNERS` for the authoritative list.
+
 ## Code Standards
 
 - See `.context/rules/coding-standards.md` for detailed standards

@@ -14,7 +14,7 @@ Cross-platform CI evidence:
     - windows-latest (Python 3.13-3.14)
     - macos-latest (Python 3.13-3.14)
     Windows/macOS CI evidence will be collected on first PR run to main.
-    See: .github/workflows/ci.yml lines 213, 298 (test-pip, test-uv matrices).
+    See: .github/workflows/ci.yml test-uv matrix.
 """
 
 from __future__ import annotations
@@ -519,7 +519,7 @@ class TestCheckSyncContentDrift:
 # === Mock-based Windows Code Path Tests (NF-008, NF-009) ===
 # These tests mock detect_platform() to exercise Windows-specific branches
 # on non-Windows hosts. Cross-platform CI will validate real Windows behavior.
-# CI matrix: .github/workflows/ci.yml (windows-latest in test-pip and test-uv).
+# CI matrix: .github/workflows/ci.yml (windows-latest in test-uv).
 
 
 class TestWindowsCreateLink:
@@ -807,12 +807,12 @@ class TestBootstrapErrorPaths:
 
 # === CI Evidence Documentation ===
 # Cross-platform CI matrix is defined in .github/workflows/ci.yml.
-# Both test-pip and test-uv jobs run on: ubuntu-latest, windows-latest, macos-latest
+# test-uv runs on: ubuntu-latest, windows-latest, macos-latest
 # with Python 3.13 and 3.14 for windows/macos, and 3.11-3.14 for ubuntu.
 #
 # Mock-based Windows tests above exercise the _create_windows_link() and
 # is_symlink_or_junction() Windows branches on the current platform.
 # Real Windows/macOS evidence will be collected when CI runs on those platforms.
 #
-# Reference: .github/workflows/ci.yml lines 207-254 (test-pip), 287-368 (test-uv)
+# Reference: .github/workflows/ci.yml test-uv job
 # Finding: F-1101 (CI matrix defined, passing evidence pending first PR run)
