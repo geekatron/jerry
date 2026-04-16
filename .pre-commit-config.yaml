@@ -39,7 +39,7 @@ repos:
   # Ruff: Fast Linting and Formatting (replaces flake8, black, isort)
   # =============================================================================
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 73413df07b4ab0bf103ca1ae73c7cec5c0ace593  # v0.9.2
+    rev: b831c3dc5d27d9da294ae4e915773b99aa24a7c5  # v0.15.10
     hooks:
       # Linter - runs first, can auto-fix
       - id: ruff
