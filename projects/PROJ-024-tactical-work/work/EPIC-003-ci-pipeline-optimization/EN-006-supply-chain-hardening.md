@@ -1,7 +1,7 @@
 # EN-006: Supply Chain Hardening — Post-EPIC-003 Residual Risks
 
 > **Type:** enabler
-> **Status:** in_progress
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** compliance
@@ -65,8 +65,8 @@ EPIC-003 closed the major CI supply chain gaps (pip removal, permission scoping,
 | TASK-028 | Evaluate replacing softprops release action with gh CLI | completed | MEDIUM | 3 | -- |
 | TASK-030 | Track bump-my-version in Dependabot or scheduled check | completed | MEDIUM | 3 | -- |
 | TASK-033 | Evaluate docs.yml deploy-pages migration | completed | LOW | 3 | -- |
-| TASK-029 | Add SBOM generation to release pipeline | pending | MEDIUM | 4 | TASK-025, TASK-028 |
-| TASK-034 | Add Dependabot pre-commit ecosystem entry | pending | LOW | 4 | TASK-024 |
+| TASK-029 | Add SBOM generation to release pipeline | completed | MEDIUM | 4 | TASK-025, TASK-028 |
+| TASK-034 | Add Dependabot pre-commit ecosystem entry | completed | LOW | 4 | TASK-024 |
 
 ---
 
@@ -140,12 +140,12 @@ graph TD
 
 ## Acceptance Criteria
 
-- [ ] All 3 HIGH findings remediated and verified
-- [ ] All 5 MEDIUM findings either remediated or explicitly deferred with documented rationale
-- [ ] All 3 LOW findings either remediated or documented as accepted risk
-- [ ] Zero pre-commit hooks using floating tags
-- [ ] Release pipeline produces SLSA Level 2 provenance
-- [ ] Scheduled and CI pip-audit scans have equivalent coverage
+- [x] All 3 HIGH findings remediated and verified (TASK-024, 025, 026)
+- [x] All 5 MEDIUM findings remediated (TASK-027, 028, 029, 030, 031) + 1 deferred with rationale (TASK-032 CODEOWNERS: requires repo admin action, done)
+- [x] All 3 LOW findings remediated or documented (TASK-033 KEEP with rationale, TASK-034 completed)
+- [x] Zero pre-commit hooks using floating tags (all 3 SHA-pinned, TASK-024)
+- [x] Release pipeline produces SLSA Level 2 provenance (TASK-025)
+- [x] Scheduled and CI pip-audit scans have equivalent coverage (TASK-026: --all-extras)
 
 ---
 

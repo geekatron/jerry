@@ -102,9 +102,14 @@
 #     `applies-to: security-updates` inside the relevant ecosystem block.
 #
 # D5: Commit message prefix
-#   - "ci" for actions, "deps" for uv. Unchanged from current config.
-#   - Both prefixes are caught by version-bump.yml Filter B (#187) which
-#     skips the version-bump job for ci: and deps: prefixed commits.
+#   - "ci" for actions, "deps" for uv, "chore" for pre-commit. Unchanged
+#     from current config for ci/deps. "chore" for pre-commit because hook
+#     SHA rotations are maintenance (not feature-deps, not CI infra).
+#   - "ci" and "deps" prefixes are caught by version-bump.yml Filter B
+#     (#187) which skips the version-bump job. "chore" prefix is NOT
+#     filtered by Filter B — pre-commit hook SHA bumps do not change
+#     jerry's version, so this is intentional. If Filter B should also
+#     skip "chore" commits, update .github/workflows/version-bump.yml.
 #   - No downstream impact from prefix choice beyond Filter B. Labels
 #     provide the risk-level signaling (see D7).
 #
@@ -117,6 +122,12 @@
 #     accommodates individual major-version PRs for the ~8 direct runtime deps plus
 #     ~4 direct dev deps. The old limit of 5 could queue PRs when
 #     multiple majors are pending simultaneously.
+#   - pre-commit: 5. Only 3 external hook repos exist today
+#     (pre-commit-hooks, ruff-pre-commit, commitizen). Limit of 5 provides
+#     headroom if new hooks are added later. No grouping: each hook repo
+#     gets its own PR, providing a clear SHA rotation audit trail with
+#     changelog context per D2 rationale (each hook update can change
+#     behavior independently). TASK-034.
 #
 # D7: Labels (verified #188; reassess after 90 days of operation)
 #   - All Dependabot PRs get "dependencies" (existing).
@@ -225,3 +236,37 @@ updates:
     #     1. Revert the merged PR: `git revert <merge-commit>`
     #     2. Open an issue tracking which dep caused the regression
     #     3. Re-merge the group without the problematic dep
+
+  # ==================================================================
+  # pre-commit -- weekly check for hook SHA updates (TASK-034)
+  # ==================================================================
+  # Supported since 2026-03-10 (https://github.blog/changelog/2026-03-10-dependabot-now-supports-pre-commit-hooks/)
+  #
+  # All 3 external hook repos in .pre-commit-config.yaml are SHA-pinned
+  # (TASK-024). Dependabot detects when a new tag is released and proposes
+  # the updated SHA, replacing the manual `pre-commit autoupdate --freeze`
+  # workflow that was previously required.
+  #
+  # External repos covered:
+  #   - https://github.com/pre-commit/pre-commit-hooks (hygiene hooks)
+  #   - https://github.com/astral-sh/ruff-pre-commit   (linter/formatter)
+  #   - https://github.com/commitizen-tools/commitizen (commit-msg linting)
+  #
+  # No grouping: each hook repo gets its own PR. Hook updates are
+  # independent (a ruff bump has no relationship to a commitizen bump),
+  # and SHA-pinned updates benefit from individual changelog review.
+  # This mirrors the D2 rationale for major GitHub Actions updates.
+  #
+  # "chore" prefix: hook SHA rotations are maintenance, not a feature
+  # dependency update or CI infrastructure change. See D5 for Filter B
+  # (version-bump.yml) implications — "chore" is not filtered.
+  - package-ecosystem: "pre-commit"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    commit-message:
+      prefix: "chore"
+    labels:
+      - "dependencies"
+    open-pull-requests-limit: 5

@@ -1,7 +1,7 @@
 # TASK-034: Add Dependabot Pre-Commit Ecosystem Entry
 
 > **Type:** task
-> **Status:** pending
+> **Status:** completed
 > **Priority:** low
 > **Created:** 2026-04-15
 > **Parent:** EN-006
@@ -27,6 +27,14 @@ Dependabot has no `pre-commit` ecosystem entry. External pre-commit repos will n
 
 ## Acceptance Criteria
 
-- [ ] Dependabot `pre-commit` ecosystem entry evaluated for compatibility
-- [ ] If supported: entry added to dependabot.yml with weekly schedule
-- [ ] If not supported: documented as limitation with manual `pre-commit autoupdate` cadence
+- [x] Dependabot `pre-commit` ecosystem evaluated — supported (GA 2026-03-10)
+- [x] Entry added to dependabot.yml: `package-ecosystem: "pre-commit"`, weekly Monday, `chore` prefix, limit 5
+- [x] Dependabot will open PRs for SHA-pinned hooks in `.pre-commit-config.yaml`
+
+## Evidence
+
+| Verification | Agent | Result |
+|-------------|-------|--------|
+| Ecosystem supported | eng-devsecops | GA 2026-03-10 per GitHub Changelog |
+| Entry added | dependabot.yml lines 240-272 | `package-ecosystem: "pre-commit"` with weekly schedule |
+| D5 comment updated | eng-devsecops | `chore` prefix documented, Filter B interaction noted |

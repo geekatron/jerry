@@ -17,6 +17,7 @@
 | [Dependency Audit](#dependency-audit) | pip-audit scan via exported lockfile |
 | [Skip-Bump Guard](#skip-bump-guard) | Infinite-loop and double-bump prevention in version-bump.yml |
 | [SLSA Build Provenance](#slsa-build-provenance) | Artifact attestation via `actions/attest-build-provenance` |
+| [SBOM Generation](#sbom-generation) | CycloneDX JSON software bill of materials attached to GitHub Releases |
 | [Dependabot Configuration](#dependabot-configuration) | Risk-tiered dependency update management |
 | [Scheduled Security Scan](#scheduled-security-scan) | Daily pip-audit for transitive CVE detection |
 | [CODEOWNERS](#codeowners) | Required-review paths for security-sensitive files |
@@ -277,7 +278,7 @@ A human-readable version comment accompanies each SHA in `.pre-commit-config.yam
   rev: cef0300fd0fc4d2a87a85fa2093c6b283ea36f4b  # v5.0.0
 ```
 
-**Maintenance:** Dependabot does not monitor `.pre-commit-config.yaml`. SHA updates for external hooks require manual review. The `.pre-commit-config.yaml` file is protected by CODEOWNERS (see [CODEOWNERS](#codeowners)), requiring `@geekatron` review before any change is merged.
+**Maintenance:** Dependabot monitors `.pre-commit-config.yaml` via the `pre-commit` ecosystem entry. See [Dependabot Configuration](#dependabot-configuration). The `.pre-commit-config.yaml` file is protected by CODEOWNERS (see [CODEOWNERS](#codeowners)), requiring `@geekatron` review before any change is merged.
 
 ---
 
@@ -455,6 +456,7 @@ The `release` job generates a signed SLSA provenance attestation for all release
 | `dist/*.tar.gz` | Plugin archive (tar format) |
 | `dist/*.zip` | Plugin archive (zip format) |
 | `dist/checksums.sha256` | SHA-256 checksums for both archives |
+| `dist/sbom.cyclonedx.json` | CycloneDX JSON SBOM (see [SBOM Generation](#sbom-generation)) |
 
 **Action configuration:**
 
@@ -466,6 +468,7 @@ The `release` job generates a signed SLSA provenance attestation for all release
       dist/*.tar.gz
       dist/*.zip
       dist/checksums.sha256
+      dist/sbom.cyclonedx.json
 ```
 
 **Required permissions:** `id-token: write` and `attestations: write` are scoped to the `release` job level. See [Permission Model](#permission-model).
@@ -478,11 +481,41 @@ gh attestation verify <artifact-file> --repo geekatron/jerry
 
 ---
 
+## SBOM Generation
+
+**Workflow:** `release.yml`, `release` job
+
+**Format:** CycloneDX JSON
+
+**Generator:** `cyclonedx-bom` via `uv run --with cyclonedx-bom`
+
+The `release` job generates a CycloneDX JSON SBOM for the project's locked dependency tree before creating the GitHub Release.
+
+**Generation command:**
+
+```yaml
+uv run --with cyclonedx-bom cyclonedx-py environment --of JSON --outfile dist/sbom.cyclonedx.json
+```
+
+**Attested artifact:**
+
+| Artifact | Description |
+|----------|-------------|
+| `dist/sbom.cyclonedx.json` | CycloneDX JSON SBOM for the release dependency tree |
+
+The SBOM is included in the `subject-path` glob passed to `actions/attest-build-provenance`, associating it with the same SLSA provenance attestation as the plugin archives and checksums file. See [SLSA Build Provenance](#slsa-build-provenance).
+
+The SBOM is attached to the GitHub Release alongside the plugin archives and checksums file via `gh release create`.
+
+**Required permissions:** No additional permissions beyond those declared for the `release` job. See [Permission Model](#permission-model).
+
+---
+
 ## Dependabot Configuration
 
 **File:** `.github/dependabot.yml`
 
-Dependabot monitors two package ecosystems with risk-tiered grouping.
+Dependabot monitors three package ecosystems with risk-tiered grouping.
 
 **Risk-tiered update handling:**
 
@@ -503,6 +536,7 @@ Dependabot monitors two package ecosystems with risk-tiered grouping.
 |-----------|-----------|----------|-----|---------------|----------|----------|
 | `github-actions` | `/` | weekly | Monday | `ci` | 10 | minor+patch grouped |
 | `uv` | `/` | weekly | Monday | `deps` | 10 | minor+patch grouped, direct only |
+| `pre-commit` | `/` | weekly | Monday | `chore` | 10 | none (individual PRs) |
 
 **Note:** `bump-my-version` is declared as a dev dependency in `pyproject.toml` and tracked in `uv.lock`. Dependabot monitors it via the `uv` ecosystem alongside all other direct dependencies.
 

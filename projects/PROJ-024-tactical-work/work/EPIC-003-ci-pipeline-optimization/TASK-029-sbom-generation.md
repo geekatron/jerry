@@ -1,7 +1,7 @@
 # TASK-029: Add SBOM Generation to Release Pipeline
 
 > **Type:** task
-> **Status:** pending
+> **Status:** completed
 > **Priority:** medium
 > **Created:** 2026-04-15
 > **Parent:** EN-006
@@ -29,6 +29,15 @@ No Software Bill of Materials is generated during build or release. Consumers ca
 
 ## Acceptance Criteria
 
-- [ ] CycloneDX JSON SBOM generated during release build
-- [ ] SBOM attached as release artifact alongside checksums
-- [ ] SBOM covers all runtime dependencies from uv.lock
+- [x] CycloneDX JSON SBOM generated during release build via `uv run --with cyclonedx-bom cyclonedx-py environment`
+- [x] SBOM attached as release artifact via `gh release create` + covered by SLSA provenance attestation
+- [x] SBOM covers all runtime + dev dependencies from installed environment (reflects exact uv.lock pins)
+
+## Evidence
+
+| Verification | Agent | Result |
+|-------------|-------|--------|
+| Decision | eng-infra | Option A (cyclonedx-py via uv ephemeral) — no third-party Action, no lockfile pollution |
+| SBOM in build job | release.yml lines 198-206 | `cyclonedx-py environment --of JSON` generates CycloneDX 1.6 |
+| SBOM in attestation | release.yml line 225 | `dist/sbom.cyclonedx.json` in subject-path |
+| SBOM in release | release.yml line 286 | Attached via `gh release create` glob |

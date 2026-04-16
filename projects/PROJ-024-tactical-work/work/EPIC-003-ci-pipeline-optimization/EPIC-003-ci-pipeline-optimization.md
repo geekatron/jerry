@@ -1,7 +1,7 @@
 # EPIC-003: CI Pipeline Optimization — Remove Pip Matrix, Fix Supply Chain Gaps, Consolidate Jobs
 
 > **Type:** epic
-> **Status:** in_progress
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-04-13
@@ -54,7 +54,7 @@ The Jerry CI pipeline has 29 jobs per PR run. A cross-skill assessment (eng-devs
 |-------|-------|--------|
 | Phase 1 — Security Hardening | TASK-017, TASK-018, TASK-021, TASK-022 | completed |
 | Phase 2 — Consolidation | TASK-016, TASK-019, TASK-020 | completed |
-| Phase 3 — Supply Chain Hardening | EN-006 (12 tasks) | in_progress |
+| Phase 3 — Supply Chain Hardening | EN-006 (12 tasks) | completed |
 
 ---
 
