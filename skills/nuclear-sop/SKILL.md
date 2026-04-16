@@ -226,14 +226,21 @@ The workflow definition file is the primary trust boundary (TB-1) in the nuclear
 
 ### STAR Validation Pre-Ship Gate
 
-**The /nuclear-sop skill is NOT available for C3+ workflows until the STAR A/B validation gate passes.** The STAR self-checking protocol (Stop-Think-Act-Review) is a behavioral claim about LLM instruction-following, not a verified deterministic constraint. The Phase 1 validation requirement is:
+**C3+ workflow status: DEFINED but BLOCKED until QG-E4 passes.** The 4-hop mode (with sop-verifier) is fully implemented and architecturally defined in NS-H-08. However, the STAR self-checking protocol is a behavioral claim about LLM instruction-following, not a verified deterministic constraint. C3+ use requires empirical validation before the behavioral safety claim is relied upon at higher criticality.
 
-- At least 3 deliberate error trap steps are embedded in `examples/c3-adr-workflow-definition.md`
-- sop-executor catches all 3 traps at the STAR Think phase (STOP-WORK before tool call executes)
-- A/B comparison documents the catch-rate difference between STAR-enabled and STAR-disabled execution
-- eng-qa-001 executes the A/B protocol and documents results in QG-E4
+**QG-E4 Pre-Ship Gate:**
 
-Until QG-E4 passes this gate, use `/nuclear-sop` only for C1-C2 workflows.
+| Field | Value |
+|-------|-------|
+| Owner | eng-qa-001 |
+| Target date | 30 days from skill registration |
+| Pass criteria | STAR-ON catch rate >= 60% on 3+ deliberate error traps; STAR-OFF catch rate 0% (confirming traps are functional) |
+| Test protocol | A/B comparison defined in `projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/eng/phase-4/eng-qa-001/test-strategy.md` Section 1.4 |
+| Test fixture | `skills/nuclear-sop/examples/c3-adr-workflow-definition.md` (TRAP-01, TRAP-02, TRAP-03) |
+| If QG-E4 PASSES | C3+ restriction lifted; NS-H-08 4-hop mode fully operational |
+| If QG-E4 FAILS | STAR reframed as "structural execution discipline" (audit trail value), not "error prevention mechanism"; C3+ use permitted with explicit P-022 disclosure that STAR catch rate is below validated threshold |
+
+Until QG-E4 passes, use `/nuclear-sop` for C1-C2 workflows only. NS-H-08 defines 4-hop mode but its activation is blocked by this gate.
 
 ---
 

@@ -36,6 +36,9 @@ This agent exists because C3+ workflows (significant scope, difficult to reverse
 </purpose>
 
 <input>
+
+> **CALLER RESPONSIBILITY NOTICE:** Context isolation is enforced by the MAIN CONTEXT (orchestrator) constructing the Task prompt correctly — NOT by sop-verifier itself. sop-verifier cannot detect or prevent execution context from being included in its Task prompt. If the caller passes execution logs, STAR records, or reasoning history, context isolation is defeated regardless of this agent's guardrails. This is an architectural limitation, not a guarantee.
+
 sop-verifier is invoked via the Task tool by the MAIN CONTEXT (orchestrator) at IV-HOLD activation.
 
 **FC-M-001 Context Isolation Contract -- Task Prompt MUST contain ONLY:**
