@@ -1,7 +1,7 @@
 # TASK-033: Evaluate docs.yml deploy-pages Migration
 
 > **Type:** task
-> **Status:** pending
+> **Status:** completed
 > **Priority:** low
 > **Created:** 2026-04-15
 > **Parent:** EN-006
@@ -26,6 +26,13 @@
 
 ## Acceptance Criteria
 
-- [ ] Migration feasibility evaluated (MkDocs compatibility with deploy-pages action)
-- [ ] Decision documented: migrate or keep with rationale
-- [ ] If migrated: docs deploy still works, permissions reduced to pages:write
+- [x] Migration feasibility evaluated: deploy-pages requires repo settings change, 2 new actions, MkDocs Material compatibility unverified
+- [x] Decision: **KEEP** current approach — risk mitigated by main-only trigger, path filters, no custom secrets
+- [x] Rationale documented: `contents: write` blast radius bounded by ephemeral token; `id-token: write` from deploy-pages has its own attack surface; net permission reduction narrower than it appears
+
+## Evidence
+
+| Verification | Agent | Result |
+|-------------|-------|--------|
+| Decision | eng-infra | KEEP — migration cost exceeds security benefit at current scale |
+| Revisit triggers | eng-infra | Revisit if: (a) other jobs need workflow-level contents:write removed, or (b) workflow gains source-branch steps |

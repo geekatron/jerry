@@ -61,10 +61,10 @@ EPIC-003 closed the major CI supply chain gaps (pip removal, permission scoping,
 | TASK-032 | Add CODEOWNERS for workflow files | completed | MEDIUM | 1 | -- |
 | TASK-024 | Pin pre-commit hooks to SHAs | completed | HIGH | 2 | -- |
 | TASK-025 | Add SLSA build provenance to release pipeline | completed | HIGH | 2 | -- |
-| TASK-027 | Evaluate replacing MishaKav coverage comment action | pending | MEDIUM | 3 | -- |
-| TASK-028 | Evaluate replacing softprops release action with gh CLI | pending | MEDIUM | 3 | -- |
-| TASK-030 | Track bump-my-version in Dependabot or scheduled check | pending | MEDIUM | 3 | -- |
-| TASK-033 | Evaluate docs.yml deploy-pages migration | pending | LOW | 3 | -- |
+| TASK-027 | Evaluate replacing MishaKav coverage comment action | completed | MEDIUM | 3 | -- |
+| TASK-028 | Evaluate replacing softprops release action with gh CLI | completed | MEDIUM | 3 | -- |
+| TASK-030 | Track bump-my-version in Dependabot or scheduled check | completed | MEDIUM | 3 | -- |
+| TASK-033 | Evaluate docs.yml deploy-pages migration | completed | LOW | 3 | -- |
 | TASK-029 | Add SBOM generation to release pipeline | pending | MEDIUM | 4 | TASK-025, TASK-028 |
 | TASK-034 | Add Dependabot pre-commit ecosystem entry | pending | LOW | 4 | TASK-024 |
 

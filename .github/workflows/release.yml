@@ -273,16 +273,16 @@ jobs:
           cat release-notes.md
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda # v3.0.0
-        with:
-          name: Jerry Framework v${{ needs.validate.outputs.version }}
-          body_path: release-notes.md
-          draft: false
-          prerelease: ${{ contains(needs.validate.outputs.version, '-') }}
-          files: |
-            dist/*.tar.gz
-            dist/*.zip
-            dist/checksums.sha256
-          fail_on_unmatched_files: true
+        run: |
+          VERSION="${{ needs.validate.outputs.version }}"
+          PRERELEASE_FLAG=""
+          if [[ "$VERSION" == *-* ]]; then
+            PRERELEASE_FLAG="--prerelease"
+          fi
+          gh release create "v${VERSION}" \
+            --title "Jerry Framework v${VERSION}" \
+            --notes-file release-notes.md \
+            $PRERELEASE_FLAG \
+            dist/*.tar.gz dist/*.zip dist/checksums.sha256
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

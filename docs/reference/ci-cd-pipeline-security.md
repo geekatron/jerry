@@ -55,7 +55,6 @@ All jobs are defined in `.github/workflows/ci.yml`.
 | `plugin-validation` | push, pull_request | ubuntu-latest | plugin manifests, hook wrapper syntax, hook script syntax, plugin.json agent sync |
 | `cli-integration` | push, pull_request | ubuntu-latest | subprocess CLI tests, MkDocs e2e validation, `jerry --help`, `jerry --version` |
 | `test-uv` | push, pull_request | ubuntu/windows/macos x Python 3.11–3.14 (8 cells) | pytest suite with coverage |
-| `coverage-report` | pull_request only | ubuntu-latest | Posts coverage comment to PR |
 | `changelog-check` | pull_request only | ubuntu-latest | Validates CHANGELOG.md updated in PR |
 | `ci-success` | always (gate) | ubuntu-latest | Aggregates all required job results; branch protection target |
 
@@ -64,8 +63,6 @@ All jobs are defined in `.github/workflows/ci.yml`.
 `static-analysis`, `security`, `validation`, `plugin-validation`, `cli-integration`, `test-uv`, `changelog-check`
 
 `changelog-check` result of `skipped` is treated as passing (it only runs on pull_request events; push events skip it).
-
-**`coverage-report` is not in `ci-success`'s `needs` list.** It runs as a PR annotation step only and does not gate the branch protection check.
 
 ### `static-analysis` job
 
@@ -141,17 +138,6 @@ Dependencies installed via: `uv sync --frozen --extra dev --extra test`
 
 Coverage artifact upload and Codecov upload occur only for the `ubuntu-latest` + `3.14` cell.
 
-### `coverage-report` job
-
-| Parameter | Value |
-|-----------|-------|
-| Trigger | `pull_request` events only |
-| `needs` | `test-uv` |
-| `permissions.pull-requests` | `write` (only job with this permission) |
-| Action | `MishaKav/pytest-coverage-comment` |
-| Coverage input | `coverage.xml` from `coverage-report-uv` artifact |
-| JUnit input | `junit-uv-3.14.xml` from `coverage-report-uv` artifact |
-
 ### `changelog-check` job
 
 | Parameter | Value |
@@ -185,12 +171,7 @@ All jobs in `ci.yml` inherit `contents: read` unless overridden at the job level
 
 **Job-level permission overrides in `ci.yml`:**
 
-| Job | `contents` | `pull-requests` | Rationale |
-|-----|-----------|-----------------|-----------|
-| `coverage-report` | `read` (inherited) | `write` | Required to post PR comment via `MishaKav/pytest-coverage-comment` |
-| All other jobs | `read` (inherited) | not granted | No PR write access needed |
-
-`pull-requests: write` is scoped exclusively to `coverage-report`. No other job receives write permissions to the repository or pull requests.
+No job in `ci.yml` overrides the top-level `contents: read` permission. No job receives `pull-requests: write` or any other elevated permission.
 
 **Workflow-level permissions in `release.yml`:**
 
@@ -211,7 +192,7 @@ release:
 
 | Permission | Scope | Value | Rationale |
 |------------|-------|-------|-----------|
-| `contents` | workflow | `write` | Required to create the GitHub Release and upload release artifacts via `softprops/action-gh-release` |
+| `contents` | workflow | `write` | Required to create the GitHub Release and upload release artifacts via `gh release create` |
 | `id-token` | `release` job only | `write` | Required by `actions/attest-build-provenance` to request an OIDC token from GitHub's identity provider for signing the attestation |
 | `attestations` | `release` job only | `write` | Required by `actions/attest-build-provenance` to write the signed attestation to the repository's attestation store |
 
@@ -250,9 +231,7 @@ GitHub Actions referenced by immutable commit SHA rather than floating version t
 | `actions/upload-artifact` | `043fb46d1a93c77aae656e7c1c64a875d1fc6a0a` | v7.0.1 |
 | `actions/download-artifact` | `3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c` | v8.0.1 |
 | `codecov/codecov-action` | `57e3a136b779b570ffcdbf80b3bdc90e7fab3de2` | v6.0.0 |
-| `softprops/action-gh-release` | `b4309332981a82ec1c5618f44dd2e27cc8bfbfda` | v3.0.0 |
 | `actions/github-script` | `3a2844b7e9c422d3c10d287c895573f7108da1b3` | v9.0.0 |
-| `MishaKav/pytest-coverage-comment` | `287292879eaaff04116f36d3eb1a670f6e5df1a4` | main (2026-03-09) |
 | `actions/attest-build-provenance` | `e8998f949152b193b063cb0ec769d69d929409be` | v2 |
 
 **Workflows where SHA-pinned actions appear:**
@@ -262,11 +241,9 @@ GitHub Actions referenced by immutable commit SHA rather than floating version t
 | `actions/checkout` | Yes | Yes | Yes | Yes | No |
 | `astral-sh/setup-uv` | Yes (all uv jobs) | No | Yes | Yes | No |
 | `actions/upload-artifact` | Yes (test-uv) | No | Yes | No | No |
-| `actions/download-artifact` | Yes (coverage-report) | No | Yes | No | No |
+| `actions/download-artifact` | No | No | Yes (release) | No | No |
 | `codecov/codecov-action` | Yes (test-uv) | No | No | No | No |
-| `softprops/action-gh-release` | No | No | Yes | No | No |
 | `actions/github-script` | No | No | No | No | Yes |
-| `MishaKav/pytest-coverage-comment` | Yes (coverage-report) | No | No | No | No |
 | `actions/attest-build-provenance` | No | No | Yes (release) | No | No |
 
 **Maintenance:** Dependabot monitors the `github-actions` ecosystem and opens pull requests when new versions of pinned actions are available. See [Dependabot Configuration](#dependabot-configuration).
@@ -527,7 +504,7 @@ Dependabot monitors two package ecosystems with risk-tiered grouping.
 | `github-actions` | `/` | weekly | Monday | `ci` | 10 | minor+patch grouped |
 | `uv` | `/` | weekly | Monday | `deps` | 10 | minor+patch grouped, direct only |
 
-**Note:** Dependabot does not track version pins embedded in workflow `run:` blocks (e.g., `uv tool install 'bump-my-version==1.2.7'`). Those inline pins must be updated manually.
+**Note:** `bump-my-version` is declared as a dev dependency in `pyproject.toml` and tracked in `uv.lock`. Dependabot monitors it via the `uv` ecosystem alongside all other direct dependencies.
 
 **Note:** `ruff` uses `0.x` versioning where `0.x` to `0.(x+1)` is semantically equivalent to a major release (new default-enabled lint rules). Dependabot classifies these as "minor."
 

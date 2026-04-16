@@ -1,7 +1,7 @@
 # TASK-030: Track bump-my-version in Dependabot or Scheduled Check
 
 > **Type:** task
-> **Status:** pending
+> **Status:** completed
 > **Priority:** medium
 > **Created:** 2026-04-15
 > **Parent:** EN-006
@@ -26,6 +26,15 @@
 
 ## Acceptance Criteria
 
-- [ ] bump-my-version either added to pyproject.toml dev deps (Dependabot tracked) or monitored by a scheduled version check
-- [ ] Decision documented with rationale
-- [ ] If moved to pyproject.toml: uv.lock updated, version-bump.yml uses `uv run bump-my-version`
+- [x] bump-my-version added to `[dependency-groups] dev` in pyproject.toml — Dependabot now tracks it
+- [x] Decision: **MOVE TO PYPROJECT.TOML** — hash-verified via uv.lock, Dependabot coverage, H-05 consistent
+- [x] uv.lock regenerated (103 packages resolved), version-bump.yml uses `uv run bump-my-version`
+
+## Evidence
+
+| Verification | Agent | Result |
+|-------------|-------|--------|
+| Decision | eng-devsecops | MOVE — supply chain integrity is dominant criterion given VERSION_BUMP_PAT access |
+| pyproject.toml | `bump-my-version>=1.2.7` in `[dependency-groups] dev` | Added |
+| uv.lock | `uv lock` resolved 103 packages | Regenerated |
+| version-bump.yml | `uv tool install` removed, `uv run bump-my-version` used | Updated |

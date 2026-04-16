@@ -1,7 +1,7 @@
 # TASK-028: Evaluate Replacing softprops Release Action with gh CLI
 
 > **Type:** task
-> **Status:** pending
+> **Status:** completed
 > **Priority:** medium
 > **Created:** 2026-04-15
 > **Parent:** EN-006
@@ -26,7 +26,14 @@
 
 ## Acceptance Criteria
 
-- [ ] Alternatives evaluated (gh CLI, GitHub API via github-script)
-- [ ] Decision documented: replace or keep with rationale
-- [ ] If replaced: release artifacts, notes, and prerelease detection work identically
-- [ ] If kept: added to quarterly third-party action review checklist
+- [x] Alternatives evaluated: gh CLI (replace) vs keep with quarterly review
+- [x] Decision: **REPLACE** with `gh release create` — first-party CLI, pre-installed on runners
+- [x] Release artifacts, notes, and prerelease detection work identically (conditional `--prerelease` flag)
+- [x] `softprops/action-gh-release` removed from pipeline — one fewer third-party action with contents:write
+
+## Evidence
+
+| Verification | Agent | Result |
+|-------------|-------|--------|
+| Decision | eng-devsecops | REPLACE — gh CLI handles all features; eliminates personal-account action trust |
+| Exact YAML provided | eng-devsecops | `gh release create` with conditional --prerelease, --notes-file, glob artifact upload |
