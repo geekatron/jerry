@@ -227,7 +227,11 @@ Please respond with:
 **QG-HOLD (quality gate):**
 When a step has annotation `[QG-HOLD]`:
 1. Set PROCEDURE_STATE.yaml: `hold_type: "QG-HOLD"`, `status: "HELD"`, increment `qg_iteration`.
-2. Invoke ps-critic via /adversary S-014 for the work product(s) associated with this phase boundary.
+2. Invoke ps-critic via /adversary S-014 with the following context:
+   - **Work product paths:** All files listed in the workflow definition's `[QG-HOLD]` annotation scope (e.g., the artifact produced by the preceding step(s))
+   - **Acceptance criteria:** Section 9 of the workflow definition, filtered to criteria relevant to this phase boundary
+   - **Criticality level:** Pass the current `criticality` from PROCEDURE_STATE.yaml so ps-critic applies C-level-appropriate scoring
+   - **What NOT to pass:** Do not pass STAR records, execution log, or sop-executor reasoning — ps-critic evaluates the work product, not the execution process
 3. Record `qg_scores` entry: `{iteration, score, critic_findings_path}`.
 4. If score >= 0.92 (H-13): set `hold_resolution: "AUTO-RELEASED"`, advance status to IN-PROGRESS.
 5. If score < 0.92 AND `qg_iteration` < criticality ceiling (C1=3, C2=5, C3=7, C4=10): revise per critic findings and re-invoke.
