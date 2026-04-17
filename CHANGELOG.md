@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove all `pip install` instructions from docs, error messages, and CI comments — replaced with `uv add`/`uv tool install`/`uv run`
 
 ### Fixed
+- **fix(ci):** correct `cyclonedx-py` output flag from `--outfile` to `-o` — fixes v0.31.4 release SBOM generation failure
 - Migrate 7 enum classes from `(str, Enum)` to `StrEnum` in `docs/schemas/types/session_context.py` — Python 3.11+ modernization, unblocks ruff 0.15.10 UP042 rule
 - **fix(ci):** replace bare `python3 -m py_compile` with `uv run python -m py_compile` in plugin-validation — closes last H-05 violation
 - **fix(ci):** scope `pull-requests:write` to `coverage-report` job only — eliminates PR write blast radius for 14 jobs (TASK-021)
