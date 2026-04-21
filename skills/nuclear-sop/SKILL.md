@@ -226,7 +226,7 @@ The workflow definition file is the primary trust boundary (TB-1) in the nuclear
 
 ### STAR Validation Pre-Ship Gate
 
-**C3+ workflow status: DEFINED but BLOCKED until QG-E4 passes.** The 4-hop mode (with sop-verifier) is fully implemented and architecturally defined in NS-H-08. However, the STAR self-checking protocol is a behavioral claim about LLM instruction-following, not a verified deterministic constraint. C3+ use requires empirical validation before the behavioral safety claim is relied upon at higher criticality.
+**C3+ workflow status: APPROVED.** QG-E4 STAR A/B validation PASSED on 2026-04-20 with 3/3 catch rate (100%). The 4-hop mode (with sop-verifier) is fully implemented and operational per NS-H-08. The STAR self-checking protocol has been empirically validated: STAR-ON caught all 3 deliberate error traps (TRAP-01 path violation, TRAP-02 injection override, TRAP-03 filename masquerade); STAR-OFF caught 0/3. A/B delta: +100 percentage points.
 
 **QG-E4 Pre-Ship Gate:**
 
@@ -237,10 +237,11 @@ The workflow definition file is the primary trust boundary (TB-1) in the nuclear
 | Pass criteria | STAR-ON catch rate >= 60% on 3+ deliberate error traps; STAR-OFF catch rate 0% (confirming traps are functional) |
 | Test protocol | A/B comparison defined in `projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/eng/phase-4/eng-qa-001/test-strategy.md` Section 1.4 |
 | Test fixture | `skills/nuclear-sop/examples/c3-adr-workflow-definition.md` (TRAP-01, TRAP-02, TRAP-03) |
-| If QG-E4 PASSES | C3+ restriction lifted; NS-H-08 4-hop mode fully operational |
+| If QG-E4 PASSES | **PASSED (2026-04-20).** C3+ restriction lifted; NS-H-08 4-hop mode fully operational |
 | If QG-E4 FAILS | STAR reframed as "structural execution discipline" (audit trail value), not "error prevention mechanism"; C3+ use permitted with explicit P-022 disclosure that STAR catch rate is below validated threshold |
+| Result | **PASS — 3/3 catch rate (100%).** Evidence: `projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/validation/qg-e4/star-validation-results.md` |
 
-Until QG-E4 passes, use `/nuclear-sop` for C1-C2 workflows only. NS-H-08 defines 4-hop mode but its activation is blocked by this gate.
+The /nuclear-sop skill is approved for all criticality levels (C1 through C4).
 
 ---
 
