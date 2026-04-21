@@ -1,0 +1,58 @@
+schema_version: "1.0.0"
+feature_id: FEAT-040-008
+agent: ux-atomic-architect
+pipeline: ux
+phase: "1a"
+handoff_id: HO-W1-008
+criticality: C3
+quality_threshold: 0.92
+iteration_ceiling: 7
+
+status: under_review   # iter-2 complete; awaiting adv review iter-2
+dispatched_at: "2026-04-20T18:31:00Z"
+returned_at: "2026-04-20T18:44:00Z"
+iteration: 1
+
+artifact_path: "projects/PROJ-040-documentation/work/EPIC-040-001/ux/FEAT-040-008/ux-atomic-architect-output.md"
+artifact_verified: true
+self_reported_quality_score: 0.924
+confidence: 0.82
+blockers: []
+
+key_findings:
+  - "29 components cataloged (12 atoms, 8 molecules, 5 organisms, 4 templates, 6 exemplar pages). Complete taxonomy ready for Wave 3/4 writers. All atoms/molecules have canonical markdown examples drawn from existing Jerry docs."
+  - "TP-01 (Per-Skill How-To Template) is highest-priority deliverable. 26 of 30 skills have zero how-to coverage. Template is ready-to-use; no further design work needed."
+  - "Four PASS documents are the reference implementation set: docs/reference/claude-code-permissions.md, docs/reference/ci-cd-pipeline-security.md, docs/explanation/ci-cd-supply-chain-security.md, docs/explanation/permission-security-model.md. Writers must copy these patterns, not the NEEDS-REVISION docs."
+  - "Style drift ratio is 0.24 overall (above 0.20 threshold); voice/tone drift is 0.47. Marketing-voice anti-pattern (INSTALLATION.md lines 1-5) is highest-risk token drift — flagging this before Wave 3/4 writes prevents propagation."
+  - "Two gaps require directory creation before Wave 4 begins: docs/tutorial/ and docs/how-to/ directories do not exist. Tutorial coverage is 0% across all 30 skills. O-01 (Tutorial Skeleton) and TP-01 are designed and ready."
+
+xp_provides: {}  # informs Wave 5 polish; no per-feature XP
+
+score_history:
+  - iteration: 1
+    composite: 0.81
+    self_reported: 0.924
+    delta_self_vs_adv: -0.114
+    verdict: REVISE
+    review_path: "orchestration/reviews/FEAT-040-008-adv-review-iter-1.md"
+    top_blockers:
+      - "Style drift ratio contradiction (0.47 voice/tone vs 0.24 overall) corrupts primary actionable metric"
+      - "O-01 organism sub-elements (Verification, Achievement) unnamed — Atomic Design adaptation superficial at organism boundary"
+      - "INSTALLATION.md anti-pattern has no enforcement mechanism, only buried advisory text"
+      - "Taxonomy has no discovery pathway — adoption assumption unmitigated Critical risk"
+
+adv_review:
+  status: complete_iter_2
+  iter_1_verdict: REVISE
+  iter_1_score: 0.81
+  iter_2_verdict: REVISE
+  iter_2_score: 0.865
+  iter_2_self_score: 0.87
+  iter_2_calibration: "Major improvement — delta -0.005 vs iter-1 -0.114"
+  iter_2_review_path: "orchestration/reviews/FEAT-040-008-adv-review-iter-2.md"
+  iter_2_major_blockers:
+    - "DA-001-2: M-10 (Verification Block) contains M-03 (a molecule). By document's own boundary rule, that makes M-10 an organism not molecule. Self-contradiction from iter-2 DA-001 fix."
+    - "CC-001-2: Voice drift table shows 13 docs but denominator claim is '7 of 15'. Readers compute 7/13=0.54, not 0.47. FM-001 residual."
+  next_iteration: 3
+  required_strategies: [S-007, S-002, S-014, S-004, S-012, S-013]
+  ordering_constraint: "S-003 MUST precede S-002 if both run (H-16)"

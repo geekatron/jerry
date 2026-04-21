@@ -25,8 +25,17 @@ workflow:
   project_id: "PROJ-040-documentation"
   version: "1.0.3"
   created_at: "2026-04-17T00:00:00Z"
-  updated_at: "2026-04-20T00:00:00Z"
-  status: "APPROVED"   # PLANNED | APPROVED | ACTIVE | PAUSED | COMPLETE | FAILED | CANCELLED
+  updated_at: "2026-04-20T22:30:00Z"
+  status: "PHASE_1A_READY_FOR_QG2"   # Path C complete; 3 PASS + 6 conditional-accept; ready for cross-pollination consistency check
+  checkpoint_ref: "orchestration/checkpoints/ae006d-phase1a-20260420.yaml"
+  resume_decision: "Path C complete: FEAT-040-001 iter-7 PASS 0.935; FEAT-040-002 iter-5 PASS 0.920"
+  phase_1a_progress:
+    complete: 3               # FEAT-040-055 (0.93), FEAT-040-001 (0.935 iter-7), FEAT-040-002 (0.920 iter-5)
+    in_flight: 0
+    conditional_accept: 6     # FEAT-040-004 (0.87), 005 (0.848), 006 (0.871), 007 (0.84), 008 (0.865), 056 (self 0.91)
+    not_dispatched: 0
+  xp_unblocked: [XP-01, XP-01b, XP-02, XP-03, XP-04]   # All Phase 1a XP handoffs unblocked (subject to documented gating conditions for XP-02)
+  next_gate: "QG-2 cross-pollination consistency check (FEAT-040-055/001/002 primary + 004/005/006/007/008/056 conditional)"
 
   id_source: "plan"
   id_format: "semantic-date-seq"

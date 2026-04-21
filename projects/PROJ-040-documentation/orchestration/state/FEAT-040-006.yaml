@@ -1,0 +1,55 @@
+schema_version: "1.0.0"
+feature_id: FEAT-040-006
+agent: ux-behavior-diagnostician
+pipeline: ux
+phase: "1a"
+handoff_id: HO-W1-006
+criticality: C3
+quality_threshold: 0.92
+iteration_ceiling: 7
+
+status: under_review   # iter-2 complete, self 0.861; awaiting adv review iter-2
+dispatched_at: "2026-04-20T19:20:00Z"
+returned_at: "2026-04-20T19:30:00Z"
+iteration: 1
+
+artifact_path: "projects/PROJ-040-documentation/work/EPIC-040-001/ux/FEAT-040-006/ux-behavior-diagnostician-output.md"
+artifact_verified: true
+artifact_persisted_by: "orchestrator"  # T1 agent
+self_reported_quality_score: 0.84
+confidence: 0.70
+blockers: []
+
+key_findings:
+  - "Primary bottleneck: Ability (Brain Cycles + Time co-equal at 2/5). 9-step prerequisite chain exceeds 15-minute window cognitive load."
+  - "Step 3 hidden CLI-vs-plugin branching is highest-friction moment: users commit mkdir/export before discovering wrong path (F-010 Sev 3 + T-04 corroboration)."
+  - "Stale version references (uv 0.5.x, Jerry v0.2.2 vs current v0.31.5, 29 versions behind) independently contribute to Brain Cycles via environment-match doubt. Low-effort fix."
+  - "Motivation above threshold (~3.7 average) but degrades across setup flow — NO motivational reinforcement at hardest steps (uv install, directory creation, env var export, session verification)."
+  - "Top intervention: restructure Step 3 with upfront explicit branch decision BEFORE any irreversible work. Medium effort, highest impact on 15-minute window. HEART Task Success primary measurement target; Adoption leading indicator."
+
+xp_provides: {}  # informs synthesis, no per-feature cross-pollination
+
+score_history:
+  - iteration: 1
+    composite: 0.765
+    self_reported: 0.84
+    delta_self_vs_adv: -0.075
+    verdict: REVISE
+    review_path: "orchestration/reviews/FEAT-040-006-adv-review-iter-1.md"
+    critical_blockers:
+      - "FM-001: motivation averaging error; Belonging=3 minimum may be at-threshold, flipping bottleneck diagnosis from Ability to shared factors"
+    major_blockers:
+      - "PM-001/IN-002: INSTALLATION.md steps counted in 9-step chain but surface not analyzed behaviorally — circular evidence"
+      - "DA-001: Prompt Step 1 partial-pass too quick; hidden-branch fix (Intervention #1) IS a Facilitator-prompt redesign, meaning prompts may be primary bottleneck not Ability"
+      - "PM-003/DA-003: Interventions #4 and #3 contraindicated by the model's own conclusions"
+
+adv_review:
+  status: complete_iter_1
+  iter_1_verdict: REVISE
+  iter_1_score: 0.765
+  iter_2_status: complete
+  iter_2_self_score: 0.861
+  iter_2_changes: "Bottleneck reclassified Multiple (Prompt+Ability); motivation min-operator borderline; INSTALLATION.md out-of-scope gate; #3 replaced with progressive disclosure; #5 sequenced post-Ability-fix"
+  next_iteration: "adv review iter-2 dispatching"
+  required_strategies: [S-007, S-002, S-014, S-004, S-012, S-013]
+  ordering_constraint: "S-003 MUST precede S-002 if both run (H-16)"

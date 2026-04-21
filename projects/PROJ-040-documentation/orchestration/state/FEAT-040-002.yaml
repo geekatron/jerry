@@ -1,0 +1,373 @@
+schema_version: "1.0.0"
+feature_id: FEAT-040-002
+agent: ux-heart-analyst
+pipeline: ux
+phase: "1a"
+pass_type: provisional
+handoff_id: HO-W1-002
+criticality: C3
+quality_threshold: 0.92
+iteration_ceiling: 7
+
+status: complete   # Phase 1a provisional pass — quality gate PASSED iter-5 (0.920 >= 0.92); Phase 1b authoritative pass pending XP-01b (JTBD enrichment)
+exit_iteration_cycle: true
+final_verdict: PASS
+final_composite: 0.920
+phase_completions:
+  - "1a-provisional"
+
+dispatched_at: "2026-04-20"
+returned_at: "2026-04-20"
+iteration: 5
+
+artifact_path: "projects/PROJ-040-documentation/work/EPIC-040-001/ux/FEAT-040-002/ux-heart-analyst-provisional-output.md"
+artifact_verified: true
+
+self_reported_quality_score: 0.911
+confidence_goal_metric: MEDIUM
+confidence_thresholds: LOW
+measurement_plan_mode: true
+
+blockers: []
+
+key_findings:
+  - "All five HEART dimensions selected with full GSM tables. Provisional Adoption goal is 'first-skill invocation within target window' — pending JTBD enrichment (XP-01b) for Phase 1b validation. Getting-Started Completion Rate (Task Success / Adoption) is the single highest-impact metric (behavioral completion event PRIMARY, survey self-report FALLBACK-ONLY), grounded in triple-convergence evidence: B=MAP Major bottleneck (FEAT-040-006), F-010 Severity 3 missing Facilitator prompt, F-001 Severity 3 stale skills table."
+  - "Skill Discovery Rate (Engagement) goal reframed (iter-3) to catalog-fraction framing — (distinct skill documentation pages visited / total registered skills) proportional to full catalog, post-remediation stable regardless of how many skills are visible at entry points. Metric count: 9 independent metrics + 2 diagnostic drill-downs. Time-to-First-Skill-Invocation requires identity bridge (account bridge or session-token correlation) to join web analytics to CLI telemetry — deferred to Phase 3 without bridge."
+  - "Jerry Framework documentation is at Measurement Maturity Level 0. Phase 1b hard dependency gate: Phase 1b authoritative HEART pass CANNOT proceed until Phase 1 instrumentation confirmed live and collecting data for minimum 30 days. Owner: DevSecOps + Docs lead (per ORCHESTRATION.yaml). Baseline divergence contingency: if Getting-Started Completion Rate baseline >= 55% re-evaluate critical path; >= 70% initiate retrospective; Step 3 floor < 20% escalate to orchestrator."
+  - "All thresholds are [REFERENCE-ONLY] LOW confidence ADAPTED ESTIMATES. SUPR-Q 65-72 range not independently verified from MeasuringU. Getting-Started Completion Rate 60% target from Baymard (order-of-magnitude only) and MeasuringU 2021 study (58% median, citation not independently confirmed). Skill Discovery Rate 25% target uses moving-average of weekly rates over 90-day window — weekly formula applies within window. 14-Day Return Rate uses rolling weekly cohort (7-day entry, 14-day observation) to avoid partial-observation bias."
+  - "XP-02 OPEN QUESTION (iter-4): Causal ordering between Task Success and Happiness is unresolved. Equal instrumentation priority is model-agnostic derived AND now explicitly scoped to Phase 1 baseline measurement (remediation sequencing gated on Phase 1b). Skill Discovery Rate '7' threshold now annotated as Phase 1a approximation of 23% of 30-skill catalog (7/30 = 0.233) in both Metric Specifications and Handoff Data tables. Segment count of 3 is a provisional analytical inference — FEAT-040-053 must validate count as primary research question. Iter-4 self-reported composite: 0.911; expected adversarial: 0.920-0.922 (PASS band). Evidence Quality structurally capped ~0.89 (Phase 1a — benchmarks unverifiable); PASS expected via other dimensions."
+
+xp_provides:
+  XP-02:    # → FEAT-040-053 pm-customer-insight (Personas + Journey Maps)
+    enrichment_data: "three provisional user segments with HEART-dimension-aligned behavioral hypotheses + key evidence citations"
+    state_ref: "key_findings[4]"
+    gating_condition: "FEAT-040-053 MUST NOT begin persona work until Phase 1b HEART authoritative pass (requires XP-01b from FEAT-040-001 and pre-remediation baseline instrumentation confirmation). Consuming XP-02 before Phase 1b risks anchoring persona work on unvalidated segment count and causal chain ordering."
+    de_anchoring_warning: "Segment count of 3 is a provisional analytical hypothesis, NOT a finding. FEAT-040-053 should validate segment count as a primary research question. Causal chain ordering (Task Success → Happiness) is UNRESOLVED — competing model (Happiness gates Adoption) has equal evidential support. Do not anchor persona investment sequencing on this provisional ordering."
+    segments:
+      - name: "first-time adopter"
+        primary_dimensions: ["Adoption", "Task Success"]
+        behavioral_hypothesis: "Blocked at Step 3 branch decision; goal is first-skill invocation"
+        evidence: ["F-010 Sev 3 FEAT-040-004", "B=MAP bottleneck FEAT-040-006"]
+      - name: "skill explorer"
+        primary_dimensions: ["Engagement", "Retention"]
+        behavioral_hypothesis: "Past first-skill invocation; expanding skill use; blocked by invisible skill catalog"
+        evidence: ["F-001 Sev 3 FEAT-040-004", "F-004b Sev 3 FEAT-040-004"]
+      - name: "trust evaluator"
+        primary_dimensions: ["Happiness"]
+        behavioral_hypothesis: "Evaluating framework investment; sensitive to social proof"
+        evidence: ["F-007 Sev 3 FEAT-040-004", "FM-001 Belonging=3 FEAT-040-006"]
+
+score_history:
+  - iteration: 1
+    composite: 0.887
+    verdict: complete
+    note: "Phase 1a provisional pass. Self-reported 0.887 (gap to threshold 0.033). Adversarial review iter-1 scored 0.845 (REVISE, gap 0.075)."
+  - iteration: 2
+    composite: 0.878
+    verdict: REVISE
+    note: >
+      Iter-2 revision addressing 5 prioritized blockers from iter-1 adversarial review (composite 0.845 REVISE).
+      B1 (CC-002+FM-001): SUPR-Q 65-72 range labeled as unverified adapted estimate; Baymard range qualified as order-of-magnitude only;
+      Getting-Started Completion Rate OR-logic replaced with AND/tiered (behavioral PRIMARY, survey FALLBACK-ONLY).
+      B2 (DA-001+IN-002): Causal chain elevated to open question with two named competing models (Model A: Task Success-first; Model B: Happiness-gates-Adoption);
+      directional critical path investment instruction removed; Phase 1b JTBD disambiguation task added.
+      B3 (IN-001+PM-002): Instrumentation roadmap updated with owner assignments (DevSecOps + Docs lead per ORCHESTRATION.yaml),
+      Phase 1b hard dependency gate (30-day baseline collection required), GitHub labeling retroactive process and owner specified.
+      B4 (DA-002): Segment count (3) explicitly flagged as provisional analytical inference; Retention and Task Success segment gaps enumerated;
+      segment non-exclusivity noted; FEAT-040-053 tasked with segment count validation as primary research question.
+      B5 (FM-002): Step 3 Drop-Off Rate reclassified as DIAGNOSTIC DRILL-DOWN of Getting-Started Completion Rate;
+      metric count revised to "9 independent + 2 diagnostic drill-downs."
+      Additional: LOW confidence section-level banner added to Dashboard Specification.
+      Self-score 0.878 (lower than iter-1 0.887 due to honest epistemic hedging on citations and causal ordering).
+      Adversarial score (iter-2): 0.889 (REVISE, gap 0.031). Self-calibration reversed — agent underscored; external review rewarded epistemic honesty gains.
+  - iteration: 3
+    composite: 0.913
+    verdict: REVISE
+    note: >
+      Iter-3 surgical revision closing all 6 Minor findings from iter-2 adversarial review (composite 0.889 REVISE, gap 0.031).
+      CC-001-I2 CLOSED: LOW confidence banners added before Phase 2 and Phase 3 dashboard sub-tables.
+      DA-003-I2 CLOSED: Skill Discovery Rate window reconciliation sentence added — rolling average of weekly rates over 90-day product-lifecycle framing.
+      FM-003-I2 CLOSED: Time-to-First-Skill-Invocation identity bridge 3-sentence spec added — two named approaches (signed-in account bridge, time-bucketed session correlation), Phase 3 deferral without bridge.
+      FM-004-I2 CLOSED: 14-Day Return Rate cohort specification replaced with "Weekly rolling cohort (7-day entry window, 14-day observation window)" — partial-observation bias rationale included.
+      IN-003-I2 CLOSED (goal level): Engagement goal reframed to catalog-fraction proportional framing; post-remediation stable.
+      PM-001-I2 CLOSED: Baseline divergence contingency with four graduated thresholds (>=55%, >=70%, <30%, <20%) added to Validation Required.
+      ADDITIONAL: Model-agnostic equal-priority derivation paragraph added (logically sound per adversarial review).
+      ADDITIONAL: MeasuringU 2021 citation marked "citation not independently confirmed" — consistent with SUPR-Q epistemic status.
+      Adversarial composite iter-3: 0.913 (REVISE). Gap to threshold: 0.007. Calibration gap: +0.010 (external above self) — consistent with iter-2 pattern.
+      Remaining: Engagement metric formula ("> 7 distinct skills") not aligned with catalog-fraction goal (pre-disclosed residual); model-agnostic derivation does not explicitly scope "equal priority" to instrumentation only.
+      Iter-4 scope: (1) update Skill Discovery Rate formula to catalog-fraction expression; (2) add instrumentation-vs-intervention scoping sentence. Estimated post-iter-4 composite: 0.917-0.921.
+  - iteration: 4
+    composite: 0.919
+    verdict: REVISE
+    note: >
+      Iter-4 surgical pass closing 2 remaining Minor findings from iter-3 adversarial review (composite 0.913 REVISE, gap 0.007).
+      IN-003-RES CLOSED: Skill Discovery Rate formula annotated with catalog-fraction footnote in both Metric Specifications table and Handoff Data table.
+      Metric Spec footnote: "The '7' threshold is a Phase 1a approximation of 23% of the 30-skill catalog (7/30 = 0.233); recalibrate proportionally after F-001 remediation expands entry-point skill visibility."
+      Handoff Data footnote: "'7' = Phase 1a approximation of 23% of 30-skill catalog (7/30 = 0.233); recalibrate proportionally post-F-001-remediation."
+      DA-003-RES CLOSED: Model-agnostic derivation paragraph extended with scoping sentence:
+      "Note: equal instrumentation priority applies to Phase 1 baseline measurement decisions; remediation investment sequencing (which dimension to fix first) remains gated on Phase 1b causal model resolution."
+      Adversarial composite iter-4: 0.919. Gap to threshold: 0.001 (rounded) / 0.0015 (full precision). Verdict: REVISE.
+      Dimension scores: Completeness 0.92 (stable), Internal Consistency 0.93 (+0.01), Methodological Rigor 0.92 (+0.01, threshold reached),
+      Evidence Quality 0.89 (stable, Phase 1a structural cap), Actionability 0.92 (stable), Traceability 0.93 (+0.02).
+      Evidence Quality structural cap (0.89, weight 0.15) is the sole remaining limiter — all other dimensions now at 0.92+.
+      Calibration: external 0.919 vs self 0.911 = +0.008 in external reviewer's favor (within prior +0.010-+0.011 calibration band).
+      Iter-5 scope: single Evidence Quality risk-disclosure sentence in Baseline and Thresholds footer.
+      Expected iter-5 composite: 0.921-0.922 if Evidence Quality reaches 0.90-0.905 (+0.015 EQ gain needed).
+  - iteration: 5
+    composite: 0.920
+    verdict: PASS
+    note: >
+      Iter-5 single surgical addition: Evidence Quality risk-disclosure paragraph added as a new paragraph
+      immediately after the "Recommended action" sentence in the Baseline and Thresholds section footer.
+      Addition: "Risk disclosure: A team that applies these [REFERENCE-ONLY] thresholds without first
+      collecting a pre-remediation baseline risks setting improvement targets that are either trivially
+      achievable (if current state already meets threshold) or unachievable (if current state is far below
+      threshold), in either case producing misleading progress measurements. The pre-remediation baseline
+      collection in Phase 1 instrumentation is therefore a prerequisite — not optional guidance — for using
+      any threshold in this document as an improvement target."
+      Change type: Evidence Quality risk-disclosure — converts implicit "recommended action" to explicit dual
+      failure-mode description with prerequisite classification. Logical derivation ("therefore") grounds
+      prerequisite claim in named consequences.
+      Evidence Quality: 0.89 → 0.90 (+0.01). All other dimensions stable at iter-4 values.
+      Composite: 0.919 → 0.920 (PASS at minimum required level).
+      Adversarial review: PASS. Quality gate met. Iteration cycle complete (5 of 7 ceiling).
+      Phase 1a status: COMPLETE (quality gate confirmed). XP-02 conditionally unblocked.
+      Phase 1a progress: 3/9 complete (FEAT-040-055, FEAT-040-001, FEAT-040-002).
+      Calibration: agent self 0.920 = adversarial 0.920. Zero calibration gap at convergence point.
+
+adv_review:
+  iter_5:
+    executed: "2026-04-20"
+    executor: "adv-executor v1.0.0"
+    report_path: "projects/PROJ-040-documentation/orchestration/reviews/FEAT-040-002-adv-review-iter-5.md"
+    strategies_executed: ["S-007", "S-002", "S-004", "S-012", "S-013", "S-014"]
+    s003_steelman_status: "waived — iter-5 carries waiver from iter-1 through iter-4; risk-disclosure addition deepens Evidence Quality framing without altering waiver basis"
+    composite: 0.920
+    verdict: "PASS"
+    gap_to_threshold: 0.000
+    dimension_scores:
+      completeness: 0.92
+      internal_consistency: 0.93
+      methodological_rigor: 0.92
+      evidence_quality: 0.90
+      actionability: 0.92
+      traceability: 0.93
+    findings_summary:
+      total: 0
+      critical: 0
+      major: 0
+      minor: 0
+    iter5_action_verified:
+      - id: "EQ-RISK-DISCLOSURE"
+        status: "CONFIRMED PRESENT — risk-disclosure paragraph at Baseline and Thresholds footer lines 233-234; placement correct (immediately after Recommended action sentence); dual failure modes named; prerequisite classification with logical derivation; 0 new findings from S-007/S-002/S-004/S-012/S-013"
+    xp02_handoff_status: "CONDITIONALLY UNBLOCKED — PASS verdict satisfies quality gate; XP-02 handoff to FEAT-040-053 gated on Phase 1b conditions: (1) JTBD enrichment XP-01b from FEAT-040-001, (2) Phase 1 instrumentation live and collecting for minimum 30 days"
+    xp_02_unblock_pending_phase_1b: true
+    phase_1a_status: "COMPLETE — quality gate confirmed at composite 0.920 >= H-13 threshold 0.92"
+    trajectory:
+      iter1_adv: 0.845
+      iter2_adv: 0.889
+      iter3_adv: 0.913
+      iter4_adv: 0.919
+      iter5_adv: 0.920
+      delta_iter5: +0.001
+    calibration_note: "Agent self-scored 0.920; external scored 0.920. Zero calibration gap at threshold boundary — convergence complete. Prior pattern (+0.010-+0.011 in external reviewer's favor) resolves to zero at point of threshold crossing. Consistent with surgical single-action closure."
+    iteration_cycle_complete: true
+    iterations_used: 5
+    iterations_remaining: 2
+  iter_4:
+    executed: "2026-04-20"
+    executor: "adv-executor v1.0.0"
+    report_path: "projects/PROJ-040-documentation/orchestration/reviews/FEAT-040-002-adv-review-iter-4.md"
+    strategies_executed: ["S-007", "S-002", "S-004", "S-012", "S-013", "S-014"]
+    s003_steelman_status: "waived — iter-4 carries waiver from iter-1 through iter-3; additions deepen traceability without altering waiver basis"
+    composite: 0.919
+    verdict: "REVISE"
+    gap_to_threshold: 0.001
+    dimension_scores:
+      completeness: 0.92
+      internal_consistency: 0.93
+      methodological_rigor: 0.92
+      evidence_quality: 0.89
+      actionability: 0.92
+      traceability: 0.93
+    findings_summary:
+      total: 0
+      critical: 0
+      major: 0
+      minor: 0
+    minors_closed_from_iter3:
+      - id: "IN-003-RES"
+        status: "CLOSED — Skill Discovery Rate formula annotated with Phase 1a catalog-fraction calibration note in both Metric Specifications table and Handoff Data table (7/30 = 0.233 = 23%)"
+      - id: "DA-003-RES"
+        status: "CLOSED — scoping sentence appended to model-agnostic derivation: 'equal instrumentation priority applies to Phase 1 baseline measurement decisions; remediation investment sequencing remains gated on Phase 1b causal model resolution'"
+    remaining_issues: "Evidence Quality structural cap at 0.89 (Phase 1a inherent — unverified benchmarks); Completeness residual (formula-parameter alignment + minimum data volumes for non-SUPR-Q instruments)"
+    iter5_scope:
+      - "Add single Evidence Quality risk-disclosure sentence to Baseline and Thresholds footer (pre-remediation baseline as prerequisite, not optional guidance)"
+    iter5_estimated_composite: "0.921-0.922"
+    trajectory:
+      iter1_adv: 0.845
+      iter2_adv: 0.889
+      iter3_adv: 0.913
+      iter4_adv: 0.919
+      delta_iter4: +0.006
+    calibration_note: "Agent self-scored 0.911; external scored 0.919. Gap +0.008 in external reviewer's favor — within prior calibration band (+0.010-+0.011 in iter-2 and iter-3). Calibration stable."
+    xp02_handoff_status: "CONDITIONALLY UNBLOCKED — iter-5 PASS unblocks XP-02 subject to Phase 1b gating conditions (JTBD enrichment + 30-day baseline instrumentation)"
+    xp_02_unblock_pending_phase_1b: true
+  iter_3:
+    executed: "2026-04-20"
+    executor: "adv-executor v1.0.0"
+    report_path: "projects/PROJ-040-documentation/orchestration/reviews/FEAT-040-002-adv-review-iter-3.md"
+    strategies_executed: ["S-007", "S-002", "S-004", "S-012", "S-013", "S-014"]
+    s003_steelman_status: "waived — rationale strengthened by iter-3 epistemic disclosure apparatus"
+    composite: 0.913
+    verdict: "REVISE"
+    gap_to_threshold: 0.007
+    dimension_scores:
+      completeness: 0.92
+      internal_consistency: 0.92
+      methodological_rigor: 0.91
+      evidence_quality: 0.89
+      actionability: 0.92
+      traceability: 0.91
+    findings_summary:
+      total: 2
+      critical: 0
+      major: 0
+      minor: 2
+    minors_closed_from_iter2:
+      - id: "CC-001-I2"
+        status: "CLOSED — LOW confidence banners added before Phase 2 and Phase 3 sub-tables"
+      - id: "DA-003-I2"
+        status: "CLOSED — rolling average / weekly formula reconciliation sentence added"
+      - id: "FM-003-I2"
+        status: "CLOSED — identity bridge 3-sentence spec with two named approaches added"
+      - id: "FM-004-I2"
+        status: "CLOSED — weekly rolling cohort (7-day entry, 14-day observation) replaces monthly cohort"
+      - id: "IN-003-I2"
+        status: "CLOSED (goal level) — catalog-fraction proportional goal; metric formula residual pre-disclosed"
+      - id: "PM-001-I2"
+        status: "CLOSED — four-level contingency thresholds (>=55%, >=70%, <30%, <20%) added"
+    remaining_minors:
+      - "IN-003-RES: Engagement metric formula '> 7 distinct skills' not aligned with catalog-fraction goal (pre-disclosed; iter-4)"
+      - "DA-003-RES: model-agnostic derivation does not explicitly distinguish instrumentation priority from remediation intervention priority (clarity gap; iter-4)"
+    iter4_scope:
+      - "Update Skill Discovery Rate formula to catalog-fraction expression (Form A or Form B per review)"
+      - "Add instrumentation-vs-intervention scoping sentence to model-agnostic derivation paragraph"
+    iter4_estimated_composite: "0.917-0.921"
+    trajectory:
+      iter1_adv: 0.845
+      iter2_adv: 0.889
+      iter3_adv: 0.913
+      delta_iter3: +0.024
+    calibration_note: "Agent self-scored 0.903; external scored 0.913. Gap +0.010 in external-reviewer's favor — consistent with iter-2 pattern (+0.011). Calibration stable."
+    xp02_handoff_status: "BLOCKED — Phase 1b authoritative pass required; PASS verdict (iter-4+) unblocks subject to Phase 1b gating condition"
+  iter_2:
+    executed: "2026-04-20"
+    executor: "adv-executor v1.0.0"
+    report_path: "projects/PROJ-040-documentation/orchestration/reviews/FEAT-040-002-adv-review-iter-2.md"
+    strategies_executed: ["S-007", "S-002", "S-004", "S-012", "S-013", "S-014"]
+    s003_steelman_status: "waived — provisional measurement plan; H-16 intent satisfied (carried from iter-1)"
+    composite: 0.889
+    verdict: "REVISE"
+    gap_to_threshold: 0.031
+    dimension_scores:
+      completeness: 0.90
+      internal_consistency: 0.90
+      methodological_rigor: 0.87
+      evidence_quality: 0.86
+      actionability: 0.91
+      traceability: 0.89
+    findings_summary:
+      total: 6
+      critical: 0
+      major: 0
+      minor: 6
+    blockers_closed_from_iter1:
+      - id: "B1"
+        findings: ["CC-002", "FM-001"]
+        status: "CLOSED — SUPR-Q labeled ADAPTED ESTIMATE with non-verification disclosure; OR-logic replaced with behavioral PRIMARY / survey FALLBACK-ONLY tiered structure"
+      - id: "B2"
+        findings: ["DA-001", "IN-002"]
+        status: "CLOSED — causal chain restructured as OPEN QUESTION with two named models (Model A Task Success-first, Model B Happiness-gates-Adoption); directional investment instruction removed; Phase 1b disambiguation task specified"
+      - id: "B3"
+        findings: ["IN-001", "PM-002"]
+        status: "CLOSED — Phase 1b hard dependency gate added; owner assignments per phase; GitHub labeling owner + automation + retroactive process specified; state file gating_condition and de_anchoring_warning added"
+      - id: "B4"
+        findings: ["DA-002"]
+        status: "CLOSED — segment count flagged as provisional analytical inference; Retention and Task Success gaps documented; FEAT-040-053 tasked with segment count validation as primary research question"
+      - id: "B5"
+        findings: ["FM-002"]
+        status: "CLOSED — Step 3 Drop-Off Rate reclassified as DIAGNOSTIC DRILL-DOWN; metric count revised to 9 independent + 2 diagnostic drill-downs"
+    remaining_minors:
+      - "CC-001-I2: Dashboard LOW confidence banner not repeated before Phase 2/3 sub-tables (iter-3)"
+      - "DA-003-I2: Skill Discovery Rate 90-day vs. weekly formula mismatch (pre-declared iter-3)"
+      - "FM-003-I2: Time-to-First-Skill-Invocation identity bridge unaddressed (pre-declared iter-3)"
+      - "FM-004-I2: 14-Day Return Rate cohort window mismatch (pre-declared iter-3)"
+      - "IN-003-I2: Engagement goal tied to remediable artifact count (pre-declared iter-3)"
+      - "PM-001-I2: Baseline divergence contingency partial — time metric covered, completion rate gap remains (iter-3 optional)"
+    trajectory:
+      iter1_adv: 0.845
+      iter2_adv: 0.889
+      delta: +0.044
+    calibration_note: "Agent self-scored 0.878; external scored 0.889. Direction reversed — agent underscored; epistemic honesty additions scored as gains by external reviewer on Internal Consistency (+0.06) and Evidence Quality (+0.09)."
+    xp02_handoff_status: "BLOCKED — Phase 1b authoritative pass required; state file gating_condition correctly set"
+  iter_1:
+    executed: "2026-04-20"
+    executor: "adv-executor v1.0.0"
+    report_path: "projects/PROJ-040-documentation/orchestration/reviews/FEAT-040-002-adv-review-iter-1.md"
+    strategies_executed: ["S-007", "S-002", "S-004", "S-012", "S-013", "S-014"]
+    s003_steelman_status: "waived — provisional measurement plan with embedded self-declared vulnerabilities; H-16 intent satisfied"
+    composite: 0.845
+    verdict: "REVISE"
+    gap_to_threshold: 0.075
+    dimension_scores:
+      completeness: 0.88
+      internal_consistency: 0.84
+      methodological_rigor: 0.83
+      evidence_quality: 0.77
+      actionability: 0.88
+      traceability: 0.87
+    findings_summary:
+      total: 17
+      critical: 0
+      major: 10
+      minor: 7
+    top_blockers:
+      - id: "B1"
+        findings: ["CC-002", "FM-001"]
+        dimension: "Evidence Quality + Internal Consistency"
+        description: "Citation provenance unverifiable (SUPR-Q 65-72 range, Baymard adaptation); Getting-Started Completion Rate OR-logic flaw admits self-report bias"
+        priority: 1
+      - id: "B2"
+        findings: ["DA-001", "IN-002"]
+        dimension: "Internal Consistency + Methodological Rigor"
+        description: "Causal chain (Task Success → Happiness last) contradicts Trust Evaluator segment hypothesis (Happiness may gate Adoption) — unresolved contradiction"
+        priority: 2
+      - id: "B3"
+        findings: ["IN-001", "PM-002"]
+        dimension: "Actionability + Completeness"
+        description: "Instrumentation roadmap has no owner or Phase 1b dependency gate; XP-02 state file lacks de-anchoring warning for FEAT-040-053"
+        priority: 3
+      - id: "B4"
+        findings: ["DA-002"]
+        dimension: "Methodological Rigor"
+        description: "Three-segment count unjustified — no methodological basis for exactly 3 segments vs. 2 or 4"
+        priority: 4
+      - id: "B5"
+        findings: ["FM-002"]
+        dimension: "Internal Consistency"
+        description: "Step 3 Drop-Off Rate is a component of Getting-Started Completion Rate, not an independent metric — overstates measurement coverage"
+        priority: 5
+    xp02_handoff_status: "BLOCKED — Phase 1b authoritative pass required before FEAT-040-053 can begin; gating condition must be added to state file"
+    self_score_gap_analysis: "Agent self-scored 0.887; external score 0.845 (delta -0.042). Largest gap: Evidence Quality (agent 0.89, external 0.77 — citation provenance concern not acknowledged in self-assessment)."
+
+jtbd_enrichment_pending:
+  required: true
+  source_feature: FEAT-040-001
+  xp_id: XP-01b
+  de_anchoring_instruction: >
+    Phase 1b authoritative pass should treat this provisional artifact as context only,
+    not as a structural constraint. If JTBD job statements (FEAT-040-001 XP-01b) suggest
+    different goal framing, revise the HEART structure from JTBD first principles.
+    JTBD job statements take precedence over provisional structure when the two conflict.
+    (Source: ORCHESTRATION.yaml Phase 1b de_anchoring_instruction)

@@ -1,0 +1,49 @@
+schema_version: "1.0.0"
+feature_id: FEAT-040-007
+agent: ux-lean-ux-facilitator
+pipeline: ux
+phase: "1a"
+handoff_id: HO-W1-007
+criticality: C3
+quality_threshold: 0.92
+iteration_ceiling: 7
+
+status: rejected_conditional_accept
+dispatched_at: "2026-04-20T20:00:00Z"
+returned_at: "2026-04-20T20:15:00Z"
+iteration: 1
+residual_disposition: "Path C conditional accept at 0.84; documented residuals below; revisit if XP-03 positioning handoff requires >0.92"
+
+artifact_path: "projects/PROJ-040-documentation/work/EPIC-040-001/ux/FEAT-040-007/ux-lean-ux-facilitator-output.md"
+artifact_verified: true
+artifact_persisted_by: "orchestrator"
+self_reported_quality_score: 0.91
+confidence: 0.75
+blockers: []
+
+key_findings:
+  - "HYP-002 (version refs) and HYP-004 (skills table) ICE 8.3 — highest-ranked, P1 immediate with no experiment gate required"
+  - "HYP-001 (Step 3 path detection) ICE 7.3 — highest impact but Q1 assumption A-001 (abandonment rate unknown); run EXP-001 one-question survey before implementing"
+  - "HYP-006 (first tutorial) ICE 6.0 — 4-8hr authoring investment; fake door EXP-004 must validate demand first"
+  - "Triple-convergence findings (Step 3 branching, terminology inconsistency) confirmed across Heuristic + WCAG + B=MAP — highest-confidence remediation targets"
+  - "Q1 risk: A-013 (user searches by domain vs. skill name) blocks Wave 4b how-to organization decision; EXP-008 survey resolves in 3 days"
+
+xp_provides: {}  # informs synthesis
+
+score_history:
+  - iteration: 1
+    composite: 0.84
+    verdict: REJECTED
+    review_path: "orchestration/reviews/FEAT-040-007-adv-review-iter-1.md"
+    top_blockers:
+      - "IN-001 Critical: 3 unfalsifiable experiments (EXP-006, EXP-009, EXP-013) cannot produce FAIL"
+      - "PM-001 Critical: EXP-003 undefined denominator at n=3-5; HYP-002 ICE Rank 1 unvalidatable"
+      - "FM-001 Critical: HYP-001 I=9 with Q1 Unknown A-001 violates lower-score-when-uncertain rule"
+
+adv_review:
+  status: complete_iter_1
+  iter_1_verdict: REJECTED
+  iter_1_score: 0.84
+  iter_1_review_path: "orchestration/reviews/FEAT-040-007-adv-review-iter-1.md"
+  next_iteration: DEFERRED_CONDITIONAL_ACCEPT  # Path C
+  required_strategies: [S-007, S-002, S-014, S-004, S-012, S-013]

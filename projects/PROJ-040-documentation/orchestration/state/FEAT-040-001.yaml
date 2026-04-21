@@ -1,0 +1,135 @@
+schema_version: "1.0.0"
+feature_id: FEAT-040-001
+agent: ux-jtbd-analyst
+pipeline: ux
+phase: "1a"
+handoff_id: HO-W1-001
+criticality: C3
+quality_threshold: 0.92
+iteration_ceiling: 7
+
+status: complete   # iter-7 adv review: PASS 0.94; exits iteration cycle
+dispatched_at: "2026-04-20T18:24:00Z"
+returned_at: "2026-04-20T18:30:00Z"
+iteration: 7
+
+artifact_path: "projects/PROJ-040-documentation/work/EPIC-040-001/ux/FEAT-040-001/ux-jtbd-analyst-output.md"
+artifact_verified: true
+artifact_line_count: 424
+
+self_reported_quality_score: 0.93
+confidence: 0.75
+
+blockers: []
+
+key_findings:
+  - "Top job categories by opportunity score (iter-6 corrected arithmetic): Tier A — (1) Structured Cognition 7 skills Opp=15 [±2, inferred] A1+A2+A3 cross-actor; (1-tied) UX Methodology Suite 11 skills Opp=15 [±2, inferred] entirely undocumented wave-gating architecture undiscoverable. Tier B — (3-tied) SDLC Methodology Chain 4 skills Opp=14 [±2, inferred] zero docs pipeline invisible; (3-tied) Workflow Management 2 skills Opp=14 [±2, inferred]. Tier C — (5) Specialized Professional Domains 3 skills Opp=13 [±2, inferred]. All scores analyst-inferred proxies; see artifact Opportunity Score Methodology subsection."
+  - "Three end-user segments drive 90% of hiring intent: A1 Solo Engineer (builds alone, hires problem-solving/eng-team/use-case chain), A2 Technical Lead (hires adversary/nasa-se/architecture/orchestration for auditable quality), A6 Domain Specialist (hires full UX suite + pm-pmm without a specialist team). A3 Framework Contributor is an internal governance segment, not an end-user persona."
+  - "Switch triggers are ACTOR-DIFFERENTIATED — XP-04 Positioning must segment messaging: A1/A3 switch FROM vanilla Claude Code prompting (push: inconsistent outputs, no paper trail); A2 switches FROM ad-hoc review processes and verbal decisions; A4 Security Practitioner switches FROM commercial pentest platforms (Burp Suite, PTES/OSSTMM runbooks) — NOT from vanilla Claude; A6 Domain Specialist switches FROM specialist SaaS tooling (Dovetail, Figma, Airtable, Notion templates, Miro) — NOT from vanilla Claude. A single universal positioning will resonate with A1/A2 but alienate A4 and A6. [A4/A6 inferred; interview validation required]"
+  - "SDLC pipeline (use-case → test-spec → contract-design) has Opp=14 but push+pull (9) is exactly cancelled by anxiety (zero docs) + habit (engineering status quo) = 9. Pipeline is switch-BLOCKED — documentation is the direct unlock and represents the single highest opportunity for PROJ-040 documentation to make an undiscovered job cluster discoverable."
+  - "26 of 30 skills have zero doc coverage (doc-gap: none); 4 have partial how-to (NEEDS REVISION). No skill has tutorial, reference, or explanation coverage. Kano Must-be candidates: methodology enforcement features for A1/A2. Kano Attractive: persistent artifacts + voice personality (saucer-boy). Positioning differentiator (to validate): 'methodology, not just answers.'"
+
+xp_provides:
+  XP-01:   # → FEAT-040-003 Kano
+    enrichment_data: "top 5 job categories + opportunity rankings"
+    state_ref: "key_findings[0], key_findings[1]"
+  XP-01b:  # → FEAT-040-002 HEART authoritative
+    enrichment_data: "JTBD actors + job goals for HEART dimension mapping"
+    state_ref: "key_findings[0], key_findings[1]"
+  XP-02:   # → FEAT-040-053 Personas
+    enrichment_data: "A1/A2/A6 actor segments + switch triggers"
+    state_ref: "key_findings[1], key_findings[2]"
+  XP-04:   # → FEAT-040-054 Positioning
+    enrichment_data: "top 5 jobs + switch-from-vanilla messaging"
+    state_ref: "key_findings[0], key_findings[2], key_findings[3]"
+
+score_history:
+  - iteration: 1
+    composite: 0.824
+    verdict: REVISE
+    review_path: "orchestration/reviews/FEAT-040-001-adv-review-iter-1.md"
+    top_blockers:
+      - "L0/L2 coverage count contradiction: L0 says 16 skills have zero coverage; L2 table + key_findings say 26. Single-line factual inconsistency at primary consumption point for all XP handoffs."
+      - "Opportunity scores (Opp=15, 14, 12, 13, 11) lack derivation — Importance/Satisfaction values are analyst inferences with no documented basis. XP-01 Kano will treat as ODI-quality survey data; they are not."
+      - "Universal switch trigger overstated for domain specialist actors (A6) and Security Practitioners (A4) — they switch from existing professional tooling, not from unstructured Claude prompting. XP-04 will produce wrong positioning if it receives a single undifferentiated message."
+  - iteration: 2
+    composite: 0.871
+    verdict: REVISE
+    top_blockers: ["state file key_findings[2] orchestrator drift"]
+  - iteration: 3
+    composite: 0.898
+    verdict: REVISE
+    top_blockers: ["30-skill table absent — orchestrator condensed iter-2 output"]
+  - iteration: 4
+    composite: 0.873
+    verdict: REVISE
+    top_blockers: ["Multiple C3 blockers including force citations, I/S derivation matrix, tier-clustering"]
+  - iteration: 5
+    composite: 0.844
+    verdict: REJECTED
+    top_blockers: ["PM-001-iter5 CRITICAL: Cat 3/4/5 opportunity score arithmetic misapplied. Cat 4 should be 15 not 12. Score regression from 0.898 → 0.873 → 0.844 due to new Critical blocker introduced in iter-4/5 write."]
+  - iteration: 6
+    composite: 0.910
+    verdict: REVISE
+    adv_score: 0.9145
+    changes: "Surgical arithmetic correction only — Cat 3 Opp 13→14, Cat 4 Opp 12→15, Cat 5 Opp 11→13; bands corrected; tier narrative updated; L0 ranking cascade updated"
+  - iteration: 7
+    composite: 0.935
+    composite_rounded: 0.94
+    verdict: PASS
+    adv_score: 0.935
+    self_score: 0.926
+    calibration_delta: +0.009
+    review_path: "orchestration/reviews/FEAT-040-001-adv-review-iter-7.md"
+    changes: "4 Minor prose-level closures: LJ-002 formula self-verification (Methodology), LJ-003 STOP GATE owner resolved (Switch Force), LJ-004 tier-clustering provenance (Top 5 table), LJ-001 composite resolved by prior two; no structural changes; Revision History iter-7 appended"
+    dimension_scores:
+      completeness: 0.95
+      internal_consistency: 0.95
+      methodological_rigor: 0.93
+      evidence_quality: 0.91
+      actionability: 0.93
+      traceability: 0.93
+
+adv_review:
+  status: complete_iter_3
+  iter_1_verdict: REVISE
+  iter_1_score: 0.824
+  iter_2_verdict: REVISE
+  iter_2_score: 0.871
+  iter_2_blocker: "state file key_findings[2] orchestrator drift — fixed"
+  iter_3_verdict: REVISE
+  iter_3_score: 0.898
+  iter_3_blocker: "30-skill table absent — orchestrator condensed iter-2 output"
+  iter_4_verdict: REVISE
+  iter_4_score: 0.873
+  iter_5_status: complete
+  iter_5_self_score: 0.922
+  iter_5_changes: "All 9 blockers: XP-04 STOP GATE + A4/A6 protocol; SKILL.md citations per force; satisfaction proxy + A3 authorship bias disclosed; I/S derivation matrix; tier-clustering; BLOCKED categories sequencing; worktracker multi-origin; 4 minor"
+  iter_5_adv_score: 0.844
+  iter_5_adv_verdict: REJECTED
+  iter_5_blocker: "PM-001-iter5 CRITICAL: Cat 3/4/5 opportunity score arithmetic misapplied"
+  iter_6_status: complete
+  iter_6_self_score: 0.930
+  iter_6_adv_score: 0.9145
+  iter_6_adv_verdict: REVISE
+  iter_6_changes: "Surgical arithmetic correction: Cat 3 Opp 13→14, Cat 4 Opp 12→15, Cat 5 Opp 11→13; all ±2 bands corrected; tier-clustering narrative updated; L0 ranking updated; Cat 2 band minor fix; Revision History appended"
+  iter_7_status: complete
+  iter_7_self_score: 0.930
+  iter_7_adv_score: 0.935
+  iter_7_adv_verdict: PASS
+  iter_7_changes: "4 Minor prose closures: LJ-002 formula verification sentence (Methodology), LJ-003 STOP GATE owner → ORCHESTRATION.yaml Phase 1b reference, LJ-004 tier-clustering provenance sentence (Top 5 Actionable guidance), LJ-001 composite closed by prior two; no structural changes"
+  exit_iteration_cycle: true
+  final_verdict: PASS
+  final_composite: 0.935
+  final_composite_rounded: 0.94
+  xp_handoff_unblocked: [XP-01, XP-01b, XP-02, XP-04]
+  xp_04_note: "A4/A6 STOP GATE remains OPEN by design — positioning analyst must complete A4/A6 validation protocol before finalizing A4/A6 messaging"
+  phase_1b_routing: active
+  required_strategies: [S-007, S-002, S-014, S-004, S-012, S-013]
+  ordering_constraint: "S-003 MUST precede S-002 if both run (H-16)"
+  source: ".context/rules/quality-enforcement.md C3 row + ORCHESTRATION.yaml adversarial.strategy_sets.C3_per_feature"
+
+notes:
+  - "Self-reported 0.92 is within band; adversarial review required to verify independently per H-13/H-14"
+  - "Confidence 0.75 reflects secondary-research synthesis without primary user interview data — appropriate calibration"
+  - "Doc-gap flag on 26 skills is sourced from baseline audit, not JTBD inference"

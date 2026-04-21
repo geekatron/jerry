@@ -1,0 +1,66 @@
+schema_version: "1.0.0"
+feature_id: FEAT-040-004
+agent: ux-heuristic-evaluator
+pipeline: ux
+phase: "1a"
+handoff_id: HO-W1-004
+criticality: C3
+quality_threshold: 0.92
+iteration_ceiling: 7
+
+status: under_review   # iter-3 complete; awaiting adv review iter-3
+dispatched_at: "2026-04-20T18:31:00Z"
+returned_at: "2026-04-20T18:33:00Z"
+iteration: 1
+
+artifact_path: "projects/PROJ-040-documentation/work/EPIC-040-001/ux/FEAT-040-004/ux-heuristic-evaluator-output.md"
+artifact_verified: true
+artifact_persisted_by: "orchestrator"  # T1 agent; orchestrator persisted inline content
+self_reported_quality_score: null
+confidence: 0.88
+blockers: []
+
+key_findings:
+  - "F-001 (Severity 4 catastrophe): Outdated skills table on README + docs/index.md — 24 of 30 skills missing. Blocks feature discovery for 80% of functionality."
+  - "F-010 (Severity 3): Hidden CLI-vs-plugin branching in getting-started.md Step 3. Users commit work before discovering wrong path."
+  - "F-007 (Severity 3): Inconsistent 'What is Jerry?' structure across README/index/INSTALLATION — cognitive load, mental model confusion."
+  - "F-004 (Severity 3): Missing guide links for 8+ skills in docs/index.md Guides section."
+  - "Severity distribution: 1 catastrophe, 3 major, 4 minor, 2 cosmetic. Multiple findings align with existing audit findings (F-003, F-010); 4 are NEW (F-002, F-005, F-007, F-008, F-009)."
+
+xp_provides:
+  XP-05:   # → QG-2 paired consistency check with FEAT-040-005 WCAG
+    enrichment_data: "severity-rated heuristic findings for cross-consistency with WCAG severity"
+    state_ref: "key_findings[0..3]"
+
+score_history:
+  - iteration: 1
+    composite: 0.75
+    verdict: REVISE
+    review_path: "orchestration/reviews/FEAT-040-004-adv-review-iter-1.md"
+    top_blockers:
+      - "H9 coverage gap — no per-surface notes despite claiming 10x4 systematic coverage (RPN 448)"
+      - "F-004 dual-assignment — same finding ID at Severity 2 (H8) AND 3 (H10) — contradictory (RPN 200)"
+      - "F-001 Severity 4 unsupported per Nielsen rubric (requires task completion failure, not discovery impairment) — cite or downgrade to S3 (RPN 252)"
+      - "H8 visual findings in degraded mode — evaluator claimed visual assessment impossible then produced visual signal-to-noise findings (RPN 216)"
+      - "Unverified diataxis line citations in Handoff Data — breaks XP-05 evidence chain (RPN 280)"
+      - "Exec Summary severity count wrong — prose says 6 severity-2 findings but table+summary say 4"
+
+adv_review:
+  status: complete_iter_3
+  iter_1_verdict: REVISE
+  iter_1_score: 0.75
+  iter_2_verdict: REVISE
+  iter_2_score: 0.82
+  iter_3_verdict: REVISE
+  iter_3_score: 0.87
+  iter_4_verdict: REVISE
+  iter_4_score: 0.84
+  iter_4_regression: true  # 0.87 → 0.84, new P0 blockers introduced
+  iter_4_review_path: "orchestration/reviews/FEAT-040-004-adv-review-iter-4.md"
+  iter_4_p0_blockers:
+    - "F-004b claims '4 playbooks' in Guides section but docs/index.md:116-126 has exactly 5 entries — factual count error in 'direct observation' evidence"
+    - "Arithmetic error persists: 0.866 rounds to 0.87 (not 0.89); true gap is 0.05 not 0.03"
+  projected_trajectory: "iter-5 → 0.90-0.91; iter-6 → 0.92+. Minimum 2 more iterations."
+  next_iteration: 5
+  required_strategies: [S-007, S-002, S-014, S-004, S-012, S-013]
+  ordering_constraint: "S-003 MUST precede S-002 if both run (H-16)"

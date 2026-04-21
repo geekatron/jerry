@@ -1,0 +1,60 @@
+schema_version: "1.0.0"
+feature_id: FEAT-040-055
+agent: pm-competitive-analyst
+pipeline: pm
+phase: "1a"
+handoff_id: HO-W1-005
+criticality: C3
+quality_threshold: 0.92
+iteration_ceiling: 7
+
+status: complete   # iter-2 PASS at 0.93; 2 Minor non-blocking items documented in score_history
+dispatched_at: "2026-04-20T18:31:00Z"
+returned_at: "2026-04-20T18:45:00Z"
+iteration: 1
+
+artifact_path: "projects/PROJ-040-documentation/work/EPIC-040-001/pm/FEAT-040-055/pm-competitive-analyst-output.md"
+artifact_verified: true
+artifact_path_corrected: "orchestrator moved file from research/ to pm/ to align with ORCHESTRATION.yaml pipeline path scheme"
+self_reported_quality_score: 0.91
+confidence: 0.74
+blockers: []
+
+key_findings:
+  - "Behavioral-system positioning gap is UNOCCUPIED. Every benchmarked framework (LangChain, CrewAI, OpenAI Agents SDK, Claude Agent SDK, LlamaIndex, AutoGen) positions around 'what you build with it.' None position around 'what it makes the AI reliably do.' Jerry's governance/quality-enforcement/memory architecture is architecturally distinct — this framing is the strongest positioning differentiator available."
+  - "'Working code before prose' is the universal adoption driver. Claude Agent SDK (3 steps, 8 lines), OpenAI Agents SDK (4 steps, 5 lines), LangChain all lead with runnable examples before explanation. Time-to-first-output is the dominant documentation quality signal; frameworks that invert this show documented abandonment."
+  - "Hidden capability catalog is Jerry's highest-risk adoption barrier. Surfacing 6 of 30 skills in the README is the single largest gap relative to all six benchmarks (capability catalogs are surfaced on landing pages). Maps directly to PROJ-040 Wave 2 README revision as pre-OSS-release blocker."
+  - "Explicit Diataxis nav labels ('Tutorials' / 'How-To Guides') matter for discoverability. LangChain's 2024 refresh confirms generic nav labels ('Guides', 'Learn') reduce discoverability; label IS a content-type signal before the click."
+  - "Governance transparency is a credibility signal no competitor has claimed. Publishing quality-enforcement.md and constitutional compliance in docs/explanation/ creates a differentiated contributor conversion story. No benchmarked framework offers this."
+
+xp_provides:
+  XP-03:   # → FEAT-040-054 Positioning
+    enrichment_data: "top 3 competitive patterns + unclaimed positioning gap"
+    state_ref: "key_findings[0], key_findings[1], key_findings[2]"
+
+score_history:
+  - iteration: 1
+    composite: 0.91
+    verdict: REVISE
+    review_path: "orchestration/reviews/FEAT-040-055-adv-review-iter-1.md"
+    top_blockers:
+      - "Behavioral-system UNOCCUPIED claim is [INFERRED] in body but asserted without provenance in XP-03 handoff — requires audience-validation flag"
+      - "'Working code before prose' asserts causation beyond correlation evidence"
+      - "Positioning recommendation proceeds without validation plan despite unknown audience"
+      - "Tone gap is inference from homepage text, not user perception data"
+      - "LangGraph/LangChain PyPI attribution ambiguity in scorecard table"
+
+adv_review:
+  status: complete
+  iter_1_verdict: REVISE
+  iter_1_score: 0.91
+  iter_2_verdict: PASS
+  iter_2_score: 0.93
+  iter_2_review_path: "orchestration/reviews/FEAT-040-055-adv-review-iter-2.md"
+  minor_items_non_blocking:
+    - "V-03 experiment design lacks participant count and failure criteria"
+    - "state.yaml key_findings handoff tag unverifiable from deliverable file — orchestrator spot-check required before XP-03 routing to pm-market-strategist"
+  final_composite: 0.93
+  iterations_used: 2
+  required_strategies: [S-007, S-002, S-014, S-004, S-012, S-013]
+  ordering_constraint: "S-003 MUST precede S-002 if both run (H-16)"

@@ -1,0 +1,54 @@
+schema_version: "1.0.0"
+feature_id: FEAT-040-056
+agent: ps-researcher
+pipeline: research
+phase: "1a"
+handoff_id: HO-W1-006
+criticality: C3
+quality_threshold: 0.92
+iteration_ceiling: 7
+
+status: under_review   # iter-2 complete, self 0.91; awaiting adv review
+dispatched_at: "2026-04-20T18:31:00Z"
+returned_at: "2026-04-20T18:38:00Z"
+iteration: 1
+
+artifact_path: "projects/PROJ-040-documentation/work/EPIC-040-001/research/FEAT-040-056/ps-researcher-output.md"
+artifact_verified: true
+self_reported_quality_score: 0.90
+confidence: 0.75
+blockers: []
+
+key_findings:
+  - "Diataxis adoption is validated at scale (Cloudflare, Canonical, Django, NumPy NEP 44, Gatsby) — Wave 4a tutorials and 4b how-tos are the highest-adoption-impact deliverables; reference and explanation are secondary. PROJ-040's wave priorities are correct."
+  - "Adopt Google developer docs style guide + Vale linter; do not hand-author a house style. Industry guidance (GitLab, Elastic, Red Hat, Grafana) is to use external baseline + thin project exceptions. Recommend Wave 5 Vale integration."
+  - "Jerry's creator-critic-revision + C4 >= 0.95 + independent reviewer pattern already matches 2026 AI-docs field consensus. Do NOT replace GH #100 AC-6 independent reviewer with LLM judge. Add human command-execution verification for Wave 4 tutorials."
+  - "Three-tier discovery (nav + search + AI-conversational) is the 2026 target; rich inline cross-linking is the lowest-cost highest-value first step. Wave 2 README should surface Diataxis quadrants as first-class navigation."
+  - "CONTRIBUTING.md must land BEFORE OSS release, not reactively. CHASE 2025 research shows projects add CONTRIBUTING after contributor influx; recommend updating in Wave 2-adjacent pre-release prep with explicit 'docs improvements welcome' framing."
+
+xp_provides: {}  # ps-researcher informs synthesis (XP-07), no per-feature cross-pollination
+
+score_history:
+  - iteration: 1
+    composite: 0.859
+    self_reported: 0.90
+    delta_self_vs_adv: -0.041
+    verdict: REVISE
+    review_path: "orchestration/reviews/FEAT-040-056-adv-review-iter-1.md"
+    critical_blockers:
+      - "RPN 504: NumPy NEP 44 listed as production Diataxis deployment in L0 — it is a PROPOSAL, not production deployment (confirmed across 4 strategies)"
+      - "RPN 240: HITL recommendation lacks process, owner, or acceptance criteria (operationally hollow for single highest-stakes recommendation, confirmed across 3 strategies)"
+    major_blockers:
+      - "Evidence Quality 0.81: DORA 2023 chain-cited; Mintlify vendor-reported; '60% direct citation' self-report overstated"
+
+adv_review:
+  status: complete_iter_1
+  iter_1_verdict: REVISE
+  iter_1_score: 0.859
+  iter_2_status: complete
+  iter_2_self_score: 0.91
+  iter_2_changes: "NumPy NEP 44 reclassified as proposal (removed from production list); HITL Verification Process operationalized with role/scope/gates/checklist; evidence reclassified 40/40/20 with vendor/chain-citation tags"
+  iter_2_evidence_classification: "40% direct / 40% synthesis / 20% inference"
+  next_iteration: "adv review iter-2 dispatching"
+  required_strategies: [S-007, S-002, S-014, S-004, S-012, S-013]
+  ordering_constraint: "S-003 MUST precede S-002 if both run (H-16)"

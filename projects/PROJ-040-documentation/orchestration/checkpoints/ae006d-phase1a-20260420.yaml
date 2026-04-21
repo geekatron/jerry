@@ -1,0 +1,195 @@
+schema_version: "1.0.0"
+checkpoint_type: AE-006d EMERGENCY context fill
+checkpoint_time: "2026-04-20"
+wave: "Wave 1 Phase 1a"
+trigger: "stop hook EMERGENCY tier — context critically full"
+handoff_required: true
+
+# =============================================================================
+# PHASE 1a FEATURE STATE AT CHECKPOINT
+# =============================================================================
+
+features:
+
+  FEAT-040-055:
+    agent: pm-competitive-analyst
+    pipeline: pm
+    status: COMPLETE
+    final_score: 0.93
+    iterations_used: 2
+    artifact: "projects/PROJ-040-documentation/work/EPIC-040-001/pm/FEAT-040-055/pm-competitive-analyst-output.md"
+    state_file: "projects/PROJ-040-documentation/orchestration/state/FEAT-040-055.yaml"
+    xp_provides: XP-03 (ready for Phase 1b Positioning handoff)
+    minor_residuals:
+      - "V-03 experiment design lacks participant count and failure criteria"
+      - "state key_findings handoff spot-check required before XP-03 routing"
+
+  FEAT-040-001:
+    agent: ux-jtbd-analyst
+    pipeline: ux
+    status: UNDER_REVIEW (iter-5 REJECTED 0.844, REGRESSION)
+    current_score: 0.844
+    trajectory: [0.824, 0.871, 0.898, 0.873, 0.844]
+    iterations_used: 5 of 7
+    critical_blocker_iter5:
+      id: "PM-001-iter5 (NEW)"
+      description: "Cat 3/4/5 opportunity scores arithmetically wrong. Formula I+max(0,I-S) correct but misapplied. Cat 4 should be 15 (not 12), tying Cat 1 for first place. Band inconsistencies cascade into tier-clustering."
+      next_action: "Iter-6 focused arithmetic correction pass ONLY — no other changes"
+      target_threshold: 0.92
+    artifact: "projects/PROJ-040-documentation/work/EPIC-040-001/ux/FEAT-040-001/ux-jtbd-analyst-output.md"
+    state_file: "projects/PROJ-040-documentation/orchestration/state/FEAT-040-001.yaml"
+    critical_path: true
+    xp_provides: "XP-01, XP-01b, XP-02, XP-04 (blocks Phase 1b Kano/HEART-auth/Personas/Positioning)"
+
+  FEAT-040-004:
+    agent: ux-heuristic-evaluator
+    pipeline: ux
+    status: UNDER_REVIEW (iter-5 revision complete, self 0.87; C3 review NOT yet dispatched)
+    current_score: 0.87 (self iter-5; adv iter-4 was 0.84)
+    trajectory: [0.75, 0.82, 0.87, 0.84, 0.87]
+    iterations_used: 5 of 7
+    pending_action: "Dispatch C3 review iter-5"
+    iter5_summary: "Guides count 4→5 corrected; arithmetic 0.89→0.87"
+    artifact: "projects/PROJ-040-documentation/work/EPIC-040-001/ux/FEAT-040-004/ux-heuristic-evaluator-output.md"
+    state_file: "projects/PROJ-040-documentation/orchestration/state/FEAT-040-004.yaml"
+
+  FEAT-040-005:
+    agent: ux-inclusive-evaluator
+    pipeline: ux
+    status: REJECTED (iter-3 0.848)
+    current_score: 0.848
+    trajectory: [0.64, 0.80, 0.848]
+    iterations_used: 3 of 7
+    iter3_findings: "0 Critical / 0 Major / 10 Minor. P0+P1 fixes projected iter-4 0.88-0.90; iter-5 P2 projected PASS."
+    pending_action: "Dispatch iter-4 revision — P0 (3 fixes: POUR footnote, W-009 Priorities footnote, leniency anchoring) + P1 (4 fixes)"
+    artifact: "projects/PROJ-040-documentation/work/EPIC-040-001/ux/FEAT-040-005/ux-inclusive-evaluator-output.md"
+    state_file: "projects/PROJ-040-documentation/orchestration/state/FEAT-040-005.yaml"
+    xp_provides: XP-05
+
+  FEAT-040-006:
+    agent: ux-behavior-diagnostician
+    pipeline: ux
+    status: REVISE (iter-2 0.871)
+    current_score: 0.871
+    trajectory: [0.765, 0.871]
+    iterations_used: 2 of 7
+    iter2_findings: "0 Critical, 5 Major. Iter-3 surgical."
+    pending_action: "Dispatch iter-3 — sufficiency condition, cross-framework min-operator, Brain Cycles calibration, 8 actions enumeration, 15-min threshold validation pathway"
+    artifact: "projects/PROJ-040-documentation/work/EPIC-040-001/ux/FEAT-040-006/ux-behavior-diagnostician-output.md"
+    state_file: "projects/PROJ-040-documentation/orchestration/state/FEAT-040-006.yaml"
+
+  FEAT-040-007:
+    agent: ux-lean-ux-facilitator
+    pipeline: ux
+    status: UNDER_REVIEW (C3 review in flight at checkpoint time)
+    current_score: 0.91 (self iter-1)
+    iterations_used: 1 of 7
+    artifact: "projects/PROJ-040-documentation/work/EPIC-040-001/ux/FEAT-040-007/ux-lean-ux-facilitator-output.md"
+    state_file: "projects/PROJ-040-documentation/orchestration/state/FEAT-040-007.yaml"
+    in_flight_agent: "a0203a5a6a6bc3315 (C3 review adv-executor)"
+
+  FEAT-040-008:
+    agent: ux-atomic-architect
+    pipeline: ux
+    status: QUEUED (iter-3 revision not yet dispatched)
+    current_score: 0.865 (adv iter-2)
+    trajectory: [0.81, 0.865]
+    iterations_used: 2 of 7
+    iter2_blockers:
+      - "DA-001-2: M-10 (Verification Block) contains M-03 making M-10 an organism not molecule (self-contradiction)"
+      - "CC-001-2: Voice drift table shows 13 docs but denominator claim is 7/15; should be 7/13=0.54 OR find missing 2"
+    pending_action: "Dispatch iter-3 revision"
+    artifact: "projects/PROJ-040-documentation/work/EPIC-040-001/ux/FEAT-040-008/ux-atomic-architect-output.md"
+    state_file: "projects/PROJ-040-documentation/orchestration/state/FEAT-040-008.yaml"
+
+  FEAT-040-056:
+    agent: ps-researcher
+    pipeline: research
+    status: UNDER_REVIEW (iter-2 self 0.91, adv review NOT dispatched)
+    current_score: 0.91 (self iter-2; adv iter-1 was 0.859)
+    trajectory: [0.859, 0.91]
+    iterations_used: 2 of 7
+    pending_action: "Dispatch iter-2 C3 review"
+    artifact: "projects/PROJ-040-documentation/work/EPIC-040-001/research/FEAT-040-056/ps-researcher-output.md"
+    state_file: "projects/PROJ-040-documentation/orchestration/state/FEAT-040-056.yaml"
+
+  FEAT-040-002:
+    agent: ux-heart-analyst
+    pipeline: ux
+    status: NOT_DISPATCHED
+    priority: HIGH (blocks Phase 1a completion)
+    pending_action: "Dispatch Phase 1a provisional HEART analysis"
+    artifact_path: "projects/PROJ-040-documentation/work/EPIC-040-001/ux/FEAT-040-002/ux-heart-analyst-output.md"
+    state_file: "(not yet created)"
+
+# =============================================================================
+# USER DECISION PENDING
+# =============================================================================
+
+escalation:
+  trigger: "Stop hook EMERGENCY tier + orchestrator H-36 escalation on FEAT-040-001 regression pattern"
+  decision_presented:
+    path_A: "Keep iterating all features (30-60 min + significant tokens)"
+    path_B: "Accept residuals at 0.85+ as conditionally complete; proceed to QG-2"
+    path_C: "Targeted triage — FEAT-040-001 iter-6 arithmetic fix + dispatch FEAT-040-002 HEART only"
+  orchestrator_recommendation: "Path C"
+  user_response: PENDING
+
+# =============================================================================
+# RESUME INSTRUCTIONS
+# =============================================================================
+
+resume_protocol:
+  step_1: "Read projects/PROJ-040-documentation/ORCHESTRATION.yaml (workflow SSOT)"
+  step_2: "Read this checkpoint file"
+  step_3: "Glob projects/PROJ-040-documentation/orchestration/state/*.yaml for per-feature state"
+  step_4: "Check for any in-flight agents: FEAT-040-007 C3 review (agent id a0203a5a6a6bc3315)"
+  step_5: "Resume per user decision on Path A/B/C"
+
+next_actions_by_path:
+  if_path_A:
+    - "Dispatch FEAT-040-001 iter-6 arithmetic fix"
+    - "Dispatch FEAT-040-004 iter-5 C3 review"
+    - "Dispatch FEAT-040-005 iter-4 revision"
+    - "Dispatch FEAT-040-006 iter-3 revision"
+    - "Dispatch FEAT-040-008 iter-3 revision"
+    - "Dispatch FEAT-040-056 iter-2 C3 review"
+    - "Dispatch FEAT-040-002 HEART"
+    - "Expect 8-12 more dispatches"
+  if_path_B:
+    - "Mark features at 0.85+ as 'conditionally complete'"
+    - "Document residual blockers in each state file"
+    - "Dispatch FEAT-040-002 HEART (required for Phase 1a completion)"
+    - "Dispatch any pending C3 reviews for completeness"
+    - "Proceed to QG-2 cross-pollination consistency check"
+  if_path_C:
+    - "Dispatch FEAT-040-001 iter-6 (surgical arithmetic fix)"
+    - "Dispatch FEAT-040-002 HEART (Phase 1a unblock)"
+    - "Accept FEAT-040-004/005/006/008/056 at current scores with documented residuals"
+    - "Proceed to QG-2 after these 2 dispatches complete"
+
+# =============================================================================
+# DISCIPLINE LESSONS CAPTURED THIS SESSION
+# =============================================================================
+
+lessons:
+  orchestrator_discipline:
+    - "DO NOT condense T1 agent inline content when persisting — preserves methodological depth (caused FEAT-040-001 iter-4 regression 0.898 → 0.873)"
+    - "Background mode (run_in_background: true) for all Agent dispatches — saves main context"
+    - "Verify artifact file existence before trusting agent completion claim (Glob/Bash after each return)"
+    - "State file key_findings must sync with artifact L0 on revision (FEAT-040-001 iter-2 drift cost)"
+    - "Agent tier matters — T1 returns inline, T2+ writes files; plan persistence strategy per tier"
+  agent_patterns:
+    - "Self-score calibration improves over iterations: iter-1 typical -0.10 to -0.29 delta; by iter-2/3 typically -0.005 to -0.05"
+    - "Surgical fix iterations (2 P0 items) typically succeed; comprehensive rewrites (5+ blockers) risk regression"
+    - "REJECTED → REVISE band transition achievable in 1 iteration via scope redefinition (FEAT-040-005 Path B rescope)"
+  iteration_ceiling_risk:
+    - "Features at iter-5 with regression pattern (FEAT-040-001) are at HIGH risk of iter-7 ceiling breach"
+    - "Trajectory REGRESSIONS are worse than plateaus — indicate fix/break coupling"
+
+committed_artifacts_via_git:
+  commit_sha: "d6ae419b (main-tree commit pushed to origin/feat/proj-040-documentation)"
+  branch: "feat/proj-040-documentation"
+  uncommitted_work: "All Phase 1a artifacts + state files + adversary reviews since commit d6ae419b — uncommitted to git; preserved via this checkpoint"
+
+context_fill_at_checkpoint: ">=0.88 EMERGENCY tier per AE-006d"

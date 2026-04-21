@@ -1,0 +1,59 @@
+schema_version: "1.0.0"
+feature_id: FEAT-040-005
+agent: ux-inclusive-evaluator
+pipeline: ux
+phase: "1a"
+handoff_id: HO-W1-005
+criticality: C3
+quality_threshold: 0.92
+iteration_ceiling: 7
+
+status: under_review   # iter-2 complete, path B re-scope; awaiting adv review
+dispatched_at: "2026-04-20T18:45:00Z"
+returned_at: "2026-04-20T19:00:00Z"
+iteration: 1
+
+artifact_path: "projects/PROJ-040-documentation/work/EPIC-040-001/ux/FEAT-040-005/ux-inclusive-evaluator-output.md"
+artifact_verified: true
+artifact_persisted_by: "orchestrator"  # T1 agent; orchestrator persisted inline content
+self_reported_quality_score: 0.93
+confidence: 0.75
+blockers: []
+
+key_findings:
+  - "SC 2.4.1 (skip navigation absent) severity 3 — all keyboard + screen reader users affected on every page. MkDocs theme must provide."
+  - "SC 1.3.1 (INSTALLATION.md Install from GitHub steps use bold text, not H3) severity 3 — inconsistent with Local Clone section; breaks heading navigation on primary install path."
+  - "SC 2.4.4 ('file it' / 'file that too' non-descriptive link text) severity 3 — screen reader link-list navigation failure in INSTALLATION.md."
+  - "SC 3.1.1 (language declaration unverifiable from markdown source) severity 3 — requires mkdocs.yml audit for lang attribute."
+  - "Persona Spectrum: 5 interaction patterns × 4 disability types confirm Visual (screen reader) and Motor (keyboard) users are highest exclusion-risk. Cross-framework convergence with heuristic findings F-001, F-007, F-010 reinforces structural consistency issues."
+
+xp_provides:
+  XP-05:   # → QG-2 paired consistency check with FEAT-040-004 heuristic
+    enrichment_data: "WCAG severity-rated findings for cross-consistency with heuristic severity"
+    state_ref: "key_findings[0..4]"
+
+score_history:
+  - iteration: 1
+    composite: 0.64
+    self_reported: 0.93
+    delta_self_vs_adv: -0.29
+    verdict: REJECTED
+    review_path: "orchestration/reviews/FEAT-040-005-adv-review-iter-1.md"
+    critical_blockers:
+      - "FM-001-F005 (RPN 504): SC coverage only 34% — ~33 WCAG 2.2 AA SCs unaddressed with no CANNOT DETERMINE or NOT APPLICABLE verdict. POUR table and conformance claim unsupported."
+    major_blockers:
+      - "DA-001-F005/LJ-003-F005: No WCAG-EM methodology; must either complete systematic SC coverage OR re-scope as 'Partial WCAG 2.2 AA Audit — Content and Navigation Only'"
+      - "DA-002-F005: SC 2.4.1 (skip nav) flagged Severity 3 Priority 1 under content-only audit despite MEDIUM confidence and likely theme-provided — probable false positive as top remediation"
+
+adv_review:
+  status: complete_iter_2
+  iter_1_verdict: REJECTED
+  iter_1_score: 0.64
+  iter_2_verdict: REVISE
+  iter_2_score: 0.80
+  iter_3_status: complete
+  iter_3_self_score: 0.833
+  iter_3_changes: "SC 3.2.4 reclassified PASS + W-009 assigned to SC 2.4.6 + per-dimension leniency correction transparent + W-008 retired + citations corrected"
+  next_iteration: "adv review iter-3 dispatching"
+  required_strategies: [S-007, S-002, S-014, S-004, S-012, S-013]
+  ordering_constraint: "S-003 MUST precede S-002 if both run (H-16)"
