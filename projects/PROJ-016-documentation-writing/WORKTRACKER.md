@@ -1,9 +1,17 @@
 # WORKTRACKER — PROJ-016 Documentation Writing
 
+> **Status:** SUPERSEDED by [PROJ-040](../PROJ-040-documentation/) (2026-04-20)
+>
+> PROJ-016 was built on the stale PROJ-015 baseline (15 skills) before Jerry grew to 30 skills. No features were started (all 17 features remained `pending`). A refreshed Diataxis audit under PROJ-040 (passed C4 at 0.956) produced an updated remediation backlog that supersedes the feature list below. Surviving feature shells are retained here for historical reference and for selective re-porting into PROJ-040 epics as applicable.
+>
+> **Authoritative successor:** `../PROJ-040-documentation/WORKTRACKER.md`
+
+---
+
 > **Project:** PROJ-016-documentation-writing
 > **Created:** 2026-03-02
-> **Status:** Active
-> **Source:** PROJ-015 remediation report
+> **Status:** Active (superseded 2026-04-20; no work started)
+> **Source:** PROJ-015 remediation report (superseded by PROJ-040 audit 2026-04-20)
 
 ## Document Sections
 

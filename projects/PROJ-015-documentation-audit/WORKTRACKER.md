@@ -1,9 +1,17 @@
 # WORKTRACKER — PROJ-015 Documentation Audit
 
+> **Status:** SUPERSEDED by [PROJ-040](../PROJ-040-documentation/) (2026-04-20)
+>
+> The 2026-03-02 audit went stale as Jerry grew from 15 skills to 30 skills. A refreshed Diataxis audit was re-run on 2026-04-20 under PROJ-040 (passed C4 adversarial review at 0.956 composite, 4 iterations). The `reports/` directory here is preserved as historical baseline; all active documentation work now routes through PROJ-040.
+>
+> **Authoritative successor:** `../PROJ-040-documentation/reports/diataxis-audit-20260420.md`
+
+---
+
 > **Project:** PROJ-015-documentation-audit
 > **GitHub Issue:** [#130](https://github.com/geekatron/jerry/issues/130)
 > **Created:** 2026-03-02
-> **Status:** Complete
+> **Status:** Complete (superseded 2026-04-20)
 
 ## Document Sections
 

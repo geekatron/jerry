@@ -1,0 +1,87 @@
+# Git Evidence for Diataxis Audit 2026-04-20
+
+Command: `git log --since="2026-03-02" --oneline -- <path>`
+Executed: 2026-04-20
+Purpose: Corroborate [GIT-CONFIRMED] assertions in diataxis-audit-20260420.md
+
+## Results
+
+### docs/INSTALLATION.md
+
+```
+$ git log --since="2026-03-02" --oneline -- docs/INSTALLATION.md
+(no output — 0 commits since baseline)
+
+$ git log -1 --format='%h %ad %s' --date=short -- docs/INSTALLATION.md
+7bfbcb16 2026-02-25 docs: add explicit SSH URL option to install table
+```
+
+### docs/BOOTSTRAP.md
+
+```
+$ git log --since="2026-03-02" --oneline -- docs/BOOTSTRAP.md
+(no output — 0 commits since baseline)
+
+$ git log -1 --format='%h %ad %s' --date=short -- docs/BOOTSTRAP.md
+baec6816 2026-02-18 docs: adversary-reviewed install docs — 4 iterations, 0.89 C2 QG
+```
+
+### docs/CLAUDE-MD-GUIDE.md
+
+```
+$ git log --since="2026-03-02" --oneline -- docs/CLAUDE-MD-GUIDE.md
+(no output — 0 commits since baseline)
+
+$ git log -1 --format='%h %ad %s' --date=short -- docs/CLAUDE-MD-GUIDE.md
+016fa573 2026-02-12 feat(docs): complete FEAT-003 and close EPIC-001
+```
+
+### docs/runbooks/getting-started.md
+
+```
+$ git log --since="2026-03-02" --oneline -- docs/runbooks/getting-started.md
+(no output — 0 commits since baseline)
+
+$ git log -1 --format='%h %ad %s' --date=short -- docs/runbooks/getting-started.md
+baec6816 2026-02-18 docs: adversary-reviewed install docs — 4 iterations, 0.89 C2 QG
+```
+
+### docs/playbooks/problem-solving.md
+
+```
+$ git log --since="2026-03-02" --oneline -- docs/playbooks/problem-solving.md
+(no output — 0 commits since baseline)
+
+$ git log -1 --format='%h %ad %s' --date=short -- docs/playbooks/problem-solving.md
+6e1f4b47 2026-02-18 feat(FEAT-024): public docs site — MkDocs Material + GitHub Actions + QG-1 PASS (0.9340)
+```
+
+### docs/playbooks/orchestration.md
+
+```
+$ git log --since="2026-03-02" --oneline -- docs/playbooks/orchestration.md
+(no output — 0 commits since baseline)
+
+$ git log -1 --format='%h %ad %s' --date=short -- docs/playbooks/orchestration.md
+6e1f4b47 2026-02-18 feat(FEAT-024): public docs site — MkDocs Material + GitHub Actions + QG-1 PASS (0.9340)
+```
+
+### docs/playbooks/transcript.md
+
+```
+$ git log --since="2026-03-02" --oneline -- docs/playbooks/transcript.md
+(no output — 0 commits since baseline)
+
+$ git log -1 --format='%h %ad %s' --date=short -- docs/playbooks/transcript.md
+6b0cbbdf 2026-02-19 fix(docs): enable keyword triggering for transcript skill (BUG-008)
+```
+
+### docs/playbooks/PLUGIN-DEVELOPMENT.md
+
+```
+$ git log --since="2026-03-02" --oneline -- docs/playbooks/PLUGIN-DEVELOPMENT.md
+(no output — 0 commits since baseline)
+
+$ git log -1 --format='%h %ad %s' --date=short -- docs/playbooks/PLUGIN-DEVELOPMENT.md
+1c108b44 2026-02-02 feat: initial OSS release of Jerry Framework
+```
