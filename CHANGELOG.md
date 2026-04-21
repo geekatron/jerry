@@ -60,6 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **BUG-002**: Version bump regex case sensitivity verified already implemented (src/version/ bounded context with case-insensitive regex) (#132)
 - **BUG-005**: Hook tests rewritten from `scripts/tests/` to `tests/` targeting CLI enforcement — deleted `test_hooks.py`, `test_patterns.py`, removed pytest.ini `--ignore` entries (#214)
 - **BUG-007**: 8 broken mkdocs anchor links fixed across 7 docs files — heading renames in INSTALLATION.md, missing References section in rescore report, truncated nav-table slugs in voice scores (#213)
+- False-positive `cd` detection in `SecurityEnforcementEngine` — substring matching replaced with regex word-boundary matching to prevent blocking commands like `argocd`, `systemctl restart httpd`, `base64` (#234)
 - 8 bypass vectors closed: null byte injection, non-string type confusion, subshell cd evasion, multi-space git push, two-stage download-execute, non-rm destructive deletion, path suffix false positives
 - Claude Code settings migrated from deprecated fields to schema-valid configuration — removed invalid `hooks`, `stash`, `grep` fields (#180)
 - Skill-level permission entries added to `settings.local.json` so proactive skill invocations (H-22) don't prompt for permission (#181)

@@ -3,6 +3,7 @@
 > **Type:** bug
 > **Status:** completed
 > **Priority:** high
+> **Severity:** major
 > **Impact:** medium
 > **Created:** 2026-03-30T00:00:00Z
 > **Due:**
@@ -21,7 +22,9 @@
 | [Summary](#summary) | What's broken |
 | [Root Cause](#root-cause) | Why it fails |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
+| [Steps to Reproduce](#steps-to-reproduce) | How to trigger |
 | [Dependencies](#dependencies) | Relationship to other work |
+| [History](#history) | Status changes |
 
 ---
 
@@ -34,6 +37,13 @@
 ## Root Cause
 
 `scripts/tests/test_hooks.py` was designed for isolated execution. Tests assume a different import path structure and environment setup than the main `tests/` suite. When both are collected together, hook test fixtures conflict with the main test infrastructure.
+
+---
+
+## Steps to Reproduce
+
+1. Add `scripts/tests` to `testpaths` in `pyproject.toml`
+2. Run `uv run pytest` — observe 15 failures from `scripts/tests/test_hooks.py` due to fixture conflicts
 
 ---
 

@@ -3,6 +3,7 @@
 > **Type:** bug
 > **Status:** completed
 > **Priority:** critical
+> **Severity:** critical
 > **Impact:** critical
 > **Created:** 2026-03-30T00:00:00Z
 > **Due:**
@@ -22,7 +23,9 @@
 | [Root Cause](#root-cause) | Why it's broken |
 | [Affected Tests](#affected-tests) | Which tests fail |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
+| [Steps to Reproduce](#steps-to-reproduce) | How to trigger |
 | [Dependencies](#dependencies) | Relationship to other work |
+| [History](#history) | Status changes |
 
 ---
 
@@ -47,6 +50,13 @@
 | `tests/system/test_context_monitoring_system.py` | 4 | Pipeline tier progression at 200K |
 | `tests/e2e/test_context_monitoring_e2e.py` | 1 | XML tag tier output |
 | `tests/project_validation/architecture/test_path_conventions.py` | 1 | Cross-project reference |
+
+---
+
+## Steps to Reproduce
+
+1. Run `uv run pytest tests/integration/test_context_monitoring_integration.py`
+2. Observe 10 failures where tests assert `== 200_000` but runtime returns `1_000_000`
 
 ---
 

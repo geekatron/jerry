@@ -8,6 +8,7 @@ PURPOSE: Post-migration defense-in-depth for MK namespace collision prevention
 -->
 
 > **Type:** enabler
+> **Enabler Type:** infrastructure
 > **Status:** pending
 > **Priority:** medium
 > **Impact:** medium
@@ -28,6 +29,7 @@ PURPOSE: Post-migration defense-in-depth for MK namespace collision prevention
 | [Problem Statement](#problem-statement) | The risk this mitigates |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
 | [Children (Tasks)](#children-tasks) | Task breakdown |
+| [Technical Approach](#technical-approach) | Implementation strategy |
 | [Related Items](#related-items) | Links and dependencies |
 | [History](#history) | Status changes |
 
@@ -71,6 +73,12 @@ When two sessions run in parallel on the same project, both invoking agents with
 - [ ] Collision detection cannot be bypassed by crafting key patterns
 - [ ] Error messages do not leak sensitive session data
 - [ ] Audit trail: collisions are logged for post-hoc analysis
+
+---
+
+## Technical Approach
+
+Implement optimistic concurrency control for Memory-Keeper writes. On write, check if the key's last-modified timestamp differs from the value read at session start. If a collision is detected, return an error with the conflicting session's metadata and offer overwrite, merge, or abort options.
 
 ---
 

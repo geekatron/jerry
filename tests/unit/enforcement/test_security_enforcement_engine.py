@@ -548,3 +548,84 @@ class TestBypassBV03NonRmDeletion:
             tool_input={"command": command},
         )
         assert decision.action == "block", f"Expected block for '{command}', got {decision.action}"
+
+
+# ---------------------------------------------------------------------------
+# Issue #234: False-positive cd detection (substring matching)
+# ---------------------------------------------------------------------------
+
+
+class TestBashCdFalsePositives:
+    """Issue #234: Commands containing 'cd' as substring must NOT be blocked."""
+
+    @pytest.mark.parametrize(
+        "command",
+        [
+            "argocd --help",
+            "argocd cluster list",
+            "argocd app sync myapp",
+            "kubectl get pod | xargs argocd app sync",
+            "echo encoded_data | base64",
+            "systemctl restart httpd",
+        ],
+    )
+    def test_allows_commands_with_cd_substring(
+        self, engine: SecurityEnforcementEngine, command: str
+    ) -> None:
+        """Commands containing 'cd' as part of another word should NOT be blocked."""
+        decision = engine.evaluate(
+            tool_name="Bash",
+            tool_input={"command": command},
+        )
+        assert decision.action == "approve", (
+            f"Expected approve for '{command}', got {decision.action}"
+        )
+
+    def test_still_blocks_cd_after_separator(
+        self,
+        engine: SecurityEnforcementEngine,
+    ) -> None:
+        """Regression: cd after separators must still be blocked."""
+        decision = engine.evaluate(
+            tool_name="Bash",
+            tool_input={"command": "ls && cd /tmp"},
+        )
+        assert decision.action == "block"
+
+    def test_still_blocks_cd_after_pipe(
+        self,
+        engine: SecurityEnforcementEngine,
+    ) -> None:
+        """Regression: cd after pipe must still be blocked."""
+        decision = engine.evaluate(
+            tool_name="Bash",
+            tool_input={"command": "echo test | cd /tmp"},
+        )
+        assert decision.action == "block"
+
+    def test_still_blocks_cd_with_tab(
+        self,
+        engine: SecurityEnforcementEngine,
+    ) -> None:
+        """Regression: cd followed by tab must still be blocked."""
+        decision = engine.evaluate(
+            tool_name="Bash",
+            tool_input={"command": "ls; cd\t/tmp"},
+        )
+        assert decision.action == "block"
+
+    def test_still_blocks_pushd(self, engine: SecurityEnforcementEngine) -> None:
+        """Regression: pushd as a standalone command must still be blocked."""
+        decision = engine.evaluate(
+            tool_name="Bash",
+            tool_input={"command": "pushd /tmp"},
+        )
+        assert decision.action == "block"
+
+    def test_still_blocks_env_chdir(self, engine: SecurityEnforcementEngine) -> None:
+        """Regression: env -C must still be blocked."""
+        decision = engine.evaluate(
+            tool_name="Bash",
+            tool_input={"command": "env -C /tmp ls"},
+        )
+        assert decision.action == "block"

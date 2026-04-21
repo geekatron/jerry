@@ -9,6 +9,12 @@
 
 ---
 
+## Summary
+
+Run the full validation suite after all STORY-013 tier/tool fixes to confirm no regressions.
+
+---
+
 ## Description
 
 After all M-001 through M-008 fixes land, run the full validation suite to confirm nothing is broken.

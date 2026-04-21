@@ -10,6 +10,7 @@ Fail-open by design: any internal error results in approval.
 
 References:
     - #150: pre_tool_use.py consolidation
+    - #234: Fix _check_cd false-positive substring matching
     - ADR-150-001: Pre-Tool Enforcement Pipeline Consolidation
     - T-04: Path traversal prevention via normpath/expanduser
     - T-06: Never log matched text, only rule IDs
@@ -249,9 +250,9 @@ class SecurityEnforcementEngine:
                 violations=["cd command detected"],
             )
 
-        # cd after command separators
+        # cd after command separators (regex word-boundary matching, issue #234)
         for pattern in self._rules.cd_patterns:
-            if pattern in command.lower():
+            if re.search(pattern, command, re.IGNORECASE):
                 return EnforcementDecision(
                     action="block",
                     reason=(

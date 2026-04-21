@@ -9,6 +9,12 @@
 
 ---
 
+## Summary
+
+Resolve nse-requirements tier mismatch where tool_tier T4 did not match actual capability set (Web+MK). Resolved by STORY-015/017/018 tier renumbering.
+
+---
+
 ## Description
 
 `nse-requirements` declares `tool_tier: T4` but has WebSearch + WebFetch (T3) + Memory-Keeper (T4) = effectively T5 capability without the Agent tool.
