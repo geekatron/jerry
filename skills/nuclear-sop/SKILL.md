@@ -425,6 +425,17 @@ The main context orchestrates the full 3-hop or 4-hop sequence:
 | Baseline: OE loop | `skills/nuclear-sop/behavioral-baselines/bb-003-oe-feedback-loop-integrity.md` | Expected OE feedback behavior |
 | Spec synthesis | `projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-4/ps-synthesizer-001/skill-specification-synthesis.md` | Requirements SSOT (0.922) |
 | ADR-001 | `projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-3/ps-architect-001/ADR-001-nuclear-sop-skill-architecture.md` | Architecture decisions (0.933) |
+| QG-E4 results | `projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/validation/qg-e4/star-validation-results.md` | STAR A/B validation (3/3, 100%) |
+
+### Nuclear Industry Source References
+
+| Source | Citation | Patterns Derived |
+|--------|----------|-----------------|
+| INPO AP-907 Rev.3 | INPO, "Procedure Use and Adherence," AP-907 Rev.3, 2016 | Procedure use classification, place-keeping, STAR self-checking |
+| INPO 09-003 | INPO, "Guidelines for Performance Improvement at Nuclear Power Plants," 09-003 Rev.1, 2012 | Pre-job briefing, post-job review, OE capture |
+| INPO 06-003 | INPO, "Human Performance Reference Manual," 06-003, 2006 | STAR protocol (Stop-Think-Act-Review), questioning attitude, conservative decision-making |
+| 10 CFR 50 App B | NRC, "Quality Assurance Criteria for Nuclear Power Plants," 10 CFR 50 Appendix B | Hold points, independent verification, QC hold points |
+| NUREG-1792 | NRC, "Good Practices for Implementing HRA," NUREG-1792, 2005 | Human reliability analysis context for procedural compliance |
 
 ---
 

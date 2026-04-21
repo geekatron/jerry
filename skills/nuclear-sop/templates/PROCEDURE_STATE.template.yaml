@@ -120,6 +120,15 @@ procedure_state:
   # Individual stop-work events are recorded in execution-log.md with DEVIATION entries.
   # This count enables sop-capture to include stop_work_events in OE schema (mandatory field).
 
+  # --- Tamper Detection ---
+  # SECURITY: state_hash provides integrity verification for security-critical fields.
+  # sop-executor computes this hash after every state write; STAR-STOP verifies it on every read.
+  # If the hash does not match the current state: FLAG ANOMALY — state was modified outside
+  # the designated write mechanism (potential hold bypass or external tampering).
+  # Hash scope: status, hold_type, hold_resolution, iv_disposition, current_step, next_step
+  # Algorithm: SHA-256 of the concatenated field values in the order listed above, coerced to strings
+  state_hash: null                    # SHA-256 hex digest; null until first state write
+
   # --- Timestamps ---
   started_at: null                    # ISO-8601 timestamp; set at INITIALIZING -> IN-PROGRESS transition
   last_updated: null                  # ISO-8601 timestamp; updated after every state write
