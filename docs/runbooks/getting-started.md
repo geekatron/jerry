@@ -107,9 +107,11 @@ Expected output: `PROJ-001-my-first-project`
 
 ### Step 3: Start a Jerry Session
 
-Open Claude Code in the same terminal session where `JERRY_PROJECT` is set. Jerry's SessionStart hook runs automatically when Claude Code starts.
+Open Claude Code in the same terminal session where `JERRY_PROJECT` is set. Jerry's SessionStart hook runs automatically when Claude Code starts — this is true for both Path A and Path B.
 
-> **Note:** The `jerry` CLI command is available when you have a local clone with uv configured (run from the clone directory with `uv run jerry`). If you installed Jerry as a plugin without cloning, the SessionStart hook still fires automatically — you do not need the CLI. Skip the explicit command below and proceed to reading the hook output.
+**If you are on Path A (plugin only):** No CLI command is required. Open Claude Code and proceed to reading the hook output below.
+
+**If you are on Path B (local clone + CLI):** You may additionally run `uv run jerry` from the clone directory to invoke CLI utilities. This is optional for starting a session — the SessionStart hook still fires automatically just like Path A.
 
 The SessionStart hook will respond with one of three XML-tagged outputs. Read the output carefully — each tag requires a different action:
 
@@ -210,6 +212,10 @@ Expected result: One or more `.md` files exist under `projects/PROJ-001-my-first
 ---
 
 ## Troubleshooting
+
+> **Install-specific issues** (plugin not found, SSH authentication failed, `uv` missing, hook not firing): see [INSTALLATION.md Troubleshooting](../INSTALLATION.md#troubleshooting) — it covers install-path problems this runbook does not.
+
+The table below covers runbook-specific issues once Jerry is installed:
 
 | Symptom | Cause | Resolution |
 |---------|-------|------------|

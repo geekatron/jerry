@@ -215,6 +215,29 @@ jerry/
 └── docs/                 # Documentation
 ```
 
+## Documentation Contributions
+
+Documentation pull requests are welcome. Typos, clarifications, new runbooks, missing examples, and accessibility improvements are all valuable — you do not need to be a core contributor to improve the docs.
+
+**What we're looking for:**
+
+- **Tutorials** — step-by-step walkthroughs for new users (e.g., "Your first skill invocation", "Setting up Jerry for a team project"). See [`docs/runbooks/getting-started.md`](docs/runbooks/getting-started.md) for structure.
+- **How-to guides** — goal-oriented procedures for competent users (e.g., "Configure hooks for a new project", "Pin Jerry to a specific version").
+- **Reference** — authoritative, structured descriptions (CLI commands, skill inventory, schemas). See [`docs/reference/`](docs/reference/) for examples.
+- **Explanation** — conceptual articles on architecture, design decisions, or how Jerry addresses Context Rot. See [`docs/explanation/`](docs/explanation/).
+- **Bug fixes in existing docs** — stale versions, broken links, incorrect commands, inaccessible patterns (missing alt text, poor heading hierarchy).
+
+**How to contribute documentation:**
+
+1. Fork the repository and create a branch (`docs/short-description`).
+2. Edit the relevant files under `docs/`, `README.md`, or `INSTALLATION.md`.
+3. Run `make docs-serve` (or `uv run mkdocs serve`) locally to preview your changes at `http://localhost:8000` before submitting.
+4. Open a pull request with a clear summary of what you changed and why.
+
+**Documentation style:**
+
+Jerry uses the [Diataxis framework](https://diataxis.fr) — each doc belongs to exactly one quadrant (tutorial / how-to / reference / explanation). If you're unsure which quadrant your contribution fits, include a brief note in the PR description and a maintainer will help classify it.
+
 ## Reporting Windows Issues
 
 If you encounter a problem that only occurs on Windows, please use the dedicated [Windows Compatibility issue template](https://github.com/geekatron/jerry/issues/new?template=windows-compatibility.yml). This helps the team triage platform-specific issues separately from general bugs.
