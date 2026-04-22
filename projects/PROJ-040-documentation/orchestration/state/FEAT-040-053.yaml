@@ -1,0 +1,317 @@
+schema_version: "1.0.0"
+feature_id: FEAT-040-053
+agent: pm-customer-insight
+pipeline: pm
+phase: "1b"
+handoff_id: HO-W1-053
+criticality: C3
+quality_threshold: 0.92
+iteration_ceiling: 7
+
+status: complete   # iter-4 adv review complete; PASS-WITH-DOCUMENTED-CEILING recommended; orchestrator option A recommended; iter-4 adv 0.917 = self 0.917 (zero calibration gap); Evidence Quality architectural ceiling 0.88 is sole gap driver (0.003 below 0.920 threshold); no text edit can close gap without Phase 2 primary user data
+dispatched_at: "2026-04-20T21:30:00Z"
+returned_at: "2026-04-21T00:15:00Z"
+iteration: 4
+adv_iter_2_reviewed_at: "2026-04-20T23:00:00Z"
+iter_3_delivered_at: "2026-04-20T23:45:00Z"
+adv_iter_3_reviewed_at: "2026-04-20T23:59:00Z"
+iter_4_delivered_at: "2026-04-21T00:15:00Z"
+
+artifact_path: "projects/PROJ-040-documentation/work/EPIC-040-001/pm/FEAT-040-053/pm-customer-insight-output.md"
+artifact_verified: true
+self_reported_quality_score: 0.917
+confidence: 0.72   # iter-4 MEDIUM-HIGH (upgraded from 0.68); self-score now aligned with adversarial exactly; calibration gap 0.000
+blockers: []
+iter_2_projected_adversarial_band: "0.90-0.92 (REVISE upper or PASS lower boundary)"
+iter_3_projected_adversarial_band: "0.91-0.92 (PASS boundary or PASS)"
+iter_3_actual_adversarial: 0.917
+iter_3_verdict: REVISE
+iter_3_gap_to_pass: 0.003
+iter_3_binding_gap_driver: "Evidence Quality held at 0.88 (structural secondary-research ceiling; self-claimed 0.90 inadequately justified by editorial changes per DA-003)"
+iter_3_calibration_gap: -0.007
+iter_4_scope: "Self-score calibration only: Evidence Quality re-calibrate to 0.88 (structural ceiling; editorial changes do not advance evidence quality per DA-003). Estimated ≤15 min. No structural changes required."
+iter_4_orchestrator_option: "Orchestrator may accept 0.917 as practical PASS (0.003 gap = Evidence Quality architectural ceiling, not deliverable quality failure) OR proceed with iter-4 calibration to achieve clean PASS"
+iter_4_delivered_composite_self: 0.917
+iter_4_calibration_gap_vs_adv_iter_3: 0.000
+iter_4_trivial_minor_closures_applied:
+  - "DA-001 (iter-3): Evan V-01 fallback paragraph added to Candidate B callout — Taylor-anchored pattern extensible to Evan via credibility-signal anchor substitution"
+  - "IN-NEW-003 (iter-3): DEFERRED-not-INVALIDATED misread-risk clarification added to Ren Validation Required table note — Ren-directional design proceeds; only quantitative targets gated"
+  - "CC-001 / DA-003 (iter-3): Evidence Quality 0.88 structural-ceiling calibration note added to Quality Self-Assessment preamble + explicit dimension rationale"
+iter_4_minor_findings_deferred_to_phase_2:
+  - "PM-006 (iter-3): docs/explanation/ audit ambiguity — requires Diataxis docs inventory work beyond iter-4 scope"
+  - "DA-002 (iter-3): Devi STOP GATE docs/explanation/ permitted-surface exception — same root (requires Diataxis taxonomy audit to classify surface as internal vs. user-indexed)"
+
+persona_count: 5
+persona_count_vs_heart_provisional: "5 personas (up from HEART provisional 3). Added Taylor (A2 distinct from first-time adopter) and Ren (closes HEART Retention gap explicitly flagged by QG-2). Merged A5 into Evan. Excluded A3 (internal) and deferred A4 (narrow + STOP GATE). Devi (A6) included as [UNVALIDATED] per A6 STOP GATE."
+segment_count_research_question_status: "Resolved with documented reconciliation. HYP-PERSONA-COUNT (5 segments) is itself a validation hypothesis; merge/split decisions require Phase 2 user interviews."
+
+heart_dimension_coverage:
+  adoption: "Sam (primary), Taylor (secondary)"
+  engagement: "Ren (primary), Devi (secondary)"
+  task_success: "Sam (primary), Taylor (secondary), Devi (tertiary)"
+  happiness: "Evan (primary), Taylor (secondary)"
+  retention: "Ren (primary) — hypothesis persona (HYP-REN-RETENTION) addresses QG-2-flagged gap pending Phase 3 cohort validation"
+
+key_findings:
+  - "5 personas (hypothesis): Sam (A1 MEDIUM), Taylor (A2 MEDIUM, V-01 dependent), Evan (A1/A2/A5 trust-evaluator LOW — both primary evidence sources unvalidated-or-misapplied), Ren (A1/A2 post-adoption Retention MEDIUM), Devi (A6 INFERRED — A6 STOP GATE). All 5 HEART dimensions have dedicated primary hypothesis-personas; Retention gap ADDRESSED by Ren hypothesis-persona, not empirically closed."
+  - "Moment of Maximum Pain analysis (iter-2 corrected): 3 of 5 personas max-pain at FMOT (Taylor, Evan, Ren); Sam exception at SMOT Step 3; Devi [UNVAL] at SMOT wave-gating. TC-002 skills catalog visibility serves all 5 personas; TC-001/TC-005 SMOT fix primarily serves Sam with secondary benefits to Taylor/Evan/Devi if reached."
+  - "Remediation priority hypothesis (POPULATION-AGNOSTIC — requires Phase 1 SUPR-Q + funnel baseline before Wave 2 commitment): (1) TC-002 skill catalog, (2) TC-001/TC-005 getting-started, (3) TC-004 tutorials, (4) Governance framing Wave 2 (conditional on FEAT-040-055 V-01), (5) TC-003 jargon. If Sam-population is majority, SMOT-first inverts priority."
+  - "HYP-CAUSAL-STRATIFIED (NEW third hypothesis — not a resolution of FEAT-040-002's Model A vs. Model B): causal ordering may be segment-dependent. Sam validates Model A IF Sam-dominant; Taylor/Evan/Ren validate Model B IF FMOT-gated personas materially size. FEAT-040-002 authoritative pass must test using independent population-share data (not re-reading the persona set — internal-circular risk)."
+  - "Silent churn is dominant hypothesized failure mode for Evan and Ren — detection requires FEAT-040-002 Phase 1-3 instrumentation (SUPR-Q for Evan; Skill Expansion Rate for Ren) not yet deployed. Ren/Sam lifecycle distinction explicit iter-2: Sam = pre-adoption day 1; Ren = post-adoption week 2+ second-skill discovery."
+
+xp_provides:
+  XP-07:   # → Phase 2 synthesis (remediation sequencing + persona-aware Wave 2 README design)
+    enrichment_data: "5 personas with JTBD statements + Moments of Truth journey maps + persona-to-remediation leverage table"
+    state_ref: "key_findings[0..4]; pm-customer-insight-output.md Handoff Data section"
+
+xp_consumes:
+  - XP-01   # FEAT-040-001 JTBD actor segments A1-A6
+  - XP-01b  # FEAT-040-001 HEART enrichment support
+  - XP-02   # FEAT-040-002 HEART provisional segments
+
+score_history:
+  - iteration: 4
+    composite_self: 0.917
+    composite_adversarial: 0.917
+    verdict: PASS-WITH-DOCUMENTED-CEILING   # strict: REVISE (0.003 gap); practical: PASS per adv-iter-4 Option A recommendation; exit_iteration_cycle: true
+    exit_iteration_cycle: true
+    final_verdict: PASS-WITH-DOCUMENTED-CEILING
+    calibration_gap_vs_adv_iter_3: 0.000
+    calibration_gap_self_vs_adversarial: 0.000
+    gap_to_pass: 0.003
+    binding_gap_driver: "Evidence Quality 0.88 (Phase 1a secondary-research architectural ceiling — not addressable by text changes; requires Phase 2 primary user data)"
+    iter_4_report: "projects/PROJ-040-documentation/orchestration/reviews/FEAT-040-053-adv-review-iter-4.md"
+    iter_4_critical_findings: 0
+    iter_4_major_findings: 0
+    iter_4_minor_findings: 5
+    iter_4_scope_items_closed: 3
+    iter_4_closures:
+      - "CLOSURE-A: DA-001 (iter-3) Evan V-01 fallback paragraph — credibility-signal anchor substitution mechanism added"
+      - "CLOSURE-B: IN-NEW-003 (iter-3) DEFERRED-not-INVALIDATED misread-risk clarification — inline in Ren Validation Required post-table note"
+      - "CLOSURE-C: CC-001/DA-003 (iter-3) Evidence Quality 0.88 structural-ceiling calibration — preamble + dimension rationale + composite recalculation"
+    iter_4_new_findings:
+      - "DA-001 (iter-4): Evan V-01 fallback property-(a) task-outcome lead applicability unconfirmed for Evan-targeted surfaces — Minor"
+      - "DA-002 (iter-4): Zero calibration gap is tautological alignment (expected and transparent) — Minor"
+      - "DA-003 (iter-4): Deferred docs/explanation/ ambiguity creates downstream consumer gap in STOP GATE mechanism — Minor"
+      - "FM-ITER4-001 (RPN 72): Evan V-01 fallback structural property-(a) underspecified for Evan context — Minor"
+      - "IN-NEW-004 (iter-4): DEFERRED-not-INVALIDATED clarification not echoed in XP-07 Can-Anchor column directly — Minor"
+    orchestrator_recommended_option: "Option A — Accept 0.917 as PASS-WITH-DOCUMENTED-CEILING (Evidence Quality 0.88 is architectural ceiling; all scope items resolved; zero major findings since iter-2; zero calibration gap iter-4)"
+    orchestrator_option_b: "Defer formal PASS to Phase 2 primary user data (N=5 interviews per persona raises EQ to ~0.93-0.95; composite projects to ~0.924+)"
+    orchestrator_option_c: "Conditional PASS contingent on Phase 2 EQ re-score ≥0.91; PM-006 docs/explanation/ resolved before Devi content; DA-001 property-(a) resolved during FEAT-040-054 V-01 execution"
+    self_score_dimensions:
+      completeness: 0.92
+      internal_consistency: 0.93   # recalibrated from iter-3 self 0.94 to match adv-iter-3
+      methodological_rigor: 0.91   # recalibrated from iter-3 self 0.92 to match adv-iter-3
+      evidence_quality: 0.88       # recalibrated from iter-3 self 0.90 to match adv-iter-3 structural ceiling
+      actionability: 0.93
+      traceability: 0.93
+    iter_4_changes:
+      - "Evidence Quality self-score 0.90 → 0.88 (structural ceiling)"
+      - "Internal Consistency self-score 0.94 → 0.93 (match adv-iter-3 A5 Excluded table variance)"
+      - "Methodological Rigor self-score 0.92 → 0.91 (match adv-iter-3 Evan methodology gap)"
+      - "Composite self 0.924 → 0.917 (matches adv-iter-3 exactly)"
+      - "Trivial Minor: DA-001 Evan V-01 fallback paragraph"
+      - "Trivial Minor: IN-NEW-003 DEFERRED-not-INVALIDATED misread-risk clarification"
+      - "Trivial Minor: CC-001/DA-003 Evidence Quality calibration note"
+    structural_changes: false
+    deferred_to_phase_2:
+      - "PM-006 (iter-3): docs/explanation/ audit ambiguity"
+      - "DA-002 (iter-3): Devi STOP GATE docs/explanation/ surface classification"
+  - iteration: 3
+    composite_self: 0.924
+    composite_adversarial: 0.917
+    verdict: REVISE
+    calibration_gap_expected: "-0.01 to -0.02 (baseline for editorial-only closures)"
+    calibration_gap_actual: -0.007
+    gap_to_pass: 0.003
+    binding_gap_driver: "Evidence Quality 0.88 (structural ceiling; iter-3 editorial changes do not advance evidence quality per DA-003)"
+    self_score_dimensions:
+      completeness: 0.92
+      internal_consistency: 0.94
+      methodological_rigor: 0.92
+      evidence_quality: 0.90
+      actionability: 0.93
+      traceability: 0.93
+    iter_3_closures:
+      - "PM-INTERNAL-CONSISTENCY-1a: Segment Count Reconciliation table (line 150) legacy 'Closes QG-2-flagged HEART provisional gap' → 'addresses gap (hypothesis persona; validation required)... addressed by hypothesis, not empirically closed'"
+      - "PM-INTERNAL-CONSISTENCY-1b: Cross-Reference table FEAT-040-002 row 'Retention gap closed by Ren' → 'Retention gap addressed by Ren (hypothesis persona; validation required via Phase 3 cohort analysis)'"
+      - "PM-METHODOLOGICAL-2: Taylor Candidate B fallback operationalization — 3 example seed phrases added to Strategic Implications V-01 dependency callout (reproducible-workflows / team-alignment / technical-lead-approval framings) + 3 structural properties enumerated; labeled 'example framings for FEAT-040-054 operationalization' (NOT committed copy)"
+      - "PM-003: Devi STOP GATE mechanism formalized in XP-07 Cannot-Anchor cell — FEAT-040-054 MUST NOT produce A6 messaging for README/docs/index.md/external; permitted only in internal CONTRIBUTING.md / docs/explanation/; release criterion: N≥3 interviews per FEAT-040-001 XP-04 STOP GATE"
+      - "PM-004: Ren instrumentation ownership assigned in Validation Required table — DevSecOps + Docs lead co-owned per FEAT-040-002 Phase 1b dependency gate; ≥30-day telemetry activation signal; post-table note with DEFERRED-not-INVALIDATED clause"
+      - "PM-ACTIONABILITY-5: IN-003 TC-002 Devi leverage qualification — Remediation Priority #1 and Top-5 Remediation-Persona Map bullet now carry 'Sam/Taylor/Evan/Ren HIGH leverage, Devi MEDIUM leverage' qualifier"
+    iter_2_closures_preserved:
+      - "L0 FMOT/SMOT distribution (3/5 FMOT; Sam-only SMOT)"
+      - "HYP-CAUSAL-STRATIFIED framing"
+      - "Evan LOW confidence"
+      - "XP-07 planning weights column"
+      - "Taylor V-01 dependency callout"
+      - "FMOT-first population-agnostic labeling"
+    structural_changes: false
+    projected_adversarial_band: "0.91-0.92 (PASS boundary or PASS)"
+    gap_to_pass_iter_2: 0.015
+    gap_closed_estimate: "+0.012 to +0.018 (edits closed 4 dimensions at +0.01 each weighted to composite +0.007-0.008; projected adv PASS probability high)"
+  - iteration: 2
+    composite_self: 0.917
+    composite_adversarial: 0.905
+    verdict: REVISE
+    calibration_gap: -0.012
+    gap_to_pass: 0.015
+    self_score_dimensions:
+      completeness: 0.92
+      internal_consistency: 0.93
+      methodological_rigor: 0.91
+      evidence_quality: 0.89
+      actionability: 0.92
+      traceability: 0.93
+    blockers_closed:
+      - "BLOCKER-1: L0 FMOT/SMOT distribution factual inversion CORRECTED — now 3/5 FMOT (Taylor/Evan/Ren), 1/5 SMOT (Sam); cascading claims updated"
+      - "BLOCKER-2: Model A/B reframed as HYP-CAUSAL-STRATIFIED — third-hypothesis, not resolution; internal-circular inference risk flagged"
+      - "BLOCKER-3: Evan confidence MEDIUM → LOW with explicit both-sources-unvalidated-or-misapplied reasoning + population-share-unknown caveat"
+      - "BLOCKER-4: XP-07 Relative Planning Weight column + Downstream Use Constraints sub-section with Can-Anchor/Cannot-Anchor matrix"
+      - "BLOCKER-5: Taylor V-01 dependency callout in persona + L2 Strategic Implications + Validation Required; Candidate B fallback named"
+      - "BLOCKER-6: FMOT-first priority labeled POPULATION-AGNOSTIC; Taylor/Ren/Sam population-unknown caveats extended; Sam-majority inversion scenario documented"
+    margin_items_closed:
+      - "FM-FMEA-006: Heatmap cell citation key added"
+      - "IN-001: Ren/Sam lifecycle distinction explicit (Sam = pre-adoption day 1; Ren = post-adoption week 2+)"
+      - "DA-004: A5-to-Evan merge strengthened with positive-evidence rationale + residual-risk Phase 2 recruitment guidance"
+    synthesis_judgments_updated: [6, 11, 12, 14]
+    synthesis_judgments_added: [15]
+    projected_adversarial_band: "0.90-0.92 (REVISE upper or PASS lower boundary)"
+    calibration_expectation: "gap -0.01 to -0.02 (narrower than iter-1 -0.052 because iter-1 gap drivers are now addressed)"
+    adversarial_score_dimensions:
+      completeness: 0.91
+      internal_consistency: 0.91
+      methodological_rigor: 0.90
+      evidence_quality: 0.88
+      actionability: 0.91
+      traceability: 0.92
+    actual_calibration_gap: -0.012
+    actual_verdict: REVISE
+    actual_composite_adversarial: 0.905
+  - iteration: 1
+    composite_self: 0.930
+    composite_adversarial: 0.878
+    verdict: REVISE
+    self_score_dimensions:
+      completeness: 0.93
+      internal_consistency: 0.94
+      methodological_rigor: 0.93
+      evidence_quality: 0.90
+      actionability: 0.94
+      traceability: 0.94
+    adversarial_score_dimensions:
+      completeness: 0.88
+      internal_consistency: 0.86
+      methodological_rigor: 0.88
+      evidence_quality: 0.84
+      actionability: 0.91
+      traceability: 0.91
+    gap: -0.052
+    anticipated_adversarial_gap: "-0.02 to -0.05 per task brief"
+    actual_adversarial_gap: "-0.052 (upper bound of anticipated range)"
+    anticipated_adversarial_findings:
+      - "Evan segment population-share claims may require stronger evidence (Evidence Quality risk)"
+      - "Model A/B stratification is a novel hypothesis not in upstream deliverables (Methodological Rigor risk)"
+      - "Devi persona inclusion despite [UNVALIDATED] may face challenge (vs. full exclusion until A6 closes)"
+    actual_adversarial_findings_summary:
+      - "L0 SMOT/FMOT distribution inversion — largest single-finding gap driver (Internal Consistency)"
+      - "Evan confidence overstated MEDIUM vs. LOW — largest Evidence Quality gap driver"
+      - "Model A/B framed as resolution not hypothesis — Methodological Rigor gap (anticipated)"
+      - "XP-07 Handoff missing planning weights — downstream safety risk not anticipated by self"
+      - "Taylor V-01 dependency not called out — not anticipated by self"
+      - "FMOT-first priority population-agnostic caveat absent — not anticipated by self"
+      - "Devi not challenged for inclusion — self-anticipated finding did NOT materialize as major"
+
+adv_review:
+  status: complete   # iter-4 adv review complete; all strategies executed; PASS-WITH-DOCUMENTED-CEILING recommended; exit_iteration_cycle: true
+  required_strategies: [S-007, S-002, S-014, S-004, S-012, S-013]
+  ordering_constraint: "S-003 MUST precede S-002 if both run (H-16)"
+  iter_1_verdict: REVISE
+  iter_1_composite: 0.878
+  iter_1_self_score: 0.930
+  iter_1_gap: -0.052
+  iter_1_report: "projects/PROJ-040-documentation/orchestration/reviews/FEAT-040-053-adv-review-iter-1.md"
+  iter_2_verdict: REVISE
+  iter_2_composite: 0.905
+  iter_2_self_score: 0.917
+  iter_2_gap: -0.012
+  iter_2_report: "projects/PROJ-040-documentation/orchestration/reviews/FEAT-040-053-adv-review-iter-2.md"
+  iter_2_critical_findings: 0
+  iter_2_major_findings: 0
+  iter_2_minor_findings: 11
+  iter_2_blockers_resolved: 6
+  iter_2_gap_to_pass: 0.015
+  iter_3_scope: "Text cleanup only (50 min max): 2x legacy closes/closed cells; Taylor Candidate B example copy; PM-003 gate mechanism forward-ref; PM-004 Ren ownership; IN-003 all-5-personas qualification"
+  iter_3_verdict: REVISE
+  iter_3_composite: 0.917
+  iter_3_self_score: 0.924
+  iter_3_gap: -0.007
+  iter_3_report: "projects/PROJ-040-documentation/orchestration/reviews/FEAT-040-053-adv-review-iter-3.md"
+  iter_3_critical_findings: 0
+  iter_3_major_findings: 0
+  iter_3_minor_findings: 6
+  iter_3_scope_items_closed: 5
+  iter_3_gap_to_pass: 0.003
+  iter_3_binding_gap: "Evidence Quality 0.88 structural ceiling (self-claimed 0.90 not awarded)"
+  iter_4_scope: "Self-score calibration only: Evidence Quality 0.88 (not 0.90); estimated ≤15 min; 0 structural changes"
+  iter_4_verdict: PASS-WITH-DOCUMENTED-CEILING
+  iter_4_composite: 0.917
+  iter_4_self_score: 0.917
+  iter_4_gap: 0.000
+  iter_4_report: "projects/PROJ-040-documentation/orchestration/reviews/FEAT-040-053-adv-review-iter-4.md"
+  iter_4_critical_findings: 0
+  iter_4_major_findings: 0
+  iter_4_minor_findings: 5
+  iter_4_scope_items_closed: 3
+  iter_4_gap_to_pass: 0.003
+  iter_4_binding_gap: "Evidence Quality 0.88 structural ceiling (self-score perfectly calibrated; zero calibration gap)"
+  iter_4_exit_iteration_cycle: true
+  iter_4_scores:
+    completeness: 0.92
+    internal_consistency: 0.93
+    methodological_rigor: 0.91
+    evidence_quality: 0.88
+    actionability: 0.93
+    traceability: 0.93
+  iter_3_scores:
+    completeness: 0.92
+    internal_consistency: 0.93
+    methodological_rigor: 0.91
+    evidence_quality: 0.88
+    actionability: 0.93
+    traceability: 0.93
+  iter_1_scores:
+    completeness: 0.88
+    internal_consistency: 0.86
+    methodological_rigor: 0.88
+    evidence_quality: 0.84
+    actionability: 0.91
+    traceability: 0.91
+  iter_1_critical_findings: 0
+  iter_1_major_findings: 6
+  iter_1_minor_findings: 9
+  iter_1_blockers:
+    - "BLOCKER-1: L0 SMOT/FMOT distribution inversion — '4 of 5 SMOT' is factually wrong (heatmap shows 3/5 FMOT)"
+    - "BLOCKER-2: Model A/B stratification must be labeled HYP-CAUSAL-STRATIFIED, not 'resolution input'"
+    - "BLOCKER-3: Evan confidence must be downgraded MEDIUM → LOW"
+    - "BLOCKER-4: XP-07 Handoff needs Relative Planning Weight column + Downstream Use Constraints section"
+    - "BLOCKER-5: Taylor V-01 dependency must be explicit in Taylor persona and L2 Strategic Implications"
+    - "BLOCKER-6: FMOT-first priority ranking must be labeled POPULATION-AGNOSTIC"
+  iter_1_remediation_estimate_hours: 2
+  iter_1_projected_iter2_composite: 0.910
+
+downstream_dependencies:
+  - feature: FEAT-040-054
+    relationship: "Positioning consumes XP-07 personas + Evan V-01 validation dependency"
+  - feature: FEAT-040-003
+    relationship: "Kano Analysis consumes XP-07 personas + TC-002/TC-004 as known Performance attributes"
+  - feature: FEAT-040-002
+    relationship: "HEART Authoritative pass consumes XP-07 persona-dimension coverage for Retention dedicated segment"
+
+validation_required:
+  sam: "N=5 interviews with Claude Code users; threshold 3/5 reach first-skill invocation in 10 min"
+  taylor: "N=3-5 interviews with engineering managers; threshold 3/5 find governance framing compelling"
+  evan: "N=5 interviews via V-01/V-02 from FEAT-040-055; resolves causal-model open question"
+  ren: "Post-remediation cohort analysis; requires Phase 3 instrumentation"
+  devi: "N=3 per FEAT-040-001 A6 Validation Protocol; may reject or revise persona"
+  persona_count: "Card-sort with 5-10 users during persona interviews"

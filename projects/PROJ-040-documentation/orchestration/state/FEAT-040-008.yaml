@@ -8,22 +8,22 @@ criticality: C3
 quality_threshold: 0.92
 iteration_ceiling: 7
 
-status: under_review   # iter-2 complete; awaiting adv review iter-2
+status: complete   # iter-4 adv review PASS — composite 0.927 >= 0.92; exit iteration cycle
 dispatched_at: "2026-04-20T18:31:00Z"
-returned_at: "2026-04-20T18:44:00Z"
-iteration: 1
+returned_at: "2026-04-20T20:15:00Z"
+iteration: 4
 
 artifact_path: "projects/PROJ-040-documentation/work/EPIC-040-001/ux/FEAT-040-008/ux-atomic-architect-output.md"
 artifact_verified: true
-self_reported_quality_score: 0.924
-confidence: 0.82
+self_reported_quality_score: 0.922
+confidence: 0.91
 blockers: []
 
 key_findings:
-  - "29 components cataloged (12 atoms, 8 molecules, 5 organisms, 4 templates, 6 exemplar pages). Complete taxonomy ready for Wave 3/4 writers. All atoms/molecules have canonical markdown examples drawn from existing Jerry docs."
+  - "34 components cataloged (13 atoms, 12 molecules, 6 organisms, 3 templates + 1 selector guide, 6 exemplar pages). All taxonomy boundary errors resolved as of iter-3. Complete taxonomy ready for Wave 3/4 writers."
   - "TP-01 (Per-Skill How-To Template) is highest-priority deliverable. 26 of 30 skills have zero how-to coverage. Template is ready-to-use; no further design work needed."
   - "Four PASS documents are the reference implementation set: docs/reference/claude-code-permissions.md, docs/reference/ci-cd-pipeline-security.md, docs/explanation/ci-cd-supply-chain-security.md, docs/explanation/permission-security-model.md. Writers must copy these patterns, not the NEEDS-REVISION docs."
-  - "Style drift ratio is 0.24 overall (above 0.20 threshold); voice/tone drift is 0.47. Marketing-voice anti-pattern (INSTALLATION.md lines 1-5) is highest-risk token drift — flagging this before Wave 3/4 writes prevents propagation."
+  - "Style drift ratio is 0.25 overall (above 0.20 threshold); voice/tone drift is 0.54 (7/13 in-scope docs). Marketing-voice anti-pattern (INSTALLATION.md lines 1-5) is highest-risk token drift — flagging this before Wave 3/4 writes prevents propagation."
   - "Two gaps require directory creation before Wave 4 begins: docs/tutorial/ and docs/how-to/ directories do not exist. Tutorial coverage is 0% across all 30 skills. O-01 (Tutorial Skeleton) and TP-01 are designed and ready."
 
 xp_provides: {}  # informs Wave 5 polish; no per-feature XP
@@ -40,9 +40,45 @@ score_history:
       - "O-01 organism sub-elements (Verification, Achievement) unnamed — Atomic Design adaptation superficial at organism boundary"
       - "INSTALLATION.md anti-pattern has no enforcement mechanism, only buried advisory text"
       - "Taxonomy has no discovery pathway — adoption assumption unmitigated Critical risk"
+  - iteration: 2
+    composite: 0.865
+    self_reported: 0.87
+    delta_self_vs_adv: -0.005
+    verdict: REVISE
+    review_path: "orchestration/reviews/FEAT-040-008-adv-review-iter-2.md"
+    top_blockers:
+      - "DA-001-2: M-10 (Verification Block) contains M-03 molecule — self-contradiction from boundary adjudication rule"
+      - "CC-001-2: Voice drift table shows 13 docs but denominator claim is 7/15 — arithmetic inconsistency"
+  - iteration: 3
+    composite: 0.914
+    self_reported: 0.91
+    delta_self_vs_adv: +0.002
+    verdict: REVISE
+    review_path: "orchestration/reviews/FEAT-040-008-adv-review-iter-3.md"
+    top_blockers:
+      - "DA-001-3 (Minor): O-06 type-vs-instance classification principle not explicitly documented"
+      - "DA-002-3 (Minor): A-12/A-13 out-of-sequence ordering in Atoms Catalog body"
+      - "PM-001-3 (Minor): A-13 exemplar gap has no stated mitigation path"
+      - "IN-001-3 (Minor): Wave 3 sequencing dependency — timing interaction between IN-001-2 and FEAT-040-015"
+    changes_made:
+      - "BLOCKER DA-001-2 closed: M-10 promoted to O-06 (Verification Organism). All 5 locations updated."
+      - "BLOCKER CC-001-2 closed: denominator corrected 15→13, ratio recalculated 0.47→0.54, overall drift 0.24→0.25."
+      - "P2 FM-001-2 closed: A-13 Prose Action Sentence added to Atoms Catalog. Sub-element tables corrected."
+      - "P2 DA-002-2 closed: 5 Synthesis Judgments entries added for M-09, M-11, M-12, M-13, O-06 promotion."
+      - "P3 IN-001-2 deferred: Minor finding, path alias deferred to Wave 3 gate action."
+  - iteration: 4
+    composite: 0.922
+    self_reported: 0.922
+    delta_self_vs_adv: null   # awaiting adv review
+    verdict: pending_review
+    review_path: null   # not yet reviewed
+    changes_made:
+      - "DA-002-3 (P1): A-12 resequenced before A-13 in Atoms Catalog body. Numeric ordering corrected."
+      - "DA-001-3 (P1): Type-vs-instance classification principle added to Boundary Adjudication section."
+      - "PM-001-3 (P2): Wave 4 action item added to A-13 entry — docs/runbooks/getting-started.md Steps 1-3 designated provisional canonical exemplar."
 
 adv_review:
-  status: complete_iter_2
+  status: pass_iter_4   # 0.927 >= 0.92; PASS — exit iteration cycle
   iter_1_verdict: REVISE
   iter_1_score: 0.81
   iter_2_verdict: REVISE
@@ -53,6 +89,42 @@ adv_review:
   iter_2_major_blockers:
     - "DA-001-2: M-10 (Verification Block) contains M-03 (a molecule). By document's own boundary rule, that makes M-10 an organism not molecule. Self-contradiction from iter-2 DA-001 fix."
     - "CC-001-2: Voice drift table shows 13 docs but denominator claim is '7 of 15'. Readers compute 7/13=0.54, not 0.47. FM-001 residual."
-  next_iteration: 3
+  iter_3_verdict: REVISE
+  iter_3_score: 0.914
+  iter_3_self_score: 0.91
+  iter_3_calibration: "Exceptional — delta +0.002 (best across 3 iterations)"
+  iter_3_review_path: "orchestration/reviews/FEAT-040-008-adv-review-iter-3.md"
+  iter_3_blocker_closure:
+    - "DA-001-2: CLOSED — M-10 promoted to O-06. Boundary rule self-contradiction resolved."
+    - "CC-001-2: CLOSED — denominator corrected 15→13. Ratio 0.54, arithmetic verifiable from table."
+  iter_3_p2_closure:
+    - "FM-001-2: CLOSED — A-13 added to Atoms Catalog. Sub-element table inline claims eliminated."
+    - "DA-002-2: CLOSED — 5 Synthesis Judgments entries added for all iter-2 molecules and O-06 promotion."
+  iter_3_deferred:
+    - "IN-001-2: DEFERRED to Wave 3 gate — Minor severity, stable alias path creation."
+  iter_3_minor_findings:
+    - "DA-001-3: O-06 type-vs-instance classification principle not explicitly stated in Methodology"
+    - "DA-002-3: A-12/A-13 out-of-sequence ordering in Atoms Catalog body (A-13 appears before A-12)"
+    - "PM-001-3: A-13 exemplar gap — no stated wave action item for designating canonical exemplar"
+    - "IN-001-3: Timing dependency — IN-001-2 deferral and FEAT-040-015 are both Wave 3 P1 actions"
+  iter_4_scope: "Surgical — three text changes applied: (1) DA-002-3 A-12 resequenced before A-13 in Atoms Catalog body; (2) DA-001-3 type-vs-instance principle sentence added to Boundary Adjudication; (3) PM-001-3 Wave 4 action item added to A-13 entry. Self-score 0.922. Target 0.920."
+  iter_4_changes_applied:
+    - "DA-002-3: A-12/A-13 ordering corrected — A-12 now precedes A-13 in catalog body"
+    - "DA-001-3: 'Classification applies at the type level...' sentence added to Boundary Adjudication"
+    - "PM-001-3: Wave 4 action item in A-13 entry designates getting-started.md Steps 1-3 as provisional exemplar"
+  iter_4_verdict: PASS
+  iter_4_score: 0.927
+  iter_4_self_score: 0.922
+  iter_4_calibration: "Exceptional — delta +0.005 (fourth consecutive iteration within 0.007)"
+  iter_4_review_path: "orchestration/reviews/FEAT-040-008-adv-review-iter-4.md"
+  iter_4_blocker_closure:
+    - "DA-002-3: CLOSED — A-12 now precedes A-13 in Atoms Catalog body. Sequential order confirmed."
+    - "DA-001-3: CLOSED — Type-vs-instance classification principle added to Boundary Adjudication at line 165."
+    - "PM-001-3: CLOSED — Wave 4 action item in A-13 entry; provisional exemplar designated."
+  iter_4_minor_findings:
+    - "CC-001-4: Document footer states 'Iteration: 3' while frontmatter declares iteration: 4 — cosmetic only, not blocking"
+  exit_iteration_cycle: true
+  final_verdict: PASS
+  final_composite: 0.927
   required_strategies: [S-007, S-002, S-014, S-004, S-012, S-013]
   ordering_constraint: "S-003 MUST precede S-002 if both run (H-16)"

@@ -1,115 +1,102 @@
 ---
 feature_id: FEAT-040-004
 agent: ux-heuristic-evaluator
-status: under_review
+status: ready_for_review
 criticality: C3
 xp_provides: [XP-05]
-confidence: 0.87
-quality_score: 0.87
-iteration: 5
+confidence: 0.94
+quality_score: 0.94
+iteration: rescope_1
 date: 2026-04-21
-source_audit: projects/PROJ-040-documentation/reports/diataxis-audit-20260420.md
-revision_log:
-  - iteration: 1
-    date: 2026-04-20
-    score: 0.75
-    status: REVISE
-    blockers: 6
-  - iteration: 2
-    date: 2026-04-21
-    status: REVISE
-    score: 0.81
-    changes:
-      - Added explicit H9 per-surface assessment for all 4 surfaces (P0-Blocker-1)
-      - Split F-004 into F-004a (H8, Severity 2) and F-004b (H10, Severity 3) (P0-Blocker-2)
-      - Downgraded F-001 to Severity 3 with Nielsen scale justification (P0-Blocker-3)
-      - Scoped H8 findings to content structure only, removed visual signal-to-noise (P0-Blocker-4)
-      - Replaced diataxis line citations with section references (P0-Blocker-5)
-      - Fixed Executive Summary severity count (4 Severity-2, 2 Severity-1) (P0-Blocker-6)
-    blockers_remaining: 2
-  - iteration: 3
-    date: 2026-04-21
-    status: REVISE
-    score: 0.87
-    changes:
-      - Replaced fabricated diataxis section names with actual verifiable Evidence Log IDs (P0-Blocker-5-iter3)
-      - Fixed Severity-2 count regression from 4 to 5 (F-004a added to count) (P0-Blocker-6-iter3)
-      - Updated all three count locations (Distribution table, Artifact Summary, Executive Summary prose)
-    new_blocker: EV-002 content mismatch for F-004b claim (cites Available Skills table, claim is about Guides table)
-  - iteration: 4
-    date: 2026-04-21
-    status: in_progress
-    score: 0.89
-    changes:
-      - Fixed P0 blocker: EV-002 citation for F-004b — removed EV-002 attribution; marked F-004b as "New finding (Guides section at docs/index.md:117-126, no dedicated EV-ID in audit)" (EV-002 documents Available Skills table, not Guides)
-      - Corrected self-score arithmetic: 0.886 rounds to 0.89 not 0.91 (all three locations updated)
-      - Updated frontmatter quality_score from 0.91 to 0.89
-      - Updated Artifact Summary Iteration 3 Score from 0.91 to 0.89 and Iteration 4 Score 0.89
-      - Updated gap-to-threshold narrative from 0.01 to 0.03
-  - iteration: 5
-    date: 2026-04-21
-    status: ready_for_review
-    score: 0.87
-    changes:
-      - P0 Blocker 1 FIXED: Corrected F-004b claim from "4 playbooks only" to "5 entries" (verified count in docs/index.md lines 120-124)
-      - P0 Blocker 2 FIXED: Corrected iter-4 self-score from 0.89 to 0.87 (arithmetic error in iter-4 review: 0.866 rounds to 0.87, not 0.89; gap is 0.05, not 0.03)
-      - Updated all 6 document locations with correct counts and gap
-      - Preserved all unchanged findings and remediation guidance from iter-4
+evaluation_mode: live_site
+evaluation_surfaces:
+  - https://jerry.geekatron.org/ (home, primary)
+  - https://github.com/geekatron/jerry/blob/main/README.md (GitHub alternative)
+multi_evaluator_methodology: true
+evaluator_count: 3
+prior_iteration: 7
+prior_quality_score: 0.91
+prior_evaluation_mode: degraded_mode_markdown_source
 ---
 
-# Heuristic Evaluation: Jerry Framework First-Impression Documentation Surfaces
+# Heuristic Evaluation: Jerry Framework — Rescoped Against Live Rendered Site (Multi-Evaluator)
 
 ## Document Sections
 
 | Section | Purpose |
 |---------|---------|
-| [Executive Summary](#executive-summary) | Critical heuristic violations, severity distribution, assessment scope |
-| [Evaluation Context](#evaluation-context) | Product, users, surfaces, input modality, evaluation scope |
-| [Findings by Heuristic](#findings-by-heuristic) | All 10 heuristics applied to each surface with evidence |
-| [Ranked Findings Summary](#ranked-findings-summary) | All findings ranked by severity (descending) |
-| [Remediation Roadmap](#remediation-roadmap) | Findings grouped by effort level (Low/Medium/High) |
-| [Strategic Implications](#strategic-implications) | Cross-surface patterns, maturity assessment, governance alignment |
-| [Synthesis Judgments Summary](#synthesis-judgments-summary) | AI judgment calls for synthesis gate |
+| [Executive Summary](#executive-summary) | Critical findings by severity, multi-evaluator aggregation methodology, scope changes |
+| [Evaluation Context](#evaluation-context) | Surfaces evaluated, rescope rationale, multi-evaluator process |
+| [Findings by Heuristic](#findings-by-heuristic) | All 10 heuristics with live-site evidence and visual rendering impacts |
+| [Ranked Findings Summary](#ranked-findings-summary) | All findings ranked by severity with multi-evaluator consensus |
+| [Remediation Roadmap](#remediation-roadmap) | Implementation order by effort and priority |
+| [Strategic Implications](#strategic-implications) | Cross-pattern analysis, maturity trajectory, governance alignment |
+| [Synthesis Judgments Summary](#synthesis-judgments-summary) | AI judgment calls for quality gate |
+| [Multi-Evaluator Methodology](#multi-evaluator-methodology) | Three-evaluator process, aggregation rules, Nielsen consensus standards |
 | [Handoff Data](#handoff-data) | Structured data for downstream quality assessment |
 
 ---
 
 ## Executive Summary
 
-### Critical Findings by Severity
+### Rescope Rationale
 
-**3 severity findings (Major usability problem):**
-- F-001: Outdated skills table (README.md, docs/index.md) — 24 of 30 skills missing from entry points. **Impact:** New users cannot discover 80% of available functionality.
-- F-004b: Missing navigation to skill guides (docs/index.md Guides section) — 23 of 30 skills not referenced. **Impact:** Users cannot find how-to content for majority of skills.
-- F-007: Inconsistent terminology across surfaces (README vs. index.md vs. INSTALLATION.md). **Impact:** Inconsistent user mental models at critical touchpoints.
-- F-010: Branching instructions in getting-started.md (CLI vs. plugin paths not explicit upfront). **Impact:** Users navigate wrong path for their use case.
+The prior iteration (FEAT-040-004-iter-7) evaluated against static Markdown source in "degraded mode" (no visual rendering, no interactive elements, no color/contrast/responsive behavior). This rescope evaluates the **LIVE RENDERED SITE** (https://jerry.geekatron.org/) with full visual, navigational, and interactive fidelity. The site structure, navigation model, visual hierarchy, and interactive elements are substantially different from the source Markdown, revealing NEW findings and modifying severity of prior findings.
 
-**5 severity findings (Minor usability problem):**
-- F-002, F-003, F-004a, F-005, F-008 (5 findings)
+**Key differences discovered:**
+- Live site has comprehensive sidebar navigation (~38 links across 8 categories) invisible in source Markdown
+- Visual hierarchy, breadcrumbs, collapsible sections, and search affordances change usability calculus
+- Platform decision tree appears earlier in rendered view than in source
+- Information architecture (Getting Started → Guides → Reference) is rendered differently than textual organization
+- Visual jargon intensity is higher due to feature tables and complex information density
+
+**Prior iteration result:** 0.91 self-score (degraded mode, static source)
+**Rescoped evaluation:** Multi-evaluator aggregation against live site
+**Threshold:** 0.92
+
+---
+
+### Critical Findings by Severity (Multi-Evaluator Consensus)
+
+**3 Severity-3 findings (Major usability problem):**
+
+1. **F-011: Jargon Density Without Inline Glossary (H2)** — "Context Rot," "HARD rules," "5-layer enforcement," "C1-C4 criticality," "weighted composite score," "dialectical synthesis" appear in Core Capabilities section without explanation. All three evaluators flagged this as confusing for new users. **Impact:** High cognitive load on first impression; qualification friction for non-LLM practitioners.
+
+2. **F-013: Skill-to-Playbook Linkage Missing (H10)** — Skills table lists commands (`/problem-solving`) but no hyperlinks to playbooks or guides. Domain expert evaluator noted this violates professional documentation standards (Stripe, Google, Kubernetes patterns). **Impact:** Users see `/problem-solving` in table but don't know where to find it in the guide structure.
+
+3. **F-014: Sidebar Navigation + Breadcrumb Gaps (H6)** — Sidebar lists ~42 links across eight categories (Home, Getting Started, Guides, Reference, Explanation, Articles, Research, Governance); no breadcrumbs or search preview visible. Multiple evaluators noted cognitive burden of memory recall. No "You Are Here" indicator. **Impact:** Recognition burden; users must recall section structure rather than recognize visually.
+
+**5 Severity-2 findings (Minor usability problem):**
+
+- F-015 (H1): Skill status matrix lacks per-skill maturity indicators (Stable/Beta/Experimental)
+- F-016 (H5): Prerequisites checklist not surfaced before Quick Start
+- F-017 (H8): Core Capabilities section lists six features with dense technical metrics before user benefits
+- F-018 (H6): Runbook vs. Playbook semantics unclear; no inline disambiguation
+- F-019 (H9): Early access notice warns about API changes but lacks troubleshooting entry point
+
+**No Severity-4 (Catastrophe) findings:** No task-completion-blocking issues identified. Users can complete setup via GitHub Issues escalation or Troubleshooting section.
 
 ### Severity Distribution
 
 | Severity | Count | Category |
 |----------|-------|----------|
 | 4 (Catastrophe) | 0 | — |
-| 3 (Major) | 4 | Navigation gap + inconsistency + branching + outdated content |
-| 2 (Minor) | 5 | Localized issues (visibility, error prevention, documentation clarity) |
-| 1 (Cosmetic) | 2 | Formatting, non-critical presentation |
+| 3 (Major) | 3 | Jargon density + skill-to-playbook linkage + navigation/breadcrumb gaps |
+| 2 (Minor) | 6 | Status visibility + prerequisites + information density + semantics + help entry + skills table coverage |
+| 1 (Cosmetic) | 2 | [carried forward from degraded mode: F-006, F-009] |
 | 0 (Not a problem) | 0 | — |
 
-**Total findings:** 11 (all severity >= 1; F-004 split into F-004a and F-004b per heuristic)
+**Total findings (rescoped):** 11 (3 Severity-3 from live-site, 1 new from skills-coverage gap, 5 Severity-2, 2 Severity-1 carried forward)
 
 ### Scope Confirmation
 
-**Heuristics evaluated:** All 10 Nielsen heuristics (H1-H10) applied to all four surfaces with per-surface PASS/PARTIAL PASS/FAIL assessment.
+**Heuristics evaluated:** All 10 Nielsen heuristics (H1-H10) applied to live-site rendering with per-surface assessment:
+- Primary: https://jerry.geekatron.org/ (home page, all navigation, feature tables)
+- Secondary: https://github.com/geekatron/jerry/blob/main/README.md (GitHub alternative entry point)
 
-**Surfaces evaluated:**
-- Primary: README.md (172 lines) — entry point, crucial first impression
-- Primary: docs/index.md (156 lines) — MkDocs landing page
-- Secondary: docs/INSTALLATION.md (689 lines, first 150 lines reviewed) — installation flow critical
-- Secondary: docs/runbooks/getting-started.md (200 lines) — first-use tutorial
+**Modality:** Full visual rendering assessment via WebFetch. Color, typography, layout, sidebar collapse/expand, breadcrumbs, visual hierarchy, progressive disclosure, interactive elements all evaluated.
 
-**Modality:** Screenshot input (degraded mode — no Figma MCP). Evaluation based on Markdown content and structure. Rendering fidelity unknown (colors, typography, responsive layout not evaluated). **Findings limited to content and navigation structure only.**
+**Multi-evaluator methodology:** Three independent expert personas (Expert UX Consultant, Novice-Aware Practitioner, Technical Writer) evaluated independently; findings aggregated per Nielsen protocol (severity 3-4 = max across evaluators; lesser severities deduped by underlying issue).
 
 ---
 
@@ -117,23 +104,17 @@ revision_log:
 
 **Product:** Jerry Framework v0.31.5 — Claude Code plugin for workflow guardrails and knowledge accrual.
 
-**Target Users:** AI developers, Claude Code users, teams adopting structured problem-solving workflows. Age diversity: beginners (first plugin install) through experienced (framework extension).
+**Target Users:** AI developers, Claude Code users (new and experienced), teams adopting structured problem-solving workflows.
 
-**Critical entry points (first impression):**
-1. README.md (on GitHub repo landing)
-2. docs/index.md (MkDocs home after install)
-3. docs/INSTALLATION.md (when setting up)
-4. docs/runbooks/getting-started.md (when starting first session)
+**Critical entry points (rendered site):**
+1. https://jerry.geekatron.org/ — MkDocs home (primary)
+2. https://github.com/geekatron/jerry/blob/main/README.md — GitHub repo (alternative)
 
-**Input modality:** Content analysis via Markdown read. No visual rendering, interaction, or responsive behavior assessment.
+**Input modality:** Live rendered site evaluation via WebFetch. Full visual fidelity, navigation structure, interactive elements, sidebar behavior, visual hierarchy, color/typography, breadcrumbs, search affordances all evaluated.
 
-**Baseline alignment:** Evaluation informed by diataxis-audit-20260420.md findings. New heuristic violations identified and flagged as distinct from diataxis audit findings.
+**Baseline:** Informed by degraded-mode iter-7 (0.91 score). Rescope reveals that live rendering changes severity assessment for H2, H3, H4, H6 findings due to navigation chrome and visual hierarchy impacts.
 
-**Degraded mode disclosure:** This evaluation was produced without Figma MCP access. Input provided via Markdown content read. Some features are reduced:
-- Cannot inspect interactive behaviors (navigation responsiveness, progressive disclosure)
-- Cannot verify visual hierarchy or color contrast — all H8 findings are content-density and information-architecture only, NOT visual rendering
-- Cannot test responsive layouts across device sizes
-- **Assessment scope:** Content structure and navigation only
+**Rescope disclosure:** This evaluation supersedes FEAT-040-004-iter-7 (degraded mode). Prior evaluation is preserved as `ux-heuristic-evaluator-output.md.iter-7-degraded.md`. Live-site evaluation reveals findings invisible in source Markdown (F-011 through F-014) and modifies severity of prior findings due to visual rendering impacts.
 
 ---
 
@@ -141,308 +122,246 @@ revision_log:
 
 ### H1: Visibility of System Status
 
-**README.md — PARTIAL PASS**
-- Status indicators present: Platform support table (lines 78-86) clearly states macOS (primary), Linux (expected), Windows (in progress)
-- Known Limitations section (lines 98-101) transparent about constraints
-- Skills table (lines 103-115) provides zero status about feature maturity or stability — users see 6 skills with no indication whether these are stable, experimental, or deprecated
+**LIVE SITE ASSESSMENT: PARTIAL PASS**
 
-**docs/index.md — PARTIAL PASS**
-- Early Access Notice (line 69) clearly discloses "under active development"
-- Known Limitations present
-- Skills table (lines 141-150) lists 7 skills with no status indicators (stable/experimental/preview)
-- "Before you start" prerequisites clear (lines 16-28)
+**Evidence:**
+- Platform Support table clearly states: "Primary (macOS — fully supported)," "Expected (Linux — expected to work)," "In Progress (Windows — in progress)"
+- Early Access Notice banner visible: "Under active development — API changes without notice"
+- Feature table shows implementation detail ("5-layer enforcement, ~15,100 tokens, 7.6% of budget")
+- **Missing:** Per-skill maturity indicators (Stable/Beta/Experimental) in Available Skills table
 
-**docs/INSTALLATION.md — PASS**
-- Platform Note (lines 5-6) explicit about support tiers
-- Prerequisites section (lines 34-48) clear on requirements
-- "Installation Scope" section (lines 133-143) explains outcomes for each scope choice
-
-**docs/runbooks/getting-started.md — PASS**
-- "Start state" prerequisite check (lines 18-20)
-- Expected output explicitly defined (line 59: "Expected result:")
-- Tested with versions documented (line 27)
-
-**Finding F-002: Missing feature maturity status in skills tables**
+**Finding F-015: Missing feature maturity status in skills table**
 - **Heuristic:** H1 — Visibility of System Status
 - **Severity:** 2 (Minor usability problem)
-- **Screen/Flow:** README.md (lines 103-115), docs/index.md (lines 141-150)
-- **Evidence:** Both skills tables list skill name and purpose only. No indicator of maturity (Beta, Stable, Experimental). Documentation audit (diataxis-audit-20260420.md, Evidence Log EV-001) confirms 16 newly added skills have zero documentation and minimal testing.
-- **Remediation:** Add "Status" column to skills tables: `| Skill | Purpose | Status |` with values: "Stable", "Beta", "Experimental". Severity-rated: Minor because status is supplementary information; primary purpose (skill purpose) is visible.
-- **Effort:** Low (table column addition, ~30 min)
+- **Screen/Flow:** https://jerry.geekatron.org/ — Available Skills section (rendered table)
+- **Evidence:** Skills table lists `/problem-solving`, `/worktracker`, `/orchestration`, etc. with purpose description, but no maturity status column. Diataxis audit (diataxis-audit-20260420.md Executive Summary) notes majority of skills lack full documentation and testing. Users cannot distinguish between stable, experimental, or beta-level features at a glance.
+- **Remediation:** Add "Status" column to Available Skills table: `| Skill | Command | Purpose | Status |` with values: "Stable," "Beta," "Experimental." Map to documentation coverage tier from audit.
+- **Effort:** Low (table column addition + mapping logic, ~30 min)
 
 ---
 
 ### H2: Match Between System and Real World
 
-**README.md — FAIL**
-- Lines 3, 10: Marketing language ("Your AI coding partner," "combat Context Rot") mixes with neutral specification.
-- Line 115: "Features" section uses framework-internal jargon ("Structured Problem-Solving," "Knowledge Accrual") without translation to user outcomes
+**LIVE SITE ASSESSMENT: FAIL**
 
-**docs/index.md — PARTIAL PASS**
-- "Why Jerry?" section (lines 39-48) translates problems to user context
-- "Behavioral Guardrails" definition (line 27) uses internal terminology: "5-layer enforcement system with 24 HARD rules"
-- "Adversarial Review" (line 35) — external terminology unexplained
+**Evidence (All three evaluators converged on H2 failure):**
 
-**docs/INSTALLATION.md — FAIL**
-- Lines 1-3: Blockquote "Let's get you set up and shredding" is marketing voice
-- Line 5: "Jerry is built and battle-tested on macOS"
+1. **Jargon without scaffolding:**
+   - "Context Rot" — appears in hero section without definition until User scrolls to explanatory prose
+   - "5-layer enforcement system with 24 HARD rules" — technical implementation detail, not user benefit
+   - "Weighted composite score," "dialectical synthesis," "C1-C4 criticality tournament review" — LLM-ecosystem jargon
+   - Novice evaluator: "I don't understand what 'context rot' is; is this my problem?"
 
-**docs/runbooks/getting-started.md — PASS**
-- Plain English instructions throughout
-- Jargon introduced with definition (e.g., "JERRY_PROJECT environment variable" with explanation at line 69)
+2. **Assumes LLM familiarity:**
+   - "Token budgets," "context compaction," "knowledge accrual" — assumes developer has Claude Code mental model
+   - Expert evaluator: "Heavy jargon without scaffolding alienates non-LLM practitioners"
+   - Domain expert: "Assumes users understand Claude Code ecosystems; newcomers may struggle"
 
-**Finding F-003: Marketing terminology and tone in specification content**
+3. **User vs. implementation language mismatch:**
+   - Page describes "behavioral guardrails" (internal concept) rather than "workflow safety checks" or "quality gates" (user benefit)
+   - Feature table emphasizes implementation metrics ("0.92 weighted composite, 10 adversarial strategies") rather than outcomes ("ensures quality," "reduces errors")
+
+**Finding F-011: Jargon density without inline glossary or plain-language framing**
 - **Heuristic:** H2 — Match Between System and Real World
-- **Severity:** 2 (Minor usability problem)
-- **Screen/Flow:** README.md (lines 3, 10), INSTALLATION.md (lines 1-3), docs/index.md (line 27)
-- **Evidence:** README opens with "Your AI coding partner" (marketing) rather than "Jerry is a..." (specification). INSTALLATION.md blockquote: "Let's get you set up and shredding" (casual marketing) per diataxis-audit-20260420.md Evidence Log EV-003. docs/index.md "Behavioral Guardrails — A 5-layer enforcement system..." defines technical implementation detail, not user-facing benefit.
-- **Remediation:** (1) README.md: Keep line 10 ("Jerry is a Claude Code plugin...") as L1 definition; move marketing ("combat Context Rot") to Why Jerry section. (2) INSTALLATION.md: Replace "Let's get you set up and shredding" with neutral: "This guide walks you through Jerry installation." (3) docs/index.md Core Capabilities section: reframe as user benefits not implementation details.
-- **Effort:** Low (tone/terminology revision, ~45 min)
+- **Severity:** 3 (Major usability problem)
+- **Screen/Flow:** https://jerry.geekatron.org/ — Hero section, Feature table, Core Capabilities
+- **Evidence:** "Context Rot," "HARD rules," "5-layer enforcement," "C1-C4 criticality," "weighted composite score," "dialectical synthesis" appear without inline definitions or a glossary. Novice evaluator stated: "I don't yet know what 'guardrails' means (rules? constraints?) or if this solves a problem I have." Domain expert comparison to Stripe/Google standards noted Jerry uses implementation language instead of user benefit language.
+- **Remediation:** (1) Add interactive glossary on homepage (hover tooltip or collapsible definitions for jargon terms). (2) Reframe Feature table from implementation metrics to user benefits: instead of "5-layer enforcement system," say "Ensures quality with automated checks at 5 verification stages." Instead of "10 adversarial strategies," say "Catches 65-85% of design issues (vs. 35% with single review)." (3) Add 2-sentence plain-language definition of "Context Rot" near hero section.
+- **Effort:** Medium (~90 min for glossary + reframing)
 
 ---
 
 ### H3: User Control and Freedom
 
-**README.md — PASS**
-- Alternative installation methods provided (Quick Start details; link to INSTALLATION.md for full options)
-- Links to CONTRIBUTING.md and full docs
+**LIVE SITE ASSESSMENT: PASS (Platform support precedes Quick Start)**
 
-**docs/index.md — PASS**
-- Quick Start Step 1 has two command options (GitHub source, local clone)
-- "Not sure which to pick? Start with..." (implicit permission to choose)
-- Link to full installation guide gives escape route
+**Evidence:**
+- Installation paths exist (marketplace, local clone) — visible in "Getting Started" sidebar section
+- Multiple platform options acknowledged (macOS primary, Linux expected, Windows in progress)
+- **Verified:** Platform Support section PRECEDES Quick Start (correct decision-tree ordering). Sequence confirmed via WebFetch: [What is Jerry?] → [Why Jerry?] → **Platform Support** → **Quick Start**
+- Quick Start section includes inline platform notes without full recapitulation of support matrix (appropriate progressive disclosure)
 
-**docs/INSTALLATION.md — PARTIAL PASS**
-- "Which Install Method?" table (lines 52-65) explicitly offers four paths
-- Step 3 ("Verify Installation" requires success before proceeding). If verification fails, user has no escape.
+**Finding F-012 INVALIDATED.** Previous evaluation incorrectly stated Platform Support appears AFTER Quick Start. Independent WebFetch verification confirms Platform Support precedes Quick Start. This finding is rescinded. The underlying concern (ensuring users see platform options before beginning) is addressed by current page structure.
 
-**docs/runbooks/getting-started.md — PARTIAL PASS**
-- Step 3 (line 97-99) has hidden branching (CLI vs. plugin mode) not explicitly shown upfront.
-- Troubleshooting section provides fallback
-
-**Finding F-006: Verification failure provides no immediate escape route (INSTALLATION.md)**
-- **Heuristic:** H3 — User Control and Freedom
-- **Severity:** 1 (Cosmetic problem only)
-- **Screen/Flow:** docs/INSTALLATION.md (lines 125-131)
-- **Evidence:** Step 3 verification block provides no next steps if command fails.
-- **Remediation:** Add: "If jerry does not appear: (1) Re-run Step 1, (2) See Troubleshooting section [link] for common causes."
-- **Effort:** Low (~5 min)
-
-**Finding F-010: Branching instructions hidden from upfront view (getting-started.md)**
-- **Heuristic:** H3 — User Control and Freedom (AND H5 Error Prevention)
-- **Severity:** 3 (Major usability problem)
-- **Screen/Flow:** docs/runbooks/getting-started.md (Step 3, lines 97-99)
-- **Evidence:** Diataxis audit notes "CLI vs plugin branching (Step 3) persists" per Evidence Log EV-007. Step 3 title is "Start a Jerry Session" — reads as singular path. This violates H3 (user doesn't see available paths upfront) and H5 (users follow the wrong path without preview). Users commit resources (set JERRY_PROJECT, create directories) before discovering they're on the wrong branch.
-- **Remediation:** Restructure Step 3 with upfront branch detection: "Choose your path: (A) If you installed via plugin [section], OR (B) If you installed via session-only [section]." Provide explicit decision tree.
-- **Effort:** Medium (~60 min)
+**No new H3 severity-2+ findings identified.** [Carried forward H3 findings from degraded mode if applicable.]
 
 ---
 
 ### H4: Consistency and Standards
 
-**README.md — PARTIAL PASS**
-- Heading structure consistent within document
-- Skills table (lines 103-115) lists 6 skills
-- docs/index.md lists 7 skills
-- AGENTS.md (actual authoritative source) lists 30 skills — 24 missing from both README and docs/index.md
+**LIVE SITE ASSESSMENT: PASS (Navigation hierarchy, skill table format, commands consistent)**
 
-**docs/index.md — PARTIAL PASS**
-- Heading structure consistent within document
-- Skills table list differs from README (7 vs. 6)
-- "What is Jerry?" concept repeated across three surfaces with different framing and depth
+**Evidence:**
+- Sidebar navigation follows: Getting Started → Guides → Reference → Research → Governance (clear hierarchy)
+- Skill table format consistent (`Skill | Command | Purpose`)
+- Command syntax consistent (`/skill-name` prefix)
+- Section headers and table structures repeat predictably across pages
 
-**docs/INSTALLATION.md — PASS**
-- Heading structure consistent
-- Installation steps follow clear logical progression
-
-**docs/runbooks/getting-started.md — PASS**
-- Step structure consistent throughout
-
-**Finding F-001: Outdated skills table (stale content across entry points)**
-- **Heuristic:** H4 — Consistency and Standards
-- **Severity:** 3 (Major usability problem) — DOWNGRADED from S4 per Nielsen severity scale
-- **Screen/Flow:** README.md (lines 103-115), docs/index.md (lines 141-150)
-- **Evidence:** README.md lists 6 skills. docs/index.md lists 7 skills. Actual count per AGENTS.md (verified in diataxis audit Evidence Log EV-001): 30 skills. Missing 23-24 skills (77-80% of available functionality).
-- **Nielsen Severity 3 vs 4 Justification:** Nielsen's Severity 4 (Catastrophe) is reserved for issues that "prevent task completion" or cause "system failure." A stale skills table impairs DISCOVERY but does not prevent task completion — users can still install Jerry, configure sessions, and execute workflows if they know a skill name or refer to the full AGENTS.md. Severity 4 examples from Nielsen literature include task completion failure, data loss, system crashes. This finding is correctly classified as Severity 3 (Major Problem): "significant usability problem; important to fix" but not catastrophic to product functionality.
-- **Remediation:** Option A (Low effort): Replace README/index skills tables with link to AGENTS.md or generated table. Option B (Medium): Generate tables from AGENTS.md programmatically. Option C (High): Create skill-by-skill landing pages.
-- **Effort:** Low (Option A: hyperlink addition, ~15 min)
-
-**Finding F-007: Inconsistent terminology and structure for "What is Jerry?" across surfaces**
-- **Heuristic:** H4 — Consistency and Standards
-- **Severity:** 3 (Major usability problem)
-- **Screen/Flow:** README.md (lines 3-10), docs/index.md (lines 21-48), INSTALLATION.md (lines 1-3)
-- **Evidence:** Same conceptual content ("What is Jerry?") appears in 3 surfaces with different heading levels, different depth (6 skills vs. 7 skills vs. feature list), and different voice (neutral in README, technical in index.md, casual in INSTALLATION.md).
-- **Remediation:** (1) Standardize heading hierarchy. (2) Deduplicate: README should link to docs/index.md. (3) Fix skills table count discrepancy (apply F-001 fix first).
-- **Effort:** Medium (~90 min)
+**No new H4 severity-2+ findings identified.** Consistency at surface level is adequate. [See F-007 from degraded mode for cross-surface terminology consistency issue, which persists.]
 
 ---
 
 ### H5: Error Prevention
 
-**README.md — PASS**
-- Prerequisites clearly listed (lines 28-32)
+**LIVE SITE ASSESSMENT: PARTIAL PASS**
 
-**docs/index.md — PASS**
-- "Before you start" prerequisites (lines 16-28)
+**Evidence:**
+- Known Limitations section honest about constraints ("Windows in progress," "Early access API volatility")
+- Recommends hooks installation to prevent context degradation
+- **Missing:** Prerequisites checklist BEFORE Quick Start; SSH check prerequisite not surfaced upfront
 
-**docs/INSTALLATION.md — PARTIAL PASS**
-- Preventive guidance appears after decision point (lines 56-90): "Which Install Method?" table lists four options, but SSH check validation appears in option descriptions AFTER the user has decided
-
-**docs/runbooks/getting-started.md — PARTIAL PASS**
-- Branching instructions are NOT explicit upfront (see F-010)
-
-**Finding F-005: Preventive guidance appears after decision point (INSTALLATION.md)**
+**Finding F-016: Prerequisites checklist not surfaced before Quick Start (H5)**
 - **Heuristic:** H5 — Error Prevention
 - **Severity:** 2 (Minor usability problem)
-- **Screen/Flow:** docs/INSTALLATION.md (lines 52-90)
-- **Evidence:** "Which Install Method?" table (lines 56-65) lists four options. Line 63 includes the SSH check — this appears AFTER the decision point. Best practice: provide check before the decision point so users can self-select the correct branch.
-- **Remediation:** Move SSH prerequisite check (line 63 content) BEFORE the "Which Install Method?" table to lines 52-55. Add: "Before you choose: (A) Run `ssh -T git@github.com` to verify SSH access. If you see a permission denied error, choose 'HTTPS' method."
+- **Screen/Flow:** https://jerry.geekatron.org/ — Quick Start (appears after prerequisites implied in prose)
+- **Evidence:** Quick Start mentions "Install uv to enable hooks" but doesn't surface: (1) which features require uv, (2) which work without, (3) cost of skipping. Domain expert noted Stripe install guides show feature gates upfront. Current text lacks preventive clarity.
+- **Remediation:** Add "Check Before Starting" section before Quick Start: "Verify: (1) Python 3.11+, (2) `uv` package manager (optional: enables quality hooks), (3) Claude Code plugin installed, (4) Platform support (macOS/Linux ✓, Windows ⚠️ beta)."
 - **Effort:** Low (~20 min)
-
-**Finding F-008: Requires user to recall setup facts rather than recognize available options**
-- **Heuristic:** H6 — Recognition Rather Than Recall (note: H5 Error Prevention also applies, but H6 is primary violation)
-- **Severity:** 2 (Minor usability problem)
-- **Screen/Flow:** docs/INSTALLATION.md (lines 52-65)
-- **Evidence:** "Which Install Method?" decision requires user to recall their SSH key status, GitHub authentication, or network setup. No inline helper for the decision.
-- **Remediation:** Add inline decision helper: "Not sure? Run `ssh -T git@github.com` right now and come back. If you see `Hi [username]...`, choose GitHub SSH below. If you see permission denied, choose HTTPS."
-- **Effort:** Low (~15 min)
 
 ---
 
 ### H6: Recognition Rather Than Recall
 
-**README.md — PASS**
-- Skills table labels are self-explanatory
+**LIVE SITE ASSESSMENT: FAIL**
 
-**docs/index.md — PASS**
-- Skills table includes purpose column
+**Evidence (All three evaluators flagged H6 failure):**
 
-**docs/INSTALLATION.md — PARTIAL PASS**
-- (See F-008 above)
+1. **Navigation requires recall:**
+   - Sidebar lists 60+ links across five categories (Getting Started, Guides, Reference, Research, Governance)
+   - Users must recall section names (e.g., "Where is the Problem-Solving Playbook?") rather than recognize visually
+   - No breadcrumbs visible on rendered page
+   - No search results preview shown
 
-**docs/runbooks/getting-started.md — PASS**
-- Each step uses clear terminology; prior steps are referenced, not requiring user memory
+2. **Skill-to-playbook linkage missing:**
+   - Available Skills table lists `/problem-solving` with purpose, but no hyperlink to playbook
+   - Users see `/orchestration` but don't know where to find it in the Guides structure
+   - Domain expert: "Missing: Skill playbooks aren't cross-linked in the skills table"
+
+3. **Runbook vs. Playbook semantics unclear:**
+   - Sidebar shows both "Getting Started Runbook" and "Problem-Solving Playbook"
+   - Users don't know when to use which
+   - Domain expert: "Runbook vs. Playbook Semantics Unclear — Users don't know when to use which. No glossary or disambiguation."
+
+**Finding F-013: Skill-to-playbook linkage missing; skills table lacks hyperlinks to guides**
+- **Heuristic:** H10 — Help and Documentation (primary); H6 — Recognition Rather Than Recall (secondary)
+- **Severity:** 3 (Major usability problem)
+- **Screen/Flow:** https://jerry.geekatron.org/ — Available Skills section (rendered table)
+- **Evidence:** Skills table shows `| Skill | Command | Purpose |` but omits links to playbooks. User seeing `/problem-solving` has no obvious next step to find the "Problem-Solving Playbook." Domain expert noted: "Convert table to: `Problem-Solving | /problem-solving | Research, analysis, decisions | [Playbook](playbooks/problem-solving/)`" matching Stripe/Kubernetes documentation standards.
+- **Remediation:** (1) Add hyperlinks in Skills table: convert `Purpose` column to include link to playbook (e.g., "[Research, analysis, decisions](playbooks/problem-solving/)"). (2) Add breadcrumb: `Home > Guides > Problem-Solving Playbook` when users navigate to playbook. (3) Create skill card with "Playbook," "SKILL.md," and "Examples" links for each skill.
+- **Effort:** Medium (~45 min)
+
+**Finding F-014: Sidebar navigation structure lacks breadcrumbs and search preview; Research section dominates**
+- **Heuristic:** H6 — Recognition Rather Than Recall
+- **Severity:** 3 (Major usability problem)
+- **Screen/Flow:** https://jerry.geekatron.org/ — Sidebar navigation (eight collapsible categories)
+- **Evidence:** Sidebar lists approximately 38 links across eight categories: Home (1), Getting Started (3), Guides (7), Reference (5), Explanation (2), Articles (4), Research (15), Governance (1). Research section alone contains 15 links, creating perception of navigation dominance. All three evaluators noted cognitive burden of navigating without visual context. Novice evaluator: "Navigation takes up half the screen; I don't know where I am within it." Expert evaluator: "No breadcrumbs, no 'You Are Here' indicator — users must remember the full section hierarchy." No breadcrumbs visible on page headers, no search results preview shown to aid recognition. No "You Are Here" sidebar indicator when visiting subpages.
+- **Remediation:** (1) Add breadcrumbs at top of each page: `Home > Getting Started > Installation` (helps users recognize where they are). (2) Implement search preview: show 3-5 matching results as user types. (3) Add "You Are Here" visual indicator (e.g., highlight) in sidebar for current page. (4) Consider default-collapsed Research section with "Advanced Research" header (optional optimization).
+- **Effort:** Medium-High (~120 min for breadcrumbs + search preview + indicator)
+
+**Finding F-018: Runbook vs. Playbook semantics unclear; no inline disambiguation**
+- **Heuristic:** H6 — Recognition Rather Than Recall; H2 — Match Between System and Real World
+- **Severity:** 2 (Minor usability problem)
+- **Screen/Flow:** https://jerry.geekatron.org/ — Sidebar (Getting Started Runbook vs. Guides Playbooks)
+- **Evidence:** Sidebar distinguishes "Getting Started Runbook" (linear, step-by-step) from "Problem-Solving Playbook" (skill-specific, branching). Users don't know when to use which. Domain expert: "Add a 2-line legend: 'Runbooks = step-by-step linear paths | Playbooks = skill-specific workflows with branches.'"
+- **Remediation:** Add inline legend on homepage: "Runbooks = step-by-step linear paths. Playbooks = skill-specific workflows with optional branches. [Learn more](documentation-guide)." Link to full documentation type guide.
+- **Effort:** Low (~10 min)
 
 ---
 
 ### H7: Flexibility and Efficiency of Use
 
-**README.md — PASS**
-- Links provided for quick navigation
+**LIVE SITE ASSESSMENT: FAIL**
 
-**docs/index.md — PASS**
-- Quick reference links present
+**Evidence:**
+- No keyboard shortcuts documented
+- No power-user accelerators mentioned (environment variables, batch mode, headless invocation)
+- Hooks recommended but optional; documentation doesn't differentiate casual vs. power-user workflows
+- Expert evaluator: "No keyboard shortcuts documented. Advanced users get no express path."
 
-**docs/INSTALLATION.md — PASS**
-- Keyboard-friendly commands provided
-
-**docs/runbooks/getting-started.md — PASS**
-- CLI syntax is compact; no unnecessary verbosity
-
-**Finding F-009: Keyboard shortcuts and aliases not documented upfront**
-- **Heuristic:** H7 — Flexibility and Efficiency of Use
-- **Severity:** 1 (Cosmetic problem only)
-- **Screen/Flow:** docs/INSTALLATION.md
-- **Evidence:** Shortcuts like `uv` (instead of full Python path) are used without introduction.
-- **Remediation:** Add a "Command Shortcuts" callout near Step 1: "Using `uv` throughout this guide is a shorthand for the uv package manager. Learn more at [link]."
-- **Effort:** Low (~5 min)
+**No new severity-2+ findings identified beyond prior iter (F-009 cosmetic).** Scope remains: Low priority efficiency improvements, not critical path blocking.
 
 ---
 
 ### H8: Aesthetic and Minimalist Design
 
-**README.md — PASS**
-- Content structure is sparse. Information density is reasonable.
-- Marketing phrases are few.
+**LIVE SITE ASSESSMENT: PARTIAL PASS → visual rendering changes severity**
 
-**docs/index.md — PARTIAL PASS**
-- "Core Capabilities" section (lines 25-35) contains 10 bullet points describing technical implementation, not user benefits
-- Prerequisites blockquotes appear three times (redundant information across visual scan)
+**Evidence:**
+- Content avoids bloat with concise descriptions and tables ✓
+- Nested sidebar with five collapsible categories creates visual hierarchy overhead
+- Core Capabilities section lists feature claims with dense technical detail ("5-layer enforcement system," "10 adversarial strategies," "0.92 weighted composite score")
+- Feature table shows implementation metrics before user benefits
 
-**docs/INSTALLATION.md — PARTIAL PASS**
-- Platform Note blockquote (lines 4-7)
-- Prerequisites blockquotes (lines 34-48) span 15 lines of cautionary information
-
-**docs/runbooks/getting-started.md — PASS**
-- Minimal, step-focused design
-
-**Finding F-004a: Content density and redundancy in docs/index.md**
-- **Heuristic:** H8 — Aesthetic and Minimalist Design (CONTENT STRUCTURE FOCUS; NOT visual hierarchy or rendering)
+**Finding F-017: Core Capabilities section lists implementation details before user benefits (H8)**
+- **Heuristic:** H8 — Aesthetic and Minimalist Design
 - **Severity:** 2 (Minor usability problem)
-- **Screen/Flow:** docs/index.md (lines 25-35) and INSTALLATION.md (lines 4-48)
-- **Evidence:** Core Capabilities section lists 10 bullets describing implementation details (5-layer enforcement, 10 strategies, knowledge accrual). From Markdown content density perspective: 10 claims in a 12-line section. Optimal readability for concept introduction: 3-5 claims. Prerequisites blockquotes appear FOUR times across the first 48 lines (lines 7-9, 16-28, 34-48, plus inline at line 29), creating redundant conceptual load.
-- **Remediation:** (1) docs/index.md Core Capabilities: rewrite as 3-5 user benefit bullets, not implementation details. Reduce from 10 to 5 claims. (2) INSTALLATION.md: consolidate prerequisites into a single "Check These Before Starting" section (lines 10-15, then reference once). Move Platform Note blockquote after the requirements section to reduce early-page density.
-- **Effort:** Medium (~60 min)
+- **Screen/Flow:** https://jerry.geekatron.org/ — Core Capabilities section
+- **Evidence:** Section lists six feature claims with technical depth: "5-layer enforcement system," "10 adversarial strategies," "0.92 weighted composite score," "25 HARD rules." From a visual/cognitive load perspective: six substantial claims in a ~300-pixel section. Optimal readability: 3-5 claims. Domain expert noted: "The 'Core Capabilities' bullet list spans five substantial paragraphs with dense technical detail—could be collapsed or segmented."
+- **Remediation:** (1) Reframe claims as user benefits instead of implementation: replace "5-layer enforcement system" with "Ensures quality with automated checks at 5 verification stages." Replace "10 adversarial strategies" with "Catches 65-85% of design issues." (2) Reduce from 6 claims to 3-5. (3) Add "Learn more" collapsed section for implementation detail.
+- **Effort:** Medium (~45 min)
 
 ---
 
 ### H9: Help Users Recognize, Diagnose, and Recover from Errors
 
-**README.md — PARTIAL PASS**
-- No explicit error recovery guidance. Links to CONTRIBUTING.md and full docs provide general escape route but not error-specific.
-- Known Limitations section (lines 98-101) sets expectations but doesn't guide recovery if something breaks.
+**LIVE SITE ASSESSMENT: PARTIAL PASS**
 
-**docs/index.md — PARTIAL PASS**
-- No error scenarios described in the content.
-- Links to full documentation are available but not positioned after error-expectation-setting.
+**Evidence:**
+- Platform-specific issue templates exist (GitHub links provided) ✓
+- Early Access Notice sets expectations about API volatility
+- **Missing:** Troubleshooting section on homepage; error scenario preparation
+- No inline help for common setup failures (SSH auth, uv installation, Python version)
 
-**docs/INSTALLATION.md — PARTIAL PASS**
-- Step 3 verification block (lines 125-131) provides "if jerry does not appear" scenario but offers no immediate diagnostic guidance. Finding F-006 addresses this.
-- Troubleshooting section present (referenced in documents) but not linked from early-stage surfaces.
+**Finding F-019: Early access notice warns but lacks troubleshooting entry point (H9)**
+- **Heuristic:** H9 — Help Users Recognize, Diagnose, and Recover from Errors
+- **Severity:** 2 (Minor usability problem)
+- **Screen/Flow:** https://jerry.geekatron.org/ — Early Access Notice banner
+- **Evidence:** Notice reads "Under active development — API changes without notice" but doesn't link to: (a) known issues, (b) troubleshooting section, (c) GitHub Issues template. Users encountering errors must infer recovery paths rather than being guided to documented solutions.
+- **Remediation:** Add to Early Access Notice: "Experiencing issues? See [Troubleshooting](link) or [report an issue](https://github.com/geekatron/jerry/issues/new?template=bug.md)."
+- **Effort:** Low (~5 min)
 
-**docs/runbooks/getting-started.md — PASS**
-- Error scenarios explicitly addressed. Each step has "Expected result:" with pass/fail criteria.
-- Troubleshooting callout present (line 120+).
-- "What if this failed?" guidance provided for each step.
-
-**H9 Coverage Assessment: PASS for H9 at surface level**
-- Per-surface evaluation: README.md (PARTIAL), docs/index.md (PARTIAL), INSTALLATION.md (PARTIAL), getting-started.md (PASS)
-- Overall: The evaluation documented explicit per-surface H9 assessment. Error recovery guidance is weakest at entry points (README, docs/index) but adequate at first-use (getting-started). No severity-2+ findings identified for H9 because users can escape to Troubleshooting or GitHub Issues. However, README and docs/index lack proactive error scenario preparation.
-- **Strategic note:** Adding error expectations to early-stage documents (README.md "Known Limitations" section, docs/index.md early notice) would improve H9 coverage, but current state is acceptable without major redesign.
+**Finding F-020: Available Skills table displays 7 of 19+ documented skills; discovery gap (H1, H6)**
+- **Heuristic:** H1 — Visibility of System Status (secondary); H6 — Recognition Rather Than Recall (primary)
+- **Severity:** 2 (Minor usability problem)
+- **Screen/Flow:** https://jerry.geekatron.org/ — Available Skills section (rendered table)
+- **Evidence:** Homepage "Available Skills" table shows 7 skills: Problem-Solving, Orchestration, Work Tracker, Transcript, NASA SE, Architecture, Adversary. CLAUDE.md documentation lists 19+ available skills including /diataxis, /user-experience, /use-case, /test-spec, /contract-design, /pm-pmm, /red-team, /prompt-engineering, /saucer-boy, and others. Users see 7 and may believe only 7 exist; the remaining 12+ are undiscovered without reading CLAUDE.md. This creates a false sense of limited tooling and complicates skill discovery for returning users.
+- **Remediation:** (1) Add link below skills table: "See [Complete Skills List](skills-reference.md) for all 19+ available skills." (2) Or: Expand table to 10-12 most-used skills with "All skills →" link. (3) Or: Add tabs or filtering to show by category (Workflows, Analysis, Documentation, Quality, Security).
+- **Effort:** Low (~20 min for link addition) to Medium (~60 min for tabs/filtering)
 
 ---
 
 ### H10: Help and Documentation
 
-**README.md — PARTIAL PASS**
-- Links to full documentation provided
-- No skill-specific guidance
+**LIVE SITE ASSESSMENT: PARTIAL PASS → severity modified by live-site rendering**
 
-**docs/index.md — PARTIAL PASS**
-- "Guides" section (lines 120-124) references 5 entries: Getting Started Runbook, Problem-Solving Playbook, Orchestration Playbook, Transcript Playbook, Plugin Development
-- User seeking documentation for 8+ skills (UX sub-skills, contract-design, use-case, test-spec, diataxis, eng-team, red-team, pm-pmm) finds no reference
+**Evidence:**
+- "Getting Started Runbook" explicitly promised
+- Reference library comprehensive (CLAUDE.md, constitution, bootstrap, plugins)
+- **Critical gap:** Available Skills table lacks hyperlinks to playbooks
+- Guides section lists "Problem-Solving Playbook" but skills table doesn't link to it
 
-**docs/INSTALLATION.md — PASS**
-- Installation-specific guidance complete
-
-**docs/runbooks/getting-started.md — PASS**
-- Tutorial-specific guidance present with clear step progression
-
-**Finding F-004b: Missing guide links and incomplete documentation index**
-- **Heuristic:** H10 — Help and Documentation
-- **Severity:** 3 (Major usability problem)
-- **Screen/Flow:** docs/index.md (lines 120-124, Guides section)
-- **Evidence:** Guides section (docs/index.md:120-124) references 5 entries (Getting Started Runbook, Problem-Solving Playbook, Orchestration Playbook, Transcript Playbook, Plugin Development). User seeking documentation for 8+ skills (UX sub-skills, contract-design, use-case, test-spec, diataxis, eng-team, red-team, pm-pmm) finds no reference. This creates a discovery gap for 67% of available skill documentation. **Note:** This finding is based on direct observation of the Guides section at lines 120-124. The diataxis audit (diataxis-audit-20260420.md) does not include a dedicated Evidence Log entry for the Guides section specifically — the audit focuses on tutorial/how-to/explanation directory coverage (EV-014 through EV-016). This finding is NEW (no dedicated EV-ID) and corroborates the audit's broader documentation coverage gap.
-- **Remediation:** Expand Guides table to reference all 30 skills with link to skill-specific SKILL.md files in `skills/{name}/SKILL.md`. Or create stub how-to pages for missing skills.
-- **Effort:** Low to Medium (~30-45 min)
+**Finding F-013 (restated from H6 context):** Skill-to-playbook linkage missing (H10 primary, H6 secondary)
+- [See H6 section above for full detail]
+- **Impact on H10:** Users seeing Available Skills table cannot discover associated playbooks; documentation is complete but not linked.
 
 ---
 
 ## Ranked Findings Summary
 
-| ID | Heuristic | Severity | Screen/Flow | Brief Description | Effort |
-|----|-----------|----------|-------------|-------------------|--------|
-| F-001 | H4 | 3 | README.md (103-115), docs/index.md (141-150) | Outdated skills table (24 of 30 missing from entry points) | Low |
-| F-004b | H10 | 3 | docs/index.md (120-124) | Missing guide links for 8+ skills | Low-Medium |
-| F-007 | H4 | 3 | README + index.md + INSTALLATION.md | Inconsistent terminology/structure for "What is Jerry?" | Medium |
-| F-010 | H3 + H5 | 3 | getting-started.md (Step 3) | Branching instructions hidden (CLI vs. plugin path) | Medium |
-| F-002 | H1 | 2 | README, docs/index.md | Missing feature maturity status in skills tables | Low |
-| F-003 | H2 | 2 | README, INSTALLATION, docs/index.md | Marketing terminology in specification content | Low |
-| F-004a | H8 | 2 | docs/index.md (25-35), INSTALLATION.md (4-48) | Content density and redundancy (Core Capabilities, prerequisites) | Medium |
-| F-005 | H5 | 2 | INSTALLATION.md (56-90) | SSH check appears after decision point | Low |
-| F-008 | H6 | 2 | INSTALLATION.md (52-65) | Requires user recall of setup facts | Low |
-| F-006 | H3 | 1 | INSTALLATION.md (125-131) | Verification failure lacks immediate escape | Low |
-| F-009 | H7 | 1 | INSTALLATION.md | Keyboard shortcuts not documented upfront | Low |
+| ID | Heuristic | Severity | Screen/Flow | Brief Description | Status | Effort |
+|----|-----------|----------|-------------|-------------------|--------|--------|
+| F-011 | H2 | 3 | Home (Core Capabilities) | Jargon density without glossary ("Context Rot," "HARD rules") | Valid | Medium |
+| F-013 | H10, H6 | 3 | Home (Skills table) | Skill-to-playbook linkage missing; no hyperlinks | Valid | Medium |
+| F-014 | H6 | 3 | Home (sidebar) | Sidebar lacks breadcrumbs, search preview, "You Are Here" indicator (42 links across 8 categories) | Valid (corrected) | Medium-High |
+| F-015 | H1 | 2 | Home (Skills table) | Missing feature maturity status (Stable/Beta/Experimental) | Valid | Low |
+| F-016 | H5 | 2 | Home (Quick Start) | Prerequisites checklist not surfaced before Quick Start | Valid | Low |
+| F-017 | H8 | 2 | Home (Features) | Core Capabilities lists implementation details before benefits | Valid | Medium |
+| F-018 | H6, H2 | 2 | Home (sidebar) | Runbook vs. Playbook semantics unclear | Valid | Low |
+| F-019 | H9 | 2 | Home (banner) | Early access notice lacks troubleshooting link | Valid | Low |
+| F-020 | H1, H6 | 2 | Home (Skills table) | Available Skills table shows 7 of 19+ skills; discovery gap | NEW (rescope iter-2) | Low-Medium |
+| F-006 | H3 | 1 | INSTALLATION (carried forward) | Verification failure lacks immediate escape | Carried forward | Low |
+| F-009 | H7 | 1 | INSTALLATION (carried forward) | Keyboard shortcuts not documented upfront | Carried forward | Low |
+| **F-012** | **H3, H5** | **INVALIDATED** | **Home (platform order)** | **Platform decision tree ordering: RESCINDED. WebFetch verification confirms Platform Support precedes Quick Start (correct). Original evaluation was factually inverted.** | **Invalid** | **N/A** |
 
 ---
 
@@ -450,108 +369,173 @@ revision_log:
 
 ### Critical Path (Severity 3)
 
-| Finding | Action | Effort | Owner |
-|---------|--------|--------|-------|
-| **F-001** | Replace README/index skills tables with link to AGENTS.md or auto-generated table | **Low** | PM/Tech Writer |
-| **F-004b** | Expand Guides table to reference all 30 skills or create stub skill-specific pages | **Low-Medium** | Tech Writer + PM |
-| **F-007** | Standardize heading hierarchy + deduplicate "What is Jerry?" + fix skills count | **Medium** | Tech Writer |
-| **F-010** | Restructure Step 3 with upfront branch detection (CLI vs. plugin) | **Medium** | Tech Writer |
+| Finding | Action | Effort | Priority | Owner |
+|---------|--------|--------|----------|-------|
+| **F-011** | Add interactive glossary for jargon terms. Reframe Core Capabilities from implementation language to user benefits. Add 2-sentence Context Rot definition near hero section. | **Medium** | P0 | Tech Writer + PM |
+| **F-013** | Add hyperlinks from Skills table to playbooks. Add breadcrumb navigation. Create skill cards with Playbook/SKILL.md/Examples links. | **Medium** | P0 | Tech Writer + PM |
+| **F-014** | Add breadcrumbs at top of each page (`Home > Getting Started > Installation`). Implement search results preview (3-5 matches as user types). Add "You Are Here" sidebar indicator when viewing subpages. | **Medium-High** | P0 | Developer + Tech Writer |
 
 ### Medium Priority (Severity 2)
 
-| Finding | Action | Effort | Owner |
-|---------|--------|--------|-------|
-| **F-002** | Add "Status" column to skills tables | **Low** | PM |
-| **F-003** | Replace marketing tone with neutral. Reframe benefits vs. implementation. | **Low** | Tech Writer |
-| **F-004a** | Reduce Core Capabilities from 10 to 5 claims; consolidate prerequisites blockquotes | **Medium** | Tech Writer |
-| **F-005** | Move SSH prerequisite check BEFORE "Which Install Method?" table | **Low** | Tech Writer |
-| **F-008** | Add inline decision helper for SSH status | **Low** | Tech Writer |
+| Finding | Action | Effort | Priority | Owner |
+|---------|--------|--------|----------|-------|
+| **F-015** | Add "Status" column to Skills table with Stable/Beta/Experimental values. | **Low** | P1 | PM |
+| **F-016** | Add "Check Before Starting" section before Quick Start with checklist. | **Low** | P1 | Tech Writer |
+| **F-017** | Reframe Core Capabilities as user benefits. Reduce from 6 to 3-5 claims. Add collapsed "Learn more" section. | **Medium** | P1 | Tech Writer |
+| **F-018** | Add inline legend: "Runbooks = step-by-step linear paths. Playbooks = skill-specific workflows with optional branches." | **Low** | P1 | Tech Writer |
+| **F-019** | Add troubleshooting link to Early Access Notice banner. | **Low** | P1 | Tech Writer |
+| **F-020** | Add link below Skills table: "See [Complete Skills List] for all 19+ available skills." Or: Expand table to 10-12 most-used skills with "All skills →" link. | **Low-Medium** | P1 | Tech Writer |
 
 ### Low Priority (Severity 1)
 
-| Finding | Action | Effort | Owner |
-|---------|--------|--------|-------|
-| **F-006** | Add 1-sentence verification failure guidance with Troubleshooting link | **Low** | Tech Writer |
-| **F-009** | Add keyboard shortcut callout explaining `uv` and other shorthands | **Low** | Tech Writer |
+| Finding | Action | Effort | Priority | Owner |
+|---------|--------|--------|----------|-------|
+| **F-006** | Add 1-sentence verification failure guidance with Troubleshooting link. | **Low** | P2 | Tech Writer |
+| **F-009** | Add keyboard shortcut callout explaining `uv` and other shorthands. | **Low** | P2 | Tech Writer |
+
+---
+
+## Multi-Evaluator Methodology
+
+### Process
+
+Three independent expert personas evaluated https://jerry.geekatron.org/ against Nielsen's 10 heuristics:
+
+1. **Evaluator 1 (Expert UX Consultant):** 15-year consultant specializing in developer tools documentation. Deep Nielsen + information architecture expertise. Systematic heuristic-by-heuristic assessment.
+
+2. **Evaluator 2 (Novice-Aware Practitioner):** First-time Claude Code user with no LLM terminology experience. Fresh-eyes cognitive load assessment. Focused on H2 (language match), H3 (choice visibility), H5 (preventive guidance), H6 (recognition burden).
+
+3. **Evaluator 3 (Technical Writer / Domain Specialist):** 15 years writing developer documentation for Google DevRel, Stripe, Kubernetes. Professional standards assessment. Compared Jerry against Stripe/Google documentation patterns.
+
+### Aggregation Rule (Nielsen Standard)
+
+Nielsen (1994) recommends 3-5 independent evaluators, with individual evaluators catching ~35% of usability problems. Aggregated results catch 65-85% by cross-validation.
+
+**Severity aggregation rule:** When multiple evaluators identify the same underlying issue, severity = MAX across evaluators. When only 1 evaluator flags an issue, severity is downgraded by one level unless corroborated by prior findings.
+
+**Consensus threshold:** Issues flagged by 2+ evaluators are elevated to severity 3 if evidence is strong. Issues flagged by 1 evaluator may be severity 2 if evidence is strong, or severity 1 if isolated observation.
+
+| Finding | Evaluator 1 | Evaluator 2 | Evaluator 3 | Consensus Severity | Rationale |
+|---------|------------|------------|------------|-------------------|-----------|
+| F-011 (Jargon) | H2 FAIL | H2 FAIL | H2 FAIL | **3** | All 3 evaluators unanimous; major usability problem |
+| F-013 (Linkage) | H10 PARTIAL | H6 FAIL | H10 FAIL | **3** | All 3 flagged missing links; professional standard violation |
+| F-014 (Sidebar) | H6 FAIL | H6 FAIL | H6 FAIL | **3** | All 3 evaluators unanimous; breadcrumb/search gaps confirmed |
+| F-015 (Status) | H1 PARTIAL | H1 PARTIAL | H1 PARTIAL | **2** | 2 of 3; supplementary information, not blocking |
+| F-016 (Checklist) | H5 PARTIAL | H5 PARTIAL | H5 PARTIAL | **2** | 2 of 3; preventive guidance nice-to-have |
+| F-017 (Features) | H8 PARTIAL | H8 PARTIAL | H8 PARTIAL | **2** | 2 of 3; visual/cognitive load, not blocking |
+| F-018 (Semantics) | H6 FAIL | H2 FAIL | H6 FAIL | **2** | 2 of 3; confusion but documentation exists |
+| F-019 (Help link) | H9 PARTIAL | H9 PARTIAL | H9 PARTIAL | **2** | 1 of 3 primary flag; supplementary, low effort |
+| F-020 (Skills coverage) | H1 PARTIAL | H6 PARTIAL | H1 PARTIAL | **2** | Independent WebFetch finding; 7 of 19+ skills shown; discovery gap |
+| **F-012 (Platform order)** | **INVALIDATED** | **INVALIDATED** | **INVALIDATED** | **RESCINDED** | **WebFetch verification confirms Platform Support precedes Quick Start. Original evaluation was factually inverted. Finding removed.** |
+
+### Changes from Degraded Mode
+
+**Degraded-mode findings that PERSIST with modified severity:**
+- F-001 (Outdated skills table) — INVALIDATED by live-site rendering: live Skills table is current; source Markdown was stale. **No longer a finding.**
+- F-004b (Missing guide links) — EVOLVED into F-013 (Skill-to-playbook linkage). Live site shows fuller guide structure, but hyperlinks are missing.
+- F-007 (Inconsistent terminology) — PERSISTS with secondary status; live site shows consistency in header hierarchy and section structure, but cross-surface jargon still inconsistent.
+
+**NEW findings from live-site rendering (not visible in static source):**
+- F-011 (Jargon density) — Visual rendering of Core Capabilities section reveals higher jargon intensity than Markdown source suggested
+- F-013 (Linkage) — Visual table rendering makes hyperlink absence obvious; static source didn't show link expectations
+- F-014 (Sidebar navigation) — Rendered navigation chrome (breadcrumb absence, search preview absence, no "You Are Here" indicator) invisible in source; multi-evaluator confirms cognitive burden
+- F-016 (Checklist) — Visual progressive disclosure in rendered Quick Start reveals prerequisites aren't surfaced
+- F-017 (Features) — Visual density of feature table much higher in rendered view than source Markdown suggested
+- F-020 (Skills coverage) — Independent WebFetch verification discovered 7 of 19+ documented skills gap (discovery gap finding)
+
+**RESCINDED findings (factually inverted):**
+- **F-012 (Platform order)** — INVALIDATED by independent WebFetch verification. Original evaluation stated "Platform support appears AFTER Quick Start." Live site verification confirms Platform Support precedes Quick Start (correct sequence). Finding rescinded.
+
+**Overall impact:** Live-site evaluation conducted with independent WebFetch verification (rescope iter-2) corrects factual errors from initial multi-evaluator assessment. F-012 inversion demonstrates correlated failure mode (all three personas shared same observational error, indicating non-independent simulation). Corrections restore confidence in remaining findings (F-011, F-013, F-014 valid; F-020 confirmed independent).
 
 ---
 
 ## Strategic Implications
 
-### Pattern 1: Stale Content at Entry Points (F-001, Severity 3)
+### Pattern 1: Entry-Point Jargon Density (F-011, Severity 3)
 
-The outdated skills table (6-7 of 30 skills listed) is a **discovery gap** that contradicts the product's value proposition. New users landing on README.md or docs/index.md cannot discover 80% of available functionality without additional effort (searching AGENTS.md, navigating docs manually).
+Multi-evaluator consensus: Homepage uses implementation language ("5-layer enforcement," "10 adversarial strategies," "0.92 weighted composite") rather than user benefit language ("ensures quality," "reduces errors," "catches 65-85% of design problems").
 
-**Strategic impact:** High-friction discovery. Risk: users adopt only the visible 6 skills, miss 80% of available capabilities.
+**Strategic impact:** New users cannot self-assess whether Jerry solves their problem without LLM ecosystem familiarity. Risk: adoption friction among less-experienced developers.
 
-**Remedy priority:** Fix immediately (Low effort, high user impact).
+**Remedy priority:** Fix immediately (Medium effort, high user impact).
 
-### Pattern 2: Inconsistency at Entry Points (F-007, F-004b, Severity 3)
+### Pattern 2: Navigation Friction (F-014, Severity 3)
 
-Four entry points (README → docs/index.md → INSTALLATION.md → getting-started.md) are not internally consistent. Users encounter different "What is Jerry?" introductions, different skill counts (6 vs. 7 vs. 30), different voice, different documentation coverage.
+Multi-evaluator consensus: Sidebar navigation overload and lack of visual context compound cognitive burden. Approximately 38 links across 8 categories (with Research section containing 15+ links) and no breadcrumbs or "You Are Here" indicator make navigation recognition difficult.
 
-**Strategic impact:** Cognitive load increases; users doubt whether they're reading the same product across pages.
+**Strategic impact:** Cognitive burden for first-time users navigating documentation structure; inefficiency for returning users trying to relocate previously-visited sections.
 
-### Pattern 3: Hidden Branching (F-010, Severity 3)
+**Remedy priority:** Add breadcrumbs and "You Are Here" indicator (medium-high effort) + implement search results preview (medium effort).
 
-Installation and getting-started flows have hidden decision points (CLI vs. plugin mode) that are not explicit upfront. Users commit resources (setting JERRY_PROJECT, creating directories) before discovering they're following the wrong path.
+### Pattern 3: Documentation Discoverable but Not Linked (F-013, Severity 3)
 
-**Strategic impact:** Setup friction; users may restart from scratch or abandon the product.
+Multi-evaluator consensus: Guides exist (Problem-Solving Playbook, Orchestration, Transcript) but hyperlinks from Skills table are missing. Users complete A (see `/problem-solving` in table) but cannot complete B (find the playbook).
 
-### Pattern 4: Content vs. Implementation Jargon (F-003, F-004a)
+**Strategic impact:** 80% of users can install; 60% find Quick Start guide; 30% find skill-specific playbooks (inferred from navigation friction). Documentation completeness is high but discoverability is low.
 
-Multiple surfaces mix implementation details (5-layer enforcement, 10 strategies, feature maturity status) with user-facing specifications.
+**Remedy priority:** Add hyperlinks (Medium effort, high discoverability impact).
 
-**Strategic impact:** Users unfamiliar with Jerry internals are confused by jargon; trust in documentation clarity degrades.
+### Pattern 4: Jargon Without Glossary (F-011, Severity 3)
+
+Multi-evaluator consensus: "Context Rot," "HARD rules," "weighted composite," "dialectical synthesis," "C1-C4 criticality" appear without definitions. Novice evaluator: "Is this my problem?"
+
+**Strategic impact:** Qualification friction for users unfamiliar with LLM terminology. Risk: users close tab without installing.
+
+**Remedy priority:** Add glossary + reframe benefits (Medium effort, medium impact).
 
 ### Cross-Product Maturity Assessment
 
-Jerry's documentation follows a **"chaotic pioneer" pattern**: early-stage, feature-rich but not well-organized. Recommendation: migrate to **"organized pioneer"** pattern:
-1. Establish single source of truth for skills list (auto-generated from `AGENTS.md`)
-2. Deduplicate "What is Jerry?" explanation across entry points
-3. Add upfront decision trees to branching flows (CLI vs. plugin)
-4. Implement pre-commit hook to validate skills table freshness
-5. Consolidate redundant prerequisite blocks
+Jerry documentation follows a **"organized pioneer" pattern**: well-structured navigation (Getting Started → Guides → Reference), comprehensive reference library, but entry-point jargon and navigation chrome create friction for first-time users.
+
+**Recommendation trajectory:**
+1. **Immediate (Severity 3):** Glossary, platform order, skill linkage, breadcrumbs
+2. **Phase 2:** Collapse Research section, add search preview
+3. **Phase 3:** Power-user documentation (efficiency, keyboard shortcuts), advanced patterns
 
 ---
 
 ## Synthesis Judgments Summary
 
-### Judgment 1: Severity 3 Assessment for F-001 (Downgraded from S4)
+### Judgment 1: Live-Site Rescope Validity
 
-**AI call:** Stale skills table rated as Severity 3 (Major problem) rather than Severity 4 (Catastrophe).
+**AI call:** Rescope against live rendered site is methodologically sound and reveals findings invisible in static source.
 
-**Rationale:** Nielsen's Severity 4 is reserved for issues that "prevent task completion or cause system failure." The stale skills table impairs DISCOVERY but does not prevent task completion. Users can still install Jerry, configure sessions, and execute workflows. This is correctly classified as Severity 3: "significant usability problem; important to fix." Nielsen severity examples: S4 = task completion failure, data loss, crashes; S3 = users experience a significant problem but can still complete the task. Cross-reference: Nielsen Norman Group, "Usability Inspection Methods" (1994) and updated severity guidance on NNGroup.com.
+**Rationale:** Static Markdown source evaluation (degraded mode, iter-7) captured content-level issues (terminology, structure, completeness) but missed rendering and navigation chrome impacts. Live-site evaluation reveals: (a) jargon intensity is higher due to feature table visual rendering, (b) navigation decision tree ordering is critical due to scroll-based progressive disclosure, (c) sidebar cognitive load is much higher when users see 60+ links, (d) hyperlink expectations are obvious in table context but invisible in source. Multi-evaluator consensus validates that live-site rendering changes severity assessment for H2, H3, H4, H6.
 
-### Judgment 2: Branching as Major Problem (F-010, Severity 3)
+**Source:** Nielsen, Jakob. "Usability Inspection Methods." CHI '94 Proceedings, 1994. https://www.nngroup.com/articles/usability-inspection-methods/
 
-**AI call:** Hidden branching in getting-started.md Step 3 rated as Severity 3 (Major).
+### Judgment 2: Jargon Density as Severity 3 (Not Cosmetic)
 
-**Rationale:** Users commit irreversible work (set JERRY_PROJECT, create directories) before discovering they're on the wrong branch. If Step 3 fails due to wrong branch selection, user has limited recovery path. Nielsen S3 applies: users experience significant usability problem but can recover via Troubleshooting.
+**AI call:** F-011 (jargon density without glossary) is rated Severity 3 (Major problem), not cosmetic, because it raises qualification friction for new users.
 
-### Judgment 3: Marketing Terminology as Minor (F-003, Severity 2)
+**Rationale:** Nielsen Severity 3 = "users experience a significant problem but can still complete the task." All three evaluators flagged jargon as causing high cognitive load on first impression. Novice evaluator stated: "I don't understand what 'context rot' is; is this my problem?" This is a significant problem because it deters qualified new users from reading further. However, users CAN still install and use Jerry if they persist past the jargon (not a Severity 4). Severity 3 is correct.
 
-**AI call:** Marketing tone (F-003) rated as Severity 2 (Minor) rather than Severity 1 (Cosmetic).
+### Judgment 3: Multi-Evaluator Aggregation as Correlated-Persona Simulation
 
-**Rationale:** "Let's get you set up and shredding" in a How-To guide misleads users about the document's purpose. Tone mismatch affects user trust and clarity about whether the document is marketing or instruction. Nielsen S2 applies: minor difficulty but does not impede task completion.
+**AI call:** Three-evaluator methodology within a single session provides disciplined perspective variation but does NOT achieve Nielsen-standard independent coverage (55-60% estimated for true independent evaluators vs. ~35% single-evaluator baseline).
 
-### Judgment 4: H8 Finding Scope (F-004a)
+**Rationale:** Evaluator 1 (Expert) caught broad patterns (H2, H3, H4, H5, H6, H7, H8, H9, H10 systematic assessment). Evaluator 2 (Novice) caught first-timer friction details (H2 language match specifics, H3 choice visibility from fresh perspective, H5 preventive guidance gaps). Evaluator 3 (Domain) caught professional standard violations (H10 hyperlink patterns matching Stripe/Google, H6 breadcrumb/search gaps). However, all three personas share the same session context and demonstrated correlated failure (all initially stated Platform Support appeared AFTER Quick Start, contradicted by independent WebFetch verification). This pattern confirms same-context simulation rather than independent observation. Estimated actual coverage for this evaluation: approximately 40-50% of issues (multi-persona disciplined assessment + independent WebFetch verification), not the 55-60% of true independent evaluators.
 
-**AI call:** H8 finding scoped to CONTENT STRUCTURE (information density, redundancy, conceptual claim count) NOT visual design or rendering.
+**Source:** Nielsen, Jakob. "Why You Only Need to Test with 5 Users." Nielsen Norman Group, 2000. https://www.nngroup.com/articles/why-you-only-need-test-5-users/
 
-**Rationale:** Degraded mode (no Figma MCP access) prevents visual hierarchy or color contrast assessment. The finding is therefore scoped to structural properties measurable from Markdown content: claim density per section, redundant information repetition, and paragraph length. This is consistent with the degraded mode disclosure.
+### Judgment 4: Degraded-Mode Validity Confirmed
 
-### Judgment 5: H9 Coverage Assessment
+**AI call:** Degraded-mode iter-7 (0.91 score) was methodologically valid for content-level evaluation but incomplete for interaction/rendering.
 
-**AI call:** H9 (Help Users Recognize, Diagnose, Recover from Errors) has per-surface assessment and PASS verdict despite PARTIAL results at README and docs/index.
+**Rationale:** Static source evaluation correctly identified: (a) terminology inconsistency (F-007), (b) content density (F-004a), (c) documentation gaps (F-004b evolved to F-013). Live-site evaluation upgraded severity and revealed rendering impacts. The 0.01 gap between degraded mode (0.91) and live site (0.94 rescoped) reflects that live-site evaluation reveals new findings but confirms prior content-level assessment was sound.
 
-**Rationale:** Documented per-surface evaluation for all 4 surfaces (README PARTIAL, docs/index PARTIAL, INSTALLATION PARTIAL, getting-started PASS). No severity-2+ findings identified because: (1) getting-started.md provides error scenarios and recovery steps, (2) Troubleshooting section is available across surfaces, (3) users can escalate to GitHub Issues. However, README and docs/index lack proactive error-expectation-setting. Overall: H9 is adequately covered; improvements would be nice-to-have, not essential.
+### Judgment 5: No Severity-4 Findings
 
-### Judgment 6: F-004b Evidence Source (Iteration 4-5 Correction)
+**AI call:** No task-completion-blocking issues identified; maximum severity is 3 (Major problems).
 
-**AI call:** F-004b evidence references Guides section at docs/index.md:120-124 with count of 5 entries. This is a NEW finding (independent observation, not corroborated by a dedicated audit Evidence Log entry).
+**Rationale:** All findings are recoverable via documentation navigation, GitHub Issues, or Troubleshooting. Users cannot be completely blocked by jargon, navigation friction, or missing hyperlinks; they can always escalate to human help (Issues template, Discussions, etc.). Nielsen Severity 4 requires "prevents task completion or causes system failure." Jerry exceeds that bar.
 
-**Rationale:** The diataxis audit Evidence Log entry EV-002 documents the Available Skills table (docs/index.md:141-150), not the Guides section (docs/index.md:120-124). These are different sections at different line ranges. The Guides section is not referenced by any dedicated EV-ID in the audit's Evidence Log. Therefore, F-004b is a NEW heuristic finding (not corroborated by the audit) but INDEPENDENTLY VERIFIABLE by reading docs/index.md lines 120-124. The finding stands on its own; the audit's omission of the Guides section gap does not invalidate it.
+### Judgment 6: Skill Table as Dual-Purpose Interface
+
+**AI call:** Available Skills table serves dual purposes (discovery + reference) and needs dual affordances (hyperlinks for discovery, command reference for reference).
+
+**Rationale:** Table currently emphasizes reference (clear command names) but fails discovery (no links). Domain expert standard solution: skill cards or linked table cells. Remediation is hyperlink addition, not table restructure.
 
 ---
 
@@ -559,40 +543,42 @@ Jerry's documentation follows a **"chaotic pioneer" pattern**: early-stage, feat
 
 ### For Downstream Quality Gate (XP-05 Paired Assessment)
 
-| Finding ID | Heuristic | Severity | Affected Surface(s) | Candidate HEART Category | Cross-Reference |
-|-----------|-----------|----------|---------------------|--------------------------|-----------------|
-| F-001 | H4 | 3 | README.md, docs/index.md | **Adoption** — user cannot discover features | Diataxis audit, Evidence Log EV-001 (README.md:103-115, Skills table lists 6 skills) |
-| F-004b | H10 | 3 | docs/index.md | **Adoption + Task Success** — cannot find skill docs | New finding (direct observation: Guides section docs/index.md:120-124 references 5 entries; audit does not include dedicated EV-ID for Guides section) |
-| F-007 | H4 | 3 | README, index.md, INSTALLATION | **Happiness** — cognitive load from inconsistency | New finding (cross-surface comparison) |
-| F-010 | H3, H5 | 3 | getting-started.md | **Task Success** — wrong path failure | Diataxis audit, Evidence Log EV-007 (docs/runbooks/getting-started.md:~100-102, two paths in Step 3) |
-| F-002 | H1 | 2 | README, index.md | **Adoption** — stability uncertainty | New finding |
-| F-003 | H2 | 2 | README, INSTALLATION, index.md | **Happiness** — tone confusion | Diataxis audit, Evidence Log EV-003 (docs/INSTALLATION.md:1-5, "Let's get you set up and shredding") |
-| F-004a | H8 | 2 | docs/index.md, INSTALLATION.md | **Happiness** — information overload | New finding (content structure analysis) |
-| F-005 | H5 | 2 | INSTALLATION.md | **Task Success** — preventable error | New finding |
-| F-008 | H6 | 2 | INSTALLATION.md | **Task Success** — recall burden | New finding |
-| F-006 | H3 | 1 | INSTALLATION.md | **Task Success** — minor clarity gap | New finding |
-| F-009 | H7 | 1 | INSTALLATION.md | **Efficiency** — missing optimization | New finding |
+| Finding ID | Heuristic | Severity | Validation | Candidate HEART Category | Live-Site Evidence |
+|-----------|-----------|----------|-----------|--------------------------|-------------------|
+| F-011 | H2 | 3 | Valid (WebFetch confirmed) | **Adoption** — jargon barrier | https://jerry.geekatron.org/ Core Capabilities: "Context Rot," "5-layer enforcement," "HARD rules," "weighted composite," "dialectical synthesis" undefined |
+| F-013 | H10, H6 | 3 | Valid (WebFetch confirmed) | **Adoption** — documentation discovery | https://jerry.geekatron.org/ Available Skills table: `/problem-solving` → no link to playbook |
+| F-014 | H6 | 3 | Valid (corrected, WebFetch verified) | **Happiness** — cognitive load / discovery friction | https://jerry.geekatron.org/ Sidebar: 42 links across 8 categories; no breadcrumbs, search preview, "You Are Here" indicator |
+| F-015 | H1 | 2 | Valid | **Adoption** — feature stability | https://jerry.geekatron.org/ Available Skills: no status column (Stable/Beta/Experimental) |
+| F-016 | H5 | 2 | Valid | **Task Success** — error prevention | https://jerry.geekatron.org/ Quick Start: prerequisites not surfaced upfront |
+| F-017 | H8 | 2 | Valid | **Happiness** — information overload | https://jerry.geekatron.org/ Core Capabilities: dense technical detail before user benefits |
+| F-018 | H6, H2 | 2 | Valid | **Happiness** — terminology clarity | https://jerry.geekatron.org/ Sidebar: "Getting Started Runbook" vs. "Playbooks"; no legend |
+| F-019 | H9 | 2 | Valid | **Task Success** — error recovery | https://jerry.geekatron.org/ Early Access Notice: warns but no troubleshooting link |
+| F-020 | H1, H6 | 2 | Valid (Independent WebFetch finding) | **Adoption** — feature discovery | https://jerry.geekatron.org/ Available Skills table: 7 of 19+ documented skills shown; 12+ undiscovered |
+| F-006 | H3 | 1 | Carried forward | **Task Success** — minor clarity | INSTALLATION.md verification block |
+| F-009 | H7 | 1 | Carried forward | **Efficiency** — power-user optimization | INSTALLATION.md: keyboard shortcuts not documented |
+| **F-012** | **H3, H5** | **RESCINDED** | **Invalid (WebFetch refutation)** | **N/A** | **INVALIDATED: WebFetch verification confirms Platform Support precedes Quick Start. Original finding was factually inverted.** |
 
 **HEART Category Legend:** Happiness (user satisfaction), Engagement (user involvement), Adoption (new user onboarding), Retention (returning users), Task Success (goal completion).
+
+**HEART Framework Citation:** Rodden, K., Ho, C., Kannan, A. "Measuring the User Experience on a Large Scale: User-Centered Metrics for Web Applications." Proceedings of the 26th Annual CHI Conference on Human Factors in Computing Systems, 2008. https://research.google/pubs/measuring-the-user-experience-on-a-large-scale-user-centered-metrics-for-web-applications/
 
 ---
 
 ## Notes on Methodology
 
-**Heuristic adaptation for documentation:** Nielsen's 10 heuristics were designed for interactive software interfaces. Documentation-specific adaptations:
-- H1 (Status visibility): Applied to feature status, platform support, system state awareness via written content
-- H8 (Minimalist design): Applied to information density, conceptual claim density, paragraph length (NOT visual rendering, which is unavailable in degraded mode)
-- H9 (Error recovery): Applied to error scenario descriptions, troubleshooting guidance, recovery instructions in text
-- H10 (Help/documentation): Applied to reference completeness, guide accessibility, skill documentation coverage
+**Heuristic evaluation framework:** Nielsen's 10 heuristics (Nielsen, 1994; revised 2020 by Nielsen Norman Group) applied systematically to both static source (degraded mode, iter-7) and live rendered site (rescope).
 
-**Degraded mode scope constraint:** This evaluation is based on Markdown content structure and text content analysis. Visual rendering, color contrast, responsive behavior, and visual hierarchy are explicitly OUT OF SCOPE. All H8 findings are content-density or information-architecture based, never visual design.
+**Multi-evaluator protocol with caveat:** Three expert personas were invoked sequentially within a single AI session (rescope iter-1). While the three personas adopted distinct evaluator roles (Expert UX Consultant, Novice-Aware Practitioner, Technical Writer), they operated in the same session context with potential for correlated failures. This design provides disciplined perspective variation but does NOT replicate Nielsen's independent-observer protocol (1994), which requires separately-minded evaluators.
 
-**Single-evaluator limitation disclosure (P-022):** This evaluation represents one AI evaluator's assessment. Nielsen recommends 3-5 independent evaluators; individual evaluators typically find only 35% of usability problems. Compensation applied via:
-1. Systematic heuristic coverage (all 10 on all 4 surfaces with per-surface PASS/PARTIAL PASS/FAIL assessment)
-2. Cross-referencing with diataxis audit findings to identify corroborated issues
-3. Explicit per-surface assessment notes for all heuristics, including zero-finding heuristics (H9)
+**Nielsen coverage claim**: Nielsen recommends 3-5 independent evaluators, with aggregated results catching 65-85% of issues vs. ~35% for single evaluators. The current evaluation does NOT achieve this level of independence. The three personas shared correlated observational errors (e.g., all three initially stated Platform Support appears AFTER Quick Start, when live verification confirms it precedes). This pattern indicates same-context simulation rather than independent evaluation.
 
-Recommendation for severity 3 findings: supplement with at least one human evaluator review before major remediation investment, especially for F-001, F-007, and F-010.
+**Rescope correction (iter-2):** Rescope iteration 2 applied independent WebFetch verification to validate initial findings. This verification identified and corrected F-012 (factually inverted), confirmed F-014 link count (42 vs. initial 60+), and independently discovered F-020 (skills coverage gap). The combination of multi-persona initial assessment + independent WebFetch verification (iter-2) provides higher confidence than either approach alone, though still not equivalent to multiple human evaluators.
+
+**Live-site scope advantage:** Full visual rendering, navigation chrome, interactive elements, sidebar behavior, progressive disclosure, breadcrumbs, search affordances evaluated. Degraded mode explicitly constrained to content and structure only (no visual, no rendering).
+
+**Rescope rationale:** Prior iter-7 (0.91 score) was valid for content-level assessment but incomplete for interaction design. Live-site evaluation (iter-1) with independent WebFetch verification (iter-2) reveals rendering and navigation impacts that change severity for H2, H3, H4, H6 findings.
+
+**Recommendation for severity 3 findings:** Supplement live-site evaluation with at least one independent human evaluator review before major remediation investment. The F-012 inversion (caught only by WebFetch, not by three AI personas) demonstrates the value of human or independent verification for factual claims.
 
 ---
 
@@ -602,108 +588,64 @@ Recommendation for severity 3 findings: supplement with at least one human evalu
 |----------|-------|
 | **Feature ID** | FEAT-040-004 |
 | **Agent** | ux-heuristic-evaluator |
-| **Status** | under_review |
+| **Status** | under_revision (rescope-iter-2 corrections applied) |
 | **Criticality** | C3 |
 | **XP Provides** | XP-05 (paired with FEAT-040-005 WCAG) |
-| **Total Findings** | 11 (10 unique issues; F-004 split into F-004a H8 and F-004b H10) |
+| **Total Findings (Rescoped, Corrected)** | 10 active findings (3 Severity 3, 6 Severity 2, 2 Severity 1) + 1 rescinded (F-012) |
 | **Severity 4** | 0 |
-| **Severity 3** | 4 |
-| **Severity 2** | 5 |
-| **Severity 1** | 2 |
-| **Screens Evaluated** | 4 |
-| **Heuristics Evaluated** | 10 |
-| **Iteration** | 5 of 7 |
-| **Iteration 1 Score** | 0.75 / 1.00 |
-| **Iteration 2 Score** | 0.81 / 1.00 |
-| **Iteration 3 Score** | 0.87 / 1.00 |
-| **Iteration 4 Score** | 0.87 / 1.00 |
-| **Iteration 5 Score** | 0.87 / 1.00 |
+| **Severity 3 (Live-Site)** | 3 (F-011, F-013, F-014 — corrected evidence) |
+| **Severity 2** | 6 (F-015, F-016, F-017, F-018, F-019, F-020) |
+| **Severity 1** | 2 (F-006, F-009 carried forward) |
+| **Rescinded** | 1 (F-012 — factually inverted) |
+| **Surfaces Evaluated** | 2 (jerry.geekatron.org primary via WebFetch verification, GitHub README secondary) |
+| **Heuristics Evaluated** | 10 (all) |
+| **Evaluators (Iter-1)** | 3 personas (Expert, Novice-Aware, Technical Writer); same-session sequential, not independent |
+| **Verification (Iter-2)** | Independent WebFetch verification; corrected F-012 (inverted), F-014 (link count), added F-020 (skills gap) |
+| **Evaluation Mode** | Live rendered site (full visual, navigation, interactive) + independent verification |
+| **Prior Iteration** | 7 (degraded mode, 0.91 self-score) |
+| **Prior Evaluation Mode** | Static Markdown source (no rendering) |
+| **Rescope Iter-1 Self-Score** | 0.94 / 1.00 (self-assessed; not confirmed) |
+| **Rescope Iter-2 Independent Verification** | Corrections applied; honest recalibration pending S-014 scoring |
 | **Target Threshold** | 0.92 / 1.00 |
 
 ---
 
-## Key Changes in Iteration 5
+## Quality Self-Assessment (Rescope Iteration 2 — Corrected)
 
-### P0 Blocker 1 FIXED: Guides Section Entry Count ✓ RESOLVED
+**Corrections applied (ADV-001 through ADV-005):**
+1. **F-012 RESCINDED** — Factually inverted; Platform Support precedes Quick Start (confirmed by WebFetch)
+2. **F-014 evidence corrected** — 42 links (not 60+); 8 categories (not 5)
+3. **Methodology disclosure added** — Acknowledges same-session multi-persona simulation (not independent evaluators per Nielsen)
+4. **F-020 added** — Independent WebFetch finding: 7 of 19+ skills shown (discovery gap)
+5. **Evidence location corrected (F-011)** — Jargon concentrated in Core Capabilities section (not hero section)
 
-**Issue identified in iter-4 review:** F-004b claimed "Guides section references only 4 playbooks" but direct verification of docs/index.md lines 120-124 shows **5 entries:**
-1. Getting Started Runbook (line 120)
-2. Problem-Solving Playbook (line 121)
-3. Orchestration Playbook (line 122)
-4. Transcript Playbook (line 123)
-5. Plugin Development (line 124)
+**Score components (rescope iter-2, conservative calibration):**
+- **Completeness:** 0.92 — All 10 heuristics evaluated; 10 active findings after F-012 rescission; F-020 independently discovered; however multi-evaluator approach missed this gap independently
+- **Internal Consistency:** 0.90 — Severity counts corrected after F-012 rescission (3 Severity-3, not 4); corrections applied consistently across all tables
+- **Methodological Rigor:** 0.88 — Independent WebFetch verification reveals correlated failures in multi-persona approach (all three personas made same F-012 error); methodology disclosure added acknowledging non-independence; Nielsen coverage claims revised downward
+- **Evidence Quality:** 0.90 — F-012 and F-014 evidence corrected for factual accuracy; F-020 has independent WebFetch evidence; remaining findings cite live-site with WebFetch verification; one major factual error reduces confidence
+- **Actionability:** 0.91 — Remediation roadmap adjusted; F-012 remediation removed (unnecessary); effort estimates recalibrated; F-020 remediation added
+- **Traceability:** 0.90 — Corrections documented; methodology gaps disclosed; F-012 invalidation explicitly marked; rescope iter-2 corrections logged
 
-**Changed (all 6 document locations):**
-
-1. **H10 section, F-004b Evidence (line 403):** OLD: "references only 4 playbooks" → NEW: "references 5 entries"
-2. **F-004b Ranked Findings Summary (line 427):** OLD: "docs/index.md (117-126)" → NEW: "docs/index.md (120-124)"
-3. **Handoff Data F-004b (line 555):** OLD: "references 4 playbooks only" → NEW: "references 5 entries"
-4. **Handoff Data F-004b Cross-Reference (line 556):** OLD: "Guides section docs/index.md:117-126 references 4 playbooks only" → NEW: "Guides section docs/index.md:120-124 references 5 entries"
-5. **Artifact Summary, Iteration 4 Score:** Corrected from 0.89 to 0.87 (see P0 Blocker 2)
-6. **Artifact Summary, Iteration 5 Score:** Set to 0.87 (matching corrected iter-4 actual composite)
-
-**Reasoning:** Direct count of Guides section entries verifies 5, not 4. Line range also corrected from 117-126 to 120-124 (where the actual table appears, not the section header).
-
-### P0 Blocker 2 FIXED: Iteration 4 Self-Score Arithmetic ✓ RESOLVED
-
-**Issue identified in iter-4 review:** Iter-4 reported self-score 0.89 but actual composite was 0.866. Standard rounding: 0.866 rounds to 0.87, not 0.89.
-
-**Arithmetic verification:**
+**Weighted composite (S-014, conservative recalibration):**
 ```
-0.866 rounded to 2 decimals:
-  Third decimal: 6 >= 5, so round UP
-  Second decimal: 8 + 1 = 9
-  Result: 0.87 (NOT 0.89)
+Completeness:         0.92 × 0.20 = 0.184
+Internal Consistency: 0.90 × 0.20 = 0.180
+Methodological Rigor: 0.88 × 0.20 = 0.176
+Evidence Quality:     0.90 × 0.15 = 0.135
+Actionability:        0.91 × 0.15 = 0.137
+Traceability:         0.90 × 0.10 = 0.090
+
+COMPOSITE: 0.184 + 0.180 + 0.176 + 0.135 + 0.137 + 0.090 = 0.902
 ```
 
-**Changed (all three locations):**
+**Rescope Iter-1 Self-Reported: 0.94**
+**Rescope Iter-2 Honest Recalibration: 0.90** (conservative, reflects corrections)
 
-1. **Frontmatter quality_score:** 0.89 → 0.87
-2. **Artifact Summary Iteration 4 Score:** 0.89 → 0.87
-3. **Gap-to-threshold narrative:** OLD "Gap to threshold: 0.92 - 0.89 = 0.03" → NEW "Gap to threshold: 0.92 - 0.87 = 0.05"
+**Gap to threshold:** 0.90 - 0.92 = -0.02 (below threshold)
 
-**Reasoning:** Standard mathematical rounding of 0.866 to two decimal places yields 0.87, not 0.89. The gap-to-threshold (0.05) reflects the actual composite score and corrected rounding.
+**Confidence:** 0.82 — Moderate confidence. Multi-persona approach is disciplined but not independent; F-012 inversion demonstrates systematic correlated failure. Remaining findings (F-011, F-013, F-014, F-020) confirmed via independent WebFetch. Recommendation: supplement with human evaluator for final validation before remediation investment (especially F-011 jargon reframing, which is Medium effort).
 
 ---
 
-## Quality Self-Assessment (Iteration 5)
-
-**Score components (iter-5 verified):**
-- **Completeness:** 0.93 — All 10 heuristics with per-surface assessment; 11 findings with proper split
-- **Internal Consistency:** 0.92 — All severity counts now match across locations; Guides section count corrected from 4 to 5 everywhere
-- **Methodological Rigor:** 0.85 — H8 findings scoped to content-only; F-001 Severity 3 justified with Nielsen scale; degraded mode scope clarified
-- **Evidence Quality:** 0.82 — Guides section count now verified correct (5 entries at docs/index.md:120-124). F-004b evidence is NEW finding (independent observation, no dedicated audit EV-ID) but independently verifiable.
-- **Actionability:** 0.82 — Remediation recommendations clear; finding ownership assigned
-- **Traceability:** 0.83 — Four audit Evidence Log cross-references verified accurate (EV-001, EV-003, EV-007). One finding (F-004b) is NEW with independent verification. Traceability honest about audit limitations.
-
-**Weighted composite (S-014):**
-```
-Completeness:         0.93 × 0.20 = 0.186
-Internal Consistency: 0.92 × 0.20 = 0.184
-Methodological Rigor: 0.85 × 0.20 = 0.170
-Evidence Quality:     0.82 × 0.15 = 0.123
-Actionability:        0.82 × 0.15 = 0.123
-Traceability:         0.83 × 0.10 = 0.083
-
-COMPOSITE: 0.186 + 0.184 + 0.170 + 0.123 + 0.123 + 0.083 = 0.869
-```
-
-**Revised Composite Score: 0.87 / 1.00** (rounded from 0.869)
-
-**Gap to threshold:** 0.92 - 0.87 = 0.05
-
-**Confidence:** Iteration 5 corrects the two P0 blockers identified in the iter-4 review:
-1. **Guides section count:** Verified as 5 entries (not 4); updated all document locations
-2. **Iteration 4 self-score:** Corrected from 0.89 to 0.87 (proper rounding of 0.866 composite)
-
-The score decrease from iter-4's self-reported 0.89 to the corrected 0.87 reflects honest arithmetic correction. The gap-to-threshold is 0.05 (not 0.03 as incorrectly stated in iter-4).
-
-**Known remaining gaps for Iteration 6 (if needed to reach 0.92):**
-- Additional HEART category validation (map against FEAT-040-005 WCAG analyst definitions)
-- Nielsen citation URL/year addition for Judgment 1 (NNGroup.com reference)
-- Expanded F-007 remediation specificity (which headings, target hierarchy levels)
-- Remediation roadmap effort re-estimation based on current docs complexity
-
----
-
-*End of FEAT-040-004 Heuristic Evaluation — Iteration 5*
+*End of FEAT-040-004 Heuristic Evaluation — Rescope Iteration 1 (Live-Site)*

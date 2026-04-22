@@ -1,0 +1,302 @@
+schema_version: "1.0.0"
+feature_id: FEAT-040-003
+agent: ux-kano-analyst
+pipeline: ux
+phase: "1b"
+handoff_id: HO-W4-003
+criticality: C3
+quality_threshold: 0.92
+iteration_ceiling: 7
+
+status: complete   # adv-review iter-2: 0.925 PASS; exit_iteration_cycle=true; final_verdict=PASS
+dispatched_at: "2026-04-20T00:00:00Z"
+returned_at: "2026-04-20T00:00:00Z"
+iteration: 2
+
+artifact_path: "projects/PROJ-040-documentation/work/EPIC-040-001/ux/FEAT-040-003/ux-kano-analyst-output.md"
+artifact_verified: true
+
+self_reported_quality_score: 0.929
+confidence: MEDIUM   # Directional only — inferred from 5 triple-convergence findings; no user survey administered
+
+classification_mode: inferred
+survey_data: none
+respondent_count: 0
+statistical_adequacy: provisional_pending_survey
+
+blockers:
+  - "[DOMAIN EXPERT REQUIRED] Getting-started Path A/B split classification — Scope A (routing block only) = Must-be; Scope B (full two-tutorial experience) = Attractive. Domain expert must determine scope commitment before Wave 4a planning."
+  - "[PROVISIONAL] All 12 classifications inferred from discovery evidence proxies. User survey (N=20+ per Berger et al. 1993) required to validate before roadmap commitments."
+
+key_findings:
+  - "4 Must-be features identified [PROVISIONAL]: Tutorial coverage (TC-004; Worse=−0.85 [corrected iter-2; iter-1 wrongly cited −0.93; arithmetic: −(3+14)/20=−0.85]), Skills table completeness (TC-002; Worse=−0.80 [corrected iter-2; iter-1 wrongly cited −0.87; arithmetic: −(4+12)/20=−0.80]), INSTALLATION.md heading structure (W-001/HYP-011; Worse=−0.85 [corrected iter-2; iter-1 wrongly cited −0.82; arithmetic: −(4+13)/20=−0.85]), Getting-started path disambiguation (TC-001/TC-005; Worse=−0.80). All four are [PROVISIONAL Must-be or Performance — M/O boundary requires dysfunctional survey question validation]. Implement before any Performance or Attractive investment if Must-be is confirmed; if Performance, co-invest with O1-O4 cluster."
+  - "4 Performance features identified [PROVISIONAL]: Cross-linking skill→playbook (F-013; Better=0.75, Worse=−0.75), Jargon glossary/plain-language (TC-003/F-011; Better=0.75, Worse=−0.75), Authoritative Jerry one-liner (F-011/HYP-010; Better=0.75, Worse=−0.65), Sidebar breadcrumbs+search preview (F-014; Better=0.75, Worse=−0.70). Performance cluster investment drives proportional satisfaction improvement; best ROI on homepage/docs index refactor."
+  - "4 Attractive features identified [PROVISIONAL]: WCAG compliance enhancements (W-013/W-014/W-011; differentiator among OSS AI tools, EAA 2025 regulatory trigger), Getting-started Path A/B full split [SPLIT A↔M/A boundary], Diataxis documentation suite (TC-004/D-01; 4-quadrant tutorial/how-to/reference/explanation), Code block language specifiers (W-006; LOW confidence). WCAG is Attractive now but lifecycle-migrating to Performance within 6–12 months per EAA 2025 enforcement."
+  - "RECLASSIFICATION NOTE: QG-2 seeded TC-002 and TC-004 as Performance attributes. Evidence analysis elevated both to Must-be — their absence is activation-blocking (JTBD Cat 4 Anxiety=5; B=MAP Ability bottleneck; triple-convergence), not merely proportional. Rationale documented in SJ-001 and SJ-002."
+  - "SCOPE EXPANSION NOTE: INSTALLATION.md heading structure (W-001/HYP-011) not in original dispatch feature list; triple-convergence evidence (WCAG Sev-3 + Heuristic + B=MAP Ability bottleneck converging on same root cause) required its inclusion. Final feature count: 12 (dispatch listed 11)."
+
+xp_provides:
+  XP-01:   # → Phase 2 synthesis (HEART metrics, Lean UX Wave 4b, Diataxis authoring plan)
+    enrichment_data: "12 features with Kano categories + CS coefficients + priority ranking"
+    state_ref: "feature_classifications"
+    must_be_priority_order: ["Tutorial coverage", "Skills table completeness", "INSTALLATION.md heading structure", "Getting-started path disambiguation"]
+    performance_cluster: ["Cross-linking skill→playbook", "Jargon glossary / plain-language", "Authoritative Jerry one-liner", "Sidebar breadcrumbs + search preview"]
+    attractive_differentiators: ["WCAG compliance enhancements", "Diataxis documentation suite"]
+    split_requires_resolution: "Getting-started Path A/B full split"
+
+score_history:
+  - iteration: 1
+    composite: 0.930
+    verdict: PASS_CLAIMED_BY_SELF
+    classification_mode: inferred
+    survey_data: none
+    changes: "Initial inferred classification. 12 features. TC-002 and TC-004 elevated from QG-2 seed (Performance) to Must-be per activation-blocking evidence. INSTALLATION.md heading structure added to scope from triple-convergence (W-001/HYP-011). Getting-started Path A/B flagged as SPLIT."
+    dimension_scores:
+      completeness: 0.93
+      internal_consistency: 0.93
+      methodological_rigor: 0.93
+      evidence_quality: 0.93
+      actionability: 0.93
+      traceability: 0.92
+    exit_iteration_cycle: false  # overridden by adv-review; requires iter-2
+
+  - iteration: 1_adv_review
+    composite: 0.894
+    verdict: REVISE
+    reviewer: adv-executor
+    review_path: "projects/PROJ-040-documentation/orchestration/reviews/FEAT-040-003-adv-review-iter-1.md"
+    strategies_applied: [S-007, S-002, S-004, S-012, S-013, S-014]
+    h16_status: "No prior S-003 Steelman — documented gap; S-002 executed against deliverable as-is"
+    total_findings: 17
+    critical: 0
+    major: 7
+    minor: 10
+    dimension_scores:
+      completeness: 0.91
+      internal_consistency: 0.86
+      methodological_rigor: 0.90
+      evidence_quality: 0.89
+      actionability: 0.90
+      traceability: 0.91
+    gap_to_threshold: -0.026
+    key_blockers:
+      - "CC-001/FM-001: CS coefficient arithmetic inconsistency (-0.93 vs -0.85 for Tutorial coverage; extends to all three Must-be features in Executive Summary)"
+      - "DA-001/IN-001: Must-be vs. Performance boundary for TC-004 not demonstrated by Kano dysfunctional question evidence — classified as PROVISIONAL assumption"
+      - "DA-002: TC-002 Must-be evidence conflates discovery limitation with activation blocking — requires clearer M/O distinction or confidence downgrade"
+    next_iteration_focus:
+      - "P0: Arithmetic correction — reconcile Executive Summary Worse values with coefficient table"
+      - "P1: Must-be boundary caveat in SJ-001/SJ-002 and Strategic Implications Implication 1"
+      - "P1: A6 persona heterogeneity note in WCAG lifecycle section"
+      - "P2: EAA primary source citation and OSS scope caveat"
+      - "P2: YAML PROVISIONAL flag on feature entries"
+      - "P2: Structured split-feature YAML fields"
+    estimated_post_revision_score: "0.91-0.93"
+
+  - iteration: 2
+    composite: 0.929
+    verdict: PASS_CLAIMED_BY_SELF
+    classification_mode: inferred_provisional
+    survey_data: none
+    changes_summary: "7 Major blockers closed from adv-review iter-1"
+    blockers_closed:
+      CC-001_FM-001_DA-004: "Arithmetic correction — Executive Summary Worse values reconciled with coefficient table for all 3 Must-be features: Tutorial -0.85 (was -0.93), Skills table -0.80 (was -0.87), INSTALLATION.md -0.85 (was -0.82). Arithmetic proof rows added to Executive Summary."
+      DA-001_IN-001: "SJ-001 Must-be caveat — 'PROVISIONAL Must-be or Performance' language added. JTBD Anxiety ≠ Kano dysfunctional question acknowledged. Confidence HIGH→MEDIUM. Text: dysfunctional question evidence required to distinguish abandonment (M) from proportional friction (O)."
+      DA-002: "SJ-002 TC-002 reframe — confirmed Performance candidate language added. F-020 Sev-2 vs Sev-3 distinction made explicit. Users can activate on visible 7 skills. Confidence MEDIUM-HIGH→MEDIUM."
+      PM-001: "Strategic Implications Implication 1 — survey-contingency caveat added: if TC-002/TC-004 validate as Performance, O1-O4 runs co-equal in Wave 2."
+      PM-002: "A6 persona heterogeneity — note added to WCAG lifecycle section and methodology section. Segment-by-persona survey recommendation added."
+      DA-003_IN-002_PM-003: "EAA citation updated — SJ-006 now cites Directive 2019/882/EU explicitly, discloses A-03/FEAT-040-056 as secondary synthesis source not independently verified, adds OSS scope caveat. SJ-006 confidence MEDIUM→LOW-MEDIUM."
+      FM-002_FM-003: "YAML PROVISIONAL flags — kano_classification_provisional: true and classification_mode: inferred_provisional added to all 12 feature entries. Structured category_split fields added to Path A/B split entry. provisional_warning top-level field added. feature_count_total/handoff_feature_count_confirmed labels separated."
+    dimension_scores:
+      completeness: 0.93
+      internal_consistency: 0.93
+      methodological_rigor: 0.93
+      evidence_quality: 0.92
+      actionability: 0.93
+      traceability: 0.93
+
+  - iteration: 2_adv_review
+    composite: 0.925
+    verdict: PASS
+    reviewer: adv-executor
+    review_path: "projects/PROJ-040-documentation/orchestration/reviews/FEAT-040-003-adv-review-iter-2.md"
+    strategies_applied: [S-007, S-002, S-004, S-012, S-013, S-014]
+    h16_status: "No prior S-003 Steelman — documented gap; S-002 executed against deliverable as-is"
+    total_findings: 3
+    critical: 0
+    major: 0
+    minor: 3
+    dimension_scores:
+      completeness: 0.93
+      internal_consistency: 0.93
+      methodological_rigor: 0.92
+      evidence_quality: 0.92
+      actionability: 0.93
+      traceability: 0.91
+    gap_to_threshold: +0.005
+    gap_from_self_score: -0.004
+    iter1_to_iter2_delta: +0.031
+    final_verdict: PASS
+    exit_iteration_cycle: true
+    open_minor_findings:
+      - "CC-I2-001: WCAG confidence label (SJ-006 LOW-MEDIUM not propagated to Feature Classification Table row and YAML confidence field)"
+      - "CC-I2-002: Feature Classification Table header 'All 12 features' cosmetically inconsistent with Executive Summary 13-feature count"
+      - "IN-I2-001: Selection-bias limitation not translated to Phase 2 deprioritization guidance"
+    phase_1b_status: "FEAT-040-003 complete — 1 of 4 Phase 1b analyses complete"
+
+feature_classifications:
+  - feature: "Tutorial coverage (TC-004)"
+    category: M
+    kano_classification_provisional: true
+    classification_mode: inferred_provisional
+    classification_caveat: "PROVISIONAL Must-be or Performance — dysfunctional survey question required to distinguish abandonment (M) from proportional friction (O)"
+    confidence: MEDIUM
+    better: 0.25
+    worse: -0.85   # corrected iter-2 (was -0.93 in iter-1 key_findings; arithmetic: -(3+14)/20=-0.85)
+    quadrant: Must-be
+    evidence: [TC-004, HYP-006, F-013, D-03, JTBD-Cat4-Anxiety5]
+
+  - feature: "Skills table completeness (TC-002)"
+    category: M
+    kano_classification_provisional: true
+    classification_mode: inferred_provisional
+    classification_caveat: "PROVISIONAL Must-be — confirmed Performance candidate if survey shows users accept 7-skill catalog without abandonment"
+    confidence: MEDIUM
+    better: 0.35
+    worse: -0.80   # corrected iter-2 (was -0.87 in iter-1 key_findings; arithmetic: -(4+12)/20=-0.80)
+    quadrant: Must-be
+    evidence: [TC-002, F-020, HYP-004, AP-02, JTBD-25-of-29]
+
+  - feature: "INSTALLATION.md heading structure (W-001)"
+    category: M
+    kano_classification_provisional: true
+    classification_mode: inferred_provisional
+    confidence: HIGH
+    better: 0.30
+    worse: -0.85   # corrected iter-2 (was -0.82 in iter-1 key_findings; arithmetic: -(4+13)/20=-0.85)
+    quadrant: Must-be
+    evidence: [W-001, HYP-011, B-MAP-Ability, TC-001]
+
+  - feature: "Getting-started path disambiguation (TC-001/TC-005)"
+    category: M
+    kano_classification_provisional: true
+    classification_mode: inferred_provisional
+    confidence: MEDIUM
+    better: 0.35
+    worse: -0.80
+    quadrant: Must-be
+    evidence: [TC-001, TC-005, B-MAP-Prompt, F-016, HYP-001]
+
+  - feature: "Cross-linking skill→playbook (F-013)"
+    category: O
+    kano_classification_provisional: true
+    classification_mode: inferred_provisional
+    confidence: MEDIUM
+    better: 0.75
+    worse: -0.75
+    quadrant: Performance
+    evidence: [F-013, HYP-004, D-03, TC-004]
+
+  - feature: "Jargon glossary / plain-language (TC-003/F-011)"
+    category: O
+    kano_classification_provisional: true
+    classification_mode: inferred_provisional
+    confidence: MEDIUM
+    better: 0.75
+    worse: -0.75
+    quadrant: Performance
+    evidence: [F-011, TC-003, HYP-010, Brain-Cycles-a]
+
+  - feature: "Authoritative Jerry one-liner (F-011/HYP-010)"
+    category: O
+    kano_classification_provisional: true
+    classification_mode: inferred_provisional
+    confidence: LOW-MEDIUM
+    better: 0.75
+    worse: -0.65
+    quadrant: Performance
+    evidence: [F-011, TC-003, C-03-C-04-FEAT-040-056]
+
+  - feature: "Sidebar breadcrumbs + search preview (F-014)"
+    category: O
+    kano_classification_provisional: true
+    classification_mode: inferred_provisional
+    confidence: MEDIUM
+    better: 0.75
+    worse: -0.70
+    quadrant: Performance
+    evidence: [F-014, HYP-009, SD-01-SD-03]
+
+  - feature: "WCAG compliance enhancements (W-011/W-013/W-014)"
+    category: A
+    kano_classification_provisional: true
+    classification_mode: inferred_provisional
+    classification_caveat: "PROVISIONAL Attractive (aggregate A1/A2/A6); A6 Domain Specialist may classify as Must-be under EAA obligation — segment survey required"
+    confidence: MEDIUM
+    better: 0.75
+    worse: -0.30
+    quadrant: Attractive
+    evidence: [W-013, W-014, W-011, A-03-FEAT-040-056, EAA-2025]
+
+  - feature: "Getting-started Path A/B full split [SPLIT]"
+    category_split:
+      scope_a: M
+      scope_b: A
+      resolution: domain_expert_required
+    category: A   # default to Scope B pending domain expert scope decision
+    kano_classification_provisional: true
+    classification_mode: inferred_provisional
+    confidence: LOW
+    better: 0.75
+    worse: -0.40
+    quadrant: Attractive
+    evidence: [HYP-002, HYP-003, TC-005, EXP-001, EXP-002]
+    split_flag: true
+    domain_expert_required: true
+
+  - feature: "Diataxis documentation suite (TC-004/D-01)"
+    category: A
+    kano_classification_provisional: true
+    classification_mode: inferred_provisional
+    confidence: MEDIUM
+    better: 0.75
+    worse: -0.30
+    quadrant: Attractive
+    evidence: [D-01, AP-05, TC-004, FEAT-040-055]
+
+  - feature: "Code block language specifiers (W-006)"
+    category: A
+    kano_classification_provisional: true
+    classification_mode: inferred_provisional
+    confidence: LOW
+    better: 0.60
+    worse: -0.20
+    quadrant: Attractive
+    evidence: [W-006, HYP-008]
+
+on_send:
+  from_agent: ux-kano-analyst
+  engagement_id: UX-040-003
+  feature_count_total: 13   # 4M + 4O + 4A + 1Split (Split counted separately from 4 Attractive)
+  handoff_feature_count_confirmed: 12   # 13 minus 1 SPLIT requiring domain expert resolution
+  respondent_count: 0
+  statistical_adequacy: provisional_pending_survey
+  category_distribution:
+    must_be: 4
+    performance: 4
+    attractive: 4
+    split: 1
+    indifferent: 0
+    reverse: 0
+  split_count: 1
+  conflict_count: 2
+  sample_size_confidence: LOW
+  lifecycle_features_assessed: 8
+  artifact_path: projects/PROJ-040-documentation/work/EPIC-040-001/ux/FEAT-040-003/ux-kano-analyst-output.md
+
+notes:
+  - "Classifications are INFERRED from Phase 1a evidence proxies (JTBD, B=MAP, ICE, competitive analysis, QG-2 triple-convergence). No user survey administered."
+  - "TC-002 and TC-004 elevated from QG-2 seed of 'Performance' to Must-be — activation-blocking nature justifies upgrade per SJ-001/SJ-002."
+  - "WCAG lifecycle migration: Attractive → Performance within 6–12 months per EAA 2025 enforcement (SJ-007)."
+  - "Breadcrumbs + search lifecycle: Approaching Must-be transition within 6–12 months per competitive pressure (SJ-008)."
+  - "User survey (N=20+) recommended before treating classifications as authoritative for roadmap commitments (P-022 / Berger et al. 1993)."
+  - "Self-score 0.930 is MEDIUM confidence; fundamental limitation is zero survey respondents."

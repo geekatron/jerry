@@ -8,15 +8,18 @@ criticality: C3
 quality_threshold: 0.92
 iteration_ceiling: 7
 
-status: under_review   # iter-2 complete, self 0.861; awaiting adv review iter-2
+status: complete   # iter-4 adv review PASS (0.9205); exit_iteration_cycle=true
 dispatched_at: "2026-04-20T19:20:00Z"
 returned_at: "2026-04-20T19:30:00Z"
-iteration: 1
+iteration: 4
+adv_review_iter3_completed_at: "2026-04-20T20:00:00Z"
+iter4_surgical_completed_at: "2026-04-20T20:30:00Z"
+adv_review_iter4_completed_at: "2026-04-20T21:00:00Z"
 
 artifact_path: "projects/PROJ-040-documentation/work/EPIC-040-001/ux/FEAT-040-006/ux-behavior-diagnostician-output.md"
 artifact_verified: true
 artifact_persisted_by: "orchestrator"  # T1 agent
-self_reported_quality_score: 0.84
+self_reported_quality_score: 0.912
 confidence: 0.70
 blockers: []
 
@@ -42,14 +45,89 @@ score_history:
       - "PM-001/IN-002: INSTALLATION.md steps counted in 9-step chain but surface not analyzed behaviorally — circular evidence"
       - "DA-001: Prompt Step 1 partial-pass too quick; hidden-branch fix (Intervention #1) IS a Facilitator-prompt redesign, meaning prompts may be primary bottleneck not Ability"
       - "PM-003/DA-003: Interventions #4 and #3 contraindicated by the model's own conclusions"
+  - iteration: 2
+    composite: 0.871
+    self_reported: 0.861
+    delta_self_vs_adv: +0.010
+    verdict: REVISE
+    review_path: "orchestration/reviews/FEAT-040-006-adv-review-iter-2.md"
+    critical_blockers: []
+    major_blockers:
+      - "CC-001-i2: 8 actions count stated but not enumerated — Completeness/Traceability gap"
+      - "DA-001-i2: Dual-bottleneck sufficiency condition unstated — Methodological Rigor/Actionability gap"
+      - "PM-001-i2: 15-min threshold has no mitigation pathway — Actionability gap"
+      - "IN-001-i2: Brain Cycles calibration shows no adjustment (general=dev=2) — Internal Consistency/Methodological Rigor gap"
+      - "FM-001-i2: Dual motivation table cross-framework relationship unexplained — Methodological Rigor gap"
+  - iteration: 4
+    composite: 0.9205
+    self_reported: 0.912
+    delta_self_vs_adv: +0.0085
+    verdict: PASS
+    review_path: "orchestration/reviews/FEAT-040-006-adv-review-iter-4.md"
+    closures:
+      - "FM-001-i3: Sufficiency condition complete-form with M-clause — all 3 B=MAP factors now in formal rule — VERIFIED CLOSED"
+      - "IC-fix: INSTALLATION.md Synthesis entry reclassified as scope-design-decision — VERIFIED CLOSED"
+      - "IN-001-i3: Intervention #4 extended with output-format expectation note for <project-context> XML — VERIFIED CLOSED"
+      - "FM-002-i3: Handoff YAML confidence derivation comment added (baseline 0.75 -0.05 -0.05 = 0.65) — VERIFIED CLOSED"
+      - "FM-003-i3: Brain Cycles vs Non-Routine evidence demarcated (number-of-decisions vs familiarity-of-options) — VERIFIED CLOSED"
+    dimension_scores:
+      completeness: 0.94
+      internal_consistency: 0.94
+      methodological_rigor: 0.93
+      evidence_quality: 0.82
+      actionability: 0.95
+      traceability: 0.93
+    new_minor_findings:
+      - "IN-001-i4: Intervention #4 XML output-format note may describe <project-context> at wrong step (session injection vs skill invocation output)"
+      - "PM-001-i4: M-escalation condition lacks lead indicator connection to SUPR-Q validation pathway"
+    margin: +0.0005
+    pass_robustness: "If EQ=0.81 (conservative), composite=0.9190 — still PASS"
+  - iteration: 3
+    composite: 0.900
+    self_reported: 0.905
+    delta_self_vs_adv: -0.005
+    verdict: REVISE
+    review_path: "orchestration/reviews/FEAT-040-006-adv-review-iter-3.md"
+    closures:
+      - "CC-001-i2: 8-action enumeration table added to Observation Scope — VERIFIED CLOSED"
+      - "FM-001-i2: Dual table structure explained; min-operator scoped to Fogg pairs only; SDT as corroborating lens — VERIFIED CLOSED"
+      - "IN-001-i2: Brain Cycles 3-tier calibration scale added; General=1 corrected; dev=2 explained via dev-novel elements — VERIFIED CLOSED"
+      - "DA-001-i2: Sufficiency condition formalized as explicit inference rule with minimum intervention set — VERIFIED CLOSED"
+      - "PM-001-i2: 15-min threshold validation pathway added (Phase 1 CLI telemetry + Phase 2 SUPR-Q) — VERIFIED CLOSED"
+    new_minor_findings:
+      - "FM-001-i3: Sufficiency condition M-clause absent from formal rule"
+      - "FM-002-i3: YAML confidence 0.65 without derivation formula"
+      - "FM-003-i3: Brain Cycles / Non-Routine evidence source overlap"
+      - "DA-001-i3: Min-operator segment-conservative for early adopters"
+      - "PM-001-i3: Step 3 assumed highest-friction; Step 2/Step 4 alternatives not ranked"
+      - "IN-001-i3: Intervention #4 gaps output-format surprise for XML"
+    critical_blockers: []
+    major_blockers: []
 
 adv_review:
-  status: complete_iter_1
+  status: complete
+  final_verdict: PASS
+  exit_iteration_cycle: true
   iter_1_verdict: REVISE
   iter_1_score: 0.765
-  iter_2_status: complete
+  iter_2_verdict: REVISE
+  iter_2_score: 0.871
   iter_2_self_score: 0.861
   iter_2_changes: "Bottleneck reclassified Multiple (Prompt+Ability); motivation min-operator borderline; INSTALLATION.md out-of-scope gate; #3 replaced with progressive disclosure; #5 sequenced post-Ability-fix"
-  next_iteration: "adv review iter-2 dispatching"
+  iter_3_verdict: REVISE
+  iter_3_score: 0.900
+  iter_3_self_score: 0.905
+  iter_3_delta_self_vs_adv: -0.005
+  iter_3_changes: "5 Major findings closed surgical: 8-action enumeration; cross-framework min-operator clarified; Brain Cycles 3-tier calibration (general=1/dev=2 distinction); sufficiency condition formalized; 15-min threshold validation pathway (Phase 1 telemetry + Phase 2 SUPR-Q)"
+  iter_3_remaining: "12 Minor findings; 0 Critical, 0 Major; gap 0.020 to threshold"
+  iter_4_self_score: 0.912
+  iter_4_adv_score: 0.9205
+  iter_4_delta_self_vs_adv: +0.0085
+  iter_4_verdict: PASS
+  iter_4_margin: +0.0005
+  iter_4_changes: "5 Minor findings closed surgical: FM-001-i3 M-clause sufficiency; IC scope-axiom notation; IN-001-i3 Intervention #4 output-format note; FM-002-i3 YAML confidence derivation; FM-003-i3 Brain Cycles vs Non-Routine demarcation"
+  iter_4_dimension_scores: "C=0.94 IC=0.94 MR=0.93 EQ=0.82 AC=0.95 TR=0.93"
+  iter_4_remaining_minor: "IN-001-i4 (XML timing), PM-001-i4 (M-escalation lead indicator) — do not affect diagnosis validity"
+  next_iteration: "none — PASS achieved; exit iteration cycle"
   required_strategies: [S-007, S-002, S-014, S-004, S-012, S-013]
   ordering_constraint: "S-003 MUST precede S-002 if both run (H-16)"

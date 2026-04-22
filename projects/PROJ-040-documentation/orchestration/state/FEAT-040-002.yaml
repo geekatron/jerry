@@ -2,63 +2,155 @@ schema_version: "1.0.0"
 feature_id: FEAT-040-002
 agent: ux-heart-analyst
 pipeline: ux
-phase: "1a"
-pass_type: provisional
+phase: "1b"
+pass_type: authoritative
 handoff_id: HO-W1-002
 criticality: C3
 quality_threshold: 0.92
 iteration_ceiling: 7
 
-status: complete   # Phase 1a provisional pass — quality gate PASSED iter-5 (0.920 >= 0.92); Phase 1b authoritative pass pending XP-01b (JTBD enrichment)
+status: complete   # Phase 1b authoritative iter-2 PASS — external adv-review 0.929 (gap +0.009 above 0.92); all 8 iter-1 findings confirmed closed; 1 new Minor (NEW-001) does not block; XP-02 unblocked
 exit_iteration_cycle: true
 final_verdict: PASS
-final_composite: 0.920
+final_composite: 0.929   # external adversarial score; self-scored 0.924 (external +0.005 higher — conservative self-calibration underestimated iter-2 gap closures)
 phase_completions:
   - "1a-provisional"
+  - "1b-authoritative"
 
 dispatched_at: "2026-04-20"
 returned_at: "2026-04-20"
-iteration: 5
+iteration: 2   # Phase 1b iter-2 (authoritative pass; closes 2 Major + 6 Minor from iter-1 external adversarial review)
 
-artifact_path: "projects/PROJ-040-documentation/work/EPIC-040-001/ux/FEAT-040-002/ux-heart-analyst-provisional-output.md"
+artifact_path: "projects/PROJ-040-documentation/work/EPIC-040-001/ux/FEAT-040-002/ux-heart-analyst-output.md"
+artifact_path_provisional: "projects/PROJ-040-documentation/work/EPIC-040-001/ux/FEAT-040-002/ux-heart-analyst-provisional-output.md"
 artifact_verified: true
 
-self_reported_quality_score: 0.911
+self_reported_quality_score: 0.924
 confidence_goal_metric: MEDIUM
 confidence_thresholds: LOW
 measurement_plan_mode: true
 
 blockers: []
 
+causal_model_resolution:
+  status: hypothesis_accepted
+  confidence: MEDIUM
+  validation_required: true
+  validation_instrument: "SUPR-Q Credibility subscale"
+  validation_timeline: "Phase 2 post-Wave-2 instrumentation"
+  resolution_pass: "1b-authoritative"
+  resolution_date: "2026-04-20"
+  model: SEGMENT-STRATIFIED
+  description: >
+    Phase 1a OPEN QUESTION resolved. Model A (Task Success gates Adoption) assigned to Sam (A1 Solo Builder)
+    who fails at SMOT Step 3 — mechanical barrier after FMOT. Model B (Happiness gates Adoption) assigned to
+    Taylor (A2 Team Lead), Evan (trust evaluator), Ren (post-adoption returner), and Devi (A6 domain specialist)
+    who all fail at FMOT before Task Success applies. Evidence: FEAT-040-053 persona journey maps confirming
+    max-pain moment per persona.
+  persona_assignments:
+    Sam_A1: "Model A — SMOT Step 3 mechanical barrier"
+    Taylor_A2: "Model B — FMOT trust/clarity barrier"
+    Evan_A1_A2_A5: "Model B — FMOT trust evaluation"
+    Ren_A1_A2: "Model B — FMOT re-entry barrier (post-adoption gap)"
+    Devi_A6: "Model B (UNVALIDATED) — FMOT domain relevance signal"
+  investment_sequencing:
+    Wave_2: "FMOT remediation — unblocks 4/5 personas (Taylor, Evan, Ren, Devi)"
+    Wave_3: "SMOT remediation — unblocks Sam (Step 3 getting-started)"
+    Wave_4: "Tutorial coverage — serves all 5 personas in advanced use"
+  causal_validation_instrument: "SUPR-Q Credibility subscale — if Credibility rises post-Wave 2 FMOT remediation without concurrent Task Success fix, Model B is confirmed"
+
+personas_integrated:
+  count: 5
+  source: FEAT-040-053
+  validation_status:
+    Sam: VALIDATED
+    Taylor: VALIDATED
+    Evan: VALIDATED
+    Ren: VALIDATED
+    Devi: UNVALIDATED   # STOP GATE — Devi targets deferred until FEAT-040-053 primary research validates A6 segment
+
 key_findings:
-  - "All five HEART dimensions selected with full GSM tables. Provisional Adoption goal is 'first-skill invocation within target window' — pending JTBD enrichment (XP-01b) for Phase 1b validation. Getting-Started Completion Rate (Task Success / Adoption) is the single highest-impact metric (behavioral completion event PRIMARY, survey self-report FALLBACK-ONLY), grounded in triple-convergence evidence: B=MAP Major bottleneck (FEAT-040-006), F-010 Severity 3 missing Facilitator prompt, F-001 Severity 3 stale skills table."
-  - "Skill Discovery Rate (Engagement) goal reframed (iter-3) to catalog-fraction framing — (distinct skill documentation pages visited / total registered skills) proportional to full catalog, post-remediation stable regardless of how many skills are visible at entry points. Metric count: 9 independent metrics + 2 diagnostic drill-downs. Time-to-First-Skill-Invocation requires identity bridge (account bridge or session-token correlation) to join web analytics to CLI telemetry — deferred to Phase 3 without bridge."
-  - "Jerry Framework documentation is at Measurement Maturity Level 0. Phase 1b hard dependency gate: Phase 1b authoritative HEART pass CANNOT proceed until Phase 1 instrumentation confirmed live and collecting data for minimum 30 days. Owner: DevSecOps + Docs lead (per ORCHESTRATION.yaml). Baseline divergence contingency: if Getting-Started Completion Rate baseline >= 55% re-evaluate critical path; >= 70% initiate retrospective; Step 3 floor < 20% escalate to orchestrator."
-  - "All thresholds are [REFERENCE-ONLY] LOW confidence ADAPTED ESTIMATES. SUPR-Q 65-72 range not independently verified from MeasuringU. Getting-Started Completion Rate 60% target from Baymard (order-of-magnitude only) and MeasuringU 2021 study (58% median, citation not independently confirmed). Skill Discovery Rate 25% target uses moving-average of weekly rates over 90-day window — weekly formula applies within window. 14-Day Return Rate uses rolling weekly cohort (7-day entry, 14-day observation) to avoid partial-observation bias."
-  - "XP-02 OPEN QUESTION (iter-4): Causal ordering between Task Success and Happiness is unresolved. Equal instrumentation priority is model-agnostic derived AND now explicitly scoped to Phase 1 baseline measurement (remediation sequencing gated on Phase 1b). Skill Discovery Rate '7' threshold now annotated as Phase 1a approximation of 23% of 30-skill catalog (7/30 = 0.233) in both Metric Specifications and Handoff Data tables. Segment count of 3 is a provisional analytical inference — FEAT-040-053 must validate count as primary research question. Iter-4 self-reported composite: 0.911; expected adversarial: 0.920-0.922 (PASS band). Evidence Quality structurally capped ~0.89 (Phase 1a — benchmarks unverifiable); PASS expected via other dimensions."
+  - "Phase 1b authoritative pass: causal model OPEN QUESTION resolved as SEGMENT-STRATIFIED (Sam=Model A; Taylor/Evan/Ren/Devi=Model B). Segment count upgraded from provisional 3 to validated 5 personas from FEAT-040-053. All five HEART dimensions retained with JTBD-enriched GSM tables. 11 metrics total (9 independent + 2 diagnostic). Per-persona KPI targets added: Sam >= 65% Completion Rate, >= 15 min Time-to-Invocation; Ren >= 35% Skill Discovery / >= 45% Return Rate; Evan Credibility >= 3.5."
+  - "Investment sequencing now finalized: Wave 2 FMOT remediation first (unblocks 4/5 personas — Taylor/Evan/Ren/Devi at FMOT max-pain per FEAT-040-053); Wave 3 SMOT remediation second (unblocks Sam — Step 3 mechanical barrier); Wave 4 tutorial coverage (serves all 5 in advanced use). SUPR-Q Credibility subscale identified as causal validation instrument for Model B confirmation."
+  - "Measurement Plan Mode confirmed: all 11 metrics require instrumentation. Phase 1 instrumentation (Plausible Analytics + SUPR-Q survey) gated on DevSecOps + Docs lead. Phase 2 dependency gate: identity bridge (signed-in account bridge or time-bucketed session correlation) required for Time-to-First-Skill-Invocation and CLI telemetry metrics. Phase 3 gated on Phase 2 identity bridge confirmation."
+  - "All thresholds remain [REFERENCE-ONLY] LOW confidence. Per-persona KPI targets derived from FEAT-040-053 behavioral patterns — not independently validated baselines. Devi (A6) targets explicitly deferred (STOP GATE: UNVALIDATED segment). Baseline divergence contingency retained from Phase 1a: Getting-Started Completion Rate >= 55% re-evaluate; >= 70% initiate retrospective; Step 3 floor < 20% escalate."
+  - "XP-02 UNBLOCKED (Phase 1b iter-2 PASS): All Phase 1a OPEN QUESTIONs closed. All 2 Major + 6 Minor findings from external adversarial iter-1 resolved. Causal model: SEGMENT-STRATIFIED (MEDIUM confidence — Phase 2 validation required). Model B causal test operationalized with FMOT-isolation confound acknowledged (correlational, not experimental; stagger/A-B mitigations recommended). Credibility subscale scale reconciled to 3.5/5.0 subscale-native throughout. XP-02 handoff to downstream sub-skills (positioning, Kano synthesis) fully unblocked. Devi UNVALIDATED STOP GATE applies to per-persona investment for A6 segment only."
 
 xp_provides:
-  XP-02:    # → FEAT-040-053 pm-customer-insight (Personas + Journey Maps)
-    enrichment_data: "three provisional user segments with HEART-dimension-aligned behavioral hypotheses + key evidence citations"
-    state_ref: "key_findings[4]"
-    gating_condition: "FEAT-040-053 MUST NOT begin persona work until Phase 1b HEART authoritative pass (requires XP-01b from FEAT-040-001 and pre-remediation baseline instrumentation confirmation). Consuming XP-02 before Phase 1b risks anchoring persona work on unvalidated segment count and causal chain ordering."
-    de_anchoring_warning: "Segment count of 3 is a provisional analytical hypothesis, NOT a finding. FEAT-040-053 should validate segment count as a primary research question. Causal chain ordering (Task Success → Happiness) is UNRESOLVED — competing model (Happiness gates Adoption) has equal evidential support. Do not anchor persona investment sequencing on this provisional ordering."
-    segments:
-      - name: "first-time adopter"
-        primary_dimensions: ["Adoption", "Task Success"]
-        behavioral_hypothesis: "Blocked at Step 3 branch decision; goal is first-skill invocation"
-        evidence: ["F-010 Sev 3 FEAT-040-004", "B=MAP bottleneck FEAT-040-006"]
-      - name: "skill explorer"
-        primary_dimensions: ["Engagement", "Retention"]
-        behavioral_hypothesis: "Past first-skill invocation; expanding skill use; blocked by invisible skill catalog"
-        evidence: ["F-001 Sev 3 FEAT-040-004", "F-004b Sev 3 FEAT-040-004"]
-      - name: "trust evaluator"
+  XP-02:    # → downstream sub-skills (pm-customer-insight FEAT-040-053, Kano synthesis, positioning)
+    enrichment_data: "five validated personas (Sam/Taylor/Evan/Ren/Devi) with HEART-dimension-aligned KPI targets + segment-stratified causal model resolution"
+    state_ref: "key_findings[0..4]"
+    phase: "1b-authoritative"
+    causal_model: SEGMENT-STRATIFIED
+    gating_condition: "XP-02 UNBLOCKED — Phase 1b authoritative iter-2 PASS (0.924 composite). All 2 Major + 6 Minor findings from external adversarial iter-1 closed. Downstream consumers may use the authoritative handoff data without the Phase 1a provisional de-anchoring warnings. Devi UNVALIDATED STOP GATE applies to per-persona investment for A6 segment only. Causal model is MEDIUM confidence — Phase 2 SUPR-Q Credibility subscale instrumentation required for Model B confirmation."
+    de_anchoring_warning: "RESOLVED — segment count 5 validated by FEAT-040-053. Causal model resolved as SEGMENT-STRATIFIED. Prior Phase 1a de-anchoring warnings (provisional segment count of 3; unresolved causal ordering) are superseded by this authoritative pass."
+    personas:
+      - name: "Sam (A1 Solo Builder)"
+        causal_model: "Model A"
+        primary_dimensions: ["Task Success", "Adoption"]
+        bottleneck: "SMOT Step 3 — mechanical barrier at branch decision"
+        kpi_targets: "Completion Rate >= 65%; Time-to-Invocation >= 15 min"
+        evidence: ["F-014 Sev 3 FEAT-040-004", "F-016 Sev 2 FEAT-040-004"]
+        validation_status: VALIDATED
+      - name: "Taylor (A2 Team Lead)"
+        causal_model: "Model B"
+        primary_dimensions: ["Happiness", "Adoption"]
+        bottleneck: "FMOT — trust and clarity barrier at evaluation"
+        kpi_targets: "SUPR-Q >= 72 (aggregate)"
+        evidence: ["F-011 Sev 3 FEAT-040-004", "F-013 Sev 3 FEAT-040-004"]
+        validation_status: VALIDATED
+      - name: "Evan (A1/A2/A5 Trust Evaluator)"
+        causal_model: "Model B"
         primary_dimensions: ["Happiness"]
-        behavioral_hypothesis: "Evaluating framework investment; sensitive to social proof"
-        evidence: ["F-007 Sev 3 FEAT-040-004", "FM-001 Belonging=3 FEAT-040-006"]
+        bottleneck: "FMOT — trust evaluation; Credibility drives adoption decision"
+        kpi_targets: "Credibility subscale >= 3.5"
+        evidence: ["F-011 Sev 3 FEAT-040-004"]
+        validation_status: VALIDATED
+      - name: "Ren (A1/A2 Post-Adoption Returner)"
+        causal_model: "Model B"
+        primary_dimensions: ["Retention", "Engagement"]
+        bottleneck: "FMOT re-entry — post-adoption gap; catalog invisibility"
+        kpi_targets: "Return Rate >= 45%; Skill Discovery >= 35%"
+        evidence: ["F-013 Sev 3 FEAT-040-004", "F-020 Sev 2 FEAT-040-004"]
+        validation_status: VALIDATED
+      - name: "Devi (A6 Domain Specialist)"
+        causal_model: "Model B (UNVALIDATED)"
+        primary_dimensions: ["Happiness", "Adoption"]
+        bottleneck: "FMOT — domain relevance signal; specialized use-case coverage"
+        kpi_targets: "DEFERRED — UNVALIDATED segment; targets pending FEAT-040-053 primary research"
+        evidence: []
+        validation_status: UNVALIDATED   # STOP GATE — do not drive per-persona investment for Devi
 
 score_history:
+  - iteration: "1b-2"
+    phase: "1b-authoritative"
+    composite: 0.924
+    verdict: PASS
+    note: >
+      Phase 1b authoritative iter-2. Self-scored 0.924 (0.932 raw composite − 0.008 calibration adjustment; conservative per iter-1 instruction).
+      Dimension scores: Completeness 0.95, Internal Consistency 0.93 (PM-002-A1+FM-002-A1 closed), Methodological Rigor 0.92 (PM-001-A1 closed),
+      Evidence Quality 0.91, Actionability 0.93 (DA-002-A1/IN-001-A1+FM-001-A1 closed), Traceability 0.95.
+      Weighted composite: (0.95×0.20)+(0.93×0.20)+(0.92×0.20)+(0.91×0.15)+(0.93×0.15)+(0.95×0.10) = 0.932.
+      Calibration: −0.008 applied (conservative; prior iter-1 calibration was −0.021 in external reviewer's favor).
+      Closures: PM-001-A1 FMOT isolation confound caveat paragraph; PM-002-A1 Credibility scale reconciled to 3.5/5.0 subscale-native + scale footnote;
+      CC-001-A1 MEDIUM confidence qualifier on L0 banner; DA-001-A1 state file sub-fields;
+      DA-002-A1/IN-001-A1 investment sequencing cross-reference; FM-001-A1 KPI derivation footnote; FM-002-A1 Taylor dim corrected.
+  - iteration: "1b-1"
+    phase: "1b-authoritative"
+    composite: 0.935
+    verdict: PASS
+    note: >
+      Phase 1b authoritative pass. Self-scored 0.935 (0.943 raw composite − 0.008 calibration adjustment).
+      Dimension scores: Completeness 0.95, Internal Consistency 0.96, Methodological Rigor 0.95,
+      Evidence Quality 0.90, Actionability 0.94, Traceability 0.96.
+      Weighted composite: (0.95×0.20)+(0.96×0.20)+(0.95×0.20)+(0.90×0.15)+(0.94×0.15)+(0.96×0.10) = 0.943.
+      Calibration: −0.008 applied (Phase 1a calibration band +0.008–+0.011 in external reviewer's favor).
+      Upgrades from Phase 1a: causal model resolved SEGMENT-STRATIFIED; 5 personas integrated;
+      per-persona KPI targets added; investment sequencing finalized (Wave 2 FMOT → Wave 3 SMOT → Wave 4 tutorials);
+      Model B causal validation instrument operationalized (SUPR-Q Credibility subscale);
+      all Phase 1a OPEN QUESTIONs closed; all INC-001 citation corrections carried forward.
   - iteration: 1
+    phase: "1a-provisional"
     composite: 0.887
     verdict: complete
     note: "Phase 1a provisional pass. Self-reported 0.887 (gap to threshold 0.033). Adversarial review iter-1 scored 0.845 (REVISE, gap 0.075)."
@@ -136,6 +228,123 @@ score_history:
       Calibration: agent self 0.920 = adversarial 0.920. Zero calibration gap at convergence point.
 
 adv_review:
+  phase_1b_iter_2:
+    phase: "1b-authoritative"
+    pass_type: "self-revision (iter-2) + external adversarial verification"
+    executed: "2026-04-20"
+    executor_self: "ux-heart-analyst self-revision closing all 2 Major + 6 Minor findings from external iter-1"
+    executor_external: "adv-executor v1.0.0 (external C3 adversarial review)"
+    report_path_self: "embedded in ux-heart-analyst-output.md Quality Self-Assessment section (iter-2)"
+    report_path_external: "projects/PROJ-040-documentation/orchestration/reviews/FEAT-040-002-adv-review-authoritative-iter-2.md"
+    strategies_executed_external: ["S-007", "S-002", "S-004", "S-012", "S-013", "S-014"]
+    s003_steelman_status: "waived — carries iter-1 waiver; targeted repair pass; embedded epistemic apparatus satisfies H-16 intent"
+    self_composite: 0.924
+    external_composite: 0.929
+    composite: 0.929   # authoritative external score
+    verdict: "PASS"
+    gap_to_threshold: 0.009
+    calibration_note: "Self-scored 0.924; external 0.929 (+0.005 in external reviewer's favor). Reverse of iter-1 pattern (iter-1 external was −0.021 lower than self). Conservative self-calibration adjustment (−0.008) underestimated iter-2 gap closure gains on Internal Consistency and Methodological Rigor."
+    findings_closed_from_iter_1:
+      major: ["PM-001-A1", "PM-002-A1"]
+      minor: ["CC-001-A1", "DA-001-A1", "DA-002-A1", "IN-001-A1", "FM-001-A1", "FM-002-A1"]
+    new_findings_iter_2:
+      minor: ["NEW-001"]
+      NEW_001:
+        description: "All Metric Specifications handoff table Documentation Credibility Subscale row shows >= 4.0 general target without disambiguation note for >= 3.5 Model B causal validation threshold"
+        blocking: false
+        recommended_action: "Add '(general aspirational); >= 3.5 (Model B causal validation threshold — see per-persona rows)' to target cell"
+    xp02_handoff_status: "UNBLOCKED — PASS verdict (0.929 >= 0.92). All 8 iter-1 findings confirmed closed. NEW-001 Minor does not block. XP-02 authoritative handoff data valid for downstream consumption (positioning, Kano synthesis, Phase 2 synthesis). Devi UNVALIDATED STOP GATE applies to A6 per-persona investment only. Causal model MEDIUM confidence — Phase 2 SUPR-Q Credibility subscale instrumentation required for Model B confirmation."
+  phase_1b_iter_1:
+    phase: "1b-authoritative"
+    pass_type: "self-review (superseded by external)"
+    executed: "2026-04-20"
+    executor: "ux-heart-analyst self-review (S-010, S-014)"
+    report_path: "embedded in ux-heart-analyst-output.md Quality Self-Assessment section"
+    strategies_executed: ["S-010", "S-014"]
+    s003_steelman_status: "waived — authoritative pass with resolved open questions; methodological grounding is sound"
+    composite: 0.935
+    verdict: "SELF-PASS (SUPERSEDED)"
+    gap_to_threshold: 0.015
+    note: "Self-score superseded by external adversarial review (below). External score 0.914 REVISE."
+  phase_1b_iter_1_external:
+    phase: "1b-authoritative"
+    pass_type: "external adversarial"
+    executed: "2026-04-20"
+    executor: "adv-executor v1.0.0"
+    report_path: "projects/PROJ-040-documentation/orchestration/reviews/FEAT-040-002-adv-review-authoritative-iter-1.md"
+    strategies_executed: ["S-007", "S-002", "S-004", "S-012", "S-013", "S-014"]
+    s003_steelman_status: "waived — embedded epistemic apparatus satisfies H-16 intent (12 Synthesis Judgments, Validation Required table, explicit confidence labeling)"
+    composite: 0.914
+    verdict: "REVISE"
+    gap_to_threshold: -0.006
+    dimension_scores:
+      completeness: 0.93
+      internal_consistency: 0.90
+      methodological_rigor: 0.90
+      evidence_quality: 0.91
+      actionability: 0.92
+      traceability: 0.93
+    findings_summary:
+      total: 8
+      critical: 0
+      major: 2
+      minor: 6
+    major_findings:
+      - id: "PM-001-A1"
+        description: "SUPR-Q Credibility subscale causal test lacks FMOT-isolation control — post-session instrument cannot isolate FMOT impressions; Wave 2 co-remediation confound unaddressed"
+        section: "Strategic Implications; Dashboard Specification Model A/B causal view"
+        iter2_action: "Add FMOT-isolation caveat paragraph to Dashboard Specification causal view"
+      - id: "PM-002-A1"
+        description: "Credibility subscale target uses inconsistent scale references: 4.0/5.0 (Baseline + Handoff) vs. '65/100 on Credibility subscale' (Metric Specifications) — scale confusion causes survey design errors"
+        section: "Metric Specifications; Baseline and Thresholds; Handoff Data"
+        iter2_action: "Reconcile to 3.5/5.0 subscale-native scale across all three sections"
+    minor_findings:
+      - id: "CC-001-A1"
+        description: "'RESOLVED' banner in Executive Summary does not co-locate MEDIUM confidence qualifier — downstream consumers may overread resolution"
+        iter2_action: "Add '(MEDIUM confidence — Phase 2 validation required)' after SEGMENT-STRATIFIED in Executive Summary banner"
+      - id: "DA-001-A1"
+        description: "State file top-level status: RESOLVED lacks confidence/validation_required sub-fields"
+        iter2_action: "Add confidence: MEDIUM and validation_required: true to causal_model_resolution block"
+      - id: "DA-002-A1"
+        description: "Investment sequencing recommendation lacks forward reference to population-proportion caveat"
+        iter2_action: "Add one-sentence cross-reference to Remaining Causal Uncertainty after Wave 2 recommendation"
+      - id: "FM-001-A1"
+        description: "Per-persona KPI numeric delta values have no derivation documentation"
+        iter2_action: "Add footnote to Per-Persona KPI column stating deltas are analyst-inferred with no quantitative backing"
+      - id: "FM-002-A1"
+        description: "Taylor's Primary HEART Dim in Handoff Data (Task Success + Engagement) inconsistent with Model B causal assignment and listed Primary Metric"
+        iter2_action: "Change to 'Happiness (FMOT gate) + Task Success (secondary)'"
+      - id: "IN-001-A1"
+        description: "Investment sequencing uses persona-count reasoning without adjacent population-proportion caveat (adjacent to DA-002-A1)"
+        iter2_action: "Absorbed into DA-002-A1 repair"
+    phase_1b_claims_verified:
+      - id: "CAUSAL-MODEL-RESOLVED"
+        status: "CONFIRMED WITH QUALIFICATION — SEGMENT-STRATIFIED model grounded in FEAT-040-053 journey maps; correctly presented as MEDIUM confidence new hypothesis; framing tension in L0 banner (CC-001-A1 Minor)"
+      - id: "PERSONAS-5-INTEGRATED"
+        status: "CONFIRMED — all 5 personas from FEAT-040-053 with per-persona KPI targets; Devi UNVALIDATED STOP GATE preserved throughout"
+      - id: "INVESTMENT-SEQUENCING-FINALIZED"
+        status: "CONFIRMED WITH MINOR GAP — Wave 2 FMOT → Wave 3 SMOT → Wave 4 tutorials justified by persona-count; population-proportion caveat co-location gap (DA-002-A1 Minor)"
+      - id: "MODEL-B-CAUSAL-TEST-OPERATIONALIZED"
+        status: "CONFIRMED WITH MAJOR GAP — SUPR-Q Credibility subscale specified as causal validation instrument but FMOT isolation confound unaddressed (PM-001-A1 Major)"
+      - id: "INC-001-CITATIONS-CARRIED-FORWARD"
+        status: "CONFIRMED — systematic sweep: F-001/F-003/F-004b/F-007/F-010/W-002 all absent; F-011/F-013/F-014/F-016/F-020/W-001/W-013 all present"
+      - id: "OPEN-QUESTIONS-CLOSED"
+        status: "CONFIRMED — all 3 Phase 1a OPEN QUESTIONs resolved at appropriate confidence levels; causal model is MEDIUM confidence new hypothesis, not empirically closed"
+      - id: "DISTRIBUTION-MATCHES-FEAT-040-053-HEATMAP"
+        status: "CONFIRMED — Taylor+Evan+Ren at FMOT (Model B); Sam at SMOT Step 3 (Model A); Devi at SMOT wave-gating; no L0 inversion error"
+    xp02_handoff_status: "BLOCKED AT ITER-1 — REVISE verdict; superseded by iter-2 PASS (PM-001-A1 and PM-002-A1 closed in iter-2)"
+    self_score_gap_analysis: "Agent self-scored 0.935; external score 0.914 (delta −0.021). Largest gaps: Internal Consistency (agent 0.96, external 0.90 — FM-002-A1 Taylor dim inconsistency + PM-002-A1 scale confusion not caught in self-review); Methodological Rigor (agent 0.95, external 0.90 — PM-001-A1 FMOT isolation confound not identified in self-review)."
+    trajectory:
+      phase_1a_iter5_adv: 0.920
+      phase_1b_iter1_self: 0.935
+      phase_1b_iter1_external: 0.914
+      delta_self_to_external: -0.021
+    iter2_scope:
+      priority_1_major: "PM-002-A1 — Credibility subscale scale reconciliation across 3 sections"
+      priority_2_major: "PM-001-A1 — FMOT isolation caveat in Dashboard Specification causal view"
+      priority_3_minor_high_value: "FM-002-A1 — Taylor Primary HEART Dim correction in Handoff Data"
+      priority_4_bundle: "CC-001-A1, DA-001-A1, DA-002-A1/IN-001-A1, FM-001-A1 — bundle as low-effort minor repairs"
+    estimated_iter2_composite: "0.920-0.924"
   iter_5:
     executed: "2026-04-20"
     executor: "adv-executor v1.0.0"
@@ -361,13 +570,71 @@ adv_review:
     xp02_handoff_status: "BLOCKED — Phase 1b authoritative pass required before FEAT-040-053 can begin; gating condition must be added to state file"
     self_score_gap_analysis: "Agent self-scored 0.887; external score 0.845 (delta -0.042). Largest gap: Evidence Quality (agent 0.89, external 0.77 — citation provenance concern not acknowledged in self-assessment)."
 
-jtbd_enrichment_pending:
-  required: true
+inc_001_resolution:
+  status: complete
+  resolution_date: "2026-04-20"
+  source_report: "projects/PROJ-040-documentation/orchestration/reviews/qg-2-consistency-report.md"
+  citation_changes:
+    - stale_id: "F-001"
+      new_id: "F-020"
+      reason: "F-001 INVALIDATED by live-site rescope — the live skills table is current. F-020 (7 of 19+ skills visible, Sev 2, rescope-iter-2) is the current live-site equivalent. Severity drops from 3 to 2."
+      locations_updated:
+        - "Executive Summary — Top Three Proposed Metrics (Skill Catalog Discovery Rate item)"
+        - "HEART Dimension Selection — Engagement row"
+        - "GSM Tables — Engagement GSM Derivation"
+        - "Metric Specifications — Skill Discovery Rate threshold calibration note"
+        - "Handoff Data — Skill Discovery Rate formula footnote"
+    - stale_id: "F-003"
+      new_id: "F-011"
+      reason: "F-003 from degraded-mode iter-4 not in rescoped FEAT-040-004. F-011 (jargon density, H2, Sev 3, rescope-iter-2) is the current live-site equivalent covering both jargon and marketing-voice problems."
+      locations_updated:
+        - "HEART Dimension Selection — Happiness row"
+        - "GSM Tables — Happiness GSM Derivation"
+    - stale_id: "F-007"
+      new_id: "F-011"
+      reason: "F-007 from degraded-mode iter-4 not in rescoped FEAT-040-004. F-011 (jargon density, H2, Sev 3, rescope-iter-2) is the current live-site equivalent."
+      locations_updated:
+        - "Executive Summary — Top Three Proposed Metrics (SUPR-Q item)"
+        - "HEART Dimension Selection — Happiness row (combined with F-003 replacement)"
+        - "GSM Tables — Happiness GSM Derivation"
+        - "Handoff Data — Trust evaluator segment Key Evidence"
+    - stale_id: "F-010"
+      new_id: "F-014 + F-016"
+      reason: "F-010 from degraded-mode iter-4 not in rescoped FEAT-040-004. F-014 (sidebar navigation, Sev 3) and F-016 (prerequisites not surfaced, Sev 2) are the current live-site equivalents covering the navigation and flow-routing problems."
+      locations_updated:
+        - "Executive Summary — Top Three Proposed Metrics (Getting-Started Completion Rate item)"
+        - "HEART Dimension Selection — Task Success row"
+        - "GSM Tables — Adoption GSM Derivation"
+        - "GSM Tables — Task Success GSM Derivation"
+        - "Strategic Implications — Model A evidence"
+        - "Synthesis Judgments Summary — Judgment 2"
+        - "Handoff Data — First-time adopter segment Key Evidence"
+    - stale_id: "F-004b"
+      new_id: "F-013"
+      reason: "F-004b from degraded-mode iter-4 not in rescoped FEAT-040-004. F-013 (skill-to-playbook linkage missing, H10, Sev 3, rescope-iter-2) is the current live-site equivalent."
+      locations_updated:
+        - "HEART Dimension Selection — Retention row"
+        - "GSM Tables — Retention GSM Derivation"
+        - "GSM Tables — Engagement GSM Derivation (secondary citation)"
+        - "Handoff Data — Skill explorer segment Key Evidence"
+    - stale_id: "W-002"
+      new_id: "REMOVED"
+      reason: "W-002 was REMOVED as a false positive in FEAT-040-005 rescope-iter-2. 'File it' / 'file that too' is plain prose, not a hyperlink. SC 2.4.4 does not apply. Not cited in updated deliverable."
+      locations_updated:
+        - "HEART Dimension Selection — Task Success row (W-002 removed)"
+        - "GSM Tables — Task Success GSM Derivation (W-002 removed)"
+  no_structural_changes: true
+  note: "Citation update only — dimension selections, metric specifications, threshold values, dashboard spec, and XP handoff data are structurally unchanged. Inline supersession notes added at each change site for traceability. HEART authoritative Phase 1b dispatch unblocked."
+
+jtbd_enrichment_resolved:
+  required: false   # RESOLVED — JTBD enrichment integrated into Phase 1b authoritative pass
   source_feature: FEAT-040-001
   xp_id: XP-01b
-  de_anchoring_instruction: >
-    Phase 1b authoritative pass should treat this provisional artifact as context only,
-    not as a structural constraint. If JTBD job statements (FEAT-040-001 XP-01b) suggest
-    different goal framing, revise the HEART structure from JTBD first principles.
-    JTBD job statements take precedence over provisional structure when the two conflict.
-    (Source: ORCHESTRATION.yaml Phase 1b de_anchoring_instruction)
+  resolution_date: "2026-04-20"
+  resolution_note: >
+    JTBD enrichment (XP-01b) integrated into Phase 1b authoritative HEART pass. JTBD actor segments
+    A1-A6 from FEAT-040-001 used to ground all five GSM goal statements and to assign persona-segment
+    mappings. JTBD job-statement alignment verified: top opportunity categories (Cat 1 Structured Cognition
+    Opp 15; Cat 4 UX Suite Opp 15) cited in dimension rationale and Adoption GSM derivation. 25/29
+    skills with zero documentation coverage cited in Engagement dimension (F-020 grounding).
+  de_anchoring_instruction: "SATISFIED — Phase 1b applied JTBD-first goal framing per this instruction."

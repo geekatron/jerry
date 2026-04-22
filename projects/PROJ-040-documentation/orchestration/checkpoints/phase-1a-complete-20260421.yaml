@@ -1,0 +1,144 @@
+schema_version: "1.0.0"
+checkpoint_type: Phase 1a COMPLETE (9 of 9 PASS)
+checkpoint_time: "2026-04-21"
+wave: "Wave 1 Phase 1a"
+trigger: "All features reached PASS (>= 0.92 composite) with user approval to proceed"
+handoff_required: false   # QG-2 can dispatch without user intervention
+
+# =============================================================================
+# PHASE 1A FINAL FEATURE STATE
+# =============================================================================
+
+features:
+
+  FEAT-040-001:
+    agent: ux-jtbd-analyst
+    pipeline: ux
+    status: COMPLETE
+    final_score: 0.935
+    iterations_used: 7  # ceiling
+    artifact: "projects/PROJ-040-documentation/work/EPIC-040-001/ux/FEAT-040-001/ux-jtbd-analyst-output.md"
+    xp_provides: [XP-01, XP-01b, XP-02, XP-04]
+    trajectory: [0.824, 0.871, 0.898, 0.873, 0.844, 0.91, 0.935]
+    notes: "Arithmetic surgery in iter-6 + prose in iter-7 closed final gap after regression at iter-5"
+
+  FEAT-040-002:
+    agent: ux-heart-analyst
+    pipeline: ux
+    status: COMPLETE
+    final_score: 0.920
+    iterations_used: 5
+    artifact: "projects/PROJ-040-documentation/work/EPIC-040-001/ux/FEAT-040-002/ux-heart-analyst-provisional-output.md"
+    xp_provides: [XP-02]   # gated pending Phase 1b HEART authoritative pass
+    trajectory: [0.845, 0.889, 0.913, 0.919, 0.920]
+    notes: "Provisional Phase 1a pass; authoritative Phase 1b pass scheduled post-instrumentation baseline"
+
+  FEAT-040-004:
+    agent: ux-heuristic-evaluator
+    pipeline: ux
+    status: COMPLETE
+    final_score: 0.922
+    iterations_used: "7 degraded + 3 rescope = 10 total (rescope-iter-3)"
+    artifact: "projects/PROJ-040-documentation/work/EPIC-040-001/ux/FEAT-040-004/ux-heuristic-evaluator-output.md"
+    backup: "projects/PROJ-040-documentation/work/EPIC-040-001/ux/FEAT-040-004/ux-heuristic-evaluator-output.md.iter-7-degraded.md"
+    xp_provides: [XP-05]
+    trajectory: "degraded [0.75, 0.82, 0.87, 0.84, 0.86, 0.89, 0.90] → rescope [0.845, 0.911, 0.922]"
+    notes: "RESCOPE corrected orchestrator scope error — original evaluation ran against static markdown. Live site + 3-persona simulation used for rescope."
+
+  FEAT-040-005:
+    agent: ux-inclusive-evaluator
+    pipeline: ux
+    status: COMPLETE
+    final_score: 0.921
+    iterations_used: "6 Path B + 5 rescope = 11 total (rescope-iter-5)"
+    artifact: "projects/PROJ-040-documentation/work/EPIC-040-001/ux/FEAT-040-005/ux-inclusive-evaluator-output.md"
+    backup: "projects/PROJ-040-documentation/work/EPIC-040-001/ux/FEAT-040-005/ux-inclusive-evaluator-output.path-b-degraded.md"
+    xp_provides: [XP-05]
+    trajectory: "Path B [0.64, 0.80, 0.848, 0.865, 0.88, 0.88] → rescope [0.807, 0.885, 0.897, 0.902, 0.921]"
+    notes: "Path A evidence integration (WebFetch raw HTML + CSS read) upgraded 3 CANNOT DETERMINE verdicts to PASS"
+
+  FEAT-040-006:
+    agent: ux-behavior-diagnostician
+    pipeline: ux
+    status: COMPLETE
+    final_score: 0.9205
+    iterations_used: 4
+    artifact: "projects/PROJ-040-documentation/work/EPIC-040-001/ux/FEAT-040-006/ux-behavior-diagnostician-output.md"
+    trajectory: [0.765, 0.871, 0.900, 0.9205]
+
+  FEAT-040-007:
+    agent: ux-lean-ux-facilitator
+    pipeline: ux
+    status: COMPLETE
+    final_score: 0.9220
+    iterations_used: 6
+    artifact: "projects/PROJ-040-documentation/work/EPIC-040-001/ux/FEAT-040-007/ux-lean-ux-facilitator-output.md"
+    trajectory: [0.84, 0.873, 0.886, 0.905, 0.9185, 0.9220]
+
+  FEAT-040-008:
+    agent: ux-atomic-architect
+    pipeline: ux
+    status: COMPLETE
+    final_score: 0.927
+    iterations_used: 4
+    artifact: "projects/PROJ-040-documentation/work/EPIC-040-001/ux/FEAT-040-008/ux-atomic-architect-output.md"
+    trajectory: [0.81, 0.865, 0.914, 0.927]
+
+  FEAT-040-055:
+    agent: pm-competitive-analyst
+    pipeline: pm
+    status: COMPLETE
+    final_score: 0.93
+    iterations_used: 2
+    artifact: "projects/PROJ-040-documentation/work/EPIC-040-001/pm/FEAT-040-055/pm-competitive-analyst-output.md"
+    xp_provides: [XP-03]
+    trajectory: [0.859, 0.93]
+
+  FEAT-040-056:
+    agent: ps-researcher
+    pipeline: research
+    status: COMPLETE
+    final_score: 0.922
+    iterations_used: 4
+    artifact: "projects/PROJ-040-documentation/work/EPIC-040-001/research/FEAT-040-056/ps-researcher-output.md"
+    xp_provides: [XP-07]
+    trajectory: [0.859, 0.906, 0.918, 0.922]
+
+# =============================================================================
+# LESSONS CAPTURED
+# =============================================================================
+
+lessons:
+  orchestrator_discipline:
+    - "AE-006d EMERGENCY checkpoint recovered cleanly to Path C — structured pause + resume preserved all state"
+    - "Scope verification BEFORE evaluation: live site at https://jerry.geekatron.org/ was discoverable via `gh repo view` in 5 seconds but was missed at orchestration kickoff, causing 004/005 to waste ~13 iterations against wrong evidence surface"
+    - "Multi-evaluator methodology: single-agent persona simulation is NOT equivalent to independent Nielsen evaluators — must disclose when claiming coverage rates"
+    - "P-022 self-monitoring: agents occasionally claim edits applied without actually applying them (FEAT-040-004 iter-7 margin items). Spot-verification required on final iterations."
+    - "Surgical > comprehensive revisions: 2-5 targeted edits converge reliably; comprehensive rewrites risk regression (FEAT-040-001 iter-3 → iter-4 pattern)"
+  agent_patterns:
+    - "Self-score calibration stabilized by iter-3 with ~+0.01 gap typical"
+    - "REJECTED → REVISE transitions achievable in 1 iteration via scope redefinition (FEAT-040-005 Path B)"
+    - "Structural ceilings should be EXPLICITLY MODELED at iter-2 — late-stage ceiling discovery wastes iterations"
+
+# =============================================================================
+# XP HANDOFFS UNBLOCKED FOR PHASE 1B
+# =============================================================================
+
+xp_handoffs_unblocked:
+  XP-01: "FEAT-040-001 → FEAT-040-003 Kano (Phase 1b) — opportunity ranking informs feature classification"
+  XP-01b: "FEAT-040-001 → FEAT-040-002 (Phase 1b authoritative HEART) — JTBD enrichment for final HEART pass"
+  XP-02: "FEAT-040-001 + FEAT-040-002 → FEAT-040-053 Personas (Phase 1b)"
+  XP-03: "FEAT-040-055 → FEAT-040-054 Positioning (Phase 1b)"
+  XP-04: "FEAT-040-001 → FEAT-040-054 Positioning (Phase 1b) — switch force messaging"
+  XP-05: "FEAT-040-004 + FEAT-040-005 paired for QG-2 consistency check"
+  XP-07: "FEAT-040-056 → synthesis (Phase 2)"
+
+# =============================================================================
+# NEXT GATE
+# =============================================================================
+
+next_gate:
+  name: QG-2
+  type: cross-pollination-consistency-check
+  scope: "Verify finding alignment across 9 Phase 1a deliverables. Triple-convergence confirmations (Heuristic + WCAG + B=MAP). XP-05 paired severity check. Drive downstream Phase 1b dispatch."
+  expected_output: "orchestration/reviews/qg-2-consistency-report.md"

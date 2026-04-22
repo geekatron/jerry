@@ -8,25 +8,32 @@ criticality: C3
 quality_threshold: 0.92
 iteration_ceiling: 7
 
-status: rejected_conditional_accept
+status: iter6_revised_adv_review_required
 dispatched_at: "2026-04-20T20:00:00Z"
 returned_at: "2026-04-20T20:15:00Z"
-iteration: 1
-residual_disposition: "Path C conditional accept at 0.84; documented residuals below; revisit if XP-03 positioning handoff requires >0.92"
+iter2_revised_at: "2026-04-20T21:00:00Z"
+iter3_revised_at: "2026-04-20T22:00:00Z"
+iter4_revised_at: "2026-04-20T23:00:00Z"
+iter5_revised_at: "2026-04-20T23:30:00Z"
+iter6_revised_at: "2026-04-20T23:45:00Z"
+iteration: 6
+residual_disposition: "Iter-6 applies 2 mechanical fixes: TR-001 q1_assumptions 9→11 (A-010 + A-012 HYP-006 omitted from tracker since iter-1), DA-007 EXP-013 within-group aggregation rule (plurality; 1-1-1 split → D5 → INCONCLUSIVE). All iter-5 closures preserved verbatim. Self-projected composite 0.927. Adv review required for PASS confirmation."
 
 artifact_path: "projects/PROJ-040-documentation/work/EPIC-040-001/ux/FEAT-040-007/ux-lean-ux-facilitator-output.md"
 artifact_verified: true
 artifact_persisted_by: "orchestrator"
-self_reported_quality_score: 0.91
-confidence: 0.75
-blockers: []
+self_reported_quality_score: 0.90
+confidence: 0.78
+blockers:
+  - "[PERSISTENT] Wave 4b how-to authoring blocked pending EXP-008 results. Three-branch contingency documented."
 
 key_findings:
-  - "HYP-002 (version refs) and HYP-004 (skills table) ICE 8.3 — highest-ranked, P1 immediate with no experiment gate required"
-  - "HYP-001 (Step 3 path detection) ICE 7.3 — highest impact but Q1 assumption A-001 (abandonment rate unknown); run EXP-001 one-question survey before implementing"
-  - "HYP-006 (first tutorial) ICE 6.0 — 4-8hr authoring investment; fake door EXP-004 must validate demand first"
-  - "Triple-convergence findings (Step 3 branching, terminology inconsistency) confirmed across Heuristic + WCAG + B=MAP — highest-confidence remediation targets"
-  - "Q1 risk: A-013 (user searches by domain vs. skill name) blocks Wave 4b how-to organization decision; EXP-008 survey resolves in 3 days"
+  - "HYP-002 (version refs) ICE 8.3 — highest-ranked P1 immediate; EXP-003 upgraded to think-aloud with pre-registered 3/5 PASS threshold"
+  - "HYP-001 (Step 3 path detection) revised ICE 5.7 — moved P2→P3 after applying lower-score-when-uncertain rule to both I and C (Q1 A-001 no baseline)"
+  - "HYP-004 (skills table) ICE 8.0 — '50%+' claim removed; C reduced 8→7; remains P1"
+  - "EXP-006/EXP-009/EXP-013 redesigned with falsifiable bilateral success criteria; all unfalsifiable patterns removed"
+  - "Wave 4b authoring explicitly locked pending EXP-008; three-branch contingency prevents paralysis on sub-60% outcome"
+  - "A-006 reclassified Q1→Q2; q1_assumptions reduced from 6 to 5"
 
 xp_provides: {}  # informs synthesis
 
@@ -39,11 +46,229 @@ score_history:
       - "IN-001 Critical: 3 unfalsifiable experiments (EXP-006, EXP-009, EXP-013) cannot produce FAIL"
       - "PM-001 Critical: EXP-003 undefined denominator at n=3-5; HYP-002 ICE Rank 1 unvalidatable"
       - "FM-001 Critical: HYP-001 I=9 with Q1 Unknown A-001 violates lower-score-when-uncertain rule"
+  - iteration: 2
+    composite: 0.873
+    verdict: REJECTED
+    closures:
+      critical: 3
+      major: 8
+      minor_deferred: 3
+    top_changes:
+      - "C1/IN-001: EXP-006/009/013 redesigned with bilateral falsifiable criteria and explicit FAIL conditions"
+      - "C2/PM-001: EXP-003 upgraded to think-aloud; denominator pre-registered (3/5 PASS, 2/5 PARTIAL, 1/5 FAIL)"
+      - "C3+M2/FM-001+CC-002: HYP-001 I 9→6 and C 7→5; ICE 7.3→5.7; band P2→P3"
+      - "M1/CC-001: HYP-004 '50%+' removed; C 8→7; ICE 8.3→8.0"
+      - "M3/DA-001: All 14 hypotheses now full canonical format (We believe…for [users]…if…because)"
+      - "M4/DA-002: A-006 Q1→Q2; q1_assumptions 6→5"
+      - "M5/PM-002: EXP-009 near-zero bar replaced with AT bilateral threshold"
+      - "M6/PM-003: EXP-008 three-branch contingency added"
+      - "M7/FM-002: HYP-008 E 9→6; Ease definition clarified in Methodology"
+      - "M8/IN-002: Wave 4b authoring lockout added to Strategic Implications + On-Send YAML [PERSISTENT] blocker"
+    expected_adv_gap: 0.03-0.05
+    actual_adv_score: 0.873
+    actual_adv_gap: 0.047
+    path_to_threshold: "iter-3 surgical (major CC-004 EXP-006 regression baseline + minor DA-004/FM-003/IN-003/PM-004 + stretch assumption maps for HYP-009/012/013/014). Projected iter-3 score 0.898; iter-4 may be needed for final polish."
+  - iteration: 3
+    composite: 0.886
+    verdict: REJECTED
+    band: REVISE
+    self_score: 0.90
+    self_vs_adv_gap: -0.014
+    review_path: "orchestration/reviews/FEAT-040-007-adv-review-iter-3.md"
+    closures_verified: 5  # all 5 iter-2 findings substantively closed
+    new_findings:
+      critical: 0
+      major: 0
+      minor: 4  # EXP006-DUAL, EXP007-DOUBLE-FAIL, EXP013-BASELINE, ONSEND-ITER
+    no_new_major: true
+    delta_vs_iter2: +0.013
+    gap_to_threshold: 0.034
+    actual_adv_dimensions:
+      completeness: 0.91        # +0.01 from iter-2: EXP-007 failure exit added; assumption maps still absent
+      internal_consistency: 0.87  # +0.03 from iter-2: CC-004/DA-004/IN-003 closures; -0.02 new minor gaps
+      methodological_rigor: 0.87  # +0.02 from iter-2: closures; -0.02 new minor gaps (EXP013-BASELINE, EXP007-DOUBLE-FAIL)
+      evidence_quality: 0.87    # no change from iter-2
+      actionability: 0.89       # +0.01 from iter-2: PM-004/FM-003 closures; Phase 1b gate timing undefined
+      traceability: 0.91        # -0.01 from iter-2: On-Send YAML iteration counter stale (shows 2, should be 3)
+    key_changes_verified:
+      - "CC-004: EXP-006 time-on-page regression guard removed; replaced with within-test survey proxy (≤1/5 clarity concern) — CLOSED SUBSTANTIVE"
+      - "PM-004: EXP-013 PRIMARY now interview-based (≥2/3 manageable rating); click-through demoted to SECONDARY (if analytics available) — CLOSED SUBSTANTIVE"
+      - "DA-004: ICE tie-breaking footnote added; WCAG proxy path → P2, no proxy path → P3 — CLOSED SUBSTANTIVE"
+      - "FM-003: EXP-007 failure exit added (<2/3 in 20 min → scope reduction review + second concierge session) — CLOSED SUBSTANTIVE"
+      - "IN-003: HYP-009 Synthesis Judgments distinguishes deterministic WCAG compliance (HIGH) from behavioral improvement (MEDIUM hypothetical) — CLOSED SUBSTANTIVE"
+    iter4_scope:
+      - "PRIMARY (Completeness lever): assumption maps for HYP-009, HYP-012, HYP-013, HYP-014 → Completeness 0.91→0.94"
+      - "ONSEND-ITER-F040007 (1 min): On-Send YAML iteration: 2 → iteration: 3"
+      - "EXP013-BASELINE-F040007 (5 min): pre-registration note for both-groups-pass-threshold case"
+      - "EXP007-DOUBLE-FAIL-F040007 (5 min): terminal decision rule if second concierge session also fails"
+      - "EXP006-DUAL-F040007 (5 min): clarify criterion 2 role (merge or label supplementary)"
+    projected_iter4_composite: 0.904
+    projected_iter4_gap: 0.016
+  - iteration: 4
+    composite: 0.905
+    verdict: REJECTED
+    band: REVISE
+    self_score: 0.90
+    self_vs_adv_gap: +0.005  # excellent calibration
+    review_path: "orchestration/reviews/FEAT-040-007-adv-review-iter-4.md"
+    gap_to_threshold: 0.015
+    delta_vs_iter3: +0.019  # largest single-iteration gain since iter-2
+    closures_verified: 4  # all 4 iter-3 minors substantively closed
+    primary_completeness_lever_closed: true  # 11 entries A-015 through A-025
+    no_new_major: true
+    no_regressions: true
+    new_findings:
+      critical: 0
+      major: 0
+      minor: 5  # CC-005, DA-005, DA-006, PM-005, IN-004
+    actual_adv_dimensions:
+      completeness: 0.94       # +0.03: 4 assumption maps added; all 14 hypotheses now mapped
+      internal_consistency: 0.89  # +0.02: ONSEND-ITER + EXP006-DUAL closed; -0.02 CC-005/DA-005 new
+      methodological_rigor: 0.89  # +0.02: EXP013-BASELINE + EXP007-DOUBLE-FAIL closed; -0.02 DA-005/DA-006
+      evidence_quality: 0.88   # +0.01: 11 new source-cited assumption entries; -0.00 IN-004
+      actionability: 0.91      # +0.02: all 4 closures improve actionability
+      traceability: 0.92       # +0.01: ONSEND-ITER synchronized; Revision History complete
+    iter3_closures_applied: 4  # ONSEND-ITER, EXP013-BASELINE, EXP007-DOUBLE-FAIL, EXP006-DUAL
+    completeness_additions:
+      - "A-015 through A-017: HYP-009 README nav table (3 assumptions)"
+      - "A-018 through A-020: HYP-012 motivational payoff sentence (3 assumptions)"
+      - "A-021 through A-023: HYP-013 explanation docs (3 assumptions)"
+      - "A-024 through A-025: HYP-014 descriptive link text (2 assumptions)"
+      - "Total new assumption entries: 11 (assumptions_mapped 14→25; q1_assumptions 5→9)"
+    key_changes_verified:
+      - "PRIMARY: Assumption maps A-015 through A-025 — all 11 entries substantive, source-cited, Q-classified — CLOSED SUBSTANTIVE"
+      - "ONSEND-ITER-F040007: iteration 4, assumptions_mapped 25, q1_assumptions 9 — synchronized — CLOSED SUBSTANTIVE"
+      - "EXP013-BASELINE-F040007: pre-registration note + tie-break rule — CLOSED SUBSTANTIVE (residual DA-005)"
+      - "EXP007-DOUBLE-FAIL-F040007: terminal rule HALT + escalation + friction feed to HYP-001/003 — CLOSED SUBSTANTIVE (residual DA-006)"
+      - "EXP006-DUAL-F040007: criterion 1 sole PASS/FAIL gate, criterion 2 labeled supplementary — CLOSED SUBSTANTIVE (residual CC-005)"
+    iter5_scope:
+      - "DA-005-F040007 (5 min): EXP-013 tie-break operational definition — 'converging vs diverging' criteria → IC +0.01, MR +0.01"
+      - "DA-006-F040007 (3 min): EXP-007 first-session friction documentation added to failure exit → Completeness +0.01, MR +0.01"
+      - "CC-005-F040007 (3 min): EXP-006 borderline criterion-1 disposition specified (PASS vs REVISE) → IC +0.01"
+      - "PM-005-F040007 (3 min): HYP-004 A-009 explicit acceptance statement + rollback path → Actionability +0.01"
+      - "IN-004-F040007 (3 min): A-016 evidence-to-quadrant rationale separates WCAG obligation from behavioral claim → EQ +0.01"
+    projected_iter5_composite: 0.921  # at or just above threshold
+  - iteration: 5
+    composite: 0.9185
+    verdict: REJECTED
+    band: REVISE
+    self_score: 0.921
+    self_vs_adv_gap: +0.0025
+    gap_to_threshold: 0.0015
+    delta_vs_iter4: +0.0135
+    review_path: "orchestration/reviews/FEAT-040-007-adv-review-iter-5.md"
+    new_findings:
+      critical: 0
+      major: 0
+      minor: 2  # TR-001 (q1_assumptions undercount), DA-007 (top positive reason unspecified)
+    primary_blocker: "TR-001: q1_assumptions stated 9, actual 11. Double-penalty IC+Traceability."
+    closures_applied:
+      - "DA-005-F040007: EXP-013 tie-break operational classification rule (5-dimension taxonomy, 2-of-3 coder agreement, CONVERGING/ADDITIVE/INCONCLUSIVE)"
+      - "DA-006-F040007: EXP-007 first-session friction memo added to failure exit (template fields defined; feeds scope reduction + HYP-001/003)"
+      - "CC-005-F040007: EXP-006 borderline criterion-1 disposition specified (CONDITIONAL REVISE vs CONDITIONAL PASS rule)"
+      - "PM-005-F040007: HYP-004 P1 ICE row A-009 explicit risk acceptance + rollback path documented"
+      - "IN-004-F040007: A-016 split into A-016a Q3 (WCAG architectural obligation) and A-016b Q1 (behavioral navigation claim)"
+    on_send_updates:
+      - "iteration: 4 → 5"
+      - "assumptions_mapped: 25 → 26 (A-016 split net +1)"
+      - "frontmatter quality_score: 0.90 → 0.921"
+    no_structural_changes: true
+    no_regressions: true
+    projected_adv_score_range: "0.916–0.926"
+    critical_lever: "DA-005 operational classification rule — if adv confirms clean close, IC and MR reach 0.92"
+    next_action: "Adv review iter-5; confirm PASS or identify residual gap"
+  - iteration: 6
+    composite: 0.927
+    verdict: PENDING_ADV_REVIEW
+    band: PROJECTED_PASS
+    self_score: 0.927
+    gap_to_threshold: -0.007  # projected above threshold
+    delta_vs_iter5: +0.0085
+    changes_applied:
+      - "TR-001-F040007: q1_assumptions corrected 9→11 with correction note comment (A-010 + A-012 from HYP-006 omitted from tracker since iter-1)"
+      - "DA-007-F040007: EXP-013 within-group aggregation sentence added (plurality rule; 1-1-1 split → D5 → INCONCLUSIVE)"
+    iter5_closures_preserved: true
+    structural_changes: false
+    regressions: false
+    expected_dimension_deltas:
+      internal_consistency: +0.01  # TR-001 count correction removes double-penalty
+      traceability: +0.01          # TR-001 On-Send YAML now accurate
+      methodological_rigor: +0.005 # DA-007 completes EXP-013 protocol specification
+    next_action: "Adv review iter-6; expecting PASS (projected 0.927 > 0.92 threshold)"
 
 adv_review:
-  status: complete_iter_1
+  status: complete_iter_2_revision_iter_3_required
   iter_1_verdict: REJECTED
   iter_1_score: 0.84
   iter_1_review_path: "orchestration/reviews/FEAT-040-007-adv-review-iter-1.md"
-  next_iteration: DEFERRED_CONDITIONAL_ACCEPT  # Path C
+  iter_2_verdict: REJECTED
+  iter_2_score: 0.873
+  iter_2_self_score: 0.87
+  iter_2_review_path: "orchestration/reviews/FEAT-040-007-adv-review-iter-2.md"
+  iter_2_closures_verified: 11
+  iter_2_da_003_implicitly_closed: true
+  iter_3_status: complete_adv_reviewed
+  iter_3_verdict: REJECTED
+  iter_3_band: REVISE
+  iter_3_self_score: 0.90
+  iter_3_adv_score: 0.886
+  iter_3_delta: +0.013
+  iter_3_gap: 0.034
+  iter_3_closures_verified: 5  # all substantive; no paper-labeling accepted
+  iter_3_new_findings:
+    critical: 0
+    major: 0
+    minor: 4
+  iter_3_deferred:
+    - "Assumption maps for HYP-009, HYP-012, HYP-013, HYP-014 (Completeness lever; iter-4 primary target)"
+  iter_3_review_path: "orchestration/reviews/FEAT-040-007-adv-review-iter-3.md"
+  iter_4_status: complete_adv_reviewed
+  iter_4_verdict: REJECTED
+  iter_4_band: REVISE
+  iter_4_self_score: 0.90
+  iter_4_adv_score: 0.905
+  iter_4_delta: +0.019
+  iter_4_gap: 0.015
+  iter_4_closures_verified: 4  # all substantive
+  iter_4_new_findings:
+    critical: 0
+    major: 0
+    minor: 5  # CC-005, DA-005, DA-006, PM-005, IN-004
+  iter_4_self_vs_adv_gap: +0.005  # excellent calibration
+  iter_4_primary_completeness_lever: closed  # 11 assumption entries; all 14 hypotheses mapped
+  iter_4_review_path: "orchestration/reviews/FEAT-040-007-adv-review-iter-4.md"
+  iter_5_status: complete_adv_reviewed
+  iter_5_verdict: REJECTED
+  iter_5_band: REVISE
+  iter_5_self_score: 0.921
+  iter_5_adv_score: 0.9185
+  iter_5_gap: 0.0015
+  iter_5_delta: +0.0135
+  iter_5_self_vs_adv_gap: +0.0025  # excellent calibration — agent correctly flagged marginal PASS
+  iter_5_closures_verified: 5  # all substantive; DA-005 critical lever confirmed closed
+  iter_5_da005_lever_verdict: "CONFIRMED CLOSED — 5-dimension taxonomy + 2-of-3 coder protocol + deterministic dispositions; pre-registration requirement enforced"
+  iter_5_new_findings:
+    critical: 0
+    major: 0
+    minor: 2  # TR-001 (q1_assumptions count error), DA-007 (top positive reason aggregation unspecified)
+  iter_5_primary_blocker: "TR-001 q1_assumptions count: stated 9, actual 11 (A-010 and A-012 from HYP-006 omitted from tracking since iter-1). Creates double-penalty: IC -0.01, Traceability -0.01."
+  iter_5_no_regressions: true
+  iter_5_no_new_major: true
+  iter_5_review_path: "orchestration/reviews/FEAT-040-007-adv-review-iter-5.md"
+  iter_5_projected_adv_score_was: "0.916–0.926"
+  iter_5_actual_adv_score: 0.9185  # within projected range; self-score 0.921 accurate to 0.0025
+  iter_6_scope:
+    - "TR-001-F040007 (2 min): Correct q1_assumptions 9→11 in On-Send YAML with correction note (A-010 + A-012 HYP-006 Q1 omitted since iter-1). IC +0.01, Traceability +0.01."
+    - "DA-007-F040007 (2 min): Add one sentence to EXP-013 Step 2 specifying group top-reason aggregation rule (plurality; tie→D5→INCONCLUSIVE). IC +0.005, MR +0.005."
+  iter_6_projected_composite: 0.927  # comfortably above 0.92 threshold
+  iter_6_confidence: HIGH  # both fixes are mechanical; no new findings anticipated
+  iter_6_status: revised_pending_adv_review
+  iter_6_changes_applied:
+    - "TR-001-F040007: q1_assumptions 9→11 in On-Send YAML with correction note (A-010 + A-012 from HYP-006)"
+    - "DA-007-F040007: EXP-013 within-group aggregation sentence (plurality; 1-1-1 split → D5 → INCONCLUSIVE)"
+  iter_6_iter5_closures_preserved: true
+  iter_6_structural_changes: false
+  iter_6_regressions: false
+  iter_6_self_projected_composite: 0.927
+  phase1b_handoff_status: BLOCKED_pending_iter6_PASS
   required_strategies: [S-007, S-002, S-014, S-004, S-012, S-013]

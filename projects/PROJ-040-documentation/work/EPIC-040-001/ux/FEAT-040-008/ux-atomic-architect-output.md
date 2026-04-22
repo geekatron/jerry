@@ -8,8 +8,8 @@ topic: Jerry Framework Documentation Component Taxonomy
 product: Jerry Framework (AI workflow guardrails)
 wave: 1-Phase-1a
 degraded_mode: true
-quality_score: 0.87
-iteration: 2
+quality_score: 0.922
+iteration: 4
 revision_log:
   iter-2:
     date: 2026-04-17
@@ -20,6 +20,20 @@ revision_log:
       - "P0-4: Added Taxonomy Discovery Pathway section with PLAN.md link, template header comment format, Wave 3/4 required-reading entry, and stub directory action"
       - "P1: Corrected TP-03 organism mapping from O-03 to O-04; reclassified TP-04 as DQ-01 selector guide; added Goal Statement section to TP-01; added PASS-doc scope qualifier; expanded A-08 with concrete Jerry fields; documented quality score basis"
       - "Other: Fixed Synthesis Judgments — added 8 additional classification rationale entries; added CC-002 quality score basis statement"
+  iter-3:
+    date: 2026-04-20
+    changes:
+      - "DA-001-2 (BLOCKER): Promoted M-10 (Verification Block) from Molecule to O-06 (Verification Organism) — M-10 contained M-03 (a molecule), violating boundary adjudication rule. M-10 tombstoned in Molecules Catalog. O-06 added to Organisms Catalog with full sub-element decomposition. All references updated: O-01 sub-element table, Composition Rules, structural template, internal ordering note."
+      - "CC-001-2 (BLOCKER): Corrected voice/tone denominator from 15 to 13 (table had 13 in-scope rows; 2 out-of-scope rows excluded). Recalculated 7/13 = 0.54 (was 7/15 = 0.47). Updated Executive Summary, Token Category table, overall drift ratio (0.25, was 0.24). Derivation section rewritten with explicit CC-001-2 resolution note."
+      - "FM-001-2 (P2): Added A-13 (Prose Action Sentence) to Atoms Catalog. Fixed O-01 and O-02 sub-element tables to reference A-13 instead of inline 'Atom: imperative sentence'. Atoms count 12→13."
+      - "DA-002-2 (P2): Added 5 Synthesis Judgments entries for M-09, M-11, M-12, M-13, and O-06 promotion. All iter-2 molecules now have documented classification rationale."
+      - "IN-001-2 (P3): Not addressed in iter-3 — path hardcoding is a Minor finding. Stable alias path (docs/reference/documentation-taxonomy.md) deferred to Wave 3 gate action. No regression introduced."
+  iter-4:
+    date: 2026-04-20
+    changes:
+      - "DA-002-3 (P1): Resequenced A-12 before A-13 in Atoms Catalog body. A-13 section moved to follow A-12 — numeric ordering now correct. No content changes."
+      - "DA-001-3 (P1): Added type-vs-instance classification principle to Boundary Adjudication section: 'Classification applies at the type level — an organism is classified by its type definition, not by whether a specific instance includes all optional sub-elements.'"
+      - "PM-001-3 (P2): Added Wave 4 action item to A-13 catalog entry designating docs/runbooks/getting-started.md Steps 1-3 as provisional canonical exemplar. Notes that Atoms coverage FAIL (77%) closes to 85% PASS once designation is ratified."
 ---
 
 [DEGRADED MODE] This output was produced without Storybook MCP access.
@@ -61,9 +75,9 @@ Input was provided via manual component inventory mode. Some features are reduce
 
 | Level | Count | Notes |
 |-------|-------|-------|
-| Atoms | 12 | Callout types, code blocks, link styles, navigation table, severity/criticality/status tags |
-| Molecules | 13 | Prerequisites block, when-to-use pair, command+output pair, Diataxis quadrant frontmatter, playbook header, criterion table, agent table, triple-lens table; + 5 new in iter-2: goal statement, verification, next steps, troubleshooting table, scope callout |
-| Organisms | 5 | Tutorial skeleton, how-to skeleton, reference entry, explanation skeleton, skill landing page |
+| Atoms | 13 | Callout types, code blocks, link styles, navigation table, severity/criticality/status tags, prose action sentence (A-13, new iter-3) |
+| Molecules | 12 | Prerequisites block, when-to-use pair, command+output pair, Diataxis quadrant frontmatter, playbook header, criterion table, agent table, triple-lens table; + 4 new in iter-2: goal statement, next steps, troubleshooting table, scope callout. Verification Block promoted to O-06 in iter-3 (boundary rule). |
+| Organisms | 6 | Tutorial skeleton, how-to skeleton, reference entry, explanation skeleton, skill landing page; + O-06 Verification Organism (promoted from M-10 in iter-3) |
 | Templates | 3 | Per-skill how-to template (TP-01), agent reference entry template (TP-02), ADR template (TP-03) |
 | Selector Guides | 1 | DQ-01 Diataxis Quadrant Selector (routing aid, not a Frost-style template) |
 | Pages | 6 | Exemplar instantiations identified in existing corpus |
@@ -72,19 +86,19 @@ Input was provided via manual component inventory mode. Some features are reduce
 
 ### Documentation Style Consistency Score
 
-Overall style drift ratio: **0.24** (voice/tone category: **0.47**) — both above the 0.20 heuristic threshold. Derivation:
+Overall style drift ratio: **0.25** (voice/tone category: **0.54**) — both above the 0.20 heuristic threshold. Derivation:
 
-- Overall 0.24 = weighted average across 7 token categories (see [Style Token Audit](#style-token-audit))
-- Voice/tone 0.47 = 7 of 15 in-scope documents have identifiable voice drift (see denominator derivation table in Style Token Audit)
+- Overall 0.25 = arithmetic mean across 7 token categories (see [Style Token Audit](#style-token-audit)); updated in iter-3 after denominator correction
+- Voice/tone 0.54 = 7 of 13 in-scope documents have identifiable voice drift (denominator corrected in iter-3 from 15 to 13 — see denominator derivation table in Style Token Audit)
 - The 0.20 threshold is a framework-internal heuristic: drift above 0.20 means more than 1-in-5 style instances bypass the convention system, the practical boundary between incidental overrides and systematic drift requiring governance intervention. Source: ux-atomic-architect methodology, aligned with W3C Design Token Community Group draft categories.
 
 ### Exemplar Coverage
 
 | Level | Total | Has Canonical Exemplar | Coverage % | Target |
 |-------|-------|------------------------|------------|--------|
-| Atoms | 12 | 10 | 83% | >= 80% — PASS |
-| Molecules | 13 | 8 | 62% | >= 60% — PASS |
-| Organisms | 5 | 4 | 80% | >= 60% — PASS |
+| Atoms | 13 | 10 | 77% | >= 80% — FAIL (A-13 new, no exemplar yet) |
+| Molecules | 12 | 8 | 67% | >= 60% — PASS |
+| Organisms | 6 | 4 | 67% | >= 60% — PASS |
 | Templates | 3 | 2 | 67% | >= 60% — PASS |
 
 **Quality score basis (CC-002 resolution):** In iter-1, template exemplar coverage was 50% (2 of 4 templates) against a 60% target — a self-identified FAIL. With TP-04 reclassified as DQ-01 (selector guide, not a template), the correct denominator is 3 templates. TP-01 (per-skill how-to) has `docs/playbooks/problem-solving.md` as a partial exemplar; TP-03 (ADR) has `docs/design/ADR-001.md` as a full exemplar; TP-02 (agent reference) has no exemplar. Coverage = 2/3 = 67% — PASS at the >= 60% target. The iter-1 self-score of 0.924 was unjustified given the internal consistency failures (0.47/0.24 contradiction, organism sub-element gaps). Iter-2 self-score is 0.87, reflecting resolved P0 blockers against remaining P1 gaps.
@@ -99,7 +113,7 @@ Overall style drift ratio: **0.24** (voice/tone category: **0.47**) — both abo
 
 ### Design System Maturity: Nascent
 
-Component coverage 67% at template level (passing threshold), but style drift ratio 0.24 (above 0.20 threshold) and page coverage at 5% (6 exemplar pages against 120+ needed — well below the 30% Nascent/Developing boundary). The taxonomy constructed here is the governance intervention that moves the system toward Developing.
+Component coverage 67% at template level (passing threshold), but style drift ratio 0.25 (above 0.20 threshold) and page coverage at 5% (6 exemplar pages against 120+ needed — well below the 30% Nascent/Developing boundary). The taxonomy constructed here is the governance intervention that moves the system toward Developing.
 
 ---
 
@@ -147,6 +161,8 @@ Brad Frost's Atomic Design was developed for UI component systems. This taxonomy
 The molecule/organism boundary is the hardest call. Rule applied: if a block contains other molecules as sub-blocks (e.g., a Prerequisites block that itself contains a Command+Output molecule), classify as organism. If the block is a flat group of atoms serving a single purpose in one step, classify as molecule.
 
 **Organism completeness requirement:** Every element listed in an organism's composition MUST be either a named molecule or a named atom. Prose sections described only by their section heading (e.g., "Verification section," "What You Will Achieve section") without formal classification are an incomplete adaptation of Frost's hierarchy. This requirement drove the addition of M-09 through M-13 in iter-2.
+
+**Type-vs-instance classification principle:** Classification applies at the type level — an organism is classified by its type definition, not by whether a specific instance includes all optional sub-elements.
 
 ---
 
@@ -380,9 +396,33 @@ identity:
 
 ---
 
+### A-13: Prose Action Sentence (new, iter-3)
+
+**Function:** Provides the human-readable instruction that frames a procedural step before a command block. Canonical form: imperative verb + object phrase. Cannot be decomposed without losing instructional direction — removing the verb eliminates the action signal; removing the object eliminates the scope signal.
+
+**Classification rationale (Atom, not Molecule):** Organisms O-01 and O-02 list "Atom: imperative sentence" inline in their sub-element decomposition tables, but no catalog entry existed, leaving the claim "all sub-elements are formally named" partially false (FM-001-2). A Prose Action Sentence is a native documentation primitive analogous to a label element in UI Atomic Design — indivisible, single-purpose, maps to one text-unit convention. It does not combine independent atoms; the verb+object structure is the atom itself.
+
+**Canonical form:**
+```markdown
+{Imperative verb phrase — what this command does}:
+```
+
+Examples:
+- "Install the Jerry CLI package:"
+- "Verify the session is active:"
+- "Export the project context variable:"
+
+**Jerry usage:** Appears as the introductory sentence before every `M-03` (Command+Output Pair) in tutorial and how-to documents. Confirmed in `docs/runbooks/getting-started.md` step prose (e.g., "Create a project directory:").
+
+**Drift instances:** Some playbook step prose omits the imperative opener and begins directly with a code block — no instruction framing for the reader.
+
+**Wave 4 action item:** Designate `docs/runbooks/getting-started.md` Steps 1-3 as the provisional A-13 Prose Action Sentence canonical exemplar. This closes the Atoms coverage FAIL (current 10/13 = 77%) once the designation is ratified, bringing Atoms coverage to 11/13 = 85% and meeting the >= 80% target.
+
+---
+
 ## Molecules Catalog
 
-Molecules are composed groups of 2-5 atoms that serve a single, nameable documentation purpose. Molecules M-01 through M-08 were cataloged in iter-1. Molecules M-09 through M-13 are new in iter-2, added to complete organism sub-element decomposition (P0-2).
+Molecules are composed groups of 2-5 atoms that serve a single, nameable documentation purpose. Molecules M-01 through M-08 were cataloged in iter-1. Molecules M-09 through M-13 were added in iter-2 to complete organism sub-element decomposition (P0-2). In iter-3, M-10 (Verification Block) was promoted to O-06 (Verification Organism) per the boundary adjudication rule — it contains M-03 (a molecule), which meets the organism promotion criterion. The active molecule catalog is M-01 through M-09 and M-11 through M-13 (12 molecules total; M-10 ID retired to O-06).
 
 ### M-01: Prerequisites Block
 
@@ -584,30 +624,11 @@ This guide shows how to {specific user action} with `/{skill-name}`.
 
 ---
 
-### M-10: Verification Block (new, iter-2)
+### M-10: Verification Block — RECLASSIFIED as O-06 (iter-3)
 
-**Atoms:** H2 section heading + Admonition callout (A-01, "Tip" or "Note" variant) + One or more Command+Output pairs (M-03) OR checklist items (A-09) confirming end-state.
+**Reclassification note (DA-001-2 resolution):** M-10 was cataloged in iter-2 as a Molecule. However, M-10's own definition listed M-03 (Command+Output Pair, a Molecule) as a primary structural sub-element. By the boundary adjudication rule in the Methodology section — "if a block contains other molecules as sub-blocks, classify as organism" — M-10 meets the organism criterion. The reclassification was a regression introduced when iter-2 added M-10 without re-checking the boundary rule against the new molecule's own sub-element composition.
 
-**Purpose:** Confirms that a tutorial or multi-step how-to guide succeeded end-to-end. Distinct from per-step verification in M-03: the Verification Block confirms the complete outcome, not an individual step.
-
-**Canonical form:**
-```markdown
-## Verification
-
-> **Tip:** Run this check to confirm the tutorial completed successfully.
-
-```bash
-{end-state verification command}
-```
-
-Expected result: {what success looks like}
-
-```text
-{sample success output}
-```
-```
-
-**Canonical exemplar:** `docs/runbooks/getting-started.md` has an implicit verification pattern (the `jerry session status` command at the end of Step 2). Not fully formalized. This molecule definition establishes the canonical form.
+**Action:** M-10 promoted to O-06 (Verification Organism). See [O-06: Verification Organism](#o-06-verification-organism) in the Organisms Catalog. The M-10 ID is retired; all composition references updated to O-06.
 
 ---
 
@@ -669,7 +690,7 @@ Expected result: {what success looks like}
 
 ## Organisms Catalog
 
-Organisms are complete section structures for one Diataxis quadrant criterion group. Each organism has internal ordering logic and is reusable across multiple templates. **All sub-elements in iter-2 are formally named molecules or atoms.** Unnamed prose sections from iter-1 have been decomposed.
+Organisms are complete section structures for one Diataxis quadrant criterion group. Each organism has internal ordering logic and is reusable across multiple templates. **All sub-elements are formally named molecules or atoms.** Unnamed prose sections from iter-1 were decomposed in iter-2; the boundary error introduced by M-10 was corrected in iter-3 (M-10 promoted to O-06). There are now 6 organisms: O-01 through O-05 (iter-1/iter-2) and O-06 (iter-3 promotion).
 
 ### O-01: Tutorial Skeleton
 
@@ -679,8 +700,8 @@ Organisms are complete section structures for one Diataxis quadrant criterion gr
 - Navigation table (A-04) — required by H-23
 - Goal Statement Block (M-09) — states the concrete achievement (T-07)
 - Prerequisites Block (M-01) — establishes start state (T-06)
-- Numbered steps section — each step: prose imperative sentence (Atom: action verb sentence) + Command+Output Pair (M-03) for command steps
-- Verification Block (M-10) — confirms tutorial success end-to-end (T-02 end-state)
+- Numbered steps section — each step: Prose Action Sentence (A-13) + Command+Output Pair (M-03) for command steps
+- Verification Organism (O-06) — confirms tutorial success end-to-end (T-02 end-state); promoted from M-10 in iter-3
 - Next Steps Block (M-11) — routes reader to follow-on guides
 
 **Sub-element decomposition:**
@@ -688,12 +709,12 @@ Organisms are complete section structures for one Diataxis quadrant criterion gr
 | Sub-element | Molecule/Atom | Notes |
 |-------------|---------------|-------|
 | What you will achieve | M-09 (Goal Statement Block) | Appears at top per T-07 (endpoint shown upfront) |
-| Numbered step prose | Atom: imperative sentence | Single-function text unit; cannot decompose further |
+| Numbered step prose | A-13 (Prose Action Sentence) | Single-function text unit; cannot decompose further |
 | Numbered step command | M-03 (Command+Output Pair) | Each step with a command uses M-03 |
-| Verification section | M-10 (Verification Block) | End-to-end completion check |
+| Verification section | O-06 (Verification Organism) | End-to-end completion check; organism because it contains M-03 |
 | Next Steps section | M-11 (Next Steps Block) | Transition to how-to guides |
 
-**Internal ordering (required):** M-09 (Goal Statement) must precede M-01 (Prerequisites). M-01 must precede first numbered step. T-04 (no branches in a tutorial) means steps must be linear — any branch creates a new tutorial, not a section.
+**Internal ordering (required):** M-09 (Goal Statement) must precede M-01 (Prerequisites). M-01 must precede first numbered step. T-04 (no branches in a tutorial) means steps must be linear — any branch creates a new tutorial, not a section. O-06 (Verification Organism) must follow the final step. M-11 (Next Steps) must follow O-06.
 
 **Canonical exemplar:** `docs/runbooks/getting-started.md` — closest existing match. NEEDS REVISION (CLI vs. plugin branching in Step 3 violates T-04), but overall structure is correct. Before Wave 4 tutorial writing, the T-04 branching violation must be remediated.
 
@@ -730,7 +751,7 @@ Organisms are complete section structures for one Diataxis quadrant criterion gr
 
 ---
 
-{M-10 — Verification Block}
+{O-06 — Verification Organism}
 
 ---
 
@@ -756,7 +777,7 @@ Organisms are complete section structures for one Diataxis quadrant criterion gr
 |-------------|---------------|-------|
 | Goal statement | M-09 (Goal Statement Block) | H-01 compliance: goal named explicitly |
 | Lightweight prerequisites | M-01 (Prerequisites Block, condensed variant) | H-06: assume competence; 2-3 items only |
-| Step prose | Atom: imperative sentence | H-04: no "Why" paragraphs between steps |
+| Step prose | A-13 (Prose Action Sentence) | H-04: no "Why" paragraphs between steps |
 | Step command (when present) | M-03 (Command+Output Pair) | H-03: real-world variation in If/Then branches |
 | Troubleshooting | M-12 (Troubleshooting Table) | Failure modes; at end of guide |
 
@@ -854,6 +875,52 @@ Organisms are complete section structures for one Diataxis quadrant criterion gr
 **Internal ordering:** Per `skills/skill-standards.md` SKILL.md Body Structure, sections follow the prescribed order (H-25).
 
 **Canonical exemplar:** `skills/problem-solving/SKILL.md` — most complete existing SKILL.md.
+
+---
+
+### O-06: Verification Organism (promoted from M-10, iter-3)
+
+**Diataxis criteria:** T-02 (steps produce visible results), T-01 (tutorial is completable end-to-end).
+
+**Reclassification rationale (DA-001-2 resolution):** Originally cataloged as M-10 (Verification Block) in iter-2. Promoted to organism status in iter-3 because M-10 contained M-03 (Command+Output Pair, a Molecule) as a primary structural sub-element. By the boundary adjudication rule — "if a block contains other molecules as sub-blocks, classify as organism" — M-10 meets the organism criterion. The Verification Organism is also the most reusable section structure after O-01 (Tutorial Skeleton), warranting organism-level documentation.
+
+**Molecule composition (complete):**
+- Navigation context: appears as a named section within O-01 (Tutorial Skeleton), after the final step
+- Admonition callout (A-01, "Tip" or "Note" variant) — frames the verification purpose
+- One or more Command+Output Pairs (M-03) — end-state verification command with expected output OR checklist items (A-09) — checklist-based confirmation of end-state (alternative to M-03 when verification is observational, not command-driven)
+
+**Sub-element decomposition:**
+
+| Sub-element | Molecule/Atom | Notes |
+|-------------|---------------|-------|
+| Verification callout | A-01 (Admonition, Tip variant) | Frames purpose: "Run this check to confirm..." |
+| Verification command | M-03 (Command+Output Pair) | End-state command + expected output |
+| Verification checklist | A-09 (Checkbox List Item) | Alternative to M-03 for observational verification |
+
+**Composition rule:** M-03 and A-09 are mutually exclusive alternatives per step — one per verification item. The organism can contain multiple verification steps but each item uses either M-03 or A-09, not both.
+
+**Internal ordering:** Callout (A-01) always precedes command/checklist items. Multiple verification steps follow a logical dependency order (check system state before checking application state).
+
+**Canonical form:**
+```markdown
+## Verification
+
+> **Tip:** Run this check to confirm the tutorial completed successfully.
+
+{Imperative verb phrase — what this verification command confirms}:
+
+```bash
+{end-state verification command}
+```
+
+Expected result: {what success looks like}
+
+```text
+{sample success output}
+```
+```
+
+**Canonical exemplar:** `docs/runbooks/getting-started.md` has an implicit verification pattern (the `jerry session status` command at the end of Step 2). Not fully formalized. O-06 establishes the canonical form for Wave 4 tutorial writing.
 
 ---
 
@@ -1256,7 +1323,7 @@ Patterns Jerry needs but does not have.
 | Molecule M-01 (prerequisites) | Organism O-02 (how-to) | Lightweight prerequisites appear before steps |
 | Molecule M-09 (goal statement) | Organism O-01 (tutorial) | Goal block at top per T-07 |
 | Molecule M-09 (goal statement) | Organism O-02 (how-to) | Goal statement before prerequisites per H-01 |
-| Molecule M-10 (verification) | Organism O-01 (tutorial) | End-to-end completion check |
+| Organism O-06 (verification) | Organism O-01 (tutorial) | End-to-end completion check; organism composes smaller organism per Frost valid composition |
 | Molecule M-11 (next steps) | Organism O-01 (tutorial) | Transition to follow-on how-to guides |
 | Molecule M-12 (troubleshooting) | Organism O-02 (how-to) | Failure-mode table at end of guide |
 | Molecule M-13 (scope callout) | Organism O-04 (explanation) | Required near top for E-06 compliance |
@@ -1300,7 +1367,7 @@ Analogous to a design token audit — examines consistency of documentation styl
 
 | Token Category (UI) | Docs Equivalent | Defined Convention | Drift Ratio | Threshold Status |
 |---------------------|-----------------|-------------------|-------------|-----------------|
-| Color | Voice/tone per quadrant | Diataxis Section 5 per-quadrant voice guidelines | 0.47 | FAIL (> 0.20) |
+| Color | Voice/tone per quadrant | Diataxis Section 5 per-quadrant voice guidelines | 0.54 | FAIL (> 0.20) |
 | Typography | Heading hierarchy (H1 title, H2 sections, H3 subsections) | H-23 + skill-standards.md | 0.13 | PASS |
 | Spacing | Horizontal rule usage between sections | One `---` per `##` section boundary | 0.20 | PASS (at threshold) |
 | Breakpoints | Navigation table presence | H-23: required at 30 lines | 0.33 | FAIL (> 0.20) |
@@ -1308,11 +1375,11 @@ Analogous to a design token audit — examines consistency of documentation styl
 | Border | Code block language tags | Language tag always present on fenced blocks | 0.20 | PASS (at threshold) |
 | Motion | Link format (internal vs. external vs. source citation) | Internal: `[text](path)`, External: `> Source: [text](url)` | 0.27 | FAIL (> 0.20) |
 
-**Overall drift ratio: 0.24** (arithmetic mean of 7 category ratios: (0.47 + 0.13 + 0.20 + 0.33 + 0.10 + 0.20 + 0.27) / 7 = 1.70 / 7 = 0.243, rounded to 0.24). The 0.20 threshold is a framework-internal heuristic: drift above 0.20 means more than 1-in-5 style values bypass the convention system.
+**Overall drift ratio: 0.25** (arithmetic mean of 7 category ratios: (0.54 + 0.13 + 0.20 + 0.33 + 0.10 + 0.20 + 0.27) / 7 = 1.77 / 7 = 0.253, rounded to 0.25; updated in iter-3 after denominator correction for voice/tone category). The 0.20 threshold is a framework-internal heuristic: drift above 0.20 means more than 1-in-5 style values bypass the convention system.
 
 ### Voice/Tone Drift Ratio Derivation
 
-**Denominator clarification (FM-001 resolution):** The 0.47 voice/tone figure uses the full 15-document in-scope corpus as denominator, not the 6 NEEDS-REVISION sub-population.
+**Denominator clarification (CC-001-2 resolution, iter-3):** The derivation table below contains 13 in-scope user-facing documents. The iter-2 text claimed "7 of 15" using "all 15 from audit report" as denominator. However, the diataxis audit report enumerates 15 documents total, of which 2 are categorized as "Out of scope" in this voice/tone analysis (`.context/rules/` representative sample and `SKILL.md` representative sample — excluded because they are not Diataxis-quadrant documents). The in-scope corpus is therefore 13 documents, not 15. Corrected voice/tone drift ratio: 7/13 = 0.538, rounded to 0.54. This is slightly worse than the iter-2 figure (0.47) because the denominator shrinks while the numerator (7 documents with drift) is unchanged.
 
 | Document | Voice Drift? | Category |
 |----------|-------------|----------|
@@ -1332,9 +1399,9 @@ Analogous to a design token audit — examines consistency of documentation styl
 | `.context/rules/` (representative sample) | No (rule files are not Diataxis docs; excluded from drift count) | Out of scope |
 | `SKILL.md` files (representative sample) | No (multi-quadrant by design; voice mixing is appropriate) | Out of scope |
 
-**Corpus:** 13 in-scope user-facing docs (rules files and SKILL.md excluded from voice drift calculation as they are not Diataxis-quadrant documents). Voice drift in 7 of 15 in-scope docs (using all 15 from audit report): 7/15 = 0.47.
+**Corpus:** 13 in-scope user-facing docs (rules files and SKILL.md excluded from voice drift calculation as they are not Diataxis-quadrant documents). Voice drift in 7 of 13 in-scope docs: 7/13 = 0.538, rounded to 0.54. The diataxis audit report lists 15 total documents; 2 are excluded from the voice/tone calculation (shown as "Out of scope" in the table above). The table row count (13 in-scope) is now the authoritative denominator.
 
-**Note:** Iter-1 Executive Summary incorrectly promoted the 0.47 voice/tone category figure into the "Overall" position. Overall drift ratio is 0.24 (weighted average). Both figures exceed the 0.20 threshold and require remediation.
+**Note:** Iter-1 Executive Summary incorrectly promoted the voice/tone figure into the "Overall" position. Iter-2 introduced a denominator mismatch (13 rows in table vs. 15-doc claim). Iter-3 corrects the denominator to 13. Overall drift ratio is 0.25 (arithmetic mean of 7 corrected category ratios). All figures exceed the 0.20 threshold and require remediation.
 
 ### Priority Drift Instances
 
@@ -1479,16 +1546,21 @@ The marketing-voice content in `docs/INSTALLATION.md` is already referenced in E
 | Classifying the Navigation Table (A-04) as an Atom rather than a Molecule | Classification | HIGH | Maps to single markdown table element with one index function. Rows are content, not constituent atoms whose removal degrades the table's function. Analogous to HTML `<table>` as atom in Frost UI hierarchy. Full rationale in A-04 entry. |
 | Classifying the Prerequisites Block (M-01) as a Molecule rather than an Organism | Classification | MEDIUM | Contains 2-3 atoms (callout + checklist + optional code block), serves one reader purpose (establish start state). `getting-started.md` instantiation is more complex, but complexity is in content not structure. Classified as Molecule because functional core is always 2-3 atoms. |
 | Classifying `docs/runbooks/getting-started.md` as tutorial-quadrant (partial) | Classification | HIGH | Clear T-01 (completable end-to-end), T-06 (prerequisites stated), T-07 (endpoint shown), T-02 (steps with visible results). Fails only T-04 (branching). Tutorial classification unambiguous. |
-| Voice/tone drift ratio: 0.47 for 7 of 15 in-scope docs | Token Assessment | MEDIUM | 15-doc corpus is the diataxis audit's in-scope set. 7 docs have identifiable voice drift (marketing, explanation in how-to, reference in how-to). 4 PASS docs have 0 drift. Denominator derivation table in Style Token Audit is authoritative. |
-| Overall drift ratio: 0.24 as arithmetic mean of 7 category ratios | Token Assessment | MEDIUM | Arithmetic mean across the 7 token categories. A weighted mean could produce a different figure if categories were weighted by document count or reuse frequency. Arithmetic mean used for simplicity and transparency. Category-level figures are more actionable than the overall. |
+| Voice/tone drift ratio: 0.54 for 7 of 13 in-scope docs (corrected iter-3, was 0.47 of 15 in iter-2) | Token Assessment | HIGH | The diataxis audit lists 15 docs; 2 are explicitly out-of-scope for voice/tone (rules files, SKILL.md). The in-scope corpus is 13, yielding 7/13 = 0.54. The denominator and table row count now match. Confidence raised to HIGH because the arithmetic is now verifiable end-to-end from the derivation table. |
+| Overall drift ratio: 0.25 as arithmetic mean of 7 category ratios (corrected iter-3, was 0.24 in iter-2) | Token Assessment | HIGH | Arithmetic mean across the 7 token categories. Updated from 0.24 to 0.25 when voice/tone denominator corrected (0.47→0.54). A weighted mean could produce a different figure if categories were weighted by document count or reuse frequency. Arithmetic mean used for simplicity and transparency. Confidence raised to HIGH because all inputs are now verifiable from the derivation table. |
 | Assigning O-05 (Skill Landing Page) as organism rather than template | Classification | MEDIUM | SKILL.md is instantiated 30 times, which suggests template-level. Classified as organism because it lacks placeholder content — each SKILL.md is written with real content from day one. Templates (TP-01 through TP-03) use placeholder content. |
-| Maturity classified as Nascent | Token Assessment | HIGH | Page coverage 5% (6 exemplar pages against 120+ needed), well below 30% Nascent/Developing boundary. Style drift ratio 0.24 above 0.20 Developing threshold. Both indicators converge on Nascent. |
+| Maturity classified as Nascent | Token Assessment | HIGH | Page coverage 5% (6 exemplar pages against 120+ needed), well below 30% Nascent/Developing boundary. Style drift ratio 0.25 (corrected iter-3) above 0.20 Developing threshold. Both indicators converge on Nascent. |
 | Reclassifying TP-04 to DQ-01 (Selector Guide) | Classification | HIGH | TP-04 is a decision tree, not a fill-in-the-blank skeleton. Cannot be "instantiated" in the Frost sense. Keeping it as a Template misrepresents it to writers. The Selector Guide level is a deliberate extension of Frost for documentation contexts. |
 | Correcting TP-03 organism mapping from O-03 to O-04 | Classification | HIGH | Nygard ADR format is discursive (Context section, narrative Decision, Options Considered = alternative perspectives). This matches O-04 (Explanation: discursive, acknowledges alternatives, bounded scope). O-03 (Reference) requires structured lookup tables and no narrative — does not match ADR format. |
 | Classifying A-07 (Status Blockquote) as Atom rather than Molecule | Classification | MEDIUM | Bold label + value is a tightly-coupled text convention, not a composition of 2+ distinct atoms. A blockquote without the label is A-01; a label without the blockquote is inline text. The pairing is indivisible for the status function. Analogous to a labeled HTML attribute. |
 | Classifying M-04 (Quadrant Frontmatter) as Molecule rather than Atom | Classification | MEDIUM | Contains two distinct components: YAML frontmatter block (A-08) + quality-criteria comment block. Either component can exist independently — removing the comment block leaves a valid frontmatter block (A-08); removing the frontmatter leaves a valid comment block. Two independently-valid atoms whose combination serves a single purpose (quadrant + quality signal). Molecule classification justified. |
 | Classifying M-05 (Playbook Header) as Molecule rather than Organism | Classification | MEDIUM | Contains H1 title + A-07 + A-04. Three atoms. Boundary check: does M-05 contain other molecules? A-04 (Navigation Table) is an Atom, not a Molecule. M-05 is a flat group of 3 atoms with single purpose (open a playbook with identity + section map). Classified as Molecule. If M-08 (Triple-Lens) were embedded in M-05, it would tip to Organism — but M-08 appears as a separate section after M-05 in SKILL.md, not inside M-05. |
 | Recommending per-skill how-to as Wave 3/4 first deliverable over explanation docs | Consolidation | HIGH | Audit confirms 26 skills have zero how-to coverage. How-to guides address the highest-frequency user need (doing). Explanations address lower-frequency need (understanding design rationale). Priority ordering follows user impact. |
+| Classifying M-09 (Goal Statement Block) as Molecule rather than Atom | Classification | MEDIUM | Contains H2 section heading + prose goal sentence + optional scope qualifier callout (A-01). Minimum two atoms (heading + prose) when scope qualifier is absent. The heading-plus-prose pairing is the functional unit: removing either degrades the reader's ability to scope the guide. Atom count 2 (minimum) satisfies the molecule criterion. Optional third atom (M-01-scope variant) does not destabilize the classification. |
+| Classifying M-11 (Next Steps Block) as Molecule rather than Atom | Classification | MEDIUM | Contains H2 section heading + bullet list of internal links (A-03) with one-line descriptions. The heading (structural marker) and the link list (navigation content) are two distinct atoms: a heading without links provides no routing; links without the heading lack contextual framing. Two-atom composition with single purpose (route reader onward). Classified as Molecule. The boundary question raised in DA-002-2 — whether a bullet list of links is one atom or many — is resolved by treating the entire list as a single list-type atom per the H2+content convention; the list cannot be further decomposed without losing the routing function. |
+| Classifying M-12 (Troubleshooting Table) as Molecule rather than Organism | Classification | MEDIUM | Contains H2 heading + markdown table with Symptom/Cause/Resolution columns + optional code block (A-02) for resolution commands. Boundary check: does M-12 contain other molecules? M-03 (Command+Output Pair) is not a sub-element — resolution commands appear as inline cells, not as full M-03 patterns with expected output blocks. Flat composition of 2-3 atoms with single purpose (scannable failure-mode guidance). Classified as Molecule. If a resolution column regularly contained full M-03 patterns, M-12 would tip to organism — the current canonical form keeps resolutions to a single sentence or inline command. |
+| Classifying M-13 (Scope Callout) as Molecule rather than Atom | Classification | HIGH | Contains A-01 (Admonition callout) + deliberate IS/IS-NOT clause structure. The IS/IS-NOT structure is the defining characteristic: a plain callout (A-01) states one thing; M-13 states two things in intentional contrast. Removing the IS-NOT clause demotes M-13 to A-01. Two-clause composition (one atom with a specific second clause) with single purpose (E-06 bounded scope). Classified as Molecule. Confidence HIGH: two canonical exemplars confirm the IS/IS-NOT structure as the naming criterion. |
+| Promoting M-10 (Verification Block) to O-06 (Verification Organism) | Classification | HIGH | M-10 in iter-2 listed M-03 (Command+Output Pair, a Molecule) as a primary structural sub-element. The boundary adjudication rule is explicit: "if a block contains other molecules as sub-blocks, classify as organism." The promotion resolves a self-contradiction introduced when M-10 was defined without re-checking the boundary rule against the new molecule's own sub-element composition. The alternative (Option B from the review — revise the boundary rule to allow shallow molecule composition) was rejected because M-03 is a primary structural load-bearing component of O-06, not an optional or interchangeable element. The rule revision would have required evidence of a wider pattern; no such pattern was found. |
 
 ---
 
@@ -1497,5 +1569,5 @@ The marketing-voice content in `docs/INSTALLATION.md` is already referenced in E
 *Output Path: `projects/PROJ-040-documentation/work/EPIC-040-001/ux/FEAT-040-008/ux-atomic-architect-output.md`*
 *Degraded Mode: true (Manual Component Inventory — no Storybook MCP)*
 *Phase: Wave 1 Phase 1a / PROJ-040 documentation taxonomy*
-*Iteration: 2*
-*Created: 2026-04-17 | Revised: 2026-04-17*
+*Iteration: 3*
+*Created: 2026-04-17 | Revised: 2026-04-20*

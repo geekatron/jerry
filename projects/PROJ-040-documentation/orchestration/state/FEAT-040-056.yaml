@@ -8,23 +8,25 @@ criticality: C3
 quality_threshold: 0.92
 iteration_ceiling: 7
 
-status: under_review   # iter-2 complete, self 0.91; awaiting adv review
-dispatched_at: "2026-04-20T18:31:00Z"
-returned_at: "2026-04-20T18:38:00Z"
-iteration: 1
+status: complete   # iter-4 adv review PASS; exit iteration cycle; XP-07 unblocked
+dispatched_at: "2026-04-20T19:30:00Z"
+returned_at: "2026-04-20T19:55:00Z"
+iteration: 4
+adv_review_iter3_completed_at: "2026-04-20"
+iter_4_revision_completed_at: "2026-04-20"
 
 artifact_path: "projects/PROJ-040-documentation/work/EPIC-040-001/research/FEAT-040-056/ps-researcher-output.md"
 artifact_verified: true
-self_reported_quality_score: 0.90
-confidence: 0.75
+self_reported_quality_score: 0.930
+confidence: 0.74
 blockers: []
 
 key_findings:
-  - "Diataxis adoption is validated at scale (Cloudflare, Canonical, Django, NumPy NEP 44, Gatsby) — Wave 4a tutorials and 4b how-tos are the highest-adoption-impact deliverables; reference and explanation are secondary. PROJ-040's wave priorities are correct."
-  - "Adopt Google developer docs style guide + Vale linter; do not hand-author a house style. Industry guidance (GitLab, Elastic, Red Hat, Grafana) is to use external baseline + thin project exceptions. Recommend Wave 5 Vale integration."
-  - "Jerry's creator-critic-revision + C4 >= 0.95 + independent reviewer pattern already matches 2026 AI-docs field consensus. Do NOT replace GH #100 AC-6 independent reviewer with LLM judge. Add human command-execution verification for Wave 4 tutorials."
-  - "Three-tier discovery (nav + search + AI-conversational) is the 2026 target; rich inline cross-linking is the lowest-cost highest-value first step. Wave 2 README should surface Diataxis quadrants as first-class navigation."
-  - "CONTRIBUTING.md must land BEFORE OSS release, not reactively. CHASE 2025 research shows projects add CONTRIBUTING after contributor influx; recommend updating in Wave 2-adjacent pre-release prep with explicit 'docs improvements welcome' framing."
+  - "Diataxis adoption validated at scale in 3-4 confirmed deployments (Cloudflare, Canonical, Django, Gatsby) + GitLab practice-aligned (inference) + NumPy NEP 44 proposal (not production). Wave 4a/4b priorities confirmed correct."
+  - "Adopt Google developer docs style guide + Vale linter with pre-integration audit for Jerry-specific syntax (/skill, agent names, H-rules) before Wave 5 CI. No retroactive Wave 2-4 rework required."
+  - "Jerry's creator-critic-revision + C4 >= 0.95 + independent reviewer aligns with vendor-advocated field consensus (HITL vendors; figure not independently validated). Do NOT replace GH #100 AC-6 independent reviewer."
+  - "HITL Verification Process for Wave 4a defined: feature owner role, 5-scope checklist, 3 timing gates (blocking), escalation path, machine-readable frontmatter recording schema."
+  - "CONTRIBUTING.md must land BEFORE OSS release. Key evidence is synthesis/chain-citation tier; direction strongly supported. Wave 2-adjacent pre-release prep with 'docs improvements welcome' framing."
 
 xp_provides: {}  # ps-researcher informs synthesis (XP-07), no per-feature cross-pollination
 
@@ -40,15 +42,143 @@ score_history:
       - "RPN 240: HITL recommendation lacks process, owner, or acceptance criteria (operationally hollow for single highest-stakes recommendation, confirmed across 3 strategies)"
     major_blockers:
       - "Evidence Quality 0.81: DORA 2023 chain-cited; Mintlify vendor-reported; '60% direct citation' self-report overstated"
+  - iteration: 2
+    composite: 0.906
+    self_reported: 0.91
+    delta_self_vs_adv: +0.004  # adversarial marginally above self; self-report well-calibrated
+    verdict: REVISE
+    verdict_band: "REVISE (0.85-0.91)"
+    gap_to_threshold: 0.014
+    review_path: "orchestration/reviews/FEAT-040-056-adv-review-iter-2.md"
+    critical_blockers: []  # all iter-1 criticals resolved
+    major_blockers:
+      - "DA-006/FM-009: GitLab added to L0 production list with only parenthetical qualifier; inference-tier evidence placed alongside direct-evidence cases; RPN 90"
+      - "FM-010/CC-003: DORA 'higher team performance' L0 claim lacks inline calibration caveat; disclosure in Limitations not L0; RPN 120"
+      - "FM-011: HITL post-publication re-verification advisory only; no tutorial-to-command mapping; RPN 196"
+    iter_1_resolutions:
+      - "CONVERGENT-1 (NumPy L0): RESOLVED"
+      - "CONVERGENT-2 (HITL hollow): FULLY RESOLVED — complete process definition with role/scope/checklist/escalation/recording"
+      - "CONVERGENT-3 (evidence overstatement): RESOLVED — 40/40/20 + L1 Limitations + vendor/chain-citation flags"
+      - "All 4 iter-1 P0 items: RESOLVED"
+      - "All 6 iter-1 P1 items: RESOLVED (DA-002 substantially addressed via Challenging Evidence)"
+    iter_3_scope:
+      p0:
+        - "Restructure L0 finding #1: separate documented adopters (Cloudflare/Canonical/Django/Gatsby) from practice-inferred GitLab; qualifier must be visible at L0 without stripping"
+        - "Add inline calibration caveat to L0 finding #3 DORA claim"
+      p1:
+        - "Add scope limitation note to Challenging Evidence: document what disconfirmation was NOT searched"
+        - "Add Revision Log entry for GitLab addition"
+        - "Add Recommendation rank 11: command-manifest.yaml for tutorial drift tracking"
+    estimated_iter_3_score: "0.916-0.922 (P0 alone crosses threshold)"
+  - iteration: 3
+    composite: 0.918
+    self_reported: 0.926
+    delta_self_vs_adv: -0.008   # self slightly above adv; calibration marginally optimistic vs iter-2
+    verdict: REVISE
+    verdict_band: "gap-zone (0.918; above REVISE band ceiling 0.91, below PASS threshold 0.92)"
+    gap_to_threshold: 0.002
+    review_path: "orchestration/reviews/FEAT-040-056-adv-review-iter-3.md"
+    critical_blockers: []
+    major_blockers: []  # all iter-2 majors resolved
+    minor_blockers:
+      - "DA-009/IN-008: Scope limitation paragraph lists search-surface exclusions (non-English, enterprise-internal, etc.) rather than the 3 recommendation-level disconfirmation gaps DA-007 specified; keeps Methodological Rigor at 0.91 vs 0.92 needed"
+      - "FM-012: D-05 body labeled '(direct)' while L0 sub-bullet calls it 'D-05 inference'; L1.4 cross-reference in L0 doesn't mention GitLab; minor label mismatch"
+    iter_2_p0_resolutions:
+      - "CONVERGENT-4/DA-006/FM-009 (RPN 90 → ~12): GitLab L0 genuinely subordinated; primary sentence lists Cloudflare/Canonical/Django/Gatsby only; RESOLVED"
+      - "CONVERGENT-5/FM-010/CC-003 (RPN 120 → ~12): DORA inline caveat added to L0 finding #3; RESOLVED"
+      - "FM-011 (RPN 196 → ~48): rank 11 command-manifest.yaml provides concrete drift-detection mechanism; SUBSTANTIALLY RESOLVED"
+    iter_2_p1_resolutions:
+      - "Revision Log entry for GitLab: RESOLVED — Iter-3 Changes table complete"
+      - "Rank 11 recommendation: RESOLVED — FM-011 citation, Synthesis evidence tier, advisory scope"
+      - "DA-007 scope limitation: PARTIAL — documents search-surface exclusions, not the 3 recommendation-level disconfirmation gaps"
+    iter_4_scope:
+      p0:
+        - "DA-009: Add 3 recommendation-level disconfirmation scope bullets to Challenging Evidence scope limitation subsection: (a) Diataxis vs alternatives for sub-100-star OSS, (b) Vale false-positive rates for specialized vocabularies, (c) Google style guide vs existing voice systems. ~5-sentence addition. Moves Methodological Rigor 0.91→0.92, composite 0.918→0.920+"
+      p1:
+        - "FM-012: Update D-05 body label from '(direct)' to '(practice-aligned inference)' and update L0 cross-reference from L1.4 to Finding D-05 in Section 2.1. Two-line fix."
+    estimated_iter_4_score: "0.920-0.922 (P0 alone crosses threshold)"
+    dimension_scores:
+      completeness: 0.92
+      internal_consistency: 0.92
+      methodological_rigor: 0.91
+      evidence_quality: 0.89
+      actionability: 0.94
+      traceability: 0.93
+  - iteration: 4
+    self_reported: 0.930
+    composite: 0.922
+    delta_self_vs_adv: -0.008
+    verdict: PASS
+    gap_to_threshold_iter3: 0.002   # closed in iter-4
+    critical_blockers: []
+    major_blockers: []
+    minor_blockers: []
+    iter_3_p0_resolutions:
+      - "DA-009 / IN-008 (scope-limitation narrowness): RESOLVED — new 'Recommendation-level disconfirmation gaps' subsection added to Challenging Evidence with 3 bullets: (a) Diataxis vs alternatives for sub-100-star OSS affecting ranks 1-4; (b) Vale FP rates for specialized vocabularies affecting rank 5; (c) Google dev style guide compat with project voice affecting rank 8. Each bullet states what was not searched and the implied open question. General-surface bullets preserved unchanged above new subsection."
+    iter_3_p1_resolutions:
+      - "FM-012 (D-05 label mismatch): RESOLVED — L2 Section 2.1 Finding D-05 label changed from '(direct)' to '(inference per D-05 methodology — retroactive framework application to pre-existing GitLab folder conventions)' to match L0 cross-reference. Explanatory sentence added: folder structure directly observed, Diataxis alignment analytically imposed."
+    iter_4_changes_summary: "Scope-limitation subsection with 3 recommendation-level disconfirmation gaps (DA-009 closure) + D-05 label correction (FM-012 closure) + Iter-4 Changes table appended to Revision Log + Iter-4 Self-Score section appended."
+    self_score_dimension_scores:
+      completeness: 0.92          # unchanged
+      internal_consistency: 0.95  # up from 0.92 adv (D-05 label match closes residual inconsistency)
+      methodological_rigor: 0.92  # up from 0.91 adv (recommendation-level disconfirmation gaps now disclosed — the sole gap driver in iter-3)
+      evidence_quality: 0.90      # up from 0.89 adv (slight improvement from disclosed gaps giving more accurate epistemic picture)
+      actionability: 0.96         # up from 0.94 adv (iter-3 self was 0.96; adv rated 0.94; held at self-level since no actionability change)
+      traceability: 0.93          # unchanged
+    expected_adv_composite_range: "0.920-0.928"
+    adv_band: "PASS — composite 0.922 ≥ 0.92 threshold; gap +0.002 above threshold"
+    sections_edited:
+      - "L2 Challenging Evidence — new 'Recommendation-level disconfirmation gaps' subsection (3 bullets + closing sentence)"
+      - "L2 Section 2.1 Finding D-05 — label update + explanatory sentence"
+      - "Revision Log — new 'Iter-4 Changes' subsection with 2-row P0/P1 table + preservation note"
+      - "Iter-4 Self-Score — new section appended with dimension scores + composite computation + confidence update"
+      - "Footer provenance line — iter-4 revision note added"
+    preserved_unchanged:
+      - "H-23 navigation table"
+      - "L0 Executive Summary (all 5 findings)"
+      - "L1 Methodology + Limitations"
+      - "All 11 recommendations (rank 1-11)"
+      - "All existing findings D-01 through D-05, SD-01 through SD-05"
+      - "Iter-2 and Iter-3 Changes tables"
+      - "General-surface scope-limitation bullets (6 items)"
+      - "All citations and references"
+    calibration_note: "iter-3 self-vs-adv delta was -0.008 (marginally optimistic, within ±0.01 tolerance). Iter-4 self-score 0.930 anticipates similar or slightly tighter delta; central estimate adv composite 0.922."
+    adv_review_path: "orchestration/reviews/FEAT-040-056-adv-review-iter-4.md"
+    next_action: "XP-07 synthesis — research cleared for ps-synthesizer"
 
 adv_review:
-  status: complete_iter_1
+  status: complete_pass   # iter-4 PASS; exit_iteration_cycle=true
   iter_1_verdict: REVISE
   iter_1_score: 0.859
-  iter_2_status: complete
+  iter_2_verdict: REVISE
+  iter_2_score: 0.906
   iter_2_self_score: 0.91
-  iter_2_changes: "NumPy NEP 44 reclassified as proposal (removed from production list); HITL Verification Process operationalized with role/scope/gates/checklist; evidence reclassified 40/40/20 with vendor/chain-citation tags"
-  iter_2_evidence_classification: "40% direct / 40% synthesis / 20% inference"
-  next_iteration: "adv review iter-2 dispatching"
+  iter_2_self_calibration: "accurate (+0.004; self-score table in deliverable is model-quality calibration)"
+  iter_2_changes: "NumPy NEP 44 reclassified as proposal (removed from production list); HITL Verification Process operationalized with role/scope/gates/checklist; evidence reclassified 40/40/20 with vendor/chain-citation tags; L1 Limitations section added; Challenging Evidence section added; SD-01 staleness propagated; OQ-4 closed; FM-003/FM-005/FM-007/PM-002/PM-003 resolved"
+  iter_3_verdict: REVISE
+  iter_3_score: 0.918
+  iter_3_self_score: 0.926
+  iter_3_self_calibration: "marginally optimistic (-0.008; within ±0.01 tolerance; slight over-score on Internal Consistency and Evidence Quality)"
+  iter_3_changes: "GitLab genuinely subordinated in L0 (4 documented adopters only in primary sentence; GitLab in sub-bullet); DORA inline caveat added to L0 finding #3; scope limitation paragraph (6 search-surface exclusions) added to Challenging Evidence; Rank 11 command-manifest.yaml added; Iter-3 Changes table in Revision Log"
+  iter_3_gap_to_threshold: 0.002
+  iter_3_gap_driver: "Methodological Rigor at 0.91 (needs 0.92): DA-007 scope limitation used wrong surfaces; recommendation-level disconfirmation gaps not disclosed"
+  iter_3_rethink: "iter-2 P0 100% resolved; score improvement +0.012 (0.906→0.918); gap narrowed from 0.014 to 0.002"
+  iter_4_status: "complete_pass"
+  iter_4_self_score: 0.930
+  iter_4_changes: "Recommendation-level disconfirmation gaps subsection added to Challenging Evidence (3 bullets: Diataxis vs alternatives for sub-100-star OSS, Vale FP rates for specialized vocabularies, Google style guide vs existing voice systems); D-05 label corrected from '(direct)' to '(inference per D-05 methodology — retroactive framework application)' with explanatory sentence; Iter-4 Changes table added to Revision Log; Iter-4 Self-Score section appended"
+  iter_4_expected_adv_range: "0.920-0.928 (PASS with narrow margin)"
+  iter_4_gap_closure_target: "Methodological Rigor 0.91→0.92 (sole iter-3 gap driver)"
+  evidence_classification: "40% direct / 40% synthesis / 20% inference"
+  xp_07_handoff_status: "UNBLOCKED — iter-4 PASS achieved; cleared for ps-synthesizer consumption"
+  xp_07_unblocked: true
+  exit_iteration_cycle: true
+  final_verdict: PASS
+  final_composite: 0.922
+  adv_review_iter4_completed_at: "2026-04-20"
+  iter_4_adv_score: 0.922
+  iter_4_adv_delta_vs_self: -0.008
+  iter_4_adv_verdict: PASS
+  iter_4_adv_review_path: "orchestration/reviews/FEAT-040-056-adv-review-iter-4.md"
+  next_iteration: null  # exit — PASS achieved
   required_strategies: [S-007, S-002, S-014, S-004, S-012, S-013]
   ordering_constraint: "S-003 MUST precede S-002 if both run (H-16)"
