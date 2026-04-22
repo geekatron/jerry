@@ -1,13 +1,15 @@
 # Jerry Framework
 
-> A Claude Code plugin for behavior and workflow guardrails with knowledge accrual.
+> Jerry: a Claude Code plugin with 30 expert skills, quality guardrails, and filesystem-based memory.
 
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-blue.svg)](https://code.claude.com)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
 ## What is Jerry?
 
-Jerry is a **Claude Code plugin** that adds structured problem-solving capabilities, work tracking, and knowledge management to your Claude Code sessions. It combats **Context Rot**—the phenomenon where LLM performance degrades as context fills—through persistent artifacts and filesystem-based memory.
+Jerry is a Claude Code plugin with a curated library of methodology-grade skills, behavioral guardrails, and persistent knowledge management — keeping Claude's work consistent and high-quality across sessions. It addresses the **Context Rot** problem (Claude's performance degrades as context fills) by treating the filesystem as infinite memory: rules, worktracker, knowledge, and decisions persist to disk and load selectively per task.
+
+> **In one line:** Jerry gives Claude Code a library of expert skills, enforced quality standards, and persistent memory across sessions.
 
 > **Note:** You do NOT need Python installed to use Jerry. The plugin runs within Claude Code using its built-in capabilities. Python is only required if you want to contribute to Jerry's development.
 
@@ -140,12 +142,46 @@ All outputs are **persisted to files**, surviving context compaction and buildin
 
 ## Documentation
 
+Jerry's documentation follows the [Diataxis framework](https://diataxis.fr) — four distinct quadrants serving different user needs.
+
+### Tutorials — learning by doing
+
+| Document | When you want to |
+|----------|------------------|
+| [Getting Started Runbook](docs/runbooks/getting-started.md) | Learn Jerry by creating your first project and invoking your first skill |
+
+### How-to Guides — goal-oriented procedures
+
+| Document | When you want to |
+|----------|------------------|
+| [Installation Guide](docs/INSTALLATION.md) | Install Jerry on your platform, with scope options and troubleshooting |
+| [Problem-Solving Playbook](docs/playbooks/problem-solving.md) | Conduct research, analysis, root-cause investigation, architecture decisions |
+| [Orchestration Playbook](docs/playbooks/orchestration.md) | Coordinate multi-phase, multi-agent workflows |
+| [Transcript Playbook](docs/playbooks/transcript.md) | Parse meeting transcripts with domain-specific entity extraction |
+| [Plugin Development](docs/playbooks/PLUGIN-DEVELOPMENT.md) | Develop and distribute Claude Code plugins |
+
+### Reference — authoritative technical descriptions
+
+| Document | When you need to |
+|----------|------------------|
+| [CLAUDE.md Guide](docs/CLAUDE-MD-GUIDE.md) | Understand how Jerry's tiered context loading works |
+| [Jerry vs. Claude Agent SDK](docs/reference/jerry-vs-claude-agent-sdk.md) | Compare Jerry with the Claude Agent SDK to choose between them |
+| [AGENTS.md](AGENTS.md) | Look up the agent registry — all available agents with their skills |
+| [Claude Code Permissions](docs/reference/claude-code-permissions.md) | Reference Claude Code permission syntax |
+| [Jerry Constitution](docs/governance/JERRY_CONSTITUTION.md) | Reference the behavioral principles governing all Jerry agents |
+
+### Explanation — understanding how and why
+
+| Document | When you want to |
+|----------|------------------|
+| [CI/CD Supply Chain Security](docs/explanation/ci-cd-supply-chain-security.md) | Understand Jerry's CI/CD security model |
+| [Permission & Security Model](docs/explanation/permission-security-model.md) | Understand the permission and security architecture |
+
+### Contributing
+
 | Document | Purpose |
 |----------|---------|
-| [Installation Guide](docs/INSTALLATION.md) | Detailed setup instructions for all platforms |
-| [CLAUDE.md](CLAUDE.md) | Context for Claude Code sessions |
-| [AGENTS.md](AGENTS.md) | Registry of available agents |
-| [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute to Jerry development |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Development setup, standards, and how to contribute documentation, code, or skills |
 
 ## For Contributors
 

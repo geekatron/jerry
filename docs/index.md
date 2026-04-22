@@ -1,13 +1,13 @@
 # Jerry Framework
 
-> Behavioral guardrails and workflow orchestration for Claude Code. Accrues knowledge, wisdom, experience.
+> Jerry: a Claude Code plugin with 30 expert skills, quality guardrails, and filesystem-based memory.
 
 ## Document Sections
 
 | Section | Purpose |
 |---------|---------|
+| [Why Jerry?](#why-jerry) | What problems Jerry solves |
 | [What is Jerry?](#what-is-jerry) | Framework overview and core capabilities |
-| [Why Jerry?](#why-jerry) | Key reasons to adopt Jerry |
 | [Platform Support](#platform-support) | Supported platforms and status |
 | [Quick Start](#quick-start) | Get up and running in minutes |
 | [Known Limitations](#known-limitations) | Current constraints and caveats |
@@ -18,9 +18,21 @@
 
 ---
 
+## Why Jerry?
+
+**Your context window is not infinite.** Once sessions exceed 50K-100K tokens, LLMs begin losing track of earlier instructions — rules get skipped, conventions drift, and output quality degrades silently. Jerry externalizes rules and state to the filesystem and re-injects critical constraints every prompt, so they are enforced reliably regardless of context depth.
+
+**Quality should be measurable, not subjective.** Jerry scores every deliverable against a six-dimension rubric and enforces a minimum threshold. Below the threshold, work is revised — not shipped.
+
+**Knowledge should accumulate, not evaporate.** Every research finding, architecture decision, and analysis result is written to a file. When you return to a project next week or next month, the knowledge is still there.
+
+**Complex work needs structure.** Multi-phase workflows with parallel agents, quality gates, and cross-session state tracking are first-class citizens in Jerry, not afterthoughts bolted onto a chat interface.
+
+---
+
 ## What is Jerry?
 
-Jerry is a Claude Code plugin that provides **behavioral guardrails**, **workflow orchestration**, and **persistent knowledge management** for AI-assisted development sessions. It solves the core problem of **Context Rot** -- the degradation of LLM performance as context windows fill with 50K-100K+ tokens, causing skipped rules, forgotten instructions, and inconsistent output -- by using the filesystem as infinite memory.
+Jerry is a Claude Code plugin with a curated library of methodology-grade skills, behavioral guardrails, and persistent knowledge management — keeping Claude's work consistent and high-quality across sessions. It addresses the **Context Rot** problem (Claude's performance degrades as context fills) by treating the filesystem as infinite memory: rules, worktracker, knowledge, and decisions persist to disk and load selectively per task.
 
 ### Core Capabilities
 
@@ -34,17 +46,16 @@ Jerry is a Claude Code plugin that provides **behavioral guardrails**, **workflo
 
 - **Adversarial Review** -- Ten adversarial strategies across 4 families (Iterative Self-Correction, Dialectical Synthesis, Role-Based Adversarialism, Structured Decomposition) applied at 4 criticality levels (C1 Routine through C4 Critical tournament review with all 10 strategies).
 
----
+### Jargon Quick Reference
 
-## Why Jerry?
+A few terms used in the Core Capabilities section:
 
-**Your context window is not infinite.** Once sessions exceed 50K-100K tokens, LLMs begin losing track of earlier instructions — rules get skipped, conventions drift, and output quality degrades silently. Jerry externalizes rules and state to the filesystem and re-injects critical constraints every prompt, so they are enforced reliably regardless of context depth.
-
-**Quality should be measurable, not subjective.** Jerry scores every deliverable against a six-dimension rubric and enforces a minimum threshold. Below the threshold, work is revised -- not shipped.
-
-**Knowledge should accumulate, not evaporate.** Every research finding, architecture decision, and analysis result is written to a file. When you return to a project next week or next month, the knowledge is still there.
-
-**Complex work needs structure.** Multi-phase workflows with parallel agents, quality gates, and cross-session state tracking are first-class citizens in Jerry, not afterthoughts bolted onto a chat interface.
+| Term | Meaning |
+|------|---------|
+| **Context Rot** | The observed degradation in LLM output quality as the context window fills — rules get skipped, earlier instructions forgotten, output drifts. Jerry's core design response is to externalize rules and state to files and re-inject critical constraints every prompt. |
+| **HARD / MEDIUM / SOFT rules** | Jerry's three-tier rule system. HARD rules cannot be overridden and are blocked at the tooling level. MEDIUM rules are enforced but can be deviated from with documented justification. SOFT rules are conventions — suggested but not enforced. |
+| **Creator-critic-revision cycle** | A required iteration pattern for non-trivial deliverables. The creator agent produces a draft, a critic agent reviews it against quality criteria, the creator revises based on feedback. Repeats until the quality score clears a threshold (default 0.92). |
+| **Tournament review** | The highest-criticality review mode (C4). All ten adversarial strategies execute against the deliverable. Used for constitutional changes, security-relevant designs, and wave-exit gates. |
 
 ---
 
@@ -138,15 +149,72 @@ Then follow the [Getting Started Runbook](runbooks/getting-started.md) for a gui
 
 ## Available Skills
 
+Jerry ships with 30 skills organized by functional area. Top-level skills are user-invocable via their `/command`; sub-skills under `/user-experience` are auto-routed by the parent skill based on the work requested.
+
+### Core Workflow
+
 | Skill | Command | Purpose |
 |-------|---------|---------|
-| Problem-Solving | `/problem-solving` | Research, analysis, architecture decisions |
+| Problem-Solving | `/problem-solving` | Research, analysis, root cause investigation |
 | Orchestration | `/orchestration` | Multi-phase workflow coordination |
 | Work Tracker | `/worktracker` | Task and work item management |
-| Transcript | `/transcript` | Meeting transcript parsing |
-| NASA SE | `/nasa-se` | Systems engineering processes |
 | Architecture | `/architecture` | Design decisions and ADRs |
-| Adversary | `/adversary` | Adversarial quality reviews and tournament scoring |
+| Adversary | `/adversary` | Adversarial quality reviews, tournament scoring, strategy templates |
+| AST | `/ast` | Markdown AST parsing, query, validation, frontmatter modification |
+| Bootstrap | `/bootstrap` | Context distribution and onboarding for new Jerry environments |
+
+### Engineering
+
+| Skill | Command | Purpose |
+|-------|---------|---------|
+| Engineering Team | `/eng-team` | Secure software engineering methodology (10 agents: architecture, implementation, quality, incident response) |
+| Red Team | `/red-team` | Offensive security testing methodology (11 agents: recon, exploitation, post-exploitation, reporting) |
+| NASA SE | `/nasa-se` | Systems engineering processes — requirements, V&V, technical reviews |
+
+### Product & Marketing
+
+| Skill | Command | Purpose |
+|-------|---------|---------|
+| PM/PMM | `/pm-pmm` | Product management and marketing (5 agents: strategy, customer insight, market, business, competitive) |
+
+### Documentation & Specification
+
+| Skill | Command | Purpose |
+|-------|---------|---------|
+| Diataxis | `/diataxis` | Four-quadrant documentation methodology (6 agents: 4 writers, classifier, auditor) |
+| Use Case | `/use-case` | Guided use case authoring and decomposition (2 agents: Cockburn 12-step author, Jacobson UC 2.0 slicer) |
+| Test Spec | `/test-spec` | BDD test specification from use cases (2 agents: Clark transformation generator, 7 Cs coverage analyst) |
+| Contract Design | `/contract-design` | API contract generation from use cases (2 agents: UC-to-OpenAPI generator, 9-step validator) |
+
+### Prompting & Content
+
+| Skill | Command | Purpose |
+|-------|---------|---------|
+| Prompt Engineering | `/prompt-engineering` | Structured prompt construction, NPT constraint generation, prompt quality scoring (3 agents) |
+| Transcript | `/transcript` | Meeting transcript parsing with domain-specific entity extraction |
+
+### User Experience (parent + 10 sub-skills)
+
+| Skill | Command | Purpose |
+|-------|---------|---------|
+| User Experience | `/user-experience` | AI-augmented UX methodology for tiny teams (11 agents: orchestrator + 10 framework specialists) |
+| UX JTBD | *(via `/user-experience`)* | Jobs-to-Be-Done research and analysis |
+| UX Kano Model | *(via `/user-experience`)* | Kano feature classification by satisfaction impact |
+| UX HEART Metrics | *(via `/user-experience`)* | Google HEART framework for UX measurement |
+| UX Heuristic Eval | *(via `/user-experience`)* | Nielsen 10-heuristic evaluation |
+| UX Inclusive Design | *(via `/user-experience`)* | WCAG 2.2 accessibility evaluation + Microsoft Inclusive Design |
+| UX Atomic Design | *(via `/user-experience`)* | Component taxonomy (Atoms/Molecules/Organisms/Templates/Pages) |
+| UX Behavior Design | *(via `/user-experience`)* | Fogg B=MAP behavior bottleneck diagnosis |
+| UX Lean UX | *(via `/user-experience`)* | Hypothesis-driven design and ICE-prioritized experiments |
+| UX Design Sprint | *(via `/user-experience`)* | AJ&Smart 4-day design sprint facilitation |
+| UX AI-First Design | *(via `/user-experience`)* | Trust-calibrated AI interaction patterns |
+
+### Voice
+
+| Skill | Command | Purpose |
+|-------|---------|---------|
+| Saucer Boy | `/saucer-boy` | Session conversational voice (McConkey personality) |
+| Saucer Boy Framework Voice | `/saucer-boy-framework-voice` | Internal: framework output voice quality gate, persona compliance |
 
 ---
 
