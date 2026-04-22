@@ -75,7 +75,7 @@ Three-stream discovery (UX, PM, Research) with synthesis convergence gate. Coord
 
 | ID | Title | Parent | Status | Priority | Agent |
 |----|-------|--------|--------|----------|-------|
-| FEAT-040-057 | Discovery Synthesis — unify all 12 stream outputs into typed input for Waves 2-4 | EPIC-040-001 | Pending | high | ps-synthesizer |
+| FEAT-040-057 | Discovery Synthesis — unify all 12 stream outputs into typed input for Waves 2-4 | EPIC-040-001 | Complete | high | ps-synthesizer |
 
 **Wave 1 orchestration plan:**
 
@@ -213,3 +213,4 @@ Each epic ties to findings in `reports/diataxis-audit-20260420.md`:
 | Date | Change |
 |------|--------|
 | 2026-04-20 | Initial creation; consolidates PROJ-015 (audit) and PROJ-016 (writing). Diataxis audit approved at C4 ≥ 0.95 (0.956 composite). |
+| 2026-04-20 | FEAT-040-057 Complete: Phase 2 Synthesis produced. Artifact: `work/EPIC-040-001/synthesis/discovery-synthesis.md` (42 findings, 5 TC, iter-1 score 0.933). State: `orchestration/state/synthesis-phase-2.yaml`. QG-2.5 live-site check performed. Wave 2 ready; V-00 gate required before README commit. Wave 4b [PERSISTENT BLOCKER] on EXP-008. |

@@ -26,7 +26,7 @@ workflow:
   version: "1.0.3"
   created_at: "2026-04-17T00:00:00Z"
   updated_at: "2026-04-21T12:00:00Z"
-  status: "PHASE_1B_COMPLETE_READY_FOR_PHASE_2_SYNTHESIS"
+  status: "PHASE_2_COMPLETE_READY_FOR_WAVE_2_DISPATCH"
   checkpoint_ref: "orchestration/checkpoints/ae006d-phase1a-20260420.yaml"
   resume_decision: "All 9 Phase 1a features PASS after full iteration + live-site rescope for 004/005"
   phase_1a_progress:

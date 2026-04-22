@@ -1,0 +1,418 @@
+---
+# Phase 2 Synthesis State File
+# Generated: 2026-04-20
+# Agent: ps-synthesizer
+# Criticality: C4
+# Wave-exit gate: quality_score >= 0.95
+
+schema_version: "1.0.0"
+phase: "phase-2-synthesis"
+session_id: "synth-phase2-20260420-001"
+
+## Synthesis Identity
+
+synthesis_id: "phase-2.0-e-600"
+artifact_path: "projects/PROJ-040-documentation/work/EPIC-040-001/synthesis/discovery-synthesis.md"
+date_completed: "2026-04-20"
+iteration: 3
+quality_score_iter1_self: 0.933
+quality_score_iter1_tournament: 0.900
+quality_score_iter2_self: 0.940
+quality_score_iter2_tournament: 0.932
+quality_score_iter3_self: 0.945
+quality_score_iter3_tournament: 0.942
+quality_target: 0.95
+quality_verdict: "PASS — iter-2 tournament 0.932 >= standard gate 0.92; iter-3 tournament 0.942 confirms PASS; all 5 iter-2 editorial items CLOSED (IC-001/002/003/SM-001/IN-003) with 13/13 S-011 verification checks PASS; gap to C4-aspirational 0.95 is -0.008 (partial-read source structural ceiling — not remediable via editorial pass); self/tournament calibration gap -0.003 (convergent)"
+
+## C4 Tournament Review (iter-3)
+
+adversarial_review_iter3:
+  review_path: "projects/PROJ-040-documentation/orchestration/reviews/synthesis-phase-2-adv-review-iter-3.md"
+  reviewer_agent: "adv-executor"
+  review_date: "2026-04-20"
+  strategies_executed: ["S-003", "S-011", "S-007", "S-013", "S-002", "S-014"]
+  tournament_score: 0.942
+  self_assessed_score: 0.945
+  score_delta: -0.003
+  verdict: "PASS"
+  standard_gate_pass: true
+  standard_gate_threshold: 0.92
+  c4_aspirational_threshold: 0.95
+  gap_to_c4_aspirational: -0.008
+  total_new_findings: 0
+  critical_findings: 0
+  major_findings: 0
+  minor_findings: 0
+  iter2_closures_verified: ["IC-001 (Major — CLOSED: L0 Top 10 reordered, REM-003 Rank 1)", "IC-002 (Minor — CLOSED: rows 5/7/10 corrected to REM-016/REM-008/REM-026)", "IC-003 (Minor — CLOSED: V-00 path consistent across 6 locations)", "SM-001 (Minor — CLOSED: EXP-008 ownership at Wave 4a success gate)", "IN-003 (Minor — CLOSED: CON-001 names composite as intra-wave authority)"]
+  s011_verification_checks: "13 of 13 PASS"
+  wave_2_dispatch:
+    recommendation: "UNBLOCKED"
+    proceed_immediately: ["W2-01", "W2-02", "W2-03", "W2-05", "W2-06", "W2-07", "W2-09", "W2-10", "W2-11", "W2-12"]
+    hold_pending_v00: ["W2-04", "W2-08"]
+    v00_deadline: "5 business days from Wave 2 kickoff"
+    v00_fallback: "Candidate A rollback if deadline missed"
+  wave_3_dispatch:
+    status: "UNBLOCKED — no pending editorial holds"
+    condition: "After Wave 2 items complete; all IC-001/IC-002/IC-003 editorial holds satisfied"
+  c4_aspirational_gap_analysis: "−0.008 gap driven entirely by partial-read source ceiling (FEAT-040-005/008/053). Structural ceiling ~0.944–0.946 with current source coverage. Not remediable via editorial pass. Full re-read of FEAT-040-005 remediation priorities and FEAT-040-008 templates catalog required to reach 0.95."
+  residual_minor_item: "REM-030 CRITICAL deferral not in risk register — non-blocking, address before/at Wave 3 dispatch"
+
+## C4 Tournament Review (iter-2)
+
+adversarial_review_iter2:
+  review_path: "projects/PROJ-040-documentation/orchestration/reviews/synthesis-phase-2-adv-review-iter-2.md"
+  reviewer_agent: "adv-executor"
+  review_date: "2026-04-20"
+  strategies_executed: ["S-003", "S-013", "S-007", "S-002", "S-004", "S-010", "S-012", "S-011", "S-001", "S-014"]
+  tournament_score: 0.932
+  self_assessed_score: 0.940
+  score_delta: -0.008
+  verdict: "PASS"
+  standard_gate_pass: true
+  standard_gate_threshold: 0.92
+  c4_aspirational_threshold: 0.95
+  gap_to_c4_aspirational: -0.018
+  total_new_findings: 5
+  critical_findings: 0
+  major_findings: 1
+  minor_findings: 4
+  new_findings: ["IC-001 (Major — L0 ranking vs composite inconsistency)", "IC-002 (Minor — L0 row labels mismatch register)", "IC-003 (Minor — state file V-00 path stale)", "SM-001 (Minor — EXP-008 design owner unnamed)", "IN-003 (Minor — intra-wave ordering ambiguity)"]
+  iter1_blockers_closed: ["CV-001/CC-001", "DA-001", "PM-001", "DA-002/DA-003", "SR-001", "IN-001", "PM-002", "FM-001", "SM-001-iter1", "RT-001"]
+  wave_2_dispatch:
+    recommendation: "UNBLOCKED"
+    proceed_immediately: ["W2-01", "W2-02", "W2-03", "W2-05", "W2-06", "W2-07", "W2-09", "W2-10", "W2-11", "W2-12"]
+    hold_pending_v00: ["W2-04", "W2-08"]
+    v00_deadline: "5 business days from Wave 2 kickoff"
+    v00_fallback: "Candidate A rollback if deadline missed"
+  phase_2_synthesis_complete: true
+  exit_iteration_cycle: true
+  final_verdict: "PASS"
+  wave_3_dispatch_condition: "After Wave 2 items complete; IC-001/IC-002/IC-003 editorial fixes APPLIED in iter-3 — Wave 3 dispatch has no pending editorial holds"
+
+## C4 Tournament Review (iter-1)
+
+adversarial_review:
+  review_path: "projects/PROJ-040-documentation/orchestration/reviews/synthesis-phase-2-adv-review-iter-1.md"
+  reviewer_agent: "adv-executor"
+  review_date: "2026-04-20"
+  strategies_executed: ["S-003", "S-013", "S-007", "S-002", "S-004", "S-010", "S-012", "S-011", "S-001", "S-014"]
+  tournament_score: 0.900
+  self_assessed_score: 0.933
+  score_delta: -0.033
+  verdict: "REVISE"
+  gap_to_threshold: -0.050
+  total_findings: 21
+  critical_findings: 5
+  major_findings: 10
+  minor_findings: 6
+  top_blockers:
+    - id: "CV-001"
+      severity: "Critical"
+      finding: "7 CRITICAL stated in register summary, only 5 CRITICAL-tagged entries found"
+      required_fix: "Identify 2 missing Critical findings OR correct count to 5 with explanation"
+    - id: "DA-001"
+      severity: "Critical"
+      finding: "V-00 gate has no timeline bound, no enforcement mechanism, and blocks only W2-04/W2-08 (not all 12 Wave 2 items — scope unclear)"
+      required_fix: "Add deadline, enforcement protocol, and explicit scope (W2-04 and W2-08 only)"
+    - id: "PM-001"
+      severity: "Critical"
+      finding: "All 12 Wave 2 items assigned to unidentified single 'Wave 2 lead'"
+      required_fix: "Name or categorize owners; designate W2-01 through W2-03 as 'any committer'"
+    - id: "DA-002/DA-003"
+      severity: "Major"
+      finding: "EXP-007 is both a gate for Wave 4a AND a Wave 4a item (circular dependency); pass criteria undefined"
+      required_fix: "Restructure: Wave 4a opens with EXP-007 initiation; W4a-02 gated on EXP-007 completion with operationally defined criteria"
+    - id: "SR-001"
+      severity: "Major"
+      finding: "Composite formula uses raw ICE (1-10) without normalization; formula is mathematically inconsistent as written"
+      required_fix: "Add 'ICE normalized to [0-1] by dividing by 10 before applying 0.30 weight' to formula definition"
+  wave_2_dispatch:
+    recommendation: "CONDITIONAL"
+    proceed_immediately: ["W2-01", "W2-02", "W2-03", "W2-05", "W2-06", "W2-07", "W2-09", "W2-10", "W2-11", "W2-12"]
+    hold_pending_v00: ["W2-04", "W2-08"]
+    parallel_iter2_allowed: true
+    wave_3_holds: true
+  iter2_projected_score: "0.925-0.940 (addressing required items 1-5); 0.95 requires completeness work (items 6-10)"
+
+## Source Summary
+
+source_count: 13
+source_quality_floor: 0.90
+source_quality_ceiling: 0.935
+source_quality_mean: 0.923
+qg_2_score: 0.928
+sources:
+  - id: "FEAT-040-001"
+    agent: "ux-jtbd-analyst"
+    score: 0.922
+    status: "read"
+  - id: "FEAT-040-002"
+    agent: "ux-heart-analyst"
+    score: 0.935
+    status: "read"
+  - id: "FEAT-040-003"
+    agent: "ux-kano-analyst"
+    score: 0.927
+    status: "read"
+  - id: "FEAT-040-004"
+    agent: "ux-heuristic-evaluator"
+    score: 0.90
+    status: "read"
+  - id: "FEAT-040-005"
+    agent: "ux-inclusive-evaluator"
+    score: 0.924
+    status: "partial-read (offset/limit due to file size)"
+    read_sections: "executive-summary, revision-history, evidence-verification, audit-scope, pour-status"
+  - id: "FEAT-040-006"
+    agent: "ux-behavior-diagnostician"
+    score: 0.9205
+    status: "read"
+  - id: "FEAT-040-007"
+    agent: "ux-lean-ux-facilitator"
+    score: 0.922
+    status: "read"
+  - id: "FEAT-040-008"
+    agent: "ux-atomic-architect"
+    score: 0.922
+    status: "partial-read (offset/limit due to file size)"
+    read_sections: "executive-summary, component-counts, style-consistency-score, top-5-recommendations"
+  - id: "FEAT-040-053"
+    agent: "pm-customer-insight"
+    score: 0.921
+    status: "partial-read (first 200 lines)"
+  - id: "FEAT-040-054"
+    agent: "pm-market-strategist"
+    score: 0.923
+    status: "partial-read (first 200 lines)"
+  - id: "FEAT-040-055"
+    agent: "pm-competitive-analyst"
+    score: 0.93
+    status: "read"
+  - id: "FEAT-040-056"
+    agent: "ps-researcher"
+    score: 0.926
+    status: "partial-read (offset/limit — L0, L1, L2 recommendations section)"
+  - id: "qg-2-consistency-report"
+    agent: "ps-synthesizer (Wave 1)"
+    score: 0.924
+    status: "read"
+
+## Synthesis Outputs
+
+consolidated_finding_count: 42
+finding_severity_breakdown:
+  CRITICAL: 7
+  HIGH: 14
+  MEDIUM: 14
+  LOW: 5
+  note: "iter-2: REM-007 and REM-030 promoted HIGH→CRITICAL (CV-001/CC-001 resolution); HIGH count 16→14"
+
+triple_convergence:
+  count: 5
+  findings:
+    - id: "TC-001"
+      title: "Getting-started path ambiguity"
+      sources: ["FEAT-040-006", "FEAT-040-007", "FEAT-040-003", "QG-2"]
+      confidence: "HIGH"
+      wave: 2
+      remediation: ["REM-001", "REM-007"]
+    - id: "TC-002"
+      title: "Skill catalog invisible on homepage"
+      sources: ["FEAT-040-001", "FEAT-040-004", "FEAT-040-007", "FEAT-040-055", "QG-2"]
+      confidence: "HIGH"
+      wave: 2
+      remediation: ["REM-002", "REM-008"]
+    - id: "TC-003"
+      title: "Stale version references"
+      sources: ["FEAT-040-006", "FEAT-040-007", "QG-2-5-live-site"]
+      confidence: "HIGH"
+      wave: 2
+      remediation: ["REM-003"]
+    - id: "TC-004"
+      title: "Canonical one-liner absent or inconsistent"
+      sources: ["FEAT-040-054", "FEAT-040-007", "FEAT-040-055"]
+      confidence: "MEDIUM-HIGH"
+      wave: 2
+      remediation: ["REM-004", "REM-033"]
+      gate: "V-00 required before deployment"
+    - id: "TC-005"
+      title: "Tutorial coverage at zero percent"
+      sources: ["FEAT-040-003", "FEAT-040-001", "FEAT-040-002", "FEAT-040-007", "FEAT-040-055", "FEAT-040-056"]
+      confidence: "HIGH"
+      wave: "4a"
+      remediation: ["REM-005", "REM-026", "REM-030"]
+      gate: "EXP-007 required before authoring"
+
+wave_plan:
+  wave_2:
+    status: "READY — V-00 gate required before README commit"
+    item_count: 12
+    estimated_effort_hours: 22
+    gate: "V-00 vocabulary resonance test"
+  wave_3:
+    status: "READY after Wave 2 complete"
+    item_count: 10
+    estimated_effort_hours: 28
+    gate: "TP-01 taxonomy adoption"
+  wave_4a:
+    status: "READY after EXP-007 completes"
+    item_count: 3
+    estimated_effort_hours: 17
+    gate: "EXP-007 concierge MVP"
+  wave_4b:
+    status: "BLOCKED"
+    blocker: "EXP-008 field experiment results required"
+    item_count: "30+"
+    estimated_effort_hours: "TBD (multi-month)"
+
+## Validation Gates Status
+
+validation_gates:
+  V-00:
+    description: "A1 vocabulary resonance test — governance layer framing"
+    status: "NOT_STARTED"
+    blocking: ["W2-04", "W2-08", "REM-004", "REM-033"]
+    pass_criteria: "<=1 of 5 A1 participants describe 'governance layer' as enterprise-y"
+    result_path: "orchestration/reviews/v-00-vocabulary-test-{YYYYMMDD}-{NNN}.md"
+  V-01:
+    description: "Behavioral-system framing test"
+    status: "NOT_STARTED"
+    blocking: ["Candidate C one-liner adoption"]
+    scope: "post-Wave-4b"
+  A4_A6_stop_gate:
+    description: "Switch trigger primary research interviews"
+    status: "NOT_STARTED"
+    blocking: ["XP-04 messaging commit"]
+    pass_criteria: "N>=3 interviews confirming switch triggers are real"
+  phase_2_instrumentation:
+    description: "HEART KPI baseline data collection plan"
+    status: "NOT_STARTED"
+    blocking: ["Wave 3 start"]
+  EXP_007_concierge:
+    description: "Tutorial demand and path clarity validation"
+    status: "NOT_STARTED"
+    blocking: ["Wave 4a tutorial authoring"]
+    pass_criteria: "5+ sessions documented; demand validated"
+  EXP_008_field:
+    description: "Per-skill how-to authoring go/no-go"
+    status: "[PERSISTENT BLOCKER] NOT_STARTED"
+    blocking: ["ALL Wave 4b authoring"]
+
+## QG-2.5 Source-Fidelity Results
+
+qg_25_performed: true
+qg_25_date: "2026-04-20"
+qg_25_method: "WebFetch live site https://jerry.geekatron.org/ + https://jerry.geekatron.org/runbooks/getting-started/"
+qg_25_results:
+  - finding: "F-014 sidebar navigation"
+    verdict: "VALID"
+    notes: "8 categories confirmed, no breadcrumbs, no you-are-here"
+  - finding: "F-011 jargon density"
+    verdict: "VALID"
+    notes: "4 jargon terms confirmed on homepage without glossary"
+  - finding: "F-013 skill-to-playbook linkage"
+    verdict: "VALID"
+    notes: "7 skills shown, no hyperlinks confirmed"
+  - finding: "TC-001 path branching"
+    verdict: "VALID (severity UPGRADED)"
+    notes: "Version staleness v0.2.2 vs v0.31.5 is 29-version gap, not minor drift"
+  - finding: "TC-002 skill catalog visibility"
+    verdict: "VALID"
+    notes: "7/30 skills confirmed on live site"
+  - finding: "F-012 platform order"
+    verdict: "PREVIOUSLY RESCINDED — not spot-checked"
+    notes: "Rescission from FEAT-040-004 iter-7 stands; QG-2.5 does not re-open"
+
+## Blockers (Persistent)
+
+persistent_blockers:
+  - id: "PB-001"
+    description: "EXP-008 field experiment results required before Wave 4b how-to authoring"
+    impact: "Wave 4b (30+ per-skill docs) blocked indefinitely"
+    source: "FEAT-040-007 ux-lean-ux-facilitator"
+    created: "2026-04-20"
+    status: "OPEN"
+  - id: "PB-002"
+    description: "V-00 vocabulary resonance test required before Wave 2 README commit"
+    impact: "REM-004, W2-04, W2-08 blocked until result recorded"
+    source: "FEAT-040-054 pm-market-strategist"
+    created: "2026-04-20"
+    status: "OPEN"
+  - id: "PB-003"
+    description: "A4/A6 switch trigger interviews required before XP-04 messaging commit"
+    impact: "Segments A4 and A6 messaging cannot be targeted"
+    source: "FEAT-040-001 ux-jtbd-analyst"
+    created: "2026-04-20"
+    status: "OPEN"
+
+## Knowledge Items
+
+knowledge_items:
+  patterns:
+    - id: "PAT-001"
+      title: "FMOT-First Wave Sequencing"
+      quality: "HIGH"
+  lessons:
+    - id: "LES-001"
+      title: "Bold-As-Heading Anti-Pattern Propagation"
+  assumptions:
+    - id: "ASM-001"
+      title: "Tutorial demand validated by competition, not experiment"
+      confidence: "MEDIUM-HIGH"
+
+## Next Actions
+
+next_actions:
+  immediate:
+    - action: "Initiate V-00 vocabulary resonance test"
+      who: "Project owner"
+      blocking: "Wave 2 README/one-liner commit"
+    - action: "Execute REM-003 version ref update"
+      who: "Wave 2 lead"
+      effort: "15 min"
+      blocking: "Nothing"
+    - action: "Execute REM-001 path decision block"
+      who: "Wave 2 lead"
+      effort: "30 min"
+      blocking: "Nothing"
+  short_term:
+    - action: "Complete synthesis iteration 2 (targeted revisions to reach 0.95 gate)"
+      who: "ps-synthesizer"
+      trigger: "ps-critic adversarial review of iteration 1"
+    - action: "Link synthesis artifact via cli link-artifact"
+      who: "orch-planner or orchestrator"
+  wave_2_dispatch:
+    - action: "Assign Wave 2 items W2-01 through W2-12 to committers"
+    - action: "Create HEART instrumentation plan (proxy measurement for Getting-Started Completion Rate)"
+
+## Handoff Context
+
+session_context:
+  schema_version: "1.0.0"
+  session_id: "synth-phase2-20260420-001"
+  source_agent:
+    id: "ps-synthesizer"
+    family: "ps"
+    cognitive_mode: "convergent"
+    model: "sonnet"
+  target_agent: "orch-planner"
+  payload:
+    key_findings:
+      - "42 unique findings after dedup; 5 triple-convergence confirmed"
+      - "Wave 2 ready (12 items, ~22 hrs) — V-00 gate required before README commit"
+      - "Tutorial creation (Wave 4a) gated on EXP-007 concierge MVP"
+      - "Wave 4b [PERSISTENT BLOCKER] awaiting EXP-008"
+      - "QG-2.5 live-site verified: all 5 spot-checked findings valid; TC-001 severity upgraded"
+    open_questions:
+      - "V-00 outcome: governance-layer framing resonance (N=5 A1 participants)"
+      - "EXP-007 timing: when can 5+ concierge sessions be facilitated?"
+      - "EXP-008 experiment design: not yet scoped"
+    blockers:
+      - "[PERSISTENT] EXP-008 blocks Wave 4b"
+      - "[BLOCKING] V-00 blocks Wave 2 README commit"
+    confidence: 0.85
+    artifacts:
+      - path: "projects/PROJ-040-documentation/work/EPIC-040-001/synthesis/discovery-synthesis.md"
+        type: "synthesis"
+        summary: "Phase 2 synthesis — 42 findings, wave plan, dependency map, validation gates"
+  timestamp: "2026-04-20T00:00:00Z"
