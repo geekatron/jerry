@@ -76,7 +76,7 @@ Jerry is a **community Claude Code plugin** hosted on [GitHub](https://github.co
 
 > **Arriving from the HTTPS row in the table above?** Use the HTTPS command in Step 1 below (the second row in the table). It works without SSH keys.
 
-**Step 1: Add the Jerry repository as a plugin source**
+### Step 1: Add the Jerry repository as a plugin source
 
 Pick whichever command matches your setup — all three do the same thing:
 
@@ -92,7 +92,7 @@ This tells Claude Code where to find Jerry. Nothing is installed yet — you're 
 
 > **SSH authentication failed?** If you see "Permission denied (publickey)", use the HTTPS command from the table above. It clones over HTTPS — no SSH keys needed.
 
-**Step 2: Verify the source registered**
+### Step 2: Verify the source registered
 
 Run this to confirm Jerry's marketplace source was added:
 
@@ -104,7 +104,7 @@ You should see `jerry-framework` in the output. This is the source name you'll u
 
 > **Shortcut:** You can also type `/plugin market list` — Claude Code accepts `market` as shorthand for `marketplace`.
 
-**Step 3: Install the plugin**
+### Step 3: Install the plugin
 
 Use the source name from Step 2's output as the `@suffix`:
 
@@ -122,7 +122,7 @@ This downloads and activates Jerry's skills, agents, and hooks. The format is `p
 
 > **"Plugin not found"?** The source name must match exactly what `/plugin marketplace list` shows. Re-run Step 2 and copy the name from the output. The source name comes from Jerry's [`.claude-plugin/marketplace.json`](https://github.com/geekatron/jerry/blob/main/.claude-plugin/marketplace.json) — you can inspect it to verify.
 
-**Step 4: Confirm it landed**
+### Step 4: Confirm it landed
 
 1. Run `/plugin` in Claude Code
 2. Go to the **Installed** tab

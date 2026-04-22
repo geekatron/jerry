@@ -30,6 +30,17 @@ If these are not in place, complete the installation steps in [`../INSTALLATION.
 
 ## Procedure
 
+> **Choose your path before starting**
+>
+> Jerry works two ways. Pick the one that matches your setup — some steps below differ.
+>
+> | Path | Who should use it | Key difference |
+> |------|-------------------|----------------|
+> | **A — Plugin only (recommended for most users)** | You installed Jerry via `/plugin` in Claude Code and have no local clone | Skip any `uv run jerry ...` CLI commands. The SessionStart hook handles everything automatically. |
+> | **B — Local clone + CLI** | You cloned `geekatron/jerry` and configured `uv` locally | You can run `uv run jerry` CLI commands from the clone directory in addition to the plugin hook. |
+>
+> If you are unsure, check `/plugin` → Installed tab in Claude Code. If `jerry` is listed, you have Path A. If you also have a local clone with `uv` configured, you additionally have Path B.
+
 ### Step 1: Create a Project Directory
 
 Jerry requires an active project to operate. Every session, skill invocation, and output artifact is scoped to a project. This is enforced by rule **[H-04](https://github.com/geekatron/jerry/blob/main/.context/rules/quality-enforcement.md#hard-rule-index)**: the `JERRY_PROJECT` environment variable MUST be set before any Jerry workflow can proceed.
