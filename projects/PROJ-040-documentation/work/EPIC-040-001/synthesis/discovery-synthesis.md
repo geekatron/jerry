@@ -798,3 +798,19 @@ synthesizer_output:
   iter2_secondary_closed: ["IN-001", "PM-002", "FM-001", "SM-001", "RT-001"]
   next_agent_hint: "orch-planner for Wave 2 dispatch; V-00 test facilitation first (5-day deadline)"
 ```
+
+---
+
+## Decision Record — 2026-04-21 (Post-Synthesis Iter-3 User Disposition)
+
+**Positioning Decision:** Candidate A selected as canonical. Candidate B ("governance layer") REJECTED by user on accuracy grounds — rationale documented in FEAT-040-054 Decision Record.
+
+**V-00 Gate Status:** SKIPPED. Not required because V-00 was specifically designed to validate Candidate B's "governance layer" phrase, which is no longer the selected commit.
+
+**Wave 2 Dispatch Unblock:** All 12 Wave 2 items may execute without V-00 dependency.
+- Previous V-00-gated items W2-04 (README canonical positioning commit) and W2-08 (docs/index.md tagline commit) now unblocked.
+- Canonical messaging hierarchy (4 tiers) per FEAT-040-054 Decision Record.
+
+**Wave 2 Execution Begins:** 2026-04-21 post-synthesis iter-3 PASS (composite 0.942).
+
+*Decision Record appended 2026-04-21 by orchestrator per user direction.*

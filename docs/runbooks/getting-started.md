@@ -24,7 +24,7 @@
 
 If these are not in place, complete the installation steps in [`../INSTALLATION.md`](../INSTALLATION.md) first, then return here.
 
-> **Tested with:** uv 0.5.x, Jerry v0.2.2, Claude Code 1.0.33+. If you are using different versions, the commands in this runbook should still work but minor output differences are possible.
+> **Tested with:** uv 0.5.x, Jerry v0.31.5, Claude Code 1.0.33+. If you are using different versions, the commands in this runbook should still work but minor output differences are possible.
 
 ---
 

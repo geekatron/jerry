@@ -1000,3 +1000,28 @@ Initial draft. Self-scored 0.928 PASS; external adv-review composite 0.88 REVISE
 *Constitutional Compliance: P-003 (no subagents invoked), P-020 (user authority preserved -- V-00 pre-gate, V-01, and STOP GATE all defer to user/owner interview decisions), P-022 (no deception -- every unvalidated claim flagged; every DRAFT block labeled; every candidate frame presents its own weaknesses; iter-1 overclaims on "validated" and "88 agents" explicitly walked back in iter-2 with named blocker IDs).*
 
 *Agent Version: 1.0.0 | Iteration: 4 | Next refresh: Post-V-00/V-01 interview results; post-FEAT-040-053 persona handoff-back; before OSS release.*
+
+---
+
+## Decision Record — 2026-04-21 (Post-Iter-4 User Disposition)
+
+**Decision:** Candidate A selected as canonical positioning. Candidate B ("governance layer") REJECTED by user on accuracy grounds.
+
+**Rationale (user judgment, ground truth):** Jerry is a Claude Code plugin containing ~30 methodology-grade skills with behavioral guardrails, workflow orchestration, and filesystem-based persistent knowledge management. "Governance layer" overclaims the governance aspect, undersells the skills (which are the bulk of user-facing value), and misframes "memory" (filesystem persistence vs. AI/LLM memory). Plugin is accurate; layer is infrastructure marketing language that doesn't match technical reality.
+
+**V-00 Status:** SKIPPED. Not required because Candidate B is no longer the recommended commit path. Candidate B remains documented in this artifact as an analytical alternative that was evaluated and rejected.
+
+**V-01 Status:** N/A (Candidate C behavioral-system framing also not selected).
+
+**Canonical Messaging Hierarchy (user-approved):**
+
+- **Tier 1 (Elevator, ~20 words):** "Jerry is a Claude Code plugin that gives Claude a library of expert skills, enforced quality standards, and persistent memory across sessions."
+- **Tier 2 (canonical, ≤15 words):** "Jerry: a Claude Code plugin with 30 expert skills, quality guardrails, and filesystem-based memory."
+- **Tier 3 (full paragraph, ~80 words):** "Jerry is a Claude Code plugin with a curated library of methodology-grade skills, behavioral guardrails, and persistent knowledge management — keeping Claude's work consistent and high-quality across sessions. It addresses the Context Rot problem (Claude's performance degrades as context fills) by treating the filesystem as infinite memory: rules, worktracker, knowledge, and decisions persist to disk and load selectively per task."
+- **Tier 4 (deep):** Deferred to Phase 2+ explanation documentation.
+
+**Wave 2 Impact:** W2-04 (README commit) and W2-08 (docs/index.md tagline commit) unblock immediately. All 12 Wave 2 items may execute in parallel without V-00 dependency.
+
+**STOP GATE Status (A4/A6):** Unchanged — still requires N>=3 interviews per segment before any A4/A6-specific external messaging is published. Decision to use Candidate A as canonical does not affect A4/A6 persona messaging gates.
+
+*Decision Record appended 2026-04-21 post-iter-4 PASS by orchestrator per user direction.*

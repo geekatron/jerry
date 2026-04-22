@@ -8,6 +8,7 @@ repo_name: geekatron/jerry
 
 theme:
   name: material
+  language: en
   custom_dir: overrides
   logo: assets/logo.svg
   favicon: assets/favicon.svg
