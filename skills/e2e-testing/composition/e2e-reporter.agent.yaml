@@ -1,0 +1,126 @@
+---
+composition_version: 1.0
+agent_id: E2E-0005
+agent_name: e2e-reporter
+role: Reporter
+skill: e2e-testing
+version: 1.0.0
+
+references:
+  identity: skills/e2e-testing/agents/e2e-reporter.md
+  governance: skills/e2e-testing/agents/e2e-reporter.governance.yaml
+  prompt_seed: skills/e2e-testing/composition/e2e-reporter.prompt.md
+
+invocation:
+  default_subagent_type: jerry:ps-researcher
+  default_template: null   # reporter assembles; no template to populate
+  assembly_spec_source: skills/e2e-testing/agents/e2e-reporter.md
+  model: sonnet
+
+inputs:
+  required:
+    - TESTRUN_ID
+    - verifier_verdict_path
+    - AUTONOMY_TIER
+  optional:
+    - author_plan_path
+    - author_rationale_path
+    - executor_trace_path
+    - assertion_inventory_path
+    - coverage_gap_report_path
+    - metrics_snapshot_path
+    - adv_scorer_result_path
+
+outputs:
+  primary: report-L0.md
+  secondary:
+    - report-L1.md
+    - report-L2.md
+  conditional:
+    - p022-enforcement-halt.json   # on missing autonomy_tier
+  location: "skills/e2e-testing/output/{TESTRUN_ID}/"
+  levels:
+    - L0
+    - L1
+    - L2
+
+pipeline:
+  upstream:
+    - e2e-verifier
+    - e2e-author
+    - e2e-executor
+    - e2e-analyst
+  downstream:
+    - user
+    - eng-reviewer
+
+owned_principles:
+  - P-E2E-10
+
+consumed_principles:
+  - P-E2E-01
+  - P-E2E-02
+  - P-E2E-04
+  - P-E2E-05
+  - P-E2E-06
+  - P-E2E-07
+  - P-E2E-08
+  - P-E2E-09
+
+tool_surface:
+  allowed:
+    - Read
+    - Write
+    - Glob
+  forbidden:
+    - agent_delegate
+    - Edit
+    - Bash
+    - WebSearch
+    - WebFetch
+    - mcp__playwright__*
+
+enforcement:
+  p022_primary_enforcement_point: autonomy_tier_declaration_in_L0
+  halt_if_autonomy_tier_absent: true
+  halt_emits_p022_enforcement_halt_json: true
+  orthogonality_note_preserved_verbatim: required
+  both_quality_scores_distinct_in_l0: required
+  never_combine_or_average_scores: required
+
+dual_enforcement_safety_net:
+  primary: e2e-reporter
+  secondary: e2e-verifier
+  spec: skills/e2e-testing/agents/e2e-reporter.md#identity
+
+autonomy:
+  default_tier: SUPERVISED
+  permitted_tiers:
+    - AUTONOMOUS
+    - SUPERVISED
+    - MANAGED-EQUIVALENT
+
+quality:
+  threshold: 0.94
+  criticality_default: C3
+
+degradation:
+  ad010_levels:
+    - level: 0
+      behaviour: full-L0-L1-L2-assembly
+    - level: 1
+      behaviour: PARTIAL-marker-when-some-upstream-absent
+    - level: 2
+      behaviour: INSUFFICIENT-EVIDENCE-advisory-only
+
+confidence_flags:
+  single_study_genia_e2etest: true
+  rt004_triangulated_threshold: true
+
+constitution:
+  reference: docs/governance/JERRY_CONSTITUTION.md
+  principles_applied:
+    - "P-003: No Recursive Subagents"
+    - "P-020: User Authority -- autonomy_tier verbatim in L0"
+    - "P-022: No Deception -- primary enforcement for autonomy-tier; orthogonality preserved"
+---

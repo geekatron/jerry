@@ -1,0 +1,366 @@
+workflow:
+  id: "e2e-skill-build-20260420-001"
+  name: "E2E Testing Skill Build"
+  project_id: "PROJ-017-e2e-testing-skill"
+  status: "COMPLETE"
+  id_source: "user"
+  id_format: "semantic-date-seq"
+  created: "2026-04-20"
+  started_at: "2026-04-21"
+  completed_at: "2026-04-21"
+  last_updated: "2026-04-21"
+  notes: |
+    Plan v1.1 in effect (7-phase structure: 1a, 1b, 1c, 2, 3, 4, 5).
+    Prompt-injection artifacts detected and ignored by all researchers.
+    Data sources: standards/innovators researchers used live web (Bing/Google/DDG); engteam used local files only.
+
+paths:
+  base: "projects/PROJ-017-e2e-testing-skill/orchestration/e2e-skill-build-20260420-001/"
+  research: "projects/PROJ-017-e2e-testing-skill/orchestration/e2e-skill-build-20260420-001/research/"
+  synthesis: "projects/PROJ-017-e2e-testing-skill/orchestration/e2e-skill-build-20260420-001/synthesis/"
+  design: "projects/PROJ-017-e2e-testing-skill/orchestration/e2e-skill-build-20260420-001/design/"
+  adversary_gates: "projects/PROJ-017-e2e-testing-skill/orchestration/e2e-skill-build-20260420-001/adversary-gates/"
+  skill_output: "skills/e2e-testing/"
+
+data_sources:
+  web_researchers:
+    - name: "Bing"
+      url: "https://www.bing.com"
+      used_by:
+        - "ps-researcher-A"
+        - "ps-researcher-B"
+      mandatory: true
+    - name: "Google"
+      url: "https://www.google.com"
+      used_by:
+        - "ps-researcher-A"
+        - "ps-researcher-B"
+      mandatory: true
+    - name: "DuckDuckGo"
+      url: "https://duckduckgo.com"
+      used_by:
+        - "ps-researcher-A"
+        - "ps-researcher-B"
+      mandatory: true
+  local_sources:
+    - name: "eng-team skill (v0.29.1 plugin cache)"
+      path: "/Users/victor.lau/.claude/plugins/cache/jerry-framework/jerry/0.29.1/skills/eng-team/"
+      used_by:
+        - "ps-researcher-C"
+      web_search_forbidden: true
+
+pipelines:
+  e2e-build:
+    short_alias: "e2e-build"
+    skill_source: "orchestration"
+    current_phase: "5"
+    phases:
+      - id: "1a"
+        path_id: "phase-1a"
+        name: "Landscape Scan"
+        execution_mode: "PARALLEL"
+        status: "COMPLETE"
+        agents:
+          - id: "ps-researcher-landscape-standards"
+            role: "Standards Landscape Researcher"
+            status: "COMPLETE"
+            artifact: "projects/PROJ-017-e2e-testing-skill/orchestration/e2e-skill-build-20260420-001/research/landscape/standards-candidates.md"
+          - id: "ps-researcher-landscape-innovators"
+            role: "Innovators Landscape Researcher"
+            status: "COMPLETE"
+            artifact: "projects/PROJ-017-e2e-testing-skill/orchestration/e2e-skill-build-20260420-001/research/landscape/innovators-candidates.md"
+
+      - id: "1b"
+        path_id: "phase-1b"
+        name: "Deep Research"
+        execution_mode: "PARALLEL"
+        status: "COMPLETE"
+        agents:
+          - id: "ps-researcher-std-1"
+            role: "W3C WebDriver Standard Researcher"
+            status: "COMPLETE"
+            artifact: "projects/PROJ-017-e2e-testing-skill/orchestration/e2e-skill-build-20260420-001/research/deep-standards/std-1-w3c-webdriver.md"
+          - id: "ps-researcher-std-2"
+            role: "ISO 29119 Standard Researcher"
+            status: "COMPLETE"
+            artifact: "projects/PROJ-017-e2e-testing-skill/orchestration/e2e-skill-build-20260420-001/research/deep-standards/std-2-iso-29119.md"
+          - id: "ps-researcher-std-3"
+            role: "ISTQB Standard Researcher"
+            status: "COMPLETE"
+            artifact: "projects/PROJ-017-e2e-testing-skill/orchestration/e2e-skill-build-20260420-001/research/deep-standards/std-3-istqb.md"
+          - id: "ps-researcher-std-4"
+            role: "OWASP WSTG Standard Researcher"
+            status: "COMPLETE"
+            artifact: "projects/PROJ-017-e2e-testing-skill/orchestration/e2e-skill-build-20260420-001/research/deep-standards/std-4-owasp-wstg.md"
+          - id: "ps-researcher-std-5"
+            role: "Cucumber/Gherkin Standard Researcher"
+            status: "COMPLETE"
+            artifact: "projects/PROJ-017-e2e-testing-skill/orchestration/e2e-skill-build-20260420-001/research/deep-standards/std-5-cucumber-gherkin.md"
+          - id: "ps-researcher-inn-1"
+            role: "QA Wolf Innovator Researcher"
+            status: "COMPLETE"
+            artifact: "projects/PROJ-017-e2e-testing-skill/orchestration/e2e-skill-build-20260420-001/research/deep-innovators/inn-1-qa-wolf.md"
+          - id: "ps-researcher-inn-2"
+            role: "Playwright MCP Innovator Researcher"
+            status: "COMPLETE"
+            artifact: "projects/PROJ-017-e2e-testing-skill/orchestration/e2e-skill-build-20260420-001/research/deep-innovators/inn-2-playwright-mcp.md"
+          - id: "ps-researcher-inn-3"
+            role: "Browser-Use Innovator Researcher"
+            status: "COMPLETE"
+            artifact: "projects/PROJ-017-e2e-testing-skill/orchestration/e2e-skill-build-20260420-001/research/deep-innovators/inn-3-browser-use.md"
+          - id: "ps-researcher-inn-4"
+            role: "Skyvern Innovator Researcher"
+            status: "COMPLETE"
+            artifact: "projects/PROJ-017-e2e-testing-skill/orchestration/e2e-skill-build-20260420-001/research/deep-innovators/inn-4-skyvern.md"
+          - id: "ps-researcher-inn-5"
+            role: "GenIA-E2ETest Innovator Researcher"
+            status: "COMPLETE"
+            artifact: "projects/PROJ-017-e2e-testing-skill/orchestration/e2e-skill-build-20260420-001/research/deep-innovators/inn-5-genia-e2etest.md"
+          - id: "ps-researcher-engteam"
+            role: "Eng-Team Testing Baseline Researcher"
+            status: "COMPLETE"
+            artifact: "projects/PROJ-017-e2e-testing-skill/orchestration/e2e-skill-build-20260420-001/research/deep-engteam/eng-team-testing-baseline.md"
+
+      - id: "1c"
+        path_id: "phase-1c"
+        name: "Lane Synthesis"
+        execution_mode: "PARALLEL"
+        status: "COMPLETE"
+        agents:
+          - id: "ps-synthesizer-standards"
+            role: "Standards Lane Synthesizer"
+            status: "COMPLETE"
+            artifact: "projects/PROJ-017-e2e-testing-skill/orchestration/e2e-skill-build-20260420-001/synthesis/lane-standards.md"
+          - id: "ps-synthesizer-innovators"
+            role: "Innovators Lane Synthesizer"
+            status: "COMPLETE"
+            artifact: "projects/PROJ-017-e2e-testing-skill/orchestration/e2e-skill-build-20260420-001/synthesis/lane-innovators.md"
+
+      - id: 2
+        path_id: "phase-2"
+        name: "Master Synthesis"
+        execution_mode: "SEQUENTIAL"
+        status: "COMPLETE"
+        blocked_by: "phase-1c-gate"
+        agents:
+          - id: "ps-synthesizer-master"
+            role: "Master Synthesizer"
+            status: "COMPLETE"
+            artifact: "projects/PROJ-017-e2e-testing-skill/orchestration/e2e-skill-build-20260420-001/synthesis/e2e-skill-requirements.md"
+
+      - id: 3
+        path_id: "phase-3"
+        name: "Skill Design"
+        execution_mode: "SEQUENTIAL"
+        status: "COMPLETE"
+        agents:
+          - id: "eng-lead"
+            role: "Implementation Planner"
+            status: "COMPLETE"
+            artifact: "projects/PROJ-017-e2e-testing-skill/orchestration/e2e-skill-build-20260420-001/design/implementation-plan.md"
+          - id: "eng-architect"
+            role: "Skill Architect"
+            status: "COMPLETE"
+            artifact: "projects/PROJ-017-e2e-testing-skill/orchestration/e2e-skill-build-20260420-001/design/skill-architecture.md"
+
+      - id: 4
+        path_id: "phase-4"
+        name: "Build"
+        execution_mode: "SEQUENTIAL"
+        status: "COMPLETE"
+        agents:
+          - id: "eng-lead"
+            role: "SKILL.md Author"
+            status: "COMPLETE"
+            artifact: "skills/e2e-testing/SKILL.md"
+          - id: "eng-qa"
+            role: "Template, Validation, and Playbook Author"
+            status: "COMPLETE"
+            artifact: "skills/e2e-testing/templates/, skills/e2e-testing/validation/, skills/e2e-testing/PLAYBOOK.md, skills/e2e-testing/examples/"
+          - id: "eng-architect"
+            role: "Agent Definition and Composition Author"
+            status: "COMPLETE"
+            artifact: "skills/e2e-testing/agents/, skills/e2e-testing/composition/"
+
+      - id: 5
+        path_id: "phase-5"
+        name: "Final Quality Gate"
+        execution_mode: "SEQUENTIAL"
+        status: "COMPLETE"
+        agents:
+          - id: "eng-reviewer"
+            role: "Skill Standards Reviewer"
+            status: "COMPLETE"
+            artifact: "projects/PROJ-017-e2e-testing-skill/orchestration/e2e-skill-build-20260420-001/adversary-gates/phase5-review.md"
+          - id: "adv-scorer"
+            role: "Final Adversary Scorer"
+            status: "COMPLETE"
+            artifact: "projects/PROJ-017-e2e-testing-skill/orchestration/e2e-skill-build-20260420-001/adversary-gates/phase5-score.md"
+
+quality:
+  threshold: 0.94
+  threshold_note: "HARD — user-specified override; exceeds H-13 default of 0.92"
+  criticality: "C3"
+  scoring_mechanism: "S-014"
+  required_strategies:
+    - "S-007"   # Constitutional AI Critique
+    - "S-002"   # Devil's Advocate
+    - "S-014"   # LLM-as-Judge
+    - "S-004"   # Pre-Mortem Analysis
+    - "S-012"   # FMEA
+    - "S-013"   # Inversion Technique
+  optional_strategies:
+    - "S-001"   # Red Team Analysis
+    - "S-003"   # Steelman Technique
+    - "S-010"   # Self-Refine
+    - "S-011"   # Chain-of-Verification
+  gate_scores:
+    phase1a:
+      score: 0.929
+      iterations: 3
+      status: "ACCEPTED_VIA_USER_OVERRIDE"
+      user_decision_date: "2026-04-21"
+      user_decision_option: "Option 1 - Accept at 0.929 (AE-006 escalation resolved)"
+      artifact: "projects/PROJ-017-e2e-testing-skill/orchestration/e2e-skill-build-20260420-001/adversary-gates/phase1a-score.md"
+      note: "User accepted despite 0.011 gap to 0.94 threshold. Gap is structural (reconstruction caveat on query-string attribution), not content quality failure."
+    phase1b:
+      score: 0.947
+      iterations: 1
+      status: "PASS"
+      artifact: "projects/PROJ-017-e2e-testing-skill/orchestration/e2e-skill-build-20260420-001/adversary-gates/phase1b-score.md"
+      note: "Clean first-pass PASS. Phase 1c routing: eng-team baseline goes direct to Phase 2 master synthesizer."
+    phase1c:
+      score: 0.935
+      iterations: 3
+      status: "ACCEPTED_VIA_USER_OVERRIDE"
+      user_decision_date: "2026-04-21"
+      user_decision_option: "Option 1 - Accept at 0.935 (AE-006 escalation resolved)"
+      artifact: "projects/PROJ-017-e2e-testing-skill/orchestration/e2e-skill-build-20260420-001/adversary-gates/phase1c-score.md"
+      note: "User accepted despite -0.005 gap to 0.94 threshold. Structural tension (standards-innovators divergence) on methodology integration, not content quality failure."
+    phase2:
+      score: 0.9485
+      iterations: 2
+      status: "PASS"
+      artifact: "projects/PROJ-017-e2e-testing-skill/orchestration/e2e-skill-build-20260420-001/adversary-gates/phase2-score.md"
+      note: "Iteration 1: 0.936 (REVISE). 3 targeted fixes applied (P-E2E-03 Uncertainty Quantification detail, RT-001 Strategic Arbitrage clarity, Evidence Confidence calibration). Iteration 2: 0.9485 PASS."
+    phase3:
+      score: 0.944
+      iterations: 1
+      status: "PASS"
+      artifact: "projects/PROJ-017-e2e-testing-skill/orchestration/e2e-skill-build-20260420-001/adversary-gates/phase3-score.md"
+      note: "Clean first-pass PASS. Design artifacts (implementation-plan.md, skill-architecture.md) ready for Phase 4 build."
+    phase5:
+      score: 0.943
+      iterations: 2
+      status: "PASS"
+      artifact: "projects/PROJ-017-e2e-testing-skill/orchestration/e2e-skill-build-20260420-001/adversary-gates/phase5-score.md"
+      note: "Iteration 1: 0.928 (REVISE). Iter 2: composition/ directory added (10 files: 5 .agent.yaml + 5 .prompt.md) + SKILL.md patched (RT-003 citation, explicit 4-tier autonomy table, 7-row Evidence Confidence Register). Iter 2: 0.943 PASS."
+  workflow_quality:
+    average_score: 0.9409
+    lowest_score: 0.929
+    highest_score: 0.947
+    total_iterations: 12
+    gates_passed_clean: 4
+    gates_accepted_via_override: 2
+    gates_total: 6
+
+checkpoints:
+  latest_id: "CP-011"
+  entries:
+    - id: "CP-001"
+      timestamp: "2026-04-20T15:00:00Z"
+      trigger: "PHASE_COMPLETE"
+      description: "Phase 1a (Landscape Scan) complete. 2 agents (standards, innovators) delivered. Candidates collected for Phase 1b deep research."
+      recovery_point: "Phase 1b agents ready to begin from landscape bindings (std-1..5, inn-1..5)"
+    - id: "CP-002"
+      timestamp: "2026-04-21T09:30:00Z"
+      trigger: "BARRIER_COMPLETE"
+      description: "Gate 1a scoring complete (3 iterations). User accepted at 0.929 (AE-006 Option 1). Phase 1b unblocked."
+      recovery_point: "Phase 1b deep research agents may resume if interrupted"
+    - id: "CP-003"
+      timestamp: "2026-04-21T12:00:00Z"
+      trigger: "PHASE_COMPLETE"
+      description: "Phase 1b (Deep Research) complete. 11 agents delivered (5 standards, 5 innovators, 1 eng-team baseline). All 11 files ready for Phase 1c synthesis."
+      recovery_point: "Phase 1c synthesizers ready to begin cross-file reconciliation"
+    - id: "CP-004"
+      timestamp: "2026-04-21T13:45:00Z"
+      trigger: "BARRIER_COMPLETE"
+      description: "Gate 1b scoring complete (1 iteration). PASS at 0.947. Phase 1c unblocked. Eng-team routing decision recorded: goes direct to Phase 2 master synthesizer."
+      recovery_point: "Phase 1c synthesis complete; ready for Phase 2 if gate 1c resolution allows"
+    - id: "CP-005"
+      timestamp: "2026-04-21T16:00:00Z"
+      trigger: "PHASE_COMPLETE"
+      description: "Phase 1c (Lane Synthesis) complete. 2 agents delivered (standards lane, innovators lane). Both files ready for Phase 2 master synthesis (pending gate 1c resolution)."
+      recovery_point: "Phase 1c gate 1c: AE-006 escalation in progress. 4 user decision options available."
+    - id: "CP-006"
+      timestamp: "2026-04-21T17:00:00Z"
+      trigger: "BARRIER_COMPLETE"
+      description: "Gate 1c user acceptance recorded (2026-04-21). Score 0.935, 3 iterations, ACCEPTED_VIA_USER_OVERRIDE (AE-006 Option 1). Phase 2 unblocked."
+      recovery_point: "Phase 2 master synthesizer ready to synthesize across lanes + eng-team baseline"
+    - id: "CP-007"
+      timestamp: "2026-04-21T18:30:00Z"
+      trigger: "BARRIER_COMPLETE"
+      description: "Phase 2 Master Synthesis complete. ps-synthesizer delivered e2e-skill-requirements.md (10 P-E2E-NN principles, 4 tension resolutions RT-001..004, agent roster, validation strategy, postures). Gate 2 PASS at 0.9485 (iter 2 after 3 targeted fixes)."
+      recovery_point: "Phase 3 design team (eng-lead, eng-architect) ready to operationalize requirements"
+    - id: "CP-008"
+      timestamp: "2026-04-21T19:45:00Z"
+      trigger: "BARRIER_COMPLETE"
+      description: "Phase 3 Skill Design complete. eng-lead delivered implementation-plan.md; eng-architect delivered skill-architecture.md. Gate 3 PASS at 0.944 (1 iteration, clean)."
+      recovery_point: "Phase 4 build team (eng-lead, eng-qa, eng-architect) ready to author SKILL.md, templates, agents, composition, playbook"
+    - id: "CP-009"
+      timestamp: "2026-04-21T21:00:00Z"
+      trigger: "PHASE_COMPLETE"
+      description: "Phase 4 Build complete. Step A: eng-lead → SKILL.md. Step B: eng-qa → 5 templates + validation-strategy.md. Step C: eng-architect → 5 agent .md + 5 governance.yaml. Step D (supplemental): eng-qa → PLAYBOOK.md + 3 examples/*.feature. Step D + composition/ (10 files) added. Total 31 deliverable files."
+      recovery_point: "Phase 5 final quality review (eng-reviewer + adv-scorer) ready to assess"
+    - id: "CP-010"
+      timestamp: "2026-04-21T22:15:00Z"
+      trigger: "BARRIER_COMPLETE"
+      description: "Phase 5 Step A: eng-reviewer delivered phase5-review.md (GO verdict, 0 critical, 0 major, 4 minor issues logged)."
+      recovery_point: "Phase 5 Step B: adv-scorer ready for final S-014 scoring"
+    - id: "CP-011"
+      timestamp: "2026-04-21T23:30:00Z"
+      trigger: "WORKFLOW_COMPLETE"
+      description: "WORKFLOW COMPLETE. Gate 5 PASS at 0.943 (iter 2). All 6 quality gates resolved: 4 clean PASS + 2 ACCEPTED_VIA_USER_OVERRIDE. Total 12 iterations. Final deliverable: skills/e2e-testing/ (31 files + registration pending)."
+      recovery_point: "Workflow complete. Registration step (C3, AE-002 gate) awaiting human approval for CLAUDE.md / AGENTS.md / mandatory-skill-usage.md updates."
+
+metrics:
+  phases_total: 7
+  phases_complete: 7
+  phases_complete_list: ["1a", "1b", "1c", "2", "3", "4", "5"]
+  agents_total: 28
+  agents_executed: 28
+  agents_executed_breakdown:
+    phase_1a: 2
+    phase_1b: 11
+    phase_1c: 2
+    phase_2: 1
+    phase_3: 2
+    phase_4: 5
+    phase_5: 2
+    supplemental_step_d: 1
+  adversary_gates_total: 6
+  gates_passed_clean: 4
+  gates_accepted_via_override: 2
+  user_escalations_resolved: 2
+  progress_percent: 100.0
+  deliverable_files: 31
+
+deliverable:
+  path: "skills/e2e-testing/"
+  file_count: 31
+  structure:
+    root:
+      - "SKILL.md"
+      - "PLAYBOOK.md"
+    agents: "10 (5 .md agent definitions + 5 .governance.yaml)"
+    templates: "5 (template-*.md files)"
+    composition: "10 (5 .agent.yaml + 5 .prompt.md for multi-strategy orchestration)"
+    validation: "1 (validation-strategy.md)"
+    examples: "3 (.feature BDD scenario files)"
+  operationalization:
+    principles: "10 (P-E2E-01 through P-E2E-10)"
+    autonomy_tiers: "4 (AUTONOMOUS, SUPERVISED [default], MANAGED-EQUIVALENT, FULLY-AUTONOMOUS-PROD [forbidden])"
+    evidence_confidence_register: "7 rows (MINIMAL, LOW, MODERATE, SUBSTANTIAL, HIGH, VERY-HIGH, DEFINITIVE)"
+    rt_resolutions: "4 tension resolutions (RT-001 Strategic Arbitrage, RT-002 Scope Bounding, RT-003 Adversarial Critique Integration, RT-004 Agent Autonomy Guardrails)"
+  registration_status: "PENDING"
+  registration_notes: "Human-gated C3 step per AE-002. SKILL.md §Registration documents planned entries: CLAUDE.md trigger-map update, AGENTS.md agent roster, mandatory-skill-usage.md proactive invocation rules."

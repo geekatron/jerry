@@ -1,0 +1,106 @@
+---
+composition_version: 1.0
+agent_id: E2E-0001
+agent_name: e2e-author
+role: Planner
+skill: e2e-testing
+version: 1.0.0
+
+references:
+  identity: skills/e2e-testing/agents/e2e-author.md
+  governance: skills/e2e-testing/agents/e2e-author.governance.yaml
+  prompt_seed: skills/e2e-testing/composition/e2e-author.prompt.md
+
+invocation:
+  default_subagent_type: jerry:ps-researcher
+  default_template: skills/e2e-testing/templates/e2e-test-generation.md
+  alternative_templates:
+    - skills/e2e-testing/templates/e2e-agentic-flow.md
+    - skills/e2e-testing/templates/e2e-diff-scope.md
+  model: sonnet
+
+inputs:
+  required:
+    - TESTRUN_ID
+    - SUT_URL
+    - RISK_LEVEL
+    - CRITICALITY
+    - LIST_BASIS_REFS
+    - EXECUTION_MODE
+    - AUTONOMY_TIER
+  optional:
+    - BLOCK_SCOPE_DOC
+    - FAILURE_DIAGNOSTIC
+    - ISO29119_ARTIFACTS
+    - AGENT_UNDER_TEST
+    - SKILL_NAME
+    - DIVERGENCE_TOLERANCE
+
+outputs:
+  primary: "{scenario-slug}.feature"
+  secondary:
+    - author-plan.json
+    - author-rationale.md
+  optional:
+    - test-case-spec-iso29119.md
+    - golden-transcript.json
+  location: "skills/e2e-testing/output/{TESTRUN_ID}/"
+  levels:
+    - L0
+    - L1
+    - L2
+
+pipeline:
+  upstream:
+    - e2e-analyst
+  downstream:
+    - e2e-executor
+    - e2e-reporter
+  replanning_input_from: e2e-verifier
+
+owned_principles:
+  - P-E2E-02
+  - P-E2E-08
+
+consumed_principles:
+  - P-E2E-01
+  - P-E2E-03
+  - P-E2E-04
+  - P-E2E-10
+
+tool_surface:
+  allowed:
+    - Read
+    - Write
+    - Edit
+    - Glob
+    - Grep
+  forbidden:
+    - agent_delegate
+    - Bash
+    - WebSearch
+    - WebFetch
+    - mcp__playwright__*
+
+autonomy:
+  default_tier: SUPERVISED
+  permitted_tiers:
+    - AUTONOMOUS
+    - SUPERVISED
+    - MANAGED-EQUIVALENT
+
+quality:
+  threshold: 0.94
+  criticality_default: C3
+
+confidence_flags:
+  single_study_genia_e2etest: true
+  rt004_triangulated_threshold: true
+
+constitution:
+  reference: docs/governance/JERRY_CONSTITUTION.md
+  principles_applied:
+    - "P-003: No Recursive Subagents"
+    - "P-020: User Authority"
+    - "P-022: No Deception"
+---

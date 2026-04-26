@@ -1,0 +1,128 @@
+---
+composition_version: 1.0
+agent_id: E2E-0003
+agent_name: e2e-verifier
+role: Validator
+skill: e2e-testing
+version: 1.0.0
+
+references:
+  identity: skills/e2e-testing/agents/e2e-verifier.md
+  governance: skills/e2e-testing/agents/e2e-verifier.governance.yaml
+  prompt_seed: skills/e2e-testing/composition/e2e-verifier.prompt.md
+
+invocation:
+  default_subagent_type: jerry:ps-researcher
+  default_template: skills/e2e-testing/templates/e2e-validation-check.md
+  primary_methodology_source: skills/e2e-testing/validation/validation-strategy.md
+  model: sonnet
+
+inputs:
+  required:
+    - TESTRUN_ID
+    - trace_path
+    - plan_path
+    - feature_path
+    - corpus_path
+    - AUTONOMY_TIER
+  optional:
+    - dom_snapshots_dir
+    - screenshots_dir
+    - browser_errors_path
+
+outputs:
+  primary: verifier-verdict.json
+  secondary:
+    - assertion-inventory.json
+    - metrics-snapshot.json
+    - adv-scorer-result.json
+  conditional:
+    - failure-diagnostic.json   # on FAIL/REVISE; routes to e2e-author ONLY
+  location: "skills/e2e-testing/output/{TESTRUN_ID}/"
+  levels:
+    - L0
+    - L1
+    - L2
+
+pipeline:
+  upstream:
+    - e2e-executor
+    - e2e-author
+  downstream:
+    - e2e-reporter
+  escalates_to: e2e-author
+  never_escalates_to: e2e-executor
+
+owned_principles:
+  - P-E2E-04
+  - P-E2E-09
+
+consumed_principles:
+  - P-E2E-02
+  - P-E2E-08
+  - P-E2E-10
+
+tool_surface:
+  allowed:
+    - Read
+    - Write
+    - Glob
+    - Grep
+  forbidden:
+    - agent_delegate
+    - Edit
+    - Bash
+    - WebSearch
+    - WebFetch
+    - mcp__playwright__*
+
+cross_skill_integration:
+  adversary_adv_scorer: required_for_c2_plus
+  problem_solving_ps_critic: upstream_h14_loop_partner_for_author
+
+autonomy:
+  default_tier: SUPERVISED
+  permitted_tiers:
+    - AUTONOMOUS
+    - SUPERVISED
+    - MANAGED-EQUIVALENT
+
+quality:
+  threshold: 0.94
+  criticality_default: C3
+  metrics:
+    execution_recall_min: 0.80
+    element_precision_min: 0.70
+    manual_modification_rate_max: 0.15
+    assertion_sensitivity_rate_min: 0.70
+    ran_only_rate_max: 0.30
+    s014_process_score_min: 0.94
+  scores_orthogonal: true
+
+orthogonality:
+  enforce_distinct_scores: required
+  never_average_or_combine: required
+  orthogonality_note_verbatim_in_verdict: required
+
+degradation:
+  ad010_levels:
+    - level: 0
+      behaviour: full-six-step-procedure-with-s014
+    - level: 1
+      behaviour: functional-metrics-without-s014
+    - level: 2
+      behaviour: assertion-presence-analysis-only
+
+confidence_flags:
+  single_study_genia_e2etest: true
+  rt004_triangulated_threshold: true
+  assertion_sensitivity_rate_unvalidated: true
+  qa_wolf_flake_taxonomy_vendor_blog: true
+
+constitution:
+  reference: docs/governance/JERRY_CONSTITUTION.md
+  principles_applied:
+    - "P-003: No Recursive Subagents -- adv-scorer invoked as tool, not delegation"
+    - "P-020: User Authority"
+    - "P-022: No Deception -- orthogonality disclosure verbatim; SINGLE-STUDY flags preserved"
+---

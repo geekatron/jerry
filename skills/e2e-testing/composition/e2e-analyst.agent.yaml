@@ -1,0 +1,107 @@
+---
+composition_version: 1.0
+agent_id: E2E-0004
+agent_name: e2e-analyst
+role: Analyst
+skill: e2e-testing
+version: 1.0.0
+
+references:
+  identity: skills/e2e-testing/agents/e2e-analyst.md
+  governance: skills/e2e-testing/agents/e2e-analyst.governance.yaml
+  prompt_seed: skills/e2e-testing/composition/e2e-analyst.prompt.md
+
+invocation:
+  default_subagent_type: jerry:ps-researcher
+  default_template: skills/e2e-testing/templates/e2e-diff-scope.md
+  model: sonnet
+
+inputs:
+  required:
+    - TESTRUN_ID
+    - GIT_DIFF_PATH
+    - FEATURE_INVENTORY_GLOB
+    - FULL_SUITE_FLAG
+    - AUTONOMY_TIER
+  optional:
+    - WSTG_COVERAGE_PATH
+    - CALL_GRAPH_PATH
+
+outputs:
+  primary: scope-document.json
+  secondary:
+    - coverage-gap-report.json
+  corpus:
+    - "eval-corpus/scenario-NNNN.json"
+  location: "skills/e2e-testing/output/{TESTRUN_ID}/"
+  levels:
+    - L0
+    - L1
+    - L2
+
+pipeline:
+  upstream: []
+  downstream:
+    - e2e-author
+    - e2e-reporter
+
+owned_principles:
+  - P-E2E-01
+  - P-E2E-03
+
+consumed_principles:
+  - P-E2E-08
+  - P-E2E-09
+  - P-E2E-10
+
+tool_surface:
+  allowed:
+    - Read
+    - Write
+    - Edit
+    - Glob
+    - Grep
+    - Bash
+  forbidden:
+    - agent_delegate
+    - WebSearch
+    - WebFetch
+    - mcp__playwright__*
+  bash_scope: read-only-analysis-commands-only
+
+autonomy:
+  default_tier: SUPERVISED
+  permitted_tiers:
+    - AUTONOMOUS
+    - SUPERVISED
+    - MANAGED-EQUIVALENT
+
+quality:
+  threshold: 0.94
+  criticality_default: C3
+
+user_confirmation:
+  p_e2e_03_gate: required_before_scope_emission
+  full_suite_requires_explicit_flag: true
+
+degradation:
+  ad010_levels:
+    - level: 0
+      behaviour: full-procedure-with-call-graph-HIGH-confidence
+    - level: 1
+      behaviour: semantic-heuristic-MEDIUM-confidence-flagged
+    - level: 2
+      behaviour: analyst-standalone-mode-human-fills-classifications
+
+confidence_flags:
+  single_study_genia_e2etest: true
+  rt004_triangulated_threshold: true
+  call_graph_absence_flag_required_if_bash_unavailable: true
+
+constitution:
+  reference: docs/governance/JERRY_CONSTITUTION.md
+  principles_applied:
+    - "P-003: No Recursive Subagents"
+    - "P-020: User Authority -- P-E2E-03 confirmation gate"
+    - "P-022: No Deception -- call-graph absence flagged; SINGLE-STUDY preserved"
+---
