@@ -582,6 +582,36 @@ These agents implement secure software engineering methodology through the `/eng
 
 ---
 
+## E2E-Testing Skill Agents
+
+These agents implement LLM-orchestrated end-to-end browser test generation, execution, and verification through the `/e2e-testing` skill. Five-agent sequential pipeline with verifier-supervised retry loop bounded at 3 iterations per H-14. Diff-scoped by default (P-E2E-03); WSTG security tag coverage (P-E2E-08); declarative Gherkin with `@basis:` traceability (P-E2E-02).
+
+| Agent | File | Role | Cognitive Mode |
+|-------|------|------|----------------|
+| e2e-analyst | `skills/e2e-testing/agents/e2e-analyst.md` | Change-Impact Analyst | Strategic |
+| e2e-author | `skills/e2e-testing/agents/e2e-author.md` | Test Scenario Planner and Gherkin Author | Convergent |
+| e2e-executor | `skills/e2e-testing/agents/e2e-executor.md` | Browser Driver and Test Runner | Systematic |
+| e2e-verifier | `skills/e2e-testing/agents/e2e-verifier.md` | Correctness Validator and Escalation Supervisor | Forensic |
+| e2e-reporter | `skills/e2e-testing/agents/e2e-reporter.md` | Multi-Level Report Assembler | Convergent |
+
+**Key Capabilities:**
+
+| Agent | Primary Use Case | Output Type |
+|-------|------------------|-------------|
+| e2e-analyst | Map git diff to user flows, prioritize scope, identify WSTG gaps | `scope-document.json` |
+| e2e-author | Risk classification, declarative Gherkin authoring, WSTG security scenario generation | `{scenario}.feature`, `author-plan.json` |
+| e2e-executor | DOM snapshot acquisition, Playwright MCP-based execution, codegen and explorer modes | `executor-trace.json`, `.spec.ts` (codegen) |
+| e2e-verifier | Six-step validation, metric computation (execution_recall, element_precision, MMR), failure escalation | `verifier-verdict.json` |
+| e2e-reporter | L0/L1/L2 assembly with mandatory autonomy-tier declaration | `report-L0.md`, `report-L1.md`, `report-L2.md` |
+
+**Invocation**: Use `/e2e-testing` skill which orchestrates the five agents in sequence: analyst -> author -> executor -> verifier -> reporter. Verifier returns FAIL diagnostics to author for replanning, capped at 3 retries before AE-006 human escalation.
+
+**Quality Gate**: 0.94 weighted composite (S-014 LLM-as-Judge) plus functional metrics: execution_recall >= 0.80, element_precision >= 0.70, MMR <= 0.15.
+
+**Artifact Location**: `skills/e2e-testing/output/{E2E-NNNN}/`
+
+---
+
 ## Red-Team Skill Agents
 
 These agents implement offensive security methodology through the `/red-team` skill, covering the full MITRE ATT&CK kill chain (14/14 tactics). Follows a non-linear workflow with mandatory scope authorization (red-lead first), circuit breaker checks at every agent transition, and RoE-gated agents for high-impact operations. Follows PTES, OSSTMM, and NIST SP 800-115 methodologies.

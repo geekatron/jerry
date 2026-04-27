@@ -91,6 +91,7 @@ See `docs/governance/JERRY_CONSTITUTION.md` for full governance.
 | `/use-case` | Guided use case authoring and decomposition (2 agents: Cockburn 12-step author, Jacobson UC 2.0 slicer) |
 | `/test-spec` | BDD test specification from use cases (2 agents: Clark transformation generator, 7 Cs coverage analyst) |
 | `/contract-design` | API contract generation from use cases (2 agents: UC-to-OpenAPI generator, 9-step validator) |
+| `/e2e-testing` | E2E browser test generation, execution, and verification (5 agents: analyst, author, executor, verifier, reporter) |
 
 **SessionStart Hook Tags:**
 
