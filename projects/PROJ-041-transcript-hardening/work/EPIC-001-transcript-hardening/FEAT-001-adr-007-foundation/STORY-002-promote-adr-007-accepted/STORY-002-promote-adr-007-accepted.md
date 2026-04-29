@@ -57,7 +57,7 @@ Per AE-004, modifying a baselined ADR is C4 — but we are *baselining* the ADR 
 |------|-------|-------|---------|
 | 1 | `/worktracker` | `wt-auditor` | Verify all 5 FEAT-002 Bugs are status `completed` with delivery evidence before allowing this Story to start |
 | 2 | `/problem-solving` | `ps-architect` | Update ADR-007 frontmatter `Status: PROPOSED` → `ACCEPTED`; add History entry with date/author/rationale |
-| 3 | `/eng-team` | `eng-architect` | Architecture compliance review: confirm ADR-007 baselining inherits no contradictions and aligns with existing ADR-001..006 |
+| 3 | `/eng-team` | `eng-architect` | Architecture compliance review: confirm ADR-007 baselining inherits no contradictions and aligns with existing ADR-001..006. **Deliverable:** authors compliance memo at `projects/PROJ-041-transcript-hardening/work/EPIC-001-transcript-hardening/FEAT-001-adr-007-foundation/STORY-002-promote-adr-007-accepted/adr-007-baselining-compliance-memo.md` per ps-architect D-4.1 (AE-004 baselined-ADR review must produce written compliance evidence). |
 | 4 | `/adversary` | `adv-selector` → `adv-executor` → `adv-scorer` | C4 ≥0.95 review (mandatory C4 per AE-004: modifying baselined ADR + project-wide stricter threshold) |
 | 5 | `/worktracker` | `wt-verifier` | Validate AC; gate move to `completed` |
 

@@ -125,8 +125,8 @@ The `ux-orchestrator` parent skill routes between these as appropriate. We do no
 | Type | Item | Description |
 |------|------|-------------|
 | Cooperates | EN-004 | Threat model is one of the inputs to UX synthesis |
-| Blocks | EN-001 | UX findings inform DDD scaffolding decisions (CLI ergonomics) |
-| Blocks | STORY-007, STORY-008 | CLI surface design absorbs UX heuristic findings |
+| Cooperates | EN-001 | UX findings may inform CLI ergonomics but not the hexagonal module skeleton (which is determined by H-07, not user research). Per ps-architect D-3.1: changed from `Blocks` to `Cooperates` to prevent serial bottleneck. |
+| Blocks | STORY-007, STORY-008 | CLI surface design absorbs UX heuristic findings (where they materially reshape the flag set or output shape) |
 | Cooperates | EN-006 | UX surface findings inform diataxis docs scope |
 
 ### Source

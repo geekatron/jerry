@@ -82,6 +82,7 @@ Each golden packet ships with a `expected.json` describing the expected validato
 ## Acceptance Criteria
 
 - [ ] All 6 golden packets exist under `test_data/golden/` with `expected.json`.
+- [ ] **Per ps-architect D-6.3:** if the audit packet is unshareable (per EN-005 inputs note "audit packet (if shareable)"), `bracket-canonical` golden is synthesized from PDD-0102 patterns referenced in BUG-006 root cause section. Synthesized packet must reproduce the parse-error condition (failing render via `mmdc`) before bracket-escape fix is applied.
 - [ ] Pytest harness at `tests/transcript/validation/golden/test_packet_validation.py` discovers golden packets via glob and parameterizes per directory.
 - [ ] Conftest fixtures wire PacketValidator with stub adapters for hermetic execution.
 - [ ] Initial test run: all 17 rules **fail** (Red phase confirmation — implementations don't exist yet).

@@ -67,8 +67,9 @@ Per audit: **pick the closed-list `DOMAIN-SCHEMA.json` form** (enum-based, stron
 | 2 | `/eng-team` | `eng-lead` | Delete or deprecate `contexts/schemas/domain-schema.json` and `schemas/context-domain-schema.json`; update all references |
 | 3 | `/eng-team` | `eng-qa` | Regression: 6 registered domain values pass; out-of-list value rejected |
 | 4 | `/problem-solving` | `ps-validator` | Grep for orphaned references to losing schemas; verify zero matches |
-| 5 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review (governance change) |
-| 6 | `/worktracker` | `wt-verifier` | Validate AC; close |
+| 5 | `/eng-team` | `eng-reviewer` | Final-gate review on schema deletion + canonical-choice ADR (governance-class change) per ps-architect D-4.4 |
+| 6 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review (governance change) |
+| 7 | `/worktracker` | `wt-verifier` | Validate AC; close |
 
 ---
 

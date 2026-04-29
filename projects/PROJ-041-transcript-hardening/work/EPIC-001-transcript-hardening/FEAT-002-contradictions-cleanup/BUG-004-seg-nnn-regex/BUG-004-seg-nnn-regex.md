@@ -67,8 +67,9 @@ Per audit: **loosen ADR-007 §3.1 from `\d{3}` to `\d{3,}`** to match schemas an
 | 2 | `/eng-team` | `eng-lead` | Confirm `ts-formatter.md` zero-padding examples align with `\d{3,}` (still pass at 3-digit minimum) |
 | 3 | `/eng-team` | `eng-qa` | Regression: synthetic 1000+ segment packet validates against all anchor rules |
 | 4 | `/problem-solving` | `ps-validator` | Grep across codebase for any remaining `\d{3}$` (non-comma form) on seg-NNN |
-| 5 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review |
-| 6 | `/worktracker` | `wt-verifier` | Validate AC; close |
+| 5 | `/eng-team` | `eng-reviewer` | Final-gate review on ADR-007 §3.1 amendment (modifying baselined ADR; AE-004 + ps-architect D-4.4) |
+| 6 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review |
+| 7 | `/worktracker` | `wt-verifier` | Validate AC; close |
 
 ---
 
@@ -96,6 +97,7 @@ Per audit: **loosen ADR-007 §3.1 from `\d{3}` to `\d{3,}`** to match schemas an
 | Blocked By | FEAT-001 STORY-001 | ADR-007 must be readable in canonical location to amend |
 | Blocks | FEAT-001 STORY-002 | ADR-007 promotion blocked while contradiction remains |
 | Blocks | FEAT-003 STORY-005 | ANCHOR-* validators need consistent regex |
+| Blocks | FEAT-003 STORY-006 | Per ps-architect D-3.4: SCHEMA-* validators also need the loosened seg-NNN regex (schema-level enforcement) |
 | Blocks | FEAT-004 STORY-015 | discussions[] disc-NNN regex inherits this convention |
 
 ### Source

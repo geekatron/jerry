@@ -115,7 +115,8 @@ Apply `/diataxis` four-quadrant methodology: every doc fits exactly one of {Tuto
 
 | Type | Item | Description |
 |------|------|-------------|
-| Blocked By | FEAT-001..FEAT-005 | Documentation describes shipped capabilities; cannot precede implementation |
+| Blocked By | FEAT-001..FEAT-004 | Documentation describes shipped capabilities; cannot precede implementation |
+| Cooperates | FEAT-005 | Per ps-architect D-3.2: FEAT-005 is the early-land quick-win track (mindmap fixes are agent-prompt changes); diataxis can document them in parallel rather than waiting. |
 | Blocks | EN-008 | Final tournament expects complete documentation |
 
 ### Source

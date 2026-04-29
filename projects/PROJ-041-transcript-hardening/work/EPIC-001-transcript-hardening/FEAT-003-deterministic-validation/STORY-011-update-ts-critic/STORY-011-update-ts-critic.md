@@ -87,6 +87,7 @@ This is the integration that closes the loop on the audit's diagnostic: ADR-007 
 | Type | Item | Description |
 |------|------|-------------|
 | Blocked By | STORY-007 | verify CLI with --json flag |
+| Blocked By | STORY-003, STORY-004, STORY-005, STORY-006 | Per ps-architect D-3.3: validators must exist for the critic to consume their output. Transitively implied via STORY-007, but explicit edge prevents ambiguity. |
 | Cooperates | EN-008 | Final tournament uses updated critic |
 
 ### Source

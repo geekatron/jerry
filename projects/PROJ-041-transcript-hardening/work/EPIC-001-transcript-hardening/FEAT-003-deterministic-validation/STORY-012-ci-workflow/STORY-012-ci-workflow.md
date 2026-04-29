@@ -54,7 +54,8 @@
 | 2 | `/eng-team` | `eng-devsecops` | PR comment posting on failure (validator summary); branch protection update (require this check) |
 | 3 | `/eng-team` | `eng-security` | Workflow security review: no secrets leak, principle of least privilege on workflow permissions |
 | 4 | `/eng-team` | `eng-qa` | End-to-end test: workflow runs against test_data/golden/ on PR; blocks merge on validator failure |
-| 5 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review on workflow + supply chain hardening |
+| 5 | `/eng-team` | `eng-infra` | Validate CI runtime environment matches developer-local execution (no env-drift between CI and local SubprocessSandbox behavior); per ps-architect D-4.5 |
+| 6 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review on workflow + supply chain hardening |
 | 6 | `/worktracker` | `wt-verifier` | Validate AC; close |
 
 ---

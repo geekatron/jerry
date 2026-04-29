@@ -65,8 +65,9 @@ Per audit: **ADR-007 is newer; pick `<backlinks>` tag and amend ADR-003.** ADR-0
 | 2 | `/eng-team` | `eng-lead` | Migrate any existing packet (including golden test packets in `test_data/`) using `## Backlinks` H2 to `<backlinks>` tag |
 | 3 | `/eng-team` | `eng-qa` | Regression: validators reject packets using `## Backlinks` H2 (covered in FEAT-003 STORY-004 CONTENT-* family) |
 | 4 | `/problem-solving` | `ps-validator` | Grep across `**/*.md` for residual `## Backlinks` headings; verify zero matches in canonical packet locations |
-| 5 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review (governance change touches two ADRs) |
-| 6 | `/worktracker` | `wt-verifier` | Validate AC; close |
+| 5 | `/eng-team` | `eng-reviewer` | Final-gate review on ADR-003 + ADR-007 amendments (governance-class change touches two baselined ADRs; AE-004 + ps-architect D-4.4) |
+| 6 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review (governance change touches two ADRs) |
+| 7 | `/worktracker` | `wt-verifier` | Validate AC; close |
 
 ---
 
@@ -91,7 +92,7 @@ Per audit: **ADR-007 is newer; pick `<backlinks>` tag and amend ADR-003.** ADR-0
 
 | Type | Item | Description |
 |------|------|-------------|
-| Blocked By | FEAT-001 STORY-001 | ADR-007 must be readable in canonical location |
+| Blocked By | FEAT-001 STORY-001 | ADR-007 must be readable in canonical location (because BUG-005's amendment to ADR-003 references ADR-007 §3.3 as the canonical authority for the `<backlinks>` tag form). Per ps-architect D-3.5: weakly-blocking — could be `Cooperates` if ADR-007 §3.3 reference is replaced with a self-contained statement of the canonical form. |
 | Blocks | FEAT-001 STORY-002 | ADR-007 promotion blocked while contradiction remains |
 | Blocks | FEAT-003 STORY-004 | CONTENT-* validators need consistent backlinks format |
 

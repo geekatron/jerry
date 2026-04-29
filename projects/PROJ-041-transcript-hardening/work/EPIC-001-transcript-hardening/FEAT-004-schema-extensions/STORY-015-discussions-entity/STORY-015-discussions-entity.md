@@ -70,6 +70,7 @@ ADRs to amend: ADR-001 (agent architecture: ts-extractor) + ADR-007 (output temp
 - [ ] Output template updated: `## Discussion Items` H2 section in topics file.
 - [ ] Mindmap symbols added: `~` for mermaid, `[~]` for ascii.
 - [ ] FEAT-005 mindmap fixes (BUG-006 bracket-escape) extend to cover the new `[~]` ascii fallback symbol where rendered as Mermaid.
+- [ ] **Per ps-architect D-6.2:** ascii rendering of `[~]` validates without bracket escape (because ascii is not Mermaid; bracket escape only applies to Mermaid output, not ascii fallback rendered by `ts-mindmap-ascii`).
 - [ ] `ts-extractor` agent updated: emits discussion items when speech is neither decision nor question.
 - [ ] At least one golden packet exercises discussions[] (existing audit packet has 33 disc_links per the gist test output — use as basis).
 - [ ] ADR-001 + ADR-007 amendments recorded.
