@@ -25,6 +25,7 @@
 | PROJ-021 | use-case | ACTIVE | Build use case capability: guided use case authoring, testing specifications, and contract design skills |
 | PROJ-024 | tactical-work | ACTIVE | Tactical work items — small improvements, quick fixes, and miscellaneous tasks |
 | PROJ-030 | bugs | ACTIVE | Bug fixes and defect resolution for the Jerry Framework |
+| PROJ-041 | transcript-hardening | ACTIVE | Harden `/transcript` skill against external packet audit findings (issue #273): governance, contradictions, deterministic substrate validation, schema extensions, mindmap rendering |
 
 ## Project Lookup
 
@@ -47,3 +48,4 @@
 - **PROJ-021**: `projects/PROJ-021-use-case/`
 - **PROJ-024**: `projects/PROJ-024-tactical-work/`
 - **PROJ-030**: `projects/PROJ-030-bugs/`
+- **PROJ-041**: `projects/PROJ-041-transcript-hardening/`
