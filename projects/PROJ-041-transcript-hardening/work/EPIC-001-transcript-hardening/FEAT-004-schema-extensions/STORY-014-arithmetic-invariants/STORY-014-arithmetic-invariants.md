@@ -17,6 +17,7 @@
 |---------|---------|
 | [User Story](#user-story) | As a / I want / So that |
 | [Schema Addition](#schema-addition) | What gets added to stat blocks |
+| [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
 | [Children Tasks](#children-tasks) | Task breakdown |
 | [Related Items](#related-items) | Links and dependencies |
@@ -51,6 +52,20 @@ Adds `arithmetic_invariants` sub-block to stat blocks (`extraction_stats.confide
 The audit identified "stat-block claims numbers it can't reproduce" as a defect class that showed up across multiple iterations on different surfaces. INV-EXT-001 (state count == array length) is the start; this generalizes the principle.
 
 FEAT-003 STORY-008 (`update-anchors`) keeps `arithmetic_invariants.computed` in lockstep with walked truth.
+
+---
+
+## Agent Assignment
+
+| Step | Skill | Agent | Purpose |
+|------|-------|-------|---------|
+| 1 | `/problem-solving` | `ps-architect` | Author ADR-002 amendment-001 capturing arithmetic_invariants design |
+| 2 | `/problem-solving` | `ps-investigator` | Identify all stat blocks that need arithmetic_invariants (extraction_stats, chunk_metadata, _anchors.json audit blocks) |
+| 3 | `/eng-team` | `eng-backend` | Update extraction-report.json + _anchors.json schemas with arithmetic_invariants sub-block |
+| 4 | `/eng-team` | `eng-backend` | Extend FEAT-003 SCHEMA-* validators to recompute and assert match per invariant; extend FEAT-003 STORY-008 update-anchors to refresh `computed` field |
+| 5 | `/eng-team` | `eng-qa` | Golden packet with populated arithmetic_invariants for each affected stat block |
+| 6 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review |
+| 7 | `/worktracker` | `wt-verifier` | Validate AC; close |
 
 ---
 

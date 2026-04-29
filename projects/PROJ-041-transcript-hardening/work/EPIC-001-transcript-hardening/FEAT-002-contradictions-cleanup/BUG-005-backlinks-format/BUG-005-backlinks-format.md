@@ -20,6 +20,7 @@
 | [Steps to Reproduce](#steps-to-reproduce) | How to observe the disagreement |
 | [Affected Documents](#affected-documents) | Where the disagreement lives |
 | [Recommended Resolution](#recommended-resolution) | Audit's stated fix |
+| [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
 | [Related Items](#related-items) | Links and dependencies |
 | [History](#history) | Change log |
@@ -53,6 +54,19 @@
 ## Recommended Resolution
 
 Per audit: **ADR-007 is newer; pick `<backlinks>` tag and amend ADR-003.** ADR-003 backlinks section gets a "superseded by ADR-007 §3.3" notice or is updated inline.
+
+---
+
+## Agent Assignment
+
+| Step | Skill | Agent | Purpose |
+|------|-------|-------|---------|
+| 1 | `/problem-solving` | `ps-architect` | Amend ADR-003 backlinks section (either delete with pointer to ADR-007 §3.3 OR update inline to `<backlinks>` tag); add History entry to ADR-003 |
+| 2 | `/eng-team` | `eng-lead` | Migrate any existing packet (including golden test packets in `test_data/`) using `## Backlinks` H2 to `<backlinks>` tag |
+| 3 | `/eng-team` | `eng-qa` | Regression: validators reject packets using `## Backlinks` H2 (covered in FEAT-003 STORY-004 CONTENT-* family) |
+| 4 | `/problem-solving` | `ps-validator` | Grep across `**/*.md` for residual `## Backlinks` headings; verify zero matches in canonical packet locations |
+| 5 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review (governance change touches two ADRs) |
+| 6 | `/worktracker` | `wt-verifier` | Validate AC; close |
 
 ---
 

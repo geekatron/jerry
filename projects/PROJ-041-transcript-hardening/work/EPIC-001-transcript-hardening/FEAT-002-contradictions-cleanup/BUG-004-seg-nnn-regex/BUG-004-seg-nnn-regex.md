@@ -20,6 +20,7 @@
 | [Steps to Reproduce](#steps-to-reproduce) | How to observe the disagreement |
 | [Affected Documents](#affected-documents) | Where the disagreement lives |
 | [Recommended Resolution](#recommended-resolution) | Audit's stated fix |
+| [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
 | [Related Items](#related-items) | Links and dependencies |
 | [History](#history) | Change log |
@@ -55,6 +56,19 @@ Segment-anchor regex disagreement. Schemas use forward-compat `\d{3,}` (supports
 ## Recommended Resolution
 
 Per audit: **loosen ADR-007 §3.1 from `\d{3}` to `\d{3,}`** to match schemas and preserve forward-compat. Tightening schemas to ADR-007 would regress the 1000+ segment capability, which is undesirable.
+
+---
+
+## Agent Assignment
+
+| Step | Skill | Agent | Purpose |
+|------|-------|-------|---------|
+| 1 | `/problem-solving` | `ps-architect` | Amend ADR-007 §3.1 regex `\d{3}` → `\d{3,}`; record History entry with rationale |
+| 2 | `/eng-team` | `eng-lead` | Confirm `ts-formatter.md` zero-padding examples align with `\d{3,}` (still pass at 3-digit minimum) |
+| 3 | `/eng-team` | `eng-qa` | Regression: synthetic 1000+ segment packet validates against all anchor rules |
+| 4 | `/problem-solving` | `ps-validator` | Grep across codebase for any remaining `\d{3}$` (non-comma form) on seg-NNN |
+| 5 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review |
+| 6 | `/worktracker` | `wt-verifier` | Validate AC; close |
 
 ---
 

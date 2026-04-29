@@ -20,6 +20,7 @@
 | [Steps to Reproduce](#steps-to-reproduce) | How the failure manifests |
 | [Root Cause](#root-cause) | Why this happens |
 | [Tested Fix](#tested-fix) | What the audit author validated locally |
+| [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
 | [Related Items](#related-items) | Links and dependencies |
 | [History](#history) | Change log |
@@ -71,6 +72,19 @@ Audit author tested several alternatives:
 | `["RFP [RDP] Kubernetes"]` (shape with quoted) | YES but adds extra shape wrapper |
 
 Local fix confirmed by author: HTML-escape applied to 5 labels in PDD-0102 packet → 125KB SVG produced via `mmdc`, no parse errors, substrate verified clean.
+
+---
+
+## Agent Assignment
+
+| Step | Skill | Agent | Purpose |
+|------|-------|-------|---------|
+| 1 | `/eng-team` | `eng-backend` | Update `ts-mindmap-mermaid.md` agent prompt: HTML-escape `[`/`]` (and defensively `(`/`)`/`{`/`}`) at write time |
+| 2 | `/eng-team` | `eng-qa` | Regression test: bracket-canonical golden packet renders cleanly via `mmdc` (actual render, not text inspection) |
+| 3 | `/eng-team` | `eng-qa` | Regression test: existing non-bracketed packets continue to render correctly |
+| 4 | `/eng-team` | `eng-backend` | Add validator (extends FEAT-003 SCHEMA-* or CONTENT-* family) detecting unescaped brackets in Mermaid output |
+| 5 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review |
+| 6 | `/worktracker` | `wt-verifier` | Validate AC; close |
 
 ---
 

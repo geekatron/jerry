@@ -19,6 +19,7 @@
 | [Summary](#summary) | What needs to happen |
 | [Source and Destination](#source-and-destination) | Cross-repo file paths |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
+| [Agent Assignment](#agent-assignment) | Specific skill+agent mappings for execution |
 | [Children Tasks](#children-tasks) | Task breakdown |
 | [Related Items](#related-items) | Links and dependencies |
 | [History](#history) | Status changes |
@@ -63,16 +64,31 @@ This is a cross-repo file copy (the two repositories are separate per user direc
 
 ---
 
+## Agent Assignment
+
+| Step | Skill | Agent | Purpose |
+|------|-------|-------|---------|
+| 1 | `/problem-solving` | `ps-architect` | Vendor ADR-007 file from jerry-core; preserve frontmatter/structure; record source commit SHA |
+| 2 | `/eng-team` | `eng-lead` | Update SKILL.md / ts-formatter.md / PLAYBOOK.md / ts-formatter.prompt.md cross-references to new `docs/adrs/` path |
+| 3 | `/eng-team` | `eng-devsecops` | Add CI check that every SKILL.md ADR cross-reference resolves (catches future packaging gaps) |
+| 4 | `/problem-solving` | `ps-validator` | Verify all internal cross-references inside ADR-007 resolve in new location; grep returns zero matches for old path |
+| 5 | `/adversary` | `adv-selector` → `adv-executor` → `adv-scorer` | C4 review at ≥0.95 (deliberate stricter threshold than H-13 SSOT 0.92, per project-wide direction) |
+| 6 | `/worktracker` | `wt-verifier` | Validate AC; gate move to `completed` |
+
+---
+
 ## Children Tasks
 
-| ID | Title | Status |
-|----|-------|--------|
-| TASK-001 | Copy ADR-007 from jerry-core to docs/adrs/ | pending |
-| TASK-002 | Update skills/transcript/SKILL.md cross-references | pending |
-| TASK-003 | Update skills/transcript/agents/ts-formatter.md cross-references | pending |
-| TASK-004 | Update PLAYBOOK.md and ts-formatter.prompt.md cross-references | pending |
-| TASK-005 | Add CI check: every SKILL.md ADR cross-reference resolves | pending |
-| TASK-006 | Verify internal cross-references inside ADR-007 resolve in new location | pending |
+| ID | Title | Owner Agent | Status |
+|----|-------|-------------|--------|
+| TASK-001 | Copy ADR-007 from jerry-core; preserve byte-identical content; record source commit SHA in History | ps-architect | pending |
+| TASK-002 | Update `skills/transcript/SKILL.md` cross-references to `docs/adrs/ADR-007-...` | eng-lead | pending |
+| TASK-003 | Update `skills/transcript/agents/ts-formatter.md` cross-references | eng-lead | pending |
+| TASK-004 | Update `skills/transcript/PLAYBOOK.md` and `ts-formatter.prompt.md` cross-references | eng-lead | pending |
+| TASK-005 | Resolve all internal cross-references inside ADR-007 against new location | ps-validator | pending |
+| TASK-006 | Add CI check: every `docs/adrs/ADR-NNN*.md` referenced from SKILL.md must resolve | eng-devsecops | pending |
+| TASK-007 | Run /adversary C4 review (≥0.95) | adv-executor + adv-scorer | pending |
+| TASK-008 | Validate AC and close | wt-verifier | pending |
 
 ---
 

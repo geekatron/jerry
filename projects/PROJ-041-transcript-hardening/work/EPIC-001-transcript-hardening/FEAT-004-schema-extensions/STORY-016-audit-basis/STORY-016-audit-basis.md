@@ -17,6 +17,7 @@
 |---------|---------|
 | [User Story](#user-story) | As a / I want / So that |
 | [Schema Addition](#schema-addition) | What gets added |
+| [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
 | [Children Tasks](#children-tasks) | Task breakdown |
 | [Related Items](#related-items) | Links and dependencies |
@@ -54,6 +55,18 @@ Adds `provenance.audit_basis` (option (a) lighter touch per audit comment 2) to 
 A reader sees one line ("audit basis: simple-cross-file-grep") and follows the breadcrumb to `_anchors.json` for full detail.
 
 (Option (b) — full mirroring — was rejected by the audit author as "more code paths to keep synchronized" for marginal benefit.)
+
+---
+
+## Agent Assignment
+
+| Step | Skill | Agent | Purpose |
+|------|-------|-------|---------|
+| 1 | `/eng-team` | `eng-backend` | Add `provenance.audit_basis` field to extraction-report.json schema (option (a) lighter touch) |
+| 2 | `/eng-team` | `eng-backend` | Wire FEAT-003 STORY-008 (update-anchors) to optionally write audit_basis at the same write moment, keeping sidecars in lock-step |
+| 3 | `/eng-team` | `eng-qa` | Golden packet with populated audit_basis; schema validates with and without the field |
+| 4 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review |
+| 5 | `/worktracker` | `wt-verifier` | Validate AC; close |
 
 ---
 

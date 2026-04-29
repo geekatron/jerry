@@ -17,6 +17,7 @@
 |---------|---------|
 | [User Story](#user-story) | As a / I want / So that |
 | [Schema Addition](#schema-addition) | What gets added to extraction-report.json |
+| [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
 | [Children Tasks](#children-tasks) | Task breakdown |
 | [Related Items](#related-items) | Links and dependencies |
@@ -51,6 +52,19 @@ Adds `provenance.editorial_conventions` to `extraction-report.json` schema v1.2 
 ```
 
 Without this block, agents either silently rewrite (loses provenance) or invent ad-hoc bracketing (drift). A documented `editorial_conventions` block solves this.
+
+---
+
+## Agent Assignment
+
+| Step | Skill | Agent | Purpose |
+|------|-------|-------|---------|
+| 1 | `/problem-solving` | `ps-architect` | Author ADR amendment (new ADR or ADR-001 amendment-002) for editorial_conventions block |
+| 2 | `/eng-team` | `eng-backend` | Update `extraction-report.json` schema to v1.2 with provenance.editorial_conventions block (optional, additive) |
+| 3 | `/eng-team` | `eng-backend` | Update `ts-extractor` agent guidance: reference editorial_conventions block when emitting narrative fields |
+| 4 | `/eng-team` | `eng-qa` | Add golden packet with populated block; FEAT-003 SCHEMA-* validators pick up new field automatically |
+| 5 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review |
+| 6 | `/worktracker` | `wt-verifier` | Validate AC; close |
 
 ---
 

@@ -20,6 +20,7 @@
 | [Steps to Reproduce](#steps-to-reproduce) | How to observe the disagreement |
 | [Affected Documents](#affected-documents) | Where the disagreement lives |
 | [Recommended Resolution](#recommended-resolution) | Audit's stated fix |
+| [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
 | [Related Items](#related-items) | Links and dependencies |
 | [History](#history) | Change log |
@@ -55,6 +56,19 @@ Three domain schemas exist and disagree. Two are regex-based; one is the closed-
 ## Recommended Resolution
 
 Per audit: **pick the closed-list `DOMAIN-SCHEMA.json` form** (enum-based, stronger validation; aligns with the registered 6-domain list). Delete or deprecate the two regex schemas. Update all references to point to `DOMAIN-SCHEMA.json`.
+
+---
+
+## Agent Assignment
+
+| Step | Skill | Agent | Purpose |
+|------|-------|-------|---------|
+| 1 | `/problem-solving` | `ps-architect` | Author ADR recording the canonical-schema choice (`DOMAIN-SCHEMA.json` enum form) and rationale |
+| 2 | `/eng-team` | `eng-lead` | Delete or deprecate `contexts/schemas/domain-schema.json` and `schemas/context-domain-schema.json`; update all references |
+| 3 | `/eng-team` | `eng-qa` | Regression: 6 registered domain values pass; out-of-list value rejected |
+| 4 | `/problem-solving` | `ps-validator` | Grep for orphaned references to losing schemas; verify zero matches |
+| 5 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review (governance change) |
+| 6 | `/worktracker` | `wt-verifier` | Validate AC; close |
 
 ---
 

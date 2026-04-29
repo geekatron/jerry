@@ -20,6 +20,7 @@
 | [Steps to Reproduce](#steps-to-reproduce) | How to observe the disagreement |
 | [Affected Documents](#affected-documents) | Where the disagreement lives |
 | [Recommended Resolution](#recommended-resolution) | Audit's stated fix |
+| [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
 | [Related Items](#related-items) | Links and dependencies |
 | [History](#history) | Change log |
@@ -55,6 +56,18 @@
 ## Recommended Resolution
 
 Per audit: **converge on `^chunk-\d{3,}$`** (3-or-more digits, supports 1000+ chunk transcripts). Tightening the others to `\d{3}` would regress forward-compat, which is undesirable.
+
+---
+
+## Agent Assignment
+
+| Step | Skill | Agent | Purpose |
+|------|-------|-------|---------|
+| 1 | `/eng-team` | `eng-lead` | Update `chunk.schema.json` and `index.schema.json` regex to `^chunk-\d{3,}$` |
+| 2 | `/eng-team` | `eng-qa` | Add regression test: synthetic 1000+ chunk packet validates against all 3 schemas |
+| 3 | `/problem-solving` | `ps-validator` | Grep across `**/*.schema.json` confirms no remaining `\d{3}$` (without comma) for chunk_id |
+| 4 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review |
+| 5 | `/worktracker` | `wt-verifier` | Validate AC; close |
 
 ---
 

@@ -20,6 +20,7 @@
 | [Technical Approach](#technical-approach) | Methodology overview |
 | [Methodology](#methodology) | Sub-skills and frameworks invoked |
 | [Inputs to Synthesize](#inputs-to-synthesize) | Source material for UX analysis |
+| [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
 | [Children Tasks](#children-tasks) | Task breakdown |
 | [Related Items](#related-items) | Links and dependencies |
@@ -64,6 +65,23 @@ The `ux-orchestrator` parent skill routes between these as appropriate. We do no
 | `/transcript` SKILL.md | `skills/transcript/SKILL.md` |
 | Existing transcript packets | `test_data/expected_output/` (existing golden) + audit packet (if shareable) |
 | Phase 1 red-team threat model (EN-004) | `projects/PROJ-041-transcript-hardening/work/EPIC-001-transcript-hardening/EN-004-red-team-threat-model/` |
+
+---
+
+## Agent Assignment
+
+| Step | Skill | Agent | Wave | Purpose |
+|------|-------|-------|------|---------|
+| 1 | `/user-experience` | `ux-orchestrator` | 0 | T5 routing: load full input set, select Wave 1-4 sub-skills based on lifecycle-stage triage |
+| 2 | `/user-experience` | `ux-jtbd-analyst` | 1 | Produce job map: ≥3 jobs people hire `/transcript` for + switch triggers + outcome expectations |
+| 3 | `/user-experience` | `ux-heuristic-evaluator` | 1 | Nielsen heuristic eval of planned CLI surface (`jerry transcript verify`/`update-anchors`); severity-rated findings |
+| 4 | `/user-experience` | `ux-heart-analyst` | 2 | HEART dashboard spec + baseline measurement plan |
+| 5 | `/user-experience` | `ux-inclusive-evaluator` | 3 | Persona Spectrum / WCAG 2.2 audit of CLI consumer ergonomics |
+| 6 | `/user-experience` | `ux-behavior-diagnostician` | 4 | B=MAP analysis on "agents that should run validators but don't" bottleneck (informs FEAT-003 STORY-009/010 hook design) |
+| 7 | `/user-experience` | `ux-orchestrator` | — | Cross-framework synthesis report at `work/EPIC-001-transcript-hardening/EN-005-user-experience-exploration/synthesis.md` |
+| 8 | `/worktracker` | New entities filed | — | If synthesis surfaces net-new findings, file new Stories/Bugs as worktracker entities (linked from this Enabler) |
+| 9 | `/adversary` | `adv-executor` + `adv-scorer` | — | C4 ≥0.95 review on synthesis report |
+| 10 | `/worktracker` | `wt-verifier` | — | Validate AC; close |
 
 ---
 

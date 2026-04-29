@@ -20,6 +20,7 @@
 | [Steps to Reproduce](#steps-to-reproduce) | How to observe the disagreement |
 | [Affected Documents](#affected-documents) | Where the disagreement lives |
 | [Recommended Resolution](#recommended-resolution) | Audit's stated fix |
+| [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
 | [Related Items](#related-items) | Links and dependencies |
 | [History](#history) | Change log |
@@ -57,6 +58,19 @@
 Per audit: **clarify the disambiguation**. If 2K/5K is the authoring budget (input to ts-formatter) and 5K/8K is the validator soft-cap (post-completion check), label both clearly. If unintended divergence, converge on 2K/5K everywhere.
 
 Recommended path: confirm intent with author/maintainer of SKILL.md L2665-L2666; if disambiguation is intended, label both sides ("authoring budget: 2K/5K", "validator soft-cap: 5K/8K") and add a cross-reference. If unintended, converge on 2K/5K.
+
+---
+
+## Agent Assignment
+
+| Step | Skill | Agent | Purpose |
+|------|-------|-------|---------|
+| 1 | `/problem-solving` | `ps-investigator` | 5 Whys: is this an unintended divergence or intentional disambiguation (authoring budget vs validator soft-cap)? |
+| 2 | `/problem-solving` | `ps-architect` | Author ADR amendment (or SKILL.md edit) recording the decision and rationale |
+| 3 | `/eng-team` | `eng-lead` | Apply edits to SKILL.md L2665-L2666 + ts-formatter.md + ADR-007 §1.1 to be consistent or labeled |
+| 4 | `/problem-solving` | `ps-validator` | Grep across `skills/transcript/` for token-cap references; verify no remaining unlabeled divergence |
+| 5 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review (governance change) |
+| 6 | `/worktracker` | `wt-verifier` | Validate AC; close |
 
 ---
 

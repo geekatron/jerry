@@ -18,6 +18,7 @@
 | [User Story](#user-story) | As a / I want / So that |
 | [Rule Family](#rule-family) | Which ADR-007 §4 rules this Story implements |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
+| [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Children Tasks](#children-tasks) | Task breakdown |
 | [Related Items](#related-items) | Links and dependencies |
 | [History](#history) | Status changes |
@@ -35,6 +36,19 @@
 ## Rule Family
 
 ADR-007 §4 CONTENT-001..003 rules. Includes the backlinks-format rule resolved by FEAT-002 BUG-005 (`<backlinks>` tag, not `## Backlinks` H2). Exact rule definitions in the vendored ADR-007.
+
+---
+
+## Agent Assignment
+
+| Step | Skill | Agent | Purpose |
+|------|-------|-------|---------|
+| 1 | `/eng-team` | `eng-qa` | Author failing tests for CONTENT-001..003 (TDD Red); include backlinks-format rule per BUG-005 (`<backlinks>` tag canonical) |
+| 2 | `/eng-team` | `eng-backend` | Implement CONTENT-001..003 (Green) under `src/jerry/transcript/validation/domain/rules/content/` |
+| 3 | `/eng-team` | `eng-backend` | Refactor for DRY |
+| 4 | `/problem-solving` | `ps-validator` | Confirm rules reject `## Backlinks` H2 form; accept `<backlinks>` tag form |
+| 5 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review |
+| 6 | `/worktracker` | `wt-verifier` | Validate AC; close |
 
 ---
 

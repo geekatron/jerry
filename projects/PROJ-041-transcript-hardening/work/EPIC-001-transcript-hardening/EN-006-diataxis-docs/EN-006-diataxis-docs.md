@@ -19,6 +19,7 @@
 | [Summary](#summary) | What this Enabler delivers |
 | [Technical Approach](#technical-approach) | /diataxis four-quadrant approach |
 | [Documentation Plan](#documentation-plan) | Per-quadrant deliverables |
+| [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
 | [Children Tasks](#children-tasks) | Task breakdown |
 | [Related Items](#related-items) | Links and dependencies |
@@ -52,6 +53,22 @@ Apply `/diataxis` four-quadrant methodology: every doc fits exactly one of {Tuto
 | **Reference** | Schema consumer | "extraction-report.json schema v1.2" — including new editorial_conventions, arithmetic_invariants, discussions[], audit_basis fields | `diataxis-reference` | `docs/transcript/reference/extraction-report-schema.md` |
 | **Explanation** (understanding-oriented) | Curious reader / contributor | "Why declared substrate is mechanically derived, not hand-attested" — design rationale connecting audit findings to validator architecture | `diataxis-explanation` | `docs/transcript/explanation/substrate-coupling.md` |
 | **Explanation** | Curious reader / contributor | "Why `/transcript` validation is an operation within the bounded context, not a separate BC" — DDD framing rationale | `diataxis-explanation` | `docs/transcript/explanation/bounded-context.md` |
+
+---
+
+## Agent Assignment
+
+| Step | Skill | Agent | Purpose |
+|------|-------|-------|---------|
+| 1 | `/diataxis` | `diataxis-classifier` | For each of the 8 planned docs, verify the proposed quadrant fits the content's purpose |
+| 2 | `/diataxis` | `diataxis-tutorial` | Author "first-validation" tutorial (1 doc) |
+| 3 | `/diataxis` | `diataxis-howto` | Author "repair-drift" + "ci-integration" how-to guides (2 docs) |
+| 4 | `/diataxis` | `diataxis-reference` | Author "validation-rules catalog" + "CLI reference" + "schema reference" (3 docs) |
+| 5 | `/diataxis` | `diataxis-explanation` | Author "substrate-coupling" + "bounded-context" explanations (2 docs) |
+| 6 | `/diataxis` | `diataxis-auditor` | Full doc-set audit: zero quadrant mixing; correct conformance to each quadrant's conventions |
+| 7 | `/eng-team` | `eng-reviewer` | Cross-check: docs match implementation reality (no orphaned references; no hallucinated APIs) |
+| 8 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review on doc set |
+| 9 | `/worktracker` | `wt-verifier` | Validate AC; close |
 
 ---
 

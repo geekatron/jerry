@@ -18,6 +18,7 @@
 | [User Story](#user-story) | As a / I want / So that |
 | [Summary](#summary) | What needs to happen |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
+| [Agent Assignment](#agent-assignment) | Specific skill+agent mappings for execution |
 | [Children Tasks](#children-tasks) | Task breakdown |
 | [Related Items](#related-items) | Links and dependencies |
 | [History](#history) | Status changes |
@@ -50,14 +51,28 @@ Per AE-004, modifying a baselined ADR is C4 — but we are *baselining* the ADR 
 
 ---
 
+## Agent Assignment
+
+| Step | Skill | Agent | Purpose |
+|------|-------|-------|---------|
+| 1 | `/worktracker` | `wt-auditor` | Verify all 5 FEAT-002 Bugs are status `completed` with delivery evidence before allowing this Story to start |
+| 2 | `/problem-solving` | `ps-architect` | Update ADR-007 frontmatter `Status: PROPOSED` → `ACCEPTED`; add History entry with date/author/rationale |
+| 3 | `/eng-team` | `eng-architect` | Architecture compliance review: confirm ADR-007 baselining inherits no contradictions and aligns with existing ADR-001..006 |
+| 4 | `/adversary` | `adv-selector` → `adv-executor` → `adv-scorer` | C4 ≥0.95 review (mandatory C4 per AE-004: modifying baselined ADR + project-wide stricter threshold) |
+| 5 | `/worktracker` | `wt-verifier` | Validate AC; gate move to `completed` |
+
+---
+
 ## Children Tasks
 
-| ID | Title | Status |
-|----|-------|--------|
-| TASK-001 | Verify all 5 FEAT-002 Bugs are completed | pending |
-| TASK-002 | Update ADR-007 frontmatter Status field | pending |
-| TASK-003 | Add History entry to ADR-007 documenting promotion | pending |
-| TASK-004 | Run /adversary C4 review on the change | pending |
+| ID | Title | Owner Agent | Status |
+|----|-------|-------------|--------|
+| TASK-001 | Verify all 5 FEAT-002 Bugs are completed (BUG-001..BUG-005) | wt-auditor | pending |
+| TASK-002 | Update ADR-007 frontmatter Status field PROPOSED → ACCEPTED | ps-architect | pending |
+| TASK-003 | Add History entry to ADR-007 documenting promotion | ps-architect | pending |
+| TASK-004 | Architecture compliance review on baselined ADR-007 | eng-architect | pending |
+| TASK-005 | Run /adversary C4 review (all 10 strategies, ≥0.95) | adv-executor + adv-scorer | pending |
+| TASK-006 | Validate AC and close | wt-verifier | pending |
 
 ---
 

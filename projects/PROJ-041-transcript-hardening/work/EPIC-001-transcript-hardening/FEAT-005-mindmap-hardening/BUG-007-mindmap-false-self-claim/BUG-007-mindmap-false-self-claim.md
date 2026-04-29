@@ -20,6 +20,7 @@
 | [Steps to Reproduce](#steps-to-reproduce) | How the misleading claim manifests |
 | [Root Cause](#root-cause) | Why the agent's claim is unfounded |
 | [Resolution Options](#resolution-options) | Two paths per audit |
+| [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
 | [Related Items](#related-items) | Links and dependencies |
 | [History](#history) | Change log |
@@ -58,6 +59,19 @@ Per audit:
 | **B — Weaken the claim** | Remove the "syntax validity" claim from agent return. Replace with scope-honest language: *"syntactic shape conforms to Mermaid mindmap directive structure"* — describes what the agent can actually verify (textual conformance) without overclaiming. |
 
 Decision: pick one in this Bug. Audit recommends Option A if `mmdc` is acceptable as a tool dependency, Option B otherwise.
+
+---
+
+## Agent Assignment
+
+| Step | Skill | Agent | Purpose |
+|------|-------|-------|---------|
+| 1 | `/eng-team` | `eng-reviewer` | Capability decision: Option A (grant Bash + mmdc) vs Option B (weaken claim to scope-honest language). Decision recorded as DEC. |
+| 2 | `/eng-team` | `eng-backend` | If Option A: update agent definition to add Bash tool; agent invokes mmdc and reports verified result. If Option B: update agent prompt to remove false syntax-validity claim. |
+| 3 | `/eng-team` | `eng-qa` | Regression: agent on BUG-006 audit packet — correctly identifies failure (Option A) or doesn't make false claim (Option B) |
+| 4 | `/eng-team` | `eng-reviewer` | P-022 alignment review: agent's claims accurately reflect actual capability |
+| 5 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review |
+| 6 | `/worktracker` | `wt-verifier` | Validate AC; close |
 
 ---
 

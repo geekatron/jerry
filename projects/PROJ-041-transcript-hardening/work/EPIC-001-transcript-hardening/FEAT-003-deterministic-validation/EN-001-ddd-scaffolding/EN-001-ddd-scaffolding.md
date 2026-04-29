@@ -19,6 +19,7 @@
 | [Summary](#summary) | What this Enabler delivers |
 | [Technical Approach](#technical-approach) | DDD module layout under /transcript BC |
 | [Design Decisions to Capture](#design-decisions-to-capture) | ADRs to author during this enabler |
+| [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
 | [Children Tasks](#children-tasks) | Task breakdown |
 | [Related Items](#related-items) | Links and dependencies |
@@ -82,6 +83,20 @@ H-07 isolation: domain layer has zero imports from application, infrastructure, 
 | Why SubprocessSandbox is a separate port from RuleEngine | DEC-003 |
 | How the gist's procedural shape maps to the DDD layout (gist as reference, not literal port) | DEC-004 |
 | Where validators live: src/jerry/ vs skills/transcript/scripts/ | DEC-005 |
+
+---
+
+## Agent Assignment
+
+| Step | Skill | Agent | Purpose |
+|------|-------|-------|---------|
+| 1 | `/problem-solving` | `ps-architect` | Author DEC-001..DEC-005 ADRs (validation as operation within /transcript BC; hexagonal 4-layer; SubprocessSandbox port; gist as reference; src/jerry vs skills/scripts placement) |
+| 2 | `/eng-team` | `eng-architect` | Threat-informed architecture review on the DDD layout + DEC-001..005; produces architecture compliance memo |
+| 3 | `/eng-team` | `eng-lead` | Implementation plan + dependency governance (which deps go in pyproject.toml; which are dev-only) |
+| 4 | `/eng-team` | `eng-backend` | Create empty module skeleton (4 layers + `__init__.py` files); declare entity stubs and Protocol classes |
+| 5 | `/eng-team` | `eng-qa` | Author scaffolding unit test (verifies import paths and H-07 isolation) |
+| 6 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review on architecture (DEC-001..005 + module skeleton) |
+| 7 | `/worktracker` | `wt-verifier` | Validate AC; close |
 
 ---
 

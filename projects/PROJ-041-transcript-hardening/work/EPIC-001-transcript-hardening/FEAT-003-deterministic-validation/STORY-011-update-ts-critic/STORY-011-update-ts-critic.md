@@ -17,6 +17,7 @@
 |---------|---------|
 | [User Story](#user-story) | As a / I want / So that |
 | [Summary](#summary) | What needs to happen |
+| [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
 | [Children Tasks](#children-tasks) | Task breakdown |
 | [Related Items](#related-items) | Links and dependencies |
@@ -37,6 +38,18 @@
 `skills/transcript/ts-critic-extension.md` (or wherever the transcript-specific critic guidance lives) currently relies on LLM interpretation of ADR-007 §4 rules. This Story changes that contract: the critic invokes `jerry transcript verify --json <packet>` first, treats failures as reportable findings without re-judging, and reserves LLM critique cycles for content quality (clarity, completeness, ASR convention adherence in narrative fields, etc.).
 
 This is the integration that closes the loop on the audit's diagnostic: ADR-007 §4 was always intended to be deterministic; we're connecting the critic to the deterministic implementation.
+
+---
+
+## Agent Assignment
+
+| Step | Skill | Agent | Purpose |
+|------|-------|-------|---------|
+| 1 | `/problem-solving` | `ps-architect` | Design new contract: critic invokes `verify --json` first, treats failures as reportable findings without re-judging, focuses LLM cycles on substantive content quality |
+| 2 | `/eng-team` | `eng-backend` | Update `ts-critic-extension.md` Step 1 to invoke verify --json; update finding format to reference rule_id |
+| 3 | `/eng-team` | `eng-qa` | Test against audit packet: critic identifies iter-9 drift via verify output (not via 30-min adversarial discovery) |
+| 4 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review |
+| 5 | `/worktracker` | `wt-verifier` | Validate AC; close |
 
 ---
 

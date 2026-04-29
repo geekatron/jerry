@@ -20,6 +20,7 @@
 | [Technical Approach](#technical-approach) | Sandbox design overview |
 | [Threat Model Summary](#threat-model-summary) | Why this is a security-critical Enabler |
 | [Sandbox Design](#sandbox-design) | Defenses applied |
+| [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
 | [Children Tasks](#children-tasks) | Task breakdown |
 | [Related Items](#related-items) | Links and dependencies |
@@ -70,6 +71,22 @@ Build the security boundary as a port + adapter pair (hexagonal architecture, H-
 | Env var policy | Strip all env vars except `PATH` (set to `/usr/bin:/bin`) and allowlist. |
 | Output handling | Capture stdout/stderr to memory; reject output > 1MB (defense against `find /` returning gigabytes). |
 | Failure mode | Always raise typed exception; never return ambiguous tuple. |
+
+---
+
+## Agent Assignment
+
+| Step | Skill | Agent | Purpose |
+|------|-------|-------|---------|
+| 1 | `/red-team` | `red-vuln` | STRIDE threat model + attack-path analysis on planned subprocess execution surface (consumed by EN-004 Phase 1; informs sandbox design here) |
+| 2 | `/eng-team` | `eng-architect` | Security boundary architecture: SubprocessSandbox port shape; hexagonal H-07 isolation |
+| 3 | `/eng-team` | `eng-infra` | Implement `SubprocessSandboxAdapter`: command allowlist, arg validation, path-traversal guard, timeout, env sanitization, output size limits |
+| 4 | `/eng-team` | `eng-qa` | Hypothesis property-based tests; 10K+ generated inputs; coverage ≥95% on adapter |
+| 5 | `/eng-team` | `eng-security` | Manual secure code review on adapter implementation |
+| 6 | `/red-team` | `red-exploit` | Exploit attempts against sandbox: ≥5 bypass classes (command injection, path traversal, env poisoning, symlink escape, resource exhaustion); document in EN-004 Phase 4 deliverables |
+| 7 | `/eng-team` | `eng-devsecops` | Add Bandit + Semgrep rules forbidding direct `subprocess.run` outside this adapter |
+| 8 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review on adapter design + tests + red-team validation |
+| 9 | `/worktracker` | `wt-verifier` | Validate AC; close |
 
 ---
 

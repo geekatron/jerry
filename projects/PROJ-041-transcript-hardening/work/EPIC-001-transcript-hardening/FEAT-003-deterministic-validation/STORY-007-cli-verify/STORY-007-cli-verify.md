@@ -17,6 +17,7 @@
 |---------|---------|
 | [User Story](#user-story) | As a / I want / So that |
 | [CLI Surface](#cli-surface) | Command shape and exit codes |
+| [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
 | [Children Tasks](#children-tasks) | Task breakdown |
 | [Related Items](#related-items) | Links and dependencies |
@@ -51,6 +52,19 @@ Default output: human-readable Markdown report listing pass/fail per rule with e
 `--fail-fast`: stop on first failure (default: report all failures).
 
 CLI lives at `src/jerry/transcript/validation/interface/cli.py`. A thin shim at `skills/transcript/scripts/validate_packet.py` provides the entrypoint.
+
+---
+
+## Agent Assignment
+
+| Step | Skill | Agent | Purpose |
+|------|-------|-------|---------|
+| 1 | `/eng-team` | `eng-backend` | Implement CLI command parser, wire to PacketValidator service per H-07 (interface/cli.py + skills/transcript/scripts/validate_packet.py shim) |
+| 2 | `/eng-team` | `eng-backend` | Author MarkdownReportRenderer + JsonReportRenderer adapters (infrastructure layer) |
+| 3 | `/eng-team` | `eng-qa` | CLI integration tests via entrypoint; performance test (~300ms target); JSON output schema validation |
+| 4 | `/problem-solving` | `ps-validator` | Verify reproduces audit's iter-9 drift detection |
+| 5 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review |
+| 6 | `/worktracker` | `wt-verifier` | Validate AC; close |
 
 ---
 

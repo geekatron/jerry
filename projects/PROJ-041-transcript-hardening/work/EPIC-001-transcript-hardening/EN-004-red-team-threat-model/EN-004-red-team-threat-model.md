@@ -22,6 +22,7 @@
 | [Attack Surface Inventory](#attack-surface-inventory) | What's in scope |
 | [Phase 1 Activities (Threat Model)](#phase-1-activities-threat-model) | Pre-implementation |
 | [Phase 4 Activities (Validation)](#phase-4-activities-validation) | Post-implementation |
+| [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
 | [Children Tasks](#children-tasks) | Task breakdown |
 | [Related Items](#related-items) | Links and dependencies |
@@ -96,6 +97,35 @@ After EN-003 SubprocessSandbox + STORY-005..010 land:
 | Atomic-write race condition probe | red-exploit | `work/red-team/atomic-write-probe.md` |
 | Prompt injection probe against ts-formatter | red-social | `work/red-team/prompt-injection-probe.md` |
 | Final engagement report | red-reporter | `work/red-team/engagement-report.md` |
+
+---
+
+## Agent Assignment
+
+**Phase 1 (Threat Model — informs design):**
+
+| Step | Skill | Agent | Purpose |
+|------|-------|-------|---------|
+| 1 | `/red-team` | `red-lead` | **MANDATORY first agent** — author engagement scope document with RoE; no other red-team agent operates without active scope |
+| 2 | `/red-team` | `red-recon` | Reconnaissance of existing surface (VTT/SRT/audio ingestion, JSON sidecars) + planned new surface (subprocess, CLI) |
+| 3 | `/red-team` | `red-vuln` | STRIDE threat model + attack-path analysis covering all 10 surfaces in the inventory |
+| 4 | `/red-team` | `red-reporter` | Phase 1 handoff to /eng-team (consumed by EN-001 design and EN-003 SubprocessSandbox shape) |
+
+**Phase 4 (Validation — exploit attempts on built artifacts):**
+
+| Step | Skill | Agent | Purpose |
+|------|-------|-------|---------|
+| 5 | `/red-team` | `red-exploit` | Exploit attempts against SubprocessSandbox: ≥5 bypass classes (command injection, path traversal, env poisoning, symlink escape, resource exhaustion) |
+| 6 | `/red-team` | `red-exploit` | Atomic-write race condition probe on update-anchors |
+| 7 | `/red-team` | `red-social` | Prompt injection probe against ts-formatter (testing whether malicious VTT/JSON content can manipulate the agent) |
+| 8 | `/red-team` | `red-reporter` | Final engagement report; classify findings (Critical/Major/Minor); remediation status |
+
+**Closure:**
+
+| Step | Skill | Agent | Purpose |
+|------|-------|-------|---------|
+| 9 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review on threat model + remediation set |
+| 10 | `/worktracker` | `wt-verifier` | Validate AC; close |
 
 ---
 

@@ -17,6 +17,7 @@
 |---------|---------|
 | [User Story](#user-story) | As a / I want / So that |
 | [CLI Surface](#cli-surface) | Command shape and exit codes |
+| [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
 | [Children Tasks](#children-tasks) | Task breakdown |
 | [Related Items](#related-items) | Links and dependencies |
@@ -49,6 +50,20 @@ Exit codes:
 `--bucket BUCKET`: scope to specific buckets (e.g., `--bucket spk_links --bucket disc_links`).
 
 After this Story, the iter-9 regression class **cannot occur**: the substrate is mechanically derived at every write rather than hand-attested.
+
+---
+
+## Agent Assignment
+
+| Step | Skill | Agent | Purpose |
+|------|-------|-------|---------|
+| 1 | `/eng-team` | `eng-backend` | Implement UpdateAnchorsService (application layer); atomic-write infrastructure adapter (temp file + rename pattern) |
+| 2 | `/eng-team` | `eng-backend` | Wire CLI command in interface/cli.py with `--dry-run` and `--bucket` flags; add `last_walked_at` audit trail |
+| 3 | `/eng-team` | `eng-security` | Code review on atomic-write semantics; verify no partial-write window |
+| 4 | `/red-team` | `red-exploit` | Probe for race condition / partial-write window via concurrent write simulation |
+| 5 | `/eng-team` | `eng-qa` | Test suite: dry-run, scoped buckets, atomicity under concurrent write simulation |
+| 6 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review |
+| 7 | `/worktracker` | `wt-verifier` | Validate AC; close |
 
 ---
 

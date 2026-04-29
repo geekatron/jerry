@@ -20,6 +20,7 @@
 | [Technical Approach](#technical-approach) | Golden packet strategy + test harness design |
 | [Golden Packet Strategy](#golden-packet-strategy) | What packets are checked in |
 | [Test Harness Design](#test-harness-design) | How rules are parameterized |
+| [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
 | [Children Tasks](#children-tasks) | Task breakdown |
 | [Related Items](#related-items) | Links and dependencies |
@@ -62,6 +63,19 @@ Each golden packet ships with a `expected.json` describing the expected validato
 | Parameterized runner | `tests/transcript/validation/golden/test_packet_validation.py` | Iterate over `test_data/golden/*/`, assert validator output matches `expected.json` |
 | Stub adapters | `tests/transcript/validation/_stubs/` | Filesystem and subprocess stubs for hermetic unit tests |
 | Coverage gate | `pyproject.toml` | ≥90% line coverage on `src/jerry/transcript/validation/` per H-20 |
+
+---
+
+## Agent Assignment
+
+| Step | Skill | Agent | Purpose |
+|------|-------|-------|---------|
+| 1 | `/eng-team` | `eng-qa` | Author the 6 golden packets (clean, drift-detected, multi-violation, large-packet, bracket-canonical, ascii-fallback) with `expected.json` per packet |
+| 2 | `/eng-team` | `eng-qa` | Author conftest.py fixtures and parameterized runner; configure ≥90% coverage gate |
+| 3 | `/eng-team` | `eng-backend` | Wire stub adapters (FilesystemPacketLoader stub, SubprocessSandbox stub) for hermetic unit tests |
+| 4 | `/eng-team` | `eng-qa` | Initial Red phase: confirm all 17 rule tests fail (implementations don't exist yet) |
+| 5 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review on harness design + golden packets |
+| 6 | `/worktracker` | `wt-verifier` | Validate AC; close |
 
 ---
 

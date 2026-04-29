@@ -18,6 +18,7 @@
 | [User Story](#user-story) | As a / I want / So that |
 | [Rule Family](#rule-family) | Which ADR-007 §4 rules this Story implements |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
+| [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Children Tasks](#children-tasks) | Task breakdown |
 | [Related Items](#related-items) | Links and dependencies |
 | [History](#history) | Status changes |
@@ -37,6 +38,19 @@
 ADR-007 §4 FILE-001..003 rules. Exact rule definitions live in the vendored ADR-007; this Story implements them per its specification. Any deviation requires an ADR amendment.
 
 (Audit identified the rule IDs but did not transcribe rule bodies into #273. STORY-003 implementer reads the canonical ADR-007 in `docs/adrs/` after FEAT-001 STORY-001 completes.)
+
+---
+
+## Agent Assignment
+
+| Step | Skill | Agent | Purpose |
+|------|-------|-------|---------|
+| 1 | `/eng-team` | `eng-qa` | Author failing tests for FILE-001..003 against golden packets (TDD Red phase) |
+| 2 | `/eng-team` | `eng-backend` | Implement FILE-001..003 as ValidationRule entities under `src/jerry/transcript/validation/domain/rules/file/` (Green) |
+| 3 | `/eng-team` | `eng-backend` | Refactor for DRY across the 3 rules (Refactor) |
+| 4 | `/problem-solving` | `ps-validator` | Confirm all 3 rules pass against clean-packet golden; fail against violation goldens |
+| 5 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review on rule implementations + tests |
+| 6 | `/worktracker` | `wt-verifier` | Validate AC; close |
 
 ---
 

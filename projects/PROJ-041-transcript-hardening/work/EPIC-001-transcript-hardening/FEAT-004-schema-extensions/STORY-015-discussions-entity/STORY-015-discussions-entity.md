@@ -17,6 +17,7 @@
 |---------|---------|
 | [User Story](#user-story) | As a / I want / So that |
 | [Schema Addition](#schema-addition) | What gets added |
+| [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
 | [Children Tasks](#children-tasks) | Task breakdown |
 | [Related Items](#related-items) | Links and dependencies |
@@ -44,6 +45,20 @@ Adds `discussions[]` as new top-level array in `extraction-report.json` v1.2 (op
 | Output template | New `## Discussion Items` H2 in `07-topics.md` (or designated topics file) |
 
 ADRs to amend: ADR-001 (agent architecture: ts-extractor) + ADR-007 (output template: anchor format extension).
+
+---
+
+## Agent Assignment
+
+| Step | Skill | Agent | Purpose |
+|------|-------|-------|---------|
+| 1 | `/problem-solving` | `ps-architect` | Author ADR-001 + ADR-007 amendments for discussions[] entity type, disc-NNN regex, mindmap symbols |
+| 2 | `/eng-team` | `eng-backend` | Implement discussions[] across extraction-report.json schema, anchor regex (`disc-\d{3,}` per BUG-004 convention), output template (07-topics.md H2), mindmap symbols (`~`/`[~]`) |
+| 3 | `/eng-team` | `eng-backend` | Update `ts-extractor` agent guidance: emit discussion items when speech is neither decision nor question |
+| 4 | `/eng-team` | `eng-qa` | Golden packet exercising discussions[] (use audit packet's 33 disc_links as reference baseline) |
+| 5 | `/eng-team` | `eng-qa` | Coordinate with FEAT-005 BUG-006: confirm `[~]` ascii symbol never escapes into Mermaid output unescaped |
+| 6 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review |
+| 7 | `/worktracker` | `wt-verifier` | Validate AC; close |
 
 ---
 

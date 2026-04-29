@@ -63,7 +63,6 @@ This Epic delivers (1) governance closure for ADR-007, (2) resolution of 5 frame
 | EN-004 | Enabler | `/red-team` threat model on entire `/transcript` skill | pending | high |
 | EN-005 | Enabler | `/user-experience` JTBD + feedback exploration | pending | medium |
 | EN-006 | Enabler | `/diataxis` documentation pass | pending | medium |
-| EN-007 | Enabler | `/orchestration` plan + sync barriers | pending | high |
 | EN-008 | Enabler | Final `/adversary` C4 tournament | pending | high |
 
 ### Work Item Links
@@ -76,7 +75,6 @@ This Epic delivers (1) governance closure for ADR-007, (2) resolution of 5 frame
 - [EN-004: /red-team threat model](./EN-004-red-team-threat-model/EN-004-red-team-threat-model.md)
 - [EN-005: /user-experience JTBD + feedback](./EN-005-user-experience-exploration/EN-005-user-experience-exploration.md)
 - [EN-006: /diataxis documentation pass](./EN-006-diataxis-docs/EN-006-diataxis-docs.md)
-- [EN-007: /orchestration plan](./EN-007-orchestration-plan/EN-007-orchestration-plan.md)
 - [EN-008: Final /adversary C4 tournament](./EN-008-final-adversary-tournament/EN-008-final-adversary-tournament.md)
 
 ---
@@ -88,7 +86,7 @@ This Epic delivers (1) governance closure for ADR-007, (2) resolution of 5 frame
 |                   EPIC PROGRESS TRACKER                           |
 +------------------------------------------------------------------+
 | Features:  [....................]  0% (0/5 completed)             |
-| Enablers:  [....................]  0% (0/5 cross-cutting)         |
+| Enablers:  [....................]  0% (0/4 cross-cutting)         |
 | Bugs:      [....................]  0% (0/7 — F2: 5, F5: 2)        |
 | Stories:   [....................]  0% (0/16 across F1, F3, F4)    |
 +------------------------------------------------------------------+
@@ -96,7 +94,7 @@ This Epic delivers (1) governance closure for ADR-007, (2) resolution of 5 frame
 +------------------------------------------------------------------+
 ```
 
-Total entity count: 1 Epic + 5 Features + 5 cross-cutting Enablers + 3 in-feature Enablers + 16 Stories + 7 Bugs = **37 work items**.
+Total entity count: 1 Epic + 5 Features + 4 cross-cutting Enablers + 3 in-feature Enablers + 16 Stories + 7 Bugs = **36 work items**.
 
 ---
 
@@ -142,4 +140,5 @@ The Epic closes only when ALL of the following hold:
 
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
-| 2026-04-28 | adam.nowak (via Claude scaffold) | pending | Epic created from #273 audit findings. 5 Features + 5 cross-cutting Enablers scaffolded. Awaiting work execution. |
+| 2026-04-28 | adam.nowak (via Claude scaffold) | pending | Epic created from #273 audit findings. 5 Features + 5 cross-cutting Enablers scaffolded. |
+| 2026-04-29 | adam.nowak (via Claude) | pending | EN-007 (`/orchestration` plan) removed — `/orchestration` skill identified as overkill. Execution order handled by worktracker dependency chain. Cross-cutting enablers count: 4 (was 5). |

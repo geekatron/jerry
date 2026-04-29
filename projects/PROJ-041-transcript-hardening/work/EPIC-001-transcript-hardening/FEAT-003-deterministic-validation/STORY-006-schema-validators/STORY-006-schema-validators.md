@@ -18,6 +18,7 @@
 | [User Story](#user-story) | As a / I want / So that |
 | [Rule Family](#rule-family) | Which ADR-007 §4 rules this Story implements |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
+| [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Children Tasks](#children-tasks) | Task breakdown |
 | [Related Items](#related-items) | Links and dependencies |
 | [History](#history) | Status changes |
@@ -35,6 +36,20 @@
 ## Rule Family
 
 ADR-007 §4 SCHEMA-001..008 rules. Each maps to a JSON Schema in the framework. Includes converged regex from FEAT-002 BUG-002 (`chunk_id`) and the canonical schema from BUG-003 (`domain`).
+
+---
+
+## Agent Assignment
+
+| Step | Skill | Agent | Purpose |
+|------|-------|-------|---------|
+| 1 | `/eng-team` | `eng-backend` | Author `JsonSchemaAdapter` (infrastructure layer) |
+| 2 | `/eng-team` | `eng-qa` | Author failing tests for SCHEMA-001..008 (TDD Red); include large-packet golden for forward-compat regex |
+| 3 | `/eng-team` | `eng-backend` | Implement SCHEMA-001..008 (Green); rules read schemas, don't hardcode shapes (so FEAT-004 schema additions extend coverage automatically) |
+| 4 | `/eng-team` | `eng-backend` | Refactor for DRY across SCHEMA family |
+| 5 | `/problem-solving` | `ps-validator` | Verify rules use post-FEAT-002 schemas (converged chunk_id, canonical DOMAIN-SCHEMA, loosened seg-NNN) |
+| 6 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review |
+| 7 | `/worktracker` | `wt-verifier` | Validate AC; close |
 
 ---
 

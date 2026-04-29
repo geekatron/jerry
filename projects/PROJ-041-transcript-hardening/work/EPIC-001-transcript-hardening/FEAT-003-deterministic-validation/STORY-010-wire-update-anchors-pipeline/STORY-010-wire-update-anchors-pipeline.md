@@ -17,6 +17,7 @@
 |---------|---------|
 | [User Story](#user-story) | As a / I want / So that |
 | [Pipeline Integration](#pipeline-integration) | Where update-anchors runs |
+| [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
 | [Children Tasks](#children-tasks) | Task breakdown |
 | [Related Items](#related-items) | Links and dependencies |
@@ -43,6 +44,19 @@
 | Fix-wave compatibility | Any future fix-wave agent that edits .md files runs the same pipeline; substrate stays in lockstep |
 
 This is **the** integration that prevents iter-9-class regressions structurally. After STORY-010 lands, the substrate is mechanically derived rather than hand-attested at every write.
+
+---
+
+## Agent Assignment
+
+| Step | Skill | Agent | Purpose |
+|------|-------|-------|---------|
+| 1 | `/problem-solving` | `ps-architect` | Decision: PostToolUse hook vs prompt-discipline approach (shared with STORY-009 hook decision) |
+| 2 | `/eng-team` | `eng-backend` | Update `ts-formatter.md` write-pipeline behavior; if hook chosen, implement PostToolUse hook |
+| 3 | `/eng-team` | `eng-qa` | Update ts-formatter golden tests; reproduce iter-9 audit case under new pipeline (declared == walked at every iter) |
+| 4 | `/eng-team` | `eng-reviewer` | Final-gate review: pipeline changes do not break agent's primary purpose; performance overhead <500ms per write |
+| 5 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review |
+| 6 | `/worktracker` | `wt-verifier` | Validate AC; close |
 
 ---
 

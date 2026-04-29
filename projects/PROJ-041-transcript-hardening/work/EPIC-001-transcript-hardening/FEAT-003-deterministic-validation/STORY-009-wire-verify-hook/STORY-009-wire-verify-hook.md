@@ -17,6 +17,7 @@
 |---------|---------|
 | [User Story](#user-story) | As a / I want / So that |
 | [Integration Point](#integration-point) | Where verify runs in the agent lifecycle |
+| [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
 | [Children Tasks](#children-tasks) | Task breakdown |
 | [Related Items](#related-items) | Links and dependencies |
@@ -43,6 +44,20 @@
 | Agent return contract | Adds `validation_status: PASS|FAIL` field; FAIL prevents completion claim |
 
 If we're using a Claude Code SubagentStop hook for stronger enforcement, that's a deterministic L4-layer enforcement option. STORY-009 evaluates and either uses it OR enforces by prompt + agent self-discipline. Decision recorded in DEC.
+
+---
+
+## Agent Assignment
+
+| Step | Skill | Agent | Purpose |
+|------|-------|-------|---------|
+| 1 | `/problem-solving` | `ps-architect` | Decision: SubagentStop hook vs prompt-discipline approach (DEC for hook mechanism) |
+| 2 | `/eng-team` | `eng-backend` | Update `ts-formatter.md` agent prompt + `ts-formatter.prompt.md` checklist; add `validation_status: PASS\|FAIL` to return contract |
+| 3 | `/eng-team` | `eng-backend` | If hook mechanism chosen: implement SubagentStop hook |
+| 4 | `/eng-team` | `eng-reviewer` | Final-gate review: agent prompt changes preserve agent's primary purpose; no regression in non-bracketed packets |
+| 5 | `/eng-team` | `eng-qa` | Test against iter-9 audit packet — agent correctly catches at exit |
+| 6 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review |
+| 7 | `/worktracker` | `wt-verifier` | Validate AC; close |
 
 ---
 

@@ -17,6 +17,7 @@
 |---------|---------|
 | [User Story](#user-story) | As a / I want / So that |
 | [CI Gate Design](#ci-gate-design) | Where and how it runs |
+| [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
 | [Children Tasks](#children-tasks) | Task breakdown |
 | [Related Items](#related-items) | Links and dependencies |
@@ -42,6 +43,19 @@
 | Coverage gate | ≥90% on `src/jerry/transcript/validation/` (≥95% for `infrastructure/subprocess_sandbox.py`) |
 | Required check | Yes — branch protection requires this check passing |
 | Caching | uv cache + golden packet content hash |
+
+---
+
+## Agent Assignment
+
+| Step | Skill | Agent | Purpose |
+|------|-------|-------|---------|
+| 1 | `/eng-team` | `eng-devsecops` | Author `.github/workflows/transcript-validators.yml`; hash-pin action versions per supply-chain hardening; configure coverage gates (≥90% module / ≥95% subprocess sandbox) |
+| 2 | `/eng-team` | `eng-devsecops` | PR comment posting on failure (validator summary); branch protection update (require this check) |
+| 3 | `/eng-team` | `eng-security` | Workflow security review: no secrets leak, principle of least privilege on workflow permissions |
+| 4 | `/eng-team` | `eng-qa` | End-to-end test: workflow runs against test_data/golden/ on PR; blocks merge on validator failure |
+| 5 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review on workflow + supply chain hardening |
+| 6 | `/worktracker` | `wt-verifier` | Validate AC; close |
 
 ---
 

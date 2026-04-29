@@ -55,7 +55,6 @@
 | EN-004 | Enabler | /red-team threat model on entire /transcript skill | pending | EPIC-001 |
 | EN-005 | Enabler | /user-experience JTBD + feedback exploration | pending | EPIC-001 |
 | EN-006 | Enabler | /diataxis documentation pass | pending | EPIC-001 |
-| EN-007 | Enabler | /orchestration plan + sync barriers | pending | EPIC-001 |
 | EN-008 | Enabler | Final /adversary C4 tournament | pending | EPIC-001 |
 
 ---
@@ -68,8 +67,7 @@ PROJ-041-transcript-hardening
     ├── EN-004 (/red-team threat model) ─────────────┐
     ├── EN-005 (/user-experience JTBD + feedback) ───┤  cross-cutting,
     ├── EN-006 (/diataxis documentation pass) ───────┤  ride alongside features
-    ├── EN-007 (/orchestration plan + barriers) ─────┤
-    ├── EN-008 (final /adversary C4 tournament) ────┘
+    ├── EN-008 (final /adversary C4 tournament) ────┘  (orchestration via worktracker dependency chain — no /orchestration skill)
     │
     ├── FEAT-001 (ADR-007 Foundation & Governance)
     │   ├── STORY-001 (vendor ADR-007 to docs/adrs/)
@@ -114,13 +112,14 @@ PROJ-041-transcript-hardening
 
 These enablers sit directly under the Epic (not under any Feature) because they apply across all five Features.
 
-| ID | Title | Skill | Phase |
-|----|-------|-------|-------|
-| EN-004 | `/red-team` threat model on entire `/transcript` skill (existing VTT/SRT/audio ingestion + new validator subprocess surface + JSON injection) | `/red-team` | 1 (parallel) + 4 (verify) |
-| EN-005 | `/user-experience` exploration: JTBD on packet consumers + feedback synthesis from external audit + persona-spectrum review for CLI consumers (UX orchestrator routes to sub-skills) | `/user-experience` | 1 (parallel) |
-| EN-006 | `/diataxis` documentation pass: tutorial for new validators, how-to for verify/update-anchors, reference for ADR-007 §4 rule catalog, explanation for substrate-coupling design | `/diataxis` | 7 |
-| EN-007 | `/orchestration` plan: phase definitions, sync barriers, `/adversary` C4 ≥0.95 gates between phases, criticality propagation | `/orchestration` | 0 (precedes all execution) |
-| EN-008 | Final `/adversary` C4 tournament against the merged Epic deliverable | `/adversary` | 8 (acceptance) |
+| ID | Title | Skill |
+|----|-------|-------|
+| EN-004 | `/red-team` threat model on entire `/transcript` skill (existing VTT/SRT/audio ingestion + new validator subprocess surface + JSON injection) | `/red-team` |
+| EN-005 | `/user-experience` exploration: JTBD on packet consumers + feedback synthesis from external audit + persona-spectrum review for CLI consumers | `/user-experience` |
+| EN-006 | `/diataxis` documentation pass: tutorial for new validators, how-to for verify/update-anchors, reference for ADR-007 §4 rule catalog, explanation for substrate-coupling design | `/diataxis` |
+| EN-008 | Final `/adversary` C4 tournament against the merged Epic deliverable | `/adversary` |
+
+> **Execution ordering** is handled by `Blocks`/`Blocked By` dependencies on each entity, not by a separate orchestration plan. The dependency chain is the order.
 
 ---
 
@@ -167,7 +166,6 @@ Every entity here traces to a specific line item in [#273](https://github.com/ge
 | EN-004 | User direction: red-team scope = "everything we do, including author's gist + existing paths" |
 | EN-005 | User direction: UX exploration "to see if there are angles we are missing" |
 | EN-006 | Standard /diataxis post-build documentation |
-| EN-007 | User direction: "ok to add /orchestration" |
 | EN-008 | User direction: "/adversary C4 ≥0.95 protocol" |
 
 ---
@@ -176,4 +174,5 @@ Every entity here traces to a specific line item in [#273](https://github.com/ge
 
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
-| 2026-04-28 | adam.nowak (via Claude scaffold) | created | Initial worktracker hierarchy authored. 1 Epic + 5 Features + 5 cross-cutting Enablers + 16 Stories + 7 Bugs + 3 in-feature Enablers = 37 entities total. All entities are individually broken out per user direction (no lumping). |
+| 2026-04-28 | adam.nowak (via Claude scaffold) | created | Initial worktracker hierarchy authored. 1 Epic + 5 Features + 5 cross-cutting Enablers + 16 Stories + 7 Bugs + 3 in-feature Enablers = 37 entities. |
+| 2026-04-29 | adam.nowak (via Claude) | revised | EN-007 (`/orchestration` plan) and `plans/PLAN-001-orchestration.md` deleted. `/orchestration` skill identified as overkill for this work — dependency chain on worktracker entities handles execution order. Entity count now 36. |

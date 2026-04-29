@@ -19,6 +19,7 @@
 | [Summary](#summary) | What this Enabler delivers |
 | [Technical Approach](#technical-approach) | C4 tournament methodology |
 | [Tournament Configuration](#tournament-configuration) | All 10 strategies, C4 protocol |
+| [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
 | [Children Tasks](#children-tasks) | Task breakdown |
 | [Related Items](#related-items) | Links and dependencies |
@@ -54,6 +55,38 @@ Run a C4 tournament against the merged Epic deliverable using the full `/adversa
 | Escalation | If composite remains <0.95 after iteration 10, escalate to user with current state, blockers, and proposed scope adjustments |
 
 This is the **same protocol** the audit author ran on the original packet — and the same protocol that surfaced #273 in the first place. By using C4 ≥0.95 here, we close the same gate that detected the gaps and prove they're closed.
+
+---
+
+## Agent Assignment
+
+**Primary tournament:**
+
+| Step | Skill | Agent | Purpose |
+|------|-------|-------|---------|
+| 1 | `/adversary` | `adv-selector` | Select C4 strategy set: all 10 selected strategies (S-001 Red Team, S-002 Devil's Advocate, S-003 Steelman, S-004 Pre-Mortem, S-007 Constitutional AI Critique, S-010 Self-Refine, S-011 Chain-of-Verification, S-012 FMEA, S-013 Inversion, S-014 LLM-as-Judge) |
+| 2 | `/adversary` | `adv-executor` | Execute all 10 strategies against the merged Epic deliverable |
+| 3 | `/adversary` | `adv-scorer` | S-014 LLM-as-Judge: weighted composite + per-dimension scores (Completeness 0.20, Internal Consistency 0.20, Methodological Rigor 0.20, Evidence Quality 0.15, Actionability 0.15, Traceability 0.10) |
+
+**FC-M-001 second-reviewer (independent fresh-context run):**
+
+| Step | Skill | Agent | Purpose |
+|------|-------|-------|---------|
+| 4 | `/adversary` | `adv-executor` (fresh context) | Independent re-execution; receives only artifact + rubric, no prior critic scores or revision history (anchoring prevention) |
+| 5 | `/adversary` | `adv-scorer` (fresh context) | Independent S-014 scoring |
+
+**Reproduction test:**
+
+| Step | Skill | Agent | Purpose |
+|------|-------|-------|---------|
+| 6 | `/problem-solving` | `ps-validator` | Re-run audit author's 9-iteration scenario against the original packet (or synthetic equivalent); composite must reach ≥0.95 — the original ceiling at 0.90 must be broken |
+
+**Closure:**
+
+| Step | Skill | Agent | Purpose |
+|------|-------|-------|---------|
+| 7 | `/red-team` | `red-reporter` | Engagement closure report; close GitHub Issue #273 with summary comment |
+| 8 | `/worktracker` | `wt-verifier` | Validate AC; gate Epic move to `completed` |
 
 ---
 
