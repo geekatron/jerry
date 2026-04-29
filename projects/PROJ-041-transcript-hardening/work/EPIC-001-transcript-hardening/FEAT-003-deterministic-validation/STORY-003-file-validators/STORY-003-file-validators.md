@@ -25,6 +25,12 @@
 
 ---
 
+## Summary
+
+Implement the FILE-001..003 validation rules (file existence, size, format) per ADR-007 §4. TDD Red-Green-Refactor against golden packets. Part of the FEAT-003 deterministic-validation work that replaces LLM-judged compliance with mechanical checks.
+
+---
+
 ## User Story
 
 **As a** `ts-formatter` agent or CI pipeline,

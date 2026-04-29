@@ -25,6 +25,12 @@
 
 ---
 
+## Summary
+
+Implement the SCHEMA-001..008 validation rules per ADR-007 §4. Each rule loads its canonical schema via JsonSchemaAdapter (rules read schemas, do not hardcode shapes — so FEAT-004 schema additions extend rule coverage automatically). Uses post-FEAT-002 converged schemas (chunk_id, DOMAIN, seg-NNN regex).
+
+---
+
 ## User Story
 
 **As a** `ts-formatter` agent or CI pipeline,

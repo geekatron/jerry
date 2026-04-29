@@ -25,6 +25,12 @@
 
 ---
 
+## Summary
+
+Add the optional `provenance.editorial_conventions` block to extraction-report.json schema v1.2 (5 policies: ASR/stutter/speculation/paraphrase/consensus). Without this block, agents either silently rewrite (loses provenance) or invent ad-hoc bracketing (drift). A documented policy block solves it.
+
+---
+
 ## User Story
 
 **As a** consumer of a transcript packet (human reviewer or downstream agent),

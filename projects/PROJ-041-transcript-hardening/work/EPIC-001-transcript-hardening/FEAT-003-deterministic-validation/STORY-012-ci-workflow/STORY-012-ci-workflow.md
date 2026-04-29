@@ -25,6 +25,12 @@
 
 ---
 
+## Summary
+
+Add a CI workflow that runs the validators against golden packets on every PR, blocking merge on validator failures or coverage drops. Branch protection requires this check. Hash-pinned action versions per supply-chain hardening; runtime environment validated for parity with developer-local execution.
+
+---
+
 ## User Story
 
 **As a** Jerry maintainer reviewing a PR that touches `/transcript`,

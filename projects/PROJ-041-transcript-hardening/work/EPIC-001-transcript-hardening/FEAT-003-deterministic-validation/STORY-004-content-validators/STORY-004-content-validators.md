@@ -25,6 +25,12 @@
 
 ---
 
+## Summary
+
+Implement the CONTENT-001..003 validation rules (markdown content shape) per ADR-007 §4. Includes the backlinks-format rule per BUG-005 (canonical `<backlinks>` tag, deprecated `## Backlinks` H2). TDD Red-Green-Refactor.
+
+---
+
 ## User Story
 
 **As a** `ts-formatter` agent or CI pipeline,

@@ -26,6 +26,12 @@
 
 ---
 
+## Summary
+
+Implement the ANCHOR-001..003 validation rules per ADR-007 §4 — the heart of the substrate-coupling fix. ANCHOR-003 is the substrate-coupling rule that walks declared grep patterns through SubprocessSandbox and asserts walked == declared per bucket; this is the rule that catches the iter-9 audit drift class. Security-adjacent (uses subprocess), so reviewed by eng-security and red-exploit.
+
+---
+
 ## User Story
 
 **As a** `ts-formatter` agent, CI pipeline, or downstream consumer,

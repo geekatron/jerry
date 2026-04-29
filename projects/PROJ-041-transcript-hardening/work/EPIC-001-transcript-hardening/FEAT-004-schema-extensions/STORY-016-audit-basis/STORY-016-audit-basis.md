@@ -25,6 +25,12 @@
 
 ---
 
+## Summary
+
+Add the optional `provenance.audit_basis` field (option (a) lighter touch per audit comment 2). A reader sees "audit basis: simple-cross-file-grep" and follows the breadcrumb to _anchors.json for full audit-methodology detail. update-anchors writes audit_basis at the same write moment as _anchors.json so the two sidecars stay in lockstep.
+
+---
+
 ## User Story
 
 **As a** reader consulting only `extraction-report.json` to understand a packet,

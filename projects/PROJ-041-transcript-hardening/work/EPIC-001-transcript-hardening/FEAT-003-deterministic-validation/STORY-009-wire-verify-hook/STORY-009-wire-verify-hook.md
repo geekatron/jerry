@@ -25,6 +25,12 @@
 
 ---
 
+## Summary
+
+Wire the `verify` CLI into the `ts-formatter` agent post-render hook so the agent cannot report completion without validators passing. Catches drift at agent exit, not 30 minutes later in adversary review. Hook mechanism (SubagentStop vs prompt-discipline) decided in FEAT-003 DEC-001.
+
+---
+
 ## User Story
 
 **As a** consumer of `ts-formatter` agent output,

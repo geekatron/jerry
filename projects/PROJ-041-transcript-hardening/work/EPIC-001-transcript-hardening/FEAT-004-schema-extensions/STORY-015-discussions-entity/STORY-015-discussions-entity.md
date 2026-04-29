@@ -25,6 +25,12 @@
 
 ---
 
+## Summary
+
+Add `discussions[]` as a 5th top-level entity type in extraction-report.json v1.2 (alongside decisions/questions/action_items/topics). Captures speech that is neither a decision nor a question (speculation, single-speaker factoid, raised-but-not-pursued items) without forcing low-confidence consensus inflation. Includes `disc-NNN` anchor regex (inheriting BUG-004 \d{3,} convention) and mindmap symbols (\` ~ \` mermaid, \`[~]\` ascii).
+
+---
+
 ## User Story
 
 **As a** consumer of a transcript packet,

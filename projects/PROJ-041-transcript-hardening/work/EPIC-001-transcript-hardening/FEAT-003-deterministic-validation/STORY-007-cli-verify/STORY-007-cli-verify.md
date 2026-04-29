@@ -25,6 +25,12 @@
 
 ---
 
+## Summary
+
+Build the `jerry transcript verify <packet>` CLI subcommand. Mechanically reconciles declared substrate against walked truth in <1 second instead of 30 minutes of manual adversary review. Hexagonal architecture per H-07 (interface/application/infrastructure layers).
+
+---
+
 ## User Story
 
 **As a** developer, agent, or CI job,
