@@ -79,16 +79,16 @@ This is a cross-repo file copy (the two repositories are separate per user direc
 
 ## Children Tasks
 
-| ID | Title | Owner Agent | Status |
-|----|-------|-------------|--------|
-| TASK-001 | Copy ADR-007 from jerry-core; preserve byte-identical content; record source commit SHA in History | ps-architect | pending |
-| TASK-002 | Update `skills/transcript/SKILL.md` cross-references to `docs/adrs/ADR-007-...` | eng-lead | pending |
-| TASK-003 | Update `skills/transcript/agents/ts-formatter.md` cross-references | eng-lead | pending |
-| TASK-004 | Update `skills/transcript/PLAYBOOK.md` and `ts-formatter.prompt.md` cross-references | eng-lead | pending |
-| TASK-005 | Resolve all internal cross-references inside ADR-007 against new location | ps-validator | pending |
-| TASK-006 | Add CI check: every `docs/adrs/ADR-NNN*.md` referenced from SKILL.md must resolve | eng-devsecops | pending |
-| TASK-007 | Run /adversary C4 review (≥0.95) | adv-executor + adv-scorer | pending |
-| TASK-008 | Validate AC and close | wt-verifier | pending |
+| ID | Title | Owner | Status |
+|----|-------|-------|--------|
+| [TASK-001](./TASK-001-copy-adr-007-from-jerry-core.md) | Copy ADR-007 from jerry-core to docs/adrs/ | `ps-architect` | pending |
+| [TASK-004](./TASK-004-update-skill-md-cross-references.md) | Update skills/transcript/SKILL.md cross-references to docs/adrs/ | `eng-lead` | pending |
+| [TASK-005](./TASK-005-update-ts-formatter-cross-references.md) | Update skills/transcript/agents/ts-formatter.md cross-references | `eng-lead` | pending |
+| [TASK-006](./TASK-006-update-playbook-and-prompt-cross-references.md) | Update PLAYBOOK.md and ts-formatter.prompt.md cross-references | `eng-lead` | pending |
+| [TASK-007](./TASK-007-verify-internal-cross-references-resolve.md) | Verify all internal cross-references inside ADR-007 resolve in new location | `ps-validator` | pending |
+| [TASK-008](./TASK-008-add-ci-check-for-skill-md-adr-references.md) | Add CI check: every SKILL.md ADR cross-reference resolves | `eng-devsecops` | pending |
+| [TASK-009](./TASK-009-run-adversary-c4-review.md) | Run /adversary C4 review (≥0.95) | `adv-executor` | pending |
+| [TASK-010](./TASK-010-validate-ac-and-close-story-001.md) | Validate STORY-001 acceptance criteria and close | `wt-verifier` | pending |
 
 ---
 

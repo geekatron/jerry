@@ -106,18 +106,18 @@ Build the security boundary as a port + adapter pair (hexagonal architecture, H-
 
 ## Children Tasks
 
-| ID | Title | Status |
-|----|-------|--------|
-| TASK-001 | Declare SubprocessSandbox Protocol in application/ports.py | pending |
-| TASK-002 | Implement SubprocessSandboxAdapter (command allowlist + arg validation) | pending |
-| TASK-003 | Implement path traversal guard | pending |
-| TASK-004 | Implement timeout + resource limits | pending |
-| TASK-005 | Implement env var sanitization | pending |
-| TASK-006 | Author Hypothesis property-based tests | pending |
-| TASK-007 | Run /eng-team eng-security manual code review | pending |
-| TASK-008 | Run /red-team red-exploit bypass attempts | pending |
-| TASK-009 | Add Bandit + Semgrep rules to forbid direct subprocess.run | pending |
-| TASK-010 | Run /adversary C4 review | pending |
+| ID | Title | Owner | Status |
+|----|-------|-------|--------|
+| [TASK-002](./TASK-002-implement-sandbox-adapter.md) | Implement SubprocessSandboxAdapter with all five defensive controls | `eng-infra` | pending |
+| [TASK-065](./TASK-065-stride-threat-model-on-subprocess.md) | STRIDE threat model + attack-path analysis on planned subprocess execution surface | `red-vuln` | pending |
+| [TASK-066](./TASK-066-design-sandbox-port-shape.md) | Security boundary architecture: SubprocessSandbox port shape; hexagonal H-07 isolation | `eng-architect` | pending |
+| [TASK-067](./TASK-067-implement-path-traversal-guard.md) | Implement path-traversal guard in SubprocessSandboxAdapter | `eng-infra` | pending |
+| [TASK-068](./TASK-068-implement-timeout-and-resource-limits.md) | Implement timeout + resource limits | `eng-infra` | pending |
+| [TASK-069](./TASK-069-implement-env-sanitization.md) | Implement env var sanitization | `eng-infra` | pending |
+| [TASK-070](./TASK-070-hypothesis-property-based-tests.md) | Author Hypothesis property-based tests on the pattern parser | `eng-qa` | pending |
+| [TASK-071](./TASK-071-manual-secure-code-review.md) | Manual secure code review on adapter implementation | `eng-security` | pending |
+| [TASK-072](./TASK-072-add-bandit-and-semgrep-rules.md) | Add Bandit + Semgrep rules forbidding direct subprocess.run outside this adapter | `eng-devsecops` | pending |
+| [TASK-073](./TASK-073-run-adversary-c4-on-sandbox.md) | Run /adversary C4 review on adapter design + tests + red-team validation | `adv-executor` | pending |
 
 ---
 

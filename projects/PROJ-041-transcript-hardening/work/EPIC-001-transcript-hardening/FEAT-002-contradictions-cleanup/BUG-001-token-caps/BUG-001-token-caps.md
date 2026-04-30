@@ -22,6 +22,7 @@
 | [Recommended Resolution](#recommended-resolution) | Audit's stated fix |
 | [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
+| [Children Tasks](#children-tasks) | Task breakdown |
 | [Related Items](#related-items) | Links and dependencies |
 | [History](#history) | Change log |
 
@@ -81,6 +82,20 @@ Recommended path: confirm intent with author/maintainer of SKILL.md L2665-L2666;
 - [ ] If converged: only 2K/5K appears across all four references; SKILL.md updated.
 - [ ] FEAT-003 STORY-003 (FILE-* validators) encodes the resolved values as test expectations.
 - [ ] Regression check: `grep -rE '(2,?000|5,?000|2K|5K|8K)' skills/transcript/` shows only labeled references.
+
+---
+
+## Children Tasks
+
+| ID | Title | Owner | Status |
+|----|-------|-------|--------|
+| [TASK-017](./TASK-017-five-whys-on-token-cap-divergence.md) | 5 Whys: is the 5K/8K vs 2K/5K divergence intended or unintended? | `ps-investigator` | pending |
+| [TASK-018](./TASK-018-author-disambiguation-decision.md) | Author ADR amendment or SKILL.md edit recording the disambiguation decision | `ps-architect` | pending |
+| [TASK-019](./TASK-019-apply-token-cap-edits.md) | Apply edits to SKILL.md L2665-L2666 + ts-formatter.md + ADR-007 §1.1 | `eng-lead` | pending |
+| [TASK-020](./TASK-020-grep-verify-no-unlabeled-divergence.md) | Grep across skills/transcript/ for token-cap references; verify no remaining unlabeled divergence | `ps-validator` | pending |
+| [TASK-021](./TASK-021-run-adversary-c4-review.md) | Run /adversary C4 review (governance change) | `adv-executor` | pending |
+| [TASK-022](./TASK-022-validate-ac-and-close-bug-001.md) | Validate BUG-001 acceptance criteria and close | `wt-verifier` | pending |
+
 
 ---
 

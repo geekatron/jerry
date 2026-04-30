@@ -22,6 +22,7 @@
 | [Recommended Resolution](#recommended-resolution) | Audit's stated fix |
 | [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
+| [Children Tasks](#children-tasks) | Task breakdown |
 | [Related Items](#related-items) | Links and dependencies |
 | [History](#history) | Change log |
 
@@ -80,6 +81,20 @@ Per audit: **converge on `^chunk-\d{3,}$`** (3-or-more digits, supports 1000+ ch
 - [ ] Regression test: schema validation passes against a synthetic 1000+ chunk packet (chunk-001 through chunk-1000+).
 - [ ] FEAT-003 STORY-006 (SCHEMA-* validators) encodes consistent `chunk_id` regex across all rule paths.
 - [ ] Audit grep across `**/*.schema.json` shows no remaining `\d{3}$` (without `,`) for `chunk_id`.
+
+---
+
+## Children Tasks
+
+| ID | Title | Owner | Status |
+|----|-------|-------|--------|
+| [TASK-023](./TASK-023-update-chunk-and-index-schemas.md) | Update chunk.schema.json and index.schema.json regex to ^chunk-\d{3,}$ | `eng-lead` | pending |
+| [TASK-024](./TASK-024-regression-test-large-chunk-packet.md) | Regression test: synthetic 1000+ chunk packet validates against all 3 schemas | `eng-qa` | pending |
+| [TASK-025](./TASK-025-grep-verify-no-d3-without-comma.md) | Grep verifies no remaining \d{3}$ (without comma) for chunk_id | `ps-validator` | pending |
+| [TASK-026](./TASK-026-final-gate-review-schema-edits.md) | Final-gate review on schema regex changes (per ps-architect D-4.4) | `eng-reviewer` | pending |
+| [TASK-027](./TASK-027-run-adversary-c4-review.md) | Run /adversary C4 review | `adv-executor` | pending |
+| [TASK-028](./TASK-028-validate-ac-and-close-bug-002.md) | Validate BUG-002 AC and close | `wt-verifier` | pending |
+
 
 ---
 

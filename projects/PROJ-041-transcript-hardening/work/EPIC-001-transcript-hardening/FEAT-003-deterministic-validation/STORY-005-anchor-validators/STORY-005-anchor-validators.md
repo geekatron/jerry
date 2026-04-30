@@ -16,6 +16,7 @@
 | Section | Purpose |
 |---------|---------|
 | [User Story](#user-story) | As a / I want / So that |
+| [Summary](#summary) | What this story delivers |
 | [Rule Family](#rule-family) | Which ADR-007 §4 rules this Story implements |
 | [Substrate Coupling](#substrate-coupling) | Why this Story is the heart of the audit's diagnostic |
 | [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
@@ -89,16 +90,16 @@ This is the rule that catches the iter-9-class regression in the audit. Without 
 
 ## Children Tasks
 
-| ID | Title | Status |
-|----|-------|--------|
-| TASK-001 | Read canonical ADR-007 §4 ANCHOR-* rule bodies | pending |
-| TASK-002 | Author failing tests for anchor format (TDD Red) | pending |
-| TASK-003 | Implement anchor format rule | pending |
-| TASK-004 | Implement anchor uniqueness rule | pending |
-| TASK-005 | Implement substrate-coupling rule (uses SubprocessSandbox) | pending |
-| TASK-006 | Reproduce audit's iter-9 drift detection | pending |
-| TASK-007 | Run /red-team on the rule's subprocess paths | pending |
-| TASK-008 | Run /adversary C4 review | pending |
+| ID | Title | Owner | Status |
+|----|-------|-------|--------|
+| [TASK-086](./TASK-086-tdd-red-anchor-tests-with-drift-case.md) | Author failing tests for ANCHOR-001..003 (TDD Red); cover declared-vs-walked drift | `eng-qa` | pending |
+| [TASK-087](./TASK-087-implement-anchor-format-rule.md) | Implement anchor format rule (ANCHOR-001) | `eng-backend` | pending |
+| [TASK-088](./TASK-088-implement-anchor-uniqueness-rule.md) | Implement anchor uniqueness rule (ANCHOR-002) | `eng-backend` | pending |
+| [TASK-089](./TASK-089-implement-substrate-coupling-rule.md) | Implement substrate-coupling rule (ANCHOR-003) using SubprocessSandbox | `eng-backend` | pending |
+| [TASK-090](./TASK-090-code-review-substrate-coupling.md) | Code review on substrate-coupling rule (subprocess-using rule) | `eng-security` | pending |
+| [TASK-091](./TASK-091-verify-anchor-rule-cant-bypass-sandbox.md) | Verify ANCHOR rule cannot bypass SubprocessSandbox boundary | `red-exploit` | pending |
+| [TASK-092](./TASK-092-reproduce-iter-9-audit-drift.md) | Reproduce audit's iter-9 drift detection on original audit packet | `ps-validator` | pending |
+| [TASK-093](./TASK-093-run-adversary-c4-review.md) | Run /adversary C4 review | `adv-executor` | pending |
 
 ---
 

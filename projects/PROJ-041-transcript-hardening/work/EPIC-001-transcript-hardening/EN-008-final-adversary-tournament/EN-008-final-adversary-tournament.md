@@ -105,16 +105,15 @@ This is the **same protocol** the audit author ran on the original packet — an
 
 ## Children Tasks
 
-| ID | Title | Status |
-|----|-------|--------|
-| TASK-001 | adv-selector: select C4 strategy set | pending |
-| TASK-002 | adv-executor: execute all 10 strategies | pending |
-| TASK-003 | adv-scorer: S-014 weighted composite + dimension scores | pending |
-| TASK-004 | FC-M-001 second-reviewer fresh-context run | pending |
-| TASK-005 | Author tournament report | pending |
-| TASK-006 | Reproduce audit author's 9-iter scenario; verify ≥0.95 reachable | pending |
-| TASK-007 | Close issue #273 with summary comment | pending |
-| TASK-008 | Move EPIC-001 to completed | pending |
+| ID | Title | Owner | Status |
+|----|-------|-------|--------|
+| [TASK-204](./TASK-204-select-c4-strategy-set.md) | Select C4 strategy set: all 10 selected strategies | `adv-selector` | pending |
+| [TASK-205](./TASK-205-execute-all-10-strategies.md) | Execute all 10 strategies against merged Epic deliverable | `adv-executor` | pending |
+| [TASK-206](./TASK-206-score-with-s-014-llm-as-judge.md) | S-014 LLM-as-Judge: weighted composite + per-dimension scores | `adv-scorer` | pending |
+| [TASK-207](./TASK-207-fc-m-001-second-reviewer.md) | FC-M-001 second-reviewer fresh-context independent run | `adv-executor` | pending |
+| [TASK-208](./TASK-208-reproduce-9-iter-audit-scenario.md) | Reproduce audit author's 9-iteration scenario; verify ≥0.95 reachable | `ps-validator` | pending |
+| [TASK-209](./TASK-209-close-issue-273-with-summary.md) | Close GitHub Issue #273 with summary comment | `red-reporter` | pending |
+| [TASK-210](./TASK-210-validate-ac-and-close-epic-001.md) | Validate EN-008 AC; gate Epic move to completed | `wt-verifier` | pending |
 
 ---
 

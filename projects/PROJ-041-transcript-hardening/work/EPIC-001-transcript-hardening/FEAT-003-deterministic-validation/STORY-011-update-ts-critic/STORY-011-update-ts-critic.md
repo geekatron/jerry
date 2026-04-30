@@ -66,13 +66,13 @@ This is the integration that closes the loop on the audit's diagnostic: ADR-007 
 
 ## Children Tasks
 
-| ID | Title | Status |
-|----|-------|--------|
-| TASK-001 | Locate canonical ts-critic-extension.md (or its successor) | pending |
-| TASK-002 | Update Step 1 to invoke verify --json | pending |
-| TASK-003 | Update finding format to reference rule_id | pending |
-| TASK-004 | Test against audit packet | pending |
-| TASK-005 | Run /adversary C4 review | pending |
+| ID | Title | Owner | Status |
+|----|-------|-------|--------|
+| [TASK-127](./TASK-127-design-new-critic-contract.md) | Design new contract: critic invokes verify --json first; failures are findings without re-judging | `ps-architect` | pending |
+| [TASK-128](./TASK-128-update-ts-critic-extension-md.md) | Update ts-critic-extension.md Step 1 to invoke verify --json | `eng-backend` | pending |
+| [TASK-129](./TASK-129-test-against-audit-packet.md) | Test against audit packet: critic identifies iter-9 drift via verify output | `eng-qa` | pending |
+| [TASK-130](./TASK-130-run-adversary-c4-review.md) | Run /adversary C4 review | `adv-executor` | pending |
+| [TASK-131](./TASK-131-validate-ac-and-close-story-011.md) | Validate STORY-011 AC and close | `wt-verifier` | pending |
 
 ---
 

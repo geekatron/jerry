@@ -16,6 +16,7 @@
 | Section | Purpose |
 |---------|---------|
 | [User Story](#user-story) | As a / I want / So that |
+| [Summary](#summary) | What this story delivers |
 | [Integration Point](#integration-point) | Where verify runs in the agent lifecycle |
 | [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
@@ -83,16 +84,15 @@ If we're using a Claude Code SubagentStop hook for stronger enforcement, that's 
 
 ## Children Tasks
 
-| ID | Title | Status |
-|----|-------|--------|
-| TASK-001 | Decide hook mechanism (SubagentStop vs prompt) | pending |
-| TASK-002 | Update ts-formatter.md agent prompt | pending |
-| TASK-003 | Update ts-formatter.prompt.md checklist | pending |
-| TASK-004 | (If hook chosen) Implement SubagentStop hook | pending |
-| TASK-005 | Update agent return contract for validation_status | pending |
-| TASK-006 | Test against iter-9 audit packet | pending |
-| TASK-007 | Run /eng-team eng-reviewer | pending |
-| TASK-008 | Run /adversary C4 review | pending |
+| ID | Title | Owner | Status |
+|----|-------|-------|--------|
+| [TASK-114](./TASK-114-decide-hook-mechanism-via-dec-001.md) | Decide hook mechanism (SubagentStop vs prompt-discipline) via FEAT-003 DEC-001 | `ps-architect` | pending |
+| [TASK-115](./TASK-115-update-ts-formatter-prompt.md) | Update ts-formatter.md agent prompt + ts-formatter.prompt.md checklist | `eng-backend` | pending |
+| [TASK-116](./TASK-116-implement-subagentstop-hook-if-chosen.md) | If hook chosen (per DEC-001): implement SubagentStop hook | `eng-backend` | pending |
+| [TASK-117](./TASK-117-final-gate-review-prompt-changes.md) | Final-gate review: agent prompt changes preserve agent's primary purpose | `eng-reviewer` | pending |
+| [TASK-118](./TASK-118-test-iter-9-catch-at-agent-exit.md) | Test against iter-9 audit packet — agent correctly catches at exit | `eng-qa` | pending |
+| [TASK-119](./TASK-119-run-adversary-c4-review.md) | Run /adversary C4 review | `adv-executor` | pending |
+| [TASK-120](./TASK-120-validate-ac-and-close-story-009.md) | Validate STORY-009 AC and close | `wt-verifier` | pending |
 
 ---
 

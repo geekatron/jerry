@@ -146,18 +146,18 @@ After EN-003 SubprocessSandbox + STORY-005..010 land:
 
 ## Children Tasks
 
-| ID | Title | Status |
-|----|-------|--------|
-| TASK-001 | red-lead engagement scope document | pending |
-| TASK-002 | Phase 1 reconnaissance (existing + new surface) | pending |
-| TASK-003 | Phase 1 STRIDE threat model | pending |
-| TASK-004 | Phase 1 attack path analysis | pending |
-| TASK-005 | Phase 1 handoff to /eng-team | pending |
-| TASK-006 | Phase 4 sandbox exploit attempts (≥5 classes) | pending |
-| TASK-007 | Phase 4 atomic-write race probe | pending |
-| TASK-008 | Phase 4 prompt injection probe | pending |
-| TASK-009 | Final engagement report | pending |
-| TASK-010 | Run /adversary C4 review on threat model | pending |
+| ID | Title | Owner | Status |
+|----|-------|-------|--------|
+| [TASK-175](./TASK-175-engagement-scope-document.md) | Author engagement scope document with Rules of Engagement | `red-lead` | pending |
+| [TASK-176](./TASK-176-phase-1-recon-existing-surface.md) | Phase 1 reconnaissance: existing surface enumeration | `red-recon` | pending |
+| [TASK-177](./TASK-177-phase-1-recon-new-surface.md) | Phase 1 reconnaissance: planned new surface (per FEAT-003 design draft) | `red-recon` | pending |
+| [TASK-178](./TASK-178-phase-1-stride-threat-model.md) | Phase 1 STRIDE threat model + attack-path analysis | `red-vuln` | pending |
+| [TASK-179](./TASK-179-phase-1-handoff-to-eng-team.md) | Phase 1 handoff to /eng-team | `red-reporter` | pending |
+| [TASK-180](./TASK-180-phase-4-sandbox-bypass-attempts.md) | Phase 4 exploit attempts against SubprocessSandbox: ≥5 bypass classes | `red-exploit` | pending |
+| [TASK-181](./TASK-181-phase-4-atomic-write-race-probe.md) | Phase 4 atomic-write race condition probe on update-anchors | `red-exploit` | pending |
+| [TASK-182](./TASK-182-phase-4-prompt-injection-probe.md) | Phase 4 prompt injection probe against ts-formatter | `red-social` | pending |
+| [TASK-183](./TASK-183-final-engagement-report.md) | Final engagement report: all findings classified (Critical/Major/Minor) with remediation | `red-reporter` | pending |
+| [TASK-184](./TASK-184-run-adversary-c4-on-threat-model.md) | Run /adversary C4 review on threat model + remediation set | `adv-executor` | pending |
 
 ---
 

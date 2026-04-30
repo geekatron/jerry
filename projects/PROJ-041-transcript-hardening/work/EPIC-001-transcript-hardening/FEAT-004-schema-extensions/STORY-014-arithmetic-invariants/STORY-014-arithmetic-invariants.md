@@ -16,6 +16,7 @@
 | Section | Purpose |
 |---------|---------|
 | [User Story](#user-story) | As a / I want / So that |
+| [Summary](#summary) | What this story delivers |
 | [Schema Addition](#schema-addition) | What gets added to stat blocks |
 | [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
@@ -89,15 +90,15 @@ FEAT-003 STORY-008 (`update-anchors`) keeps `arithmetic_invariants.computed` in 
 
 ## Children Tasks
 
-| ID | Title | Status |
-|----|-------|--------|
-| TASK-001 | Identify all stat blocks that need arithmetic_invariants | pending |
-| TASK-002 | Author schema addition | pending |
-| TASK-003 | Update extraction-report.json + _anchors.json schemas | pending |
-| TASK-004 | Add validators in FEAT-003 SCHEMA family for the new shapes | pending |
-| TASK-005 | Update FEAT-003 STORY-008 update-anchors to refresh computed | pending |
-| TASK-006 | Author ADR-002 amendment-001 | pending |
-| TASK-007 | Run /adversary C4 review | pending |
+| ID | Title | Owner | Status |
+|----|-------|-------|--------|
+| [TASK-144](./TASK-144-author-adr-002-amendment-001.md) | Author ADR-002 amendment-001 capturing arithmetic_invariants design | `ps-architect` | pending |
+| [TASK-145](./TASK-145-identify-stat-blocks-needing-invariants.md) | Identify all stat blocks that need arithmetic_invariants | `ps-investigator` | pending |
+| [TASK-146](./TASK-146-update-schemas-with-invariants-block.md) | Update extraction-report.json + _anchors.json schemas with arithmetic_invariants sub-block | `eng-backend` | pending |
+| [TASK-147](./TASK-147-extend-validators-and-update-anchors.md) | Extend FEAT-003 SCHEMA-* validators + update-anchors to recompute and refresh `computed` | `eng-backend` | pending |
+| [TASK-148](./TASK-148-golden-packet-with-arithmetic-invariants.md) | Golden packet with populated arithmetic_invariants for each affected stat block | `eng-qa` | pending |
+| [TASK-149](./TASK-149-run-adversary-c4-review.md) | Run /adversary C4 review | `adv-executor` | pending |
+| [TASK-150](./TASK-150-validate-ac-and-close-story-014.md) | Validate STORY-014 AC and close | `wt-verifier` | pending |
 
 ---
 

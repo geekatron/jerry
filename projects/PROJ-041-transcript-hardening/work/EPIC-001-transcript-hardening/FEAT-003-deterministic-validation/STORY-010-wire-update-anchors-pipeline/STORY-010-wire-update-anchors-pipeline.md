@@ -16,6 +16,7 @@
 | Section | Purpose |
 |---------|---------|
 | [User Story](#user-story) | As a / I want / So that |
+| [Summary](#summary) | What this story delivers |
 | [Pipeline Integration](#pipeline-integration) | Where update-anchors runs |
 | [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
@@ -81,15 +82,14 @@ This is **the** integration that prevents iter-9-class regressions structurally.
 
 ## Children Tasks
 
-| ID | Title | Status |
-|----|-------|--------|
-| TASK-001 | Decide pipeline mechanism (PostToolUse hook vs prompt-discipline) | pending |
-| TASK-002 | Update ts-formatter.md agent prompt | pending |
-| TASK-003 | (If hook chosen) Implement PostToolUse hook | pending |
-| TASK-004 | Update ts-formatter golden tests | pending |
-| TASK-005 | Reproduce iter-9 audit case under new pipeline (declared == walked at every iter) | pending |
-| TASK-006 | Run /eng-team eng-reviewer | pending |
-| TASK-007 | Run /adversary C4 review | pending |
+| ID | Title | Owner | Status |
+|----|-------|-------|--------|
+| [TASK-121](./TASK-121-share-hook-mechanism-decision.md) | Apply FEAT-003 DEC-001 hook-mechanism decision to write pipeline | `ps-architect` | pending |
+| [TASK-122](./TASK-122-update-ts-formatter-write-pipeline.md) | Update ts-formatter.md write-pipeline behavior | `eng-backend` | pending |
+| [TASK-123](./TASK-123-update-golden-tests-for-pipeline.md) | Update ts-formatter golden tests; reproduce iter-9 case under new pipeline | `eng-qa` | pending |
+| [TASK-124](./TASK-124-final-gate-review-pipeline-changes.md) | Final-gate review: pipeline changes do not break agent's primary purpose; <500ms overhead | `eng-reviewer` | pending |
+| [TASK-125](./TASK-125-run-adversary-c4-review.md) | Run /adversary C4 review | `adv-executor` | pending |
+| [TASK-126](./TASK-126-validate-ac-and-close-story-010.md) | Validate STORY-010 AC and close | `wt-verifier` | pending |
 
 ---
 

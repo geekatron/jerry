@@ -22,6 +22,7 @@
 | [Recommended Resolution](#recommended-resolution) | Audit's stated fix |
 | [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
+| [Children Tasks](#children-tasks) | Task breakdown |
 | [Related Items](#related-items) | Links and dependencies |
 | [History](#history) | Change log |
 
@@ -79,6 +80,21 @@ Per audit: **ADR-007 is newer; pick `<backlinks>` tag and amend ADR-003.** ADR-0
 - [ ] All existing packets (including golden test packets in `test_data/`) regenerated to use `<backlinks>` tag where they used `## Backlinks`.
 - [ ] FEAT-003 STORY-004 (CONTENT-* validators) encodes `<backlinks>` as the canonical CONTENT rule; rejects packets using `## Backlinks` H2.
 - [ ] Migration note: if any external user packets exist with `## Backlinks`, document a one-time migration path.
+
+---
+
+## Children Tasks
+
+| ID | Title | Owner | Status |
+|----|-------|-------|--------|
+| [TASK-043](./TASK-043-amend-adr-003-backlinks-section.md) | Amend ADR-003 backlinks section (delete with pointer OR update inline to <backlinks> tag) | `ps-architect` | pending |
+| [TASK-044](./TASK-044-migrate-existing-packets-to-tag-form.md) | Migrate any existing packet (including golden test packets) using ## Backlinks H2 to <backlinks> tag | `eng-lead` | pending |
+| [TASK-045](./TASK-045-regression-validators-reject-h2-form.md) | Regression: validators reject packets using ## Backlinks H2 form | `eng-qa` | pending |
+| [TASK-046](./TASK-046-grep-residual-h2-backlinks.md) | Grep across **/*.md for residual ## Backlinks headings; verify zero matches in canonical packet locations | `ps-validator` | pending |
+| [TASK-047](./TASK-047-final-gate-review-adr-amendments.md) | Final-gate review on ADR-003 + ADR-007 amendments (per AE-004 + ps-architect D-4.4) | `eng-reviewer` | pending |
+| [TASK-048](./TASK-048-run-adversary-c4-review.md) | Run /adversary C4 review (governance change touches two ADRs) | `adv-executor` | pending |
+| [TASK-049](./TASK-049-validate-ac-and-close-bug-005.md) | Validate BUG-005 AC and close | `wt-verifier` | pending |
+
 
 ---
 

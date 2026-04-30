@@ -16,6 +16,7 @@
 | Section | Purpose |
 |---------|---------|
 | [User Story](#user-story) | As a / I want / So that |
+| [Summary](#summary) | What this story delivers |
 | [Schema Addition](#schema-addition) | What gets added |
 | [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
@@ -89,13 +90,13 @@ A reader sees one line ("audit basis: simple-cross-file-grep") and follows the b
 
 ## Children Tasks
 
-| ID | Title | Status |
-|----|-------|--------|
-| TASK-001 | Author audit_basis schema field | pending |
-| TASK-002 | Update extraction-report.json schema | pending |
-| TASK-003 | Wire FEAT-003 STORY-008 to update audit_basis | pending |
-| TASK-004 | Add golden packet | pending |
-| TASK-005 | Run /adversary C4 review | pending |
+| ID | Title | Owner | Status |
+|----|-------|-------|--------|
+| [TASK-158](./TASK-158-add-audit-basis-field-to-schema.md) | Add provenance.audit_basis field to extraction-report.json schema (option (a) lighter touch) | `eng-backend` | pending |
+| [TASK-159](./TASK-159-wire-update-anchors-write-audit-basis.md) | Wire FEAT-003 STORY-008 update-anchors to optionally write audit_basis to extraction-report.json | `eng-backend` | pending |
+| [TASK-160](./TASK-160-golden-packet-with-audit-basis.md) | Golden packet with populated audit_basis | `eng-qa` | pending |
+| [TASK-161](./TASK-161-run-adversary-review.md) | Run /adversary review | `adv-executor` | pending |
+| [TASK-162](./TASK-162-validate-ac-and-close-story-016.md) | Validate STORY-016 AC and close | `wt-verifier` | pending |
 
 ---
 

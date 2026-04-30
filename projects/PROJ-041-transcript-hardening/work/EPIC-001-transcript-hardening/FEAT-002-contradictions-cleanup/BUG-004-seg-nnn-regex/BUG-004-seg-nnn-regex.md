@@ -22,6 +22,7 @@
 | [Recommended Resolution](#recommended-resolution) | Audit's stated fix |
 | [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
+| [Children Tasks](#children-tasks) | Task breakdown |
 | [Related Items](#related-items) | Links and dependencies |
 | [History](#history) | Change log |
 
@@ -81,6 +82,21 @@ Per audit: **loosen ADR-007 §3.1 from `\d{3}` to `\d{3,}`** to match schemas an
 - [ ] FEAT-003 STORY-005 (ANCHOR-* validators) encodes `^seg-\d{3,}$` as the ANCHOR rule.
 - [ ] Regression test: a synthetic packet with 1000+ segments passes all anchor validators.
 - [ ] FEAT-004 STORY-015 (`discussions[]`) inherits the `\d{3,}` convention for `disc-NNN` regex.
+
+---
+
+## Children Tasks
+
+| ID | Title | Owner | Status |
+|----|-------|-------|--------|
+| [TASK-036](./TASK-036-amend-adr-007-section-3-1.md) | Amend ADR-007 §3.1 segment-anchor regex \d{3} → \d{3,} | `ps-architect` | pending |
+| [TASK-037](./TASK-037-confirm-ts-formatter-zero-padding.md) | Confirm ts-formatter.md zero-padding examples align with \d{3,} | `eng-lead` | pending |
+| [TASK-038](./TASK-038-regression-1000-segment-packet.md) | Regression: synthetic 1000+ segment packet validates against all anchor rules | `eng-qa` | pending |
+| [TASK-039](./TASK-039-grep-no-d3-without-comma-seg.md) | Grep across codebase for any remaining \d{3}$ (non-comma form) on seg-NNN | `ps-validator` | pending |
+| [TASK-040](./TASK-040-final-gate-review-adr-007-amendment.md) | Final-gate review on ADR-007 §3.1 amendment (per AE-004 + ps-architect D-4.4) | `eng-reviewer` | pending |
+| [TASK-041](./TASK-041-run-adversary-c4-review.md) | Run /adversary C4 review | `adv-executor` | pending |
+| [TASK-042](./TASK-042-validate-ac-and-close-bug-004.md) | Validate BUG-004 AC and close | `wt-verifier` | pending |
+
 
 ---
 

@@ -16,6 +16,7 @@
 | Section | Purpose |
 |---------|---------|
 | [User Story](#user-story) | As a / I want / So that |
+| [Summary](#summary) | What this story delivers |
 | [CLI Surface](#cli-surface) | Command shape and exit codes |
 | [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
@@ -91,16 +92,14 @@ CLI lives at `src/jerry/transcript/validation/interface/cli.py`. A thin shim at 
 
 ## Children Tasks
 
-| ID | Title | Status |
-|----|-------|--------|
-| TASK-001 | Author CLI command parser (argparse or click) | pending |
-| TASK-002 | Wire CLI to PacketValidator service | pending |
-| TASK-003 | Author MarkdownReportRenderer adapter | pending |
-| TASK-004 | Author JsonReportRenderer adapter | pending |
-| TASK-005 | Add CLI shim at skills/transcript/scripts/validate_packet.py | pending |
-| TASK-006 | Author CLI tests (test via entrypoint, not internal API) | pending |
-| TASK-007 | Performance test: ~300ms target on standard packet | pending |
-| TASK-008 | Run /adversary C4 review | pending |
+| ID | Title | Owner | Status |
+|----|-------|-------|--------|
+| [TASK-101](./TASK-101-author-cli-command-parser.md) | Author CLI command parser (argparse or click) | `eng-backend` | pending |
+| [TASK-102](./TASK-102-wire-cli-to-packet-validator.md) | Wire CLI to PacketValidator service | `eng-backend` | pending |
+| [TASK-103](./TASK-103-author-report-renderers.md) | Author MarkdownReportRenderer + JsonReportRenderer adapters (infrastructure) | `eng-backend` | pending |
+| [TASK-104](./TASK-104-add-cli-shim.md) | Add CLI shim at skills/transcript/scripts/validate_packet.py | `eng-backend` | pending |
+| [TASK-105](./TASK-105-cli-tests-via-entrypoint-and-perf.md) | CLI integration tests via entrypoint; performance test ~300ms target | `eng-qa` | pending |
+| [TASK-106](./TASK-106-verify-reproduces-audit-iter-9-drift.md) | Verify reproduces audit's iter-9 drift detection | `ps-validator` | pending |
 
 ---
 

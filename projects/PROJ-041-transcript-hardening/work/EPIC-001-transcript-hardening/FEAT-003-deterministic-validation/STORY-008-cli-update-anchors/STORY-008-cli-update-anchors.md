@@ -16,6 +16,7 @@
 | Section | Purpose |
 |---------|---------|
 | [User Story](#user-story) | As a / I want / So that |
+| [Summary](#summary) | What this story delivers |
 | [CLI Surface](#cli-surface) | Command shape and exit codes |
 | [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
@@ -90,17 +91,15 @@ After this Story, the iter-9 regression class **cannot occur**: the substrate is
 
 ## Children Tasks
 
-| ID | Title | Status |
-|----|-------|--------|
-| TASK-001 | Author UpdateAnchorsService (application layer) | pending |
-| TASK-002 | Author atomic-write infrastructure adapter | pending |
-| TASK-003 | Wire CLI command in interface/cli.py | pending |
-| TASK-004 | Add --dry-run mode | pending |
-| TASK-005 | Add --bucket scoping | pending |
-| TASK-006 | Add audit trail (last_walked_at) | pending |
-| TASK-007 | Test atomicity (concurrent write simulation) | pending |
-| TASK-008 | Run /red-team validation on atomicity | pending |
-| TASK-009 | Run /adversary C4 review | pending |
+| ID | Title | Owner | Status |
+|----|-------|-------|--------|
+| [TASK-107](./TASK-107-author-update-anchors-service.md) | Author UpdateAnchorsService (application layer) | `eng-backend` | pending |
+| [TASK-108](./TASK-108-author-atomic-write-adapter.md) | Author atomic-write infrastructure adapter (temp file + rename) | `eng-backend` | pending |
+| [TASK-109](./TASK-109-wire-update-anchors-cli-with-flags.md) | Wire CLI command with --dry-run and --bucket flags; add last_walked_at audit trail | `eng-backend` | pending |
+| [TASK-110](./TASK-110-code-review-atomic-write-semantics.md) | Code review on atomic-write semantics; verify no partial-write window | `eng-security` | pending |
+| [TASK-111](./TASK-111-probe-race-condition.md) | Probe for race condition / partial-write window via concurrent write simulation | `red-exploit` | pending |
+| [TASK-112](./TASK-112-tests-dry-run-buckets-and-atomicity.md) | Test suite: dry-run, scoped buckets, atomicity under concurrent simulation | `eng-qa` | pending |
+| [TASK-113](./TASK-113-run-adversary-c4-review.md) | Run /adversary C4 review | `adv-executor` | pending |
 
 ---
 

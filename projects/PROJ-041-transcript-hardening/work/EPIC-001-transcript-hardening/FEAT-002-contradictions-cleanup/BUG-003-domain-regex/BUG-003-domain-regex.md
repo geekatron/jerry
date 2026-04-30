@@ -22,6 +22,7 @@
 | [Recommended Resolution](#recommended-resolution) | Audit's stated fix |
 | [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
+| [Children Tasks](#children-tasks) | Task breakdown |
 | [Related Items](#related-items) | Links and dependencies |
 | [History](#history) | Change log |
 
@@ -81,6 +82,21 @@ Per audit: **pick the closed-list `DOMAIN-SCHEMA.json` form** (enum-based, stron
 - [ ] `grep -r 'context-domain-schema\|domain-schema' --include='*.json' --include='*.md' --include='*.py'` shows only references to the canonical schema (no orphaned references to the two losing schemas).
 - [ ] Schema validation passes against a packet with each of the 6 registered domain values.
 - [ ] Schema validation REJECTS a packet with a domain not in the closed list (regression test).
+
+---
+
+## Children Tasks
+
+| ID | Title | Owner | Status |
+|----|-------|-------|--------|
+| [TASK-029](./TASK-029-author-canonical-domain-schema-adr.md) | Author ADR recording canonical-schema choice (DOMAIN-SCHEMA.json) | `ps-architect` | pending |
+| [TASK-030](./TASK-030-delete-losing-domain-schemas.md) | Delete or deprecate contexts/schemas/domain-schema.json and schemas/context-domain-schema.json | `eng-lead` | pending |
+| [TASK-031](./TASK-031-regression-test-domain-enum.md) | Regression: 6 registered domain values pass; out-of-list value rejected | `eng-qa` | pending |
+| [TASK-032](./TASK-032-grep-orphaned-references.md) | Grep for orphaned references to losing schemas; verify zero matches | `ps-validator` | pending |
+| [TASK-033](./TASK-033-final-gate-review-canonical-choice.md) | Final-gate review on schema deletion + canonical-choice ADR (per ps-architect D-4.4) | `eng-reviewer` | pending |
+| [TASK-034](./TASK-034-run-adversary-c4-review.md) | Run /adversary C4 review | `adv-executor` | pending |
+| [TASK-035](./TASK-035-validate-ac-and-close-bug-003.md) | Validate BUG-003 AC and close | `wt-verifier` | pending |
+
 
 ---
 

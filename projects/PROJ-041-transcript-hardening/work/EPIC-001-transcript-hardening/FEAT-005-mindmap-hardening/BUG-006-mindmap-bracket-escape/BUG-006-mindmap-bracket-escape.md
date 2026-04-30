@@ -22,6 +22,7 @@
 | [Tested Fix](#tested-fix) | What the audit author validated locally |
 | [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
+| [Children Tasks](#children-tasks) | Task breakdown |
 | [Related Items](#related-items) | Links and dependencies |
 | [History](#history) | Change log |
 
@@ -97,6 +98,20 @@ Local fix confirmed by author: HTML-escape applied to 5 labels in PDD-0102 packe
 - [ ] FEAT-003 SCHEMA-* or CONTENT-* validator added: detects unescaped brackets in Mermaid output (defensive guard).
 - [ ] FEAT-004 STORY-015 (`discussions[]`) `[~]` ascii symbol — confirm it never appears in Mermaid output (Mermaid uses `~` not `[~]`).
 - [ ] `/adversary` C4 ≥0.95 phase gate.
+
+---
+
+## Children Tasks
+
+| ID | Title | Owner | Status |
+|----|-------|-------|--------|
+| [TASK-163](./TASK-163-update-mindmap-mermaid-prompt.md) | Update ts-mindmap-mermaid.md agent prompt: HTML-escape brackets at write time | `eng-backend` | pending |
+| [TASK-164](./TASK-164-regression-bracket-canonical-renders.md) | Regression test: bracket-canonical golden renders cleanly via mmdc | `eng-qa` | pending |
+| [TASK-165](./TASK-165-regression-non-bracketed-still-works.md) | Regression test: non-bracketed packets continue to render correctly | `eng-qa` | pending |
+| [TASK-166](./TASK-166-add-validator-for-unescaped-brackets.md) | Add validator (extends FEAT-003 SCHEMA-* or CONTENT-*) detecting unescaped brackets in Mermaid output | `eng-backend` | pending |
+| [TASK-167](./TASK-167-run-adversary-c4-review.md) | Run /adversary C4 review | `adv-executor` | pending |
+| [TASK-168](./TASK-168-validate-ac-and-close-bug-006.md) | Validate BUG-006 AC and close | `wt-verifier` | pending |
+
 
 ---
 

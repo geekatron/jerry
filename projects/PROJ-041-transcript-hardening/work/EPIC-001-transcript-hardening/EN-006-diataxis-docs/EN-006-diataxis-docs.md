@@ -88,20 +88,17 @@ Apply `/diataxis` four-quadrant methodology: every doc fits exactly one of {Tuto
 
 ## Children Tasks
 
-| ID | Title | Status |
-|----|-------|--------|
-| TASK-001 | diataxis-tutorial: first-validation tutorial | pending |
-| TASK-002 | diataxis-howto: repair-drift how-to | pending |
-| TASK-003 | diataxis-howto: ci-integration how-to | pending |
-| TASK-004 | diataxis-reference: validation rules catalog | pending |
-| TASK-005 | diataxis-reference: CLI reference | pending |
-| TASK-006 | diataxis-reference: schema reference | pending |
-| TASK-007 | diataxis-explanation: substrate coupling | pending |
-| TASK-008 | diataxis-explanation: bounded context | pending |
-| TASK-009 | Run diataxis-classifier on each doc | pending |
-| TASK-010 | Run diataxis-auditor on full doc set | pending |
-| TASK-011 | Update SKILL.md References section | pending |
-| TASK-012 | Run /adversary C4 review | pending |
+| ID | Title | Owner | Status |
+|----|-------|-------|--------|
+| [TASK-195](./TASK-195-verify-doc-quadrant-claims.md) | Verify each of the 8 planned docs fits its claimed quadrant | `diataxis-classifier` | pending |
+| [TASK-196](./TASK-196-author-first-validation-tutorial.md) | Author 'first-validation' tutorial | `diataxis-tutorial` | pending |
+| [TASK-197](./TASK-197-author-howto-repair-drift-and-ci-integration.md) | Author 'repair-drift' + 'ci-integration' how-to guides | `diataxis-howto` | pending |
+| [TASK-198](./TASK-198-author-reference-rules-cli-schema.md) | Author 3 reference docs: validation rules, CLI, schema | `diataxis-reference` | pending |
+| [TASK-199](./TASK-199-author-explanations-substrate-and-bc.md) | Author 2 explanations: substrate-coupling, bounded-context | `diataxis-explanation` | pending |
+| [TASK-200](./TASK-200-doc-set-audit-no-quadrant-mixing.md) | diataxis-auditor full doc-set audit: zero quadrant mixing | `diataxis-auditor` | pending |
+| [TASK-201](./TASK-201-verify-docs-match-implementation.md) | Cross-check: docs match implementation reality (no orphaned references) | `eng-reviewer` | pending |
+| [TASK-202](./TASK-202-run-adversary-c4-on-doc-set.md) | Run /adversary C4 review on doc set | `adv-executor` | pending |
+| [TASK-203](./TASK-203-validate-ac-and-close-en-006.md) | Validate EN-006 AC and close | `wt-verifier` | pending |
 
 ---
 

@@ -100,17 +100,18 @@ The `ux-orchestrator` parent skill routes between these as appropriate. We do no
 
 ## Children Tasks
 
-| ID | Title | Status |
-|----|-------|--------|
-| TASK-001 | Invoke ux-orchestrator with full input set | pending |
-| TASK-002 | ux-jtbd-analyst run + job map | pending |
-| TASK-003 | ux-heart-analyst run + HEART dashboard spec | pending |
-| TASK-004 | ux-heuristic-evaluator run on CLI design | pending |
-| TASK-005 | ux-inclusive-evaluator persona-spectrum audit | pending |
-| TASK-006 | ux-behavior-diagnostician B=MAP analysis | pending |
-| TASK-007 | Author synthesis report enumerating findings | pending |
-| TASK-008 | File new worktracker entities for any net-new findings | pending |
-| TASK-009 | Run /adversary C4 review on synthesis | pending |
+| ID | Title | Owner | Status |
+|----|-------|-------|--------|
+| [TASK-185](./TASK-185-ux-orchestrator-routing.md) | ux-orchestrator routes to sub-skills based on lifecycle-stage triage | `ux-orchestrator` | pending |
+| [TASK-186](./TASK-186-wave-1-jtbd-job-map.md) | Wave 1: ux-jtbd-analyst job map (≥3 jobs) | `ux-jtbd-analyst` | pending |
+| [TASK-187](./TASK-187-wave-1-heuristic-eval-cli.md) | Wave 1: ux-heuristic-evaluator on planned CLI surface | `ux-heuristic-evaluator` | pending |
+| [TASK-188](./TASK-188-wave-2-heart-dashboard.md) | Wave 2: ux-heart-analyst HEART dashboard spec + baseline measurement plan | `ux-heart-analyst` | pending |
+| [TASK-189](./TASK-189-wave-3-inclusive-cli-audit.md) | Wave 3: ux-inclusive-evaluator persona-spectrum / WCAG audit of CLI | `ux-inclusive-evaluator` | pending |
+| [TASK-190](./TASK-190-wave-4-bmap-on-validator-bottleneck.md) | Wave 4: ux-behavior-diagnostician B=MAP analysis on agent-runs-validators bottleneck | `ux-behavior-diagnostician` | pending |
+| [TASK-191](./TASK-191-cross-framework-synthesis.md) | Cross-framework synthesis report | `ux-orchestrator` | pending |
+| [TASK-192](./TASK-192-file-net-new-entities-if-any.md) | If synthesis surfaces net-new findings, file new Stories/Bugs as worktracker entities | `wt-auditor` | pending |
+| [TASK-193](./TASK-193-run-adversary-c4-on-synthesis.md) | Run /adversary C4 review on synthesis report | `adv-executor` | pending |
+| [TASK-194](./TASK-194-validate-ac-and-close-en-005.md) | Validate EN-005 AC and close | `wt-verifier` | pending |
 
 ---
 

@@ -65,14 +65,14 @@ Per AE-004, modifying a baselined ADR is C4 — but we are *baselining* the ADR 
 
 ## Children Tasks
 
-| ID | Title | Owner Agent | Status |
-|----|-------|-------------|--------|
-| TASK-001 | Verify all 5 FEAT-002 Bugs are completed (BUG-001..BUG-005) | wt-auditor | pending |
-| TASK-002 | Update ADR-007 frontmatter Status field PROPOSED → ACCEPTED | ps-architect | pending |
-| TASK-003 | Add History entry to ADR-007 documenting promotion | ps-architect | pending |
-| TASK-004 | Architecture compliance review on baselined ADR-007 | eng-architect | pending |
-| TASK-005 | Run /adversary C4 review (all 10 strategies, ≥0.95) | adv-executor + adv-scorer | pending |
-| TASK-006 | Validate AC and close | wt-verifier | pending |
+| ID | Title | Owner | Status |
+|----|-------|-------|--------|
+| [TASK-011](./TASK-011-verify-feat-002-bugs-completed.md) | Verify all 5 FEAT-002 Bugs are completed with delivery evidence | `wt-auditor` | pending |
+| [TASK-012](./TASK-012-update-adr-007-status-to-accepted.md) | Update ADR-007 frontmatter Status PROPOSED → ACCEPTED | `ps-architect` | pending |
+| [TASK-013](./TASK-013-add-history-entry-to-adr-007.md) | Add History entry to ADR-007 documenting promotion | `ps-architect` | pending |
+| [TASK-014](./TASK-014-architecture-compliance-review-memo.md) | Architecture compliance review memo (per ps-architect D-4.1) | `eng-architect` | pending |
+| [TASK-015](./TASK-015-run-adversary-c4-on-promotion.md) | Run /adversary C4 review on promotion (mandatory per AE-004) | `adv-executor` | pending |
+| [TASK-016](./TASK-016-validate-ac-and-close-story-002.md) | Validate STORY-002 acceptance criteria and close | `wt-verifier` | pending |
 
 ---
 

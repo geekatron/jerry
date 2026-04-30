@@ -94,17 +94,17 @@ Each golden packet ships with a `expected.json` describing the expected validato
 
 ## Children Tasks
 
-| ID | Title | Status |
-|----|-------|--------|
-| TASK-001 | Build clean-packet golden (all rules pass) | pending |
-| TASK-002 | Build drift-detected golden | pending |
-| TASK-003 | Build multi-violation golden | pending |
-| TASK-004 | Build large-packet golden (1000+ chunks/segments) | pending |
-| TASK-005 | Build bracket-canonical golden | pending |
-| TASK-006 | Build ascii-fallback golden | pending |
-| TASK-007 | Author conftest.py with fixtures and stub adapters | pending |
-| TASK-008 | Author parameterized test runner | pending |
-| TASK-009 | Configure coverage gate (≥90%) | pending |
+| ID | Title | Owner | Status |
+|----|-------|-------|--------|
+| [TASK-003](./TASK-003-build-clean-packet-golden.md) | Build clean-packet golden where all 17 validation rules pass | `eng-qa` | pending |
+| [TASK-057](./TASK-057-build-drift-detected-golden.md) | Build drift-detected golden packet | `eng-qa` | pending |
+| [TASK-058](./TASK-058-build-multi-violation-golden.md) | Build multi-violation golden packet | `eng-qa` | pending |
+| [TASK-059](./TASK-059-build-large-packet-golden.md) | Build large-packet golden (1000+ chunks/segments) | `eng-qa` | pending |
+| [TASK-060](./TASK-060-build-bracket-canonical-golden.md) | Build bracket-canonical golden (mindmap labels with [...]) | `eng-qa` | pending |
+| [TASK-061](./TASK-061-build-ascii-fallback-golden.md) | Build ascii-fallback golden (ts-mindmap-ascii output) | `eng-qa` | pending |
+| [TASK-062](./TASK-062-author-conftest-and-fixtures.md) | Author conftest.py with fixtures and stub adapters | `eng-qa` | pending |
+| [TASK-063](./TASK-063-author-parameterized-runner-and-coverage.md) | Author parameterized test runner; configure coverage gate | `eng-qa` | pending |
+| [TASK-064](./TASK-064-run-adversary-c4-on-harness.md) | Run /adversary C4 review on harness design + golden packets | `adv-executor` | pending |
 
 ---
 

@@ -16,6 +16,7 @@
 | Section | Purpose |
 |---------|---------|
 | [User Story](#user-story) | As a / I want / So that |
+| [Summary](#summary) | What this story delivers |
 | [CI Gate Design](#ci-gate-design) | Where and how it runs |
 | [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
@@ -82,15 +83,14 @@ Add a CI workflow that runs the validators against golden packets on every PR, b
 
 ## Children Tasks
 
-| ID | Title | Status |
-|----|-------|--------|
-| TASK-001 | Author .github/workflows/transcript-validators.yml | pending |
-| TASK-002 | Hash-pin action versions per supply-chain hardening | pending |
-| TASK-003 | Configure coverage gates | pending |
-| TASK-004 | Configure PR comment on failure | pending |
-| TASK-005 | Update branch protection (manual settings or repo-config-as-code) | pending |
-| TASK-006 | Run /eng-team eng-devsecops review | pending |
-| TASK-007 | Run /adversary C4 review | pending |
+| ID | Title | Owner | Status |
+|----|-------|-------|--------|
+| [TASK-132](./TASK-132-author-transcript-validators-workflow.md) | Author .github/workflows/transcript-validators.yml; hash-pin actions; coverage gates | `eng-devsecops` | pending |
+| [TASK-133](./TASK-133-configure-pr-comment-and-branch-protection.md) | PR comment posting on failure (validator summary); branch protection update | `eng-devsecops` | pending |
+| [TASK-134](./TASK-134-workflow-security-review.md) | Workflow security review: no secrets leak, principle of least privilege | `eng-security` | pending |
+| [TASK-135](./TASK-135-e2e-test-against-golden-packets.md) | End-to-end test: workflow runs against test_data/golden/ on PR; blocks merge on validator failure | `eng-qa` | pending |
+| [TASK-136](./TASK-136-validate-runtime-env-parity.md) | Validate CI runtime environment matches developer-local execution (per ps-architect D-4.5) | `eng-infra` | pending |
+| [TASK-137](./TASK-137-run-adversary-c4-review.md) | Run /adversary C4 review on workflow + supply chain hardening | `adv-executor` | pending |
 
 ---
 

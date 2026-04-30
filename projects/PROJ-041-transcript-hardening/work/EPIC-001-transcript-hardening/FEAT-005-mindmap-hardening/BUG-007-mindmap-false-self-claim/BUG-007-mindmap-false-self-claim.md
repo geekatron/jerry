@@ -22,6 +22,7 @@
 | [Resolution Options](#resolution-options) | Two paths per audit |
 | [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
+| [Children Tasks](#children-tasks) | Task breakdown |
 | [Related Items](#related-items) | Links and dependencies |
 | [History](#history) | Change log |
 
@@ -84,6 +85,20 @@ Decision: pick one in this Bug. Audit recommends Option A if `mmdc` is acceptabl
 - [ ] Regression test: agent behavior on the BUG-006 audit packet — either correctly identifies failure (Option A) or doesn't make a false claim (Option B).
 - [ ] `/eng-team` `eng-reviewer` confirms agent definition matches actual capability.
 - [ ] `/adversary` C4 ≥0.95 phase gate.
+
+---
+
+## Children Tasks
+
+| ID | Title | Owner | Status |
+|----|-------|-------|--------|
+| [TASK-169](./TASK-169-decide-capability-or-claim-honesty-via-dec-001.md) | Decide capability vs claim honesty via FEAT-005 DEC-001 | `eng-reviewer` | pending |
+| [TASK-170](./TASK-170-apply-chosen-option-a-or-b.md) | Apply chosen option (A: grant Bash+mmdc; B: weaken claim language) | `eng-backend` | pending |
+| [TASK-171](./TASK-171-regression-on-bug-006-audit-packet.md) | Regression: agent on BUG-006 audit packet — correctly identifies failure (Option A) or doesn't make false claim (Option B) | `eng-qa` | pending |
+| [TASK-172](./TASK-172-p-022-alignment-review.md) | P-022 alignment review: agent's claims accurately reflect actual capability | `eng-reviewer` | pending |
+| [TASK-173](./TASK-173-run-adversary-c4-review.md) | Run /adversary C4 review | `adv-executor` | pending |
+| [TASK-174](./TASK-174-validate-ac-and-close-bug-007.md) | Validate BUG-007 AC and close | `wt-verifier` | pending |
+
 
 ---
 

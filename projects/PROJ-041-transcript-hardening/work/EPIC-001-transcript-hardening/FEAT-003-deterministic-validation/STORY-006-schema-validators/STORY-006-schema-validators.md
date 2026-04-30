@@ -16,6 +16,7 @@
 | Section | Purpose |
 |---------|---------|
 | [User Story](#user-story) | As a / I want / So that |
+| [Summary](#summary) | What this story delivers |
 | [Rule Family](#rule-family) | Which ADR-007 §4 rules this Story implements |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
 | [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
@@ -74,15 +75,15 @@ ADR-007 §4 SCHEMA-001..008 rules. Each maps to a JSON Schema in the framework. 
 
 ## Children Tasks
 
-| ID | Title | Status |
-|----|-------|--------|
-| TASK-001 | Read canonical ADR-007 §4 SCHEMA-* rule bodies | pending |
-| TASK-002 | Author JsonSchemaAdapter (infrastructure layer) | pending |
-| TASK-003 | Author failing tests for SCHEMA-001..008 (TDD Red) | pending |
-| TASK-004 | Implement SCHEMA-001..008 (Green) | pending |
-| TASK-005 | Validate against large-packet golden (forward-compat) | pending |
-| TASK-006 | Refactor for DRY across SCHEMA family | pending |
-| TASK-007 | Run /adversary C4 review | pending |
+| ID | Title | Owner | Status |
+|----|-------|-------|--------|
+| [TASK-094](./TASK-094-implement-jsonschema-adapter.md) | Implement JsonSchemaAdapter (infrastructure layer) | `eng-backend` | pending |
+| [TASK-095](./TASK-095-tdd-red-schema-tests.md) | Author failing tests for SCHEMA-001..008 (TDD Red); include large-packet golden | `eng-qa` | pending |
+| [TASK-096](./TASK-096-implement-schema-rules-green.md) | Implement SCHEMA-001..008 (Green); rules read schemas, don't hardcode shapes | `eng-backend` | pending |
+| [TASK-097](./TASK-097-refactor-dry-schema-family.md) | Refactor for DRY across SCHEMA family | `eng-backend` | pending |
+| [TASK-098](./TASK-098-verify-large-packet-passes.md) | Verify SCHEMA rules pass against large-packet golden (forward-compat) | `ps-validator` | pending |
+| [TASK-099](./TASK-099-run-adversary-c4-review.md) | Run /adversary C4 review | `adv-executor` | pending |
+| [TASK-100](./TASK-100-validate-ac-and-close-story-006.md) | Validate STORY-006 AC and close | `wt-verifier` | pending |
 
 ---
 

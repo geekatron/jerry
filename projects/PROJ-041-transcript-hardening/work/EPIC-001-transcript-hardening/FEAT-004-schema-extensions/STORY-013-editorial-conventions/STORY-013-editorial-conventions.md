@@ -16,6 +16,7 @@
 | Section | Purpose |
 |---------|---------|
 | [User Story](#user-story) | As a / I want / So that |
+| [Summary](#summary) | What this story delivers |
 | [Schema Addition](#schema-addition) | What gets added to extraction-report.json |
 | [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
@@ -88,14 +89,14 @@ Without this block, agents either silently rewrite (loses provenance) or invent 
 
 ## Children Tasks
 
-| ID | Title | Status |
-|----|-------|--------|
-| TASK-001 | Draft schema addition for editorial_conventions block | pending |
-| TASK-002 | Update extraction-report.json schema to v1.2 | pending |
-| TASK-003 | Add golden packet with populated block | pending |
-| TASK-004 | Update ts-extractor agent guidance | pending |
-| TASK-005 | Author ADR amendment | pending |
-| TASK-006 | Run /adversary C4 review | pending |
+| ID | Title | Owner | Status |
+|----|-------|-------|--------|
+| [TASK-138](./TASK-138-author-editorial-conventions-adr.md) | Author ADR amendment (new ADR or ADR-001 amendment-002) for editorial_conventions block | `ps-architect` | pending |
+| [TASK-139](./TASK-139-update-extraction-report-schema-v1-2.md) | Update extraction-report.json schema to v1.2 with provenance.editorial_conventions block | `eng-backend` | pending |
+| [TASK-140](./TASK-140-update-ts-extractor-guidance.md) | Update ts-extractor agent guidance: reference editorial_conventions when emitting narrative fields | `eng-backend` | pending |
+| [TASK-141](./TASK-141-add-golden-packet-with-block.md) | Add golden packet with populated editorial_conventions block; FEAT-003 SCHEMA-* validators pick up new field | `eng-qa` | pending |
+| [TASK-142](./TASK-142-run-adversary-c4-review.md) | Run /adversary C4 review | `adv-executor` | pending |
+| [TASK-143](./TASK-143-validate-ac-and-close-story-013.md) | Validate STORY-013 AC and close | `wt-verifier` | pending |
 
 ---
 

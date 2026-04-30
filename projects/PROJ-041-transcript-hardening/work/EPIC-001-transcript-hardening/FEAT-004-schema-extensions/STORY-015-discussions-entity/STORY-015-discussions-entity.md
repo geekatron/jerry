@@ -16,6 +16,7 @@
 | Section | Purpose |
 |---------|---------|
 | [User Story](#user-story) | As a / I want / So that |
+| [Summary](#summary) | What this story delivers |
 | [Schema Addition](#schema-addition) | What gets added |
 | [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
@@ -86,16 +87,15 @@ ADRs to amend: ADR-001 (agent architecture: ts-extractor) + ADR-007 (output temp
 
 ## Children Tasks
 
-| ID | Title | Status |
-|----|-------|--------|
-| TASK-001 | Author discussions[] schema in extraction-report.json | pending |
-| TASK-002 | Register disc-NNN regex pattern | pending |
-| TASK-003 | Update output template (topics file) with H2 section | pending |
-| TASK-004 | Add mindmap symbols | pending |
-| TASK-005 | Update ts-extractor agent guidance | pending |
-| TASK-006 | Author ADR-001 + ADR-007 amendments | pending |
-| TASK-007 | Add golden packet exercise discussions[] | pending |
-| TASK-008 | Run /adversary C4 review | pending |
+| ID | Title | Owner | Status |
+|----|-------|-------|--------|
+| [TASK-151](./TASK-151-author-adr-amendments-discussions.md) | Author ADR-001 + ADR-007 amendments for discussions[] entity type, disc-NNN regex, mindmap symbols | `ps-architect` | pending |
+| [TASK-152](./TASK-152-implement-discussions-across-schemas.md) | Implement discussions[] across extraction-report.json schema, anchor regex, output template, mindmap symbols | `eng-backend` | pending |
+| [TASK-153](./TASK-153-update-ts-extractor-discussion-detection.md) | Update ts-extractor agent: emit discussion items when speech is neither decision nor question | `eng-backend` | pending |
+| [TASK-154](./TASK-154-golden-packet-with-discussions.md) | Golden packet exercising discussions[] | `eng-qa` | pending |
+| [TASK-155](./TASK-155-verify-bracket-symbol-handling.md) | Coordinate with FEAT-005 BUG-006: confirm `[~]` ascii symbol never escapes into Mermaid output unescaped | `eng-qa` | pending |
+| [TASK-156](./TASK-156-run-adversary-c4-review.md) | Run /adversary C4 review | `adv-executor` | pending |
+| [TASK-157](./TASK-157-validate-ac-and-close-story-015.md) | Validate STORY-015 AC and close | `wt-verifier` | pending |
 
 ---
 

@@ -16,6 +16,7 @@
 | Section | Purpose |
 |---------|---------|
 | [User Story](#user-story) | As a / I want / So that |
+| [Summary](#summary) | What this story delivers |
 | [Rule Family](#rule-family) | Which ADR-007 §4 rules this Story implements |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
 | [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
@@ -75,14 +76,14 @@ ADR-007 §4 FILE-001..003 rules. Exact rule definitions live in the vendored ADR
 
 ## Children Tasks
 
-| ID | Title | Status |
-|----|-------|--------|
-| TASK-001 | Read canonical ADR-007 §4 FILE-* rule bodies in docs/adrs/ | pending |
-| TASK-002 | Author failing tests for FILE-001 (TDD Red) | pending |
-| TASK-003 | Implement FILE-001 (Green) | pending |
-| TASK-004 | Repeat Red-Green for FILE-002, FILE-003 | pending |
-| TASK-005 | Refactor for DRY across the 3 rules | pending |
-| TASK-006 | Run /adversary C4 review | pending |
+| ID | Title | Owner | Status |
+|----|-------|-------|--------|
+| [TASK-074](./TASK-074-tdd-red-failing-tests-file-rules.md) | Author failing tests for FILE-001..003 (TDD Red) | `eng-qa` | pending |
+| [TASK-075](./TASK-075-implement-file-rules-green.md) | Implement FILE-001..003 as ValidationRule entities (Green) | `eng-backend` | pending |
+| [TASK-076](./TASK-076-refactor-dry-across-file-family.md) | Refactor for DRY across the 3 FILE rules | `eng-backend` | pending |
+| [TASK-077](./TASK-077-verify-against-violation-goldens.md) | Verify FILE rules fail correctly against violation goldens | `ps-validator` | pending |
+| [TASK-078](./TASK-078-run-adversary-c4-review.md) | Run /adversary C4 review | `adv-executor` | pending |
+| [TASK-079](./TASK-079-validate-ac-and-close-story-003.md) | Validate STORY-003 AC and close | `wt-verifier` | pending |
 
 ---
 

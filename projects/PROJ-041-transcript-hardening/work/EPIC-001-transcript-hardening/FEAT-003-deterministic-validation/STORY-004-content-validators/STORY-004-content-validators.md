@@ -16,6 +16,7 @@
 | Section | Purpose |
 |---------|---------|
 | [User Story](#user-story) | As a / I want / So that |
+| [Summary](#summary) | What this story delivers |
 | [Rule Family](#rule-family) | Which ADR-007 §4 rules this Story implements |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
 | [Agent Assignment](#agent-assignment) | Specific skill+agent mappings |
@@ -71,13 +72,14 @@ ADR-007 §4 CONTENT-001..003 rules. Includes the backlinks-format rule resolved 
 
 ## Children Tasks
 
-| ID | Title | Status |
-|----|-------|--------|
-| TASK-001 | Read canonical ADR-007 §4 CONTENT-* rule bodies | pending |
-| TASK-002 | Author failing tests (TDD Red) | pending |
-| TASK-003 | Implement CONTENT-001..003 (Green) | pending |
-| TASK-004 | Refactor for DRY | pending |
-| TASK-005 | Run /adversary C4 review | pending |
+| ID | Title | Owner | Status |
+|----|-------|-------|--------|
+| [TASK-080](./TASK-080-tdd-red-failing-tests-content-rules.md) | Author failing tests for CONTENT-001..003 (TDD Red) | `eng-qa` | pending |
+| [TASK-081](./TASK-081-implement-content-rules-green.md) | Implement CONTENT-001..003 (Green) | `eng-backend` | pending |
+| [TASK-082](./TASK-082-refactor-dry-content-family.md) | Refactor for DRY across CONTENT rules | `eng-backend` | pending |
+| [TASK-083](./TASK-083-verify-content-rules-reject-h2-backlinks.md) | Verify rules reject `## Backlinks` H2 form; accept `<backlinks>` tag form | `ps-validator` | pending |
+| [TASK-084](./TASK-084-run-adversary-c4-review.md) | Run /adversary C4 review | `adv-executor` | pending |
+| [TASK-085](./TASK-085-validate-ac-and-close-story-004.md) | Validate STORY-004 AC and close | `wt-verifier` | pending |
 
 ---
 

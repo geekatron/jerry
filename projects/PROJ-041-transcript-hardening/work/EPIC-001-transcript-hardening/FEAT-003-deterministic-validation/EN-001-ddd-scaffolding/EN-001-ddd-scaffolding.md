@@ -116,15 +116,15 @@ H-07 isolation: domain layer has zero imports from application, infrastructure, 
 
 ## Children Tasks
 
-| ID | Title | Status |
-|----|-------|--------|
-| TASK-001 | Author DEC-001..DEC-005 ADRs | pending |
-| TASK-002 | Create empty module skeleton (4 layers + __init__.py files) | pending |
-| TASK-003 | Define domain entity stubs (Packet, ValidationRule, ValidationResult, VOs) | pending |
-| TASK-004 | Define application port Protocol classes | pending |
-| TASK-005 | Author scaffolding unit test (verifies import paths) | pending |
-| TASK-006 | Run /eng-team eng-architect review on ADRs | pending |
-| TASK-007 | Run /adversary C4 review on architecture | pending |
+| ID | Title | Owner | Status |
+|----|-------|-------|--------|
+| [TASK-050](./TASK-050-author-decisions-001-through-005.md) | Author DEC-001..DEC-005 ADRs | `ps-architect` | pending |
+| [TASK-051](./TASK-051-threat-informed-architecture-review.md) | Threat-informed architecture review on DDD layout + DEC-001..005 | `eng-architect` | pending |
+| [TASK-052](./TASK-052-implementation-plan-and-dependency-governance.md) | Implementation plan + dependency governance | `eng-lead` | pending |
+| [TASK-053](./TASK-053-create-empty-module-skeleton.md) | Create empty module skeleton (4 layers + __init__.py files) | `eng-backend` | pending |
+| [TASK-054](./TASK-054-declare-domain-entities-and-ports.md) | Declare domain entity stubs and application port Protocol classes | `eng-backend` | pending |
+| [TASK-055](./TASK-055-scaffolding-unit-test.md) | Author scaffolding unit test (verifies import paths) | `eng-qa` | pending |
+| [TASK-056](./TASK-056-run-adversary-c4-on-architecture.md) | Run /adversary C4 review on architecture (DEC-001..005 + skeleton) | `adv-executor` | pending |
 
 ---
 
