@@ -10,6 +10,8 @@
 
 **Max Depth Reached:** Cross-Feature dependency edges visualized
 
+**Complete Edge View:** For the complete edge inventory including Bug→Story, FEAT-004 Story, and Cooperates edges, see [`dependencies-full.md`](./dependencies-full.md).
+
 ---
 
 ## Diagram
