@@ -235,6 +235,9 @@ scripts/ci/check_skill_adr_refs.py
 ```
 
 This path is conventional for Jerry framework CI scripts. The script MUST:
+
+> **Implementation deviation note (recorded 2026-04-30 by adv-scorer review):** TASK-008 implemented the script at `scripts/check_skill_adr_references.py` (no `ci/` subdirectory; full word `references` instead of abbreviation). Rationale: existing Jerry helper scripts (`scripts/check_markdown_schemas.py`, `scripts/check_hard_rule_ceiling.py`) all live directly under `scripts/` with no `ci/` subdirectory; the implementation matches the established repo idiom. The implemented path is the canonical path going forward; this spec entry is preserved as historical record of the original recommendation.
+
 1. Accept zero arguments (self-discovering via `git rev-parse --show-toplevel`).
 2. Be executable with `uv run python` per H-05.
 3. Require no dependencies beyond the Python standard library (`os`, `re`, `pathlib`, `subprocess`).

@@ -135,7 +135,10 @@ The recon grep surfaced several categories of references to the old jerry-core `
 | `skills/transcript/test_data/validation/mindmap-pipeline-tests.yaml` | `<source-project>/...` | 1 | Path in test fixture. Out of scope. |
 | `skills/transcript/validation/ts-critic-extension.md` | `../../../<source-project>/...` | 1 | DISC-001. Out of scope. |
 
-**Recommendation:** A follow-on FEAT under PROJ-041 should address the remaining `PROJ-008-transcript-skill` references across `skills/transcript/` to complete the source-project path cleanup. The `transcript-skill/` `$id` values in JSON Schema files are schema namespace URNs and do not require updating.
+**Recommendation:** A follow-on Story under PROJ-041 should address the remaining `PROJ-008-transcript-skill` references across `skills/transcript/` to complete the source-project path cleanup. The `transcript-skill/` `$id` values in JSON Schema files are schema namespace URNs and do not require updating.
+
+> **Tracking note (2026-04-30 adv-scorer follow-up):** The follow-on Story has not yet been filed. STORY-001 is at `REVISE` (composite 0.941, 0.009 below the 0.95 project bar) primarily because this gap is acknowledged but untracked. Next session MUST file the entity (suggested ID `STORY-017` under FEAT-001 or as a new in-feature enabler), with acceptance criteria mirroring STORY-001 AC #6 — grep for `transcript-skill/` and the source-project path returning zero matches in `skills/transcript/`. After filing, this recon report's "Out-of-Scope Noteworthy Findings" section should be amended to cite the new entity ID, after which STORY-001 can be re-scored for closure.
+
 
 ---
 
