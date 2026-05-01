@@ -26,17 +26,17 @@
 
 ---
 
-## Summary
-
-Add the optional `arithmetic_invariants` sub-block to stat blocks (\`{computed, declared, match, computed_at_revision, scope_note?}\`). Generalizes the substrate-coupling fix beyond _anchors.json: any stat block with declared counts gets a recompute pattern and a match boolean. update-anchors keeps `computed` in lockstep with walked truth at every write.
-
----
-
 ## User Story
 
 **As a** consumer of a stat block in a transcript packet,
 **I want** every declared count to ship with a recompute pattern, computed value, declared value, match boolean, and revision id,
 **So that** stat-block claims that don't reproduce are mechanically detectable.
+
+---
+
+## Summary
+
+Add the optional `arithmetic_invariants` sub-block to stat blocks (\`{computed, declared, match, computed_at_revision, scope_note?}\`). Generalizes the substrate-coupling fix beyond _anchors.json: any stat block with declared counts gets a recompute pattern and a match boolean. update-anchors keeps `computed` in lockstep with walked truth at every write.
 
 ---
 

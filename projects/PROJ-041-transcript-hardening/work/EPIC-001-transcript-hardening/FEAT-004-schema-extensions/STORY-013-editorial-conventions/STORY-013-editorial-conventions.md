@@ -26,17 +26,17 @@
 
 ---
 
-## Summary
-
-Add the optional `provenance.editorial_conventions` block to extraction-report.json schema v1.2 (5 policies: ASR/stutter/speculation/paraphrase/consensus). Without this block, agents either silently rewrite (loses provenance) or invent ad-hoc bracketing (drift). A documented policy block solves it.
-
----
-
 ## User Story
 
 **As a** consumer of a transcript packet (human reviewer or downstream agent),
 **I want** the per-session ASR-correction policy, stutter-preservation policy, speculation-marker policy, paraphrase-marker policy, and consensus-standard policy documented in the packet itself,
 **So that** I know how to interpret narrative fields without inferring conventions from the prose.
+
+---
+
+## Summary
+
+Add the optional `provenance.editorial_conventions` block to extraction-report.json schema v1.2 (5 policies: ASR/stutter/speculation/paraphrase/consensus). Without this block, agents either silently rewrite (loses provenance) or invent ad-hoc bracketing (drift). A documented policy block solves it.
 
 ---
 

@@ -26,17 +26,17 @@
 
 ---
 
-## Summary
-
-Build the `jerry transcript update-anchors <packet>` CLI subcommand. Walks declared patterns through SubprocessSandbox and writes walked counts back into _anchors.json atomically. After this Story lands, declared counts become a cache of walked truth — never a hand-maintained assertion that can drift.
-
----
-
 ## User Story
 
 **As a** `ts-formatter` agent or developer fixing an audited packet,
 **I want** `jerry transcript update-anchors <packet>` to walk the declared patterns and write the walked counts back into `_anchors.json`,
 **So that** declared counts become a cache of walked truth — never a hand-maintained assertion that can drift.
+
+---
+
+## Summary
+
+Build the `jerry transcript update-anchors <packet>` CLI subcommand. Walks declared patterns through SubprocessSandbox and writes walked counts back into _anchors.json atomically. After this Story lands, declared counts become a cache of walked truth — never a hand-maintained assertion that can drift.
 
 ---
 

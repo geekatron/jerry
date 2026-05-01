@@ -26,12 +26,6 @@
 
 ---
 
-## Summary
-
-Implement the CONTENT-001..003 validation rules (markdown content shape) per ADR-007 §4. Includes the backlinks-format rule per BUG-005 (canonical `<backlinks>` tag, deprecated `## Backlinks` H2). TDD Red-Green-Refactor.
-
----
-
 ## User Story
 
 **As a** `ts-formatter` agent or CI pipeline,
@@ -40,9 +34,26 @@ Implement the CONTENT-001..003 validation rules (markdown content shape) per ADR
 
 ---
 
+## Summary
+
+Implement the CONTENT-001..003 validation rules (markdown content shape) per ADR-007 §4. Includes the backlinks-format rule per BUG-005 (canonical `<backlinks>` tag, deprecated `## Backlinks` H2). TDD Red-Green-Refactor.
+
+---
+
 ## Rule Family
 
 ADR-007 §4 CONTENT-001..003 rules. Includes the backlinks-format rule resolved by FEAT-002 BUG-005 (`<backlinks>` tag, not `## Backlinks` H2). Exact rule definitions in the vendored ADR-007.
+
+---
+
+## Acceptance Criteria
+
+- [ ] All 3 CONTENT-* rules implemented as ValidationRule entities under `src/jerry/transcript/validation/domain/rules/content/`.
+- [ ] CONTENT rule encoding the backlinks format **uses `<backlinks>` tag** per BUG-005 resolution.
+- [ ] TDD Red-Green-Refactor; coverage ≥90%.
+- [ ] All 3 rules pass against clean-packet golden; fail against matching violation goldens.
+- [ ] Property-based test for deterministic behavior.
+- [ ] `/adversary` C4 ≥0.95 phase gate.
 
 ---
 
@@ -56,17 +67,6 @@ ADR-007 §4 CONTENT-001..003 rules. Includes the backlinks-format rule resolved 
 | 4 | `/problem-solving` | `ps-validator` | Confirm rules reject `## Backlinks` H2 form; accept `<backlinks>` tag form |
 | 5 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review |
 | 6 | `/worktracker` | `wt-verifier` | Validate AC; close |
-
----
-
-## Acceptance Criteria
-
-- [ ] All 3 CONTENT-* rules implemented as ValidationRule entities under `src/jerry/transcript/validation/domain/rules/content/`.
-- [ ] CONTENT rule encoding the backlinks format **uses `<backlinks>` tag** per BUG-005 resolution.
-- [ ] TDD Red-Green-Refactor; coverage ≥90%.
-- [ ] All 3 rules pass against clean-packet golden; fail against matching violation goldens.
-- [ ] Property-based test for deterministic behavior.
-- [ ] `/adversary` C4 ≥0.95 phase gate.
 
 ---
 

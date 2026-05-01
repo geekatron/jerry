@@ -26,17 +26,17 @@
 
 ---
 
-## Summary
-
-Wire `update-anchors` into the `ts-formatter` agent write pipeline so every rendered .md write automatically refreshes declared substrate counts. Eliminates the declare-then-attest pattern entirely; substrate becomes mechanically derived at every write. Hook mechanism shared with STORY-009 (FEAT-003 DEC-001).
-
----
-
 ## User Story
 
 **As a** `ts-formatter` agent or fix-wave worker,
 **I want** declared substrate counts to be automatically derived from walked truth at every write,
 **So that** the "declare-then-attest" pattern is eliminated entirely — declared counts become a cache, never a hand-maintained assertion.
+
+---
+
+## Summary
+
+Wire `update-anchors` into the `ts-formatter` agent write pipeline so every rendered .md write automatically refreshes declared substrate counts. Eliminates the declare-then-attest pattern entirely; substrate becomes mechanically derived at every write. Hook mechanism shared with STORY-009 (FEAT-003 DEC-001).
 
 ---
 

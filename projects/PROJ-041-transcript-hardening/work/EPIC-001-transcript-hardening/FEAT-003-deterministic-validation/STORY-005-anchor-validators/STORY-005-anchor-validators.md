@@ -27,17 +27,17 @@
 
 ---
 
-## Summary
-
-Implement the ANCHOR-001..003 validation rules per ADR-007 §4 — the heart of the substrate-coupling fix. ANCHOR-003 is the substrate-coupling rule that walks declared grep patterns through SubprocessSandbox and asserts walked == declared per bucket; this is the rule that catches the iter-9 audit drift class. Security-adjacent (uses subprocess), so reviewed by eng-security and red-exploit.
-
----
-
 ## User Story
 
 **As a** `ts-formatter` agent, CI pipeline, or downstream consumer,
 **I want** mechanical validation that anchor format, anchor uniqueness, and anchor resolution match the declared substrate,
 **So that** the declared-derived coupling defect class (audit comment 1) cannot recur.
+
+---
+
+## Summary
+
+Implement the ANCHOR-001..003 validation rules per ADR-007 §4 — the heart of the substrate-coupling fix. ANCHOR-003 is the substrate-coupling rule that walks declared grep patterns through SubprocessSandbox and asserts walked == declared per bucket; this is the rule that catches the iter-9 audit drift class. Security-adjacent (uses subprocess), so reviewed by eng-security and red-exploit.
 
 ---
 
@@ -59,20 +59,6 @@ This is the rule that catches the iter-9-class regression in the audit. Without 
 
 ---
 
-## Agent Assignment
-
-| Step | Skill | Agent | Purpose |
-|------|-------|-------|---------|
-| 1 | `/eng-team` | `eng-qa` | Author failing tests for ANCHOR-001..003 (TDD Red); use `\d{3,}` regex per BUG-004; cover declared-vs-walked drift case |
-| 2 | `/eng-team` | `eng-backend` | Implement anchor format + uniqueness + substrate-coupling rules; substrate-coupling rule routes through SubprocessSandbox port (EN-003) |
-| 3 | `/eng-team` | `eng-security` | Code review on substrate-coupling rule (uses subprocess via sandbox; security-adjacent) |
-| 4 | `/red-team` | `red-exploit` | Verify ANCHOR rule cannot bypass SubprocessSandbox boundary (re-uses EN-004 Phase 4 work) |
-| 5 | `/problem-solving` | `ps-validator` | Reproduce audit's iter-9 drift detection on the original audit packet (declared 33 vs walked 32) |
-| 6 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review |
-| 7 | `/worktracker` | `wt-verifier` | Validate AC; close |
-
----
-
 ## Acceptance Criteria
 
 - [ ] All 3 ANCHOR-* rules implemented under `src/jerry/transcript/validation/domain/rules/anchor/`.
@@ -85,6 +71,20 @@ This is the rule that catches the iter-9-class regression in the audit. Without 
 - [ ] Validates against the iter-9 audit packet state and reproduces the audit's drift detection (1 walked, 1 declared difference).
 - [ ] `/red-team` validates ANCHOR rule does not bypass SubprocessSandbox boundary.
 - [ ] `/adversary` C4 ≥0.95 phase gate.
+
+---
+
+## Agent Assignment
+
+| Step | Skill | Agent | Purpose |
+|------|-------|-------|---------|
+| 1 | `/eng-team` | `eng-qa` | Author failing tests for ANCHOR-001..003 (TDD Red); use `\d{3,}` regex per BUG-004; cover declared-vs-walked drift case |
+| 2 | `/eng-team` | `eng-backend` | Implement anchor format + uniqueness + substrate-coupling rules; substrate-coupling rule routes through SubprocessSandbox port (EN-003) |
+| 3 | `/eng-team` | `eng-security` | Code review on substrate-coupling rule (uses subprocess via sandbox; security-adjacent) |
+| 4 | `/red-team` | `red-exploit` | Verify ANCHOR rule cannot bypass SubprocessSandbox boundary (re-uses EN-004 Phase 4 work) |
+| 5 | `/problem-solving` | `ps-validator` | Reproduce audit's iter-9 drift detection on the original audit packet (declared 33 vs walked 32) |
+| 6 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review |
+| 7 | `/worktracker` | `wt-verifier` | Validate AC; close |
 
 ---
 

@@ -26,17 +26,17 @@
 
 ---
 
-## Summary
-
-Build the `jerry transcript verify <packet>` CLI subcommand. Mechanically reconciles declared substrate against walked truth in <1 second instead of 30 minutes of manual adversary review. Hexagonal architecture per H-07 (interface/application/infrastructure layers).
-
----
-
 ## User Story
 
 **As a** developer, agent, or CI job,
 **I want** `jerry transcript verify <packet>` to mechanically reconcile declared substrate against walked truth,
 **So that** I can detect drift in <1 second instead of 30 minutes of manual adversary review.
+
+---
+
+## Summary
+
+Build the `jerry transcript verify <packet>` CLI subcommand. Mechanically reconciles declared substrate against walked truth in <1 second instead of 30 minutes of manual adversary review. Hexagonal architecture per H-07 (interface/application/infrastructure layers).
 
 ---
 

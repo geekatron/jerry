@@ -26,17 +26,17 @@
 
 ---
 
-## Summary
-
-Add a CI workflow that runs the validators against golden packets on every PR, blocking merge on validator failures or coverage drops. Branch protection requires this check. Hash-pinned action versions per supply-chain hardening; runtime environment validated for parity with developer-local execution.
-
----
-
 ## User Story
 
 **As a** Jerry maintainer reviewing a PR that touches `/transcript`,
 **I want** CI to run all 17 validators against the golden packet set on every PR,
 **So that** validator regressions are caught at PR time, not at next adversary review.
+
+---
+
+## Summary
+
+Add a CI workflow that runs the validators against golden packets on every PR, blocking merge on validator failures or coverage drops. Branch protection requires this check. Hash-pinned action versions per supply-chain hardening; runtime environment validated for parity with developer-local execution.
 
 ---
 
@@ -63,7 +63,7 @@ Add a CI workflow that runs the validators against golden packets on every PR, b
 | 4 | `/eng-team` | `eng-qa` | End-to-end test: workflow runs against test_data/golden/ on PR; blocks merge on validator failure |
 | 5 | `/eng-team` | `eng-infra` | Validate CI runtime environment matches developer-local execution (no env-drift between CI and local SubprocessSandbox behavior); per ps-architect D-4.5 |
 | 6 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review on workflow + supply chain hardening |
-| 6 | `/worktracker` | `wt-verifier` | Validate AC; close |
+| 7 | `/worktracker` | `wt-verifier` | Validate AC; close |
 
 ---
 

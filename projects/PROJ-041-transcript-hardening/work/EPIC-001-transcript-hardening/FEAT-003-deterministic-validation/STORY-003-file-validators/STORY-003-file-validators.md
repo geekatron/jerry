@@ -26,12 +26,6 @@
 
 ---
 
-## Summary
-
-Implement the FILE-001..003 validation rules (file existence, size, format) per ADR-007 §4. TDD Red-Green-Refactor against golden packets. Part of the FEAT-003 deterministic-validation work that replaces LLM-judged compliance with mechanical checks.
-
----
-
 ## User Story
 
 **As a** `ts-formatter` agent or CI pipeline,
@@ -40,24 +34,17 @@ Implement the FILE-001..003 validation rules (file existence, size, format) per 
 
 ---
 
+## Summary
+
+Implement the FILE-001..003 validation rules (file existence, size, format) per ADR-007 §4. TDD Red-Green-Refactor against golden packets. Part of the FEAT-003 deterministic-validation work that replaces LLM-judged compliance with mechanical checks.
+
+---
+
 ## Rule Family
 
 ADR-007 §4 FILE-001..003 rules. Exact rule definitions live in the vendored ADR-007; this Story implements them per its specification. Any deviation requires an ADR amendment.
 
 (Audit identified the rule IDs but did not transcribe rule bodies into #273. STORY-003 implementer reads the canonical ADR-007 in `docs/adrs/` after FEAT-001 STORY-001 completes.)
-
----
-
-## Agent Assignment
-
-| Step | Skill | Agent | Purpose |
-|------|-------|-------|---------|
-| 1 | `/eng-team` | `eng-qa` | Author failing tests for FILE-001..003 against golden packets (TDD Red phase) |
-| 2 | `/eng-team` | `eng-backend` | Implement FILE-001..003 as ValidationRule entities under `src/jerry/transcript/validation/domain/rules/file/` (Green) |
-| 3 | `/eng-team` | `eng-backend` | Refactor for DRY across the 3 rules (Refactor) |
-| 4 | `/problem-solving` | `ps-validator` | Confirm all 3 rules pass against clean-packet golden; fail against violation goldens |
-| 5 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review on rule implementations + tests |
-| 6 | `/worktracker` | `wt-verifier` | Validate AC; close |
 
 ---
 
@@ -71,6 +58,19 @@ ADR-007 §4 FILE-001..003 rules. Exact rule definitions live in the vendored ADR
 - [ ] All 3 rules fail against the matching violation golden(s) in EN-002.
 - [ ] Property-based test: rule behavior is deterministic (same input always produces same output).
 - [ ] `/adversary` C4 ≥0.95 phase gate before merge.
+
+---
+
+## Agent Assignment
+
+| Step | Skill | Agent | Purpose |
+|------|-------|-------|---------|
+| 1 | `/eng-team` | `eng-qa` | Author failing tests for FILE-001..003 against golden packets (TDD Red phase) |
+| 2 | `/eng-team` | `eng-backend` | Implement FILE-001..003 as ValidationRule entities under `src/jerry/transcript/validation/domain/rules/file/` (Green) |
+| 3 | `/eng-team` | `eng-backend` | Refactor for DRY across the 3 rules (Refactor) |
+| 4 | `/problem-solving` | `ps-validator` | Confirm all 3 rules pass against clean-packet golden; fail against violation goldens |
+| 5 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review on rule implementations + tests |
+| 6 | `/worktracker` | `wt-verifier` | Validate AC; close |
 
 ---
 

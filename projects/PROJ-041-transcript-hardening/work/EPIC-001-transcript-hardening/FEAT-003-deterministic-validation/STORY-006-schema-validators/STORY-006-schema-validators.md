@@ -26,12 +26,6 @@
 
 ---
 
-## Summary
-
-Implement the SCHEMA-001..008 validation rules per ADR-007 §4. Each rule loads its canonical schema via JsonSchemaAdapter (rules read schemas, do not hardcode shapes — so FEAT-004 schema additions extend rule coverage automatically). Uses post-FEAT-002 converged schemas (chunk_id, DOMAIN, seg-NNN regex).
-
----
-
 ## User Story
 
 **As a** `ts-formatter` agent or CI pipeline,
@@ -40,9 +34,28 @@ Implement the SCHEMA-001..008 validation rules per ADR-007 §4. Each rule loads 
 
 ---
 
+## Summary
+
+Implement the SCHEMA-001..008 validation rules per ADR-007 §4. Each rule loads its canonical schema via JsonSchemaAdapter (rules read schemas, do not hardcode shapes — so FEAT-004 schema additions extend rule coverage automatically). Uses post-FEAT-002 converged schemas (chunk_id, DOMAIN, seg-NNN regex).
+
+---
+
 ## Rule Family
 
 ADR-007 §4 SCHEMA-001..008 rules. Each maps to a JSON Schema in the framework. Includes converged regex from FEAT-002 BUG-002 (`chunk_id`) and the canonical schema from BUG-003 (`domain`).
+
+---
+
+## Acceptance Criteria
+
+- [ ] All 8 SCHEMA-* rules implemented under `src/jerry/transcript/validation/domain/rules/schema/`.
+- [ ] Each rule loads its canonical schema via `JsonSchemaAdapter` (infrastructure layer); no direct file reads from rule code.
+- [ ] All 8 rules use the post-FEAT-002 schemas (converged `chunk_id` regex; canonical `DOMAIN-SCHEMA.json`; loosened `seg-NNN` regex).
+- [ ] TDD Red-Green-Refactor; coverage ≥90%.
+- [ ] All rules pass against clean-packet golden; fail against violation goldens.
+- [ ] Validates against the large-packet golden (1000+ chunks/segments); confirms forward-compat regex.
+- [ ] FEAT-004 schema additions (when they land) extend rule coverage automatically (rules read schemas, don't hardcode shapes).
+- [ ] `/adversary` C4 ≥0.95 phase gate.
 
 ---
 
@@ -57,19 +70,6 @@ ADR-007 §4 SCHEMA-001..008 rules. Each maps to a JSON Schema in the framework. 
 | 5 | `/problem-solving` | `ps-validator` | Verify rules use post-FEAT-002 schemas (converged chunk_id, canonical DOMAIN-SCHEMA, loosened seg-NNN) |
 | 6 | `/adversary` | `adv-executor` + `adv-scorer` | C4 ≥0.95 review |
 | 7 | `/worktracker` | `wt-verifier` | Validate AC; close |
-
----
-
-## Acceptance Criteria
-
-- [ ] All 8 SCHEMA-* rules implemented under `src/jerry/transcript/validation/domain/rules/schema/`.
-- [ ] Each rule loads its canonical schema via `JsonSchemaAdapter` (infrastructure layer); no direct file reads from rule code.
-- [ ] All 8 rules use the post-FEAT-002 schemas (converged `chunk_id` regex; canonical `DOMAIN-SCHEMA.json`; loosened `seg-NNN` regex).
-- [ ] TDD Red-Green-Refactor; coverage ≥90%.
-- [ ] All rules pass against clean-packet golden; fail against violation goldens.
-- [ ] Validates against the large-packet golden (1000+ chunks/segments); confirms forward-compat regex.
-- [ ] FEAT-004 schema additions (when they land) extend rule coverage automatically (rules read schemas, don't hardcode shapes).
-- [ ] `/adversary` C4 ≥0.95 phase gate.
 
 ---
 
