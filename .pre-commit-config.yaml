@@ -186,6 +186,22 @@ repos:
         stages: [pre-commit]
 
   # =============================================================================
+  # SKILL.md ADR Cross-Reference Integrity (TASK-008, STORY-001)
+  # Asserts every docs/adrs/ADR-NNN*.md reference in skills/*/SKILL.md resolves
+  # to a real file in the repository. Catches future packaging gaps.
+  # =============================================================================
+  - repo: local
+    hooks:
+      - id: skill-adr-refs
+        name: SKILL.md ADR cross-reference integrity
+        entry: uv run --frozen python scripts/check_skill_adr_references.py
+        language: system
+        files: ^(skills/[^/]+/SKILL\.md|docs/adrs/ADR-[0-9]+.*\.md)$
+        pass_filenames: false
+        always_run: false
+        stages: [pre-commit]
+
+  # =============================================================================
   # Template Format Validation (EN-818)
   # =============================================================================
   - repo: local

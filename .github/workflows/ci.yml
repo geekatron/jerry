@@ -152,6 +152,10 @@ jobs:
       - name: Validate agent and skill frontmatter (STORY-025)
         run: uv run jerry agents validate-frontmatter
 
+      # TASK-008: SKILL.md ADR cross-reference integrity (STORY-001)
+      - name: Check SKILL.md ADR cross-references (TASK-008)
+        run: uv run python scripts/check_skill_adr_references.py
+
   # ===========================================================================
   # Plugin Validation (EN-005)
   # ===========================================================================
