@@ -100,6 +100,8 @@ CLI lives at `src/jerry/transcript/validation/interface/cli.py`. A thin shim at 
 | [TASK-104](./TASK-104-add-cli-shim.md) | Add CLI shim at skills/transcript/scripts/validate_packet.py | `eng-backend` | pending |
 | [TASK-105](./TASK-105-cli-tests-via-entrypoint-and-perf.md) | CLI integration tests via entrypoint; performance test ~300ms target | `eng-qa` | pending |
 | [TASK-106](./TASK-106-verify-reproduces-audit-iter-9-drift.md) | Verify reproduces audit's iter-9 drift detection | `ps-validator` | pending |
+| [TASK-212](./TASK-212-run-adversary-c4-review.md) | Run /adversary C4 review | `adv-executor` | pending |
+| [TASK-213](./TASK-213-validate-ac-and-close-story-007.md) | Validate STORY-007 AC and close | `wt-verifier` | pending |
 
 ---
 

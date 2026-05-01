@@ -91,6 +91,7 @@ Add a CI workflow that runs the validators against golden packets on every PR, b
 | [TASK-135](./TASK-135-e2e-test-against-golden-packets.md) | End-to-end test: workflow runs against test_data/golden/ on PR; blocks merge on validator failure | `eng-qa` | pending |
 | [TASK-136](./TASK-136-validate-runtime-env-parity.md) | Validate CI runtime environment matches developer-local execution (per ps-architect D-4.5) | `eng-infra` | pending |
 | [TASK-137](./TASK-137-run-adversary-c4-review.md) | Run /adversary C4 review on workflow + supply chain hardening | `adv-executor` | pending |
+| [TASK-215](./TASK-215-validate-ac-and-close-story-012.md) | Validate STORY-012 AC and close | `wt-verifier` | pending |
 
 ---
 

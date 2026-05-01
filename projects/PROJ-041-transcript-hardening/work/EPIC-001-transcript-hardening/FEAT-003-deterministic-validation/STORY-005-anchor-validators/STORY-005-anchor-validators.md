@@ -100,6 +100,7 @@ This is the rule that catches the iter-9-class regression in the audit. Without 
 | [TASK-091](./TASK-091-verify-anchor-rule-cant-bypass-sandbox.md) | Verify ANCHOR rule cannot bypass SubprocessSandbox boundary | `red-exploit` | pending |
 | [TASK-092](./TASK-092-reproduce-iter-9-audit-drift.md) | Reproduce audit's iter-9 drift detection on original audit packet | `ps-validator` | pending |
 | [TASK-093](./TASK-093-run-adversary-c4-review.md) | Run /adversary C4 review | `adv-executor` | pending |
+| [TASK-211](./TASK-211-validate-ac-and-close-story-005.md) | Validate STORY-005 AC and close | `wt-verifier` | pending |
 
 ---
 

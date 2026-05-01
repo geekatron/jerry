@@ -100,6 +100,7 @@ After this Story, the iter-9 regression class **cannot occur**: the substrate is
 | [TASK-111](./TASK-111-probe-race-condition.md) | Probe for race condition / partial-write window via concurrent write simulation | `red-exploit` | pending |
 | [TASK-112](./TASK-112-tests-dry-run-buckets-and-atomicity.md) | Test suite: dry-run, scoped buckets, atomicity under concurrent simulation | `eng-qa` | pending |
 | [TASK-113](./TASK-113-run-adversary-c4-review.md) | Run /adversary C4 review | `adv-executor` | pending |
+| [TASK-214](./TASK-214-validate-ac-and-close-story-008.md) | Validate STORY-008 AC and close | `wt-verifier` | pending |
 
 ---
 
