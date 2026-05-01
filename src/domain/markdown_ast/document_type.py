@@ -98,6 +98,7 @@ class DocumentTypeDetector:
         ("projects/*/WORKTRACKER.md", DocumentType.WORKTRACKER_ENTITY),
         ("projects/*/work/**/*.md", DocumentType.WORKTRACKER_ENTITY),
         ("projects/*/PLAN.md", DocumentType.FRAMEWORK_CONFIG),
+        ("projects/*/MASTER-DRIVER.md", DocumentType.FRAMEWORK_CONFIG),
         ("projects/*/ORCHESTRATION_PLAN.md", DocumentType.FRAMEWORK_CONFIG),
         ("projects/*/ORCHESTRATION_WORKTRACKER.md", DocumentType.WORKTRACKER_ENTITY),
         ("projects/*/decisions/*.md", DocumentType.ADR),
