@@ -1,7 +1,7 @@
 # STORY-001: Vendor ADR-007 from jerry-core to public docs/adrs/
 
 > **Type:** story
-> **Status:** pending
+> **Status:** in_progress
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-04-28T00:00:00Z
@@ -117,3 +117,4 @@ This is a cross-repo file copy (the two repositories are separate per user direc
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-04-28 | adam.nowak (via Claude scaffold) | pending | Story created. P0 foundation. |
+| 2026-04-30 | adam.nowak (via Claude) | in_progress | Opened. jerry-core checkout located on `main` branch (source HEAD `9d8f325f`). ADR-007 source resolved at the path called out in the Source and Destination table above; absolute paths and cross-project IDs intentionally omitted from worktracker per architecture validation. Vendoring (TASK-001) to follow. |

@@ -462,7 +462,7 @@ This is the final output of the Transcript Skill pipeline.
 - [ADR-002](../../../projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-004-architecture-decisions/docs/adrs/adr-002.md) - Artifact Structure
 - [ADR-003](../../../projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-004-architecture-decisions/docs/adrs/adr-003.md) - Bidirectional Linking
 - [ADR-004](../../../projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-001-analysis-design/EN-004-architecture-decisions/docs/adrs/adr-004.md) - File Splitting
-- [ADR-007](../../../projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-006-output-consistency/docs/decisions/ADR-007-output-template-specification.md) - Output Template Specification (MUST-CREATE/MUST-NOT-CREATE rules)
+- [ADR-007](../../../docs/adrs/ADR-007-output-template-specification.md) - Output Template Specification (MUST-CREATE/MUST-NOT-CREATE rules)
 
 ### Forward Links
 - [SKILL.md](../SKILL.md) - Skill definition

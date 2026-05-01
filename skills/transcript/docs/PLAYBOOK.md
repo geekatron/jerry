@@ -408,7 +408,7 @@ Invoke ps-critic with:
 | SCHEMA-007 | Token Limits Respected | 0.10 | 1.0 | All files under 35K tokens |
 | SCHEMA-008 | YAML Frontmatter Present | 0.10 | 0.95 | All files have schema_version |
 
-**Reference:** [ADR-007](../../../projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-006-output-consistency/docs/decisions/ADR-007-output-template-specification.md)
+**Reference:** [ADR-007](../../../docs/adrs/ADR-007-output-template-specification.md)
 
 **Verification:**
 - [ ] Overall score >= 0.90

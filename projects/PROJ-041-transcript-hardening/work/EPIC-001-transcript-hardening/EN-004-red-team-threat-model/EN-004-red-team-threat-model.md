@@ -2,7 +2,7 @@
 
 > **Type:** enabler
 > **Enabler Type:** exploration
-> **Status:** pending
+> **Status:** in_progress
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-04-28T00:00:00Z
@@ -188,3 +188,4 @@ After EN-003 SubprocessSandbox + STORY-005..010 land:
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-04-28 | adam.nowak (via Claude scaffold) | pending | Cross-cutting Enabler created. Two-phase engagement (pre-design threat model + post-implementation validation). |
+| 2026-04-30 | adam.nowak (via Claude) | in_progress | Opened. Wave 0 critical-path entry point. Phase 1 (red-lead → red-recon → red-vuln → red-reporter) in scope this session. Phase 4 deferred until FEAT-003 implementations land. |

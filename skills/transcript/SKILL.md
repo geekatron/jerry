@@ -1543,7 +1543,7 @@ Every entity file (01-07) MUST include:
 - [Next: {NEXT_FILE_NAME}]({NEXT_FILE}.md)
 ```
 
-**Reference:** See [ADR-007](../../projects/PROJ-008-transcript-skill/work/EPIC-001-transcript-skill/FEAT-006-output-consistency/docs/decisions/ADR-007-output-template-specification.md) for complete specification.
+**Reference:** See [ADR-007](../../docs/adrs/ADR-007-output-template-specification.md) for complete specification.
 
 ### Tool Example: Writing Packet Files
 
