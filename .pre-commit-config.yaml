@@ -202,7 +202,7 @@ repos:
   # Conventional Commit Message Linting (EN-108)
   # =============================================================================
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: b5d5040f7980a5d2bce320d2a1ea1e04ac54b00c  # v4.13.10
+    rev: 953e1ba4599cc3143122ed5c3e8de3d6dfd5524d  # v4.16.2
     hooks:
       - id: commitizen
         stages: [commit-msg]
