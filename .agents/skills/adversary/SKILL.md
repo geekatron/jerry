@@ -6,7 +6,7 @@ description: >-
   artifact — "adversarial review", "red team this", "devil's advocate", "steelman", "pre-mortem",
   "score this with LLM-as-Judge", "run a C3/C4 review", "quality gate". Selects strategies by
   criticality (C1-C4), executes adversarial strategy templates, and scores quality against a
-  6-dimension weighted rubric (pass threshold >= 0.92 for C2+). Do NOT use for iterative
+  6-dimension weighted rubric (pass threshold of at least 0.92 for C2+). Do NOT use for iterative
   creator-critic-revision loops, routine defect-only code review, binary pass/fail constraint
   validation, root-cause debugging, or when the user explicitly asked for a quick non-rigorous review.
 ---
