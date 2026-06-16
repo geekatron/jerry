@@ -1,0 +1,7 @@
+interface:
+  display_name: "Adversary — Adversarial Quality Review"
+  short_description: "On-demand adversarial review and LLM-as-Judge quality scoring of a finished deliverable (C1-C4)."
+  default_prompt: "Run an adversarial quality review of the deliverable. Determine its criticality (C1-C4), select strategies, execute them, and produce a rubric score with a PASS/REVISE/ESCALATE verdict."
+
+policy:
+  allow_implicit_invocation: true

@@ -37,7 +37,7 @@ Adopt one role at a time. Do not try to spawn parallel agents.
 1. **Determine criticality** (C1-C4) of the deliverable under review (see table below).
 2. **adv-selector:** load `references/adv-selector.md`, produce the ordered strategy plan.
 3. **adv-executor:** for each strategy in the plan, load its template from
-   `.context/templates/adversarial/s-NNN-<slug>.md` and run it; persist a finding report per strategy.
+   `references/strategies/s-NNN-<slug>.md` and run it; persist a finding report per strategy.
 4. **adv-scorer:** load `references/adv-scorer.md`, feed it the aggregated findings, produce the
    composite score and verdict.
 
@@ -55,20 +55,21 @@ adv-executor and just that one template.
 
 ## Strategy catalog (10 strategies, 4 families)
 
-Templates live in `.context/templates/adversarial/` (repo-relative). The executor loads them on demand.
+Templates are bundled in this skill at `references/strategies/` (skill-relative). The executor loads
+them on demand — this skill is self-contained and needs no files outside its own directory.
 
 | ID | Strategy | Template file |
 |----|----------|---------------|
-| S-001 | Red Team Analysis | `.context/templates/adversarial/s-001-red-team.md` |
-| S-002 | Devil's Advocate | `.context/templates/adversarial/s-002-devils-advocate.md` |
-| S-003 | Steelman Technique | `.context/templates/adversarial/s-003-steelman.md` |
-| S-004 | Pre-Mortem Analysis | `.context/templates/adversarial/s-004-pre-mortem.md` |
-| S-007 | Constitutional AI Critique | `.context/templates/adversarial/s-007-constitutional-ai.md` |
-| S-010 | Self-Refine | `.context/templates/adversarial/s-010-self-refine.md` |
-| S-011 | Chain-of-Verification | `.context/templates/adversarial/s-011-cove.md` |
-| S-012 | FMEA | `.context/templates/adversarial/s-012-fmea.md` |
-| S-013 | Inversion Technique | `.context/templates/adversarial/s-013-inversion.md` |
-| S-014 | LLM-as-Judge | `.context/templates/adversarial/s-014-llm-as-judge.md` |
+| S-001 | Red Team Analysis | `references/strategies/s-001-red-team.md` |
+| S-002 | Devil's Advocate | `references/strategies/s-002-devils-advocate.md` |
+| S-003 | Steelman Technique | `references/strategies/s-003-steelman.md` |
+| S-004 | Pre-Mortem Analysis | `references/strategies/s-004-pre-mortem.md` |
+| S-007 | Constitutional AI Critique | `references/strategies/s-007-constitutional-ai.md` |
+| S-010 | Self-Refine | `references/strategies/s-010-self-refine.md` |
+| S-011 | Chain-of-Verification | `references/strategies/s-011-cove.md` |
+| S-012 | FMEA | `references/strategies/s-012-fmea.md` |
+| S-013 | Inversion Technique | `references/strategies/s-013-inversion.md` |
+| S-014 | LLM-as-Judge | `references/strategies/s-014-llm-as-judge.md` |
 
 > If a template file is missing, warn and ask for the corrected path — never silently skip a strategy.
 
@@ -122,8 +123,18 @@ Aggregate all executor findings as evidence into the final S-014 score.
 - **Root-cause debugging** → this evaluates deliverables, it doesn't diagnose causes.
 - **User asked for a quick, non-rigorous review** → respect that; don't impose tournament overhead.
 
+## Self-containment
+
+This skill needs nothing outside its own `.agents/skills/adversary/` directory: the role prompts are
+in `references/`, and all 10 strategy templates are bundled in `references/strategies/`. The thresholds,
+strategy IDs, criticality levels, and rubric dimensions are embedded directly in this SKILL.md and the
+role files, so no external SSOT file is required at runtime. You can copy this directory anywhere Codex
+discovers skills and it will work standalone.
+
 ## Provenance
 
-Source: Jerry Framework `/adversary` skill (`skills/adversary/SKILL.md`), agent definitions in
-`skills/adversary/agents/*.md`, strategy templates in `.context/templates/adversarial/`, and the
-quality SSOT `.context/rules/quality-enforcement.md` (thresholds, strategy IDs, criticality, dimensions).
+Derived from the Jerry Framework `/adversary` skill (`skills/adversary/SKILL.md`), its agent definitions
+(`skills/adversary/agents/*.md`), the strategy templates originally in
+`.context/templates/adversarial/` (now bundled here), and the quality SSOT
+`.context/rules/quality-enforcement.md` (values embedded above). Listed for traceability only — none of
+these are runtime dependencies of this Codex skill.

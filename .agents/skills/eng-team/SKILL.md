@@ -102,6 +102,13 @@ presenting it, and strengthen an argument (steelman) before critiquing it.
 NIST SP 800-218 (SSDF) · Microsoft SDL · OWASP ASVS v5.0 · OWASP Top 10 · CWE Top 25 · Google SLSA v1.0
 · OWASP SAMM v2.0 · CIS Benchmarks · NIST CSF 2.0 · NIST SP 800-61r3 (incident response).
 
+## Self-containment
+
+This skill is standalone — everything it needs is inside `.agents/skills/eng-team/`. The `eng-reviewer`
+role mentions running an adversarial quality review for C2+ work; that is an **optional** enhancement,
+not a dependency. `eng-reviewer` performs its own quality scoring inline. If the separate `adversary`
+skill happens to be installed you may use it for deeper review, but eng-team works fully without it.
+
 ## When NOT to use this skill
 
 - **Offensive security / penetration testing** → use a red-team methodology, not this defensive skill.

@@ -135,16 +135,16 @@ Only include strategies that are required or selected-optional for the criticali
 
 | Strategy ID | Template Path |
 |-------------|---------------|
-| S-001 | `.context/templates/adversarial/s-001-red-team.md` |
-| S-002 | `.context/templates/adversarial/s-002-devils-advocate.md` |
-| S-003 | `.context/templates/adversarial/s-003-steelman.md` |
-| S-004 | `.context/templates/adversarial/s-004-pre-mortem.md` |
-| S-007 | `.context/templates/adversarial/s-007-constitutional-ai.md` |
-| S-010 | `.context/templates/adversarial/s-010-self-refine.md` |
-| S-011 | `.context/templates/adversarial/s-011-cove.md` |
-| S-012 | `.context/templates/adversarial/s-012-fmea.md` |
-| S-013 | `.context/templates/adversarial/s-013-inversion.md` |
-| S-014 | `.context/templates/adversarial/s-014-llm-as-judge.md` |
+| S-001 | `references/strategies/s-001-red-team.md` |
+| S-002 | `references/strategies/s-002-devils-advocate.md` |
+| S-003 | `references/strategies/s-003-steelman.md` |
+| S-004 | `references/strategies/s-004-pre-mortem.md` |
+| S-007 | `references/strategies/s-007-constitutional-ai.md` |
+| S-010 | `references/strategies/s-010-self-refine.md` |
+| S-011 | `references/strategies/s-011-cove.md` |
+| S-012 | `references/strategies/s-012-fmea.md` |
+| S-013 | `references/strategies/s-013-inversion.md` |
+| S-014 | `references/strategies/s-014-llm-as-judge.md` |
 </template_paths>
 
 <output>
@@ -166,8 +166,8 @@ Produce a strategy selection plan with:
 
 | Order | Strategy ID | Strategy Name | Template Path | Required/Optional |
 |-------|-------------|---------------|---------------|-------------------|
-| 1 | S-010 | Self-Refine | .context/templates/adversarial/s-010-self-refine.md | Required |
-| 2 | S-003 | Steelman Technique | .context/templates/adversarial/s-003-steelman.md | Optional (H-16) |
+| 1 | S-010 | Self-Refine | references/strategies/s-010-self-refine.md | Required |
+| 2 | S-003 | Steelman Technique | references/strategies/s-003-steelman.md | Optional (H-16) |
 | ... | ... | ... | ... | ... |
 
 ## H-16 Compliance

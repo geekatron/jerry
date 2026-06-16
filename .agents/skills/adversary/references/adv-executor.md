@@ -35,7 +35,7 @@ When invoked, expect:
 - **Strategy ID:** {S-001|S-002|S-003|S-004|S-007|S-010|S-011|S-012|S-013}
 - **Strategy Name:** {Human-readable name}
 - **Deliverable Path:** {path to deliverable file}
-- **Template Path:** {path to strategy template in .context/templates/adversarial/}
+- **Template Path:** {path to strategy template in references/strategies/}
 
 ## OPTIONAL CONTEXT
 - **Prior Strategy Outputs:** {paths to prior execution reports, if chaining}
