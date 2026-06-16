@@ -13,10 +13,17 @@ description: >-
 
 # Adversary — Adversarial Quality Review Skill (Codex port)
 
+> **Codex port version:** `codex-1.0.0` — versioned independently of the Jerry source skill.
+> **Forked from:** Jerry `/adversary` v1.0.0 + strategy templates `TEMPLATE-FORMAT.md` v1.1.0
+> (divergence point). This Codex port is a separate running version: it is **not** kept in lockstep
+> with the Jerry original and may intentionally diverge. Bump this `codex-x.y.z` version on its own
+> cadence when this port or its bundled templates change; do not assume parity with `skills/adversary/`.
+
 > Ported from the Jerry Framework `/adversary` Claude skill (`skills/adversary/SKILL.md`).
 > Codex has a single execution context and no sub-agent spawning, so the three "agents" are
 > **roles** you adopt one at a time by loading the matching file in `references/`. Strategy selection,
-> execution, and scoring methodology are identical to the Claude original.
+> execution, and scoring methodology are identical to the Claude original **as of the divergence point
+> above**.
 
 ## What this skill does
 

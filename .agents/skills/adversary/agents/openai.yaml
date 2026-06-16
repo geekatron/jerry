@@ -1,3 +1,4 @@
+# Codex port version: codex-1.0.0 (independent of Jerry /adversary v1.0.0; see SKILL.md header)
 interface:
   display_name: "Adversary — Adversarial Quality Review"
   short_description: "On-demand adversarial review and LLM-as-Judge quality scoring of a finished deliverable (C1-C4)."

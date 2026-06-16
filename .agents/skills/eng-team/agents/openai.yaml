@@ -1,3 +1,4 @@
+# Codex port version: codex-1.0.0 (independent of Jerry /eng-team v1.0.0; see SKILL.md header)
 interface:
   display_name: "Eng-Team — Secure Engineering"
   short_description: "Secure software engineering methodology: threat modeling, secure implementation, DevSecOps, security review, incident response."

@@ -13,10 +13,17 @@ description: >-
 
 # Eng-Team — Secure Engineering Skill (Codex port)
 
+> **Codex port version:** `codex-1.0.0` — versioned independently of the Jerry source skill.
+> **Forked from:** Jerry `/eng-team` v1.0.0 (divergence point). This Codex port is a separate running
+> version: it is **not** kept in lockstep with the Jerry original and may intentionally diverge. Bump
+> this `codex-x.y.z` version on its own cadence when this port changes; do not assume parity with
+> `skills/eng-team/`.
+
 > Ported from the Jerry Framework `/eng-team` Claude skill (`skills/eng-team/SKILL.md`).
 > Codex has a single execution context and no sub-agent spawning, so the 10 "agents" are represented
 > here as **roles** you adopt one at a time by loading the matching file in `references/`. The
-> methodology, standards, and per-role prompts are identical to the Claude original.
+> methodology, standards, and per-role prompts are identical to the Claude original **as of the
+> divergence point above**.
 
 ## What this skill does
 
