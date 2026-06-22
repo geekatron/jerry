@@ -31,26 +31,26 @@ classifiers = [
 dependencies = [
     "jsonschema[test]>=4.26.0",
     "webvtt-py>=0.5.1",
-    "tiktoken>=0.5.0",  # EN-026: Token counting for chunking (BUG-001 fix)
-    "filelock>=3.28.0",
-    "markdown-it-py>=4.0.0,<5.0.0",
+    "tiktoken>=0.13.0",  # EN-026: Token counting for chunking (BUG-001 fix)
+    "filelock>=3.29.4",
+    "markdown-it-py>=4.2.0,<5.0.0",
     "mdformat>=1.0.0,<2.0.0",
-    "mdit-py-plugins>=0.4.0",
+    "mdit-py-plugins>=0.6.1",
     "pyyaml>=6.0",  # EN-005: StalenessDetector ORCHESTRATION.yaml parsing
-    "requests>=2.33.1",
+    "requests>=2.34.2",
     "pygments>=2.19.3",
-    "pymdown-extensions>=10.21.2",
+    "pymdown-extensions>=10.21.3",
 ]
 
 [project.optional-dependencies]
 dev = [
     "mypy>=1.20.1",
-    "ruff>=0.15.11",
-    "filelock>=3.28.0",
+    "ruff>=0.15.18",
+    "filelock>=3.29.4",
     "jsonschema>=4.21.0",
 ]
 test = [
-    "pytest>=8.0.0",
+    "pytest>=9.1.1",
     "pytest-archon>=0.0.6",
     "pytest-bdd>=8.0.0",
     "pytest-cov>=7.1.0",
@@ -197,13 +197,13 @@ replace = "(v{new_version})"
 
 [dependency-groups]
 dev = [
-    "bump-my-version>=1.2.7",
+    "bump-my-version>=1.4.1",
     "mkdocs-material>=9.7.6",
-    "pip-audit>=2.10.0",
+    "pip-audit>=2.10.1",
     "pip-licenses>=5.5.5",
-    "pre-commit>=4.5.1",
-    "pyright>=1.1.408",
-    "pytest>=9.0.3",
+    "pre-commit>=4.6.0",
+    "pyright>=1.1.410",
+    "pytest>=9.1.1",
     "pytest-cov>=7.1.0",
-    "ruff>=0.15.11",
+    "ruff>=0.15.18",
 ]
