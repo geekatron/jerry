@@ -1,0 +1,277 @@
+# DRAFT: .github/actions/security-audit/action.yml
+# Composite action: unified dependency security audit with CVE accept-list.
+#
+# DESIGN:
+#   - Caller is responsible for checkout (actions/checkout) before invoking this action.
+#   - Installs uv, syncs the full locked dependency tree (all extras), exports a
+#     requirements file, parses the accept-list for unexpired --ignore-vuln flags,
+#     then runs pip-audit --requirement against the exported file.
+#   - The accept-list is parsed ONCE (single invocation) and its exit code is checked
+#     immediately. FAIL-CLOSED: a non-zero exit from audit_allowlist.py halts the action.
+#   - vuln-found output is SET BEFORE any failing exit so it is available to callers
+#     even when the action exits non-zero (required for if: always() steps in callers).
+#   - Non-blocking by default for the CI context (fail-on-vuln: 'false') — emits a
+#     ::warning:: instead of failing the job so PRs stay mergeable while remediation
+#     is in-flight. The scheduled scan overrides to fail-on-vuln: 'true' so it still
+#     goes red on real findings.
+#
+# PIN POLICY (EN-001): All `uses:` lines are SHA-pinned with a version comment.
+# SHA values below are taken verbatim from existing workflow files in this repo.
+# When Dependabot bumps a pin, it updates BOTH the SHA and the comment.
+# NOTE: Dependabot must be configured to scan .github/actions/security-audit/action.yml
+# (the 'actions' ecosystem block in .github/dependabot.yml covers the full .github/ tree).
+#
+# CALLER EXAMPLE (ci.yml security job — non-blocking):
+#   steps:
+#     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+#     - uses: ./.github/actions/security-audit
+#       with:
+#         fail-on-vuln: 'false'
+#
+# CALLER EXAMPLE (security-scan.yml with issue management):
+#   steps:
+#     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+#     - id: audit
+#       uses: ./.github/actions/security-audit
+#       with:
+#         fail-on-vuln: 'true'
+#     - if: always() && steps.audit.outputs.vuln-found == 'true'
+#       run: ... open/update GitHub issue ...
+#     - if: always() && steps.audit.outputs.vuln-found == 'false'
+#       run: ... close GitHub issue ...
+
+name: Security Audit
+description: >
+  Unified pip-audit dependency scan with CVE accept-list support.
+  Exports the full locked dependency set, checks accept-list expiry,
+  builds --ignore-vuln flags for unexpired accepted CVEs, and runs pip-audit.
+  Outputs vuln-found for callers that need to drive downstream logic (e.g. auto-issue).
+
+inputs:
+  uv-version:
+    description: "uv version to install (must match the version pinned across all workflows)."
+    required: false
+    default: "0.10.9"
+
+  python-version:
+    description: "Python version to install via uv."
+    required: false
+    default: "3.14"
+
+  allowlist-path:
+    description: "Repo-relative path to the CVE accept-list YAML file."
+    required: false
+    default: ".github/security/audit-allowlist.yml"
+
+  requirements-path:
+    description: "Temporary path for the exported requirements file."
+    required: false
+    default: "/tmp/security-audit-requirements.txt"
+
+  fail-on-vuln:
+    description: >
+      TOGGLE — controls whether unfixed CVEs block the job.
+      'false' (default, CI context): emits ::warning:: but exits 0 — PRs stay mergeable
+        while remediation is in-flight. The rolling issue (security-scan.yml) is the
+        forcing function.
+      'true' (scheduled-scan context): exits non-zero on CVEs so the workflow run goes
+        red (email notifications, badge, run history).
+      Set explicitly by each caller; do not rely on the default for scheduled scans.
+    required: false
+    default: "false"
+
+  min-audited-packages:
+    description: >
+      Minimum number of packages the requirements file must contain for the audit to be
+      considered meaningful (D5 guard). If the exported file has fewer entries than this
+      floor the action exits 1 — this catches the Scan-B neutered-audit failure mode
+      where only 'jerry' itself was seen.
+      Default 20 is conservative for the jerry dependency tree (~60+ packages).
+    required: false
+    default: "20"
+
+outputs:
+  vuln-found:
+    description: "'true' if pip-audit found at least one vulnerability; 'false' otherwise."
+    value: ${{ steps.audit.outputs.vuln-found }}
+
+  clean:
+    description: "'true' if the audit passed with no unfixed vulnerabilities; 'false' otherwise."
+    value: ${{ steps.audit.outputs.clean }}
+
+runs:
+  using: composite
+  steps:
+    # ------------------------------------------------------------------
+    # 1. Install uv (SHA-pinned, EN-001)
+    # ------------------------------------------------------------------
+    - name: Install uv
+      uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+      with:
+        version: ${{ inputs.uv-version }}
+
+    # ------------------------------------------------------------------
+    # 2. Install Python
+    # ------------------------------------------------------------------
+    - name: Set up Python
+      shell: bash
+      run: uv python install ${{ inputs.python-version }}
+
+    # ------------------------------------------------------------------
+    # 3. Sync full locked dependency tree (all extras so every transitive
+    #    dep is present in the environment before export).
+    # ------------------------------------------------------------------
+    - name: Install dependencies
+      shell: bash
+      run: uv sync --frozen --all-extras
+
+    # ------------------------------------------------------------------
+    # 4. Export the complete pinned dependency set to a requirements file.
+    #    --no-hashes:      pip-audit does not use hashes; they add noise.
+    #    --frozen:         respect the committed lockfile exactly.
+    #    --all-extras:     include optional-dependency groups.
+    #    --no-emit-project: exclude "jerry" itself (not on PyPI; pip-audit
+    #                       would log a skip warning and count it as a line,
+    #                       which would satisfy a naive "output >= 1 line" guard).
+    #    This is the approach proven to work in ci.yml (as opposed to bare
+    #    `uv run pip-audit` which audits almost nothing — root cause E4).
+    # ------------------------------------------------------------------
+    - name: Export full dependency set
+      shell: bash
+      run: |
+        uv export \
+          --no-hashes \
+          --frozen \
+          --all-extras \
+          --no-emit-project \
+          > ${{ inputs.requirements-path }}
+        echo "Exported $(wc -l < ${{ inputs.requirements-path }}) packages to ${{ inputs.requirements-path }}"
+
+    # ------------------------------------------------------------------
+    # 5. Parse accept-list: validate fields, enforce 90-day cap, check
+    #    expiry, and collect --ignore-vuln flags — all in a SINGLE
+    #    invocation so exit code and stdout are captured together.
+    #
+    #    FAIL-CLOSED: if audit_allowlist.py exits non-zero for ANY reason
+    #    (missing field, cap violation, expired entry, malformed YAML,
+    #    missing script) the action exits 1 immediately. Never silently
+    #    continue with empty flags after a script error.
+    # ------------------------------------------------------------------
+    - name: Parse accept-list and check expiry
+      id: allowlist
+      shell: bash
+      run: |
+        # FAIL-CLOSED: capture stdout (flags) and exit code in one call.
+        # set +e so we can inspect the exit code before deciding to fail.
+        set +e
+        IGNORE_FLAGS=$(uv run python scripts/security/audit_allowlist.py \
+          --allowlist ${{ inputs.allowlist-path }})
+        ALLOWLIST_EXIT=$?
+        set -e
+
+        if [[ "$ALLOWLIST_EXIT" -ne 0 ]]; then
+          # FAIL-CLOSED: non-zero from audit_allowlist.py means expired entry,
+          # missing field, 90-day cap violation, or malformed YAML.
+          # The script already printed ::error:: lines; we add a summary here.
+          echo "::error::CVE accept-list check failed (exit $ALLOWLIST_EXIT) — see errors above. Action halted."
+          exit 1
+        fi
+
+        # Export flags for the next step via environment file (composite-action safe).
+        echo "ignore_flags=$IGNORE_FLAGS" >> "$GITHUB_OUTPUT"
+        echo "Accept-list check passed. Ignore flags: '${IGNORE_FLAGS:-<none>}'"
+
+    # ------------------------------------------------------------------
+    # 6. D5 meaningful-audit guard + run pip-audit.
+    #
+    #    D5 GUARD: asserts BOTH that pip-audit produced a recognizable
+    #    verdict sentinel AND that the requirements file covers enough
+    #    packages to constitute a real audit (>= min-audited-packages).
+    #    This catches the Scan-B failure mode: if uv export somehow
+    #    produces a near-empty file, a bare line-count check passes but
+    #    the audit was neutered. The floor check is the structural
+    #    assertion that the full dependency tree was actually scanned.
+    #
+    #    FAIL-CLOSED: set vuln-found BEFORE any exit so callers using
+    #    `if: always()` can read the output even when this step exits 1.
+    # ------------------------------------------------------------------
+    - name: Run pip-audit
+      id: audit
+      shell: bash
+      run: |
+        echo "## Security Audit Results" >> "$GITHUB_STEP_SUMMARY"
+
+        IGNORE_FLAGS="${{ steps.allowlist.outputs.ignore_flags }}"
+
+        # Run pip-audit. Capture output AND tee to a temp file for the D5 guard.
+        # shellcheck disable=SC2086  # word-splitting of IGNORE_FLAGS is intentional
+        set +e
+        uv run pip-audit \
+          --requirement ${{ inputs.requirements-path }} \
+          --strict \
+          --desc \
+          $IGNORE_FLAGS \
+          2>&1 | tee /tmp/pip-audit-output.txt
+        AUDIT_EXIT=$?
+        set -e
+
+        # ------------------------------------------------------------------
+        # D5 MEANINGFUL-AUDIT GUARD
+        # Two independent assertions (belt-and-suspenders):
+        #   (1) pip-audit output contains a recognizable verdict sentinel.
+        #   (2) The requirements file has >= min-audited-packages entries
+        #       (non-empty, non-comment lines), proving a full tree was scanned.
+        # FAIL-CLOSED: either assertion failing exits 1 with ::error::.
+        # ------------------------------------------------------------------
+
+        # Assertion 1: recognizable verdict present.
+        VERDICT_LINE=$(grep -E "(No known vulnerabilities found|Found [0-9]+ known vulnerabilit)" \
+          /tmp/pip-audit-output.txt | head -1 || true)
+        if [[ -z "$VERDICT_LINE" ]]; then
+          # FAIL-CLOSED: no verdict sentinel = silent failure or neutered invocation.
+          echo "::error::D5 guard: pip-audit did not produce a recognizable verdict line. " \
+               "Possible silent failure or neutered invocation. Audit result not trusted."
+          exit 1
+        fi
+
+        # Assertion 2: package floor.
+        # Count non-empty, non-comment lines in the requirements file
+        # (these are the packages pip-audit was asked to check).
+        REQ_COUNT=$(grep -c -v '^\s*#\|^\s*$' ${{ inputs.requirements-path }} || echo 0)
+        MIN_PKGS=${{ inputs.min-audited-packages }}
+        if [[ "$REQ_COUNT" -lt "$MIN_PKGS" ]]; then
+          # FAIL-CLOSED: too few packages = the full dep tree was not exported.
+          # This catches uv export producing a near-empty file (Scan-B signature).
+          echo "::error::D5 guard: requirements file contains only $REQ_COUNT packages " \
+               "(floor: $MIN_PKGS). The full dependency tree was not audited. " \
+               "Check that uv export --all-extras --no-emit-project ran correctly."
+          exit 1
+        fi
+        echo "D5 guard passed: verdict found, $REQ_COUNT packages in scope (floor: $MIN_PKGS)."
+
+        # ------------------------------------------------------------------
+        # Set outputs BEFORE any exit so `if: always()` callers can read them.
+        # FAIL-CLOSED note: outputs are written here, before the fail-on-vuln
+        # exit below, ensuring vuln-found is set regardless of whether the
+        # job ultimately exits 0 or 1.
+        # ------------------------------------------------------------------
+        if [[ "$AUDIT_EXIT" -eq 0 ]]; then
+          echo "No known unfixed vulnerabilities found." >> "$GITHUB_STEP_SUMMARY"
+          echo "vuln-found=false" >> "$GITHUB_OUTPUT"
+          echo "clean=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "::warning::pip-audit found vulnerabilities in the dependency tree"
+          cat /tmp/pip-audit-output.txt >> "$GITHUB_STEP_SUMMARY"
+          # Set outputs BEFORE the conditional exit below.
+          echo "vuln-found=true" >> "$GITHUB_OUTPUT"
+          echo "clean=false" >> "$GITHUB_OUTPUT"
+
+          if [[ "${{ inputs.fail-on-vuln }}" == "true" ]]; then
+            echo "::error::pip-audit found unfixed vulnerabilities (fail-on-vuln=true)"
+            exit 1
+          else
+            # Non-blocking: emit warning, exit 0, let the rolling issue be the forcing function.
+            echo "::warning::Vulnerabilities found but fail-on-vuln=false — not blocking this run. " \
+                 "The scheduled security scan will open/update a CVE alert issue."
+          fi
+        fi
