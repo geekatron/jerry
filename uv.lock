@@ -472,7 +472,7 @@ wheels = [
 
 [[package]]
 name = "jerry"
-version = "0.31.5"
+version = "0.31.6"
 source = { editable = "." }
 dependencies = [
     { name = "filelock" },
