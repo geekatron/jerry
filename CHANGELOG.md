@@ -27,6 +27,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **refactor(ci):** merge `lint` and `type-check` into `static-analysis` job with shared `uv sync --frozen --extra dev` (TASK-020)
 
 ### Added
+- **feat(ci):** composite action `.github/actions/security-audit` — unified pip-audit scan with CVE accept-list, D5 meaningful-audit guard, and `vuln-found` output for downstream issue management (#301)
+- `.github/security/audit-allowlist.yml` — CVE accept-list with 90-day expiry enforcement; empty by default (all current CVEs have published fixes)
+- `scripts/security/audit_allowlist.py` — fail-closed parser for the accept-list: validates required fields, enforces 90-day cap, checks expiry, emits `--ignore-vuln` flags for pip-audit (#301)
+- **feat(ci):** `security-scan.yml` hardened — scheduled scan now uses composite action (fixes E4 false-green bug), adds auto-issue creation/update/close via `gh` CLI for rolling CVE alert management (#301)
+- CODEOWNERS entries for `.github/actions/` and `.github/security/` — requires maintainer review to prevent supply-chain attacks via action script or CVE suppression abuse (#301)
 - ADR-output-path-resolution-001: Unified Output Path Resolution Protocol (P1/P2/P3/P4 layered resolution chain)
 - AD-M-011 MEDIUM standard: agents SHOULD use project-relative output paths per ADR-output-path-resolution-001
 - `filename_pattern` field in agent-governance-v1.schema.json for Priority 2 base-path resolution

@@ -13,3 +13,8 @@
 # Governance and rule files — changes to framework constraints
 .context/rules/        @geekatron
 docs/governance/       @geekatron
+
+# Composite action and accept-list files — changes require maintainer review
+# to prevent supply-chain attacks via the action script or CVE suppression abuse.
+.github/actions/   @geekatron
+.github/security/  @geekatron
