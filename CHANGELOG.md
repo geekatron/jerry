@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+- **fix(deps):** bump 5 transitive dependencies to patched versions via `[tool.uv]` constraints — urllib3 2.7.0, pip 26.1.2, pydantic-settings 2.14.2, msgpack 1.2.1, mako 1.3.12 — clearing 9 pip-audit advisories (PYSEC-2026-141/142, PYSEC-2026-196, CVE-2026-3219, CVE-2026-6357, GHSA-4xgf-cpjx-pc3j, GHSA-6v7p-g79w-8964, CVE-2026-44307) (#301)
+
 ### Removed
 - Delete `requirements.txt`, `requirements-dev.txt`, `requirements-test.txt` — dead pip artifacts that triggered broken Dependabot PRs (#251); uv-only per H-05
 - Remove pip fallback from release archive — `release.yml` no longer bundles requirements files
