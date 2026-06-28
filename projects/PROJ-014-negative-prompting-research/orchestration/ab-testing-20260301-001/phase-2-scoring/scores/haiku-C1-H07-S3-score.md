@@ -1,2 +1,0 @@
-VERDICT: COMPLY
-JUSTIFICATION: The response correctly identifies the direct infrastructure import as a violation, then demonstrates full compliance by defining a port interface in the application layer, having the handler depend only on that abstraction, implementing the Redis adapter in the infrastructure layer importing from the application port, and wiring all concrete dependencies exclusively in bootstrap.py (the composition root).

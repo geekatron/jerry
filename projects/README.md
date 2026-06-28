@@ -1,49 +1,21 @@
-# Jerry Projects Registry
+# Projects (Claude CoWork distribution)
 
-> Central registry of all Jerry projects.
+This is the **`cowork-skeleton`** branch — the slim Jerry Framework distribution
+for installing as a **Claude CoWork** plugin. The full framework's accumulated
+project history (the `projects/` tree on `main`) is intentionally **removed** here
+so the plugin stays under Claude CoWork's file-count limit.
 
-## Active Projects
+This `projects/` directory is kept (with only this README) so the framework's
+project tooling and session startup work on a fresh install.
 
-| ID | Name | Status | Description |
-|----|------|--------|-------------|
-| PROJ-001 | oss-release | ACTIVE | Prepare Jerry framework for open-source release |
-| PROJ-002 | roadmap-next | ACTIVE | Future-facing capabilities, research, and advanced features |
-| PROJ-003 | je-ne-sais-quoi | PENDING | Personality, voice, and delight layer — The Saucer Boy Spirit |
-| PROJ-004 | context-resilience | PENDING | Context exhaustion detection and graceful session handoff for multi-orchestration runs |
-| PROJ-005 | markdown-ast | PENDING | AST-based markdown manipulation to replace raw text operations across Jerry's full surface |
-| PROJ-006 | multi-instance | PENDING | Automated multi-instance Claude management via SDK or CLI to replace manual worktree + session workflows |
-| PROJ-007 | agent-patterns | ACTIVE | Agent design patterns, routing standards, and development lifecycle |
-| PROJ-008 | agentic-security | ACTIVE | Mission-critical security-first agentic platform — competitive gap analysis and Jerry hardening to set the industry standard |
-| PROJ-009 | llm-deception-research | ACTIVE | Research documenting LLM deception patterns and behavioral flaws; multi-platform Saucer Boy content for Anthropic/Boris engagement |
-| PROJ-010 | cyber-ops | ACTIVE | Elite /eng-team (secure software engineering) and /red-team (offensive security) skills for authorized pentesting and system hardening |
-| PROJ-011 | saucer-boy-articles | ACTIVE | High-quality articles in the Saucer Boy (McConkey) voice covering LLM engineering topics with C4 adversarial quality gates |
-| PROJ-014 | negative-prompting-research | COMPLETE | Deep research on negative prompting techniques — hypothesis: telling LLMs what NOT to do reduces hallucination by 60% and outperforms positive prompting. Application to Jerry framework. |
-| PROJ-015 | documentation-audit | COMPLETE | User-facing documentation audit & gap analysis using /diataxis |
-| PROJ-016 | documentation-writing | ACTIVE | Write user-facing Jerry documentation based on PROJ-015 audit findings |
-| PROJ-020 | feature-enhancements | ACTIVE | Feature enhancement filing and tracking for the Jerry Framework |
-| PROJ-022 | user-experience-skill | ACTIVE | /user-experience parent orchestrator skill with 10 pluggable sub-skills across 5 criteria-gated waves |
-| PROJ-021 | use-case | ACTIVE | Build use case capability: guided use case authoring, testing specifications, and contract design skills |
-| PROJ-024 | tactical-work | ACTIVE | Tactical work items — small improvements, quick fixes, and miscellaneous tasks |
-| PROJ-030 | bugs | ACTIVE | Bug fixes and defect resolution for the Jerry Framework |
+## Create your first project
 
-## Project Lookup
+In a Jerry session:
 
-- **PROJ-001**: `projects/PROJ-001-oss-release/`
-- **PROJ-002**: `projects/PROJ-002-roadmap-next/`
-- **PROJ-003**: `projects/PROJ-003-je-ne-sais-quoi/`
-- **PROJ-004**: `projects/PROJ-004-context-resilience/`
-- **PROJ-005**: `projects/PROJ-005-markdown-ast/`
-- **PROJ-006**: `projects/PROJ-006-multi-instance/`
-- **PROJ-007**: `projects/PROJ-007-agent-patterns/`
-- **PROJ-008**: `projects/PROJ-008-agentic-security/`
-- **PROJ-009**: `projects/PROJ-009-llm-deception-research/`
-- **PROJ-010**: `projects/PROJ-010-cyber-ops/`
-- **PROJ-011**: `projects/PROJ-011-saucer-boy-articles/`
-- **PROJ-014**: `projects/PROJ-014-negative-prompting-research/`
-- **PROJ-015**: `projects/PROJ-015-documentation-audit/`
-- **PROJ-016**: `projects/PROJ-016-documentation-writing/`
-- **PROJ-020**: `projects/PROJ-020-feature-enhancements/`
-- **PROJ-022**: `projects/PROJ-022-user-experience-skill/`
-- **PROJ-021**: `projects/PROJ-021-use-case/`
-- **PROJ-024**: `projects/PROJ-024-tactical-work/`
-- **PROJ-030**: `projects/PROJ-030-bugs/`
+    jerry projects list
+    # then create or select a project (see the worktracker skill)
+
+Your work then lives under `projects/PROJ-NNN-<slug>/`.
+
+---
+*Generated from `main` minus `projects/`. Tracked by PROJ-031-cowork-skeleton (test branch).*
