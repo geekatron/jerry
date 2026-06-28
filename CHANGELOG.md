@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **refactor(ci):** merge `lint` and `type-check` into `static-analysis` job with shared `uv sync --frozen --extra dev` (TASK-020)
 
 ### Added
+- ADR-secscan-hardening-001: dependency security-scan pipeline hardening — DRY composite audit action, owner CVE accept-list with `review_by` expiry, non-blocking CI policy, and the meaningful-audit guard (#301)
 - **feat(ci):** composite action `.github/actions/security-audit` — unified pip-audit scan with CVE accept-list, D5 meaningful-audit guard, and `vuln-found` output for downstream issue management (#301)
 - `.github/security/audit-allowlist.yml` — CVE accept-list with 90-day expiry enforcement; empty by default (all current CVEs have published fixes)
 - `scripts/security/audit_allowlist.py` — fail-closed parser for the accept-list: validates required fields, enforces 90-day cap, checks expiry, emits `--ignore-vuln` flags for pip-audit (#301)

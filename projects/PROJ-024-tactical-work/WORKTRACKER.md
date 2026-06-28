@@ -33,6 +33,16 @@
 | TASK-032 | Task | Add CODEOWNERS for workflow files | completed | EN-006 |
 | TASK-033 | Task | Evaluate docs.yml deploy-pages migration | completed | EN-006 |
 | TASK-034 | Task | Add Dependabot pre-commit ecosystem entry | completed | EN-006 |
+| EPIC-004 | Epic | Dependency Security-Scan Pipeline Hardening | in_progress | PROJ-024 |
+| FEAT-002 | Feature | Security-scan pipeline hardening | in_progress | EPIC-004 |
+| EN-007 | Enabler | Dependency security-scan pipeline hardening | in_progress | FEAT-002 |
+| BUG-008 | Bug | Scheduled security scan is false-green — audits only the local project, misses all transitive CVEs | in_progress | FEAT-002 |
+| STORY-026 | Story | Unify CI + scheduled security audit into one shared composite action (DRY) | in_progress | FEAT-002 |
+| STORY-027 | Story | Add owner-governed CVE accept-list with mandatory expiry/re-review | in_progress | FEAT-002 |
+| STORY-028 | Story | Add owner alerting via an auto-managed rolling GitHub issue | in_progress | FEAT-002 |
+| STORY-029 | Story | Fix the silent-failure guard to verify a meaningful audit (not just non-empty output) | in_progress | FEAT-002 |
+| STORY-030 | Story | Remediate the 9 current transitive CVEs (mako→1.3.12, urllib3→2.7.0, msgpack→1.2.1, pydantic-settings→2.14.2, pip→26.1.2) | in_progress | FEAT-002 |
+| TASK-035 | Task | Confirm Dependabot security updates + vulnerability alerts are enabled in repo Settings | pending | EN-007 |
 
 ## Completed
 
