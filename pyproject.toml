@@ -45,7 +45,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "mypy>=1.20.1",
-    "ruff>=0.15.18",
+    "ruff>=0.15.20",
     "filelock>=3.29.4",
     "jsonschema>=4.21.0",
 ]
@@ -217,8 +217,8 @@ dev = [
     "pip-audit>=2.10.1",
     "pip-licenses>=5.5.5",
     "pre-commit>=4.6.0",
-    "pyright>=1.1.410",
+    "pyright>=1.1.411",
     "pytest>=9.1.1",
     "pytest-cov>=7.1.0",
-    "ruff>=0.15.18",
+    "ruff>=0.15.20",
 ]
