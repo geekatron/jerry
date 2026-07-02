@@ -72,8 +72,7 @@ guardrails:
 
 output:
   required: true
-  location: "projects/${JERRY_PROJECT}/contracts/UC-{DOMAIN}-{NNN}-{slug}.openapi.yaml"
-  fallback_location: "work/contracts/UC-{DOMAIN}-{NNN}-{slug}.openapi.yaml"
+  location: "${JERRY_OUTPUT_BASE}contracts/UC-{DOMAIN}-{NNN}-{slug}.openapi.yaml"
   template: "skills/contract-design/templates/openapi-template.yaml"
   levels:
     - "L0"

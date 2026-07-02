@@ -58,8 +58,7 @@ guardrails:
 
 output:
   required: true
-  location: "projects/${JERRY_PROJECT}/test-specs/UC-{DOMAIN}-{NNN}-{slug}.feature.md"
-  fallback_location: "work/test-specs/UC-{DOMAIN}-{NNN}-{slug}.feature.md"
+  location: "${JERRY_OUTPUT_BASE}test-specs/UC-{DOMAIN}-{NNN}-{slug}.feature.md"
   template: "skills/test-spec/templates/bdd-scenario.template.md"
   levels:
     - "L0"

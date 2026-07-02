@@ -156,21 +156,65 @@ def get_project_data_path() -> Path | None:
     Returns:
         Path to project data directory, or None if no project is active.
 
-    Resolution order:
-        1. JERRY_PROJECT environment variable + projects directory
-        2. None (no active project)
+    Resolution order (via OutputResolver):
+        1. output.base_path from config (env > project > root > defaults)
+        2. projects/{JERRY_PROJECT}/ when JERRY_PROJECT is set
+        3. work/ as terminal fallback
+
+    Note:
+        When output.base_path is explicitly configured, always returns a Path
+        (never None), since the user has explicitly chosen a location.
+        Returns None only when no config is set AND JERRY_PROJECT is unset,
+        to preserve backward compatibility with callers that check for None.
+
+    References:
+        - GitHub Issue #192: Configurable output base path
+        - REQ-OBP-005b: get_project_data_path() delegation to OutputResolver
     """
-    project_id = os.environ.get("JERRY_PROJECT")
-    if not project_id:
+    from src.configuration.application.services.output_resolver import OutputResolver
+    from src.infrastructure.adapters.configuration.layered_config_adapter import (
+        LayeredConfigAdapter,
+    )
+
+    project_root_env = os.environ.get("CLAUDE_PROJECT_DIR")
+    project_root = Path(project_root_env) if project_root_env else Path.cwd()
+
+    jerry_project = os.environ.get("JERRY_PROJECT")
+    project_config_path = None
+    if jerry_project:
+        project_config_path = project_root / "projects" / jerry_project / ".jerry" / "config.toml"
+
+    config = LayeredConfigAdapter(
+        env_prefix="JERRY_",
+        root_config_path=project_root / ".jerry" / "config.toml",
+        project_config_path=project_config_path,
+        defaults={"output.base_path": None},
+    )
+
+    resolver = OutputResolver(config_provider=config)
+    resolved = resolver.resolve()
+
+    # If resolved to terminal fallback and no project is active,
+    # return None to preserve backward compatibility with callers
+    # that check for None (e.g., create_event_store)
+    if resolved == "work/" and not jerry_project:
         return None
 
-    project_root = os.environ.get("CLAUDE_PROJECT_DIR")
-    if project_root:
-        base = Path(project_root)
-    else:
-        base = Path.cwd()
+    # SRR-FIND-001 (CWE-22) + SRR-FIND-002 (CWE-73):
+    # Resolve symlinks and normalize path, then verify the candidate
+    # remains under the project root to prevent path traversal and
+    # symlink escape attacks via malicious output.base_path config.
+    candidate = (project_root / resolved).resolve()
+    root_real = project_root.resolve()
+    try:
+        candidate.relative_to(root_real)
+    except ValueError:
+        raise ValueError(
+            f"Resolved output path '{candidate}' escapes project root "
+            f"'{root_real}'. Check output.base_path configuration."
+        ) from None
 
-    return base / "projects" / project_id
+    return candidate
 
 
 def create_event_store(
@@ -614,6 +658,7 @@ def create_hooks_handlers() -> dict[str, Any]:
             "context_monitor.emergency_threshold": 0.88,
             "context_monitor.compaction_detection_threshold": 10000,
             "context_monitor.enabled": True,
+            "output.base_path": None,
         },
     )
     threshold_config = ConfigThresholdAdapter(config=config_adapter)

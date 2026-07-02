@@ -49,8 +49,7 @@ guardrails:
 
 output:
   required: true
-  location: "projects/${JERRY_PROJECT}/use-cases/UC-{DOMAIN}-{NNN}-{slug}.md"
-  fallback_location: "work/use-cases/UC-{DOMAIN}-{NNN}-{slug}.md"
+  location: "${JERRY_OUTPUT_BASE}use-cases/UC-{DOMAIN}-{NNN}-{slug}.md"
   template: "skills/use-case/templates/use-case-slice.template.md"
   levels:
     - "L0"

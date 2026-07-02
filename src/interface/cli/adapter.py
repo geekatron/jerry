@@ -1029,6 +1029,7 @@ class CLIAdapter:
                 "context_monitor.emergency_threshold": 0.88,
                 "context_monitor.compaction_detection_threshold": 10000,
                 "context_monitor.enabled": True,
+                "output.base_path": None,
             },
         )
 
