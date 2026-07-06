@@ -1,0 +1,319 @@
+workflow:
+  id: "cowork-skeleton-20260626-001"
+  name: "CoWork Skeleton Branch"
+  project_id: "PROJ-031-cowork-skeleton"
+  status: "PLANNED"
+  created: "2026-06-26"
+  created_by: "orch-planner v2.2.0"
+
+paths:
+  base: "projects/PROJ-031-cowork-skeleton/orchestration/cowork-skeleton-20260626-001/"
+  phase: "{base}phase-{N}-{name}/{agent_id}/"
+  quality: "{base}quality/phase-{N}-gate/{adv_agent}/"
+  mcp_fallback: "{base}mcp-fallback/{phase}.md"
+
+pipelines:
+  main:
+    short_alias: "cowork-skeleton"
+    skill_source: "orchestration"
+    current_phase: 1
+    phases:
+      - id: 1
+        name: "requirements"
+        status: "PENDING"
+        approval_stage: "PRE"
+        agents:
+          - id: "ps-researcher-001"
+            status: "PENDING"
+            artifact: "phase-1-requirements/ps-researcher-001/recon-synthesis.md"
+          - id: "nse-requirements-001"
+            status: "PENDING"
+            artifact: "phase-1-requirements/nse-requirements-001/requirements.md"
+          - id: "ps-architect-001"
+            status: "PENDING"
+            artifacts:
+              - "phase-1-requirements/ps-architect-001/ADR-PROJ031-001-skeleton-strategy.md"
+              - "phase-1-requirements/ps-architect-001/ADR-PROJ031-002-token-strategy.md"
+
+      - id: 2
+        name: "security"
+        status: "PENDING"
+        approval_stage: "PRE"
+        agents:
+          - id: "red-lead-001"
+            status: "PENDING"
+            artifact: "phase-2-security/red-lead-001/threat-model-scope.md"
+          - id: "red-recon-001"
+            status: "PENDING"
+            artifact: "phase-2-security/red-recon-001/attack-surface.md"
+          - id: "eng-architect-001"
+            status: "PENDING"
+            artifact: "phase-2-security/eng-architect-001/stride-analysis.md"
+          - id: "eng-devsecops-001"
+            status: "PENDING"
+            artifact: "phase-2-security/eng-devsecops-001/remediation-plan.md"
+          - id: "eng-security-001"
+            status: "PENDING"
+            artifact: "phase-2-security/eng-security-001/security-requirements.md"
+
+      - id: 3
+        name: "design"
+        status: "PENDING"
+        approval_stage: "PRE"
+        agents:
+          - id: "eng-architect-002"
+            status: "PENDING"
+            artifact: "phase-3-design/eng-architect-001/skeleton-design.md"
+          - id: "eng-infra-001"
+            status: "PENDING"
+            artifacts:
+              - "phase-3-design/eng-infra-001/ci-workflow-design.md"
+              - "phase-3-design/eng-infra-001/stub-specification.md"
+          - id: "eng-lead-001"
+            status: "PENDING"
+            artifact: "phase-3-design/eng-lead-001/implementation-spec.md"
+
+      - id: 4
+        name: "docs"
+        status: "PENDING"
+        approval_stage: "PRE"
+        agents:
+          - id: "diataxis-tutorial-001"
+            status: "PENDING"
+            artifact: "phase-4-docs/diataxis-tutorial-001/tutorial-cowork-install-draft.md"
+          - id: "diataxis-howto-001"
+            status: "PENDING"
+            artifacts:
+              - "phase-4-docs/diataxis-howto-001/howto-sync-draft.md"
+              - "phase-4-docs/diataxis-howto-001/howto-troubleshoot-draft.md"
+          - id: "diataxis-reference-001"
+            status: "PENDING"
+            artifact: "phase-4-docs/diataxis-reference-001/reference-skeleton-branch-draft.md"
+          - id: "diataxis-explanation-001"
+            status: "PENDING"
+            artifact: "phase-4-docs/diataxis-explanation-001/explanation-why-skeleton-draft.md"
+          - id: "ux-heuristic-evaluator-001"
+            status: "PENDING"
+            artifact: "phase-4-docs/ux-heuristic-evaluator-001/ux-review.md"
+          - id: "diataxis-auditor-001"
+            status: "PENDING"
+            artifact: "phase-4-docs/diataxis-auditor-001/mkdocs-nav-patch.md"
+
+      # --- APPROVAL GATE (between phase 4 and phase 5) ---
+      # Status transitions: PENDING -> AWAITING_APPROVAL -> APPROVED | CHANGES_REQUESTED
+      approval_gate:
+        status: "PENDING"
+        items_ag: [AG-01, AG-02, AG-03, AG-04, AG-05, AG-06, AG-07, AG-08, AG-09, AG-10]
+        user_approval_received: false
+        approval_timestamp: null
+
+      - id: 5
+        name: "skeleton-impl"
+        status: "PENDING"
+        approval_stage: "POST"
+        entry_condition: "approval_gate.user_approval_received == true"
+        agents:
+          - id: "eng-infra-002"
+            status: "PENDING"
+            artifact: "phase-5-skeleton-impl/eng-infra-001/generate-cowork-skeleton.sh"
+          - id: "eng-lead-002"
+            status: "PENDING"
+            artifact: "phase-5-skeleton-impl/eng-lead-001/implementation-review.md"
+          - id: "eng-qa-001"
+            status: "PENDING"
+            artifact: "phase-5-skeleton-impl/eng-qa-001/validation-report.md"
+
+      - id: 6
+        name: "ci-impl"
+        status: "PENDING"
+        approval_stage: "POST"
+        agents:
+          - id: "eng-devsecops-002"
+            status: "PENDING"
+            artifact: "phase-6-ci-impl/eng-devsecops-001/cowork-skeleton.yml"
+          - id: "eng-infra-003"
+            status: "PENDING"
+            artifact: "phase-6-ci-impl/eng-infra-001/branch-protection-config.md"
+          - id: "eng-qa-002"
+            status: "PENDING"
+            artifact: "phase-6-ci-impl/eng-qa-001/ci-test-report.md"
+          - id: "eng-reviewer-001"
+            status: "PENDING"
+            artifact: "phase-6-ci-impl/eng-reviewer-001/ci-review.md"
+
+      - id: 7
+        name: "docs-commit"
+        status: "PENDING"
+        approval_stage: "POST"
+        agents:
+          - id: "eng-lead-003"
+            status: "PENDING"
+            artifact: "phase-7-docs-commit/eng-lead-001/commit-record.md"
+          - id: "diataxis-auditor-002"
+            status: "PENDING"
+            artifact: "phase-7-docs-commit/diataxis-auditor-001/nav-audit.md"
+
+      - id: 8
+        name: "validation"
+        status: "PENDING"
+        approval_stage: "POST"
+        agents:
+          - id: "eng-infra-004"
+            status: "PENDING"
+            artifact: "phase-8-validation/eng-infra-001/branch-creation-log.md"
+          - id: "eng-qa-003"
+            status: "PENDING"
+            artifact: "phase-8-validation/eng-qa-001/e2e-validation-report.md"
+
+quality:
+  threshold: 0.95
+  criticality: "C4"
+  scoring_mechanism: "S-014"
+  auto_escalation_rules_applied:
+    - "AE-005"  # Security-relevant CI + token handling
+    - "AE-002"  # Touches .github/
+  required_strategies:
+    - id: "S-010"
+      name: "Self-Refine"
+      group: "A"
+      execution_order: 1
+      template: ".context/templates/adversarial/s-010-self-refine.md"
+    - id: "S-003"
+      name: "Steelman Technique"
+      group: "B"
+      execution_order: 2
+      template: ".context/templates/adversarial/s-003-steelman.md"
+      h16_constraint: "MUST precede S-002"
+    - id: "S-002"
+      name: "Devil's Advocate"
+      group: "C"
+      execution_order: 3
+      template: ".context/templates/adversarial/s-002-devils-advocate.md"
+      h16_constraint: "MUST follow S-003"
+    - id: "S-004"
+      name: "Pre-Mortem Analysis"
+      group: "C"
+      execution_order: 4
+      template: ".context/templates/adversarial/s-004-pre-mortem.md"
+    - id: "S-001"
+      name: "Red Team Analysis"
+      group: "C"
+      execution_order: 5
+      template: ".context/templates/adversarial/s-001-red-team.md"
+    - id: "S-007"
+      name: "Constitutional AI Critique"
+      group: "D"
+      execution_order: 6
+      template: ".context/templates/adversarial/s-007-constitutional-ai.md"
+    - id: "S-011"
+      name: "Chain-of-Verification"
+      group: "D"
+      execution_order: 7
+      template: ".context/templates/adversarial/s-011-cove.md"
+    - id: "S-012"
+      name: "FMEA"
+      group: "E"
+      execution_order: 8
+      template: ".context/templates/adversarial/s-012-fmea.md"
+    - id: "S-013"
+      name: "Inversion Technique"
+      group: "E"
+      execution_order: 9
+      template: ".context/templates/adversarial/s-013-inversion.md"
+    - id: "S-014"
+      name: "LLM-as-Judge"
+      group: "F"
+      execution_order: 10
+      template: ".context/templates/adversarial/s-014-llm-as-judge.md"
+      constraint: "ALWAYS LAST — receives aggregated findings from S-010 through S-013"
+  optional_strategies: []
+  iteration_ceiling:
+    criticality: "C4"
+    max_iterations: 10
+    plateau_detection:
+      delta_threshold: 0.01
+      consecutive_required: 3
+      action: "escalate_to_user"
+  scoring_dimensions:
+    completeness: 0.20
+    internal_consistency: 0.20
+    methodological_rigor: 0.20
+    evidence_quality: 0.15
+    actionability: 0.15
+    traceability: 0.10
+  phase_scores: {}
+  barrier_scores: {}
+  workflow_quality: {}
+
+execution_queue:
+  current_group: 1
+  groups:
+    - id: 1
+      execution_mode: "SEQUENTIAL"
+      phases: [1, 2, 3, 4]
+      note: "PRE-APPROVAL phases — sequential dependency chain"
+    - id: 2
+      execution_mode: "BLOCKED"
+      condition: "approval_gate.user_approval_received == true"
+      phases: [5, 6, 7, 8]
+      note: "POST-APPROVAL phases — blocked until user sign-off"
+
+checkpoints:
+  latest_id: null
+  entries: []
+
+mcp_context:
+  key_pattern: "jerry/PROJ-031/orchestration/cowork-skeleton-20260626-001"
+  fallback_path: "projects/PROJ-031-cowork-skeleton/orchestration/cowork-skeleton-20260626-001/mcp-fallback/"
+  last_saved: null
+
+metrics:
+  phases_total: 8
+  phases_complete: 0
+  agents_total: 24
+  agents_executed: 0
+  quality_gates_total: 8
+  quality_gates_passed: 0
+  approval_gate_status: "PENDING"
+
+risks:
+  - id: "R-001"
+    description: "CoWork counts local working-tree files (not clean clone) — .venv/ inflates count, projects/ removal insufficient"
+    likelihood: "Medium"
+    impact: "Critical"
+    mitigation: "Phase 1: add verification step — reproduce error on clean clone vs dev checkout"
+  - id: "R-002"
+    description: "skills/transcript/test_data/ ~908 KB blobs survive — clone weight concern"
+    likelihood: "Low"
+    impact: "Low-Medium"
+    mitigation: "Phase 3: optional flag in generate-cowork-skeleton.sh to strip test_data/"
+  - id: "R-003"
+    description: "Force-push overwrites manual commits on cowork-skeleton branch"
+    likelihood: "Low"
+    impact: "Medium"
+    mitigation: "CI-owned branch documentation in workflow header + stub README warning"
+  - id: "R-004"
+    description: "PAT scope broader than required — token exfiltration risk"
+    likelihood: "Medium"
+    impact: "High"
+    mitigation: "Phase 2 STRIDE + Phase 6: SHA-pin Actions, minimum PAT scope, environment protection"
+  - id: "R-005"
+    description: "CI loop: cowork-skeleton.yml inadvertently triggers itself or upstream workflows"
+    likelihood: "Low"
+    impact: "High"
+    mitigation: "Phase 3+6: trigger restricted to tags/v* only; skeleton push is a branch not a tag; formal loop-safety argument required"
+  - id: "R-006"
+    description: "Branch protection on cowork-skeleton blocks force-push from CI"
+    likelihood: "Low-Medium"
+    impact: "Medium"
+    mitigation: "Phase 6: document and implement branch-protection exemption; mirror gh-pages pattern"
+  - id: "R-007"
+    description: "Supply-chain: compromised CI injects malicious content into cowork-skeleton"
+    likelihood: "Low"
+    impact: "Critical"
+    mitigation: "Phase 2 STRIDE + Phase 6: SHA-pin, SLSA provenance, branch protection + required CI check, integrity audit"
+
+# === RESUME CHECKPOINT 2026-06-29 (EMERGENCY context tier, AE-006d) ===
+# Full resume state: ./RESUME-CHECKPOINT.md
+# Status: re-adversary iteration-004 = 0.74 REVISE (architecture SOUND; drag = 2 fixable contradictions + missing ops reqs).
+# In flight: ps-architect ADR A+B+C remediation (bg agent a1bead658). Next: nse-requirements mirror -> iteration-005 blind tournament (6-group, each strategy own blind agent) -> target >=0.92.
