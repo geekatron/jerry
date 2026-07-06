@@ -1,0 +1,39 @@
+# S-004 Pre-Mortem Refutation Panel — Iteration 10, Remediation-Value Lens
+
+> **Target report:** `orchestration/adr-convention-20260702-001/adversary/iteration-010/s-004-findings.md`
+> **Lens:** Remediation-value — would fixing this materially change real adoption outcomes, or is it churn?
+> **Rule:** Default to REFUTED if uncertain. Findings whose fix is optional polish, already scheduled elsewhere, or would ADD machinery against the ratified subtraction doctrine are REFUTED.
+> **Scope:** Critical findings only (per mandate). The target report has exactly one Critical: `004-001-iter010`. (`004-002-iter010` is Major, `004-003-iter010` is Minor — out of scope for this panel.)
+> **Blind protocol:** Only the target S-004 report, the two current deliverables, and `subtraction-pass-notes.md` were read. No sibling refuter or panel output was read. No subagents invoked (P-003).
+
+---
+
+## Verdict
+
+### 004-001-iter010 — "Deletion of an ADR file silently frees its number for reuse, misdirecting old citations to an unrelated decision" [CRITICAL]
+
+**Verdict: REFUTED (remediation-value lens)**
+
+**Reasoning:**
+
+1. **The scenario is already contradicted by the document's own core discipline, not merely "undisclosed."** The Amend-vs-Supersede rule-of-thumb states plainly: "Numbers are never reused (Nygard; **Jerry's tombstone precedent**)" (`ADR-PROJ031-004-adr-identifier-convention.md:612`). "Tombstone precedent" is not incidental phrasing — it names the *mechanism*: an ADR is never deleted, it is superseded/deprecated/rejected **in place**, with its file and ID retained and its `status` flipped (`:606-611`, `:622-649` Status Vocabulary; `SUPERSEDED` is the sole terminal state, `:647`). ADR-M-009 in the companion rule draft reinforces this: "Accepted ADRs SHOULD be treated as immutable... a reversal SHOULD be a new superseding ADR" (`adr-standards-rule-draft.md:54`). File deletion of a canonical/dialect ADR is therefore already outside the design's operative model, not a silent gap in it — the finding treats the *absence of the literal words* "SHOULD NOT delete" as equivalent to "the failure mode is unguarded," but the tombstone-precedent language already forecloses the deletion path as a matter of established convention, in the same way that "supersede, don't delete" is bedrock practice across Nygard/MADR/AWS ADR traditions generally.
+
+2. **The likelihood argument overreaches by analogy.** The finding's Medium-likelihood rationale leans on "this very project's own governing doctrine for the last 5 iterations has been 'close findings by deleting the exposing claim/mechanism'" (`subtraction-pass-notes.md:27`) to argue a future maintainer would apply "that same instinct" to a ratified ADR file. But the subtraction doctrine deletes **overclaiming prose and unbuilt lint machinery inside a document still under active adversarial revision** — it has never once, across 9 iterations, deleted a canonical decision record or tombstoned-ADR body; the doctrine's own text is explicit that a superseded ADR's "old body SHOULD NOT be edited" (`adr-standards-rule-draft.md:144`) and Changelog rows 1.1-1.5 are "historical records of past machinery... MUST NOT rewrite" (`subtraction-pass-notes.md:146`). Conflating "this repo deletes exposed draft prose" with "this repo will delete ratified ADR files" is an analogy across two categorically different artifact classes (living review documents vs. tombstoned historical records) that the finding does not otherwise substantiate.
+
+3. **This is the narrowest in an already-diminishing-returns chain of disclosed residuals, and the document has already flagged that chain as over budget.** The Risks register has grown R-1 through R-17 across iterations 4-9, each iteration adding increasingly narrow edge-case disclosures (R-13 title-slug-tail extraction, R-14 frozen-dir new-file collision, R-15 frontmatter `id:` non-dedup, R-16 L-7 zero-real-targets, R-17 concurrent-supersession race — `ADR-PROJ031-004-adr-identifier-convention.md:477-481`). The rule draft's own changelog has repeatedly disclosed that it is "marginally above the 250-line self-guidance" and "above the ~2.5k soft target" purely from this accretion (`adr-standards-rule-draft.md:251`, v1.11 row). Adding an R-18 for "deletion of an already-tombstone-disciplined file, followed by independent re-mint of the exact same slug+NNN by an unrelated author" is a further increment of the same pattern — a conjunctive, low-probability edge case whose disclosure cost is not zero (it continues to grow a document the project itself has flagged as size-constrained) and whose real-world adoption benefit is negligible, because the practice it would guard against is already outside the design's normal operating model per point 1.
+
+4. **The proposed mitigation does not change what an adopting author actually does.** The finding's own mitigation is "no new lint rule required... one SHOULD-NOT guidance line... and a new Risk entry" — i.e., its author agrees no enforcement gap exists to close, only a documentation gap. Under the remediation-value lens (not the factual/materiality lens), a documentation-only addition that restates, in different words, a practice already implied by "tombstone precedent" and "immutable" is optional polish: an author who was going to delete a ratified ADR was never going to be stopped by an additional guidance line either, since MEDIUM-tier guidance is already overridable-with-justification (`ADR-PROJ031-004-adr-identifier-convention.md:657`) and this repo is single-owner (R-12, `:476`) — the same self-approval condition the panel's own prior iteration (iter-9) already disclosed as inherent and declined to re-gate.
+
+5. **The severity claim ("defeats the standard's own headline selling point") overstates the mechanism's actual target.** D-2's citation-stability guarantee is about promotion (`git mv`, no rename, no churn) eliminating the *rename-driven* citation break that BUG-006 documented and that this ADR exists to fix (`:219`, `:440`). A hypothetical future deletion-then-reuse event is a distinct failure class — deliberate destructive file management, not promotion-driven identity churn — and conflating it with the promotion-citation problem this ADR is scoped to solve inflates the finding's severity beyond what the evidence supports.
+
+**Net assessment:** The underlying observation (no register entry explicitly names post-deletion `NNN` reuse) is factually accurate — confirmed by direct read of `ADR-PROJ031-004-adr-identifier-convention.md:461-482` (R-1..R-17) and `adr-standards-rule-draft.md` Frozen/Amend sections, neither of which contains the phrase "delete" in a normative guidance sense. But remediation value is near-zero: the practice the finding worries about is already foreclosed by the document's own tombstone-precedent/immutability design, the scenario requires a conjunctive, deliberate violation of that design plus an independent unrelated re-mint of the exact freed ID, and the proposed fix is one more increment in a disclosure register the project has already flagged as running over its own size budget for diminishing marginal benefit. This is churn, not a fix that would materially change real adoption outcomes. **REFUTED.**
+
+---
+
+## Scope Note
+
+Per the panel mandate ("attempt to REFUTE every Critical finding"), only `004-001-iter010` required a verdict — it is the sole Critical in the target report's Findings Table (`s-004-findings.md:34-38`). `004-002-iter010` (Major) and `004-003-iter010` (Minor) are outside this panel's scope and were not adjudicated.
+
+---
+
+*No subagents invoked (P-003). No deliverable file edited (P-020). All evidence cited by repo-relative file path and line number (P-022). No employer-internal references or absolute filesystem paths introduced into this artifact.*

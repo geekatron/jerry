@@ -72,7 +72,7 @@ Nominative fair use (general U.S. doctrine) typically allows using a mark to *de
 
 ### Claude (baseline) — the format Jerry uses today
 
-Repo root holds **`.claude-plugin/marketplace.json`** (schema `json.schemastore.org/claude-code-marketplace.json`) listing plugins, each with **`.claude-plugin/plugin.json`** bundling **skills + sub-agents + hooks + commands + MCP servers**. Consumed by Claude Code (CLI) and the Claude apps / CoWork surface. This is a **Claude-Code-native plugin construct**. [Claude Code plugins-reference; internal `claude-plugin-surfaces.md`]
+Repo root holds **`.claude-plugin/marketplace.json`** (schema `json.schemastore.org/claude-code-marketplace.json`) listing plugins, each with **`.claude-plugin/plugin.json`** bundling **skills + sub-agents + hooks + commands + MCP servers**. Consumed by Claude Code (CLI) and the Claude apps / CoWork surface. This is a **Claude-Code-native plugin construct**. [Claude Code plugins-reference; internal `claude-plugin-surfaces-extraction.md`]
 
 ### OpenAI — current state
 
@@ -142,7 +142,7 @@ The strongest pro-namespacing argument, presented fairly:
 11. [ChatGPT plugins sunset (youreverydayai)](https://www.youreverydayai.com/chatgpt-is-killing-off-plugins-what-it-means/) — deprecation 2024-03-19 / shutdown 2024-04-09; GPTs/Actions successor.
 12. [Vertex AI — Create and run extensions](https://docs.cloud.google.com/vertex-ai/generative-ai/docs/extensions/create-extension) — extension manifest + OpenAPI 3.0 YAML; deprecation after 2026-11-26. **(Primary)**
 13. [Gemini Enterprise Agent Platform (Google Cloud)](https://cloud.google.com/products/gemini-enterprise-agent-platform) — Vertex AI evolution; A2A capability manifests. **(Primary)**
-14. Internal: `projects/PROJ-031-cowork-skeleton/research/claude-plugin-surfaces.md` — confirms Claude plugin repo/marketplace structure and surfaces. **(Internal primary)**
+14. Internal: `projects/PROJ-031-cowork-skeleton/research/claude-plugin-surfaces-extraction.md` — confirms Claude plugin repo/marketplace structure and surfaces. **(Internal primary)**
 
 ---
 

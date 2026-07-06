@@ -37,7 +37,7 @@ A clean `git clone` (what a CoWork marketplace install performs) sees only track
 
 Committing triggered the repo's pre-commit hooks, which run the full `pytest` suite. On the skeleton this produced **9 failures + 3 errors**, all because tests depend on `projects/` content the skeleton removes:
 
-- `tests/integration/cli/test_ast_subprocess.py` — copies a fixture from `projects/PROJ-005-markdown-ast/work/.../ST-001-jerry-document.md` (now absent → `FileNotFoundError`).
+- `tests/integration/cli/test_ast_subprocess.py` — copies a fixture from `PROJ-005-markdown-ast/work/.../ST-001-jerry-document.md` (now absent → `FileNotFoundError`).
 - `tests/integration/test_document_type_regression.py::test_discovers_minimum_file_count` — asserts ≥ 2,500 `.md` files; the skeleton has 686.
 
 **Implications (inputs for Phase 2/3/5/6):**

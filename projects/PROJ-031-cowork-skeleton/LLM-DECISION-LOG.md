@@ -1,7 +1,7 @@
 # LLM-DECISION-LOG — PROJ-031-cowork-skeleton
 
 > Captures decisions made in user↔LLM interaction: verbatim exchanges, summaries, model, session, datetime, context. Per FU.2 (2026-07-05).
-> **Status: BOOTSTRAP format** — migrates to the ratified Jerry convention once designed. Scoping rule (per FU.2): project-scoped file when a Jerry Project is active; repo-root file otherwise.
+> **Status: ACTIVE bootstrap.** Entries DEC-LLM-001–003 are real and preserved. The schema now tracks the **revised** Jerry convention (segment rotation, logger-assigned ids + verbatim aliases — see `design/feedback-decision-log-convention-design.md`), **pending final user ratification**. Scoping rule (per FU.2): project-scoped file when a Jerry Project is active; repo-root file otherwise.
 > **Distinct from worktracker `DEC-NNN` entities:** those are work-item-scoped decision documents; this log is the interaction-level record of what was decided *between user and LLM* and under what context. Entries cross-link to DEC/ADR artifacts where they exist.
 
 ## Document Sections
@@ -73,9 +73,9 @@ Shared context for DEC-LLM-001..003: **datetime** 2026-07-05 · **session** `fd8
 
 Decisions made before this log existed (retro-capture from transcripts pending user authorization):
 
-| Approx date | Decision | Where recorded today |
-|---|---|---|
-| 2026-06-29 | Accept design-phase ceiling (~0.86), proceed to Phase 3 (option a) | RESUME-CHECKPOINT.md |
-| 2026-06-30 | Repo name `geekatron/jerry-claude-plugin` (vendor-family pattern; YAGNI rejected) | `decisions/repo-naming-options.md` §Decision |
-| 2026-07-02 | Strip-set correction + c-007 gate (from live-test failures) | ADR-PROJ031-001 amendment; REQ-056 |
-| 2026-07-02 | Interim rename bare ADR-001..003 → ADR-PROJ031-00N | RESUME-CHECKPOINT.md; superseded in part by DEC-LLM-001 |
+| Approx date | Added | Decision | Where recorded today |
+|---|---|---|---|
+| 2026-06-29 | 2026-07-05 | Accept design-phase ceiling (~0.86), proceed to Phase 3 (option a) | RESUME-CHECKPOINT.md |
+| 2026-06-30 | 2026-07-05 | Repo name `geekatron/jerry-claude-plugin` (vendor-family pattern; YAGNI rejected) | `decisions/repo-naming-options.md` §Decision |
+| 2026-07-02 | 2026-07-05 | Strip-set correction + c-007 gate (from live-test failures) | ADR-PROJ031-001 amendment; REQ-056 |
+| 2026-07-02 | 2026-07-05 | Interim rename bare ADR-001..003 → ADR-PROJ031-00N | RESUME-CHECKPOINT.md; superseded in part by DEC-LLM-001 |

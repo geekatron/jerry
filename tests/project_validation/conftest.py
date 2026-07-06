@@ -212,6 +212,10 @@ OPTIONAL_CATEGORY_DIRS: tuple[str, ...] = (
     "reviews",
     "runbooks",
     "orchestration",
+    # /nasa-se requirements-engineering outputs (e.g., PROJ-031 phase requirements docs).
+    "requirements",
+    # /eng-team security artifacts (threat models, attack-surface analyses; e.g., PROJ-031).
+    "security",
 )
 
 # All valid subdirectories (required + optional).

@@ -119,6 +119,13 @@ class DocumentTypeDetector:
         ("GOVERNANCE.md", DocumentType.FRAMEWORK_CONFIG),
         # --- Tier 5: Broader patterns (catch-alls last) ---
         ("projects/*/orchestration/**/*.md", DocumentType.ORCHESTRATION_ARTIFACT),
+        # Project category patterns added after the orchestration catch-all so
+        # nested orchestration artifacts keep their classification (PROJ-031).
+        ("projects/*/FEEDBACK-LOG.md", DocumentType.FRAMEWORK_CONFIG),
+        ("projects/*/LLM-DECISION-LOG.md", DocumentType.FRAMEWORK_CONFIG),
+        ("projects/*/design/**/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
+        ("projects/*/requirements/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
+        ("projects/*/security/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
         ("work/**/*.md", DocumentType.WORKTRACKER_ENTITY),
         (".context/templates/worktracker/*.md", DocumentType.TEMPLATE),
         (".context/templates/design/*.md", DocumentType.TEMPLATE),

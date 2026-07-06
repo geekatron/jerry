@@ -46,7 +46,7 @@ Locations searched (all read or grepped; results below are exhaustive for the AD
 | 10 | `docs/knowledge/` (broad grep) | **No** | Only incidental ADR citations (e.g., agent-pattern-taxonomy). |
 | 11 | Filename search for any `*adr*standard*`, `*adr*convention*`, `*adr*guide*`, `*decision-record*` | **No** | None exist. |
 
-The closest thing to a naming decision anywhere is **`projects/PROJ-030-bugs/reviews/BUG-006-adr-naming-evaluation.md`** — but it is a **Nielsen heuristic *evaluation* (a review deliverable in a project `reviews/` folder), not an adopted rule or standard**, and its recommended follow-ups (a `docs/design/README.md` domain index, a template update) were never implemented (both confirmed absent).
+The closest thing to a naming decision anywhere is **`PROJ-030-bugs/reviews/BUG-006-adr-naming-evaluation.md`** — but it is a **Nielsen heuristic *evaluation* (a review deliverable in a project `reviews/` folder), not an adopted rule or standard**, and its recommended follow-ups (a `docs/design/README.md` domain index, a template update) were never implemented (both confirmed absent).
 
 ---
 
@@ -58,20 +58,20 @@ The closest thing to a naming decision anywhere is **`projects/PROJ-030-bugs/rev
 |---|---|---|---|---|---|
 | **Framework domain-slug** | `ADR-{domain-slug}-NNN` | `ADR-agent-design-001`, `ADR-routing-triggers-001`, `ADR-output-path-resolution-001` | 3 | `docs/design/` | **Framework-scoped** (de-facto promoted; carry PROJ-007/EPIC-002 provenance in metadata) |
 | **Project-ID scoped** | `ADR-PROJ{NNN}-NNN` | `ADR-PROJ010-001` … `-006`; `ADR-PROJ022-001/002`; `ADR-PROJ031-001/002/003` | 6 + 2 + 3 = 11 | `projects/PROJ-NNN-*/decisions/` | **Project-scoped, collision-free** |
-| **Epic-ID scoped** | `ADR-EPIC{NNN}-NNN` | `ADR-EPIC002-001/002` | 2 | `projects/PROJ-001-oss-release/decisions/` | Project-scoped (entity-keyed), collision-free |
-| **Story-ID scoped** | `ADR-STORY{NNN}-NNN` | `ADR-STORY015-001` | 1 | `projects/PROJ-024-*/work/.../STORY-015-*/` | Project-scoped, co-located with the story |
-| **GH-issue scoped** | `ADR-{issue}-NNN` | `ADR-150-001` | 1 | `projects/PROJ-030-bugs/decisions/` | Project-scoped (keyed to GH issue #150), collision-free |
+| **Epic-ID scoped** | `ADR-EPIC{NNN}-NNN` | `ADR-EPIC002-001/002` | 2 | `PROJ-001-oss-release/decisions/` | Project-scoped (entity-keyed), collision-free |
+| **Story-ID scoped** | `ADR-STORY{NNN}-NNN` | `ADR-STORY015-001` | 1 | `PROJ-024-*/work/.../STORY-015-*/` | Project-scoped, co-located with the story |
+| **GH-issue scoped** | `ADR-{issue}-NNN` | `ADR-150-001` | 1 | `PROJ-030-bugs/decisions/` | Project-scoped (keyed to GH issue #150), collision-free |
 | **Bare sequential (legacy framework)** | `ADR-NNN-slug` (+ `ADR-NNN-amendment-NNN`) | `ADR-001-agent-architecture` (+ `ADR-001-amendment-001-python-preprocessing`) | 6 (+1 amendment) | `docs/adrs/` | **Legacy** — `/transcript` skill; **collision source** |
 | **Bare sequential (archived)** | `ADR-0NN-slug` | `ADR-031`…`ADR-034` | 4 | `docs/archive/projects-archive/decisions/` | **Archived/frozen**; occupies the `031–034` range |
-| **Bare sequential (project, transient)** | `ADR-NNN-slug` | `ADR-001-npt014-elimination` … `ADR-004-compaction-resilience` | 4 | `projects/PROJ-014-*/orchestration/.../phase-5/` | Project decision in orchestration artifacts; **collision source** |
-| **OSS orchestration series** | `ADR-OSS-NNN` | `ADR-OSS-001` … `-007` | 7 | `projects/PROJ-001-*/.../orchestration/.../ps/phase-2/ps-architect-00N/` | Orchestration work artifacts (transient, per-agent) |
+| **Bare sequential (project, transient)** | `ADR-NNN-slug` | `ADR-001-npt014-elimination` … `ADR-004-compaction-resilience` | 4 | `PROJ-014-*/orchestration/.../phase-5/` | Project decision in orchestration artifacts; **collision source** |
+| **OSS orchestration series** | `ADR-OSS-NNN` | `ADR-OSS-001` … `-007` | 7 | `PROJ-001-*/.../orchestration/.../ps/phase-2/ps-architect-00N/` | Orchestration work artifacts (transient, per-agent) |
 | **Lowercase ad-hoc** | `adr-{slug}[-vN]` | `adr-cli-integration`, `adr-cli-integration-v2` | several | `projects/*/orchestration/.../` | Informal orchestration drafts |
 
 ### Collision evidence (verified)
 
 The **bare `ADR-NNN` namespace collides across independent scopes** (the preliminary finding, confirmed with precision):
 
-- **`ADR-001`** — 4 files carry the prefix across **3 distinct decision contexts**: `docs/adrs/ADR-001-agent-architecture.md` (transcript) + `docs/adrs/ADR-001-amendment-001-python-preprocessing.md` (an amendment *within* the transcript context) + `projects/PROJ-014-.../phase-5/ADR-001-npt014-elimination.md` (neg-prompting) + (at session start) `projects/PROJ-031-.../decisions/ADR-001-skeleton-derived-branch-strategy.md`.
+- **`ADR-001`** — 4 files carry the prefix across **3 distinct decision contexts**: `docs/adrs/ADR-001-agent-architecture.md` (transcript) + `docs/adrs/ADR-001-amendment-001-python-preprocessing.md` (an amendment *within* the transcript context) + `PROJ-014-.../phase-5/ADR-001-npt014-elimination.md` (neg-prompting) + (at session start) `projects/PROJ-031-.../decisions/ADR-001-skeleton-derived-branch-strategy.md`.
 - **`ADR-002`** — `docs/adrs/ADR-002-artifact-structure.md` + `PROJ-014/.../ADR-002-constitutional-upgrades.md` + (at session start) `PROJ-031 ADR-002`.
 - **`ADR-003`** — `docs/adrs/ADR-003-bidirectional-linking.md` + `PROJ-014/.../ADR-003-routing-disambiguation.md` + (at session start) `PROJ-031 ADR-003`.
 - **Range reuse:** archived `ADR-031..034` occupy a range that a future bare "PROJ-031" numbering could visually alias.
@@ -197,7 +197,7 @@ Grounded in GOV.UK scope-determination + AWS/Nygard immutability + adr-tools lin
 
 ## P-022 Disclosures (Corrections, Inference, Gaps)
 
-- **BUG-006 factual error — corrected.** BUG-006's finding F-002 claims `ADR-EPIC002-001` "exists in two different projects: PROJ-022 … and PROJ-004." **This is false.** Filesystem verification: `ADR-EPIC002-001/002` exist **only** in `projects/PROJ-001-oss-release/decisions/`; PROJ-022 uses `ADR-PROJ022-*`; no PROJ-004 ADR-EPIC002 exists. The real, verifiable collision is in the **bare `ADR-NNN`** namespace (docs/adrs + PROJ-014, formerly PROJ-031). My recommendation is built on the verified collision, not BUG-006's example.
+- **BUG-006 factual error — corrected.** BUG-006's finding F-002 claims `ADR-EPIC002-001` "exists in two different projects: PROJ-022 … and PROJ-004." **This is false.** Filesystem verification: `ADR-EPIC002-001/002` exist **only** in `PROJ-001-oss-release/decisions/`; PROJ-022 uses `ADR-PROJ022-*`; no PROJ-004 ADR-EPIC002 exists. The real, verifiable collision is in the **bare `ADR-NNN`** namespace (docs/adrs + PROJ-014, formerly PROJ-031). My recommendation is built on the verified collision, not BUG-006's example.
 - **BUG-006 second inaccuracy.** BUG-006 asserts the convention is "documented in `quality-enforcement.md`." It is not — that file only *cites* `ADR-EPIC002-001` as a reference; it defines no ADR naming convention.
 - **Inference vs fact.** The scope hierarchy (GOV.UK), immutability/supersede (AWS/Nygard), bidirectional/amend links (adr-tools), and slug-as-ID (log4brains/JPH) are **source-verified**. The specific **promotion recipe (ID remap + `PROMOTED_FROM/TO` back-link)** and the **two-namespace scope-keyed scheme** are **my synthesis** of those sources plus Jerry's observed practice — labeled as such.
 - **Gaps where WebSearch yielded nothing.** No external source prescribes a concrete "renumber-and-backlink on promotion" mechanic (only the constituent parts). No external standard mandates a multi-project numbering rule — the ecosystem splits between global-sequence-plus-labels and per-project-directory. These gaps are stated rather than filled with fabrication.
@@ -222,7 +222,7 @@ Grounded in GOV.UK scope-determination + AWS/Nygard immutability + adr-tools lin
 13. [SimplerGrants — Repo organization ADR](https://wiki.simpler.grants.gov/product/decisions/adr/2025-01-02-repo-organization) — labels to scope decisions per service in a monorepo.
 14. [Microsoft Azure Well-Architected — Maintain an ADR](https://learn.microsoft.com/en-us/azure/well-architected/architect-role/architecture-decision-record) — corroborates immutability/lifecycle.
 
-Internal artifacts cited (filesystem-verified): `docs/knowledge/exemplars/templates/adr.md`; `skills/architecture/SKILL.md`; `projects/PROJ-030-bugs/reviews/BUG-006-adr-naming-evaluation.md`; `docs/design/ADR-{agent-design,routing-triggers,output-path-resolution}-001.md`; `docs/adrs/ADR-001..006`; `docs/archive/projects-archive/decisions/ADR-031..034`; `projects/PROJ-031-cowork-skeleton/decisions/ADR-PROJ031-001..003-*`; `.context/rules/quality-enforcement.md` (HARD ceiling 25/25; Retired-Rule-ID tombstone); `skills/worktracker/rules/worktracker-directory-structure.md` (`DEC-NNN`).
+Internal artifacts cited (filesystem-verified): `docs/knowledge/exemplars/templates/adr.md`; `skills/architecture/SKILL.md`; `PROJ-030-bugs/reviews/BUG-006-adr-naming-evaluation.md`; `docs/design/ADR-{agent-design,routing-triggers,output-path-resolution}-001.md`; `docs/adrs/ADR-001..006`; `docs/archive/projects-archive/decisions/ADR-031..034`; `projects/PROJ-031-cowork-skeleton/decisions/ADR-PROJ031-001..003-*`; `.context/rules/quality-enforcement.md` (HARD ceiling 25/25; Retired-Rule-ID tombstone); `skills/worktracker/rules/worktracker-directory-structure.md` (`DEC-NNN`).
 
 ---
 
