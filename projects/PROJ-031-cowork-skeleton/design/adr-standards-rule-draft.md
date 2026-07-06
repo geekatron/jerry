@@ -61,9 +61,16 @@ All standards are **MEDIUM-tier** (SHOULD/RECOMMENDED, override with documented 
 
 ## ID Scheme
 
-- **Canonical** (RECOMMENDED, all scopes): `ADR-{domain-slug}-NNN-{title-slug}.md`, e.g. `ADR-agent-design-001-canonical-format.md`.
-- **Dialect** (permitted, project-local only): `ADR-{PROJ\|EPIC\|FEAT\|STORY}NNN-NNN-{title-slug}.md`, e.g. `ADR-PROJ031-005-foo.md`.
-- **Deprecated**: bare `ADR-NNN-{slug}.md` (rejected by lint outside frozen dirs). **Frozen**: `ADR-NNN`/`ADR-0NN` in `docs/adrs/`, `docs/archive/` (do not extend).
+```mermaid
+flowchart TD
+    S["New ADR filename"] --> C{"Scope + promotion intent?"}
+    C -->|"any scope (RECOMMENDED)"| CAN["Canonical: ADR-{domain-slug}-NNN-{title-slug}.md"]
+    C -->|"project-local, positively never promotes"| DIA["Dialect (permitted): ADR-{PROJ|EPIC|FEAT|STORY}NNN-NNN-{title-slug}.md"]
+    C -->|"bare ADR-NNN"| DEP["DEPRECATED — rejected by lint outside frozen dirs"]
+    S -.->|"docs/adrs/, docs/archive/"| FRZ["Frozen: ADR-NNN / ADR-0NN — do not extend"]
+```
+
+*ID scheme (see ADR Fig. 1): canonical is the default; dialect is the discouraged local escape hatch; bare is deprecated; frozen sets are closed.*
 
 A filename PASSES if it matches **canonical OR dialect** (a lowercase-only regex would wrongly reject grandfathered uppercase dialect ADRs):
 
@@ -122,13 +129,21 @@ The lint parses this YAML `---` block (distinct from `jerry ast frontmatter`, wh
 
 ## Promotion Process
 
-Elevates a project decision to framework scope. Two paths plus a Path-0 graduation.
+Elevates a project decision to framework scope — two paths plus a Path-0 graduation:
 
-**Path 0 — Draft → canonical home:** a transient-location draft (`orchestration/*/explore/`, `ADR-OSS-NNN`/`adr-*`) is non-canonical until moved. Assign the canonical (or dialect) identity, `git mv` into a `decisions/`/`docs/design/` home, add frontmatter, set `status`. No tombstone.
+```mermaid
+flowchart TD
+    D["Project decision"] --> Q0{"Transient draft?<br/>(orchestration/*, ADR-OSS-*, adr-*)"}
+    Q0 -->|"yes"| P0["Path 0 — graduate: assign identity, git mv into a<br/>decisions/ or docs/design/ home, add frontmatter, set status (no tombstone)"]
+    Q0 -->|"no"| QID{"Identity form?"}
+    P0 --> QID
+    QID -->|"canonical ADR-{slug}-NNN"| P1["Path 1 (default, zero-churn): git mv to docs/design/;<br/>id + title-slug UNCHANGED; scope: framework;<br/>bare-ID citations intact (full-path move with the file)"]
+    QID -->|"dialect ADR-{PROJECT-ID}-NNN"| P2["Path 2 (discouraged): domain slug + next NNN; author framework<br/>ADR (body immutable); back-link (original SUPERSEDED + promoted_to;<br/>new promoted_from); re-point live citations only"]
+    P1 --> F["Framework ADR"]
+    P2 --> F
+```
 
-**Path 1 — Canonical ADR (default, zero-churn):** `git mv` to `docs/design/`, **identifier and `title-slug` unchanged**; set `scope: framework`. Bare-ID citations need no re-pointing (the majority); full-path citations move with the file (minority — see [descoped note](#l5-ci-lint-specification)).
-
-**Path 2 — Dialect ADR (discouraged, rename + tombstone):** choose a domain slug + next `NNN`; author the framework ADR in `docs/design/` (do not mutate the original body). Set `promoted_from`; bidirectional back-link (original → `SUPERSEDED` + `promoted_to`; framework → `promoted_from`). Re-point `grep -rl "ADR-PROJ{NNN}-NNN"` **in live documents only** (exclude CHANGELOGs, commit messages, release notes); optionally sweep GitHub Issues — the lint does not scan them.
+*Promotion flow (see ADR Fig. 3). Path-2 re-point: `grep -rl "ADR-PROJ{NNN}-NNN"` **in live documents only** (exclude append-only history — CHANGELOGs, commits, releases; optionally sweep GitHub Issues, which the lint does not scan). Full-path Path-1 citations move with the file (see the [descoped note](#l5-ci-lint-specification)).*
 
 A `DEC-NNN` SHOULD NOT be renamed into an ADR; author a new ADR and cross-link instead.
 
@@ -156,7 +171,20 @@ An amendment SHOULD NOT change an ADR's `scope`, `origin_project`/`origin_entity
 
 `PROPOSED` (not in force; default) · `ACCEPTED` (in effect) · `REJECTED` (declined) · `DEPRECATED` (no longer applies, no specific successor) · `SUPERSEDED` (replaced by a specific newer ADR; also terminal after Path-2).
 
-Transitions: `PROPOSED`→`ACCEPTED`/`REJECTED`; `ACCEPTED`→`SUPERSEDED`/`DEPRECATED`; `DEPRECATED`→`SUPERSEDED` (only if a specific replacement is *later* identified); `REJECTED`→`PROPOSED`. **`SUPERSEDED` is the one terminal state** (a revived decision is a new ADR). `DEPRECATED` has no *forward-link field* by design — it names no successor — but is **not** itself terminal: acquiring a specific replacement moves it to `SUPERSEDED` (which carries the link).
+```mermaid
+stateDiagram-v2
+    [*] --> PROPOSED
+    PROPOSED --> ACCEPTED: ratified
+    PROPOSED --> REJECTED: declined
+    REJECTED --> PROPOSED: reopened (rare)
+    ACCEPTED --> ACCEPTED: amended in place
+    ACCEPTED --> DEPRECATED: no successor
+    ACCEPTED --> SUPERSEDED: replaced / Path-2
+    DEPRECATED --> SUPERSEDED: replacement later identified
+    SUPERSEDED --> [*]: terminal
+```
+
+*Lifecycle (see ADR Fig. 4). **`SUPERSEDED` is the one terminal state** (a revived decision is a new ADR). `DEPRECATED` has no forward-link field by design — it names no successor — but is **not** terminal: acquiring a specific replacement moves it to `SUPERSEDED` (which carries the link).*
 
 ---
 
@@ -205,7 +233,7 @@ find projects docs/design -name 'ADR-*.md' \
 
 **Descoped, honestly (not phased, not committed).** Left out of the minimal core to keep it buildable by a solo maintainer and free of overclaimed coverage: provenance/framework-home WARNs, provenance-correctness checks, **repo-wide free-text citation scanning** (incl. GitHub Issues, full-path citations, config), taxonomy-synonymy matching, producer-drift monitoring, supersession separation-of-duties, repository-topology dialect rejection, entity-embedded-ADR scanning (R-10), and **cross-installation collision detection** across independent Jerry installs (the [INHERENT] residual R-18 in the parent ADR — single-tree lint/pre-flight cannot see a slug claimed in a separate installation; manual union-of-trees check at contribution-back time). The citation-scan omission is an **[INHERENT] residual R-B** — the core detects only structural frontmatter links; Path-1's ID-stable move avoids the churn for the bare-ID majority, and a manual `grep`/`gh issue list` sweep is the fallback (**owner: governance; cadence: at each Path-1/Path-2 promotion**). None is promised for a later release; a future amendment MAY add a single targeted rule if a gap causes real pain. ("Not committed" scopes descoped *lint rules* only — the parent ADR's R-6/R-7/PM-009 residual-monitoring commitments are a separate, watched category; DA-005-iter7.)
 
-*Notes (P-022): L-5/L-6 were retired in the subtraction pass; the 5 retained IDs keep their original numbers so changelog cross-refs stay resolvable (FM-007). L1 budget (CC-002): `.context/rules/*.md` already measures ~26.9k words (~36k tokens), so the SSOT's ~12,500-token L1 figure is a curated/re-injected subset, not a raw corpus sum; this file's **~6.4k tokens / 254 lines** (re-measured 2026-07-06 *after* the iteration-010 post-ceiling artifact-hygiene pass, `wc` = 254 lines / ~4.76k words × 1.35 — the single current figure, reconciled across the changelog and companion notes; the figure is self-referential — this very changelog entry is counted — so ±a-few-words is inherent and disclosed) is comparable to other substantive rule files and a bounded add. The iter-6…iter-010 growth is overclaim-correction and honest residual disclosure (L-7 forward-looking scope, the grandfather-baseline clause anchored to ratification and its capture procedure, the two-clause scan correction, the D-4 exemption references folded into L-1/L-2/L-4, the tag-stripping clause, and R-14…R-18) that cannot be cut without dropping a disclosure; it now sits **marginally above the 250-line self-guidance (254 lines) — within the original ~250–350-line range** — while remaining above the literal ~2.5k-token soft target. The +1 line vs. iteration-9 is the iteration-010 changelog row; the word growth is the in-line D-4 exemption references, the baseline capture procedure, R-18, and the tag-stripping clause; the two budget expressions diverge inherently at real rule-file density, disclosed rather than papered over.*
+*Notes (P-022): L-5/L-6 were retired in the subtraction pass; the 5 retained IDs keep their original numbers so changelog cross-refs stay resolvable (FM-007). L1 budget (CC-002): the SSOT's ~12,500-token L1 figure is a curated/re-injected subset, not a raw corpus sum. This file measures **~6.47k tokens / 283 lines** (`wc` 2026-07-06, this row counted) — above the ~2.5k soft target but a bounded, comparable size; per-iteration history is in the [Changelog](#changelog).*
 
 ---
 
@@ -250,5 +278,6 @@ Also (parent ADR M-14): document `decisions/` (both topologies) in the worktrack
 | **1.10** | **2026-07-06** | **Subtraction-doctrine pass 4 (iteration-8) — text/disclosure only, no new machinery; the 5-rule core is unchanged.** **EDIT:** ADR-M-001 gained the `id:`-SHOULD-equal-filename clause (RT-002/RT-001-iter8, disclosed as R-15); L-1 spec gained the grandfather-baseline clause so a later-edited legacy file (`ADR-150-001`) is exempt rather than new-bare, closing the deleted-L-12 gap by wording (IN-001); grandfather counts aligned to the single authoritative parent-ADR [D-4 reconciliation](../decisions/ADR-PROJ031-004-adr-identifier-convention.md#decision) (16 whole dialect corpus / 15 reachable / 3 canonical / 18 regression; FM-001-iter8); L-7 row disclosed as forward-looking with zero real YAML targets in the blockquote-only `ADR-PROJ031-002`→`003` chain (FM-002-iter8, R-16). **DISCLOSE:** frozen-dir new-file collision residual reference (DA-002, R-14); concurrent-supersession race in Supersede-and-Amend (FM-003-iter8, R-17); residual register range updated R-1…R-17. **RE-MEASURED (honest):** ~4.3k/242 → **~5.0k tokens / 247 lines** (`wc` 2026-07-06, ~3.7k words × 1.35), still within the 250-line guidance, above the ~2.5k soft target — disclosed. Full disposition: `../orchestration/adr-convention-20260702-001/adversary/iteration-008/post-tournament-fix-notes.md`. |
 | **1.11** | **2026-07-06** | **Owner-first remediation after iteration-9 (verified-protocol score 0.86, gate 0.95) — only the 5 panel-VERIFIED Criticals fixed; text/disclosure only, no new machinery; 5-rule core unchanged.** **RT-001 (command correction):** the pre-flight/L-3 `find` corrected from single `-path '*/decisions/*'` (reached only 15 files) to a **two-clause scan** `\( -path '*/decisions/*' -o -path '*docs/design/ADR-*.md' \)` reaching all **18** (15 dialect + 3 flat `docs/design/` framework ADRs), filesystem-verified 2026-07-06 — making the twice-stated "18 reachable" claim true (a character-of-the-existing-command fix, not a new rule, parallel to the iter-6 regex precedent). **RT-002 (scope-correction):** the pre-flight command comment now names the `${RepositoryRoot}/decisions` substitution required for the repository-based topology (the one-liner as written does not reach that home). **012-003 (temporal anchor):** the grandfather baseline re-anchored from "when the lint ships" to **ratification time (2026-07-05/06)**, closing the post-ratification amnesty-window inconsistency with D-4. Two-clause + ratification-anchor disclosures are the only changes here. **RE-MEASURED (honest):** ~5.0k/247 → **~5.5k tokens / 253 lines** (`wc` 2026-07-06, ~4.1k words × 1.35, this row counted), now marginally above the 250-line self-guidance (within the original ~250–350 range), above the ~2.5k soft target — disclosed. DA-002 and 012-001 were ADR-only fixes (Migration Plan M-2 link enumeration; Downstream-disclosure caveat). Full disposition: `../orchestration/adr-convention-20260702-001/adversary/iteration-009/remediation-notes.md`. |
 | **1.12** | **2026-07-06** | **Post-ceiling artifact-hygiene pass after iteration-010 (VERIFIED-CRITICALS protocol; score 0.88, gate 0.95; zero VERIFIED Criticals — no re-score claimed).** Text/disclosure only; the **5-rule core (L-1/L-2/L-3/L-4/L-7) is unchanged**. **Cluster 1 (row-vs-grandfather seam):** L-1 gains the third disjunct "canonical OR dialect OR present on the ratification-time grandfather baseline" (referencing the single authoritative parent-ADR [D-4 exemption rule](../decisions/ADR-PROJ031-004-adr-identifier-convention.md#decision)); L-2 scoped to files **absent from the baseline** (no false-positive on PROJ-014's pre-existing bare drafts); L-4 gains the `EPIC002`-in-project-`decisions/` grandfather-exempt note; ID-Scheme grandfathered gloss + Location Model note reference D-4. **Cluster 2 (baseline procedure):** the grandfather-baseline clause gains the who/where/what-changes-it capture procedure — checked-in `scripts/adr-grandfather-baseline-20260705.txt` + the ratification commit SHA, changed only via a superseding/amending ADR. **Cluster 4:** cross-installation collision (parent-ADR residual **R-18**) added to the L-3 row scope + the descoped note. **Cluster 5 (003-001/SM-001):** the wrapper note now names inline tournament-tag stripping/relocation on the M-2 move, so the shipped `.context/rules/adr-standards.md` is self-contained (its tag glossary lives only in the parent ADR and does not travel). **RE-MEASURED (honest):** 253 → **254 lines / ~4.76k words / ~6.4k tokens** (`wc` 2026-07-06, this self-referential row counted) — above the ~2.5k soft target and marginally above the 250-line guidance; the +1 line and word growth are irreducible honesty-disclosure content (the D-4 exemption references, the baseline capture procedure, R-18, and the tag-stripping clause) that cannot be cut without dropping a disclosure. Full disposition: `../orchestration/adr-convention-20260702-001/adversary/iteration-010/post-ceiling-fix-notes.md`. |
+| **1.13** | **2026-07-06** | **Visual layer per FU.10 — prose consolidated into diagrams; representation only, zero content-decision changes; 5-rule core (L-1…L-7) unchanged.** Added **3 compact Mermaid diagrams** (each below its section, one-line caption): ID-scheme tree ([ID Scheme](#id-scheme)) replacing the form-bullets; promotion flow ([Promotion Process](#promotion-process)) replacing the Path 0/1/2 paragraphs; lifecycle machine ([Status Vocabulary](#status-vocabulary)) replacing the `Transitions:` sentence. The bloated size-note was compressed (FM-007/CC-002 kept) to offset the diagrams. Valid `mermaid`; no `##` section changed (H-23 nav intact). **RE-MEASURED (`wc`):** 254 lines / 4,757 words (~6.42k tokens) → **283 lines / 4,792 words (~6.47k tokens)**, net **+35 words (+0.7%, flat)** — 3 diagrams offset by the replaced prose + size-note compression. Notes: `../orchestration/adr-convention-20260702-001/visual-layer-notes.md`. |
 
 *Proposed home on ratification: `.context/rules/adr-standards.md` · Tier: MEDIUM only · No HARD rule added.*

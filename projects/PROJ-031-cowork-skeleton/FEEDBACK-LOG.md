@@ -19,6 +19,8 @@
 
 Each entry records: **Verbatim** (user's exact words, typos preserved — verbatim means verbatim), **Summary** (assistant's normalization), **Disposition** (OPEN / IN-PROGRESS / DONE / WONTFIX + evidence links), and **Context** (date, session id, model(s), turn reference, related agent/workflow ids). Turn references are approximate (no native turn counter — a robust scheme is part of the convention design).
 
+**Rotate at the cap:** seal this file and start a new segment at **~50 entries or ~800 lines** (whichever first), continuing ids monotonically (segment rotation, per the convention design). The cap is stated here so it is legible from this log alone.
+
 Session metadata shared by FU.0–FU.2: **session** `fd8559c2-abdd-4da7-b29a-ef4895fa5248` · **date** 2026-07-05 · **receiving model** `claude-fable-5` (session default since 2026-07-02; turns before that were `claude-opus-4-8`) · **turn ref**: first user message after the wf_dcb52638-593 completion report · transcript: `[transcripts]/fd8559c2-abdd-4da7-b29a-ef4895fa5248.jsonl`.
 
 ---
@@ -155,6 +157,34 @@ Session metadata shared by FU.0–FU.2: **session** `fd8559c2-abdd-4da7-b29a-ef4
 **Summary:** Process-accountability challenge. Honest accounting given in-turn: convention design used jerry:ps-researcher + jerry:ps-architect (/problem-solving agents) in a background workflow; /adversary was deliberately gated until after user design review (vindicated — this review changed the design); /user-experience was NOT used and the FU.6 operator-burden miss is precisely the class of defect it would have caught. Corrective pipeline launched: ux-heuristic-evaluator review → ps-architect revision → blind /adversary C4 tournament ≥0.95, ≤7 iterations.
 
 **Disposition:** **IN-PROGRESS** — revision + tournament workflow running; quality bar for this deliverable set to ≥0.95 / ≤7 iterations per user.
+
+---
+
+## Review Round: post-tournament (2026-07-06)
+
+> User labels restarted at FU.0 per convention (logger-assigned canonical ids below). Shared context: session `fd8559c2-abdd-4da7-b29a-ef4895fa5248` · model `claude-fable-5` · turn ref: user message after the 1a841347 cadence-commit report.
+
+### FU.10 diagrams-for-humans (user label: FU.0)
+
+**Verbatim:**
+> FU.0. adr-standards-rule-draft.md
+> AN:
+> Is there a reason why we don't have any diagrams to help visualize for yourself and the human operator what the process is supposed to be? This is massive walls of text...
+
+**Summary:** The ADR-convention deliverables are prose/table-only — no diagrams for the ID-scheme decision, lifecycle, promotion flow, or location model. Honest answer: no good reason — ten tournament rounds optimized for adversary-readable text; operator visualization was never prioritized (same UX-lens blind-spot class as FU.6). **Accepted** — Mermaid visual layer being added to BOTH deliverables with the constraint that diagrams replace equivalent prose (net token count must not grow; rule draft should shrink from ~6.4k). Same lesson applied proactively to the FU-log package (2 diagrams in its endgame Restore pass).
+
+**Disposition:** **DONE (2026-07-06, v1.13).** 7 Mermaid diagrams added — ADR: Fig.1 ID-scheme decision tree, Fig.2 location-model map, Fig.3 promotion flow (Paths 0/1/2), Fig.4 lifecycle state machine (replaces the FM-020 transition table); rule draft: compact ID-scheme tree + promotion flow + lifecycle. **All 7 validated by actual `mmdc` render** (not claimed-valid — parsed). Content decisions + 5-rule lint core unchanged; equivalent prose swapped out (16 lines). Honest P-022 note: net size FLAT (+0.7% rule draft / +2.1% ADR incl. changelog row) rather than shrinking — the remaining prose is load-bearing residual disclosures that representation-only edits may not delete; "decrease or stay flat" floor met. Notes: `orchestration/adr-convention-20260702-001/visual-layer-notes.md`.
+
+### FU.11 fu-log-workflow-crashed (user label: FU.1)
+
+**Verbatim:**
+> FU.1. fu-log-convention-c4
+> AN:
+> Did this actually finish; I see a red circle and it indicates some components hit API issues.
+
+**Summary:** Correct catch — it did NOT finish. Workflow `wf_89445d40-a95` completed iterations 001–006 then died mid-iteration-007 on API errors (no completion notification ever arrived; zombie task stopped). Score trend was DECLINING (0.64/0.65/0.59/0.53/0.47/0.46) — worse than the ADR thread's oscillation — while exhibiting the same protocol signature: **zero regressions on previously-fixed items across all 6 rounds** and ~6 fresh Criticals per round that never diminish (IC hammered 6 consecutive iterations). Package stayed lean (788 lines/6 files — no bloat). Per the user's earlier ratified default ("if oscillation appears, switch to verified-criticals"), the switch fired.
+
+**Disposition:** **ENDGAME CONCLUDED (2026-07-06) — 0.72 with 6 panel-VERIFIED Criticals; user iteration budget (≤7) exhausted at 8 rounds; post-tournament fix running, then escalation.** Endgame `wf_fe75b9ad-a9a` (47 agents): Restore pass closed all 6 iteration-006 Criticals + added 2 Mermaid diagrams (FU.10 lesson) + hygiene; iteration-007 scored **0.83**; iteration-008 dropped to **0.72** because the refutation panels **CONFIRMED 6 new Criticals as real** (contrast: the ADR package's panels refuted all claims → the protocol is demonstrably not a rubber stamp — it also refuted PM-001-iter8 as a restatement of iteration-003's closed FM-006). Highest-materiality verified finding: **DA-002-i8 (unanimous)** — the Restore pass's inline-doc dedup silently drops EDITED markers = changed feedback lost = core-purpose violation; a regression introduced by a prior fix, caught by the panel layer. All 6 fixes wording-only; owner fix-pass running (no re-score claimed). Aborted iteration-007 preserved as `iteration-007-aborted-api-errors/`. Next: cadence commit (with the fu-log orchestration surface sanitized per FU.4 handoff) → both packages to user for accept/install sign-off.
 
 ---
 

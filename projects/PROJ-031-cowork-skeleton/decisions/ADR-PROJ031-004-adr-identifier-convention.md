@@ -318,6 +318,19 @@ I judge this conjunction unlikely but *not* impossible (n=3; the framework is yo
 
 ## L1: Technical Implementation
 
+```mermaid
+flowchart TD
+    S["Writing an ADR"] --> Q1{"Governs the framework broadly?"}
+    Q1 -->|"yes"| FW["ADR-{domain-slug}-NNN<br/>home: docs/design/"]
+    Q1 -->|"no — project-local"| Q2{"Certain it will NEVER promote?"}
+    Q2 -->|"no / unsure (DEFAULT)"| PC["ADR-{domain-slug}-NNN (RECOMMENDED)<br/>home: projects/PROJ-NNN-*/decisions/"]
+    Q2 -->|"yes — positively local"| PD["ADR-{PROJECT-ID}-NNN dialect<br/>(PERMITTED, discouraged — SOFT MAY)"]
+    Q2 -.->|"legacy entity-embedded"| EE["ADR-{PROJ|EPIC|FEAT|STORY}NNN-NNN<br/>in work/.../{ENTITY}/ (grandfathered)"]
+    S -->|"bare ADR-NNN"| DEP["DEPRECATED — collision source<br/>(frozen dirs excepted)"]
+```
+
+*Fig. 1 — "What ID + where?" decision tree (D-1..D-4). Subject-slug is the default at every scope; the project-ID dialect is a permitted, discouraged escape hatch; bare `ADR-NNN` is deprecated.*
+
 ### ID grammar (canonical and dialect)
 
 ```
@@ -393,6 +406,29 @@ The three existing framework ADRs already do this informally via `PS-ID`/`Parent
 | Legacy (transcript) | `docs/adrs/` | `ADR-NNN` | **Frozen** |
 | Archived | `docs/archive/.../decisions/` | `ADR-0NN` | **Frozen** |
 | Orchestration drafts | `projects/*/orchestration/.../` | `ADR-OSS-NNN`, `adr-*` | **Transient** (non-canonical until moved into a `decisions/` home) |
+
+```mermaid
+flowchart LR
+    subgraph Active["Active — canonical (domain-slug), identity stable"]
+        FW["docs/design/<br/>framework ADRs"]
+        PJ["projects/PROJ-NNN-*/decisions/<br/>project ADRs (recommended)"]
+        RR["{RepositoryRoot}/decisions/<br/>repo-based topology (alt)"]
+    end
+    subgraph Dialect["Active — permitted dialect (legacy)"]
+        PD["ADR-{PROJ|EPIC|FEAT|STORY}NNN-NNN<br/>project decisions/ or work/.../{ENTITY}/"]
+    end
+    subgraph Frozen["Frozen — do NOT extend"]
+        LG["docs/adrs/ (ADR-NNN, transcript)"]
+        AR["docs/archive/.../ (ADR-0NN)"]
+    end
+    subgraph Transient["Transient — non-canonical until moved"]
+        OR["projects/*/orchestration/.../<br/>ADR-OSS-NNN, adr-*"]
+    end
+    OR -.->|"graduate (Path 0)"| PJ
+    PJ -->|"promote = git mv (Path 1)"| FW
+```
+
+*Fig. 2 — Location model: scope lives in the **path** (mutable), not the identifier. Promotion moves location; frozen/transient sets stay put.*
 
 **Entity-prefix dialect in a project `decisions/` dir — grandfathered legacy, not a new permitted row (002-001 / CV-001-iter010).** The two `ADR-EPIC002-001/002` files predate this convention and live in `PROJ-001-oss-release/decisions/` — an `EPIC`-prefix dialect in a *project* `decisions/` dir rather than the `work/.../{ENTITY}/` home the Entity-embedded row describes. They are **grandfathered legacy dialect instances on the ratification-time baseline** (per the single authoritative [D-4 exemption rule](#decision)), so L-4 is baseline-exempt on them rather than misfiring. No fresh *permitted* Location Model row is added for this (location, ID-form) pairing: a *new* entity-prefix dialect SHOULD use the `work/.../{ENTITY}/` home or, preferably, a canonical slug from birth. This is disclosed here so the model's coverage of its own corpus is explicit, not implicit.
 
@@ -559,6 +595,20 @@ The decision is **ratified** (M-1 DONE, 2026-07-05); the rows below are the post
 
 Promotion elevates a project-relevant decision to framework-governing scope. There are **two promotion paths** (below), plus a **Path 0** that graduates an exploratory draft into a canonical home. Grounded in GOV.UK scope-determination + AWS/Nygard immutability + adr-tools link mechanics; the ID-handling specifics are Jerry synthesis (labeled per P-022, `adr-convention-standards-research.md:113,158`).
 
+```mermaid
+flowchart TD
+    D["Project-relevant decision"] --> Q0{"In a transient draft location?<br/>(orchestration/*, ADR-OSS-*, adr-*)"}
+    Q0 -->|"yes"| P0["Path 0 — graduate: assign identity, git mv<br/>into a decisions/ home, add frontmatter (no tombstone)"]
+    Q0 -->|"no"| QID{"Current identity form?"}
+    P0 --> QID
+    QID -->|"canonical ADR-{slug}-NNN"| P1["Path 1 (DEFAULT, zero-churn):<br/>git mv to docs/design/; ID + title-slug UNCHANGED;<br/>scope: project → framework; bare-ID citations intact"]
+    QID -->|"dialect ADR-{PROJECT-ID}-NNN"| P2["Path 2 (discouraged): pick domain slug + NNN;<br/>author framework ADR; tombstone original<br/>(SUPERSEDED + promoted_to / promoted_from);<br/>re-point live citations"]
+    P1 --> F["Framework ADR in docs/design/"]
+    P2 --> F
+```
+
+*Fig. 3 — Promotion paths. Path 1 (canonical) is a pure move with intact citations; Path 2 (dialect) is the one rename, requiring a tombstone and back-links. Path 0 graduates a draft, no tombstone.*
+
 ### Path 0 — Draft → canonical `decisions/` home (graduation, not yet promotion) (FM-005)
 
 An ADR authored in a transient location (`projects/*/orchestration/*/explore/`, or a working `ADR-OSS-NNN`/`adr-*` draft) is **non-canonical** until it lands in a `decisions/` (project) or `docs/design/` (framework) home. To graduate it:
@@ -638,16 +688,22 @@ Rule of thumb: *amend* preserves the decision and its ID; *supersede* replaces t
 
 The exemplar template currently offers only `PROPOSED | ACCEPTED | DEPRECATED | SUPERSEDED` (`docs/knowledge/exemplars/templates/adr.md:6`); Deliverable 2 specifies adding `REJECTED`.
 
-**Valid status transitions (FM-020).** Statuses are not freely interchangeable; the permitted transitions are:
+**Valid status transitions (FM-020).** Statuses are not freely interchangeable; the permitted transitions are exactly those below (this diagram replaces the prior transition table — same content, per FU.10):
 
-| From | To | Trigger |
-|------|----|---------|
-| `PROPOSED` | `ACCEPTED` | Ratified (P-020) |
-| `PROPOSED` | `REJECTED` | Considered and declined |
-| `ACCEPTED` | `SUPERSEDED` | A specific newer ADR replaces it (`superseded_by` set); also the terminal state of a dialect ADR after Path-2 promotion (`promoted_to` set) |
-| `ACCEPTED` | `DEPRECATED` | No longer applies, with no specific replacement |
-| `DEPRECATED` | `SUPERSEDED` | A specific replacement is *later* identified for a decision first deprecated without one (see the [forward-link note](#status-vocabulary) below) |
-| `REJECTED` | `PROPOSED` | Re-opened for reconsideration (rare; a new consideration cycle) |
+```mermaid
+stateDiagram-v2
+    [*] --> PROPOSED
+    PROPOSED --> ACCEPTED: ratified (P-020)
+    PROPOSED --> REJECTED: considered and declined
+    REJECTED --> PROPOSED: reopened (rare)
+    ACCEPTED --> ACCEPTED: amended in place (decision unchanged)
+    ACCEPTED --> DEPRECATED: no longer applies, no successor
+    ACCEPTED --> SUPERSEDED: replaced by a specific ADR / Path-2 promotion
+    DEPRECATED --> SUPERSEDED: specific replacement later identified
+    SUPERSEDED --> [*]: terminal
+```
+
+*Fig. 4 — Lifecycle. Amend keeps the ID and `ACCEPTED` (self-loop); supersede mints a new ID and tombstones the old. `SUPERSEDED` is the one terminal state; `PROPOSED`→`DEPRECATED`/`SUPERSEDED` is invalid (never in force). Triggers: `superseded_by`/`promoted_to` set on the respective edges.*
 
 **`SUPERSEDED` is the one terminal state** (FM-001-iter7 correction, P-022) — a superseded decision that becomes relevant again is addressed by a *new* ADR, never by reviving the old status (Nygard immutability). `DEPRECATED` is **not** terminal: as the [forward-link note](#status-vocabulary) below spells out, a decision deprecated *without* a specific successor may **later** transition to `SUPERSEDED` if a specific replacement is identified. An earlier draft listed `DEPRECATED` alongside `SUPERSEDED` as "terminal — do not transition further," directly contradicting that handling; the false invariant is deleted here rather than papered over. `PROPOSED`→`DEPRECATED`/`SUPERSEDED` is invalid (an un-ratified decision was never in force to deprecate/supersede).
 
@@ -802,6 +858,7 @@ Per c-007, this ADR must comply with the scheme it decides — or state its rema
 | **1.10** | **2026-07-06** | **Subtraction-doctrine pass 4 — owner-first remediation after iteration-8 tournament (score 0.62; 7 new distinct Criticals; gate 0.95).** All seven Criticals were assessed by their own blind reviewers as text/disclosure-fixable with **zero new machinery**; closed accordingly — the 5-rule core (L-1/L-2/L-3/L-4/L-7) is unchanged, no ledger/gate/matrix added. **Counts filesystem-verified 2026-07-06** (`find` over `projects/` + `docs/design/`). **CLOSED-BY-EDIT (3):** **FM-001-i8** — the 16-vs-15 grandfather-count self-contradiction fixed by a single authoritative reconciliation stated once at [D-4](#decision) (16 whole dialect corpus / 15 dialect-reachable / 3 canonical / **18** regression corpus), verified against the filesystem; the false "16 matches the rule draft's regression test" claim dropped; the M-6 row and Enforcement-Design paragraph now reference D-4. **IN-001** — grandfather clause added to L-1's spec text ([Enforcement Design](#enforcement-design-l5-ci-lint)): "pre-adoption grandfathered" operationalized against a static adoption-time baseline (the 18 reachable + out-of-scan `ADR-STORY015-001`), so a later-edited legacy file (`ADR-150-001`) is exempt rather than treated as new-bare — closing the deleted-L-12 gap by spec wording, not a sixth rule. **DA-001** — the lint's collision-safety topology-scope stated at the [Decision (D-5)](#decision) headline: repository-based-topology adopters (PROJ-031's own downstream audience) receive guidance + the pre-flight one-liner only, not lint coverage (underlying gap = existing R-10). **RESIDUAL-DISCLOSED (4):** **DA-002 → R-14** (frozen-dir new-file collision, L-9 deleted, persists post-M-6); **RT-001 → R-15** (frontmatter `id:` never deduplicated/filename-checked; guidance root-cause closed at ADR-M-001 per RT-002); **FM-002-i8 → R-16** (L-7 has zero real YAML targets in the blockquote-only `ADR-PROJ031-002`→`003` chain; L-7 disclosed as forward-looking); **FM-003-i8 → R-17** (cross-branch concurrent-supersession race, the supersession analog of R-6). **REBUTTED / DECLINED under doctrine:** re-adding L-9 or L-12, widening L-3 to scan `id:`, or a supersession-graph checker — all the additive move the subtraction doctrine forbids; disclosed as residuals instead. **INHERENT (disclosed, not fabricated):** M-2/M-6/M-12 tracked-work, the actual lint build, forward-promotion rate n=3. *Numbering note (P-022): appended as 1.10 (the next version after the live 1.9), not the task prompt's stale "v1.8" which predated the 1.8/1.9 passes; sequencing kept honest.* Full disposition + verification: `../orchestration/adr-convention-20260702-001/adversary/iteration-008/post-tournament-fix-notes.md`. |
 | **1.11** | **2026-07-06** | **Subtraction-doctrine pass 5 — owner-first remediation after iteration-9 (VERIFIED-CRITICALS protocol; score 0.86, gate 0.95).** Iteration-9's 2-of-3 majority refutation panel confirmed **5 of 10** claimed Criticals as VERIFIED; only those 5 are fixed here — all text/disclosure, **no new machinery**, the 5-rule core (L-1/L-2/L-3/L-4/L-7) unchanged. The 5 panel-refuted claims (DA-001, 004-001, 004-002, 011-001/CV-001, 012-002) were **not** actioned. **Load-bearing facts re-verified by `find`/`Glob` first (P-022, 2026-07-06):** 3 flat `docs/design/ADR-*.md`, none under a `decisions/` segment; 15 `projects/*/decisions/ADR-*.md`; the old single-clause command returned 15, the two-clause returns 18. **RT-001-iter009 (command correction):** the pre-flight/L-3 `find` (L1 Technical Implementation; [Enforcement Design](#enforcement-design-l5-ci-lint)) corrected to a **two-clause scan** (`\( -path '*/decisions/*' -o -path '*docs/design/ADR-*.md' \)`) so it reaches all **18** files — the twice-stated "18 reachable" claim (D-4, L-3 row, M-6 grandfather test) is now true of the actual command; the earlier single `-path '*/decisions/*'` silently excluded the 3 framework ADRs and returned only 15. A correction to the existing command, not a new rule (parallel to the iter-6 regex precedent). **RT-002-iter009 (scope-correction, D-5):** the pre-flight one-liner is disclosed to scan the project-based roots only; a repository-based-topology adopter MUST substitute `${RepositoryRoot}/decisions` — the fallback as written does not reach that topology's home either. **DA-002-20260706-i9 (Migration Plan M-2 enumeration):** M-2's cross-link-repair scope extended from the reciprocal ADR↔rule pair to name all **5** additional relative links that break on M-9/M-2 (3× `../FEEDBACK-LOG.md` incl. the Changelog-row link-target, `../orchestration/.../subtraction-pass-notes.md`, and the rule-draft's `ADR-PROJ031-003` link), each with a repo-root-relative repair target. **012-001 (Enforcement-Scope caveat):** added a plain current-state disclosure that until M-2 executes and a build is cut, a plugin install carries *no trace of this convention at all* (both deliverables live under the stripped `projects/`; the `.context/rules/adr-standards.md` destination does not yet exist) — the "day one" framing is the intended post-M-2 state. **012-003 (grandfather baseline):** re-anchored from "when the lint ships" to **ratification time (2026-07-05/06)**, closing the post-ratification amnesty-window inconsistency with D-4's "existing/legacy" framing. Advisory Majors (RT-003, 013-001, 003-001) were **out of this owner-first mandate** and deferred. Full disposition: `../orchestration/adr-convention-20260702-001/adversary/iteration-009/remediation-notes.md` + [subtraction-pass notes](../orchestration/adr-convention-20260702-001/subtraction-pass-notes.md#iteration-9-remediation-2026-07-06-subtraction-doctrine-pass-5). |
 | **1.12** | **2026-07-06** | **Post-ceiling artifact-hygiene pass after iteration-010 (VERIFIED-CRITICALS protocol; score 0.88, gate 0.95; verdict REVISE by score-band — **zero VERIFIED Criticals**, all 6 claimed Criticals refuted 2-of-3 by the adversarial panels).** **No re-score is claimed** — this pass fixes the 5 residual Major clusters the iteration-010 scorer named; text/disclosure only, **no new machinery**, the 5-rule core (L-1/L-2/L-3/L-4/L-7) unchanged. **Cluster 3 — P-022 honesty correction (PRIORITY, RT-001-iter010):** M-9's "no `.github/PULL_REQUEST_TEMPLATE.md` exists yet — Glob-verified" claim (originated FM-010-iter6, reaffirmed through iter-7…iter-9) was **FALSE** — a PR template **does exist** at `.github/pull_request_template.md` (lowercase, the GitHub-recognized form; committed 2026-02-18; filesystem-verified 2026-07-06) with a `## Checklist` section. The false claim was a false negative from an exact-uppercase-case search that never tested the conventionally-cased lowercase filename; M-9 is corrected to state the file exists and that the atomicity check is an unadded checklist bullet in it (an owned M-9-adjacent one-line edit, not performed here per P-020). Named explicitly as an honesty fix — a prior agent fabricated a "verified" repo-state claim, corrected here. **Cluster 1 — table-vs-grandfather seam (002-001 / 012-004 / 013-001 / CV-001-iter010):** the single grandfather-exemption rule is stated **once** at [D-4](#decision) and referenced (not re-derived) by L-1/L-2/L-4; L-1 gains the third disjunct "canonical OR dialect OR present on the ratification-time baseline" (no sentence now asserts `ADR-150-001` "is rejected" without the qualifier); L-4 gains an EPIC002-in-project-`decisions/` grandfather-exempt scope note; the Location Model gains a note for that class; the Migration-Plan count row references D-4 instead of re-enumerating (and its latent `ADR-EPIC002-001`→`002` phrasing is corrected to →`ADR-output-path-resolution-001` per CV-002). **Cluster 2 — ratification-baseline procedure (004-002 / 012-005 / 013-002):** the baseline clause + M-6 gain the minimal who/where/what-changes-it procedure — governance captures it at ratification as checked-in `scripts/adr-grandfather-baseline-20260705.txt` + the ratification commit SHA, changed only via a superseding/amending ADR (policy-without-procedure gap closed, executable not merely stateable). **Cluster 4 — cross-installation collision (012-006):** disclosed as new residual **R-18** (single-tree lint/pre-flight cannot see a slug claimed in an independent Jerry install; manual union-of-trees check at contribution-back). **Cluster 5 — shipped tag-glossary (003-001/SM-001):** M-2 gains a tag-stripping close-condition + the rule-draft wrapper names it, so the auto-loaded rule ships self-contained. Full disposition: `../orchestration/adr-convention-20260702-001/adversary/iteration-010/post-ceiling-fix-notes.md`. |
+| **1.13** | **2026-07-06** | **Visual layer per user feedback FU.10 — representation only; zero content-decision changes; the 5-rule core (L-1/L-2/L-3/L-4/L-7) is unchanged.** FU.10 asked why the package is "massive walls of text" with no diagrams. Added **4 compact Mermaid diagrams**, each immediately below the section it serves with a one-line caption: **Fig. 1** ID-scheme decision tree ("what ID + where?", D-1..D-4) atop [L1 Technical Implementation](#l1-technical-implementation); **Fig. 2** location-model map beside the L1 [canonical location model](#l1-technical-implementation) table; **Fig. 3** promotion-flow (Path 0 / Path 1 canonical pure-`git mv` / Path 2 dialect rename+tombstone) atop [Promotion Process](#promotion-process-step-by-step); **Fig. 4** lifecycle state machine in [Status Vocabulary](#status-vocabulary). **Prose consolidated into a diagram:** Fig. 4 **replaces** the prior "Valid status transitions (FM-020)" 7-row table (same transitions, now visual) — the one net prose-for-diagram swap; the terminal-state disclosure prose is retained. All diagrams cross-checked for consistency with the surrounding normative text (S-011 self-check): Fig. 4 vs. the terminal-state/DEPRECATED prose; Fig. 3 vs. Path 0/1/2 numbered steps; Fig. 1 vs. D-1..D-4; Fig. 2 vs. the Location Model table. Valid fenced `mermaid` (`flowchart TD/LR`, `stateDiagram-v2`); no exotic features. No `##` section added/removed, so the H-23 nav table is unchanged. **RE-MEASURED (honest, `wc` 2026-07-06):** 811 lines / 28,229 words (~38.1k tokens) → **868 lines / 28,820 words (~38.9k tokens)**, i.e. +57 lines / +591 words / ~+0.80k tokens (+2.1%). The bulk of that delta is *this changelog row itself* (~230 words) plus the 4 diagrams and captions; the transition-table→Fig. 4 swap reclaimed ~120 words. On a 38k-token base this is "stay flat" within the mandate — the ADR was never the shrink target (the companion rule draft was); here the priority was navigability of a genuine wall of text. |
 
 ---
 

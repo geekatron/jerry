@@ -20,6 +20,8 @@
 
 Shared context for DEC-LLM-001..003: **datetime** 2026-07-05 · **session** `fd8559c2-abdd-4da7-b29a-ef4895fa5248` · **model** `claude-fable-5` (user messages authored by human; assistant turns before 2026-07-02 were `claude-opus-4-8`) · transcript: `[transcripts]/fd8559c2-abdd-4da7-b29a-ef4895fa5248.jsonl`.
 
+**Rotate at the cap:** seal this file and start a new segment at **~50 entries or ~800 lines** (whichever first), continuing ids monotonically (segment rotation, per the convention design). The cap is stated here so it is legible from this log alone.
+
 ---
 
 ## DEC-LLM-001 scheme-b-ratified
