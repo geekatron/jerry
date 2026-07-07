@@ -1,0 +1,36 @@
+stateDiagram-v2
+    [*] --> Claimed: finder raises finding
+
+    Claimed --> PanelAdjudication: severity == Critical (C3/C4 gate)
+    Claimed --> AdvisoryMajorMinor: severity == Major or Minor
+
+    state PanelAdjudication {
+        [*] --> Factual
+        [*] --> Materiality
+        [*] --> RemediationValue
+        Factual --> Tally
+        Materiality --> Tally
+        RemediationValue --> Tally: 2-of-3, DEFAULT-REFUTED
+    }
+
+    PanelAdjudication --> Verified: 2-of-3 majority
+    PanelAdjudication --> Refuted: below majority
+
+    Refuted --> ZeroWeight: carries no dimension weight
+    ZeroWeight --> [*]
+
+    Verified --> AutoReviseGate: blocks PASS regardless of composite
+    AdvisoryMajorMinor --> Remediated: advisory (scorer judgment)
+
+    AutoReviseGate --> Remediated: owner subtraction-first pass
+
+    state Remediated {
+        [*] --> ClosedByDeletion
+        [*] --> ClosedByEdit
+        [*] --> ClosedByRebuttal
+        [*] --> ClosedByDisclosure
+    }
+
+    Remediated --> DisclosedResidual: irreducible, honestly named
+    Remediated --> [*]: closed
+    DisclosedResidual --> [*]: valid MEDIUM posture (not a finding)

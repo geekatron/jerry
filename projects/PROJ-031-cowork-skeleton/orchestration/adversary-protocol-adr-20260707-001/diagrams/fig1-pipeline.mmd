@@ -1,0 +1,38 @@
+flowchart TD
+    START([Deliverable + criticality]) --> SEL["adv-selector<br/>strategy set + order"]
+
+    subgraph FINDERS["Finder groups A to E (unchanged)"]
+        direction TB
+        A["Group A - Self-Review<br/>S-010"]
+        B["Group B - Strengthen<br/>S-003 (H-16)"]
+        C["Group C - Challenge<br/>S-002 / S-004 / S-001"]
+        D["Group D - Verify-strategies<br/>S-007 / S-011"]
+        E["Group E - Decompose<br/>S-012 / S-013"]
+        A --> B --> C --> D --> E
+    end
+
+    SEL --> A
+    E --> CLAIMS{"Any claimed<br/>Criticals?"}
+
+    subgraph VERIFY["NEW: Refutation-Panel Verify stage (criticality-gated)"]
+        direction TB
+        L1["Lens 1 - Factual accuracy<br/>adv-verifier (blind)"]
+        L2["Lens 2 - Materiality<br/>adv-verifier (blind)"]
+        L3["Lens 3 - Remediation-value<br/>adv-verifier (blind)"]
+        MAJ["2-of-3 majority<br/>DEFAULT-REFUTED"]
+        L1 --> MAJ
+        L2 --> MAJ
+        L3 --> MAJ
+    end
+
+    CLAIMS -- "Yes (C4 all / C3 Criticals-only)" --> L1
+    CLAIMS -- "Yes (C4 all / C3 Criticals-only)" --> L2
+    CLAIMS -- "Yes (C4 all / C3 Criticals-only)" --> L3
+    CLAIMS -- "No, or C1-C2" --> F
+
+    MAJ -- "VERIFIED" --> VC["VERIFIED Criticals<br/>(gate auto-REVISE)"]
+    MAJ -- "REFUTED" --> RC["REFUTED<br/>(zero dimension weight)"]
+
+    VC --> F["Group F - Score<br/>S-014 (ALWAYS LAST)<br/>dual-protocol + delta-reconciliation"]
+    RC --> F
+    F --> OUT([PASS / REVISE / ESCALATE])

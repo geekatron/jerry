@@ -1,0 +1,29 @@
+flowchart LR
+    subgraph OWNER["Lane: Owner / creator (ps-architect)"]
+        direction TB
+        O1["Deliverable vN"]
+        O5["Subtraction-first fix pass<br/>+ disposition table"]
+        O6["Deliverable vN+1"]
+    end
+
+    subgraph FINDERS["Lane: Finders (adv-executor x9, blind)"]
+        direction TB
+        FN["Run selected strategies<br/>emit claimed findings"]
+    end
+
+    subgraph PANELS["Lane: Refutation panels (adv-verifier, blind)"]
+        direction TB
+        PN["3 lenses per Critical-bearing report<br/>(all in-report Criticals), 2-of-3, DEFAULT-REFUTED"]
+    end
+
+    subgraph SCORER["Lane: Scorer (adv-scorer)"]
+        direction TB
+        SC["S-014 on VERIFIED only<br/>dual-protocol + delta-reconcile"]
+    end
+
+    O1 --> FN
+    FN -- "claimed findings" --> PN
+    PN -- "VERIFIED / REFUTED verdicts" --> SC
+    SC -- "verdict + VERIFIED Criticals" --> O5
+    O5 --> O6
+    O6 -. "next round (until stop-condition)" .-> FN

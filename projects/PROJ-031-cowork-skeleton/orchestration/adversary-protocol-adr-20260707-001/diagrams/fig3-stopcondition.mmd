@@ -1,0 +1,19 @@
+flowchart TD
+    R([Round N scored]) --> PROTO{"Verified protocol<br/>running this round?"}
+
+    PROTO -- "No (old protocol,<br/>no panels yet)" --> Q2{"Do claimed Criticals RECUR<br/>across independent rounds?"}
+    Q2 -- "Yes: convergent<br/>(real defect)" --> FIX["Owner subtraction-first<br/>remediation pass"]
+    Q2 -- "No: fresh stream every round<br/>(protocol artifact)" --> SWITCH["Switch to VERIFIED protocol<br/>(3-lens refutation panels)"]
+    SWITCH --> R
+
+    PROTO -- "Yes (verified protocol)" --> Q1{"Any VERIFIED<br/>Criticals this round?"}
+    Q1 -- "Yes: ALWAYS remediate<br/>(D-2 unconditional gate)" --> FIX
+    Q1 -- "No, composite >= gate" --> PASS([PASS - accept])
+    Q1 -- "No, composite < gate" --> BAND["REVISE by score-band<br/>(targeted polish)"]
+
+    FIX --> Q4{"RT-M-010 ceiling reached?<br/>(C3=7 / C4=10)"}
+    BAND --> Q4
+
+    Q4 -- "No, and delta >= 0.01" --> NEXT([Next round])
+    Q4 -- "No, but plateau: delta < 0.01 x3" --> ESC
+    Q4 -- "Yes: ceiling" --> ESC([ESCALATE to user<br/>present best result + residuals])

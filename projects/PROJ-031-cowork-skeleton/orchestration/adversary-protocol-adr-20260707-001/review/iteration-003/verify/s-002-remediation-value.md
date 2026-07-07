@@ -1,0 +1,38 @@
+# Refutation Panel — Remediation-Value Lens
+
+**Target report:** `projects/PROJ-031-cowork-skeleton/orchestration/adversary-protocol-adr-20260707-001/review/iteration-003/s-002-findings.md` (S-002 Devil's Advocate, iteration 3)
+**Deliverable under review:** `projects/PROJ-031-cowork-skeleton/decisions/ADR-adversary-tournament-protocol-001-verified-criticals-methodology.md`
+**Lens:** Remediation-value (would the proposed fix materially improve decision quality, or is it churn/machinery-adding?)
+**Panel constraint:** Blind to other lenses' verdicts. DEFAULT REFUTED IF UNCERTAIN.
+**Scope:** Critical-severity claims only (DA-001-i3, DA-002-i3). DA-003-i3 (Major) and DA-004-i3 (Minor) are out of scope for this panel per protocol (panels adjudicate Criticals only).
+
+---
+
+## DA-001-i3 — VERIFIED
+
+**Claim:** The D-1 (no verification panel at C1–C2) + D-2 (verified-only auto-REVISE gating) combination silently makes the automatic-REVISE special case permanently unreachable at C1–C2, regressing an existing unconditional control with no disclosure in Risks/Consequences.
+
+**Remediation-value assessment:** Direct read of `skills/adversary/agents/adv-scorer.md:165-168` confirms the current rule ("Any Critical finding from adv-executor reports → automatic REVISE regardless of score") carries no criticality branch — it fires today at every tier including C2. The ADR's Decision table (`ADR-adversary-tournament-protocol-001-verified-criticals-methodology.md:439-440`) replaces this unconditionally via D-2 ("Only panel-VERIFIED Criticals trigger automatic-REVISE"), and WI-3's acceptance criteria (line 847: "Lines 166–167 rule replaced with verified-only gating") confirms a full, unqualified replacement. Since D-1 (line 439) withholds the panel entirely at C1–C2 ("C1–C2 none"), no Critical claim raised at C2 can ever be "panel-VERIFIED" — the new auto-REVISE trigger becomes structurally unreachable at exactly the tier (C2 "Standard," the framework's most common day-to-day criticality) where S-002 is a required strategy per `.context/rules/quality-enforcement.md`. Searching the ADR's own self-audit (Negative Consequences, lines 794-809; Risk register, lines 822-830) finds no entry naming this specific regression — RSK-3 (line 826) covers only *miscategorized* C4-work-run-as-C2, not the inherent C2 gating gap present even under correct categorization. This is a genuine, confirmed specification gap, not a manufactured or hypothetical one. The proposed fix (retain the pre-existing unconditional rule as an explicit C1–C2 fallback, or explicitly disclose the regression as an accepted named trade-off) is a small textual clarification consistent with the ADR's own subtraction-first doctrine — it adds no new agent, template, or process step. Leaving this unaddressed carries real operational stakes: a C2 deliverable with a genuine, unrefuted Critical (raised by the required S-002/S-007 strategies) but a composite score at or above 0.92 would newly PASS under the letter of D-2, where today it would be hard-blocked. This is exactly the kind of quality-gate erosion the ADR is designed to prevent at C3/C4, inadvertently introduced at C2. Fixing it materially improves decision quality; it is not churn.
+
+**Evidence:** `skills/adversary/agents/adv-scorer.md:165-168` (direct read, no criticality branch present); ADR lines 439-440 (D-1/D-2 decision rows), 514 (Figure 1 Mermaid: `CLAIMS -- "No, or C1-C2" --> F`), 794-809 (Negative Consequences, no entry names this gap), 822-830 (Risk register, RSK-3 addresses a different failure mode), 847 (WI-3 AC, unqualified replacement).
+
+---
+
+## DA-002-i3 — VERIFIED
+
+**Claim:** RSK-7's stated mitigation (WI-8 non-ADR-genre validation gates "the protocol [being] treated as framework-general") only actually gates a documentation cross-reference (WI-7), not the mechanism's real operational deployment — WI-1 through WI-5 (the agent, template, scorer edit, selector edit, SKILL.md edit) carry no dependency on WI-8 and, once shipped, activate the Verify stage genre-agnostically for every C3/C4 tournament.
+
+**Remediation-value assessment:** The Work-Item dependency column (ADR lines 845-852) confirms WI-1 depends only on WI-2, WI-3 on WI-1, WI-4 on WI-2, WI-5 on WI-1/WI-3/WI-4 — none reference WI-8. Only WI-7 (line 851, the `quality-enforcement.md` pointer edit) carries the explicit "MUST NOT land until WI-8... has run" precondition. Direct read of `skills/adversary/agents/adv-selector.md:75-107` confirms the AE-001 through AE-006 escalation logic keys strictly on file path patterns and content keywords (governance files, `.context/rules/`, `decisions/`, security terms), never on deliverable genre — so once WI-4 ships, the Verify stage inserts for any C3/C4 deliverable of any type, ADR or not. This means the mechanism that RSK-7 is worried about generalizing prematurely from an n=2, same-author, same-project, same-reviewer-roster evidence base does in fact generalize immediately upon WI-1–WI-5 shipping, while the RSK-7 mitigation text and the WI-7 precondition read (to an ordinary reader) as if WI-8 gates the mechanism's activation rather than merely a documentation cross-reference. This is a genuine internal-consistency/traceability gap between the dependency graph and the risk narrative it is invoked to satisfy, not a nitpick over wording the ADR never intended to make precise — the ADR itself frames the WI-7 precondition as "the concrete act of treating the protocol as framework-general" (line 851), which is a specific, checkable claim that the dependency graph does not support once traced to WI-1–WI-5. The proposed fixes are both low-cost and substantive rather than machinery-adding: (a) adding a WI-8 dependency to WI-4 (or WI-1–WI-5 collectively) is a one-line change to an already-PROPOSED, not-yet-implemented backlog — sequencing, not new apparatus; (b) rewriting RSK-7's mitigation prose to honestly describe WI-8 as post-hoc validation rather than a pre-deployment gate is a pure textual correction. Either resolves a real ambiguity that currently lets a reader believe non-ADR-genre tournaments are protected from an unvalidated, thinly-evidenced protocol change when, as written, they are not. This meets the bar for genuine remediation value: it changes either real deployment sequencing or the accuracy of a risk-mitigation claim the ADR relies on to justify framework-wide generalization from a small, correlated evidence base.
+
+**Evidence:** ADR lines 845-852 (Work-Item dependency column, WI-1 through WI-5 list no WI-8 dependency; only WI-7 does); ADR line 830 (RSK-7 mitigation text); ADR line 851 (WI-7 precondition text, "the concrete act of treating the protocol as framework-general"); `skills/adversary/agents/adv-selector.md:75-107` (direct read, AE-001–AE-006 escalation is genre-agnostic — path/keyword-based only).
+
+---
+
+## Summary Table
+
+| Finding ID | Verdict | Basis |
+|------------|---------|-------|
+| DA-001-i3 | VERIFIED | Confirmed specification gap (unreachable auto-REVISE at C1–C2); fix is a low-cost textual clarification with real operational stakes at the most common criticality tier — not churn. |
+| DA-002-i3 | VERIFIED | Confirmed dependency-graph/risk-narrative mismatch (WI-1–WI-5 activate genre-agnostically without a WI-8 gate); fix is a one-line dependency edit or textual correction resolving a genuine ambiguity in the ADR's own risk-mitigation claim — not churn. |
+
+Neither finding was refuted. Both attack genuine specification/traceability gaps confirmed by direct reads of the ADR and the two cited agent-definition files, and both proposed fixes are inexpensive, non-machinery-adding corrections consistent with the ADR's own subtraction-first doctrine.
