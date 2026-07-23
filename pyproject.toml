@@ -39,7 +39,7 @@ dependencies = [
     "pyyaml>=6.0",  # EN-005: StalenessDetector ORCHESTRATION.yaml parsing
     "requests>=2.34.2",
     "pygments>=2.19.3",
-    "pymdown-extensions>=10.21.3",
+    "pymdown-extensions>=11.0.1",
 ]
 
 [project.optional-dependencies]
