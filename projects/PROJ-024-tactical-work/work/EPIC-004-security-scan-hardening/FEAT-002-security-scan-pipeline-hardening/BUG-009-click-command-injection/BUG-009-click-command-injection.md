@@ -1,12 +1,11 @@
 # BUG-009: click 8.3.1 Transitive Command Injection in click.edit() (PYSEC-2026-2132)
 
 > **Type:** bug
-> **Status:** completed
+> **Status:** in_progress
 > **Priority:** high
 > **Impact:** medium
 > **Severity:** major
 > **Created:** 2026-08-05
-> **Completed:** 2026-08-05
 > **Parent:** FEAT-002
 > **Found In:** click 8.3.1 (transitive, via rich-click)
 > **Fix Version:** click 8.3.3
@@ -85,3 +84,4 @@ The transitive dependency `click` 8.3.1 (pulled in via `rich-click`) is affected
 |------|--------|-------|
 | 2026-08-05 | pending | Bug filed per owner decision (track-and-defer) during EPIC-004 verification pass; detected daily by scheduled scan since ~2026-07-18; GH issue #336 opened for H-32 parity |
 | 2026-08-05 | completed | Deferral reversed by owner: the CVE blocked all git pushes via the pre-push pip-audit hook (which does not read the accept-list). Fixed same-day: `click>=8.3.3` added to constraint-dependencies, lock resolves click 8.4.2, local audit clean (105 packages, 0 findings). Scheduled-scan green + #335 auto-close expected on next daily run. |
+| 2026-08-05 | in_progress | Closure reverted per owner review: fix (commit d715313c) is on the feature branch only, NOT on main — main's scan is still red, so AC-3/AC-4 cannot be true yet. GH #336 reopened; it auto-closes via the commit's "Closes #336" trailer when the branch merges. Cross-links added between #335 and #336. |
