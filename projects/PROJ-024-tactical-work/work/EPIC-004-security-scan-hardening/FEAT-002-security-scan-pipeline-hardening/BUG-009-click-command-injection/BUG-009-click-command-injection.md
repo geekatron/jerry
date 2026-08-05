@@ -1,11 +1,12 @@
 # BUG-009: click 8.3.1 Transitive Command Injection in click.edit() (PYSEC-2026-2132)
 
 > **Type:** bug
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** medium
 > **Severity:** major
 > **Created:** 2026-08-05
+> **Completed:** 2026-08-05
 > **Parent:** FEAT-002
 > **Found In:** click 8.3.1 (transitive, via rich-click)
 > **Fix Version:** click 8.3.3
@@ -31,7 +32,7 @@ The transitive dependency `click` 8.3.1 (pulled in via `rich-click`) is affected
 **Key Details:**
 - **Symptom:** Scheduled scan fails daily with `Found 1 known vulnerability in 1 package` — `click 8.3.1 PYSEC-2026-2132 8.3.3`
 - **Frequency:** Every scheduled run since the advisory was published
-- **Workaround:** None applied; owner decision is track-and-defer via this bug (no accept-list entry)
+- **Workaround:** None applied; initially track-and-defer per owner decision, then fixed same-day when the CVE proved to block all git pushes via the pre-push pip-audit hook (owner-approved change of course)
 
 ---
 
@@ -56,11 +57,11 @@ The transitive dependency `click` 8.3.1 (pulled in via `rich-click`) is affected
 
 ## Acceptance Criteria
 
-- [ ] `click` is constrained to `>=8.3.3` via `[tool.uv] constraint-dependencies` in `pyproject.toml` (pattern of commit e372e418)
-- [ ] `uv.lock` is re-locked and resolves click at 8.3.3 or later
-- [ ] Scheduled scan (`security-scan.yml`) runs green (no unaccepted CVEs)
-- [ ] Rolling alert issue [#335](https://github.com/geekatron/jerry/issues/335) auto-closes on the first clean scan
-- [ ] No new CVEs are introduced by the bump (scanner exits clean after re-lock)
+- [x] `click` is constrained to `>=8.3.3` via `[tool.uv] constraint-dependencies` in `pyproject.toml` (pattern of commit e372e418) — added 2026-08-05
+- [x] `uv.lock` is re-locked and resolves click at 8.3.3 or later — resolves **8.4.2**
+- [ ] Scheduled scan (`security-scan.yml`) runs green (no unaccepted CVEs) — expected on next scheduled run (~06:00 UTC); local equivalent audit already clean (105 packages, 0 findings)
+- [ ] Rolling alert issue [#335](https://github.com/geekatron/jerry/issues/335) auto-closes on the first clean scan — pending that run
+- [x] No new CVEs are introduced by the bump (scanner exits clean after re-lock) — `uv run --frozen pip-audit --skip-editable`: 105 packages audited, 0 vulnerabilities
 
 ---
 
@@ -83,3 +84,4 @@ The transitive dependency `click` 8.3.1 (pulled in via `rich-click`) is affected
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-08-05 | pending | Bug filed per owner decision (track-and-defer) during EPIC-004 verification pass; detected daily by scheduled scan since ~2026-07-18; GH issue #336 opened for H-32 parity |
+| 2026-08-05 | completed | Deferral reversed by owner: the CVE blocked all git pushes via the pre-push pip-audit hook (which does not read the accept-list). Fixed same-day: `click>=8.3.3` added to constraint-dependencies, lock resolves click 8.4.2, local audit clean (105 packages, 0 findings). Scheduled-scan green + #335 auto-close expected on next daily run. |
