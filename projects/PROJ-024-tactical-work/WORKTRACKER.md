@@ -18,10 +18,9 @@
 | EN-004 | Enabler | Memory-Keeper Collision Detection Enhancement | pending | FEAT-001 |
 | EPIC-004 | Epic | Dependency Security-Scan Pipeline Hardening | in_progress | PROJ-024 |
 | FEAT-002 | Feature | Security-scan pipeline hardening | in_progress | EPIC-004 |
-| EN-007 | Enabler | Dependency security-scan pipeline hardening (open solely pending TASK-035) | in_progress | FEAT-002 |
+| EN-007 | Enabler | Dependency security-scan pipeline hardening (6/7 ACs done; open solely pending STORY-028's alerting criterion) | in_progress | FEAT-002 |
 | STORY-028 | Story | Add owner alerting via an auto-managed rolling GitHub issue (verified 60% — AC-4 failed, AC-2/AC-3 unproven) | in_progress | FEAT-002 |
 | BUG-009 | Bug | click 8.3.1 transitive command injection — fix delivered on branch (click>=8.3.3, resolves 8.4.2); completion pending merge to main + green scan (#336) | in_progress | FEAT-002 |
-| TASK-035 | Task | Confirm Dependabot security updates + vulnerability alerts are enabled in repo Settings (confirmed NOT enabled 2026-08-05) | pending | EN-007 |
 
 ## Completed
 
@@ -106,3 +105,4 @@
 | STORY-027 | Story | Add owner-governed CVE accept-list with mandatory expiry/re-review | FEAT-002 | 2026-08-05 |
 | STORY-029 | Story | Fix the silent-failure guard to verify a meaningful audit (not just non-empty output) | FEAT-002 | 2026-08-05 |
 | STORY-030 | Story | Remediate the 9 current transitive CVEs (mako→1.3.12, urllib3→2.7.0, msgpack→1.2.1, pydantic-settings→2.14.2, pip→26.1.2) | FEAT-002 | 2026-08-05 |
+| TASK-035 | Task | Confirm Dependabot security updates + vulnerability alerts enabled in repo Settings — owner enabled alerts/malware alerts/security updates; alerts API-confirmed | EN-007 | 2026-08-05 |

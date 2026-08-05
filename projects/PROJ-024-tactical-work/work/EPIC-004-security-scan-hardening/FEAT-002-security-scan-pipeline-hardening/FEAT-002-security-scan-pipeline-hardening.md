@@ -142,9 +142,9 @@ Harden the dependency security-scan pipeline by inserting a Feature container th
 | Stories:   [################....] 80% (4/5 completed)              |
 | Enablers:  [....................] 0% (0/1 completed)               |
 | Bugs:      [##########..........] 50% (1/2 completed)              |
-| Tasks:     [....................] 0% (0/1 completed)               |
+| Tasks:     [####################] 100% (1/1 completed)             |
 +------------------------------------------------------------------+
-| Overall:   [###########.........] 56% (5/9 items)                  |
+| Overall:   [#############.......] 67% (6/9 items)                  |
 +------------------------------------------------------------------+
 ```
 
@@ -162,9 +162,9 @@ Harden the dependency security-scan pipeline by inserting a Feature container th
 | **Completed Bugs** | 1 (BUG-008 — closed 2026-08-05) |
 | **Open Bugs** | 1 (BUG-009, in_progress — fix on branch, pending merge + green scan) |
 | **Total Tasks** | 1 |
-| **Completed Tasks** | 0 |
-| **Open Tasks** | 1 (TASK-035, pending — Dependabot confirmed NOT enabled) |
-| **Completion %** | 56% (5/9 items) |
+| **Completed Tasks** | 1 (TASK-035 — closed 2026-08-05, Dependabot enabled by owner, alerts API-confirmed) |
+| **Open Tasks** | 0 |
+| **Completion %** | 67% (6/9 items) |
 
 ---
 
@@ -191,3 +191,4 @@ Harden the dependency security-scan pipeline by inserting a Feature container th
 | 2026-08-05 | claude | in_progress | wt-verifier pass closed BUG-008, STORY-026, STORY-027, STORY-029, STORY-030. Remaining open: STORY-028 (60% — AC-4 failed, AC-2/3 unproven), EN-007/TASK-035 (Dependabot confirmed NOT enabled), and new BUG-009 (click 8.3.1 / GH #336, track-and-defer). |
 | 2026-08-05 | claude | in_progress | BUG-009 deferral reversed by owner (CVE blocked all pushes via pre-push pip-audit hook): click>=8.3.3 constraint added, lock resolves 8.4.2, local audit clean → BUG-009 completed. Open: STORY-028, EN-007/TASK-035. |
 | 2026-08-05 | claude | in_progress | BUG-009 closure reverted per owner review — fix is on the feature branch only, not main; BUG-009 back to in_progress until merge + green scheduled scan. GH #336 reopened (auto-closes on merge via commit trailer). Open: STORY-028, BUG-009, EN-007/TASK-035. |
+| 2026-08-05 | claude | in_progress | TASK-035 completed — owner enabled Dependabot alerts/malware alerts/security updates (alerts API-confirmed; grouped updates deliberately off). EN-007 open solely pending STORY-028's alerting criterion. Open: STORY-028, BUG-009, EN-007. |
