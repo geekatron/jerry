@@ -50,10 +50,12 @@
 
 ## Acceptance Criteria
 
-- [ ] `scripts/tests` can be added to pytest testpaths without breaking existing tests
-- [ ] `test_hooks.py` passes when collected alongside `tests/`
-- [ ] `test_validate_agent_frontmatter.py` (STORY-022) runs in CI via pytest collection (not just script invocation)
-- [ ] Proper `conftest.py` or markers isolate script test environment
+- [x] `scripts/tests` can be added to pytest testpaths without breaking existing tests
+- [x] `test_hooks.py` passes when collected alongside `tests/`
+- [x] `test_validate_agent_frontmatter.py` (STORY-022) runs in CI via pytest collection (not just script invocation)
+- [x] Proper `conftest.py` or markers isolate script test environment
+
+> AC boxes backfilled 2026-08-05 (audit W-004c): work verified complete at closure 2026-03-30 — GitHub issue [#228](https://github.com/geekatron/jerry/issues/228) closed; the full suite including script tests passes in CI and pre-commit today.
 
 ---
 
@@ -72,3 +74,4 @@
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-03-30 | adam.nowak | pending | Created from PROJ-024 session. Discovered when STORY-022 tried adding scripts/tests to testpaths. |
+| 2026-03-30 | adam.nowak | completed | Fixed and closed — GH #228 closed; script tests isolated and collected cleanly alongside tests/. (History row backfilled 2026-08-05 per audit W-004c.) |

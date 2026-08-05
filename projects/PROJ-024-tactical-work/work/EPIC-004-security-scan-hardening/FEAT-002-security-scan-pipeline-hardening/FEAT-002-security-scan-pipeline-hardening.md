@@ -69,7 +69,7 @@ Harden the dependency security-scan pipeline by inserting a Feature container th
 - [ ] STORY-028: rolling GitHub issue is auto-created/updated when CVEs are found (in_progress — AC-4 failed, AC-2/AC-3 unproven at runtime; verified 60%)
 - [x] STORY-029: silent-failure guard verifies non-zero package count, not just non-empty output
 - [x] STORY-030: all 9 transitive CVEs resolved or accepted with documented rationale and expiry
-- [ ] TASK-035: Dependabot security updates and vulnerability alerts confirmed enabled (externally confirmed NOT enabled as of 2026-08-05 — action outstanding)
+- [x] TASK-035: Dependabot security updates and vulnerability alerts confirmed enabled (owner enabled 2026-08-05; alerts API-confirmed)
 
 ### Functional Criteria
 
@@ -81,7 +81,7 @@ Harden the dependency security-scan pipeline by inserting a Feature container th
 | AC-4 | Rolling GitHub issue alerting implemented | [ ] STORY-028 (60% verified — open) |
 | AC-5 | Silent-failure guard validates non-zero audit scope | [x] STORY-029 (2026-08-05) |
 | AC-6 | All 9 transitive CVEs remediated or formally accepted | [x] STORY-030 (2026-08-05; post-remediation click CVE tracked as BUG-009) |
-| AC-7 | Dependabot settings confirmed enabled | [ ] TASK-035 (confirmed NOT enabled 2026-08-05) |
+| AC-7 | Dependabot settings confirmed enabled | [x] TASK-035 (owner enabled 2026-08-05; alerts API-confirmed) |
 
 ---
 
@@ -118,7 +118,7 @@ Harden the dependency security-scan pipeline by inserting a Feature container th
 | STORY-028 | Story | Add owner alerting via an auto-managed rolling GitHub issue | in_progress | medium | — |
 | STORY-029 | Story | Fix the silent-failure guard to verify a meaningful audit (not just non-empty output) | completed (2026-08-05) | high | — |
 | STORY-030 | Story | Remediate the 9 current transitive CVEs | completed (2026-08-05) | critical | — |
-| TASK-035 | Task | Confirm Dependabot security updates + vulnerability alerts are enabled in repo Settings | pending | medium | — |
+| TASK-035 | Task | Confirm Dependabot security updates + vulnerability alerts are enabled in repo Settings | completed (2026-08-05) | medium | — |
 
 ### Work Item Links
 
@@ -157,7 +157,7 @@ Harden the dependency security-scan pipeline by inserting a Feature container th
 | **Open Stories** | 1 (STORY-028, in_progress — verified 60%, AC-4 failed) |
 | **Total Enablers** | 1 |
 | **Completed Enablers** | 0 |
-| **Open Enablers** | 1 (EN-007, in_progress — open solely pending TASK-035) |
+| **Open Enablers** | 1 (EN-007, in_progress — open solely pending STORY-028's alerting criterion) |
 | **Total Bugs** | 2 |
 | **Completed Bugs** | 1 (BUG-008 — closed 2026-08-05) |
 | **Open Bugs** | 1 (BUG-009, in_progress — fix on branch, pending merge + green scan) |

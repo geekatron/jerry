@@ -66,7 +66,7 @@ Implement in layers: fix the root defect first (BUG-008), then unify the scans (
 
 | ID | Type | Title | Status |
 |----|------|-------|--------|
-| TASK-035 | Task | Confirm Dependabot security updates + vulnerability alerts are enabled in repo Settings | pending |
+| TASK-035 | Task | Confirm Dependabot security updates + vulnerability alerts are enabled in repo Settings | completed (2026-08-05) |
 
 ### Task Links
 
@@ -79,10 +79,10 @@ Implement in layers: fix the root defect first (BUG-008), then unify the scans (
 | Metric | Value |
 |--------|-------|
 | Total items | 1 |
-| Completed | 0 |
+| Completed | 1 (TASK-035, 2026-08-05) |
 | In Progress | 0 |
-| Pending | 1 |
-| Completion % | 0% of direct children (TASK-035 pending). Feature-level code delivery is fully merged: PR #302 (81c7c61c) + PR #303 (e372e418) merged 2026-06-23, reached main via merge PR #304 (687a3214, includes docs commit 38b9d23b). EN-007 remains open **solely** pending TASK-035 (manual repo-settings verification). |
+| Pending | 0 |
+| Completion % | 100% of direct children (TASK-035 completed 2026-08-05 — owner enabled Dependabot alerts/malware alerts/security updates, alerts API-confirmed). Feature-level code delivery fully merged: PR #302 (81c7c61c) + PR #303 (e372e418) merged 2026-06-23, reached main via merge PR #304 (687a3214). EN-007 remains open **solely** pending its rolling-issue alerting criterion (AC-4), tracked by STORY-028. |
 
 ---
 
