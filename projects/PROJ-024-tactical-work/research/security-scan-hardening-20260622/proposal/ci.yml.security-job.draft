@@ -1,0 +1,60 @@
+# DRAFT: replacement for the `security` job in .github/workflows/ci.yml
+#
+# DROP-IN REPLACEMENT: paste this block in place of the existing `security:` job
+# (lines 68-106 in the current ci.yml).  Everything else in ci.yml is unchanged.
+#
+# CHANGE SUMMARY vs current ci.yml security job:
+#   REMOVED: Install uv, Set up Python, Install dependencies, Export dependencies,
+#            Audit dependencies steps (5 steps).
+#   ADDED:   Single `uses: ./.github/actions/security-audit` step.
+#   KEPT:    "Check for banned YAML APIs" step (unchanged — not in scope of composite action).
+#
+# NON-BLOCKING POLICY (ADR D3): fail-on-vuln is 'false' in the CI context.
+#   The security job emits ::warning:: annotations on CVEs but exits 0, keeping
+#   PRs mergeable while remediation is in-flight. The scheduled security-scan.yml
+#   (daily + workflow_dispatch) uses fail-on-vuln: 'true' and the rolling CVE issue
+#   (D4) is the forcing function for remediation — not this CI job.
+#
+#   TOGGLE — if you ever want CI to hard-block on new CVEs, change this one line:
+#     fail-on-vuln: 'false'  →  fail-on-vuln: 'true'
+#   Caveat: doing so makes the `security` job a de-facto merge barrier if `ci-success`
+#   is ever added as a required status check. That would contradict D3 and should be
+#   accompanied by an ADR update. Do NOT change this silently.
+#
+# NOTE on the banned-YAML step: it is intentionally kept as a separate step in the
+# caller workflow rather than folded into the composite action.  It is a static grep
+# check (not pip-audit), and it is logically distinct from dependency vulnerability
+# scanning.  Composite action scope is dependency CVE scanning only.
+
+  # ===========================================================================
+  # Security Scanning
+  # ===========================================================================
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Run security audit
+        uses: ./.github/actions/security-audit
+        with:
+          # NON-BLOCKING (D3): emits ::warning:: on CVEs but exits 0.
+          # Change to 'true' only with an ADR update — see header comment above.
+          fail-on-vuln: 'false'
+
+      - name: Check for banned YAML APIs (M-04b)
+        run: |
+          echo "Checking for banned yaml.load() and yaml.unsafe_load() usage..."
+          FOUND=0
+          if grep -rn 'yaml\.load(' src/ --include='*.py' | grep -v 'yaml\.safe_load('; then
+            echo "ERROR: Found yaml.load() usage. Use yaml.safe_load() only (M-04b)."
+            FOUND=1
+          fi
+          if grep -rn 'yaml\.unsafe_load(' src/ --include='*.py'; then
+            echo "ERROR: Found yaml.unsafe_load() usage. Use yaml.safe_load() only (M-04b)."
+            FOUND=1
+          fi
+          if [ "$FOUND" -eq 1 ]; then
+            exit 1
+          fi
+          echo "No banned YAML APIs found. OK."
