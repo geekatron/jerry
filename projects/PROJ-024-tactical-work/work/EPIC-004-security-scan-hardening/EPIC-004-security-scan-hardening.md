@@ -41,7 +41,7 @@ The CI security audit (`ci.yml`) correctly detects transitive CVEs, but the sche
 
 | ID | Type | Status |
 |----|------|--------|
-| FEAT-002 | Feature | in_progress |
+| FEAT-002 | Feature | in_progress — 5/9 children completed 2026-08-05 (BUG-008, STORY-026, STORY-027, STORY-029, STORY-030); open: STORY-028 (in_progress), EN-007/TASK-035 (pending Dependabot enablement), BUG-009 (pending, click 8.3.1 / GH #336) |
 
 ---
 
@@ -50,4 +50,5 @@ The CI security audit (`ci.yml`) correctly detects transitive CVEs, but the sche
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-06-22 | pending | Epic created for security-scan pipeline hardening |
-| 2026-06-23 | in_progress | FEAT-002 children in review via PR #302 (81c7c61c) and PR #303 (e372e418); pending merge |
+| 2026-06-23 | in_progress | FEAT-002 children delivered via PR #302 (81c7c61c) and PR #303 (e372e418), both merged 2026-06-23; reached main via merge PR #304 (687a3214) — evidence trail corrected 2026-08-05 |
+| 2026-08-05 | in_progress | Verification pass: BUG-008 + STORY-026/027/029/030 closed. Remaining open: STORY-028, EN-007/TASK-035, BUG-009 (new, GH #336). |

@@ -1,11 +1,12 @@
 # BUG-008: Scheduled Security Scan Is False-Green — Audits Only the Local Project, Misses All Transitive CVEs
 
 > **Type:** bug
-> **Status:** in_progress
+> **Status:** completed
 > **Priority:** critical
 > **Impact:** critical
 > **Severity:** critical
 > **Created:** 2026-06-22
+> **Completed:** 2026-08-05
 > **Parent:** FEAT-002
 > **GitHub Issue:** [#301](https://github.com/geekatron/jerry/issues/301)
 
@@ -72,10 +73,12 @@ Scheduled scan exits 0, logs `Dependency not found on PyPI: jerry`, audits zero 
 
 ## Acceptance Criteria
 
-- [ ] Scheduled scan detects at least the 9 known transitive CVEs that the CI scan detects (parity verified by running both workflows and comparing CVE lists)
-- [ ] Running the scheduled scan against the current codebase produces a non-zero exit code (audit fails due to open CVEs, not a false-green pass)
-- [ ] The log no longer contains `Dependency not found on PyPI: jerry` as the primary audit result
-- [ ] Silent-failure guard rejects a scheduled scan run that audits zero PyPI packages
+- [x] Scheduled scan detects at least the 9 known transitive CVEs that the CI scan detects (parity verified by running both workflows and comparing CVE lists)
+- [x] Running the scheduled scan against the current codebase produces a non-zero exit code (audit fails due to open CVEs, not a false-green pass)
+- [x] The log no longer contains `Dependency not found on PyPI: jerry` as the primary audit result
+- [x] Silent-failure guard rejects a scheduled scan run that audits zero PyPI packages
+
+> **AC-1 note (2026-08-05):** the literal 9-CVE reproduction is no longer possible — STORY-030 remediated those CVEs on 2026-06-23. The AC's intent (CI/scheduled parity) was verified live against the current single CVE (click 8.3.1 / PYSEC-2026-2132) via a same-commit run pair: CI run 30934932209 and scheduled run 30983157958 report byte-identical findings. See `../verification/wt-verifier-BUG-008-20260805.md`.
 
 ---
 
@@ -109,7 +112,8 @@ Scheduled scan exits 0, logs `Dependency not found on PyPI: jerry`, audits zero 
 
 | Artifact | Link | Commit | Notes |
 |----------|------|--------|-------|
-| PR #302 — Scanner hardening | [geekatron/jerry#302](https://github.com/geekatron/jerry/pull/302) | 81c7c61c | Fix delivered via STORY-026 (DRY composite action) + STORY-029 (guard fix); pending merge — close on merge + AC verification |
+| PR #302 — Scanner hardening | [geekatron/jerry#302](https://github.com/geekatron/jerry/pull/302) | 81c7c61c | Fix delivered via STORY-026 (DRY composite action) + STORY-029 (guard fix). **Merged 2026-06-23** alongside PR #303 (commit e372e418, CVE remediation); reached main via merge PR #304 (merge commit 687a3214, includes docs commit 38b9d23b). All confirmed ancestors of origin/main. |
+| Verification report | [wt-verifier-BUG-008-20260805.md](../verification/wt-verifier-BUG-008-20260805.md) | — | Verdict 4/4 READY (100%). Composite action live on main; 13 consecutive daily scheduled runs RED on a real CVE (runs [30983157958](https://github.com/geekatron/jerry/actions/runs/30983157958), [31039187847](https://github.com/geekatron/jerry/actions/runs/31039187847)); `Dependency not found on PyPI: jerry` absent from live logs; D5 guard claims G-1/G-2 PASS. |
 
 ---
 
@@ -118,4 +122,5 @@ Scheduled scan exits 0, logs `Dependency not found on PyPI: jerry`, audits zero 
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-06-22 | pending | Bug filed based on scan behaviour analysis |
-| 2026-06-23 | in_progress | PR #302 (commit 81c7c61c) delivers fix via STORY-026 composite action + STORY-029 guard fix; pending merge |
+| 2026-06-23 | in_progress | PR #302 (commit 81c7c61c) delivers fix via STORY-026 composite action + STORY-029 guard fix; merged same day (evidence trail corrected 2026-08-05) |
+| 2026-08-05 | completed | All 4 ACs verified by wt-verifier (4/4 READY, 100%) against live scheduled/CI run evidence; closed. See Delivery Evidence. |

@@ -3,10 +3,10 @@
 > **Type:** bug
 > **Status:** completed
 > **Priority:** high
+> **Severity:** minor
 > **Impact:** medium
 > **Created:** 2026-03-30T00:00:00Z
-> **Due:**
-> **Completed:**
+> **Completed:** 2026-03-30T00:00:00Z
 > **Parent:** FEAT-001
 > **Owner:**
 > **Effort:** 2
@@ -19,15 +19,26 @@
 | Section | Purpose |
 |---------|---------|
 | [Summary](#summary) | What's broken |
+| [Steps to Reproduce](#steps-to-reproduce) | How to observe the failure |
 | [Root Cause](#root-cause) | Why it fails |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
 | [Dependencies](#dependencies) | Relationship to other work |
+| [History](#history) | Status changes |
 
 ---
 
 ## Summary
 
 `scripts/tests/test_hooks.py` (15 failures) cannot be collected alongside `tests/` via pytest testpaths. Different environment assumptions cause failures. Prevents expanding testpaths to include script-level tests.
+
+---
+
+## Steps to Reproduce
+
+1. At the 2026-03-30 pre-fix state, add `scripts/tests` to the `testpaths` list in `pyproject.toml`.
+2. Run `uv run pytest` (collecting `tests/` and `scripts/tests` together).
+3. Observe 15 failures in `scripts/tests/test_hooks.py` — fixtures conflict with the main test infrastructure due to different import-path and environment assumptions.
+4. Run `uv run pytest scripts/tests/test_hooks.py` in isolation — all tests pass, confirming the collection conflict.
 
 ---
 

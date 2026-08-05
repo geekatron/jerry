@@ -13,8 +13,7 @@ PURPOSE: UX review of schema validation developer experience using /user-experie
 > **Impact:** medium
 > **Enabler Type:** exploration
 > **Created:** 2026-03-26T22:10:00Z
-> **Due:**
-> **Completed:**
+> **Completed:** 2026-03-26T00:00:00Z
 > **Parent:** FEAT-001
 > **Owner:** adam.nowak
 > **Effort:** 3

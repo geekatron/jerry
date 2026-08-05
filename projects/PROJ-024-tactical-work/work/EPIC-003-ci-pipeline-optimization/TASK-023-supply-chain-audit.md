@@ -4,6 +4,7 @@
 > **Status:** completed
 > **Priority:** high
 > **Created:** 2026-04-15
+> **Completed:** 2026-04-16
 > **Parent:** EN-006
 > **GitHub Issue:** [#252](https://github.com/geekatron/jerry/issues/252)
 
