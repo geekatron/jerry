@@ -584,9 +584,9 @@ This decision is supported by **unanimous consensus across 5 independent researc
 
 - Automated round-trip tests (RISK-2 mitigation):
   ```python
-  @pytest.mark.parametrize("serializer", [
-      JsonSerializer, ToonSerializer, JsonLdSerializer, RdfTurtleSerializer
-  ])
+  @pytest.mark.parametrize(
+      "serializer", [JsonSerializer, ToonSerializer, JsonLdSerializer, RdfTurtleSerializer]
+  )
   def test_round_trip(serializer):
       task = Task(title="Test", status="IN_PROGRESS")
       serialized = serializer.serialize(task)
@@ -685,7 +685,7 @@ This decision is supported by **unanimous consensus across 5 independent researc
 - Implement graph traversal retrieval (Gremlin):
   ```python
   def retrieve_blocking_tasks(task_id: str) -> List[Task]:
-      return g.V(task_id).out('BLOCKS').toList()
+      return g.V(task_id).out("BLOCKS").toList()
   ```
 
 - Create HybridRAG context merger:
@@ -726,25 +726,25 @@ This decision is supported by **unanimous consensus across 5 independent researc
 **Deliverables:**
 - SPARQL endpoint (Flask + pyoxigraph):
   ```python
-  @app.route('/sparql', methods=['POST'])
+  @app.route("/sparql", methods=["POST"])
   def sparql_query():
-      query = request.form.get('query')
+      query = request.form.get("query")
       results = oxigraph_store.query(query)
       return jsonify(results), 200
   ```
 
 - Content negotiation for Jerry URIs (PAT-010):
   ```python
-  @app.route('/jer/work-tracker/task/<task_id>')
+  @app.route("/jer/work-tracker/task/<task_id>")
   def resolve_task_uri(task_id: str):
-      accept = request.headers.get('Accept', 'application/json')
+      accept = request.headers.get("Accept", "application/json")
 
-      if 'application/ld+json' in accept:
+      if "application/ld+json" in accept:
           return jsonify(task_as_jsonld), 200
-      elif 'text/turtle' in accept:
-          return task_as_turtle, 200, {'Content-Type': 'text/turtle'}
-      elif 'text/html' in accept:
-          return render_template('task.html', task=task), 200
+      elif "text/turtle" in accept:
+          return task_as_turtle, 200, {"Content-Type": "text/turtle"}
+      elif "text/html" in accept:
+          return render_template("task.html", task=task), 200
       else:
           return jsonify(task_as_json), 200
   ```

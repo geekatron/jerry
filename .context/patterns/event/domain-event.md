@@ -100,9 +100,7 @@ class DomainEvent(ABC):
 
         Must be implemented by subclasses for polymorphic deserialization.
         """
-        raise NotImplementedError(
-            f"{cls.__name__} must implement from_dict for deserialization"
-        )
+        raise NotImplementedError(f"{cls.__name__} must implement from_dict for deserialization")
 ```
 
 ---

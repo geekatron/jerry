@@ -61,6 +61,7 @@ Triple stores persist RDF data (subject-predicate-object triples) and provide SP
 **Python Integration**:
 ```python
 from SPARQLWrapper import SPARQLWrapper, JSON
+
 sparql = SPARQLWrapper("http://localhost:3030/dataset/sparql")
 sparql.setQuery("SELECT * WHERE { ?s ?p ?o } LIMIT 10")
 sparql.setReturnFormat(JSON)
@@ -172,6 +173,7 @@ for result in results:
 **Integration with rdflib**:
 ```python
 from rdflib import Graph
+
 g = Graph(store="Oxigraph")  # Drop-in replacement
 g.parse("data.ttl")
 results = g.query("SELECT * WHERE { ?s ?p ?o }")
@@ -332,12 +334,12 @@ with driver.session() as session:
 ```python
 from arango import ArangoClient
 
-client = ArangoClient(hosts='http://localhost:8529')
-db = client.db('_system', username='root', password='password')
+client = ArangoClient(hosts="http://localhost:8529")
+db = client.db("_system", username="root", password="password")
 
 # Document operations
-collection = db.collection('tasks')
-collection.insert({'title': 'Task 1', 'status': 'pending'})
+collection = db.collection("tasks")
+collection.insert({"title": "Task 1", "status": "pending"})
 
 # Graph traversal (AQL)
 cursor = db.aql.execute("""
@@ -437,7 +439,7 @@ g.parse("data.ttl", format="turtle")
 
 # Add triples
 JER = Namespace("https://jerry.dev/jer/work-tracker/")
-g.add((JER['task-001'], JER['title'], Literal("Implement feature")))
+g.add((JER["task-001"], JER["title"], Literal("Implement feature")))
 
 # SPARQL query
 results = g.query("""
@@ -486,12 +488,15 @@ from owlready2 import *
 # Load ontology
 onto = get_ontology("http://example.org/work-tracker.owl").load()
 
+
 # Define classes
 class Task(Thing):
     namespace = onto
 
+
 class hasStatus(Task >> str):
     pass
+
 
 # Create instances
 task1 = Task("task-001")
@@ -576,6 +581,7 @@ See Triple Stores > Oxigraph for full details.
 **Python Integration**: Export NetworkX graphs to Gephi format (GEXF)
 ```python
 import networkx as nx
+
 G = nx.DiGraph()
 G.add_edge("Task-001", "Subtask-001")
 nx.write_gexf(G, "graph.gexf")
@@ -613,12 +619,12 @@ nx.write_gexf(G, "graph.gexf")
 ```python
 from graphviz import Digraph
 
-dot = Digraph(comment='Jerry Work Tracker')
-dot.node('PLAN-001', 'Plan: Q1 Goals')
-dot.node('PHASE-001', 'Phase 1: Setup')
-dot.edge('PLAN-001', 'PHASE-001', label='CONTAINS')
+dot = Digraph(comment="Jerry Work Tracker")
+dot.node("PLAN-001", "Plan: Q1 Goals")
+dot.node("PHASE-001", "Phase 1: Setup")
+dot.edge("PLAN-001", "PHASE-001", label="CONTAINS")
 
-dot.render('work-tracker.gv', format='svg', view=True)
+dot.render("work-tracker.gv", format="svg", view=True)
 ```
 
 **Tradeoffs**:
@@ -659,16 +665,16 @@ import dash_cytoscape as cyto
 app = dash.Dash(__name__)
 
 elements = [
-    {'data': {'id': 'task-001', 'label': 'Implement feature'}},
-    {'data': {'id': 'subtask-001', 'label': 'Write tests'}},
-    {'data': {'source': 'task-001', 'target': 'subtask-001'}}
+    {"data": {"id": "task-001", "label": "Implement feature"}},
+    {"data": {"id": "subtask-001", "label": "Write tests"}},
+    {"data": {"source": "task-001", "target": "subtask-001"}},
 ]
 
 app.layout = cyto.Cytoscape(
-    id='cytoscape',
+    id="cytoscape",
     elements=elements,
-    layout={'name': 'breadthfirst'},
-    style={'width': '100%', 'height': '600px'}
+    layout={"name": "breadthfirst"},
+    style={"width": "100%", "height": "600px"},
 )
 ```
 
@@ -778,11 +784,13 @@ app = Flask(__name__)
 g = Graph()
 g.parse("data.ttl")
 
-@app.route('/sparql', methods=['GET', 'POST'])
+
+@app.route("/sparql", methods=["GET", "POST"])
 def sparql_endpoint():
-    query = request.args.get('query') or request.form.get('query')
+    query = request.args.get("query") or request.form.get("query")
     results = g.query(query)
-    return results.serialize(format='json')
+    return results.serialize(format="json")
+
 
 app.run(port=3030)
 ```
@@ -816,15 +824,15 @@ from gremlin_python.driver import client, serializer
 
 # Connect to Gremlin Server
 gremlin_client = client.Client(
-    'ws://localhost:8182/gremlin',
-    'g',
-    message_serializer=serializer.GraphSONSerializersV3d0()
+    "ws://localhost:8182/gremlin", "g", message_serializer=serializer.GraphSONSerializersV3d0()
 )
 
 # Execute traversal
-results = gremlin_client.submit(
-    "g.V().has('Task', 'id', 'TASK-001').out('CONTAINS').values('title')"
-).all().result()
+results = (
+    gremlin_client.submit("g.V().has('Task', 'id', 'TASK-001').out('CONTAINS').values('title')")
+    .all()
+    .result()
+)
 
 for result in results:
     print(result)
@@ -1027,11 +1035,7 @@ store = Store("jerry-data.db")
 
 # Convert Task to RDF triples
 task = Task.load("TASK-001")
-store.add((
-    URIRef("jer:task-001"),
-    URIRef("jer:title"),
-    Literal(task.title)
-))
+store.add((URIRef("jer:task-001"), URIRef("jer:title"), Literal(task.title)))
 
 # SPARQL query
 results = store.query("""
@@ -1154,6 +1158,7 @@ From GRAPH_DATA_MODEL_ANALYSIS.md Section 11 (DISC-064):
 from pyoxigraph import Store, NamedNode, Literal
 from jerry.domain.entities import Task
 
+
 class RDFAdapter:
     def __init__(self, store: Store):
         self.store = store
@@ -1162,23 +1167,11 @@ class RDFAdapter:
         """Convert Task domain entity to RDF triples."""
         task_uri = NamedNode(f"jer:task:{task.id.value}")
 
-        self.store.add((
-            task_uri,
-            NamedNode("rdf:type"),
-            NamedNode("jer:Task")
-        ))
+        self.store.add((task_uri, NamedNode("rdf:type"), NamedNode("jer:Task")))
 
-        self.store.add((
-            task_uri,
-            NamedNode("jer:title"),
-            Literal(task.title)
-        ))
+        self.store.add((task_uri, NamedNode("jer:title"), Literal(task.title)))
 
-        self.store.add((
-            task_uri,
-            NamedNode("jer:status"),
-            Literal(task.status.value)
-        ))
+        self.store.add((task_uri, NamedNode("jer:status"), Literal(task.status.value)))
 
     def load_task(self, task_id: str) -> Task:
         """Query RDF store and reconstruct Task domain entity."""

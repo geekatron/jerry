@@ -348,7 +348,7 @@ You are the orch-tracker agent (v2.2.0).
 3. Update agent status and artifact with resolved paths
 4. Write updated ORCHESTRATION.yaml
 5. Update ORCHESTRATION_WORKTRACKER.md execution log
-"""
+""",
 )
 ```
 </invocation>

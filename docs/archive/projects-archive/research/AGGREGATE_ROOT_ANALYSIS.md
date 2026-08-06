@@ -245,9 +245,11 @@ from dataclasses import dataclass
 from typing import NewType
 import uuid
 
+
 @dataclass(frozen=True)
 class TaskId:
     """Strongly typed Task identifier."""
+
     value: str
 
     def __post_init__(self):
@@ -261,27 +263,33 @@ class TaskId:
     def __str__(self) -> str:
         return self.value
 
+
 @dataclass(frozen=True)
 class PhaseId:
     """Strongly typed Phase identifier."""
+
     value: str
 
     @classmethod
     def generate(cls) -> "PhaseId":
         return cls(f"PHASE-{uuid.uuid4().hex[:8].upper()}")
 
+
 @dataclass(frozen=True)
 class PlanId:
     """Strongly typed Plan identifier."""
+
     value: str
 
     @classmethod
     def generate(cls) -> "PlanId":
         return cls(f"PLAN-{uuid.uuid4().hex[:8].upper()}")
 
+
 @dataclass(frozen=True)
 class SubtaskId:
     """Strongly typed Subtask identifier - scoped to parent Task."""
+
     task_id: TaskId
     sequence: int
 

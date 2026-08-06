@@ -87,10 +87,7 @@ class EventSourcedWorkItemRepository:
         if not stored_events:
             return None
 
-        domain_events = [
-            self._to_domain_event(stored)
-            for stored in stored_events
-        ]
+        domain_events = [self._to_domain_event(stored) for stored in stored_events]
 
         return WorkItem.load_from_history(domain_events)
 
@@ -133,10 +130,7 @@ class EventSourcedWorkItemRepository:
             return  # No changes to persist
 
         # Convert to stored events
-        stored_events = [
-            self._to_stored_event(event, stream_id)
-            for event in domain_events
-        ]
+        stored_events = [self._to_stored_event(event, stream_id) for event in domain_events]
 
         # Calculate expected version (version before these events)
         expected_version = aggregate.version - len(domain_events)
@@ -193,9 +187,7 @@ class EventSourcedWorkItemRepository:
         """
         # Implementation would scan all streams
         # In practice, use a projection for this
-        raise NotImplementedError(
-            "Use WorkItemListProjection for status-based queries"
-        )
+        raise NotImplementedError("Use WorkItemListProjection for status-based queries")
 
     def find_by_parent(self, parent_id: WorkItemId) -> Sequence[WorkItem]:
         """Find all children of a work item.
@@ -208,9 +200,7 @@ class EventSourcedWorkItemRepository:
         """
         # Implementation would scan all streams
         # In practice, use a projection for this
-        raise NotImplementedError(
-            "Use WorkItemHierarchyProjection for parent-based queries"
-        )
+        raise NotImplementedError("Use WorkItemHierarchyProjection for parent-based queries")
 
     # Internal helpers
 
@@ -303,6 +293,7 @@ class EventSourcedWorkItemRepository:
 
 ```python
 # Example: Concurrent modification detection
+
 
 def handle_concurrent_updates():
     """Demonstrate optimistic concurrency."""
@@ -433,6 +424,7 @@ def save(self, aggregate):
     for event in events:
         self._event_store.update(event)  # NO!
 
+
 # CORRECT: Always append
 def save(self, aggregate):
     events = aggregate.collect_events()
@@ -445,6 +437,7 @@ def save(self, aggregate):
 # WRONG: Saving events directly
 def save_event(self, event: DomainEvent):
     self._event_store.append(stream_id, [event], version)
+
 
 # CORRECT: Always go through aggregate
 def save(self, aggregate: WorkItem):

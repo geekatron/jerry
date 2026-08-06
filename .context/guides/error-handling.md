@@ -205,6 +205,7 @@ These are the hard questions that come up in practice. Use this table for escala
 @dataclass(frozen=True)
 class Percentage:
     """Value object representing a percentage (0-100)."""
+
     value: float
 
     def __post_init__(self) -> None:
@@ -625,6 +626,7 @@ raise ValidationError(
 ```python
 from dataclasses import dataclass
 
+
 @dataclass
 class NotFoundError(DomainError):
     """Raised when an entity is not found."""
@@ -924,26 +926,33 @@ def complete_item(item_id: str, dispatcher: ICommandDispatcher) -> None:
 # (From: src/shared_kernel/exceptions.py, lines 15-77)
 class DomainError(Exception):
     """Base class for all domain errors."""
+
     def __init__(self, message: str) -> None:
         self.message = message
         super().__init__(message)
 
+
 class NotFoundError(DomainError):
     """Entity not found."""
+
     def __init__(self, entity_type: str, entity_id: str) -> None:
         self.entity_type = entity_type
         self.entity_id = entity_id
         super().__init__(f"{entity_type} '{entity_id}' not found")
 
+
 class InvalidStateError(DomainError):
     """Operation invalid for current state."""
+
     def __init__(self, current_state: str, attempted_action: str) -> None:
         self.current_state = current_state
         self.attempted_action = attempted_action
         super().__init__(f"Cannot {attempted_action} in state {current_state}")
 
+
 class ConcurrencyError(DomainError):
     """Optimistic concurrency conflict."""
+
     def __init__(self, expected_version: int, actual_version: int) -> None:
         self.expected_version = expected_version
         self.actual_version = actual_version
@@ -952,8 +961,10 @@ class ConcurrencyError(DomainError):
             f"actual version {actual_version}"
         )
 
+
 class ValidationError(DomainError):
     """Input validation failed."""
+
     def __init__(self, field: str, message: str) -> None:
         self.field = field
         self.validation_message = message
@@ -969,13 +980,16 @@ class ValidationError(DomainError):
 # (From: src/session_management/domain/exceptions.py, lines 24-58)
 class InvalidProjectIdError(DomainError):
     """Raised when a project ID does not conform to the required format."""
+
     def __init__(self, value: str, reason: str) -> None:
         self.value = value
         self.reason = reason
         super().__init__(f"Invalid project ID '{value}': {reason}")
 
+
 class ProjectNotFoundError(DomainError):
     """Raised when a project cannot be found at the expected location."""
+
     def __init__(self, project_id: str, path: str | None = None) -> None:
         self.project_id = project_id
         self.path = path

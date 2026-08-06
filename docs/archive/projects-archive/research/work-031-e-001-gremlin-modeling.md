@@ -109,12 +109,12 @@ g.V().has('Product', 'name', 'Widget')
 ```python
 # Jerry → Gremlin type mapping
 {
-    "PlanId": "g:UUID",           # Strongly typed IDs
-    "sequence": "g:Int64",        # Long integer for ordering
-    "progress": "g:Double",       # Float for percentages
-    "created_at": "g:Date",       # ISO timestamps
-    "subtask_ids": "g:List",      # JSON arrays
-    "metadata": "g:Map"           # Complex properties
+    "PlanId": "g:UUID",  # Strongly typed IDs
+    "sequence": "g:Int64",  # Long integer for ordering
+    "progress": "g:Double",  # Float for percentages
+    "created_at": "g:Date",  # ISO timestamps
+    "subtask_ids": "g:List",  # JSON arrays
+    "metadata": "g:Map",  # Complex properties
 }
 ```
 
@@ -122,14 +122,14 @@ g.V().has('Product', 'name', 'Widget')
 
 ```python
 # Single value properties (most common)
-schema.propertyKey('title').Text().single().make()
-schema.propertyKey('status').Text().single().make()
+schema.propertyKey("title").Text().single().make()
+schema.propertyKey("status").Text().single().make()
 
 # List properties (ordered, allow duplicates)
-schema.propertyKey('tags').Text().list().make()
+schema.propertyKey("tags").Text().list().make()
 
 # Set properties (no duplicates)
-schema.propertyKey('assigned_to_ids').Text().set().make()
+schema.propertyKey("assigned_to_ids").Text().set().make()
 ```
 
 **Jerry Application**: Use `SINGLE` cardinality for most properties. Only use `LIST` for audit trails or multi-valued attributes where order matters.
@@ -218,6 +218,7 @@ Product-[PRICE_RANGE]→Price_100_199-[IN_RANGE]→Product
 MAX_EDGES_BEFORE_WARNING = 100
 MAX_EDGES_BEFORE_ERROR = 1000
 
+
 def validate_node_degree(vertex_id: VertexId, edge_label: str) -> ValidationResult:
     edge_count = count_edges(vertex_id, edge_label)
     if edge_count > MAX_EDGES_BEFORE_ERROR:
@@ -252,22 +253,22 @@ g.V().has('Task', 'id', 'TASK-001')  // Index on id (yes)
 ```python
 # Primary indexes (required for traversal start points)
 REQUIRED_INDEXES = [
-    ('Plan', 'id'),      # g.V().has('Plan', 'id', 'PLAN-001')
-    ('Phase', 'id'),     # g.V().has('Phase', 'id', 'PHASE-001')
-    ('Task', 'id'),      # g.V().has('Task', 'id', 'TASK-001')
+    ("Plan", "id"),  # g.V().has('Plan', 'id', 'PLAN-001')
+    ("Phase", "id"),  # g.V().has('Phase', 'id', 'PHASE-001')
+    ("Task", "id"),  # g.V().has('Task', 'id', 'TASK-001')
 ]
 
 # Secondary indexes (for filtering)
 OPTIONAL_INDEXES = [
-    ('Task', 'status'),   # Moderate selectivity, frequently filtered
-    ('Plan', 'status'),   # Moderate selectivity
+    ("Task", "status"),  # Moderate selectivity, frequently filtered
+    ("Plan", "status"),  # Moderate selectivity
 ]
 
 # DO NOT INDEX
 NO_INDEX = [
-    ('Task', 'description'),   # Free text, never filtered
-    ('Task', 'title'),         # Free text, low selectivity
-    ('Event', 'data'),         # JSON blob, not queryable
+    ("Task", "description"),  # Free text, never filtered
+    ("Task", "title"),  # Free text, low selectivity
+    ("Event", "data"),  # JSON blob, not queryable
 ]
 ```
 
@@ -564,19 +565,19 @@ g.V().has('Task', 'status', 'BLOCKED')  // 100 tasks (Time: 10ms, % Dur: 5%)
 1. **Composite Index** (exact match queries):
 ```python
 # For queries like: g.V().has('Task', 'id', 'TASK-001')
-schema.index('taskById').on('Task').by('id').composite().build()
+schema.index("taskById").on("Task").by("id").composite().build()
 ```
 
 2. **Mixed Index** (range queries, full-text search):
 ```python
 # For queries like: g.V().has('Task', 'created_at', gt(date))
-schema.index('taskByDate').on('Task').by('created_at').mixed().build()
+schema.index("taskByDate").on("Task").by("created_at").mixed().build()
 ```
 
 3. **Edge Index** (for high-degree vertices):
 ```python
 # For queries like: g.V('ACTOR-001').outE('CREATED').has('timestamp', gt(date))
-schema.edgeLabel('CREATED').indexOn(('timestamp',)).build()
+schema.edgeLabel("CREATED").indexOn(("timestamp",)).build()
 ```
 
 **Jerry Index Requirements**:
@@ -584,23 +585,23 @@ schema.edgeLabel('CREATED').indexOn(('timestamp',)).build()
 ```python
 # Composite indexes (exact match - required for traversal start)
 COMPOSITE_INDEXES = [
-    ('Plan', 'id'),     # g.V().has('Plan', 'id', ...)
-    ('Phase', 'id'),    # g.V().has('Phase', 'id', ...)
-    ('Task', 'id'),     # g.V().has('Task', 'id', ...)
-    ('Event', 'id'),    # g.V().has('Event', 'id', ...)
+    ("Plan", "id"),  # g.V().has('Plan', 'id', ...)
+    ("Phase", "id"),  # g.V().has('Phase', 'id', ...)
+    ("Task", "id"),  # g.V().has('Task', 'id', ...)
+    ("Event", "id"),  # g.V().has('Event', 'id', ...)
 ]
 
 # Mixed indexes (range queries, filtering)
 MIXED_INDEXES = [
-    ('Task', 'status'),        # g.V().has('Task', 'status', within(['PENDING', 'ACTIVE']))
-    ('Event', 'time'),         # g.V().has('Event', 'time', gt(datetime))
-    ('Task', 'created_at'),    # Range queries
+    ("Task", "status"),  # g.V().has('Task', 'status', within(['PENDING', 'ACTIVE']))
+    ("Event", "time"),  # g.V().has('Event', 'time', gt(datetime))
+    ("Task", "created_at"),  # Range queries
 ]
 
 # Edge indexes (for high-degree vertices - Actor supernode mitigation)
 EDGE_INDEXES = [
-    ('CREATED_BY', 'timestamp'),   # g.V('ACTOR-001').outE('CREATED_BY').has('timestamp', ...)
-    ('EMITTED', 'sequence'),       # g.V('TASK-001').outE('EMITTED').has('sequence', ...)
+    ("CREATED_BY", "timestamp"),  # g.V('ACTOR-001').outE('CREATED_BY').has('timestamp', ...)
+    ("EMITTED", "sequence"),  # g.V('TASK-001').outE('EMITTED').has('sequence', ...)
 ]
 ```
 
@@ -715,9 +716,9 @@ g.V('TASK-001')
 schema.default = none
 
 # Force explicit schema definition
-schema.propertyKey('title').Text().make()
-schema.vertexLabel('Task').make()
-schema.edgeLabel('CONTAINS').make()
+schema.propertyKey("title").Text().make()
+schema.vertexLabel("Task").make()
+schema.edgeLabel("CONTAINS").make()
 ```
 
 **Benefits**:
@@ -849,18 +850,14 @@ def downgrade(g):
 3. **Version control for schema DDL**:
 ```python
 # schema/v1.0/task.py
-TASK_SCHEMA_V1 = {
-    'label': 'Task',
-    'properties': ['id', 'title', 'state'],
-    'version': '1.0'
-}
+TASK_SCHEMA_V1 = {"label": "Task", "properties": ["id", "title", "state"], "version": "1.0"}
 
 # schema/v2.0/task.py
 TASK_SCHEMA_V2 = {
-    'label': 'Task',
-    'properties': ['id', 'title', 'status', 'verification'],
-    'version': '2.0',
-    'changes': ['state → status (BREAKING)', 'added verification']
+    "label": "Task",
+    "properties": ["id", "title", "status", "verification"],
+    "version": "2.0",
+    "changes": ["state → status (BREAKING)", "added verification"],
 }
 ```
 
@@ -1042,17 +1039,21 @@ from dataclasses import dataclass
 from typing import List
 from src.domain.graph.primitives import VertexId
 
+
 @dataclass
 class SupernodeThreshold:
     """Configuration for supernode detection."""
+
     warning_threshold: int = 100
     error_threshold: int = 1000
+
 
 @dataclass
 class ValidationResult:
     is_valid: bool
     warnings: List[str]
     errors: List[str]
+
 
 class SupernodeValidator:
     """
@@ -1066,10 +1067,7 @@ class SupernodeValidator:
         self.threshold = threshold
 
     def validate_vertex_degree(
-        self,
-        vertex_id: VertexId,
-        edge_label: str,
-        edge_count: int
+        self, vertex_id: VertexId, edge_label: str, edge_count: int
     ) -> ValidationResult:
         """
         Validate vertex degree against supernode thresholds.
@@ -1097,26 +1095,22 @@ class SupernodeValidator:
                 f"{edge_label} edges (warning at: {self.threshold.warning_threshold})"
             )
 
-        return ValidationResult(
-            is_valid=len(errors) == 0,
-            warnings=warnings,
-            errors=errors
-        )
+        return ValidationResult(is_valid=len(errors) == 0, warnings=warnings, errors=errors)
 
     def suggest_mitigation(self, vertex_label: str, edge_label: str) -> str:
         """Suggest mitigation strategy based on vertex/edge types."""
         strategies = {
-            ('Actor', 'CREATED_BY'):
-                "Time-based partitioning: Use CREATED_BY_2026_01 edge labels",
-            ('Phase', 'CONTAINS'):
-                "Hierarchical decomposition: Add intermediate grouping nodes",
-            ('Event', 'EMITTED'):
-                "Sequence-based partitioning: Partition events into ranges (0-999, 1000-1999)",
+            ("Actor", "CREATED_BY"): "Time-based partitioning: Use CREATED_BY_2026_01 edge labels",
+            ("Phase", "CONTAINS"): "Hierarchical decomposition: Add intermediate grouping nodes",
+            (
+                "Event",
+                "EMITTED",
+            ): "Sequence-based partitioning: Partition events into ranges (0-999, 1000-1999)",
         }
 
         return strategies.get(
             (vertex_label, edge_label),
-            "Generic: Consider partitioning by time, hierarchy, or attribute"
+            "Generic: Consider partitioning by time, hierarchy, or attribute",
         )
 ```
 
@@ -1129,19 +1123,24 @@ from dataclasses import dataclass
 from typing import List, Tuple
 from enum import Enum, auto
 
+
 class IndexType(Enum):
     """Index types aligned with JanusGraph."""
+
     COMPOSITE = auto()  # Exact match queries
-    MIXED = auto()      # Range/full-text queries
-    EDGE = auto()       # Edge property indexes
+    MIXED = auto()  # Range/full-text queries
+    EDGE = auto()  # Edge property indexes
+
 
 @dataclass
 class IndexDefinition:
     """Index definition for graph database."""
+
     vertex_label: str
     property_key: str
     index_type: IndexType
     index_name: str
+
 
 class JerryIndexConfiguration:
     """
@@ -1160,12 +1159,12 @@ class JerryIndexConfiguration:
         g.V().has('Task', 'id', 'TASK-001')
         """
         return [
-            IndexDefinition('Plan', 'id', IndexType.COMPOSITE, 'planById'),
-            IndexDefinition('Phase', 'id', IndexType.COMPOSITE, 'phaseById'),
-            IndexDefinition('Task', 'id', IndexType.COMPOSITE, 'taskById'),
-            IndexDefinition('Subtask', 'id', IndexType.COMPOSITE, 'subtaskById'),
-            IndexDefinition('Event', 'id', IndexType.COMPOSITE, 'eventById'),
-            IndexDefinition('Actor', 'id', IndexType.COMPOSITE, 'actorById'),
+            IndexDefinition("Plan", "id", IndexType.COMPOSITE, "planById"),
+            IndexDefinition("Phase", "id", IndexType.COMPOSITE, "phaseById"),
+            IndexDefinition("Task", "id", IndexType.COMPOSITE, "taskById"),
+            IndexDefinition("Subtask", "id", IndexType.COMPOSITE, "subtaskById"),
+            IndexDefinition("Event", "id", IndexType.COMPOSITE, "eventById"),
+            IndexDefinition("Actor", "id", IndexType.COMPOSITE, "actorById"),
         ]
 
     @staticmethod
@@ -1177,13 +1176,12 @@ class JerryIndexConfiguration:
         """
         return [
             # Status filtering (moderate selectivity)
-            IndexDefinition('Task', 'status', IndexType.COMPOSITE, 'taskByStatus'),
-            IndexDefinition('Phase', 'status', IndexType.COMPOSITE, 'phaseByStatus'),
-            IndexDefinition('Plan', 'status', IndexType.COMPOSITE, 'planByStatus'),
-
+            IndexDefinition("Task", "status", IndexType.COMPOSITE, "taskByStatus"),
+            IndexDefinition("Phase", "status", IndexType.COMPOSITE, "phaseByStatus"),
+            IndexDefinition("Plan", "status", IndexType.COMPOSITE, "planByStatus"),
             # Temporal range queries
-            IndexDefinition('Task', 'created_at', IndexType.MIXED, 'taskByCreatedAt'),
-            IndexDefinition('Event', 'time', IndexType.MIXED, 'eventByTime'),
+            IndexDefinition("Task", "created_at", IndexType.MIXED, "taskByCreatedAt"),
+            IndexDefinition("Event", "time", IndexType.MIXED, "eventByTime"),
         ]
 
     @staticmethod
@@ -1194,9 +1192,9 @@ class JerryIndexConfiguration:
         Mitigates supernode performance issues.
         """
         return [
-            ('CREATED_BY', 'timestamp'),  # Actor supernode mitigation
-            ('EMITTED', 'sequence'),      # Event ordering
-            ('CONTAINS', 'sequence'),     # Child ordering
+            ("CREATED_BY", "timestamp"),  # Actor supernode mitigation
+            ("EMITTED", "sequence"),  # Event ordering
+            ("CONTAINS", "sequence"),  # Child ordering
         ]
 
     @staticmethod
@@ -1210,11 +1208,11 @@ class JerryIndexConfiguration:
         - Large blobs (JSON, etc.)
         """
         return [
-            'description',   # Free text
-            'title',         # Free text
-            'verification',  # Free text
-            'data',          # JSON blob (Event.data)
-            'metadata',      # JSON blob
+            "description",  # Free text
+            "title",  # Free text
+            "verification",  # Free text
+            "data",  # JSON blob (Event.data)
+            "metadata",  # JSON blob
         ]
 ```
 
@@ -1386,30 +1384,30 @@ Phase 3 (9-18 months): Evaluate native graph DB
 # Performance benchmarks to establish
 BENCHMARK_QUERIES = [
     {
-        'name': 'Get task by ID',
-        'query': "g.V().has('Task', 'id', 'TASK-001')",
-        'expected_latency': '< 10ms'
+        "name": "Get task by ID",
+        "query": "g.V().has('Task', 'id', 'TASK-001')",
+        "expected_latency": "< 10ms",
     },
     {
-        'name': 'Get all subtasks',
-        'query': "g.V('TASK-001').out('CONTAINS').hasLabel('Subtask')",
-        'expected_latency': '< 20ms'
+        "name": "Get all subtasks",
+        "query": "g.V('TASK-001').out('CONTAINS').hasLabel('Subtask')",
+        "expected_latency": "< 20ms",
     },
     {
-        'name': 'Calculate phase progress',
-        'query': "g.V('PHASE-001').out('CONTAINS').group().by('status').by(count())",
-        'expected_latency': '< 50ms'
+        "name": "Calculate phase progress",
+        "query": "g.V('PHASE-001').out('CONTAINS').group().by('status').by(count())",
+        "expected_latency": "< 50ms",
     },
     {
-        'name': 'Recursive parent traversal',
-        'query': "g.V('TASK-001').repeat(out('BELONGS_TO')).until(hasLabel('Plan')).path()",
-        'expected_latency': '< 30ms'
+        "name": "Recursive parent traversal",
+        "query": "g.V('TASK-001').repeat(out('BELONGS_TO')).until(hasLabel('Plan')).path()",
+        "expected_latency": "< 30ms",
     },
     {
-        'name': 'Find blocking dependencies',
-        'query': "g.V('TASK-001').out('BLOCKS').values('title')",
-        'expected_latency': '< 15ms'
-    }
+        "name": "Find blocking dependencies",
+        "query": "g.V('TASK-001').out('BLOCKS').values('title')",
+        "expected_latency": "< 15ms",
+    },
 ]
 ```
 
@@ -1423,13 +1421,13 @@ BENCHMARK_QUERIES = [
    ```python
    # schema/v1.0/task_schema.py
    TASK_SCHEMA = {
-       'label': 'Task',
-       'properties': {
-           'id': {'type': 'String', 'cardinality': 'SINGLE', 'indexed': True},
-           'title': {'type': 'String', 'cardinality': 'SINGLE', 'indexed': False},
-           'status': {'type': 'String', 'cardinality': 'SINGLE', 'indexed': True},
+       "label": "Task",
+       "properties": {
+           "id": {"type": "String", "cardinality": "SINGLE", "indexed": True},
+           "title": {"type": "String", "cardinality": "SINGLE", "indexed": False},
+           "status": {"type": "String", "cardinality": "SINGLE", "indexed": True},
        },
-       'version': '1.0'
+       "version": "1.0",
    }
    ```
 

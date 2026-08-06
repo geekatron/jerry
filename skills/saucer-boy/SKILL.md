@@ -169,7 +169,7 @@ Read your agent definition: skills/saucer-boy/agents/sb-voice.md
 
 ## TASK
 Generate a McConkey-style conversational response.
-"""
+""",
 )
 ```
 

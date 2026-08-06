@@ -197,7 +197,7 @@ Facilitate a Lean UX hypothesis cycle for the checkout flow redesign.
 
 ## MANDATORY PERSISTENCE (P-002)
 Create file at: projects/${JERRY_PROJECT}/engagements/UX-0001/ux-lean-ux-facilitator-checkout-flow.md
-"""
+""",
 )
 ```
 

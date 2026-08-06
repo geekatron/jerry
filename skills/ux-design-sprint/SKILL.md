@@ -200,7 +200,7 @@ Facilitate a complete AJ&Smart Design Sprint 2.0 for mobile navigation redesign.
 
 ## MANDATORY PERSISTENCE (P-002)
 Create file at: projects/${JERRY_PROJECT}/engagements/UX-0012/ux-sprint-facilitator-mobile-navigation.md
-"""
+""",
 )
 ```
 

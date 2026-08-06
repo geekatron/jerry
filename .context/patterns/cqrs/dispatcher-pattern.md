@@ -38,6 +38,7 @@ class IQueryDispatcher(Protocol):
         """Dispatch a query to its registered handler."""
         ...
 
+
 @runtime_checkable
 class ICommandDispatcher(Protocol):
     """Inbound/primary port - command routing contract."""
@@ -80,9 +81,7 @@ class QueryDispatcher:
         """
         handler = self._handlers.get(type(query))
         if handler is None:
-            raise UnregisteredQueryError(
-                f"No handler registered for {type(query).__name__}"
-            )
+            raise UnregisteredQueryError(f"No handler registered for {type(query).__name__}")
         return handler(query)
 ```
 
@@ -94,6 +93,7 @@ Handlers are registered in the composition root:
 
 ```python
 # src/bootstrap.py
+
 
 def create_query_dispatcher() -> QueryDispatcher:
     """Create and configure query dispatcher."""
@@ -177,6 +177,7 @@ def test_cmd_init_dispatches_query():
 ```python
 # src/application/ports/primary/iquerydispatcher.py
 """Query dispatcher port (primary/inbound)."""
+
 from __future__ import annotations
 
 from typing import Any, Protocol, runtime_checkable
@@ -216,9 +217,7 @@ class QueryDispatcher:
         """Route query to registered handler."""
         handler = self._handlers.get(type(query))
         if handler is None:
-            raise UnregisteredQueryError(
-                f"No handler registered for {type(query).__name__}"
-            )
+            raise UnregisteredQueryError(f"No handler registered for {type(query).__name__}")
         return handler(query)
 ```
 

@@ -85,9 +85,11 @@ Hexagonal Architecture (also called Ports and Adapters) is a pattern that **prot
 from dataclasses import dataclass
 from datetime import datetime
 
+
 @dataclass
 class WorkItem:
     """Aggregate root representing a unit of work."""
+
     id: str
     title: str
     status: Status
@@ -105,6 +107,7 @@ class WorkItem:
 ```python
 # WRONG: Domain importing infrastructure
 from src.infrastructure.adapters.persistence.filesystem_adapter import FilesystemAdapter
+
 
 class WorkItem:
     def save(self) -> None:
@@ -137,6 +140,7 @@ class WorkItem:
 from src.domain.aggregates.work_item import WorkItem
 from src.domain.ports.repository import IRepository
 
+
 class CreateWorkItemCommandHandler:
     def __init__(self, repository: IRepository) -> None:
         self._repository = repository  # Port, not concrete adapter
@@ -151,6 +155,7 @@ class CreateWorkItemCommandHandler:
 ```python
 # WRONG: Application importing infrastructure
 from src.infrastructure.adapters.persistence.filesystem_adapter import FilesystemAdapter
+
 
 class CreateWorkItemCommandHandler:
     def __init__(self) -> None:
@@ -181,6 +186,7 @@ class CreateWorkItemCommandHandler:
 from pathlib import Path
 from src.domain.aggregates.work_item import WorkItem
 from src.domain.ports.repository import IRepository
+
 
 class FilesystemWorkItemAdapter(IRepository[WorkItem, str]):
     """Filesystem implementation of work item repository."""
@@ -217,6 +223,7 @@ import click
 from src.application.commands.create_work_item_command import CreateWorkItemCommand
 from src.application.ports.primary.icommanddispatcher import ICommandDispatcher
 
+
 @click.command()
 @click.argument("title")
 def create_item(title: str, dispatcher: ICommandDispatcher) -> None:
@@ -242,6 +249,7 @@ def create_item(title: str, dispatcher: ICommandDispatcher) -> None:
 ```python
 # ❌ BAD: Domain importing infrastructure
 from src.infrastructure.adapters.persistence.sqlalchemy_adapter import SessionFactory
+
 
 class WorkItem:
     def save(self) -> None:
@@ -402,6 +410,7 @@ Does the logic involve:
 # src/domain/aggregates/work_item.py
 from src.infrastructure.adapters.persistence.filesystem_adapter import FilesystemAdapter
 
+
 class WorkItem:
     def save(self) -> None:
         adapter = FilesystemAdapter()
@@ -431,6 +440,7 @@ class CreateWorkItemCommandHandler:
 # src/application/handlers/commands/handler.py
 from src.infrastructure.adapters.persistence.filesystem_adapter import FilesystemAdapter
 
+
 class CreateWorkItemCommandHandler:
     def __init__(self) -> None:
         self._repository = FilesystemAdapter()  # Instantiating concrete adapter
@@ -452,8 +462,8 @@ class CreateWorkItemCommandHandler:
 **Problem**:
 ```python
 # src/domain/aggregates/work_item.py
-class WorkItem:
-    ...
+class WorkItem: ...
+
 
 class Task:  # ❌ Violates H-10
     ...
@@ -464,12 +474,11 @@ class Task:  # ❌ Violates H-10
 **Fix**: One public class per file.
 ```python
 # src/domain/aggregates/work_item.py
-class WorkItem:
-    ...
+class WorkItem: ...
+
 
 # src/domain/aggregates/task.py
-class Task:
-    ...
+class Task: ...
 ```
 
 ---
@@ -504,8 +513,8 @@ def complete_item(item_id: str, dispatcher: ICommandDispatcher) -> None:
 
 **Problem**:
 ```python
-class ListWorkItemsQuery:
-    ...
+class ListWorkItemsQuery: ...
+
 
 class ListWorkItemsQueryHandler:
     def handle(self, query: ListWorkItemsQuery) -> list[WorkItem]:  # ❌ Returning entities
@@ -521,6 +530,7 @@ class WorkItemDTO:
     id: str
     title: str
     status: str
+
 
 class ListWorkItemsQueryHandler:
     def handle(self, query: ListWorkItemsQuery) -> list[WorkItemDTO]:
@@ -559,10 +569,13 @@ class ListWorkItemsQueryHandler:
 @dataclass(frozen=True)
 class VertexId:
     """Base class for all identity types."""
+
     value: str
+
 
 # src/domain/aggregates/work_item.py
 from src.shared_kernel.identity.vertex_id import VertexId  # ✅ Allowed
+
 
 @dataclass(frozen=True)
 class WorkItemId(VertexId):
@@ -586,8 +599,7 @@ def test_domain_has_no_infrastructure_imports():
     domain_files = Path("src/domain").rglob("*.py")
     for file in domain_files:
         imports = extract_imports(file)
-        assert not any("infrastructure" in imp for imp in imports), \
-            f"{file} violates H-07"
+        assert not any("infrastructure" in imp for imp in imports), f"{file} violates H-07"
 ```
 
 **Run**: `uv run pytest tests/architecture/`

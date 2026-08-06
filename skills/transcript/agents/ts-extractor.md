@@ -270,9 +270,7 @@ for chunk_meta in index["chunks"]:
 
     # Extract entities from this chunk
     chunk_entities = extract_from_chunk(
-        chunk=chunk,
-        chunk_id=chunk_meta["chunk_id"],
-        speaker_registry=speakers
+        chunk=chunk, chunk_id=chunk_meta["chunk_id"], speaker_registry=speakers
     )
 
     # Accumulate results

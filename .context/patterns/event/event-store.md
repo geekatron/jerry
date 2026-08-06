@@ -125,6 +125,7 @@ class IEventStore(Protocol):
 
 class EventStoreError(Exception):
     """Base error for event store operations."""
+
     pass
 
 
@@ -222,9 +223,9 @@ class InMemoryEventStore:
 
             # Filter by version range
             filtered = [
-                e for e in events
-                if e.version >= from_version
-                and (to_version is None or e.version <= to_version)
+                e
+                for e in events
+                if e.version >= from_version and (to_version is None or e.version <= to_version)
             ]
 
             return filtered
@@ -265,10 +266,7 @@ class EventSourcedWorkItemRepository:
             return None
 
         # Convert StoredEvent to DomainEvent
-        domain_events = [
-            EventRegistry.deserialize(e.data)
-            for e in stored_events
-        ]
+        domain_events = [EventRegistry.deserialize(e.data) for e in stored_events]
 
         return WorkItem.load_from_history(domain_events)
 

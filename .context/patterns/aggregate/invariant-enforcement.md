@@ -211,19 +211,25 @@ class WorkItemStatus(Enum):
 ```python
 # File: src/shared_kernel/exceptions.py
 
+
 class DomainError(Exception):
     """Base for all domain errors."""
+
     pass
+
 
 class ValidationError(DomainError):
     """Field validation failed."""
+
     def __init__(self, field: str, message: str) -> None:
         self.field = field
         self.message = message
         super().__init__(f"Validation failed for {field}: {message}")
 
+
 class InvalidStateError(DomainError):
     """Operation invalid for current state."""
+
     def __init__(
         self,
         entity_type: str,
@@ -236,8 +242,10 @@ class InvalidStateError(DomainError):
         self.current_state = current_state
         super().__init__(message)
 
+
 class InvalidStateTransitionError(InvalidStateError):
     """State transition not allowed."""
+
     def __init__(
         self,
         current_state: str,
@@ -256,14 +264,18 @@ class InvalidStateTransitionError(InvalidStateError):
             ),
         )
 
+
 class InvariantViolationError(DomainError):
     """Business invariant violated."""
+
     def __init__(self, invariant: str, message: str) -> None:
         self.invariant = invariant
         super().__init__(f"Invariant '{invariant}' violated: {message}")
 
+
 class QualityGateError(DomainError):
     """Quality gate check failed."""
+
     def __init__(self, work_item_id: str, message: str) -> None:
         self.work_item_id = work_item_id
         super().__init__(message)
@@ -358,6 +370,7 @@ work_item.start()  # Raises if invalid
 class WorkItem:
     def set_status(self, status: str) -> None:
         self._status = status  # No validation!
+
 
 # CORRECT: Behavior method with validation
 class WorkItem:

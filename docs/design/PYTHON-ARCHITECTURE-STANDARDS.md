@@ -113,6 +113,7 @@ from typing import Protocol, TypeVar, Generic
 TQuery = TypeVar("TQuery")
 TResult = TypeVar("TResult")
 
+
 class IQueryDispatcher(Protocol):
     """Dispatcher for routing queries to handlers."""
 
@@ -146,6 +147,7 @@ class QueryDispatcher:
 @dataclass(frozen=True)
 class ScanProjectsQuery:
     """Query to scan for all available projects."""
+
     base_path: str
 
 
@@ -184,6 +186,7 @@ class ScanProjectsHandler:
 def execute(self) -> list[ProjectInfo]: ...
 def execute(self) -> tuple[ProjectId | None, ValidationResult]: ...
 
+
 # Commands return None or domain events
 def execute(self) -> None: ...
 def execute(self) -> list[DomainEvent]: ...
@@ -200,11 +203,12 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import ClassVar
 
+
 @dataclass
 class ProjectInfo:
     """Project entity with identity and audit metadata."""
 
-    id: ProjectId                          # Identity
+    id: ProjectId  # Identity
     status: ProjectStatus
     created_at: datetime = field(default_factory=datetime.utcnow)
     updated_at: datetime | None = None
@@ -225,6 +229,7 @@ class ProjectInfo:
 
 ```python
 from dataclasses import dataclass
+
 
 @dataclass(frozen=True, slots=True)  # MUST be frozen
 class ProjectId:
@@ -248,6 +253,7 @@ class ProjectId:
 ```python
 from dataclasses import dataclass
 from datetime import datetime
+
 
 @dataclass(frozen=True)
 class ProjectCreated:  # Past tense
@@ -473,9 +479,9 @@ def parse_input(args: argparse.Namespace) -> dict:
 
     if args.stdin:
         raw = sys.stdin.read()
-        if raw.startswith('{'):
+        if raw.startswith("{"):
             return json.loads(raw)
-        elif '|' in raw:
+        elif "|" in raw:
             return parse_toon(raw)
         else:
             return parse_args(raw)

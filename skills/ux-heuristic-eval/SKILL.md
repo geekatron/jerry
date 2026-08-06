@@ -193,7 +193,7 @@ Produce ranked findings with remediation recommendations.
 
 ## MANDATORY PERSISTENCE (P-002)
 Create file at: projects/${JERRY_PROJECT}/engagements/UX-0001/ux-heuristic-evaluator-settings-page.md
-"""
+""",
 )
 ```
 

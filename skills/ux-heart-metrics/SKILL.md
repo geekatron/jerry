@@ -207,7 +207,7 @@ Agent(
 Define HEART metrics for the checkout flow using the GSM process.
 Select applicable HEART dimensions. Produce goal definitions,
 signal identification, and dashboard-ready metric specifications.
-"""
+""",
 )
 ```
 

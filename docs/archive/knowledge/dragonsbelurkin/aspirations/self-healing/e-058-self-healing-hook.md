@@ -233,6 +233,7 @@ DISCOVERY_PATTERNS = [
     (r"\blearned\s+(?:that\s+)?", Confidence.MEDIUM, "learned"),
 ]
 
+
 def detect_discoveries(text: str) -> DetectionResult:
     """Detect discovery language in text."""
     return detect_with_patterns(text, DISCOVERY_PATTERNS, KnowledgeType.DISCOVERY)
@@ -248,6 +249,7 @@ from pathlib import Path
 from datetime import datetime
 
 HEALING_DIR = Path(".ecw/healing")
+
 
 def write_pending_captures(session_id: str, discoveries: list[Detection]) -> Path:
     """Write pending captures for Claude to process."""
@@ -267,12 +269,13 @@ def write_pending_captures(session_id: str, discoveries: list[Detection]) -> Pat
             }
             for d in discoveries
         ],
-        "instructions": generate_healing_instructions(len(discoveries))
+        "instructions": generate_healing_instructions(len(discoveries)),
     }
 
     path = HEALING_DIR / "pending-captures.json"
     path.write_text(json.dumps(pending, indent=2))
     return path
+
 
 def generate_healing_instructions(count: int) -> str:
     """Generate clear healing instructions for Claude."""
@@ -363,6 +366,7 @@ fi
 ```python
 # healing_state.py (verification function)
 
+
 def verify_captures(session_id: str) -> dict:
     """Verify that pending captures have been completed."""
     pending_path = HEALING_DIR / "pending-captures.json"
@@ -377,10 +381,7 @@ def verify_captures(session_id: str) -> dict:
         return {"status": "stale_session", "remaining": len(pending.get("items", []))}
 
     # Remaining items not marked captured
-    remaining = [
-        item for item in pending.get("items", [])
-        if not item.get("captured", False)
-    ]
+    remaining = [item for item in pending.get("items", []) if not item.get("captured", False)]
 
     if not remaining:
         # All captured - clean up

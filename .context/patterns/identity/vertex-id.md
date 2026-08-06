@@ -32,6 +32,7 @@ Create a frozen dataclass base class that validates UUID format and provides val
 from dataclasses import dataclass
 from uuid import UUID
 
+
 @dataclass(frozen=True)
 class VertexId:
     """
@@ -43,6 +44,7 @@ class VertexId:
     - UUID validation: Ensures valid identifiers
     - Graph-compatible: Ready for TinkerPop migration
     """
+
     value: str
 
     def __post_init__(self) -> None:

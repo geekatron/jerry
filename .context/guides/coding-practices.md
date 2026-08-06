@@ -34,12 +34,15 @@
 def get_work_item(id):
     return repository.get(id)
 
+
 # Bug: Passing integer instead of string
 item = get_work_item(123)  # Runtime error later
+
 
 # With type hints
 def get_work_item(id: str) -> WorkItem | None:
     return repository.get(id)
+
 
 # Bug caught by mypy
 item = get_work_item(123)  # ❌ mypy error: Expected str, got int
@@ -51,12 +54,11 @@ item = get_work_item(123)  # ❌ mypy error: Expected str, got int
 
 ```python
 # Without type hints - unclear
-def process(data, options=None):
-    ...
+def process(data, options=None): ...
+
 
 # With type hints - clear
-def process(data: list[WorkItem], options: ProcessOptions | None = None) -> ProcessResult:
-    ...
+def process(data: list[WorkItem], options: ProcessOptions | None = None) -> ProcessResult: ...
 ```
 
 **Reading the second signature**, you immediately know:
@@ -90,20 +92,20 @@ def complete_work_item(item_id: str, dispatcher: ICommandDispatcher) -> None:
 
 ```python
 # ✅ GOOD: Modern syntax
-def get_item(id: str) -> WorkItem | None:
-    ...
+def get_item(id: str) -> WorkItem | None: ...
 
-def process(items: list[WorkItem]) -> dict[str, int]:
-    ...
+
+def process(items: list[WorkItem]) -> dict[str, int]: ...
+
 
 # ❌ OLD: Deprecated syntax (avoid)
 from typing import Optional, List, Dict
 
-def get_item(id: str) -> Optional[WorkItem]:
-    ...
 
-def process(items: List[WorkItem]) -> Dict[str, int]:
-    ...
+def get_item(id: str) -> Optional[WorkItem]: ...
+
+
+def process(items: List[WorkItem]) -> Dict[str, int]: ...
 ```
 
 **Why prefer modern syntax?**
@@ -117,6 +119,7 @@ def process(items: List[WorkItem]) -> Dict[str, int]:
 
 ```python
 from __future__ import annotations
+
 
 class WorkItem:
     def add_subtask(self, subtask: WorkItem) -> None:  # ✅ Forward reference works
@@ -144,6 +147,7 @@ class WorkItem:
 def save_work_item(item: WorkItem) -> None:
     repository.save(item)
 
+
 # ❌ BAD: Missing return type
 def save_work_item(item: WorkItem):
     repository.save(item)
@@ -162,6 +166,7 @@ def save_work_item(item: WorkItem):
 # ✅ GOOD: Specific element type
 def filter_items(items: list[WorkItem], status: Status) -> list[WorkItem]:
     return [i for i in items if i.status == status]
+
 
 # ❌ BAD: Untyped list
 def filter_items(items: list, status: Status) -> list:
@@ -184,8 +189,7 @@ def create_task(
     title: str,
     description: str | None = None,  # Optional, defaults to None
     parent_id: str | None = None,
-) -> Task:
-    ...
+) -> Task: ...
 ```
 
 ---
@@ -205,11 +209,11 @@ def load_config(source: str | Path) -> Config:
 ```python
 from typing import Callable
 
+
 def register_handler(
     event_type: type[DomainEvent],
     handler: Callable[[DomainEvent], None],
-) -> None:
-    ...
+) -> None: ...
 ```
 
 ---
@@ -222,6 +226,7 @@ from typing import Protocol, TypeVar
 
 TAggregate = TypeVar("TAggregate")
 TId = TypeVar("TId")
+
 
 class IRepository(Protocol[TAggregate, TId]):
     def get(self, id: TId) -> TAggregate | None: ...
@@ -348,6 +353,7 @@ def validate_quality(item: WorkItem) -> bool:
     """Check if work item meets quality criteria."""
     ...
 
+
 # ❌ BAD: Too verbose for first line
 def validate_quality(item: WorkItem) -> bool:
     """This function validates whether a given work item meets the quality criteria
@@ -366,6 +372,7 @@ def validate_quality(item: WorkItem) -> bool:
 def save_snapshot(item: WorkItem, version: int) -> None:
     """Save snapshot of work item at version."""
     ...
+
 
 # ✅ GOOD: Explains rationale
 def save_snapshot(item: WorkItem, version: int) -> None:
@@ -512,9 +519,11 @@ except json.JSONDecodeError as e:
 ```python
 from dataclasses import dataclass
 
+
 @dataclass(frozen=True, slots=True)
 class Priority:
     """Value object representing task priority."""
+
     value: str
 
     def __post_init__(self) -> None:
@@ -546,6 +555,7 @@ class Priority:
 
 ```python
 from enum import Enum, auto
+
 
 class WorkItemStatus(Enum):
     """Work item status with state machine."""
@@ -582,6 +592,7 @@ class WorkItemStatus(Enum):
 @dataclass(frozen=True, slots=True)
 class DateRange:
     """Value object representing a date range."""
+
     start: datetime
     end: datetime
 
@@ -615,11 +626,13 @@ class DateRange:
 ```python
 from typing import Protocol
 
+
 class IRepository(Protocol):
     """Port interface (structural subtyping)."""
 
     def save(self, item: WorkItem) -> None: ...
     def get(self, id: str) -> WorkItem | None: ...
+
 
 # Any class with these methods implements IRepository
 class FilesystemAdapter:
@@ -630,6 +643,7 @@ class FilesystemAdapter:
     def get(self, id: str) -> WorkItem | None:
         # Implementation
         ...
+
 
 # No inheritance needed! FilesystemAdapter "implements" IRepository
 repository: IRepository = FilesystemAdapter()  # ✅ Type-safe
@@ -652,6 +666,7 @@ repository: IRepository = FilesystemAdapter()  # ✅ Type-safe
 ```python
 from abc import ABC, abstractmethod
 
+
 class AggregateRoot(ABC):
     """Base class for all aggregate roots."""
 
@@ -669,6 +684,7 @@ class AggregateRoot(ABC):
         self._apply(event)  # Calls subclass implementation
         self._events.append(event)
         self._version += 1
+
 
 # Subclass must implement _apply
 class WorkItem(AggregateRoot):
@@ -714,15 +730,19 @@ Question: Does the interface need shared implementation?
 # src/domain/aggregates/work_item.py
 from src.domain.ports.repository import IRepository  # Imports repository
 
+
 class WorkItem:
     def save_to(self, repository: IRepository) -> None:
         repository.save(self)
 
+
 # src/domain/ports/repository.py
 from src.domain.aggregates.work_item import WorkItem  # Imports work_item
 
+
 class IRepository(Protocol):
     def save(self, item: WorkItem) -> None: ...
+
 
 # ❌ Circular import: work_item → repository → work_item
 ```
@@ -739,9 +759,11 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from src.domain.ports.repository import IRepository  # Only imported for type checking
 
+
 class WorkItem:
     def save_to(self, repository: IRepository) -> None:  # ✅ Type hint works
         repository.save(self)
+
 
 # src/domain/ports/repository.py
 from __future__ import annotations
@@ -749,6 +771,7 @@ from typing import TYPE_CHECKING, Protocol
 
 if TYPE_CHECKING:
     from src.domain.aggregates.work_item import WorkItem  # Only imported for type checking
+
 
 class IRepository(Protocol):
     def save(self, item: WorkItem) -> None: ...  # ✅ Type hint works

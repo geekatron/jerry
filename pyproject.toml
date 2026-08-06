@@ -95,6 +95,16 @@ exclude = [
     "projects/*/work/**/EN-*/r01_poc.py",
 ]
 
+# Ruff 0.16+ formats Python code blocks inside Markdown. Exclude the archival
+# projects/ tree from the FORMATTER only: project records are historical
+# artifacts — reformatting them churns closed work items and drags legacy
+# (pre-schema) entity files into the markdown schema validation gate.
+# Live docs (.context/, docs/, skills/) remain in formatter scope.
+[tool.ruff.format]
+exclude = [
+    "projects/**",
+]
+
 [tool.ruff.lint]
 select = [
     "E",   # pycodestyle errors

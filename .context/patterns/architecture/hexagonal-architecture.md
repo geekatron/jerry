@@ -186,6 +186,7 @@ def test_domain_has_no_infrastructure_imports():
         imports = get_imports_from_file(file)
         assert not has_infrastructure_import(imports)
 
+
 def test_application_has_no_interface_imports():
     """Application layer must not import interface."""
     app_files = Path("src/application").rglob("*.py")

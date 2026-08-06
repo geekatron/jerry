@@ -28,7 +28,7 @@ class CLIAdapter:
     def cmd_init(self, args):
         # Direct infrastructure instantiation in adapter
         repository = FilesystemProjectAdapter()  # VIOLATION!
-        environment = OsEnvironmentAdapter()     # VIOLATION!
+        environment = OsEnvironmentAdapter()  # VIOLATION!
         query = GetProjectContextQuery(repository=repository, environment=environment)
         return query.execute()
 ```
@@ -43,6 +43,7 @@ Create a single factory function that wires all dependencies at application star
 
 ```python
 # src/bootstrap.py - Composition Root
+
 
 def create_query_dispatcher() -> QueryDispatcher:
     """Factory function that wires all dependencies.
@@ -86,6 +87,7 @@ def create_query_dispatcher():
     repository = FilesystemProjectAdapter()  # Created here
     ...
 
+
 # Bad - Handler creates its own adapter
 class SomeHandler:
     def __init__(self):
@@ -102,6 +104,7 @@ class RetrieveProjectContextQueryHandler:
     def __init__(self, repository: IProjectRepository, environment: IEnvironment):
         self._repository = repository
         self._environment = environment
+
 
 # Bad - Self-instantiation
 class RetrieveProjectContextQueryHandler:
@@ -156,6 +159,7 @@ References:
     - PAT-ARCH-005 (Composition Root)
     - PAT-ARCH-001 (Hexagonal Architecture)
 """
+
 from src.application.dispatchers.query_dispatcher import QueryDispatcher
 from src.application.handlers.queries.retrieve_project_context_query_handler import (
     RetrieveProjectContextQueryHandler,
@@ -203,17 +207,20 @@ Architecture tests validate composition root isolation:
 ```python
 # tests/architecture/test_composition_root.py
 
+
 def test_cli_adapter_has_no_infrastructure_imports():
     """CLIAdapter must not import infrastructure directly."""
     adapter_path = Path("src/interface/cli/adapter.py")
     imports = get_imports_from_file(adapter_path)
     assert not has_infrastructure_import(imports)
 
+
 def test_bootstrap_imports_infrastructure():
     """Bootstrap SHOULD import infrastructure adapters."""
     bootstrap_path = Path("src/bootstrap.py")
     imports = get_imports_from_file(bootstrap_path)
     assert has_infrastructure_import(imports)
+
 
 def test_handlers_do_not_import_infrastructure():
     """Handlers must not import infrastructure directly."""

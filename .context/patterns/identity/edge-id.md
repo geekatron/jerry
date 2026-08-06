@@ -42,6 +42,7 @@ PLAN-001--HAS_PHASE-->PHASE-001
 ```python
 from dataclasses import dataclass
 
+
 @dataclass(frozen=True)
 class EdgeId:
     """Generated identifier for graph edges.
@@ -50,6 +51,7 @@ class EdgeId:
     always produce the same EdgeId. This enables idempotent edge
     operations.
     """
+
     source_id: VertexId
     label: str
     target_id: VertexId
@@ -61,12 +63,7 @@ class EdgeId:
         return hash((str(self.source_id), self.label, str(self.target_id)))
 
     @classmethod
-    def create(
-        cls,
-        source: VertexId,
-        label: str,
-        target: VertexId
-    ) -> 'EdgeId':
+    def create(cls, source: VertexId, label: str, target: VertexId) -> "EdgeId":
         """Factory method for creating EdgeId.
 
         Args:
@@ -80,7 +77,7 @@ class EdgeId:
         return cls(source_id=source, label=label, target_id=target)
 
     @classmethod
-    def parse(cls, edge_id_string: str) -> 'EdgeId':
+    def parse(cls, edge_id_string: str) -> "EdgeId":
         """Parse EdgeId from string representation.
 
         Args:
@@ -93,7 +90,8 @@ class EdgeId:
             ValueError: If format is invalid
         """
         import re
-        pattern = r'^(.+)--(.+)-->(.+)$'
+
+        pattern = r"^(.+)--(.+)-->(.+)$"
         match = re.match(pattern, edge_id_string)
 
         if not match:
@@ -102,7 +100,7 @@ class EdgeId:
         return cls(
             source_id=VertexId(match.group(1)),
             label=match.group(2),
-            target_id=VertexId(match.group(3))
+            target_id=VertexId(match.group(3)),
         )
 ```
 
@@ -144,11 +142,7 @@ See [PAT-GRAPH-002: Edge Labels](../graph/edge-labels.md) for the complete label
 
 ```python
 # Create edge ID
-edge_id = EdgeId.create(
-    source=PhaseId("PHASE-001"),
-    label="CONTAINS",
-    target=TaskId("TASK-001")
-)
+edge_id = EdgeId.create(source=PhaseId("PHASE-001"), label="CONTAINS", target=TaskId("TASK-001"))
 print(edge_id)  # PHASE-001--CONTAINS-->TASK-001
 
 # Parse from string

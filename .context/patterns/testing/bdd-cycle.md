@@ -98,10 +98,12 @@ class WorkItem(AggregateRoot):
             )
 
         self._status = WorkItemStatus.DONE
-        self._raise_event(WorkItemCompleted(
-            work_item_id=self._id,
-            quality_passed=True,
-        ))
+        self._raise_event(
+            WorkItemCompleted(
+                work_item_id=self._id,
+                quality_passed=True,
+            )
+        )
 ```
 
 **Run test**: Should pass now.
@@ -135,11 +137,13 @@ class WorkItem(AggregateRoot):
         """
         self._validate_transition(WorkItemStatus.DONE)
 
-        self._raise_event(WorkItemCompleted(
-            work_item_id=self._id,
-            quality_passed=quality_passed,
-            completed_at=datetime.now(timezone.utc),
-        ))
+        self._raise_event(
+            WorkItemCompleted(
+                work_item_id=self._id,
+                quality_passed=quality_passed,
+                completed_at=datetime.now(timezone.utc),
+            )
+        )
 
     def _validate_transition(self, target_status: WorkItemStatus) -> None:
         """Validate state transition is allowed."""
@@ -241,6 +245,7 @@ class WorkItem:
     def complete(self):
         self._status = WorkItemStatus.DONE
 
+
 # CORRECT: Test first
 def test_complete_transitions_to_done():
     item = ...
@@ -265,6 +270,7 @@ def test_event_captures_work_item_id():
     event = WorkItemCreated(work_item_id="W-1", title="Test")
     assert event.work_item_id == "W-1"
 
+
 def test_event_captures_title():
     event = WorkItemCreated(work_item_id="W-1", title="Test")
     assert event.title == "Test"
@@ -274,14 +280,15 @@ def test_event_captures_title():
 
 ```python
 # WRONG: Refactoring while red
-def test_failing():
-    ...  # Fails
+def test_failing(): ...  # Fails
+
 
 # Now refactoring code  # NO!
 
+
 # CORRECT: Get to green first
-def test_passing():
-    ...  # Passes
+def test_passing(): ...  # Passes
+
 
 # NOW refactor code
 ```
@@ -310,6 +317,7 @@ def test_work_item_can_be_completed_when_in_progress(): ...
 def test_work_item_cannot_be_completed_when_pending(): ...
 def test_work_item_cannot_be_completed_when_already_done(): ...
 
+
 # These form a readable specification:
 # - Work item can be completed when in progress
 # - Work item cannot be completed when pending
@@ -337,6 +345,7 @@ def test_work_item_cannot_be_completed_when_already_done(): ...
 class WorkItem:
     def complete(self): ...  # Already implemented
 
+
 # Now writing test  # Test may just verify what exists, not what's needed
 ```
 
@@ -351,6 +360,7 @@ def test_work_item_lifecycle():
     assert item.status == IN_PROGRESS  # Feature 2
     item.complete()
     assert item.status == DONE  # Feature 3
+
 
 # CORRECT: One test per feature
 def test_new_work_item_has_pending_status(): ...

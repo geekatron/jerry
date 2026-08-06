@@ -213,7 +213,7 @@ Perform an inclusive design evaluation of the checkout flow.
 
 ## MANDATORY PERSISTENCE (P-002)
 Create file at: projects/${JERRY_PROJECT}/engagements/UX-0001/ux-inclusive-evaluator-checkout-flow.md
-"""
+""",
 )
 ```
 

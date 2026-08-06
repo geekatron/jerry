@@ -92,6 +92,7 @@ S-014 scoring rubric.
 5. **Extracting entity context for scoring setup:**
    ```python
    from skills.ast.scripts.ast_ops import query_frontmatter
+
    fm = query_frontmatter("{artifact_path}")
    # Returns: {"Type": "story", "Status": "in_progress", "Parent": "FEAT-001", ...}
    entity_type = fm.get("Type", "unknown")
@@ -101,6 +102,7 @@ S-014 scoring rubric.
 6. **Checking nav table compliance for Completeness dimension (H-23/H-24):**
    ```python
    from skills.ast.scripts.ast_ops import validate_nav_table_file
+
    nav_result = validate_nav_table_file("{artifact_path}")
    # Returns: {"is_valid": bool, "missing_entries": [...], "orphaned_entries": [...]}
    # Nav table violations = Completeness dimension deduction (missing sections)
@@ -109,6 +111,7 @@ S-014 scoring rubric.
 7. **Schema validation for entity deliverables:**
    ```python
    from skills.ast.scripts.ast_ops import validate_file
+
    result = validate_file("{artifact_path}", schema=entity_type)
    # Returns: {"schema_valid": bool, "schema_violations": [...]}
    # Schema violations inform Completeness (0.20) and Methodological Rigor (0.20) scoring
@@ -676,7 +679,7 @@ Use default criteria:
 ## CRITIQUE TASK
 Evaluate the authentication design document against the criteria above.
 Provide quality score, specific improvement recommendations, and threshold assessment.
-"""
+""",
 )
 ```
 

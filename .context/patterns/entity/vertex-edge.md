@@ -125,24 +125,24 @@ class EdgeLabel(str, Enum):
     """
 
     # Dependency relationships
-    BLOCKS = "blocks"           # Source blocks target
-    DEPENDS_ON = "depends_on"   # Source depends on target
+    BLOCKS = "blocks"  # Source blocks target
+    DEPENDS_ON = "depends_on"  # Source depends on target
 
     # Hierarchy relationships
-    PARENT_OF = "parent_of"     # Source is parent of target
-    CHILD_OF = "child_of"       # Source is child of target
+    PARENT_OF = "parent_of"  # Source is parent of target
+    CHILD_OF = "child_of"  # Source is child of target
 
     # Association relationships
-    RELATED_TO = "related_to"   # General relationship
-    REFERENCES = "references"   # Source references target
+    RELATED_TO = "related_to"  # General relationship
+    REFERENCES = "references"  # Source references target
 
     # Ownership relationships
-    OWNS = "owns"               # Source owns target
-    BELONGS_TO = "belongs_to"   # Source belongs to target
+    OWNS = "owns"  # Source owns target
+    BELONGS_TO = "belongs_to"  # Source belongs to target
 
     # Workflow relationships
-    PRECEDES = "precedes"       # Source comes before target
-    FOLLOWS = "follows"         # Source comes after target
+    PRECEDES = "precedes"  # Source comes before target
+    FOLLOWS = "follows"  # Source comes after target
 
 
 @dataclass(frozen=True)
@@ -201,9 +201,7 @@ class Edge:
 
     _id: EdgeId
     _properties: dict[str, Any] = field(default_factory=dict)
-    _created_at: datetime = field(
-        default_factory=lambda: datetime.now(timezone.utc)
-    )
+    _created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
     @property
     def id(self) -> EdgeId:

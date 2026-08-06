@@ -243,7 +243,7 @@ uv run jerry transcript parse file.vtt \
 Task(
     description="Extract entities from transcript",
     subagent_type="general-purpose",
-    prompt="You are ts-extractor v1.3.0..."
+    prompt="You are ts-extractor v1.3.0...",
 )
 
 # Does this work?
@@ -251,7 +251,7 @@ Task(
     description="Extract entities from transcript",
     subagent_type="general-purpose",
     model="opus",  # ← CAN WE DO THIS?
-    prompt="You are ts-extractor v1.3.0..."
+    prompt="You are ts-extractor v1.3.0...",
 )
 ```
 

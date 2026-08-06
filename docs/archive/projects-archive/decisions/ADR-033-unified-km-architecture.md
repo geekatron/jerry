@@ -357,13 +357,13 @@ class IKnowledgeRepository(ABC):
         """Retrieve knowledge item by ID."""
 
     @abstractmethod
-    def find_by_type(self, km_type: KnowledgeType,
-                     status: Optional[KnowledgeStatus] = None) -> List[KnowledgeItem]:
+    def find_by_type(
+        self, km_type: KnowledgeType, status: Optional[KnowledgeStatus] = None
+    ) -> List[KnowledgeItem]:
         """Find all items of a specific type."""
 
     @abstractmethod
-    def find_related(self, item_id: KnowledgeItemId,
-                     max_depth: int = 2) -> List[KnowledgeItem]:
+    def find_related(self, item_id: KnowledgeItemId, max_depth: int = 2) -> List[KnowledgeItem]:
         """Find knowledge items related via graph traversal."""
 ```
 
@@ -378,8 +378,9 @@ class ISemanticIndex(ABC):
         """Add knowledge item to semantic index (generate embeddings)."""
 
     @abstractmethod
-    def search(self, query: str, top_k: int = 5,
-               filters: dict = None) -> List[Tuple[KnowledgeItemId, float]]:
+    def search(
+        self, query: str, top_k: int = 5, filters: dict = None
+    ) -> List[Tuple[KnowledgeItemId, float]]:
         """Semantic search returning (item_id, similarity_score) tuples."""
 
     @abstractmethod
@@ -398,13 +399,19 @@ class IGraphStore(ABC):
         """Add knowledge item as graph vertex."""
 
     @abstractmethod
-    def add_edge(self, from_id: KnowledgeItemId, to_id: KnowledgeItemId,
-                 label: str, properties: Dict[str, Any] = None) -> Edge:
+    def add_edge(
+        self,
+        from_id: KnowledgeItemId,
+        to_id: KnowledgeItemId,
+        label: str,
+        properties: Dict[str, Any] = None,
+    ) -> Edge:
         """Create relationship between knowledge items."""
 
     @abstractmethod
-    def traverse(self, start_id: KnowledgeItemId, edge_label: str,
-                 max_depth: int = 2) -> List[KnowledgeItemId]:
+    def traverse(
+        self, start_id: KnowledgeItemId, edge_label: str, max_depth: int = 2
+    ) -> List[KnowledgeItemId]:
         """Graph traversal from starting vertex."""
 
     @abstractmethod

@@ -181,7 +181,7 @@ Create file at: {output_path}
 
 ## TASK
 Select the strategy set for C3 criticality per SSOT.
-"""
+""",
 )
 ```
 

@@ -464,7 +464,7 @@ Investigate the production API timeout issue reported at 2026-01-03 14:30.
 - Create Ishikawa diagram categorizing contributing factors
 - Propose corrective actions with owners
 - Identify similar risks using FMEA
-"""
+""",
 )
 ```
 

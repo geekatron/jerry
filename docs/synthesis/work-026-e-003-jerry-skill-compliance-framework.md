@@ -1924,10 +1924,7 @@ index_data = Read(file_path="output/index.json")
 
 ```python
 # Write extraction report
-Write(
-    file_path="output/extraction-report.json",
-    content=json.dumps(extraction_report, indent=2)
-)
+Write(file_path="output/extraction-report.json", content=json.dumps(extraction_report, indent=2))
 ```
 
 ### Edit Example
@@ -1937,7 +1934,7 @@ Write(
 Edit(
     file_path="output/packet/00-index.md",
     old_string="## Sections",
-    new_string="## Sections\n- 08-mindmap/"
+    new_string="## Sections\n- 08-mindmap/",
 )
 ```
 
@@ -1954,10 +1951,7 @@ uv run jerry transcript validate output/ --strict
 # Delegate entity extraction to ts-extractor
 Task(
     agent_id="ts-extractor",
-    input={
-        "index_json_path": "output/index.json",
-        "chunks_dir": "output/chunks/"
-    }
+    input={"index_json_path": "output/index.json", "chunks_dir": "output/chunks/"},
 )
 ```
 ```

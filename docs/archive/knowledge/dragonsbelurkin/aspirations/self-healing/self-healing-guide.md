@@ -236,7 +236,7 @@ policy = RetryPolicy(
     initial_delay=0.5,
     max_delay=30.0,
     exponential_base=2.0,
-    jitter=True  # Random variation to prevent thundering herd
+    jitter=True,  # Random variation to prevent thundering herd
 )
 ```
 
@@ -496,6 +496,7 @@ CLOSED ──(failures > threshold)──> OPEN
 3. If persistent, manually reset:
 ```python
 from domain.self_healing import CircuitBreaker
+
 cb = CircuitBreaker()
 cb.reset()  # Force to CLOSED
 ```

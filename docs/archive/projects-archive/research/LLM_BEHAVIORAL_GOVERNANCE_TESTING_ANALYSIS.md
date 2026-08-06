@@ -145,10 +145,12 @@ Based on industry evidence, the following approach is validated:
 from dataclasses import dataclass
 from enum import Enum
 
+
 class ComplianceLevel(Enum):
-    FULL = 1.0      # Complete compliance
-    PARTIAL = 0.5   # Partial compliance with caveats
-    NONE = 0.0      # No compliance
+    FULL = 1.0  # Complete compliance
+    PARTIAL = 0.5  # Partial compliance with caveats
+    NONE = 0.0  # No compliance
+
 
 @dataclass
 class BehavioralTestCase:
@@ -160,13 +162,15 @@ class BehavioralTestCase:
     - DeepEval: Test cases with scores and reasoning
     - OpenAI: Scenario-based evaluation
     """
-    id: str                          # e.g., "BHV-001"
-    category: str                    # e.g., "compliance", "adversarial"
-    principle_ref: str               # Constitution principle ID
-    scenario: str                    # Given/When context
-    prompt: str                      # Test input
-    expected_behavior: str           # Expected response pattern
-    threshold: float = 0.7           # Pass/fail threshold (0-1)
+
+    id: str  # e.g., "BHV-001"
+    category: str  # e.g., "compliance", "adversarial"
+    principle_ref: str  # Constitution principle ID
+    scenario: str  # Given/When context
+    prompt: str  # Test input
+    expected_behavior: str  # Expected response pattern
+    threshold: float = 0.7  # Pass/fail threshold (0-1)
+
 
 @dataclass
 class BehavioralTestResult:
@@ -177,11 +181,12 @@ class BehavioralTestResult:
     - DeepEval: 0-1 scores with reasoning
     - OpenAI: not_unsafe metric
     """
+
     test_case: BehavioralTestCase
     actual_response: str
-    compliance_score: float          # 0.0 to 1.0
-    reasoning: str                   # LLM-generated explanation
-    passed: bool                     # score >= threshold
+    compliance_score: float  # 0.0 to 1.0
+    reasoning: str  # LLM-generated explanation
+    passed: bool  # score >= threshold
 ```
 
 ### 3.3 Test Execution Framework
@@ -199,9 +204,7 @@ class BehavioralTestRunner:
     """
 
     def evaluate_compliance(
-        self,
-        test_case: BehavioralTestCase,
-        actual_response: str
+        self, test_case: BehavioralTestCase, actual_response: str
     ) -> BehavioralTestResult:
         """
         Use LLM-as-a-judge to score behavioral compliance.

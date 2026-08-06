@@ -358,7 +358,7 @@ Reference findings and sources in your decision rationale.
 
 ## MANDATORY PERSISTENCE (P-002)
 Create file at: docs/decisions/work-024-e-103-adr-caching.md
-"""
+""",
 )
 ```
 
@@ -500,7 +500,7 @@ After completing your task, you MUST:
 
 ## YOUR TASK
 {Detailed task description}
-"""
+""",
 )
 ```
 
@@ -509,8 +509,7 @@ After completing your task, you MUST:
 ```python
 # Step 1: Research
 research_result = Task(
-    description="ps-researcher: Caching options",
-    prompt="... research caching ..."
+    description="ps-researcher: Caching options", prompt="... research caching ..."
 )
 
 # Step 2: Analysis (references research)
@@ -521,7 +520,7 @@ analysis_result = Task(
     ## UPSTREAM ARTIFACTS
     - Research: {research_result.artifact_path}
     ...
-    """
+    """,
 )
 
 # Step 3: Decision (references both)
@@ -533,7 +532,7 @@ decision_result = Task(
     - Research: {research_result.artifact_path}
     - Analysis: {analysis_result.artifact_path}
     ...
-    """
+    """,
 )
 ```
 

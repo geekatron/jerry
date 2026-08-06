@@ -52,6 +52,7 @@ The following components form a shared kernel used by both Work Tracker and KM c
 @dataclass(frozen=True)
 class VertexId:
     """Base class for strongly-typed graph vertex identifiers."""
+
     value: str
 
     def __str__(self) -> str:
@@ -92,11 +93,14 @@ Both domains emit events conforming to CloudEvents 1.0:
 ```python
 class IGraphStore(Protocol):
     """Shared graph operations for both domains."""
+
     def add_vertex(self, id: VertexId, label: str, properties: dict) -> None: ...
-    def add_edge(self, from_id: VertexId, to_id: VertexId,
-                 label: str, properties: dict | None = None) -> Edge: ...
-    def traverse(self, start_id: VertexId, edge_label: str,
-                 max_depth: int = 2) -> list[VertexId]: ...
+    def add_edge(
+        self, from_id: VertexId, to_id: VertexId, label: str, properties: dict | None = None
+    ) -> Edge: ...
+    def traverse(
+        self, start_id: VertexId, edge_label: str, max_depth: int = 2
+    ) -> list[VertexId]: ...
     def traverse_incoming(self, end_id: VertexId, edge_label: str) -> list[VertexId]: ...
 ```
 
@@ -534,49 +538,67 @@ These port interfaces are defined in the shared kernel and implemented once for 
 # IEventStore - Event Sourcing Port
 class IEventStore(Protocol):
     """Append-only event log for domain events."""
+
     def append(self, aggregate_id: str, events: list[DomainEvent]) -> None: ...
     def get_events(self, aggregate_id: str) -> list[DomainEvent]: ...
     def get_events_since(self, aggregate_id: str, version: int) -> list[DomainEvent]: ...
     def get_all_events(self) -> list[DomainEvent]: ...
 
+
 # IEventDispatcher - Pub/Sub Port
 class IEventDispatcher(Protocol):
     """Event routing for domain events."""
+
     def dispatch(self, event: DomainEvent) -> None: ...
     def dispatch_all(self, events: list[DomainEvent]) -> None: ...
     def subscribe(self, event_type: str, handler: Callable[[DomainEvent], None]) -> None: ...
 
+
 # IGraphStore - Graph Operations Port
 class IGraphStore(Protocol):
     """Property graph operations for both domains."""
+
     def add_vertex(self, id: VertexId, label: str, properties: dict[str, Any]) -> None: ...
     def get_vertex(self, id: VertexId) -> dict[str, Any] | None: ...
-    def add_edge(self, from_id: VertexId, to_id: VertexId,
-                 label: str, properties: dict[str, Any] | None = None) -> Edge: ...
+    def add_edge(
+        self,
+        from_id: VertexId,
+        to_id: VertexId,
+        label: str,
+        properties: dict[str, Any] | None = None,
+    ) -> Edge: ...
     def get_edges(self, vertex_id: VertexId, direction: str = "out") -> list[Edge]: ...
-    def traverse(self, start_id: VertexId, edge_label: str,
-                 max_depth: int = 2) -> list[VertexId]: ...
+    def traverse(
+        self, start_id: VertexId, edge_label: str, max_depth: int = 2
+    ) -> list[VertexId]: ...
     def traverse_incoming(self, end_id: VertexId, edge_label: str) -> list[VertexId]: ...
+
 
 # ISemanticIndex - Vector Search Port
 class ISemanticIndex(Protocol):
     """Semantic similarity search for both domains."""
+
     def index(self, id: VertexId, text: str, metadata: dict[str, Any]) -> None: ...
-    def search(self, query: str, top_k: int = 5,
-               filters: dict[str, Any] | None = None) -> list[tuple[VertexId, float]]: ...
+    def search(
+        self, query: str, top_k: int = 5, filters: dict[str, Any] | None = None
+    ) -> list[tuple[VertexId, float]]: ...
     def reindex(self, items: list[tuple[VertexId, str, dict]]) -> None: ...
     def delete(self, id: VertexId) -> None: ...
+
 
 # IRDFSerializer - RDF Export Port
 class IRDFSerializer(Protocol):
     """RDF serialization for standards compliance."""
+
     def to_rdf(self, entity: Vertex) -> Graph: ...
     def serialize(self, format: str = "turtle") -> str: ...
     def to_jsonld(self, entity: Vertex, context: dict | None = None) -> str: ...
 
+
 # IUnitOfWork - Transaction Port
 class IUnitOfWork(Protocol):
     """Transactional unit of work pattern."""
+
     def __enter__(self) -> "IUnitOfWork": ...
     def __exit__(self, exc_type, exc_val, exc_tb) -> None: ...
     def commit(self) -> None: ...
@@ -591,6 +613,7 @@ Domain-specific ports for Work Tracker context:
 # IWorkItemRepository - Persistence Port
 class IWorkItemRepository(Protocol):
     """Repository for WorkItem aggregate persistence."""
+
     def save(self, item: WorkItem) -> None: ...
     def get(self, id: WorkItemId) -> WorkItem | None: ...
     def get_all(self) -> list[WorkItem]: ...
@@ -600,16 +623,20 @@ class IWorkItemRepository(Protocol):
     def exists(self, id: WorkItemId) -> bool: ...
     def next_id(self) -> WorkItemId: ...
 
+
 # IProjectRepository - Persistence Port
 class IProjectRepository(Protocol):
     """Repository for Project aggregate persistence."""
+
     def save(self, project: Project) -> None: ...
     def get(self, id: ProjectId) -> Project | None: ...
     def get_all(self) -> list[Project]: ...
 
+
 # ISprintRepository - Persistence Port
 class ISprintRepository(Protocol):
     """Repository for Sprint aggregate persistence."""
+
     def save(self, sprint: Sprint) -> None: ...
     def get(self, id: SprintId) -> Sprint | None: ...
     def get_active(self) -> Sprint | None: ...
@@ -623,26 +650,35 @@ Domain-specific ports for Knowledge Management context:
 # IKnowledgeRepository - Persistence Port
 class IKnowledgeRepository(ABC):
     """Repository for KnowledgeItem aggregate persistence."""
+
     @abstractmethod
     def save(self, item: KnowledgeItem) -> None: ...
     @abstractmethod
     def find_by_id(self, id: KnowledgeItemId) -> KnowledgeItem | None: ...
     @abstractmethod
-    def find_by_type(self, km_type: KnowledgeType,
-                     status: KnowledgeStatus | None = None) -> list[KnowledgeItem]: ...
+    def find_by_type(
+        self, km_type: KnowledgeType, status: KnowledgeStatus | None = None
+    ) -> list[KnowledgeItem]: ...
     @abstractmethod
-    def find_related(self, item_id: KnowledgeItemId,
-                     max_depth: int = 2) -> list[KnowledgeItem]: ...
+    def find_related(self, item_id: KnowledgeItemId, max_depth: int = 2) -> list[KnowledgeItem]: ...
     @abstractmethod
     def next_id(self, km_type: KnowledgeType) -> KnowledgeItemId: ...
+
 
 # IKnowledgeSearch - Search Port (extends ISemanticIndex)
 class IKnowledgeSearch(Protocol):
     """Semantic search specialized for knowledge items."""
-    def search_patterns(self, query: str, top_k: int = 5) -> list[tuple[KnowledgeItemId, float]]: ...
+
+    def search_patterns(
+        self, query: str, top_k: int = 5
+    ) -> list[tuple[KnowledgeItemId, float]]: ...
     def search_lessons(self, query: str, top_k: int = 5) -> list[tuple[KnowledgeItemId, float]]: ...
-    def search_assumptions(self, query: str, top_k: int = 5) -> list[tuple[KnowledgeItemId, float]]: ...
-    def find_similar(self, item_id: KnowledgeItemId, top_k: int = 5) -> list[tuple[KnowledgeItemId, float]]: ...
+    def search_assumptions(
+        self, query: str, top_k: int = 5
+    ) -> list[tuple[KnowledgeItemId, float]]: ...
+    def find_similar(
+        self, item_id: KnowledgeItemId, top_k: int = 5
+    ) -> list[tuple[KnowledgeItemId, float]]: ...
 ```
 
 ### 5.4 Port Hierarchy
@@ -748,6 +784,7 @@ class CreateWorkItemCommand:
     parent_id: str | None = None
     tags: list[str] = field(default_factory=list)
 
+
 @dataclass
 class CompleteWorkItemCommand:
     id: str
@@ -835,7 +872,7 @@ class CaptureKnowledgeFromWorkItemHandler:
         wt_repo: IWorkItemRepository,
         km_repo: IKnowledgeRepository,
         graph: IGraphStore,
-        event_dispatcher: IEventDispatcher
+        event_dispatcher: IEventDispatcher,
     ):
         self.wt_repo = wt_repo
         self.km_repo = km_repo
@@ -853,7 +890,7 @@ class CaptureKnowledgeFromWorkItemHandler:
         lesson_content = Lesson(
             what_happened=command.what_happened,
             what_learned=command.what_learned,
-            prevention=command.prevention
+            prevention=command.prevention,
         )
 
         knowledge_item = KnowledgeItem(
@@ -861,7 +898,7 @@ class CaptureKnowledgeFromWorkItemHandler:
             title=f"Lesson from {task.title}",
             km_type=KnowledgeType.LESSON,
             content=lesson_content,
-            evidence_refs=[str(JerryUri.for_task(task.id))]
+            evidence_refs=[str(JerryUri.for_task(task.id))],
         )
 
         self.km_repo.save(knowledge_item)
@@ -871,16 +908,18 @@ class CaptureKnowledgeFromWorkItemHandler:
             from_id=task.id,
             to_id=lesson_id,
             label="LEARNED_FROM",
-            properties={"captured_at": datetime.utcnow().isoformat()}
+            properties={"captured_at": datetime.utcnow().isoformat()},
         )
 
         # Emit event
-        self.event_dispatcher.dispatch(KnowledgeItemCreated(
-            item_id=str(lesson_id),
-            km_type="LESSON",
-            title=knowledge_item.title,
-            created_by=command.captured_by
-        ))
+        self.event_dispatcher.dispatch(
+            KnowledgeItemCreated(
+                item_id=str(lesson_id),
+                km_type="LESSON",
+                title=knowledge_item.title,
+                created_by=command.captured_by,
+            )
+        )
 
         return lesson_id
 ```
@@ -1024,6 +1063,7 @@ Patterns appearing in both Work Tracker and KM domains:
 ```python
 import networkx as nx
 
+
 # Unified graph for both domains
 class NetworkXGraphStore:
     def __init__(self):
@@ -1032,14 +1072,13 @@ class NetworkXGraphStore:
     def add_vertex(self, id: VertexId, label: str, properties: dict) -> None:
         self._graph.add_node(str(id), label=label, **properties)
 
-    def add_edge(self, from_id: VertexId, to_id: VertexId,
-                 label: str, properties: dict | None = None) -> Edge:
-        key = self._graph.add_edge(str(from_id), str(to_id),
-                                   label=label, **(properties or {}))
+    def add_edge(
+        self, from_id: VertexId, to_id: VertexId, label: str, properties: dict | None = None
+    ) -> Edge:
+        key = self._graph.add_edge(str(from_id), str(to_id), label=label, **(properties or {}))
         return Edge(from_id, to_id, label, properties, key)
 
-    def traverse(self, start_id: VertexId, edge_label: str,
-                 max_depth: int = 2) -> list[VertexId]:
+    def traverse(self, start_id: VertexId, edge_label: str, max_depth: int = 2) -> list[VertexId]:
         results = []
         for target in nx.bfs_edges(self._graph, str(start_id), depth_limit=max_depth):
             # Filter by edge label
@@ -1076,6 +1115,7 @@ class NetworkXGraphStore:
 import faiss
 import numpy as np
 
+
 class FAISSSemanticIndex:
     def __init__(self, dimension: int = 1536):
         self._index = faiss.IndexFlatL2(dimension)
@@ -1089,8 +1129,9 @@ class FAISSSemanticIndex:
         self._metadata[self._next_idx] = metadata
         self._next_idx += 1
 
-    def search(self, query_embedding: np.ndarray, top_k: int = 5,
-               filters: dict | None = None) -> list[tuple[VertexId, float]]:
+    def search(
+        self, query_embedding: np.ndarray, top_k: int = 5, filters: dict | None = None
+    ) -> list[tuple[VertexId, float]]:
         distances, indices = self._index.search(query_embedding.reshape(1, -1), top_k * 2)
 
         results = []
@@ -1138,6 +1179,7 @@ from rdflib.namespace import RDF, RDFS, XSD, DC
 JERRY = Namespace("https://jerry.framework/ontology/")
 WT = Namespace("https://jerry.framework/ontology/worktracker/")
 KM = Namespace("https://jerry.framework/ontology/knowledge/")
+
 
 class RDFLibSerializer:
     def __init__(self):
