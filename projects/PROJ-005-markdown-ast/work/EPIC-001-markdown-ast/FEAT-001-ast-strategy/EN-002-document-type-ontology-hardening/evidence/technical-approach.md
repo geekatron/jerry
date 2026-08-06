@@ -67,8 +67,10 @@ Files that match no path pattern AND no structural cue should return `UNKNOWN` w
 ```python
 class DocumentType(Enum):
     # Existing values unchanged...
-    SKILL_RESOURCE = "skill_resource"      # NEW: playbooks, skill rules, tests, docs, refs, composition prompts
-    TEMPLATE = "template"                  # NEW: non-adversarial templates
+    SKILL_RESOURCE = (
+        "skill_resource"  # NEW: playbooks, skill rules, tests, docs, refs, composition prompts
+    )
+    TEMPLATE = "template"  # NEW: non-adversarial templates
     # PATTERN_DOCUMENT already exists, just needs path patterns
 ```
 
@@ -81,61 +83,57 @@ PATH_PATTERNS: list[tuple[str, DocumentType]] = [
     (".context/rules/*.md", DocumentType.RULE_FILE),
     (".claude/rules/*.md", DocumentType.RULE_FILE),
     ("docs/design/*.md", DocumentType.ADR),
-    ("docs/adrs/*.md", DocumentType.ADR),                            # NEW
+    ("docs/adrs/*.md", DocumentType.ADR),  # NEW
     (".context/templates/adversarial/*.md", DocumentType.STRATEGY_TEMPLATE),
-
     # --- Tier 2: Skill resources (before broad skill/*) ---
-    ("skills/*/PLAYBOOK.md", DocumentType.SKILL_RESOURCE),           # NEW
-    ("skills/*/rules/*.md", DocumentType.RULE_FILE),                 # NEW (reuse RULE_FILE)
-    ("skills/*/tests/*.md", DocumentType.SKILL_RESOURCE),            # NEW
-    ("skills/*/composition/*.md", DocumentType.SKILL_RESOURCE),      # NEW
-    ("skills/*/reference/*.md", DocumentType.SKILL_RESOURCE),        # NEW
-    ("skills/*/references/*.md", DocumentType.SKILL_RESOURCE),       # NEW
-    ("skills/*/templates/*.md", DocumentType.TEMPLATE),              # NEW
-    ("skills/*/docs/*.md", DocumentType.SKILL_RESOURCE),             # NEW
-    ("skills/*/validation/*.md", DocumentType.SKILL_RESOURCE),       # NEW
-    ("skills/*/knowledge/**/*.md", DocumentType.KNOWLEDGE_DOCUMENT), # NEW
-    ("skills/shared/*.md", DocumentType.SKILL_RESOURCE),             # NEW
-
+    ("skills/*/PLAYBOOK.md", DocumentType.SKILL_RESOURCE),  # NEW
+    ("skills/*/rules/*.md", DocumentType.RULE_FILE),  # NEW (reuse RULE_FILE)
+    ("skills/*/tests/*.md", DocumentType.SKILL_RESOURCE),  # NEW
+    ("skills/*/composition/*.md", DocumentType.SKILL_RESOURCE),  # NEW
+    ("skills/*/reference/*.md", DocumentType.SKILL_RESOURCE),  # NEW
+    ("skills/*/references/*.md", DocumentType.SKILL_RESOURCE),  # NEW
+    ("skills/*/templates/*.md", DocumentType.TEMPLATE),  # NEW
+    ("skills/*/docs/*.md", DocumentType.SKILL_RESOURCE),  # NEW
+    ("skills/*/validation/*.md", DocumentType.SKILL_RESOURCE),  # NEW
+    ("skills/*/knowledge/**/*.md", DocumentType.KNOWLEDGE_DOCUMENT),  # NEW
+    ("skills/shared/*.md", DocumentType.SKILL_RESOURCE),  # NEW
     # --- Tier 3: Worktracker entities ---
     ("projects/*/WORKTRACKER.md", DocumentType.WORKTRACKER_ENTITY),
     ("projects/*/work/**/*.md", DocumentType.WORKTRACKER_ENTITY),
-    ("projects/*/PLAN.md", DocumentType.FRAMEWORK_CONFIG),           # NEW
-    ("projects/*/decisions/*.md", DocumentType.ADR),                  # NEW
-    ("projects/*/analysis/*.md", DocumentType.KNOWLEDGE_DOCUMENT),   # NEW
-    ("projects/*/research/*.md", DocumentType.KNOWLEDGE_DOCUMENT),   # NEW
+    ("projects/*/PLAN.md", DocumentType.FRAMEWORK_CONFIG),  # NEW
+    ("projects/*/decisions/*.md", DocumentType.ADR),  # NEW
+    ("projects/*/analysis/*.md", DocumentType.KNOWLEDGE_DOCUMENT),  # NEW
+    ("projects/*/research/*.md", DocumentType.KNOWLEDGE_DOCUMENT),  # NEW
     ("projects/*/synthesis/*.md", DocumentType.KNOWLEDGE_DOCUMENT),  # NEW
     ("projects/*/critiques/*.md", DocumentType.KNOWLEDGE_DOCUMENT),  # NEW
-
     # --- Tier 4: Framework config ---
     ("CLAUDE.md", DocumentType.FRAMEWORK_CONFIG),
     ("AGENTS.md", DocumentType.FRAMEWORK_CONFIG),
-    ("README.md", DocumentType.FRAMEWORK_CONFIG),                    # NEW
-    ("CODE_OF_CONDUCT.md", DocumentType.FRAMEWORK_CONFIG),           # NEW
-    ("projects/*/ORCHESTRATION_PLAN.md", DocumentType.FRAMEWORK_CONFIG), # NEW
-
+    ("README.md", DocumentType.FRAMEWORK_CONFIG),  # NEW
+    ("CODE_OF_CONDUCT.md", DocumentType.FRAMEWORK_CONFIG),  # NEW
+    ("projects/*/ORCHESTRATION_PLAN.md", DocumentType.FRAMEWORK_CONFIG),  # NEW
     # --- Tier 5: Broader patterns ---
     ("projects/*/orchestration/**/*.md", DocumentType.ORCHESTRATION_ARTIFACT),
-    (".context/templates/worktracker/*.md", DocumentType.TEMPLATE),   # NEW
-    (".context/templates/design/*.md", DocumentType.TEMPLATE),        # NEW
-    (".context/templates/**/*.md", DocumentType.TEMPLATE),            # NEW (catch-all for templates)
-    (".context/patterns/**/*.md", DocumentType.PATTERN_DOCUMENT),     # NEW
-    (".context/guides/*.md", DocumentType.PATTERN_DOCUMENT),          # NEW
+    (".context/templates/worktracker/*.md", DocumentType.TEMPLATE),  # NEW
+    (".context/templates/design/*.md", DocumentType.TEMPLATE),  # NEW
+    (".context/templates/**/*.md", DocumentType.TEMPLATE),  # NEW (catch-all for templates)
+    (".context/patterns/**/*.md", DocumentType.PATTERN_DOCUMENT),  # NEW
+    (".context/guides/*.md", DocumentType.PATTERN_DOCUMENT),  # NEW
     ("docs/knowledge/**/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
-    ("docs/synthesis/**/*.md", DocumentType.KNOWLEDGE_DOCUMENT),     # NEW
-    ("docs/governance/*.md", DocumentType.KNOWLEDGE_DOCUMENT),       # NEW
-    ("docs/research/**/*.md", DocumentType.KNOWLEDGE_DOCUMENT),      # NEW
-    ("docs/playbooks/*.md", DocumentType.KNOWLEDGE_DOCUMENT),        # NEW
-    ("docs/reviews/**/*.md", DocumentType.KNOWLEDGE_DOCUMENT),       # NEW
-    ("docs/scores/**/*.md", DocumentType.KNOWLEDGE_DOCUMENT),        # NEW
-    ("docs/runbooks/*.md", DocumentType.KNOWLEDGE_DOCUMENT),         # NEW
-    ("docs/blog/**/*.md", DocumentType.KNOWLEDGE_DOCUMENT),          # NEW
-    ("docs/analysis/**/*.md", DocumentType.KNOWLEDGE_DOCUMENT),      # NEW
-    ("docs/specifications/*.md", DocumentType.KNOWLEDGE_DOCUMENT),   # NEW
-    ("docs/security/*.md", DocumentType.KNOWLEDGE_DOCUMENT),         # NEW
-    ("docs/schemas/*.md", DocumentType.KNOWLEDGE_DOCUMENT),          # NEW
-    ("docs/templates/*.md", DocumentType.TEMPLATE),                  # NEW
-    ("docs/*.md", DocumentType.KNOWLEDGE_DOCUMENT),                  # NEW (catch-all for docs/)
+    ("docs/synthesis/**/*.md", DocumentType.KNOWLEDGE_DOCUMENT),  # NEW
+    ("docs/governance/*.md", DocumentType.KNOWLEDGE_DOCUMENT),  # NEW
+    ("docs/research/**/*.md", DocumentType.KNOWLEDGE_DOCUMENT),  # NEW
+    ("docs/playbooks/*.md", DocumentType.KNOWLEDGE_DOCUMENT),  # NEW
+    ("docs/reviews/**/*.md", DocumentType.KNOWLEDGE_DOCUMENT),  # NEW
+    ("docs/scores/**/*.md", DocumentType.KNOWLEDGE_DOCUMENT),  # NEW
+    ("docs/runbooks/*.md", DocumentType.KNOWLEDGE_DOCUMENT),  # NEW
+    ("docs/blog/**/*.md", DocumentType.KNOWLEDGE_DOCUMENT),  # NEW
+    ("docs/analysis/**/*.md", DocumentType.KNOWLEDGE_DOCUMENT),  # NEW
+    ("docs/specifications/*.md", DocumentType.KNOWLEDGE_DOCUMENT),  # NEW
+    ("docs/security/*.md", DocumentType.KNOWLEDGE_DOCUMENT),  # NEW
+    ("docs/schemas/*.md", DocumentType.KNOWLEDGE_DOCUMENT),  # NEW
+    ("docs/templates/*.md", DocumentType.TEMPLATE),  # NEW
+    ("docs/*.md", DocumentType.KNOWLEDGE_DOCUMENT),  # NEW (catch-all for docs/)
 ]
 ```
 
@@ -217,10 +215,13 @@ ALL_MD_FILES = sorted(
 )
 
 # Files intentionally classified as UNKNOWN
-EXPECTED_UNKNOWN = frozenset({
-    "SOUNDTRACK.md",
-    # ... other intentionally unclassified files
-})
+EXPECTED_UNKNOWN = frozenset(
+    {
+        "SOUNDTRACK.md",
+        # ... other intentionally unclassified files
+    }
+)
+
 
 @pytest.mark.parametrize("file_path", ALL_MD_FILES)
 def test_document_type_detection(file_path: str) -> None:
@@ -231,9 +232,7 @@ def test_document_type_detection(file_path: str) -> None:
 
     # BUG-004 regression: no file should match agent_definition via structure
     if doc_type == DocumentType.AGENT_DEFINITION:
-        path_type = DocumentTypeDetector._detect_from_path(
-            _normalize_path(file_path)
-        )
+        path_type = DocumentTypeDetector._detect_from_path(_normalize_path(file_path))
         assert path_type is not None, (
             f"{file_path} classified as agent_definition via STRUCTURE, not path. "
             "This is the BUG-004 regression."

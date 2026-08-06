@@ -160,7 +160,9 @@ The PromptReinforcementEngine is designed to extract V-024 content from L2-REINJ
 ```python
 class PreToolEnforcementEngine:
     def evaluate_write(self, file_path: str, content: str) -> EnforcementDecision: ...
-    def evaluate_edit(self, file_path: str, old_string: str, new_string: str) -> EnforcementDecision: ...
+    def evaluate_edit(
+        self, file_path: str, old_string: str, new_string: str
+    ) -> EnforcementDecision: ...
 ```
 
 The `evaluate_edit` method (v1.1.0 redesign) performs in-memory file reconstruction: reads the target file, applies the `old_string -> new_string` replacement, then runs AST analysis on the reconstructed content. This addresses the B-002 blocking finding from iteration 1.
@@ -185,9 +187,9 @@ The `evaluate_edit` method (v1.1.0 redesign) performs in-memory file reconstruct
 ```python
 @dataclass
 class EnforcementDecision:
-    action: str          # "allow" | "block"
-    reason: str          # Human-readable explanation
-    violations: list     # List of specific violations found
+    action: str  # "allow" | "block"
+    reason: str  # Human-readable explanation
+    violations: list  # List of specific violations found
     criticality_escalation: str | None  # "C3" | "C4" if governance file affected
 ```
 

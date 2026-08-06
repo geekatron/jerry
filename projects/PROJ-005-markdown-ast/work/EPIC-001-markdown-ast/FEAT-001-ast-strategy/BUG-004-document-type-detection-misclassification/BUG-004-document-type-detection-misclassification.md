@@ -105,7 +105,7 @@ The first structural cue in `STRUCTURAL_CUE_PRIORITY` is:
 
 ```python
 STRUCTURAL_CUE_PRIORITY: list[tuple[str, DocumentType]] = [
-    ("---", DocumentType.AGENT_DEFINITION),   # <-- BUG: matches ALL files with horizontal rules
+    ("---", DocumentType.AGENT_DEFINITION),  # <-- BUG: matches ALL files with horizontal rules
     ("> **", DocumentType.WORKTRACKER_ENTITY),
     ("<identity>", DocumentType.AGENT_DEFINITION),
     ("<!-- L2-REINJECT", DocumentType.RULE_FILE),

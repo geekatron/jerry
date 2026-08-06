@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
-- **style:** reformat 157 live-doc files (.context/, docs/, skills/, runbooks/) for ruff 0.16.1's new Markdown code-block formatting; add `[tool.ruff.format]` exclude for the archival `projects/` tree so historical work records are never reformatted or dragged into schema validation (PROJ-024 EN-010/TASK-036, #339)
+- **style:** reformat 324 Markdown files repo-wide (.context/, docs/, skills/, runbooks/, projects/) for ruff 0.16.1's new Markdown code-block formatting — no formatter exclusions (an initial projects/ exclusion was rejected in review as a shortcut and reverted) (PROJ-024 EN-010/TASK-036, #339)
+- **docs(proj-001):** conform 8 legacy pre-schema task entities to the current worktracker schema (enum vocabulary DONE→completed / HIGH→high, backfilled frontmatter derived from each file's own metadata, `## Content`→`## Summary` heading renames); rename 3 adversarial-critic reports whose `EN-` filename prefixes falsely triggered entity schema validation (#339)
 - **deps(dev):** bump uv-minor-patch group — ruff 0.15.22→0.16.1, filelock 3.31.0→3.32.2, bump-my-version 1.4.1→1.5.0, pre-commit 4.6.0→4.6.1 (Dependabot #334)
 
 ### Security

@@ -181,15 +181,28 @@ Or to modify/block:
 import json
 import sys
 
+
 def classify_task(prompt: str) -> str:
     """Classify prompt into task type for tiered enforcement."""
     implementation_keywords = [
-        "implement", "code", "write", "create", "build",
-        "fix", "refactor", "add feature", "update"
+        "implement",
+        "code",
+        "write",
+        "create",
+        "build",
+        "fix",
+        "refactor",
+        "add feature",
+        "update",
     ]
     research_keywords = [
-        "research", "analyze", "investigate", "explore",
-        "review", "evaluate", "compare"
+        "research",
+        "analyze",
+        "investigate",
+        "explore",
+        "review",
+        "evaluate",
+        "compare",
     ]
 
     prompt_lower = prompt.lower()
@@ -200,6 +213,7 @@ def classify_task(prompt: str) -> str:
         if kw in prompt_lower:
             return "research"
     return "general"
+
 
 def get_enforcement_context(task_type: str) -> str:
     """Get task-type-specific enforcement context."""
@@ -235,6 +249,7 @@ def get_enforcement_context(task_type: str) -> str:
     base += "</quality-enforcement>\n"
     return base
 
+
 def main() -> int:
     try:
         input_data = json.loads(sys.stdin.read())
@@ -242,17 +257,17 @@ def main() -> int:
         task_type = classify_task(prompt)
         enforcement = get_enforcement_context(task_type)
 
-        print(json.dumps({
-            "decision": "approve",
-            "hookSpecificOutput": {
-                "additionalContext": enforcement
-            }
-        }))
+        print(
+            json.dumps(
+                {"decision": "approve", "hookSpecificOutput": {"additionalContext": enforcement}}
+            )
+        )
         return 0
     except Exception as e:
         # Non-blocking: allow prompt through on error
         print(json.dumps({"decision": "approve"}))
         return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())
@@ -373,16 +388,11 @@ def check_post_write_quality(tool_name: str, tool_input: dict, tool_output: str)
     # If any file written, remind about quality review
     if tool_name in ("Write", "Edit"):
         reminders.append(
-            "QUALITY REMINDER: File modified. "
-            "Schedule adversarial review before marking complete."
+            "QUALITY REMINDER: File modified. Schedule adversarial review before marking complete."
         )
 
     if reminders:
-        return json.dumps({
-            "hookSpecificOutput": {
-                "additionalContext": "\n".join(reminders)
-            }
-        })
+        return json.dumps({"hookSpecificOutput": {"additionalContext": "\n".join(reminders)}})
     return json.dumps({})
 ```
 
@@ -841,6 +851,7 @@ Jerry already has a robust pre-commit configuration (`.pre-commit-config.yaml`).
 
 import sys
 from pathlib import Path
+
 
 def check_quality_artifacts():
     """Check that quality artifacts accompany implementation changes."""

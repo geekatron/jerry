@@ -65,7 +65,7 @@ def _detect_context_window(self) -> tuple[int, str]:
             if value <= 0:
                 logger.warning(...)
             else:
-                return value, "config"          # <-- priority 1
+                return value, "config"  # <-- priority 1
         except (ValueError, TypeError):
             logger.warning(...)
 
@@ -78,7 +78,7 @@ def _detect_context_window(self) -> tuple[int, str]:
         pass
 
     # 3. Default (correct for Pro/Team Standard 200K)
-    return _DEFAULT_CONTEXT_WINDOW_TOKENS, "default"              # <-- priority 3
+    return _DEFAULT_CONTEXT_WINDOW_TOKENS, "default"  # <-- priority 3
 ```
 
 The if/elif/else logic correctly implements the claimed chain. Priority 1 falls
@@ -122,10 +122,10 @@ claim is over-stated relative to the implementation for direct callers of
 ```python
 # config_threshold_adapter.py:231-251
 key = f"{_CONFIG_NAMESPACE}.context_window_tokens"
-explicit = self._config.get(key)   # <-- NO try/except wrapping this line
+explicit = self._config.get(key)  # <-- NO try/except wrapping this line
 if explicit is not None:
     try:
-        value = int(explicit)      # <-- try/except only for parse errors
+        value = int(explicit)  # <-- try/except only for parse errors
         ...
     except (ValueError, TypeError):
         ...
@@ -158,8 +158,7 @@ Specifically: `_detect_context_window()` has `value <= 0` check AND `estimate()`
 value = int(explicit)
 if value <= 0:
     logger.warning(
-        "Invalid context_window_tokens=%d (must be > 0); "
-        "falling through to auto-detection.",
+        "Invalid context_window_tokens=%d (must be > 0); falling through to auto-detection.",
         value,
     )
 else:
@@ -196,17 +195,19 @@ detection chain can distinguish "not configured" from "configured to 200K".
 **Evidence:** `bootstrap.py` lines 584-594.
 
 ```python
-defaults={
-    # NOTE: context_window_tokens is intentionally NOT in defaults.
-    # The adapter must distinguish "user explicitly configured" from
-    # "default" to support auto-detection priority chain (TASK-006).
-    "context_monitor.nominal_threshold": 0.55,
-    "context_monitor.warning_threshold": 0.70,
-    "context_monitor.critical_threshold": 0.80,
-    "context_monitor.emergency_threshold": 0.88,
-    "context_monitor.compaction_detection_threshold": 10000,
-    "context_monitor.enabled": True,
-},
+defaults = (
+    {
+        # NOTE: context_window_tokens is intentionally NOT in defaults.
+        # The adapter must distinguish "user explicitly configured" from
+        # "default" to support auto-detection priority chain (TASK-006).
+        "context_monitor.nominal_threshold": 0.55,
+        "context_monitor.warning_threshold": 0.70,
+        "context_monitor.critical_threshold": 0.80,
+        "context_monitor.emergency_threshold": 0.88,
+        "context_monitor.compaction_detection_threshold": 10000,
+        "context_monitor.enabled": True,
+    },
+)
 ```
 
 The key `context_monitor.context_window_tokens` is absent. The comment precisely
@@ -409,14 +410,16 @@ _CONFIG_NAMESPACE: str = "context_monitor"
 **Evidence (bootstrap):** `bootstrap.py` lines 584-594.
 
 ```python
-defaults={
-    "context_monitor.nominal_threshold": 0.55,
-    "context_monitor.warning_threshold": 0.70,
-    "context_monitor.critical_threshold": 0.80,
-    "context_monitor.emergency_threshold": 0.88,
-    "context_monitor.compaction_detection_threshold": 10000,
-    "context_monitor.enabled": True,
-},
+defaults = (
+    {
+        "context_monitor.nominal_threshold": 0.55,
+        "context_monitor.warning_threshold": 0.70,
+        "context_monitor.critical_threshold": 0.80,
+        "context_monitor.emergency_threshold": 0.88,
+        "context_monitor.compaction_detection_threshold": 10000,
+        "context_monitor.enabled": True,
+    },
+)
 ```
 
 All keys in bootstrap defaults use the `context_monitor.` prefix, which matches

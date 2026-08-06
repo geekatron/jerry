@@ -374,10 +374,11 @@ Additionally, register `SKILL_RESOURCE_SCHEMA` and `TEMPLATE_SCHEMA` in the sche
 ```python
 if len(parts) != 2:
     import warnings
+
     warnings.warn(
         f"Pattern '{pattern}' contains multiple '**' segments; "
         "returning False (no match) to avoid incorrect fnmatch behavior.",
-        stacklevel=2
+        stacklevel=2,
     )
     return False
 ```

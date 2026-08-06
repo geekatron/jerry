@@ -60,6 +60,7 @@ Modify `_build_resumption_state()` to parse ORCHESTRATION.yaml with a YAML parse
 Per REC-1 from the validation report:
 ```python
 import yaml
+
 doc = yaml.safe_load(content)
 return {
     "current_phase": doc.get("current_phase"),

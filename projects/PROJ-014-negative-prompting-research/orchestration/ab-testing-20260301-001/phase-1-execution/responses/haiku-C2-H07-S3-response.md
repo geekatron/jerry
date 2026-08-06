@@ -83,6 +83,7 @@ from typing import Generic, Optional, TypeVar
 
 ValueT = TypeVar("ValueT")
 
+
 class ICacheAdapter(ABC, Generic[ValueT]):
     """
     Domain-layer port for cache operations.
@@ -128,6 +129,7 @@ from src.domain.ports.cache import ICacheAdapter
 from src.domain.ports.repository import IInventoryRepository
 from src.application.queries.read_inventory_query import ReadInventoryQuery
 from src.application.dtos.inventory_dto import InventoryDTO
+
 
 class ReadInventoryQueryHandler:
     """
@@ -209,6 +211,7 @@ from src.application.handlers.read_inventory_handler import ReadInventoryQueryHa
 from src.domain.ports.cache import ICacheAdapter
 from src.domain.ports.repository import IInventoryRepository
 
+
 def create_read_inventory_handler() -> ReadInventoryQueryHandler:
     """
     Factory function for ReadInventoryQueryHandler with all dependencies wired.
@@ -260,6 +263,7 @@ import json
 import logging
 
 logger = logging.getLogger(__name__)
+
 
 class RedisCacheAdapter(ICacheAdapter):
     """
@@ -384,6 +388,7 @@ from unittest.mock import Mock
 from src.application.handlers.read_inventory_handler import ReadInventoryQueryHandler
 from src.application.queries.read_inventory_query import ReadInventoryQuery
 
+
 class TestReadInventoryHandlerWithoutCache(unittest.TestCase):
     """Test handler behavior when caching is disabled."""
 
@@ -410,6 +415,7 @@ class TestReadInventoryHandlerWithoutCache(unittest.TestCase):
 
 ```python
 from unittest.mock import Mock
+
 
 class TestReadInventoryHandlerWithCache(unittest.TestCase):
     """Test handler behavior with caching enabled."""
@@ -458,11 +464,13 @@ import os
 import pytest
 from src.bootstrap import create_read_inventory_handler
 
+
 @pytest.fixture
 def handler():
     """Create handler with real Redis (requires REDIS_ENABLED=true)."""
     os.environ["REDIS_ENABLED"] = "true"
     return create_read_inventory_handler()
+
 
 def test_cache_hit_reduces_database_queries(handler, mock_repository):
     """Integration test: verify Redis cache actually reduces DB hits."""

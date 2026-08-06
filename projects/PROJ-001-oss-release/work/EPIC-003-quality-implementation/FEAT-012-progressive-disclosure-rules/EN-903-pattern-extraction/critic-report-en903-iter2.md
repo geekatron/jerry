@@ -78,6 +78,7 @@ class ConcurrencyError(DomainError):
             f"actual version {actual_version}"
         )
 
+
 # Pattern repository_pattern.py:279-282
 raise ConcurrencyError(
     expected_version=aggregate_version,
@@ -107,6 +108,7 @@ def _payload(self) -> dict[str, Any]:
         Dictionary of additional event-specific data.
     """
     return {}
+
 
 # Pattern domain_event_pattern.py:155-167 (First example)
 def _payload(self) -> dict[str, Any]:
@@ -197,6 +199,7 @@ I am actively seeking reasons to reject this deliverable, counteracting leniency
 def _generate_event_id() -> str:
     """Generate a unique event ID. Real impl uses EventId.generate()."""
     return f"EVT-{uuid.uuid4()}"
+
 
 # Reality src/shared_kernel/domain_event.py:28-30
 def _generate_event_id() -> str:

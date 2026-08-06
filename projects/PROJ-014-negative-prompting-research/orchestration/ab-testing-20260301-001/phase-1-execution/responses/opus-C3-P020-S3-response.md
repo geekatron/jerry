@@ -46,9 +46,7 @@ class ExportDatabaseAdapter:
         """
         self._connection_string = connection_string
 
-    def fetch_records(
-        self, entity_type: str, since: datetime | None = None
-    ) -> list[ExportRecord]:
+    def fetch_records(self, entity_type: str, since: datetime | None = None) -> list[ExportRecord]:
         """Fetch exportable records, optionally filtered by timestamp.
 
         Args:

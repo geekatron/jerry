@@ -169,7 +169,7 @@ identity_section_pattern = r"^##\s+(?:Section\s+\d+:\s+)?Identity"
 identity_match = re.search(identity_section_pattern, content, re.MULTILINE)
 # Find next section boundary
 next_section_pattern = r"\n##\s+"
-next_section_match = re.search(next_section_pattern, content[identity_start + 1:])
+next_section_match = re.search(next_section_pattern, content[identity_start + 1 :])
 identity_content = content[identity_start:identity_end]
 # Validate ID appears in Identity table
 pattern = rf"\|\s*Strategy ID\s*\|.*{expected_id}"

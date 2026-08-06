@@ -184,6 +184,7 @@ class CreateProjectCommandHandler:
     def _generate_project_id() -> str:
         """Generate a unique project ID."""
         from uuid import uuid4
+
         return f"proj_{uuid4().hex[:12]}"
 ```
 

@@ -534,9 +534,9 @@ else:
 ```python
 def find_uv() -> str | None:
     candidates = [
-        "uv",                                            # In PATH
-        str(Path.home() / ".cargo" / "bin" / "uv"),      # Rust install location
-        str(Path.home() / ".local" / "bin" / "uv"),      # pipx location
+        "uv",  # In PATH
+        str(Path.home() / ".cargo" / "bin" / "uv"),  # Rust install location
+        str(Path.home() / ".local" / "bin" / "uv"),  # pipx location
     ]
 ```
 
@@ -734,6 +734,7 @@ Replace the `dir /AL` subprocess approach with `os.stat()` and the `FILE_ATTRIBU
 ```python
 import stat
 
+
 def is_symlink_or_junction(path: Path) -> bool:
     """Check if a path is a symlink or Windows junction point."""
     if path.is_symlink():
@@ -744,10 +745,7 @@ def is_symlink_or_junction(path: Path) -> bool:
             st = os.stat(str(path), follow_symlinks=False)
             # On Windows, os.lstat returns st_file_attributes
             FILE_ATTRIBUTE_REPARSE_POINT = 0x400
-            return bool(
-                getattr(st, "st_file_attributes", 0)
-                & FILE_ATTRIBUTE_REPARSE_POINT
-            )
+            return bool(getattr(st, "st_file_attributes", 0) & FILE_ATTRIBUTE_REPARSE_POINT)
         except OSError:
             pass
     return False
@@ -784,8 +782,7 @@ def _create_windows_link(source: Path, target: Path, quiet: bool) -> bool:
         if not quiet:
             print(f"  Junction: {target} -> {abs_source}")
         return True
-    except (subprocess.CalledProcessError, FileNotFoundError,
-            subprocess.TimeoutExpired) as e:
+    except (subprocess.CalledProcessError, FileNotFoundError, subprocess.TimeoutExpired) as e:
         print(f"  Error creating junction: {e}", file=sys.stderr)
         return False
 ```
@@ -867,6 +864,7 @@ def _files_match(source: Path, target: Path) -> bool:
 def _rmtree_with_retry(path: Path, max_retries: int = 3) -> None:
     """Remove directory tree with retry for Windows file locks."""
     import time
+
     for attempt in range(max_retries):
         try:
             shutil.rmtree(path)
@@ -888,16 +886,20 @@ def find_uv() -> str | None:
     home = Path.home()
 
     if sys.platform == "win32":
-        candidates.extend([
-            str(home / ".cargo" / "bin" / "uv.exe"),
-            str(home / "AppData" / "Local" / "Programs" / "uv" / "uv.exe"),
-            str(home / ".local" / "bin" / "uv.exe"),
-        ])
+        candidates.extend(
+            [
+                str(home / ".cargo" / "bin" / "uv.exe"),
+                str(home / "AppData" / "Local" / "Programs" / "uv" / "uv.exe"),
+                str(home / ".local" / "bin" / "uv.exe"),
+            ]
+        )
     else:
-        candidates.extend([
-            str(home / ".cargo" / "bin" / "uv"),
-            str(home / ".local" / "bin" / "uv"),
-        ])
+        candidates.extend(
+            [
+                str(home / ".cargo" / "bin" / "uv"),
+                str(home / ".local" / "bin" / "uv"),
+            ]
+        )
     # ... rest unchanged
 ```
 

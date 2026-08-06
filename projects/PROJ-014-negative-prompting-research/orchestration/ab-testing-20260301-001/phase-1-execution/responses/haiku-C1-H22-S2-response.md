@@ -49,7 +49,7 @@ class OrderAggregate:
             aggregate_id=self.aggregate_id,
             item_id=item_id,
             quantity=quantity,
-            version=self.version + 1
+            version=self.version + 1,
         )
         self.events.append(event)
         self.version += 1
@@ -106,6 +106,7 @@ from dataclasses import dataclass
 from typing import List
 from datetime import datetime
 
+
 @dataclass
 class Event:
     event_id: str
@@ -114,8 +115,10 @@ class Event:
     timestamp: datetime
     payload: dict
 
+
 class OptimisticLockingError(Exception):
     pass
+
 
 class EventSourcedAggregate:
     def __init__(self, aggregate_id: str):
@@ -139,10 +142,11 @@ class EventSourcedAggregate:
             aggregate_id=self.aggregate_id,
             version=self.version + 1,
             timestamp=datetime.utcnow(),
-            payload=event_data
+            payload=event_data,
         )
         self.apply_event(event)
         self.uncommitted_events.append(event)
+
 
 # Usage: Load aggregate, attempt write, version mismatch triggers conflict handling
 ```

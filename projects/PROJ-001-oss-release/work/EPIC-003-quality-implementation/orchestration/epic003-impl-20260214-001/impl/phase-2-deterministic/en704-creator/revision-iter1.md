@@ -65,7 +65,7 @@ All tests use `tmp_path` fixture for isolation and follow `test_{scenario}_when_
    except ImportError:
        # Fallback for environments where src is not importable.
        # These values MUST stay in sync with enforcement_rules.py.
-       LAYER_IMPORT_RULES: dict[str, set[str]] = { ... }
+       LAYER_IMPORT_RULES: dict[str, set[str]] = {...}
        ...
    ```
 

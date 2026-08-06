@@ -668,7 +668,8 @@ def check_plugin_json(project_root: Path, expected: str) -> tuple[bool, str]:
 
 
 def check_marketplace_json(
-    project_root: Path, expected: str,
+    project_root: Path,
+    expected: str,
 ) -> tuple[bool, str]:
     """Check .claude-plugin/marketplace.json version fields."""
     path = project_root / ".claude-plugin" / "marketplace.json"
@@ -683,9 +684,7 @@ def check_marketplace_json(
     if plugins:
         plugin_version = plugins[0].get("version", "MISSING")
         if plugin_version != expected:
-            issues.append(
-                f"  plugins[0].version: {plugin_version} (expected {expected})"
-            )
+            issues.append(f"  plugins[0].version: {plugin_version} (expected {expected})")
 
     if issues:
         return False, "marketplace.json:\n" + "\n".join(issues)

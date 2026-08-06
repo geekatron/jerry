@@ -408,11 +408,13 @@ Error handling:
 @dataclass(frozen=True)
 class ContextMonitorResult:
     """Result of context fill monitoring."""
-    fill_percentage: float          # 0.0 to 1.0
-    input_tokens: int               # Raw token count from transcript
-    threshold_tier: str             # NOMINAL | LOW | WARNING | CRITICAL | EMERGENCY
-    injection_tag: str              # XML tag content (or empty string)
-    token_estimate: int             # Estimated tokens in injection_tag
+
+    fill_percentage: float  # 0.0 to 1.0
+    input_tokens: int  # Raw token count from transcript
+    threshold_tier: str  # NOMINAL | LOW | WARNING | CRITICAL | EMERGENCY
+    injection_tag: str  # XML tag content (or empty string)
+    token_estimate: int  # Estimated tokens in injection_tag
+
 
 class ContextMonitorEngine:
     """Stateless L2 context fill monitoring engine.
@@ -423,6 +425,7 @@ class ContextMonitorEngine:
     - Produces injection content
     - Fail-open: errors return empty result
     """
+
     def __init__(self, config_adapter: LayeredConfigAdapter | None = None) -> None: ...
     def generate_monitor_tag(self, transcript_path: str) -> ContextMonitorResult: ...
 ```
@@ -433,10 +436,12 @@ class ContextMonitorEngine:
 @dataclass(frozen=True)
 class CompactionAlertResult:
     """Result of compaction alert check."""
-    alert_needed: bool              # True if unacknowledged checkpoint exists
-    checkpoint_id: str | None       # e.g., "cx-003"
-    injection_tag: str              # XML tag content (or empty string)
-    token_estimate: int             # Estimated tokens in injection_tag
+
+    alert_needed: bool  # True if unacknowledged checkpoint exists
+    checkpoint_id: str | None  # e.g., "cx-003"
+    injection_tag: str  # XML tag content (or empty string)
+    token_estimate: int  # Estimated tokens in injection_tag
+
 
 class CompactionAlertEngine:
     """Stateless L2 compaction alert engine.
@@ -445,6 +450,7 @@ class CompactionAlertEngine:
     Produces <compaction-alert> injection on first prompt after compaction.
     Marks checkpoint as acknowledged after injection.
     """
+
     def __init__(self, checkpoints_dir: Path | None = None) -> None: ...
     def generate_alert_tag(self) -> CompactionAlertResult: ...
 ```
@@ -455,12 +461,14 @@ class CompactionAlertEngine:
 @dataclass(frozen=True)
 class CheckpointData:
     """Immutable snapshot of session state at compaction."""
-    checkpoint_id: str              # e.g., "cx-003"
-    timestamp: str                  # ISO 8601
-    compaction_sequence: int        # Sequential compaction number
-    context_state: dict             # fill_percentage, input_tokens, threshold_tier
-    resumption_state: dict | None   # From ORCHESTRATION.yaml (None if unavailable)
-    session_info: dict              # project_id, branch, working_directory
+
+    checkpoint_id: str  # e.g., "cx-003"
+    timestamp: str  # ISO 8601
+    compaction_sequence: int  # Sequential compaction number
+    context_state: dict  # fill_percentage, input_tokens, threshold_tier
+    resumption_state: dict | None  # From ORCHESTRATION.yaml (None if unavailable)
+    session_info: dict  # project_id, branch, working_directory
+
 
 class CheckpointWriter:
     """Stateless PreCompact checkpoint creation engine.
@@ -469,6 +477,7 @@ class CheckpointWriter:
     Writes checkpoint file using AtomicFileAdapter.
     Follows FileSystemEventStore pattern for directory creation.
     """
+
     def __init__(self, checkpoints_dir: Path | None = None) -> None: ...
     def write_checkpoint(
         self,
@@ -483,10 +492,12 @@ class CheckpointWriter:
 @dataclass(frozen=True)
 class ResumptionContextResult:
     """Result of resumption context generation."""
-    resumption_needed: bool         # True if unacknowledged checkpoint exists
-    checkpoint_id: str | None       # e.g., "cx-003"
-    injection_tag: str              # XML tag content (or empty string)
-    token_estimate: int             # Estimated tokens in injection_tag
+
+    resumption_needed: bool  # True if unacknowledged checkpoint exists
+    checkpoint_id: str | None  # e.g., "cx-003"
+    injection_tag: str  # XML tag content (or empty string)
+    token_estimate: int  # Estimated tokens in injection_tag
+
 
 class ResumptionContextGenerator:
     """Stateless L1 resumption context generator.
@@ -496,6 +507,7 @@ class ResumptionContextGenerator:
     - Token-budgeted (~760 token target)
     - Reads checkpoint files and ORCHESTRATION.yaml
     """
+
     def __init__(self, checkpoints_dir: Path | None = None) -> None: ...
     def generate_resumption_tag(
         self,

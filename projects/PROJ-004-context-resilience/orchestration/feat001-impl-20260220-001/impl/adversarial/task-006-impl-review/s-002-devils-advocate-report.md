@@ -153,6 +153,7 @@ def get_context_window_tokens(self) -> int:
     tokens, _ = self._detect_context_window()
     return tokens
 
+
 def get_context_window_source(self) -> str:
     _, source = self._detect_context_window()
     return source
@@ -271,7 +272,7 @@ Furthermore, the architecture relies on the semantic distinction between "key ab
 **Evidence from code:**
 ```python
 # bootstrap.py lines 584-594
-defaults={
+defaults = {
     # NOTE: context_window_tokens is intentionally NOT in defaults.
     # The adapter must distinguish "user explicitly configured" from
     # "default" to support auto-detection priority chain (TASK-006).
@@ -331,8 +332,7 @@ The correct solution is to tighten the port contract (`get_context_window_tokens
 # config_threshold_adapter.py lines 237-242 (adapter guard)
 if value <= 0:
     logger.warning(
-        "Invalid context_window_tokens=%d (must be > 0); "
-        "falling through to auto-detection.",
+        "Invalid context_window_tokens=%d (must be > 0); falling through to auto-detection.",
         value,
     )
 

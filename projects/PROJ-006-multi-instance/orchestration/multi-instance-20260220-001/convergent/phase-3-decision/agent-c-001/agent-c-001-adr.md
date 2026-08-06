@@ -241,6 +241,7 @@ from typing import Protocol, AsyncIterator
 from domain.value_objects.dispatch_options import DispatchOptions
 from domain.value_objects.instance_result import InstanceResult
 
+
 class ClaudeDispatchPort(Protocol):
     """Port for dispatching work to Claude instances."""
 

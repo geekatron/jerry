@@ -186,14 +186,18 @@ except Exception as e:
 
 **Current JSON Output (Lines 173-186, 190):**
 ```python
-print(json.dumps({
-    "action": "handoff",
-    "to_agent": to_agent,
-    "context": context,
-    "work_items": signals.get("work_items", []),
-    "summary": signals.get("summary", ""),
-    "status_transition": STATUS_TRANSITIONS.get(...),
-}))
+print(
+    json.dumps(
+        {
+            "action": "handoff",
+            "to_agent": to_agent,
+            "context": context,
+            "work_items": signals.get("work_items", []),
+            "summary": signals.get("summary", ""),
+            "status_transition": STATUS_TRANSITIONS.get(...),
+        }
+    )
+)
 
 # Line 190
 print(json.dumps({"action": "none", "reason": "No handoff condition matched"}))

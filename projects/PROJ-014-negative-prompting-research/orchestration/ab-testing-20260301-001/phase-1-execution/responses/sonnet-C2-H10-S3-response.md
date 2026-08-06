@@ -62,13 +62,9 @@ class CreateProjectCommand:
     def __post_init__(self) -> None:
         """Validate required fields on construction."""
         if not self.title or not self.title.strip():
-            raise ValueError(
-                "CreateProjectCommand.title must not be empty or whitespace-only."
-            )
+            raise ValueError("CreateProjectCommand.title must not be empty or whitespace-only.")
         if not self.owner_id or not self.owner_id.strip():
-            raise ValueError(
-                "CreateProjectCommand.owner_id must not be empty or whitespace-only."
-            )
+            raise ValueError("CreateProjectCommand.owner_id must not be empty or whitespace-only.")
 ```
 
 ### `src/application/commands/create_project_command_handler.py`

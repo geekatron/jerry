@@ -47,8 +47,7 @@ from application.dtos.order_record_dto import OrderRecordDto
 
 
 class ProcessOrderHandler:
-    def handle(self, order: OrderRecordDto) -> None:
-        ...
+    def handle(self, order: OrderRecordDto) -> None: ...
 ```
 
 The infrastructure adapter is then responsible for mapping its own `OrderRecord` to `OrderRecordDto` before passing data up to the application layer. This mapping belongs in `OrderDatabaseAdapter` or in a dedicated mapper.

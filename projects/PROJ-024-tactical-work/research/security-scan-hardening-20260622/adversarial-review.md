@@ -277,7 +277,10 @@ Add a top-level structure assertion after loading:
 
 ```python
 if not isinstance(data, dict) or "accepted" not in data:
-    print("::error::audit-allowlist.yml is malformed (expected a dict with 'accepted' key)", file=sys.stderr)
+    print(
+        "::error::audit-allowlist.yml is malformed (expected a dict with 'accepted' key)",
+        file=sys.stderr,
+    )
     sys.exit(1)
 ```
 
@@ -317,7 +320,7 @@ Add enforcement in `audit_allowlist.py`. This is a 4-line addition to the valida
 ```python
 MAX_DAYS = 90
 accepted_on = date.fromisoformat(entry.get("accepted_on", ""))
-review_by   = date.fromisoformat(entry.get("review_by", ""))
+review_by = date.fromisoformat(entry.get("review_by", ""))
 if (review_by - accepted_on).days > MAX_DAYS:
     print(f"::error::{entry['id']}: review_by exceeds {MAX_DAYS}-day cap", file=sys.stderr)
     return 1

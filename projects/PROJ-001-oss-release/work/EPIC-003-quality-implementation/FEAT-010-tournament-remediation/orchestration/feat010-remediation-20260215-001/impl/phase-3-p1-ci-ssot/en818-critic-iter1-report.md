@@ -211,9 +211,7 @@ The script's `check_identity_fields()` checks only that the 7 field names are pr
 **Evidence:**
 
 ```python
-has_criticality = (
-    "Criticality Tier" in identity_content or "criticality tier" in identity_content
-)
+has_criticality = "Criticality Tier" in identity_content or "criticality tier" in identity_content
 ```
 
 **Analysis:** The `check_criticality_tier_table()` function checks only for the string "Criticality Tier" anywhere in the Identity section. It does not verify that an actual table exists with C1-C4 rows and REQUIRED/OPTIONAL/NOT USED values. A template containing just the text "See Criticality Tier in SSOT" (a prose reference) would pass this check. The TEMPLATE-FORMAT.md specifies this as a "table" requirement, not just a mention.

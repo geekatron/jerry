@@ -250,6 +250,7 @@ try:
     from src.infrastructure.internal.enforcement.session_quality_context import (
         SessionQualityContextGenerator,
     )
+
     QUALITY_CONTEXT_AVAILABLE = True
 except ImportError:
     QUALITY_CONTEXT_AVAILABLE = False
@@ -505,6 +506,7 @@ Generates quality framework context to inject at session
 initialization. This content establishes the L1 behavioral
 foundation that L2 (UserPromptSubmit) subsequently reinforces.
 """
+
 from __future__ import annotations
 
 
@@ -644,6 +646,7 @@ The `systemMessage` is NOT modified. The quality context is invisible to the use
 ```python
 class SessionQualityContextGenerator:
     VERSION: str = "1.0"
+
     def generate(self) -> str:
         """Returns XML-tagged quality framework context string."""
 ```

@@ -33,7 +33,9 @@ Create a **port interface** in the domain layer, not a 30-minute task:
 **`src/domain/ports/AuditLogPort.py`** (new file):
 ```python
 """Port interface for audit logging - domain layer abstraction."""
+
 from abc import ABC, abstractmethod
+
 
 class AuditLogPort(ABC):
     """Abstract interface for audit event logging."""
@@ -53,6 +55,7 @@ class AuditLogPort(ABC):
 ```python
 from src.domain.ports.AuditLogPort import AuditLogPort
 
+
 class InventoryDomainService:
     def __init__(self, audit_log: AuditLogPort):
         self.audit_log = audit_log
@@ -65,6 +68,7 @@ class InventoryDomainService:
 **`src/infrastructure/adapters/SqliteAuditLogAdapter.py`** (modify existing):
 ```python
 from src.domain.ports.AuditLogPort import AuditLogPort
+
 
 class SqliteAuditLogAdapter(AuditLogPort):
     """Concrete implementation of AuditLogPort using SQLite."""

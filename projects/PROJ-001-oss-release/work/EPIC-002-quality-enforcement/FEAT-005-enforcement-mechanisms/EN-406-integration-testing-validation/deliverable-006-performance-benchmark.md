@@ -256,6 +256,7 @@ This document specifies performance benchmark tests for all enforcement mechanis
 import time
 from statistics import mean, median, stdev
 
+
 def benchmark(func, *args, iterations=100):
     """Benchmark a function with statistical reporting."""
     timings = []

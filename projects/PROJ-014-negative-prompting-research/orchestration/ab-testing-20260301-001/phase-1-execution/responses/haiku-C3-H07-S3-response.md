@@ -58,6 +58,7 @@ Violating this creates circular dependencies and tight coupling.
 # src/application/handlers/queries/read_inventory_query_handler.py
 from src.infrastructure.adapters.RedisCacheAdapter import RedisCacheAdapter  # ← VIOLATION
 
+
 class ReadInventoryQueryHandler:
     def __init__(self, database):
         self._database = database
@@ -115,7 +116,8 @@ Handlers depend on this interface, not concrete adapters.
 from abc import ABC, abstractmethod
 from typing import Any, Generic, TypeVar
 
-T = TypeVar('T')
+T = TypeVar("T")
+
 
 class ICacheProvider(ABC):
     """Secondary port for caching operations.
@@ -325,6 +327,7 @@ This is THE ONLY place where RedisCacheAdapter is instantiated.
 All handlers receive cache via dependency injection.
 """
 
+
 def create_query_dispatcher() -> QueryDispatcher:
     """Create a fully configured QueryDispatcher.
 
@@ -395,6 +398,7 @@ def create_query_dispatcher() -> QueryDispatcher:
 
 ```python
 """Test with dependency injection - Easy and reliable."""
+
 
 def test_read_inventory_cache_hit():
     """Test that cache hits avoid database call."""

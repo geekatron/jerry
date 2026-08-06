@@ -69,16 +69,16 @@ from domain.value_objects.currency_types import Money, Currency, ExchangeRate
 
 ```python
 # src/domain/value_objects/money.py
-class Money:
-    ...
+class Money: ...
+
 
 # src/domain/value_objects/currency.py
-class Currency:
-    ...
+class Currency: ...
+
 
 # src/domain/value_objects/exchange_rate.py
-class ExchangeRate:
-    ...
+class ExchangeRate: ...
+
 
 # src/domain/value_objects/__init__.py
 from .money import Money

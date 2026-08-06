@@ -93,11 +93,7 @@ print(make_decision("deny", reason))
 **Original lines 285-290:**
 ```python
 if pattern_decision == "block":
-    print(
-        json.dumps(
-            {"decision": "block", "reason": pattern_reason, "matches": pattern_matches}
-        )
-    )
+    print(json.dumps({"decision": "block", "reason": pattern_reason, "matches": pattern_matches}))
     return 0
 ```
 
@@ -120,11 +116,7 @@ if pattern_decision == "block":
 ```python
 if pattern_decision == "ask":
     # Ask user for confirmation
-    print(
-        json.dumps(
-            {"decision": "ask", "reason": pattern_reason, "matches": pattern_matches}
-        )
-    )
+    print(json.dumps({"decision": "ask", "reason": pattern_reason, "matches": pattern_matches}))
     return 0
 ```
 

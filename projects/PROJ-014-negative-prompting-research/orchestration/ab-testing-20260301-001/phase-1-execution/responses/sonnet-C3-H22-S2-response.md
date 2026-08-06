@@ -73,14 +73,17 @@ from dataclasses import dataclass
 from uuid import UUID
 from typing import Sequence
 
+
 @dataclass
 class EventStream:
     aggregate_id: UUID
     events: list
     version: int  # version AT TIME OF READ — used as expected_version on next write
 
+
 class ConcurrentStreamWriteError(Exception):
     pass
+
 
 class EventStore:
     def load_stream(self, aggregate_id: UUID) -> EventStream:
@@ -98,8 +101,7 @@ class EventStore:
         )
         if rows_affected == 0:
             raise ConcurrentStreamWriteError(
-                f"Aggregate {aggregate_id} was modified. "
-                f"Expected version {expected_version}."
+                f"Aggregate {aggregate_id} was modified. Expected version {expected_version}."
             )
         self._insert_events(events)
 ```
@@ -112,8 +114,10 @@ The retry pattern is the standard response to a `ConcurrentStreamWriteError`:
 import time
 from functools import wraps
 
+
 def with_optimistic_retry(max_attempts: int = 3, backoff_seconds: float = 0.1):
     """Decorator for command handlers that may encounter concurrency conflicts."""
+
     def decorator(fn):
         @wraps(fn)
         def wrapper(*args, **kwargs):
@@ -123,9 +127,12 @@ def with_optimistic_retry(max_attempts: int = 3, backoff_seconds: float = 0.1):
                 except ConcurrentStreamWriteError:
                     if attempt == max_attempts - 1:
                         raise
-                    time.sleep(backoff_seconds * (2 ** attempt))  # exponential backoff
+                    time.sleep(backoff_seconds * (2**attempt))  # exponential backoff
+
         return wrapper
+
     return decorator
+
 
 @with_optimistic_retry(max_attempts=3)
 def handle_cancel_order(order_id: UUID, event_store: EventStore) -> None:
@@ -141,6 +148,7 @@ def handle_cancel_order(order_id: UUID, event_store: EventStore) -> None:
 from eventsourcing.application import Application
 from eventsourcing.domain import Aggregate, event
 
+
 class Order(Aggregate):
     @event("OrderPlaced")
     def __init__(self, customer_id: str) -> None:
@@ -153,6 +161,7 @@ class Order(Aggregate):
             raise ValueError("Only placed orders can be cancelled")
         self.status = "cancelled"
 
+
 class OrderService(Application):
     def place_order(self, customer_id: str) -> str:
         order = Order(customer_id=customer_id)
@@ -163,6 +172,7 @@ class OrderService(Application):
         order = self.repository.get(order_id)
         order.cancel()
         self.save(order)  # raises IntegrityError on version conflict
+
 
 # version is managed automatically; aggregate.version reflects event count
 ```

@@ -228,6 +228,7 @@ Following Checkov's dual-format pattern (F-003, Finding 4), rules that cannot be
 # rules/eng-team/architecture/eng_arch_dependency_cycle_detection.py
 from cyberops.rules import Rule, RuleResult, RuleContext
 
+
 class DependencyCycleDetection(Rule):
     """Detect circular dependency patterns in architecture designs.
 
@@ -247,13 +248,13 @@ class DependencyCycleDetection(Rule):
         "max_cycle_length": {
             "type": "integer",
             "default": 3,
-            "description": "Maximum cycle length to report (longer cycles are less actionable)"
+            "description": "Maximum cycle length to report (longer cycles are less actionable)",
         },
         "ignore_weak_dependencies": {
             "type": "boolean",
             "default": False,
-            "description": "Exclude optional/weak dependencies from cycle detection"
-        }
+            "description": "Exclude optional/weak dependencies from cycle detection",
+        },
     }
 
     def evaluate(self, context: RuleContext) -> RuleResult:

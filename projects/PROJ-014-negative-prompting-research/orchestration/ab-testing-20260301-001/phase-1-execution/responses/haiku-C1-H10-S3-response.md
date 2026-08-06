@@ -218,17 +218,11 @@ class CreateProjectCommandHandler:
         """
         # Validate title
         if not command.title or not command.title.strip():
-            raise ProjectValidationError(
-                field="title",
-                reason="Title cannot be empty"
-            )
+            raise ProjectValidationError(field="title", reason="Title cannot be empty")
 
         # Validate owner_id
         if not command.owner_id or not command.owner_id.strip():
-            raise ProjectValidationError(
-                field="owner_id",
-                reason="Owner ID cannot be empty"
-            )
+            raise ProjectValidationError(field="owner_id", reason="Owner ID cannot be empty")
 
         # Verify owner exists
         if not self._repository.owner_exists(command.owner_id):
@@ -237,8 +231,7 @@ class CreateProjectCommandHandler:
         # Validate description if provided
         if command.description and len(command.description) > 1000:
             raise ProjectValidationError(
-                field="description",
-                reason="Description cannot exceed 1000 characters"
+                field="description", reason="Description cannot exceed 1000 characters"
             )
 
         # Create the project aggregate
@@ -296,22 +289,15 @@ src/projects/
 ```python
 def test_create_project_command_frozen():
     """Verify command is immutable."""
-    cmd = CreateProjectCommand(
-        title="Test",
-        description="Desc",
-        owner_id="user-1"
-    )
+    cmd = CreateProjectCommand(title="Test", description="Desc", owner_id="user-1")
     # Frozen dataclass prevents modification
     with pytest.raises(AttributeError):
         cmd.title = "Modified"
 
+
 def test_create_project_command_fields():
     """Verify command fields are correct."""
-    cmd = CreateProjectCommand(
-        title="Test Project",
-        description="A test",
-        owner_id="user-42"
-    )
+    cmd = CreateProjectCommand(title="Test Project", description="A test", owner_id="user-42")
     assert cmd.title == "Test Project"
     assert cmd.owner_id == "user-42"
 ```
@@ -325,20 +311,17 @@ def test_handler_validates_title(mock_repository):
     cmd = CreateProjectCommand(
         title="",  # Invalid: empty
         description="Test",
-        owner_id="user-1"
+        owner_id="user-1",
     )
     with pytest.raises(ProjectValidationError) as exc_info:
         handler.handle(cmd)
     assert exc_info.value.field == "title"
 
+
 def test_handler_creates_project(mock_repository):
     """Verify handler creates project and persists."""
     handler = CreateProjectCommandHandler(mock_repository)
-    cmd = CreateProjectCommand(
-        title="New Project",
-        description="Test",
-        owner_id="user-1"
-    )
+    cmd = CreateProjectCommand(title="New Project", description="Test", owner_id="user-1")
     # Mock repository setup
     mock_repository.owner_exists.return_value = True
     mock_repository.save.return_value = []  # No events

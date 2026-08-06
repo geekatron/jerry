@@ -88,7 +88,7 @@ class WorktrackerEntitySchema:
     required_frontmatter = ["Type", "Status", "Priority", "Created", "Parent"]
     required_sections = ["Content", "Related Items", "History"]
     required_nav_table = True  # H-23
-    nav_table_anchors = True   # H-24
+    nav_table_anchors = True  # H-24
 
     def validate(self, doc: JerryDocument) -> list[ValidationError]:
         errors = []

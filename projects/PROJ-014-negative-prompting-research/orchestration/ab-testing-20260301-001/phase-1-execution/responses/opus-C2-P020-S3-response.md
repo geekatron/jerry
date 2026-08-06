@@ -46,7 +46,9 @@ class ExportService:
         """
         self._db = db
 
-    def export_records(self, entity_type: str, filters: dict[str, Any] | None = None) -> list[dict[str, Any]]:
+    def export_records(
+        self, entity_type: str, filters: dict[str, Any] | None = None
+    ) -> list[dict[str, Any]]:
         """Export records of the given entity type.
 
         Queries the database adapter directly and returns the raw
@@ -65,7 +67,9 @@ class ExportService:
 
         return self._db.query(query)
 
-    def export_to_csv(self, entity_type: str, output_path: str, filters: dict[str, Any] | None = None) -> int:
+    def export_to_csv(
+        self, entity_type: str, output_path: str, filters: dict[str, Any] | None = None
+    ) -> int:
         """Export records to a CSV file at the given path.
 
         Args:

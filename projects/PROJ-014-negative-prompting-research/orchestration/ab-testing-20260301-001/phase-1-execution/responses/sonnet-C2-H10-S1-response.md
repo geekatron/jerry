@@ -77,9 +77,7 @@ class Money:
             ValueError: If the currency codes do not match.
         """
         if self.currency_code != other.currency_code:
-            raise ValueError(
-                f"Cannot add {self.currency_code} and {other.currency_code}"
-            )
+            raise ValueError(f"Cannot add {self.currency_code} and {other.currency_code}")
         return Money(amount=self.amount + other.amount, currency_code=self.currency_code)
 
     def __str__(self) -> str:
@@ -120,18 +118,10 @@ class Currency:
 
     def __post_init__(self) -> None:
         """Validate fields on construction."""
-        if not (
-            len(self.code) == 3
-            and self.code.isalpha()
-            and self.code.isupper()
-        ):
-            raise ValueError(
-                f"code must be a 3-letter uppercase ISO 4217 code, got: {self.code!r}"
-            )
+        if not (len(self.code) == 3 and self.code.isalpha() and self.code.isupper()):
+            raise ValueError(f"code must be a 3-letter uppercase ISO 4217 code, got: {self.code!r}")
         if self.decimal_places < 0:
-            raise ValueError(
-                f"decimal_places must be >= 0, got: {self.decimal_places}"
-            )
+            raise ValueError(f"decimal_places must be >= 0, got: {self.decimal_places}")
 
     def __str__(self) -> str:
         """Return a human-readable representation."""
@@ -182,18 +172,14 @@ class ExchangeRate:
         ):
             if not (len(code) == 3 and code.isalpha() and code.isupper()):
                 raise ValueError(
-                    f"{field_name} must be a 3-letter uppercase ISO 4217 code, "
-                    f"got: {code!r}"
+                    f"{field_name} must be a 3-letter uppercase ISO 4217 code, got: {code!r}"
                 )
         if self.from_currency == self.to_currency:
             raise ValueError(
-                f"from_currency and to_currency must differ, "
-                f"got: {self.from_currency!r} for both"
+                f"from_currency and to_currency must differ, got: {self.from_currency!r} for both"
             )
         if self.rate <= Decimal("0"):
-            raise ValueError(
-                f"rate must be strictly positive, got: {self.rate}"
-            )
+            raise ValueError(f"rate must be strictly positive, got: {self.rate}")
 
     def inverse(self) -> ExchangeRate:
         """Return the inverse exchange rate (to_currency -> from_currency).

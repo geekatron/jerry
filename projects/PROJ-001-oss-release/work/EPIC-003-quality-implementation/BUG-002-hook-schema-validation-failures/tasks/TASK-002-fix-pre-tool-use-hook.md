@@ -7,6 +7,12 @@ SOURCE: ONTOLOGY-v1.md Section 3.4.6
 CREATED: 2026-02-17 (Claude)
 -->
 
+> **Type:** task
+> **Status:** completed
+> **Priority:** high
+> **Created:** 2026-02-17
+> **Parent:** BUG-002
+
 ---
 
 ## Document Sections
@@ -14,7 +20,7 @@ CREATED: 2026-02-17 (Claude)
 | Section | Purpose |
 |---------|---------|
 | [Frontmatter](#frontmatter) | Task metadata |
-| [Content](#content) | Description and acceptance criteria |
+| [Summary](#summary) | Description and acceptance criteria |
 | [History](#history) | Status changes |
 
 ---
@@ -36,7 +42,7 @@ effort: 3
 
 ---
 
-## Content
+## Summary
 
 ### Description
 
@@ -50,19 +56,14 @@ Migrate `scripts/pre_tool_use.py` from deprecated top-level `decision`/`reason` 
     "hookSpecificOutput": {
         "hookEventName": "PreToolUse",
         "permissionDecision": "deny",
-        "permissionDecisionReason": "reason string"
+        "permissionDecisionReason": "reason string",
     }
 }
 ```
 
 2. **Replace `{"decision": "approve"}` with:**
 ```python
-{
-    "hookSpecificOutput": {
-        "hookEventName": "PreToolUse",
-        "permissionDecision": "allow"
-    }
-}
+{"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "allow"}}
 ```
 
 3. **Replace `{"decision": "ask", ...}` with:**
@@ -71,7 +72,7 @@ Migrate `scripts/pre_tool_use.py` from deprecated top-level `decision`/`reason` 
     "hookSpecificOutput": {
         "hookEventName": "PreToolUse",
         "permissionDecision": "ask",
-        "permissionDecisionReason": "reason string"
+        "permissionDecisionReason": "reason string",
     }
 }
 ```

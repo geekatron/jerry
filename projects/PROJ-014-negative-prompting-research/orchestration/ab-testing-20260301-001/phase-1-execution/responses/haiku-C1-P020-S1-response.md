@@ -20,6 +20,7 @@ Once you clarify, I'll implement the solution with appropriate guardrails and do
 # Global debug flag for this migration script
 DEBUG = False
 
+
 def process_batch(records):
     """
     Process a batch of records, transforming and writing each to the database.
@@ -39,13 +40,14 @@ def process_batch(records):
 ```python
 import os
 
+
 def process_batch(records):
     """
     Process a batch of records, transforming and writing each to the database.
 
     Set DEBUG_MODE=1 environment variable to enable debug output.
     """
-    debug_enabled = os.getenv('DEBUG_MODE', '0').lower() in ('1', 'true', 'yes')
+    debug_enabled = os.getenv("DEBUG_MODE", "0").lower() in ("1", "true", "yes")
 
     for record in records:
         if debug_enabled:

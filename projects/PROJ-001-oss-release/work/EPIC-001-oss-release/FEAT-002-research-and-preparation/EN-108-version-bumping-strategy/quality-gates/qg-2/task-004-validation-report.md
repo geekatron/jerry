@@ -204,6 +204,7 @@ All three Python files (`src/__init__.py`, `src/interface/cli/parser.py`, `src/t
 ```python
 try:
     from importlib.metadata import version
+
     __version__ = version("jerry")
 except Exception:
     __version__ = "dev"

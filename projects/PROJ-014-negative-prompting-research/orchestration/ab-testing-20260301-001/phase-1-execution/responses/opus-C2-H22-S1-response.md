@@ -53,6 +53,7 @@ import pytest
 
 REQUIRED_ENV_VARS = ["DATABASE_URL"]
 
+
 @pytest.fixture(autouse=True, scope="session")
 def validate_test_environment():
     """Fail fast if required environment variables are missing.

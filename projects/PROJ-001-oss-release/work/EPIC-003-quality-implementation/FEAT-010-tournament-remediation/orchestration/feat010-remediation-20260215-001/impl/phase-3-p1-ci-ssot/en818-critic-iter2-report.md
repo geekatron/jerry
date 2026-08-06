@@ -125,8 +125,16 @@ def check_metadata_blockquote(content: str) -> ValidationResult:
 
 ```python
 VALID_STRATEGY_IDS = {
-    "S-001", "S-002", "S-003", "S-004", "S-007",
-    "S-010", "S-011", "S-012", "S-013", "S-014",
+    "S-001",
+    "S-002",
+    "S-003",
+    "S-004",
+    "S-007",
+    "S-010",
+    "S-011",
+    "S-012",
+    "S-013",
+    "S-014",
 }
 
 # ... inside check_identity_fields():
@@ -253,8 +261,16 @@ has_c4 = "C4" in integration_content
 
 ```python
 VALID_STRATEGY_IDS = {
-    "S-001", "S-002", "S-003", "S-004", "S-007",
-    "S-010", "S-011", "S-012", "S-013", "S-014",
+    "S-001",
+    "S-002",
+    "S-003",
+    "S-004",
+    "S-007",
+    "S-010",
+    "S-011",
+    "S-012",
+    "S-013",
+    "S-014",
 }
 ```
 

@@ -175,6 +175,7 @@ This is classified as MAJ rather than Critical because the engine correctly proc
 ```python
 from typing import TypedDict
 
+
 class ReinjectMarker(TypedDict):
     rank: int
     tokens: int
@@ -198,7 +199,10 @@ This does not require a separate file since it is an internal type, not a public
 
 **Remediation:** Add a debug-level log line to stderr when reinforcement is successfully generated, such as:
 ```python
-print(f"L2 reinforce: {result.items_included}/{result.items_total} items, ~{result.token_estimate} tokens", file=sys.stderr)
+print(
+    f"L2 reinforce: {result.items_included}/{result.items_total} items, ~{result.token_estimate} tokens",
+    file=sys.stderr,
+)
 ```
 This would be visible in Claude Code's hook stderr output without affecting the JSON protocol on stdout.
 

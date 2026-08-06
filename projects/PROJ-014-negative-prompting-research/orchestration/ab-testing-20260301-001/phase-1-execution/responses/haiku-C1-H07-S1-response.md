@@ -91,7 +91,7 @@ class InventoryDomainService:
         # Log the operation
         self._audit_log.log_domain_event(
             event_name="inventory_operation_completed",
-            payload={"operation": "example", "status": "success"}
+            payload={"operation": "example", "status": "success"},
         )
 ```
 

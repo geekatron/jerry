@@ -270,6 +270,7 @@ def test_agent_definition_has_required_frontmatter():
     assert "identity" in frontmatter
     assert "capabilities" in frontmatter
 
+
 def test_agent_output_matches_schema():
     """Agent output must follow session_context schema."""
     output = {
@@ -324,13 +325,14 @@ def test_agent_does_not_invoke_other_agents():
     # Check for Task tool invocation patterns
     forbidden_patterns = [
         r"Task\s*\(\s*.*agent",  # Task(agent=...)
-        r"invoke.*agent",        # invoke_agent(...)
-        r"spawn.*agent",         # spawn_agent(...)
+        r"invoke.*agent",  # invoke_agent(...)
+        r"spawn.*agent",  # spawn_agent(...)
     ]
 
     for pattern in forbidden_patterns:
-        assert not re.search(pattern, agent_content, re.IGNORECASE), \
+        assert not re.search(pattern, agent_content, re.IGNORECASE), (
             f"P-003 violation: Agent contains '{pattern}'"
+        )
 ```
 
 **Evidence:** Based on Jerry's `testing-standards.md` test pyramid and pytest patterns.

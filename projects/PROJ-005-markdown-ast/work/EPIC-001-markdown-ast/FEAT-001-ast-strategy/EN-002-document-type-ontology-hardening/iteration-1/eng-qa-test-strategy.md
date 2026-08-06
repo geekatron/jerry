@@ -398,24 +398,27 @@ SKILL_RESOURCE covers the following subpaths under `skills/*/`:
 **Test cases:**
 
 ```python
-@pytest.mark.parametrize("path", [
-    "skills/problem-solving/PLAYBOOK.md",
-    "skills/adversary/PLAYBOOK.md",
-    "skills/nasa-se/PLAYBOOK.md",
-    "skills/shared/AGENT_TEMPLATE_CORE.md",
-    "skills/shared/PLAYBOOK_TEMPLATE.md",
-    "skills/worktracker/rules/worktracker-behavior-rules.md",
-    "skills/worktracker/rules/worktracker-directory-structure.md",
-    "skills/problem-solving/tests/BEHAVIOR_TESTS.md",
-    "skills/nasa-se/tests/BEHAVIOR_TESTS.md",
-    "skills/problem-solving/composition/ps-analyst.prompt.md",
-    "skills/worktracker/composition/wt-auditor.prompt.md",
-    "skills/nasa-se/docs/NASA-SE-MAPPING.md",
-    "skills/orchestration/docs/PATTERNS.md",
-    "skills/saucer-boy-framework-voice/references/voice-guide.md",
-    "skills/saucer-boy-framework-voice/references/biographical-anchors.md",
-    "skills/transcript/validation/ts-critic-extension.md",
-])
+@pytest.mark.parametrize(
+    "path",
+    [
+        "skills/problem-solving/PLAYBOOK.md",
+        "skills/adversary/PLAYBOOK.md",
+        "skills/nasa-se/PLAYBOOK.md",
+        "skills/shared/AGENT_TEMPLATE_CORE.md",
+        "skills/shared/PLAYBOOK_TEMPLATE.md",
+        "skills/worktracker/rules/worktracker-behavior-rules.md",
+        "skills/worktracker/rules/worktracker-directory-structure.md",
+        "skills/problem-solving/tests/BEHAVIOR_TESTS.md",
+        "skills/nasa-se/tests/BEHAVIOR_TESTS.md",
+        "skills/problem-solving/composition/ps-analyst.prompt.md",
+        "skills/worktracker/composition/wt-auditor.prompt.md",
+        "skills/nasa-se/docs/NASA-SE-MAPPING.md",
+        "skills/orchestration/docs/PATTERNS.md",
+        "skills/saucer-boy-framework-voice/references/voice-guide.md",
+        "skills/saucer-boy-framework-voice/references/biographical-anchors.md",
+        "skills/transcript/validation/ts-critic-extension.md",
+    ],
+)
 def test_skill_resource_path_detection(path):
     doc_type, warning = DocumentTypeDetector.detect(path, "")
     assert doc_type == DocumentType.SKILL_RESOURCE
@@ -425,10 +428,13 @@ def test_skill_resource_path_detection(path):
 **Negative: SKILL_RESOURCE paths that should NOT match agents/ or SKILL.md:**
 
 ```python
-@pytest.mark.parametrize("path, wrong_type", [
-    ("skills/ast/agents/ast-parser.md", DocumentType.SKILL_RESOURCE),
-    ("skills/problem-solving/SKILL.md", DocumentType.SKILL_RESOURCE),
-])
+@pytest.mark.parametrize(
+    "path, wrong_type",
+    [
+        ("skills/ast/agents/ast-parser.md", DocumentType.SKILL_RESOURCE),
+        ("skills/problem-solving/SKILL.md", DocumentType.SKILL_RESOURCE),
+    ],
+)
 def test_skill_resource_does_not_overlap_agent_or_skill(path, wrong_type):
     doc_type, _ = DocumentTypeDetector.detect(path, "")
     assert doc_type != wrong_type
@@ -445,6 +451,7 @@ def test_skill_resource_relies_on_path_not_structure():
     doc_type, warning = DocumentTypeDetector.detect("skills/foo/PLAYBOOK.md", "")
     assert doc_type == DocumentType.SKILL_RESOURCE
     assert warning is None
+
 
 def test_skill_resource_path_wins_over_worktracker_cue():
     """Path classification as SKILL_RESOURCE wins over structural cue for worktracker."""
@@ -470,23 +477,27 @@ TEMPLATE covers:
 **Test cases:**
 
 ```python
-@pytest.mark.parametrize("path", [
-    ".context/templates/worktracker/BUG.md",
-    ".context/templates/worktracker/ENABLER.md",
-    ".context/templates/worktracker/EPIC.md",
-    ".context/templates/worktracker/FEATURE.md",
-    ".context/templates/design/TDD.template.md",
-    ".context/templates/design/PLAYBOOK.template.md",
-    "skills/nasa-se/templates/alternative-analysis.md",
-    "skills/nasa-se/templates/trade-study.md",
-    "skills/orchestration/templates/ORCHESTRATION_PLAN.template.md",
-    "skills/orchestration/templates/ORCHESTRATION_WORKTRACKER.template.md",
-    "skills/problem-solving/templates/critique.md",
-])
+@pytest.mark.parametrize(
+    "path",
+    [
+        ".context/templates/worktracker/BUG.md",
+        ".context/templates/worktracker/ENABLER.md",
+        ".context/templates/worktracker/EPIC.md",
+        ".context/templates/worktracker/FEATURE.md",
+        ".context/templates/design/TDD.template.md",
+        ".context/templates/design/PLAYBOOK.template.md",
+        "skills/nasa-se/templates/alternative-analysis.md",
+        "skills/nasa-se/templates/trade-study.md",
+        "skills/orchestration/templates/ORCHESTRATION_PLAN.template.md",
+        "skills/orchestration/templates/ORCHESTRATION_WORKTRACKER.template.md",
+        "skills/problem-solving/templates/critique.md",
+    ],
+)
 def test_template_path_detection(path):
     doc_type, warning = DocumentTypeDetector.detect(path, "")
     assert doc_type == DocumentType.TEMPLATE
     assert warning is None
+
 
 def test_template_catch_all_for_new_subdir():
     """Unknown template subdir falls to TEMPLATE via catch-all pattern."""
@@ -494,6 +505,7 @@ def test_template_catch_all_for_new_subdir():
         ".context/templates/future-category/some-template.md", ""
     )
     assert doc_type == DocumentType.TEMPLATE
+
 
 def test_adversarial_template_not_classified_as_template():
     """STRATEGY_TEMPLATE takes precedence over the TEMPLATE catch-all."""
@@ -508,19 +520,22 @@ def test_adversarial_template_not_classified_as_template():
 PATTERN_DOCUMENT exists in the enum but had zero path patterns. EN-002 adds patterns for `.context/patterns/**/*.md` and `.context/guides/*.md`:
 
 ```python
-@pytest.mark.parametrize("path", [
-    ".context/patterns/adapter/cli-adapter.md",
-    ".context/patterns/aggregate/event-collection.md",
-    ".context/patterns/architecture/hexagonal-architecture.md",
-    ".context/patterns/cqrs/command-pattern.md",
-    ".context/patterns/entity/aggregate-root.md",
-    ".context/patterns/event/domain-event.md",
-    ".context/patterns/identity/jerry-uri.md",
-    ".context/patterns/repository/generic-repository.md",
-    ".context/patterns/skill-development/some-pattern.md",
-    ".context/guides/architecture-patterns.md",
-    ".context/guides/error-handling.md",
-])
+@pytest.mark.parametrize(
+    "path",
+    [
+        ".context/patterns/adapter/cli-adapter.md",
+        ".context/patterns/aggregate/event-collection.md",
+        ".context/patterns/architecture/hexagonal-architecture.md",
+        ".context/patterns/cqrs/command-pattern.md",
+        ".context/patterns/entity/aggregate-root.md",
+        ".context/patterns/event/domain-event.md",
+        ".context/patterns/identity/jerry-uri.md",
+        ".context/patterns/repository/generic-repository.md",
+        ".context/patterns/skill-development/some-pattern.md",
+        ".context/guides/architecture-patterns.md",
+        ".context/guides/error-handling.md",
+    ],
+)
 def test_pattern_document_path_detection(path):
     doc_type, warning = DocumentTypeDetector.detect(path, "")
     assert doc_type == DocumentType.PATTERN_DOCUMENT
@@ -554,6 +569,7 @@ def test_skill_resource_path_wins_no_warning_when_no_structural_cue():
     assert doc_type == DocumentType.SKILL_RESOURCE
     assert warning is None
 
+
 def test_template_path_wins_no_warning_when_no_structural_cue():
     """TEMPLATE path classified with no structural cue produces no warning."""
     doc_type, warning = DocumentTypeDetector.detect(
@@ -561,6 +577,7 @@ def test_template_path_wins_no_warning_when_no_structural_cue():
     )
     assert doc_type == DocumentType.TEMPLATE
     assert warning is None
+
 
 def test_mismatch_warning_fires_when_template_path_has_agent_structural_cue():
     """Warning fires when TEMPLATE path has a structural cue suggesting agent."""
@@ -572,12 +589,11 @@ def test_mismatch_warning_fires_when_template_path_has_agent_structural_cue():
     assert warning is not None
     assert "agent_definition" in warning
 
+
 def test_mismatch_warning_fires_when_skill_resource_path_has_worktracker_cue():
     """Warning fires when SKILL_RESOURCE path has a worktracker structural cue."""
     content = "> **Type:** resource\n"
-    doc_type, warning = DocumentTypeDetector.detect(
-        "skills/foo/rules/foo-rule.md", content
-    )
+    doc_type, warning = DocumentTypeDetector.detect("skills/foo/rules/foo-rule.md", content)
     assert doc_type == DocumentType.RULE_FILE  # Path wins (rules/ maps to RULE_FILE)
     assert warning is not None
     assert "worktracker_entity" in warning
@@ -604,6 +620,7 @@ def test_horizontal_rule_does_not_classify_as_agent_definition():
         "The structural cue '---' must be removed per EN-002 TASK-005."
     )
 
+
 def test_yaml_frontmatter_block_does_not_classify_as_agent_definition():
     """BUG-004 regression: YAML frontmatter alone must NOT classify as agent_definition."""
     content = "---\nname: test-file\nversion: 1.0\n---\n\n# Content\n"
@@ -616,15 +633,34 @@ def test_yaml_frontmatter_block_does_not_classify_as_agent_definition():
 #### 4.2 Positive Precision Tests for New Structural Cues
 
 ```python
-@pytest.mark.parametrize("cue, expected_type, description", [
-    ("<identity>\nRole: Analyst\n</identity>\n", DocumentType.AGENT_DEFINITION, "identity XML tag"),
-    ("<methodology>\nStep 1.\n</methodology>\n", DocumentType.AGENT_DEFINITION, "methodology XML tag"),
-    ("<purpose>\nWhy this agent.\n</purpose>\n", DocumentType.AGENT_DEFINITION, "purpose XML tag"),
-    ("> **Type:** story\n", DocumentType.WORKTRACKER_ENTITY, "blockquote type frontmatter"),
-    ("> **Type:** bug\n", DocumentType.WORKTRACKER_ENTITY, "blockquote bug type"),
-    ('<!-- L2-REINJECT: rank=1, content="test" -->\n', DocumentType.RULE_FILE, "L2-REINJECT marker"),
-    ("## Status\n\nProposed.\n", DocumentType.ADR, "ADR status heading"),
-])
+@pytest.mark.parametrize(
+    "cue, expected_type, description",
+    [
+        (
+            "<identity>\nRole: Analyst\n</identity>\n",
+            DocumentType.AGENT_DEFINITION,
+            "identity XML tag",
+        ),
+        (
+            "<methodology>\nStep 1.\n</methodology>\n",
+            DocumentType.AGENT_DEFINITION,
+            "methodology XML tag",
+        ),
+        (
+            "<purpose>\nWhy this agent.\n</purpose>\n",
+            DocumentType.AGENT_DEFINITION,
+            "purpose XML tag",
+        ),
+        ("> **Type:** story\n", DocumentType.WORKTRACKER_ENTITY, "blockquote type frontmatter"),
+        ("> **Type:** bug\n", DocumentType.WORKTRACKER_ENTITY, "blockquote bug type"),
+        (
+            '<!-- L2-REINJECT: rank=1, content="test" -->\n',
+            DocumentType.RULE_FILE,
+            "L2-REINJECT marker",
+        ),
+        ("## Status\n\nProposed.\n", DocumentType.ADR, "ADR status heading"),
+    ],
+)
 def test_structural_cue_precision(cue, expected_type, description):
     """New structural cues classify correctly on unmatched paths."""
     doc_type, _ = DocumentTypeDetector.detect("unmatched/arbitrary/path.md", cue)
@@ -641,12 +677,14 @@ def test_worktracker_cue_not_triggered_by_generic_blockquote():
     # The new precise cue "> **Type:**" must NOT match "> **Note:**"
     assert doc_type != DocumentType.WORKTRACKER_ENTITY
 
+
 def test_generic_html_comment_does_not_classify_as_adr():
     """A plain <!-- comment --> must not trigger ADR classification."""
     content = "<!-- This is a simple comment -->\n# Title\n"
     doc_type, _ = DocumentTypeDetector.detect("unmatched/path.md", content)
     # After EN-002, "<!--" is replaced by "## Status" for ADR detection
     assert doc_type != DocumentType.ADR
+
 
 def test_unknown_returned_when_no_cue_matches():
     """Content with no structural cues and no path match returns UNKNOWN."""
@@ -701,6 +739,7 @@ def test_normalize_path_absolute_with_no_known_marker():
     # Should not crash; result is UNKNOWN (no pattern matches /tmp/... after normalization)
     assert doc_type is not None  # Just verify no exception
 
+
 def test_recursive_glob_no_suffix_pattern():
     """Pattern with ** and no suffix (trailing **) matches recursively."""
     # If EN-002 adds a pattern like "docs/**" with no trailing filename segment:
@@ -710,6 +749,7 @@ def test_recursive_glob_no_suffix_pattern():
     # Test indirectly via a pattern that produces this code path
     # (requires internal access or a known pattern that uses trailing **)
     from src.domain.markdown_ast.document_type import _match_recursive_glob
+
     assert _match_recursive_glob("docs/knowledge/foo.md", "docs/**") is True
     assert _match_recursive_glob("docs/bar.md", "docs/**") is True
     assert _match_recursive_glob("other/foo.md", "docs/**") is False

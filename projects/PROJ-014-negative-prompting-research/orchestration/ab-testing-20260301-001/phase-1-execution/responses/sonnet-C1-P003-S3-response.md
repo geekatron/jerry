@@ -65,8 +65,11 @@ The inventory query returns stale data intermittently because `UpdateInventoryHa
 # BEFORE (incorrect ordering -- race window exists)
 async def handle(self, command: UpdateInventoryCommand) -> None:
     updated_item = await self._repository.update(command.item_id, command.data)
-    await self._event_bus.publish(InventoryUpdated(item_id=command.item_id))  # subscribers can read stale cache
+    await self._event_bus.publish(
+        InventoryUpdated(item_id=command.item_id)
+    )  # subscribers can read stale cache
     await self._cache.invalidate(command.item_id)  # too late
+
 
 # AFTER (correct ordering -- invalidate first, then publish)
 async def handle(self, command: UpdateInventoryCommand) -> None:
@@ -81,6 +84,7 @@ async def handle(self, command: UpdateInventoryCommand) -> None:
 # BEFORE (fire-and-forget -- no ordering guarantee)
 def invalidate(self, item_id: str) -> None:
     asyncio.create_task(self._backend.delete(self._key(item_id)))
+
 
 # AFTER (awaited -- provides ordering guarantee)
 async def invalidate(self, item_id: str) -> None:

@@ -189,18 +189,11 @@ class CLIAdapter:
         """Execute tool and return structured result."""
         if not self.is_available():
             return ToolResult(
-                status="unavailable",
-                message=f"{self.tool_name} not found in PATH",
-                findings=[]
+                status="unavailable", message=f"{self.tool_name} not found in PATH", findings=[]
             )
 
         cmd = self.build_command(params)
-        result = subprocess.run(
-            cmd,
-            capture_output=True,
-            timeout=params.timeout_seconds,
-            text=True
-        )
+        result = subprocess.run(cmd, capture_output=True, timeout=params.timeout_seconds, text=True)
         return self.parse_output(result.stdout, result.stderr, result.returncode)
 
     def is_available(self) -> bool:
@@ -276,18 +269,19 @@ All tool outputs should be normalized to a common finding schema:
 @dataclass
 class Finding:
     """Normalized security finding from any tool."""
-    id: str                      # Unique finding identifier
-    source_tool: str             # Tool that produced the finding
-    severity: Severity           # CRITICAL, HIGH, MEDIUM, LOW, INFO
-    category: FindingCategory    # VULNERABILITY, MISCONFIGURATION, SECRET, etc.
-    title: str                   # Human-readable finding title
-    description: str             # Detailed finding description
-    location: Location | None    # File/URL/host/port if applicable
-    evidence: str | None         # Raw evidence from tool
-    remediation: str | None      # Suggested fix
-    references: list[str]        # CVE, CWE, tool-specific rule IDs
-    confidence: float            # 0.0-1.0 confidence score
-    raw_data: dict               # Original tool output preserved
+
+    id: str  # Unique finding identifier
+    source_tool: str  # Tool that produced the finding
+    severity: Severity  # CRITICAL, HIGH, MEDIUM, LOW, INFO
+    category: FindingCategory  # VULNERABILITY, MISCONFIGURATION, SECRET, etc.
+    title: str  # Human-readable finding title
+    description: str  # Detailed finding description
+    location: Location | None  # File/URL/host/port if applicable
+    evidence: str | None  # Raw evidence from tool
+    remediation: str | None  # Suggested fix
+    references: list[str]  # CVE, CWE, tool-specific rule IDs
+    confidence: float  # 0.0-1.0 confidence score
+    raw_data: dict  # Original tool output preserved
 ```
 
 This enables:

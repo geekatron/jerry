@@ -577,10 +577,12 @@ Full control. A Python script can update any file in any format:
 ```python
 #!/usr/bin/env python3
 """Bump version across all Jerry version files."""
+
 import json
 import re
 import sys
 from pathlib import Path
+
 
 def bump_version(version: str, bump_type: str) -> str:
     major, minor, patch = map(int, version.split("."))
@@ -590,6 +592,7 @@ def bump_version(version: str, bump_type: str) -> str:
         return f"{major}.{minor + 1}.0"
     else:
         return f"{major}.{minor}.{patch + 1}"
+
 
 def update_pyproject(new_version: str) -> None:
     path = Path("pyproject.toml")
@@ -603,11 +606,13 @@ def update_pyproject(new_version: str) -> None:
     )
     path.write_text(content)
 
+
 def update_plugin_json(new_version: str) -> None:
     path = Path(".claude-plugin/plugin.json")
     data = json.loads(path.read_text())
     data["version"] = new_version
     path.write_text(json.dumps(data, indent=2) + "\n")
+
 
 def update_marketplace_json(new_version: str) -> None:
     path = Path(".claude-plugin/marketplace.json")
@@ -615,6 +620,7 @@ def update_marketplace_json(new_version: str) -> None:
     # Only bump the plugin version, not the marketplace schema version
     data["plugins"][0]["version"] = new_version
     path.write_text(json.dumps(data, indent=2) + "\n")
+
 
 def main() -> None:
     bump_type = sys.argv[1]  # major, minor, patch
@@ -628,6 +634,7 @@ def main() -> None:
     update_plugin_json(new_version)
     update_marketplace_json(new_version)
     print(f"Bumped {current} -> {new_version}")
+
 
 if __name__ == "__main__":
     main()

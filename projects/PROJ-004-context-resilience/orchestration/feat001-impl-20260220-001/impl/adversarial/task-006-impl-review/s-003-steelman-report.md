@@ -50,7 +50,7 @@ def _detect_context_window(self) -> tuple[int, str]:
         if model_env.endswith(_EXTENDED_CONTEXT_SUFFIX):
             return _EXTENDED_CONTEXT_WINDOW, "env-1m-detection"
     except Exception:  # noqa: BLE001
-            pass  # fail-open: any detection error returns default
+        pass  # fail-open: any detection error returns default
 
     # 3. Default (correct for Pro/Team Standard 200K)
     return _DEFAULT_CONTEXT_WINDOW_TOKENS, "default"
@@ -116,6 +116,7 @@ def test_endswith_not_substring(self) -> None:
 def get_context_window_tokens(self) -> int:
     tokens, _ = self._detect_context_window()
     return tokens
+
 
 def get_context_window_source(self) -> str:
     _, source = self._detect_context_window()
@@ -243,10 +244,14 @@ The test suite validates this distinction:
 # test_config_threshold_adapter.py TestContextWindowExplicitConfig
 def test_env_var_overrides_1m_detection(self) -> None:
     """Explicit config takes priority over [1m] auto-detection."""
-    with patch.dict(os.environ, {
-        "JERRY_CONTEXT_MONITOR__CONTEXT_WINDOW_TOKENS": "500000",
-        "ANTHROPIC_MODEL": "sonnet[1m]",
-    }, clear=True):
+    with patch.dict(
+        os.environ,
+        {
+            "JERRY_CONTEXT_MONITOR__CONTEXT_WINDOW_TOKENS": "500000",
+            "ANTHROPIC_MODEL": "sonnet[1m]",
+        },
+        clear=True,
+    ):
         adapter = _make_adapter()
         assert adapter.get_context_window_tokens() == 500_000
         assert adapter.get_context_window_source() == "config"
@@ -273,10 +278,14 @@ Test classes in `test_config_threshold_adapter.py` are directly named after TASK
 The priority interaction test tests all three signals simultaneously:
 ```python
 def test_env_var_overrides_1m_detection(self) -> None:
-    with patch.dict(os.environ, {
-        "JERRY_CONTEXT_MONITOR__CONTEXT_WINDOW_TOKENS": "500000",
-        "ANTHROPIC_MODEL": "sonnet[1m]",
-    }, clear=True):
+    with patch.dict(
+        os.environ,
+        {
+            "JERRY_CONTEXT_MONITOR__CONTEXT_WINDOW_TOKENS": "500000",
+            "ANTHROPIC_MODEL": "sonnet[1m]",
+        },
+        clear=True,
+    ):
         adapter = _make_adapter()
         assert adapter.get_context_window_tokens() == 500_000
         assert adapter.get_context_window_source() == "config"
