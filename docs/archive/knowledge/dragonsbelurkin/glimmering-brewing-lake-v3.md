@@ -996,14 +996,14 @@ class Task(Entity, IAdoMappable):
     # ... other core properties
 
     # ADO ACL Extension Properties
-    ado_id: Optional[int] = None                    # System.Id
-    ado_url: Optional[str] = None                   # ADO work item URL
-    ado_revision: Optional[int] = None              # System.Rev
-    ado_area_path: Optional[str] = None             # System.AreaPath
-    ado_iteration_path: Optional[str] = None        # System.IterationPath
-    ado_team_project: Optional[str] = None          # System.TeamProject
-    ado_state: Optional[str] = None                 # System.State (cached)
-    ado_reason: Optional[str] = None                # System.Reason (cached)
+    ado_id: Optional[int] = None  # System.Id
+    ado_url: Optional[str] = None  # ADO work item URL
+    ado_revision: Optional[int] = None  # System.Rev
+    ado_area_path: Optional[str] = None  # System.AreaPath
+    ado_iteration_path: Optional[str] = None  # System.IterationPath
+    ado_team_project: Optional[str] = None  # System.TeamProject
+    ado_state: Optional[str] = None  # System.State (cached)
+    ado_reason: Optional[str] = None  # System.Reason (cached)
     ado_sync_enabled: bool = False
     ado_last_synced_at: Optional[datetime] = None
     ado_sync_direction: Optional[SyncDirection] = None

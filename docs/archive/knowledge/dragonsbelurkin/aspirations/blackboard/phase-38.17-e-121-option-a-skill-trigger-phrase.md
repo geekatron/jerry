@@ -124,7 +124,7 @@ Task(
 
     ## MANDATORY PERSISTENCE (c-009)
     ...
-    """
+    """,
 )
 ```
 

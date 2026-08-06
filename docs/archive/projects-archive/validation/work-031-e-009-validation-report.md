@@ -365,8 +365,8 @@ Spot-check of key claims:
   ```python
   # migrations/001_add_blocking_reason_rollback.py
   def rollback(graph: Graph):
-      for task in graph.V().hasLabel('Task'):
-          task.properties('blocking_reason').drop()
+      for task in graph.V().hasLabel("Task"):
+          task.properties("blocking_reason").drop()
   ```
 
 **Validation:** Rollback paths defined for all phases. Reversibility HIGH in Phase 2 (critical phase), MEDIUM in Phase 3 (acceptable), LOW in Phase 4 (mitigated by optional status and gates).

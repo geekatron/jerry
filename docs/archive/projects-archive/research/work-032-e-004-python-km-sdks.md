@@ -178,6 +178,7 @@ For standards-based knowledge graphs (RDF, OWL, SPARQL), **RDFLib** is the de fa
 # Domain Layer (src/domain/ports/)
 class GraphPort(ABC):
     """Port for graph operations (dependency-free)."""
+
     @abstractmethod
     def add_node(self, node_id: str, properties: dict) -> None: ...
 
@@ -187,15 +188,19 @@ class GraphPort(ABC):
     @abstractmethod
     def traverse(self, start: str, pattern: TraversalPattern) -> List[Node]: ...
 
+
 # Infrastructure Layer (src/infrastructure/graph/)
 class NetworkXAdapter(GraphPort):
     """NetworkX implementation of graph port."""
+
     def __init__(self):
         import networkx as nx  # Import isolated to adapter
+
         self._graph = nx.MultiDiGraph()
 
     def add_node(self, node_id: str, properties: dict) -> None:
         self._graph.add_node(node_id, **properties)
+
     # ... implement other methods
 ```
 
@@ -261,7 +266,7 @@ G.add_edge("task-001", "phase-001", edge_type="BELONGS_TO", created_at="2026-01-
 G.add_edge("phase-001", "plan-001", edge_type="PART_OF")
 
 # Query by property
-tasks = [n for n, attr in G.nodes(data=True) if attr.get('type') == 'task']
+tasks = [n for n, attr in G.nodes(data=True) if attr.get("type") == "task"]
 
 # Traverse relationships
 phase = list(G.successors("task-001"))[0]
@@ -271,7 +276,7 @@ print(f"Task belongs to: {G.nodes[phase]['name']}")
 tasks_in_plan = []
 for phase in G.successors("plan-001"):
     for task in G.predecessors(phase):
-        if G.nodes[task]['type'] == 'task':
+        if G.nodes[task]["type"] == "task":
             tasks_in_plan.append(task)
 
 # Export to various formats
@@ -299,6 +304,7 @@ import networkx as nx
 
 from src.domain.ports.graph_port import GraphPort, Node, Edge, TraversalPattern
 
+
 class NetworkXGraphAdapter(GraphPort):
     """NetworkX implementation of graph storage."""
 
@@ -310,11 +316,7 @@ class NetworkXGraphAdapter(GraphPort):
         self._graph.add_node(node_id, label=label, **properties)
 
     def add_edge(
-        self,
-        source: str,
-        target: str,
-        edge_type: str,
-        properties: Optional[Dict[str, Any]] = None
+        self, source: str, target: str, edge_type: str, properties: Optional[Dict[str, Any]] = None
     ) -> None:
         """Add an edge to the graph."""
         props = properties or {}
@@ -325,11 +327,7 @@ class NetworkXGraphAdapter(GraphPort):
         if not self._graph.has_node(node_id):
             return None
         attrs = self._graph.nodes[node_id]
-        return Node(
-            id=node_id,
-            label=attrs.get('label', 'unknown'),
-            properties=dict(attrs)
-        )
+        return Node(id=node_id, label=attrs.get("label", "unknown"), properties=dict(attrs))
 
     def traverse_out(self, node_id: str, edge_type: Optional[str] = None) -> List[Node]:
         """Traverse outgoing edges from a node."""
@@ -341,7 +339,7 @@ class NetworkXGraphAdapter(GraphPort):
             # Filter by edge type if specified
             if edge_type:
                 edge_data = self._graph.get_edge_data(node_id, successor)
-                if not any(data.get('edge_type') == edge_type for data in edge_data.values()):
+                if not any(data.get("edge_type") == edge_type for data in edge_data.values()):
                     continue
 
             node = self.get_node(successor)
@@ -357,7 +355,7 @@ class NetworkXGraphAdapter(GraphPort):
         # For now, simplified implementation
         nodes = []
         for node_id, attrs in self._graph.nodes(data=True):
-            if attrs.get('label') == pattern.start_label:
+            if attrs.get("label") == pattern.start_label:
                 nodes.append(Node(id=node_id, label=pattern.start_label, properties=dict(attrs)))
         return nodes
 
@@ -412,22 +410,22 @@ g = Graph(directed=True)
 
 # Add vertices with attributes
 g.add_vertices(3)
-g.vs[0]['name'] = 'task-001'
-g.vs[0]['type'] = 'task'
-g.vs[1]['name'] = 'phase-001'
-g.vs[1]['type'] = 'phase'
-g.vs[2]['name'] = 'plan-001'
-g.vs[2]['type'] = 'plan'
+g.vs[0]["name"] = "task-001"
+g.vs[0]["type"] = "task"
+g.vs[1]["name"] = "phase-001"
+g.vs[1]["type"] = "phase"
+g.vs[2]["name"] = "plan-001"
+g.vs[2]["type"] = "plan"
 
 # Add edges
-g.add_edge(0, 1, edge_type='BELONGS_TO')
-g.add_edge(1, 2, edge_type='PART_OF')
+g.add_edge(0, 1, edge_type="BELONGS_TO")
+g.add_edge(1, 2, edge_type="PART_OF")
 
 # Query by attribute
-tasks = g.vs.select(type='task')
+tasks = g.vs.select(type="task")
 
 # Traverse
-neighbors = g.neighbors(0, mode='out')
+neighbors = g.neighbors(0, mode="out")
 
 # Algorithms (fast!)
 pagerank = g.pagerank(directed=True)
@@ -437,7 +435,7 @@ betweenness = g.betweenness(directed=True)
 communities = g.community_multilevel()
 
 # Export
-g.write_graphml('graph.graphml')
+g.write_graphml("graph.graphml")
 ```
 
 **When to Use igraph Over NetworkX:**
@@ -563,11 +561,11 @@ from torch_geometric.nn import GCNConv
 import torch.nn.functional as F
 
 # Create graph data
-edge_index = torch.tensor([[0, 1, 1, 2],
-                           [1, 0, 2, 1]], dtype=torch.long)
+edge_index = torch.tensor([[0, 1, 1, 2], [1, 0, 2, 1]], dtype=torch.long)
 x = torch.tensor([[-1], [0], [1]], dtype=torch.float)
 
 data = Data(x=x, edge_index=edge_index)
+
 
 # Define GNN model
 class GCN(torch.nn.Module):
@@ -581,6 +579,7 @@ class GCN(torch.nn.Module):
         x = F.relu(x)
         x = self.conv2(x, edge_index)
         return x
+
 
 # Train model
 model = GCN(num_features=1, hidden_channels=16)
@@ -635,22 +634,22 @@ dst = torch.tensor([1, 0, 2, 1])
 g = dgl.graph((src, dst))
 
 # Add node features
-g.ndata['feat'] = torch.randn(3, 5)
+g.ndata["feat"] = torch.randn(3, 5)
 
 # Add edge features
-g.edata['weight'] = torch.randn(4, 1)
+g.edata["weight"] = torch.randn(4, 1)
 
 # Heterogeneous graph (knowledge graph)
 graph_data = {
-    ('task', 'belongs_to', 'phase'): (torch.tensor([0, 1]), torch.tensor([0, 0])),
-    ('phase', 'part_of', 'plan'): (torch.tensor([0]), torch.tensor([0]))
+    ("task", "belongs_to", "phase"): (torch.tensor([0, 1]), torch.tensor([0, 0])),
+    ("phase", "part_of", "plan"): (torch.tensor([0]), torch.tensor([0])),
 }
 hetero_g = dgl.heterograph(graph_data)
 
 # Message passing
 import dgl.function as fn
 
-g.update_all(fn.copy_u('feat', 'm'), fn.mean('m', 'feat_agg'))
+g.update_all(fn.copy_u("feat", "m"), fn.mean("m", "feat_agg"))
 ```
 
 **When to Use Over PyG:**
@@ -734,10 +733,10 @@ for row in results:
     print(f"Task: {row.task}, Title: {row.title}, Phase: {row.phase}")
 
 # Serialize to Turtle (human-readable)
-print(g.serialize(format='turtle'))
+print(g.serialize(format="turtle"))
 
 # Serialize to JSON-LD (LLM-friendly)
-print(g.serialize(format='json-ld'))
+print(g.serialize(format="json-ld"))
 
 # Load from file
 g.parse("knowledge_graph.ttl", format="turtle")
@@ -749,7 +748,7 @@ for s, o in g.subject_objects(JERRY.partOf):
         g.add((s2, JERRY.indirectPartOf, o))
 
 # Export to triple store
-g.serialize(destination='knowledge_graph.nt', format='nt')
+g.serialize(destination="knowledge_graph.nt", format="nt")
 ```
 
 **Jerry Adapter Pattern:**
@@ -761,6 +760,7 @@ from rdflib import Graph, Namespace, Literal, URIRef
 from rdflib.namespace import RDF, RDFS
 
 from src.domain.ports.knowledge_port import KnowledgePort, Triple
+
 
 class RDFLibAdapter(KnowledgePort):
     """RDFLib implementation of knowledge graph storage."""
@@ -784,20 +784,20 @@ class RDFLibAdapter(KnowledgePort):
 
     def export_turtle(self) -> str:
         """Export graph to Turtle format."""
-        return self._graph.serialize(format='turtle')
+        return self._graph.serialize(format="turtle")
 
     def export_jsonld(self) -> str:
         """Export graph to JSON-LD format."""
-        return self._graph.serialize(format='json-ld')
+        return self._graph.serialize(format="json-ld")
 
     def import_turtle(self, data: str) -> None:
         """Import graph from Turtle format."""
-        self._graph.parse(data=data, format='turtle')
+        self._graph.parse(data=data, format="turtle")
 
     def _is_literal(self, value: str) -> bool:
         """Check if value should be a literal."""
         # Simple heuristic: if it doesn't look like an identifier, it's a literal
-        return ' ' in value or not value.replace('_', '').replace('-', '').isalnum()
+        return " " in value or not value.replace("_", "").replace("-", "").isalnum()
 ```
 
 **Citations:**
@@ -844,6 +844,7 @@ onto = get_ontology("http://jerry.ai/ontology/work_tracker.owl")
 
 # Define classes
 with onto:
+
     class Task(Thing):
         pass
 
@@ -869,6 +870,7 @@ with onto:
     class hasStatus(DataProperty):
         domain = [Task]
         range = [str]
+
 
 # Create instances
 task_001 = Task("task_001")
@@ -977,11 +979,14 @@ df = kg.query_as_df(sparql)  # Returns Pandas DataFrame
 
 # Add triples from Pandas
 import pandas as pd
-df = pd.DataFrame({
-    'subject': ['task:001', 'task:002'],
-    'predicate': ['rdf:type', 'rdf:type'],
-    'object': ['jerry:Task', 'jerry:Task']
-})
+
+df = pd.DataFrame(
+    {
+        "subject": ["task:001", "task:002"],
+        "predicate": ["rdf:type", "rdf:type"],
+        "object": ["jerry:Task", "jerry:Task"],
+    }
+)
 # (Would need custom conversion)
 
 # Visualization
@@ -1055,25 +1060,22 @@ doc = nlp(text)
 # Extract entities
 entities = []
 for ent in doc.ents:
-    entities.append({
-        'text': ent.text,
-        'label': ent.label_,
-        'start': ent.start_char,
-        'end': ent.end_char
-    })
+    entities.append(
+        {"text": ent.text, "label": ent.label_, "start": ent.start_char, "end": ent.end_char}
+    )
 print("Entities:", entities)
 
 # Extract relationships via dependency parsing
 triples = []
 for sent in doc.sents:
     for token in sent:
-        if token.dep_ in ('nsubj', 'nsubjpass'):
+        if token.dep_ in ("nsubj", "nsubjpass"):
             subject = token.text
             predicate = token.head.text
 
             # Find object
             for child in token.head.children:
-                if child.dep_ in ('dobj', 'pobj', 'attr'):
+                if child.dep_ in ("dobj", "pobj", "attr"):
                     obj = child.text
                     triples.append((subject, predicate, obj))
 
@@ -1088,7 +1090,7 @@ matcher = Matcher(nlp.vocab)
 pattern = [
     {"ENT_TYPE": {"IN": ["ORG", "PRODUCT"]}},
     {"LOWER": "uses"},
-    {"ENT_TYPE": {"IN": ["ORG", "PRODUCT"]}}
+    {"ENT_TYPE": {"IN": ["ORG", "PRODUCT"]}},
 ]
 matcher.add("USES_RELATION", [pattern])
 
@@ -1105,17 +1107,17 @@ g = Graph()
 JERRY = Namespace("http://jerry.ai/kg/")
 
 for ent in doc.ents:
-    entity_uri = JERRY[ent.text.replace(' ', '_')]
+    entity_uri = JERRY[ent.text.replace(" ", "_")]
     g.add((entity_uri, RDF.type, JERRY[ent.label_]))
     g.add((entity_uri, JERRY.text, Literal(ent.text)))
 
 for subj, pred, obj in triples:
-    s_uri = JERRY[subj.replace(' ', '_')]
-    p_uri = JERRY[pred.replace(' ', '_')]
-    o_uri = JERRY[obj.replace(' ', '_')]
+    s_uri = JERRY[subj.replace(" ", "_")]
+    p_uri = JERRY[pred.replace(" ", "_")]
+    o_uri = JERRY[obj.replace(" ", "_")]
     g.add((s_uri, p_uri, o_uri))
 
-print(g.serialize(format='turtle'))
+print(g.serialize(format="turtle"))
 ```
 
 **Jerry Adapter Pattern:**
@@ -1126,6 +1128,7 @@ from typing import List, Dict, Any, Tuple
 import spacy
 
 from src.domain.ports.nlp_port import NLPPort, Entity, Relation
+
 
 class SpacyNLPAdapter(NLPPort):
     """spaCy implementation of NLP operations."""
@@ -1152,7 +1155,7 @@ class SpacyNLPAdapter(NLPPort):
                 label=ent.label_,
                 start=ent.start_char,
                 end=ent.end_char,
-                confidence=1.0  # spaCy doesn't provide confidence scores
+                confidence=1.0,  # spaCy doesn't provide confidence scores
             )
             for ent in doc.ents
         ]
@@ -1165,18 +1168,18 @@ class SpacyNLPAdapter(NLPPort):
         relations = []
         for sent in doc.sents:
             for token in sent:
-                if token.dep_ in ('nsubj', 'nsubjpass'):
+                if token.dep_ in ("nsubj", "nsubjpass"):
                     subject = token.text
                     predicate = token.head.text
 
                     for child in token.head.children:
-                        if child.dep_ in ('dobj', 'pobj', 'attr'):
+                        if child.dep_ in ("dobj", "pobj", "attr"):
                             relations.append(
                                 Relation(
                                     subject=subject,
                                     predicate=predicate,
                                     object=child.text,
-                                    confidence=0.8  # Heuristic score
+                                    confidence=0.8,  # Heuristic score
                                 )
                             )
 
@@ -1238,9 +1241,7 @@ from transformers import pipeline
 # Relation extraction with REBEL
 # (REBEL: Relation Extraction By End-to-end Language generation)
 triplet_extractor = pipeline(
-    'text2text-generation',
-    model='Babelscape/rebel-large',
-    tokenizer='Babelscape/rebel-large'
+    "text2text-generation", model="Babelscape/rebel-large", tokenizer="Babelscape/rebel-large"
 )
 
 text = """
@@ -1250,24 +1251,28 @@ The Work Tracker manages tasks, phases, and plans within the framework.
 """
 
 # Extract triplets
-extracted_text = triplet_extractor(text, return_tensors=True, return_text=False)[0]['generated_token_ids']
+extracted_text = triplet_extractor(text, return_tensors=True, return_text=False)[0][
+    "generated_token_ids"
+]
 extracted_triplets = triplet_extractor.tokenizer.batch_decode(extracted_text)
+
 
 # Parse triplets (REBEL format: <subj> <relation> <obj> <subj> <relation> <obj> ...)
 def extract_triplets_from_rebel(text):
     triplets = []
-    relations = text.split('<triplet>')
+    relations = text.split("<triplet>")
     for rel in relations:
         if rel.strip():
-            parts = rel.split('<subj>')[1].split('<obj>')
+            parts = rel.split("<subj>")[1].split("<obj>")
             if len(parts) >= 2:
                 subject = parts[0].strip()
-                rest = parts[1].split('<relation>')
+                rest = parts[1].split("<relation>")
                 if len(rest) >= 2:
                     obj = rest[0].strip()
                     relation = rest[1].strip()
                     triplets.append((subject, relation, obj))
     return triplets
+
 
 triplets = extract_triplets_from_rebel(extracted_triplets[0])
 print("Extracted triplets:", triplets)
@@ -1285,12 +1290,12 @@ g = Graph()
 JERRY = Namespace("http://jerry.ai/kg/")
 
 for subj, rel, obj in triplets:
-    s_uri = JERRY[subj.replace(' ', '_')]
-    r_uri = JERRY[rel.replace(' ', '_')]
-    o_uri = JERRY[obj.replace(' ', '_')]
+    s_uri = JERRY[subj.replace(" ", "_")]
+    r_uri = JERRY[rel.replace(" ", "_")]
+    o_uri = JERRY[obj.replace(" ", "_")]
     g.add((s_uri, r_uri, o_uri))
 
-print(g.serialize(format='turtle'))
+print(g.serialize(format="turtle"))
 ```
 
 **When to Use:**
@@ -1342,10 +1347,7 @@ loader = TextLoader("jerry_docs.txt")
 documents = loader.load()
 
 # Split into chunks
-text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=1000,
-    chunk_overlap=200
-)
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
 chunks = text_splitter.split_documents(documents)
 
 # Create embeddings
@@ -1357,9 +1359,7 @@ vectorstore = FAISS.from_documents(chunks, embeddings)
 # Create retrieval chain
 llm = OpenAI(temperature=0)
 qa_chain = RetrievalQA.from_chain_type(
-    llm=llm,
-    chain_type="stuff",
-    retriever=vectorstore.as_retriever()
+    llm=llm, chain_type="stuff", retriever=vectorstore.as_retriever()
 )
 
 # Query
@@ -1415,7 +1415,7 @@ from llama_index import SimpleDirectoryReader, VectorStoreIndex, ServiceContext
 from llama_index.llms import HuggingFaceLLM
 
 # Load documents
-documents = SimpleDirectoryReader('docs/').load_data()
+documents = SimpleDirectoryReader("docs/").load_data()
 
 # Create index
 index = VectorStoreIndex.from_documents(documents)
@@ -1430,10 +1430,7 @@ from llama_index.graph_stores import SimpleGraphStore
 from llama_index.indices.knowledge_graph import KnowledgeGraphIndex
 
 graph_store = SimpleGraphStore()
-kg_index = KnowledgeGraphIndex.from_documents(
-    documents,
-    storage_context=graph_store
-)
+kg_index = KnowledgeGraphIndex.from_documents(documents, storage_context=graph_store)
 
 # Query knowledge graph
 kg_query_engine = kg_index.as_query_engine()
@@ -1493,7 +1490,7 @@ dimension = 384  # Embedding dimension
 num_vectors = 10000
 
 # Random embeddings for demonstration
-vectors = np.random.random((num_vectors, dimension)).astype('float32')
+vectors = np.random.random((num_vectors, dimension)).astype("float32")
 
 # Normalize vectors (for cosine similarity)
 faiss.normalize_L2(vectors)
@@ -1505,7 +1502,7 @@ index.add(vectors)
 print(f"Index contains {index.ntotal} vectors")
 
 # Search
-query_vector = np.random.random((1, dimension)).astype('float32')
+query_vector = np.random.random((1, dimension)).astype("float32")
 faiss.normalize_L2(query_vector)
 
 k = 5  # Number of nearest neighbors
@@ -1549,6 +1546,7 @@ import faiss
 
 from src.domain.ports.vector_store_port import VectorStorePort, SearchResult
 
+
 class FAISSVectorStore(VectorStorePort):
     """FAISS implementation of vector storage."""
 
@@ -1582,7 +1580,7 @@ class FAISSVectorStore(VectorStorePort):
     def add_vectors(self, entity_ids: List[str], vectors: np.ndarray) -> None:
         """Add vectors to the index."""
         if vectors.dtype != np.float32:
-            vectors = vectors.astype('float32')
+            vectors = vectors.astype("float32")
 
         # Normalize for cosine similarity
         faiss.normalize_L2(vectors)
@@ -1597,14 +1595,10 @@ class FAISSVectorStore(VectorStorePort):
         # Update ID mapping
         self._id_map.extend(entity_ids)
 
-    def search(
-        self,
-        query_vector: np.ndarray,
-        k: int = 5
-    ) -> List[SearchResult]:
+    def search(self, query_vector: np.ndarray, k: int = 5) -> List[SearchResult]:
         """Search for nearest neighbors."""
         if query_vector.dtype != np.float32:
-            query_vector = query_vector.astype('float32')
+            query_vector = query_vector.astype("float32")
 
         # Ensure 2D array
         if query_vector.ndim == 1:
@@ -1620,11 +1614,13 @@ class FAISSVectorStore(VectorStorePort):
         results = []
         for dist, idx in zip(distances[0], indices[0]):
             if idx >= 0 and idx < len(self._id_map):
-                results.append(SearchResult(
-                    entity_id=self._id_map[idx],
-                    distance=float(dist),
-                    similarity=1.0 / (1.0 + float(dist))  # Convert distance to similarity
-                ))
+                results.append(
+                    SearchResult(
+                        entity_id=self._id_map[idx],
+                        distance=float(dist),
+                        similarity=1.0 / (1.0 + float(dist)),  # Convert distance to similarity
+                    )
+                )
 
         return results
 
@@ -1697,15 +1693,11 @@ import chromadb
 from chromadb.config import Settings
 
 # Create client
-client = chromadb.Client(Settings(
-    chroma_db_impl="duckdb+parquet",
-    persist_directory="./chroma_db"
-))
+client = chromadb.Client(Settings(chroma_db_impl="duckdb+parquet", persist_directory="./chroma_db"))
 
 # Create or get collection
 collection = client.get_or_create_collection(
-    name="jerry_knowledge",
-    metadata={"description": "Jerry framework knowledge base"}
+    name="jerry_knowledge", metadata={"description": "Jerry framework knowledge base"}
 )
 
 # Add documents with embeddings (automatic embedding)
@@ -1714,28 +1706,23 @@ collection.add(
         "Jerry is a framework for behavior and workflow guardrails.",
         "NetworkX is used for graph operations in Jerry.",
         "RDFLib handles semantic knowledge representation.",
-        "The Work Tracker manages tasks, phases, and plans."
+        "The Work Tracker manages tasks, phases, and plans.",
     ],
     metadatas=[
         {"source": "readme", "type": "overview"},
         {"source": "architecture", "type": "implementation"},
         {"source": "architecture", "type": "implementation"},
-        {"source": "features", "type": "component"}
+        {"source": "features", "type": "component"},
     ],
-    ids=["doc1", "doc2", "doc3", "doc4"]
+    ids=["doc1", "doc2", "doc3", "doc4"],
 )
 
 # Query (semantic search)
-results = collection.query(
-    query_texts=["How does Jerry handle graphs?"],
-    n_results=2
-)
+results = collection.query(query_texts=["How does Jerry handle graphs?"], n_results=2)
 
 print("Query results:")
 for doc, metadata, distance in zip(
-    results['documents'][0],
-    results['metadatas'][0],
-    results['distances'][0]
+    results["documents"][0], results["metadatas"][0], results["distances"][0]
 ):
     print(f"Document: {doc}")
     print(f"Metadata: {metadata}")
@@ -1744,9 +1731,7 @@ for doc, metadata, distance in zip(
 
 # Query with metadata filtering
 results = collection.query(
-    query_texts=["Tell me about architecture"],
-    n_results=2,
-    where={"type": "implementation"}
+    query_texts=["Tell me about architecture"], n_results=2, where={"type": "implementation"}
 )
 
 # Add with custom embeddings
@@ -1754,16 +1739,14 @@ import numpy as np
 
 custom_embeddings = [np.random.random(384).tolist() for _ in range(2)]
 collection.add(
-    embeddings=custom_embeddings,
-    documents=["Document 1", "Document 2"],
-    ids=["custom1", "custom2"]
+    embeddings=custom_embeddings, documents=["Document 1", "Document 2"], ids=["custom1", "custom2"]
 )
 
 # Update documents
 collection.update(
     ids=["doc1"],
     documents=["Jerry is an advanced framework for AI behavior guardrails."],
-    metadatas=[{"source": "readme", "type": "overview", "version": "2.0"}]
+    metadatas=[{"source": "readme", "type": "overview", "version": "2.0"}],
 )
 
 # Delete documents
@@ -1780,43 +1763,29 @@ collection.delete(ids=["custom1", "custom2"])
 import chromadb
 from typing import List, Dict, Any
 
+
 class ChromaRAGService:
     """RAG service using ChromaDB."""
 
     def __init__(self, persist_directory: str = "./data/chroma"):
-        self._client = chromadb.Client(Settings(
-            chroma_db_impl="duckdb+parquet",
-            persist_directory=persist_directory
-        ))
+        self._client = chromadb.Client(
+            Settings(chroma_db_impl="duckdb+parquet", persist_directory=persist_directory)
+        )
         self._collection = self._client.get_or_create_collection("jerry_kb")
 
     def index_documents(self, documents: List[str], metadata: List[Dict[str, Any]]) -> None:
         """Index documents for retrieval."""
         ids = [f"doc_{i}" for i in range(len(documents))]
-        self._collection.add(
-            documents=documents,
-            metadatas=metadata,
-            ids=ids
-        )
+        self._collection.add(documents=documents, metadatas=metadata, ids=ids)
 
     def retrieve(self, query: str, k: int = 5, filters: Dict[str, Any] = None) -> List[Dict]:
         """Retrieve relevant documents."""
-        results = self._collection.query(
-            query_texts=[query],
-            n_results=k,
-            where=filters
-        )
+        results = self._collection.query(query_texts=[query], n_results=k, where=filters)
 
         return [
-            {
-                'document': doc,
-                'metadata': meta,
-                'distance': dist
-            }
+            {"document": doc, "metadata": meta, "distance": dist}
             for doc, meta, dist in zip(
-                results['documents'][0],
-                results['metadatas'][0],
-                results['distances'][0]
+                results["documents"][0], results["metadatas"][0], results["distances"][0]
             )
         ]
 ```
@@ -1875,7 +1844,7 @@ client = QdrantClient(host="localhost", port=6333)
 # Create collection
 client.create_collection(
     collection_name="jerry_knowledge",
-    vectors_config=VectorParams(size=384, distance=Distance.COSINE)
+    vectors_config=VectorParams(size=384, distance=Distance.COSINE),
 )
 
 # Add vectors with payload
@@ -1887,7 +1856,7 @@ payloads = [
     {"text": "Graph operations with NetworkX", "type": "code", "section": "infrastructure"},
     {"text": "RDF knowledge representation", "type": "documentation", "section": "knowledge"},
     {"text": "Work Tracker architecture", "type": "design", "section": "features"},
-    {"text": "Hexagonal architecture pattern", "type": "architecture", "section": "design"}
+    {"text": "Hexagonal architecture pattern", "type": "architecture", "section": "design"},
 ]
 
 client.upsert(
@@ -1895,17 +1864,13 @@ client.upsert(
     points=[
         PointStruct(id=i, vector=vec, payload=pay)
         for i, (vec, pay) in enumerate(zip(vectors, payloads))
-    ]
+    ],
 )
 
 # Search
 query_vector = np.random.random(384).tolist()
 
-results = client.search(
-    collection_name="jerry_knowledge",
-    query_vector=query_vector,
-    limit=3
-)
+results = client.search(collection_name="jerry_knowledge", query_vector=query_vector, limit=3)
 
 for result in results:
     print(f"ID: {result.id}, Score: {result.score}")
@@ -1915,12 +1880,8 @@ for result in results:
 results = client.search(
     collection_name="jerry_knowledge",
     query_vector=query_vector,
-    query_filter={
-        "must": [
-            {"key": "type", "match": {"value": "documentation"}}
-        ]
-    },
-    limit=2
+    query_filter={"must": [{"key": "type", "match": {"value": "documentation"}}]},
+    limit=2,
 )
 
 # Hybrid search (vector + keyword)
@@ -1930,14 +1891,9 @@ results = client.search(
     collection_name="jerry_knowledge",
     query_vector=query_vector,
     query_filter=Filter(
-        must=[
-            FieldCondition(
-                key="section",
-                match=MatchValue(value="infrastructure")
-            )
-        ]
+        must=[FieldCondition(key="section", match=MatchValue(value="infrastructure"))]
     ),
-    limit=3
+    limit=3,
 )
 ```
 
@@ -2133,7 +2089,7 @@ g.add((task_concept, SKOS.altLabel, Literal("Work Item")))
 g.add((task_concept, SKOS.related, URIRef("http://jerry.ai/taxonomy/Issue")))
 
 # Export
-print(g.serialize(format='turtle'))
+print(g.serialize(format="turtle"))
 ```
 
 **Jerry Recommendation**: Use RDFLib with SKOS namespace. No additional library needed.
@@ -2221,6 +2177,7 @@ from docling.document_converter import DocumentConverter
 
 from src.domain.ports.document_port import DocumentPort, Document, DocumentElement
 
+
 class DoclingAdapter(DocumentPort):
     """Docling implementation of document processing."""
 
@@ -2238,17 +2195,15 @@ class DoclingAdapter(DocumentPort):
 
         elements = []
         for elem in result.document.elements:
-            elements.append(DocumentElement(
-                type=elem.type,
-                text=elem.text,
-                metadata=elem.metadata or {}
-            ))
+            elements.append(
+                DocumentElement(type=elem.type, text=elem.text, metadata=elem.metadata or {})
+            )
 
         return Document(
             path=file_path,
-            title=result.document.metadata.get('title', Path(file_path).name),
+            title=result.document.metadata.get("title", Path(file_path).name),
             elements=elements,
-            metadata=result.document.metadata
+            metadata=result.document.metadata,
         )
 
     def convert_to_markdown(self, file_path: str, output_path: str) -> None:
@@ -2256,7 +2211,7 @@ class DoclingAdapter(DocumentPort):
         result = self._converter.convert(file_path)
         markdown = result.document.export_to_markdown()
 
-        with open(output_path, 'w') as f:
+        with open(output_path, "w") as f:
             f.write(markdown)
 
     def batch_process(self, input_dir: str, output_dir: str) -> None:
@@ -2266,11 +2221,11 @@ class DoclingAdapter(DocumentPort):
         output_path.mkdir(exist_ok=True)
 
         for doc_file in input_path.glob("*.*"):
-            if doc_file.suffix.lower() in ['.pdf', '.docx', '.pptx', '.html']:
+            if doc_file.suffix.lower() in [".pdf", ".docx", ".pptx", ".html"]:
                 result = self._converter.convert(str(doc_file))
                 out_file = output_path / (doc_file.stem + ".md")
 
-                with open(out_file, 'w') as f:
+                with open(out_file, "w") as f:
                     f.write(result.document.export_to_markdown())
 ```
 
@@ -2322,10 +2277,7 @@ from marker.models import load_all_models
 model_list = load_all_models()
 
 # Convert PDF
-full_text, images, out_meta = convert_single_pdf(
-    "document.pdf",
-    model_list
-)
+full_text, images, out_meta = convert_single_pdf("document.pdf", model_list)
 
 print("Markdown content:")
 print(full_text)
@@ -2399,17 +2351,13 @@ tables = [el for el in elements if el.category == "Table"]
 elements = partition(
     "document.pdf",
     strategy="hi_res",  # Use OCR for better quality
-    languages=["eng"]
+    languages=["eng"],
 )
 
 # Chunk for RAG
 from unstructured.chunking.title import chunk_by_title
 
-chunks = chunk_by_title(
-    elements,
-    max_characters=1000,
-    combine_text_under_n_chars=100
-)
+chunks = chunk_by_title(elements, max_characters=1000, combine_text_under_n_chars=100)
 
 # Integration with LangChain
 from langchain.document_loaders import UnstructuredPDFLoader
@@ -2513,11 +2461,13 @@ from abc import ABC, abstractmethod
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
 
+
 @dataclass
 class Node:
     id: str
     label: str
     properties: Dict[str, Any]
+
 
 @dataclass
 class Edge:
@@ -2525,6 +2475,7 @@ class Edge:
     target: str
     edge_type: str
     properties: Dict[str, Any]
+
 
 class GraphPort(ABC):
     """Port for graph storage and traversal operations."""
@@ -2536,11 +2487,7 @@ class GraphPort(ABC):
 
     @abstractmethod
     def add_edge(
-        self,
-        source: str,
-        target: str,
-        edge_type: str,
-        properties: Optional[Dict[str, Any]] = None
+        self, source: str, target: str, edge_type: str, properties: Optional[Dict[str, Any]] = None
     ) -> None:
         """Add an edge to the graph."""
         pass
@@ -2556,7 +2503,7 @@ class GraphPort(ABC):
         pass
 
     @abstractmethod
-    def query(self, pattern: 'TraversalPattern') -> List[Node]:
+    def query(self, pattern: "TraversalPattern") -> List[Node]:
         """Execute a traversal pattern query."""
         pass
 ```
@@ -2565,6 +2512,7 @@ class GraphPort(ABC):
 # src/domain/ports/knowledge_port.py
 from abc import ABC, abstractmethod
 from typing import List, Dict, Any
+
 
 class KnowledgePort(ABC):
     """Port for semantic knowledge graph operations (RDF/OWL)."""
@@ -2597,11 +2545,13 @@ from typing import List, Tuple
 import numpy as np
 from dataclasses import dataclass
 
+
 @dataclass
 class SearchResult:
     entity_id: str
     distance: float
     similarity: float
+
 
 class VectorStorePort(ABC):
     """Port for vector similarity search."""
@@ -2633,11 +2583,13 @@ from abc import ABC, abstractmethod
 from typing import List, Dict, Any
 from dataclasses import dataclass
 
+
 @dataclass
 class DocumentElement:
     type: str  # "heading", "paragraph", "table", etc.
     text: str
     metadata: Dict[str, Any]
+
 
 @dataclass
 class Document:
@@ -2645,6 +2597,7 @@ class Document:
     title: str
     elements: List[DocumentElement]
     metadata: Dict[str, Any]
+
 
 class DocumentPort(ABC):
     """Port for document processing operations."""
@@ -2698,16 +2651,20 @@ from typing import Literal
 
 GraphBackend = Literal["networkx", "igraph", "gremlin"]
 
+
 def create_graph_adapter(backend: GraphBackend = "networkx") -> GraphPort:
     """Factory to create graph adapter."""
     if backend == "networkx":
         from src.infrastructure.graph.networkx_adapter import NetworkXGraphAdapter
+
         return NetworkXGraphAdapter()
     elif backend == "igraph":
         from src.infrastructure.graph.igraph_adapter import IGraphAdapter
+
         return IGraphAdapter()
     elif backend == "gremlin":
         from src.infrastructure.graph.gremlin_adapter import GremlinAdapter
+
         return GremlinAdapter()
     else:
         raise ValueError(f"Unknown graph backend: {backend}")
@@ -3003,7 +2960,7 @@ RUN pip install --no-cache-dir -r interface.txt
 
 ```python
 # setup.py or pyproject.toml
-[project.optional-dependencies]
+[project.optional - dependencies]
 infrastructure = [
     "networkx>=3.0",
     "rdflib>=7.0",
@@ -3178,7 +3135,7 @@ kg.add((JERRY.Jerry, RDF.type, JERRY.Framework))
 kg.add((JERRY.Jerry, JERRY.uses, JERRY.NetworkX))
 kg.add((JERRY.Jerry, JERRY.uses, JERRY.RDFLib))
 
-print(kg.serialize(format='turtle'))
+print(kg.serialize(format="turtle"))
 ```
 
 ### Example 2: Vector Search with FAISS
@@ -3188,7 +3145,7 @@ import numpy as np
 import faiss
 
 # Create embeddings (use sentence-transformers in production)
-vectors = np.random.random((1000, 384)).astype('float32')
+vectors = np.random.random((1000, 384)).astype("float32")
 faiss.normalize_L2(vectors)
 
 # Build index
@@ -3196,7 +3153,7 @@ index = faiss.IndexHNSWFlat(384, 32)
 index.add(vectors)
 
 # Search
-query = np.random.random((1, 384)).astype('float32')
+query = np.random.random((1, 384)).astype("float32")
 faiss.normalize_L2(query)
 distances, indices = index.search(query, 5)
 
@@ -3216,13 +3173,14 @@ for ent in doc.ents:
 
 # Build graph from entities
 from rdflib import Graph, Namespace
+
 g = Graph()
 JERRY = Namespace("http://jerry.ai/")
 
 for ent in doc.ents:
     g.add((JERRY[ent.text], JERRY.type, JERRY[ent.label_]))
 
-print(g.serialize(format='turtle'))
+print(g.serialize(format="turtle"))
 ```
 
 ### Example 4: Process Document with Docling

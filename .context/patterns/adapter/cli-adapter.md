@@ -215,7 +215,7 @@ class CLIAdapter:
             if events:
                 event = events[0]
                 message = success_message.format(
-                    work_item_id=getattr(event, 'work_item_id', ''),
+                    work_item_id=getattr(event, "work_item_id", ""),
                 )
             else:
                 message = success_message
@@ -286,6 +286,7 @@ class CLIAdapter:
     def _get_projects_dir(self) -> str:
         """Get projects directory path."""
         import os
+
         return os.environ.get("JERRY_PROJECTS_DIR", "projects")
 ```
 
@@ -342,17 +343,18 @@ class DefaultOutputFormatter(OutputFormatter):
         """Display data based on type."""
         if isinstance(data, dict):
             self._display_dict(data)
-        elif hasattr(data, '__dataclass_fields__'):
+        elif hasattr(data, "__dataclass_fields__"):
             self._display_dataclass(data)
         else:
             print(data)
 
     def json(self, data: Any) -> None:
         """Output as formatted JSON."""
-        if hasattr(data, 'to_dict'):
+        if hasattr(data, "to_dict"):
             data = data.to_dict()
-        elif hasattr(data, '__dataclass_fields__'):
+        elif hasattr(data, "__dataclass_fields__"):
             from dataclasses import asdict
+
             data = asdict(data)
         print(json.dumps(data, indent=2, default=str))
 

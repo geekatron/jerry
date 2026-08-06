@@ -164,6 +164,7 @@ from typing import Literal
 
 SyncStrategy = Literal["symlink", "junction", "copy"]
 
+
 def detect_platform() -> dict:
     """Comprehensive platform detection."""
     system = platform.system()
@@ -197,6 +198,7 @@ def detect_platform() -> dict:
         "is_unix_like": os_name == "posix",
     }
 
+
 def detect_best_strategy(source: Path, target: Path) -> SyncStrategy:
     """Determine optimal sync strategy based on platform and capabilities."""
     info = detect_platform()
@@ -220,6 +222,7 @@ def detect_best_strategy(source: Path, target: Path) -> SyncStrategy:
     # Unknown - fall back to copy
     return "copy"
 
+
 def _detect_windows_strategy(source: Path, target: Path) -> SyncStrategy:
     """Windows-specific strategy detection."""
     # Check for network paths first
@@ -241,9 +244,11 @@ def _detect_windows_strategy(source: Path, target: Path) -> SyncStrategy:
     # Fall back to copy
     return "copy"
 
+
 def _test_symlink_capability() -> bool:
     """Test if symlinks can be created (Dev Mode or admin)."""
     import tempfile
+
     test_dir = Path(tempfile.gettempdir()) / ".jerry_symlink_test"
     test_target = test_dir / "target"
     test_link = test_dir / "link"
@@ -258,9 +263,11 @@ def _test_symlink_capability() -> bool:
     finally:
         _cleanup_test_dir(test_dir)
 
+
 def _test_junction_capability() -> bool:
     """Test if junctions can be created (should work on NTFS)."""
     import tempfile
+
     test_dir = Path(tempfile.gettempdir()) / ".jerry_junction_test"
     test_target = test_dir / "target"
     test_junction = test_dir / "junction"
@@ -281,9 +288,11 @@ def _test_junction_capability() -> bool:
     finally:
         _cleanup_test_dir(test_dir)
 
+
 def _cleanup_test_dir(test_dir: Path) -> None:
     """Clean up test directory safely."""
     import shutil
+
     try:
         if test_dir.exists():
             shutil.rmtree(test_dir, ignore_errors=True)
@@ -303,6 +312,7 @@ def _cleanup_test_dir(test_dir: Path) -> None:
 import os
 import ctypes
 from pathlib import Path
+
 
 def is_network_path(path: Path) -> bool:
     """
@@ -333,6 +343,7 @@ def is_network_path(path: Path) -> bool:
 
     return False
 
+
 def _is_mapped_network_drive(drive: str) -> bool:
     """Check if Windows drive letter is mapped to network."""
     if os.name != "nt":
@@ -346,6 +357,7 @@ def _is_mapped_network_drive(drive: str) -> bool:
         return drive_type == DRIVE_REMOTE
     except Exception:
         return False
+
 
 def _is_network_mount_unix(path: Path) -> bool:
     """Check if Unix path is on network filesystem."""
@@ -375,6 +387,7 @@ def _is_network_mount_unix(path: Path) -> bool:
 import hashlib
 from pathlib import Path
 from typing import Optional
+
 
 def compute_directory_hash(directory: Path) -> str:
     """
@@ -434,6 +447,7 @@ def compute_directory_hash(directory: Path) -> str:
 
     return hasher.hexdigest()
 
+
 def check_drift(source: Path, target: Path) -> tuple[bool, Optional[str]]:
     """
     Check if source has changed since last sync.
@@ -483,9 +497,10 @@ def check_controlled_folder_access() -> bool:
 
     try:
         import winreg
+
         key = winreg.OpenKey(
             winreg.HKEY_LOCAL_MACHINE,
-            r"SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\Controlled Folder Access"
+            r"SOFTWARE\Microsoft\Windows Defender\Windows Defender Exploit Guard\Controlled Folder Access",
         )
         value, _ = winreg.QueryValueEx(key, "EnableControlledFolderAccess")
         return value == 1

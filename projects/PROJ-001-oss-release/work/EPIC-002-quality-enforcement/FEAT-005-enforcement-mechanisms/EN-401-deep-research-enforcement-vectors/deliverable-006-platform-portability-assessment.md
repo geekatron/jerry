@@ -454,16 +454,22 @@ Priority fixes:
 # src/enforcement/ports/lifecycle_hook.py
 from typing import Protocol
 
+
 class IPreActionHook(Protocol):
     """Platform-independent pre-action enforcement gate."""
+
     def evaluate(self, action: str, target: str, content: str) -> HookDecision: ...
+
 
 class IPostActionHook(Protocol):
     """Platform-independent post-action enforcement check."""
+
     def evaluate(self, action: str, target: str, result: str) -> HookResult: ...
+
 
 class IContextInjector(Protocol):
     """Platform-independent context injection mechanism."""
+
     def get_enforcement_context(self) -> str: ...
 ```
 

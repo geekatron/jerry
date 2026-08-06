@@ -164,6 +164,7 @@ Guardrails AI provides both built-in validators and a community-contributed **Gu
 ```python
 from guardrails.validators import Validator, register_validator, PassResult, FailResult
 
+
 @register_validator(name="quality-score-check", data_type="string")
 class QualityScoreValidator(Validator):
     """Validates that output contains a quality score >= threshold."""
@@ -178,7 +179,7 @@ class QualityScoreValidator(Validator):
         if score is None:
             return FailResult(
                 error_message="Output does not contain a quality score. "
-                              "Include a quality score calculation.",
+                "Include a quality score calculation.",
                 fix_value=None,
             )
         if score < self._threshold:
@@ -458,9 +459,9 @@ config = RailsConfig.from_path("./config")
 rails = LLMRails(config)
 
 # The rails object wraps the LLM and enforces all defined guardrails
-response = rails.generate(messages=[
-    {"role": "user", "content": "Implement the work item tracking feature"}
-])
+response = rails.generate(
+    messages=[{"role": "user", "content": "Implement the work item tracking feature"}]
+)
 ```
 
 **Configuration structure:**
@@ -528,25 +529,18 @@ LangChain provides structured output parsing that enforces schema compliance:
 from langchain.output_parsers import PydanticOutputParser
 from pydantic import BaseModel, Field, field_validator
 
+
 class QualityDeliverable(BaseModel):
     """Schema for a quality-compliant deliverable."""
 
     content: str = Field(description="The main deliverable content")
-    quality_score: float = Field(
-        description="Quality score (0.0 - 1.0)",
-        ge=0.0, le=1.0
-    )
-    citations: list[str] = Field(
-        description="List of authoritative citations",
-        min_length=1
-    )
+    quality_score: float = Field(description="Quality score (0.0 - 1.0)", ge=0.0, le=1.0)
+    citations: list[str] = Field(description="List of authoritative citations", min_length=1)
     review_iterations: int = Field(
-        description="Number of creator-critic-revision iterations completed",
-        ge=1
+        description="Number of creator-critic-revision iterations completed", ge=1
     )
     skill_invocations: list[str] = Field(
-        description="Skills invoked during this work",
-        min_length=1
+        description="Skills invoked during this work", min_length=1
     )
 
     @field_validator("quality_score")
@@ -558,6 +552,7 @@ class QualityDeliverable(BaseModel):
                 "Revise deliverable until quality target is met."
             )
         return v
+
 
 parser = PydanticOutputParser(pydantic_object=QualityDeliverable)
 
@@ -593,8 +588,10 @@ LangGraph enables **stateful, graph-based** workflow enforcement where each node
 from langgraph.graph import StateGraph, END
 from typing import TypedDict
 
+
 class QualityWorkflowState(TypedDict):
     """State schema for quality-enforced workflow."""
+
     task_type: str
     plan_exists: bool
     implementation_complete: bool
@@ -602,6 +599,7 @@ class QualityWorkflowState(TypedDict):
     review_score: float
     review_iterations: int
     artifacts_persisted: list[str]
+
 
 def should_continue(state: QualityWorkflowState) -> str:
     """Quality gate: determine next step based on state."""
@@ -616,6 +614,7 @@ def should_continue(state: QualityWorkflowState) -> str:
     if state["review_score"] >= 0.92:
         return END
     return "escalate"
+
 
 # Build the graph
 workflow = StateGraph(QualityWorkflowState)
@@ -635,7 +634,7 @@ workflow.add_conditional_edges(
         "review": "review",
         "create_plan": "create_plan",
         "write_tests": "write_tests",
-    }
+    },
 )
 
 workflow.add_conditional_edges(
@@ -645,11 +644,12 @@ workflow.add_conditional_edges(
         "review": "review",  # Loop for revision
         END: END,
         "escalate": "escalate",
-    }
+    },
 )
 
 # Compile with checkpointing
 from langgraph.checkpoint.sqlite import SqliteSaver
+
 memory = SqliteSaver.from_conn_string("quality_checkpoints.db")
 app = workflow.compile(checkpointer=memory)
 ```
@@ -674,19 +674,19 @@ LangChain/LangGraph validate tool calls before execution:
 from langchain.tools import StructuredTool
 from pydantic import BaseModel, Field
 
+
 class WriteFileInput(BaseModel):
     """Schema for file write operations with quality gates."""
+
     file_path: str = Field(description="Path to write the file")
     content: str = Field(description="File content")
     quality_evidence: str | None = Field(
-        default=None,
-        description="Reference to quality review artifact"
+        default=None, description="Reference to quality review artifact"
     )
 
+
 def write_file_with_quality_gate(
-    file_path: str,
-    content: str,
-    quality_evidence: str | None = None
+    file_path: str, content: str, quality_evidence: str | None = None
 ) -> str:
     """Write a file, enforcing quality evidence for implementation files."""
     if file_path.startswith("src/") and quality_evidence is None:
@@ -697,6 +697,7 @@ def write_file_with_quality_gate(
         )
     # Proceed with write...
     return f"File written: {file_path}"
+
 
 tool = StructuredTool.from_function(
     func=write_file_with_quality_gate,
@@ -848,6 +849,7 @@ QUALITY_PRINCIPLES = [
     },
 ]
 
+
 def generate_self_critique_prompt(principles: list[dict]) -> str:
     """Generate a self-critique injection for the agent."""
     critique = "<quality-self-critique>\n"
@@ -904,6 +906,7 @@ from semantic_kernel.filters import (
     FunctionInvocationContext,
     PromptRenderContext,
 )
+
 
 class QualityEnforcementFilter:
     """Filter that enforces quality prerequisites."""
@@ -964,9 +967,7 @@ Semantic Kernel's **planner** system generates execution plans that can include 
 from semantic_kernel.planners import SequentialPlanner
 
 planner = SequentialPlanner(kernel)
-plan = await planner.create_plan(
-    goal="Implement the work item tracking feature"
-)
+plan = await planner.create_plan(goal="Implement the work item tracking feature")
 
 # The plan includes steps that can be gated
 for step in plan.steps:
@@ -1017,6 +1018,7 @@ CrewAI provides guardrails at the task level:
 from crewai import Task, Agent, Crew
 from crewai.guardrails import OutputGuardrail
 
+
 # Define output validation
 def validate_quality_output(output: str) -> tuple[bool, str]:
     """Validate that output meets quality requirements."""
@@ -1032,6 +1034,7 @@ def validate_quality_output(output: str) -> tuple[bool, str]:
     if issues:
         return False, f"Quality issues: {', '.join(issues)}"
     return True, ""
+
 
 research_task = Task(
     description="Research enforcement vectors with citations",
@@ -1068,13 +1071,16 @@ CrewAI uses Pydantic models for structured output enforcement:
 ```python
 from pydantic import BaseModel, Field
 
+
 class ResearchOutput(BaseModel):
     """Enforced output schema for research tasks."""
+
     summary: str = Field(min_length=100)
     findings: list[str] = Field(min_length=3)
     citations: list[str] = Field(min_length=5)
     quality_score: float = Field(ge=0.0, le=1.0)
     methodology: str = Field(min_length=50)
+
 
 task = Task(
     description="Research LLM guardrail frameworks",
@@ -1258,6 +1264,7 @@ Combined Score -> Allow / Block Decision
 ```python
 import guidance
 
+
 @guidance
 def quality_deliverable(lm):
     lm += "Research findings:\n"
@@ -1299,9 +1306,7 @@ deliverable = client.chat.completions.create(
     model="gpt-4",
     response_model=QualityDeliverable,
     max_retries=3,
-    messages=[
-        {"role": "user", "content": "Research enforcement vectors"}
-    ],
+    messages=[{"role": "user", "content": "Research enforcement vectors"}],
 )
 # deliverable is a validated QualityDeliverable Pydantic object
 ```
@@ -1315,12 +1320,12 @@ deliverable = client.chat.completions.create(
 ```python
 @lmql.query
 def research_query():
-    '''lmql
+    """lmql
     "Research enforcement vectors."
     "[FINDINGS]" where len(FINDINGS) > 500
     "Quality score: [SCORE]" where SCORE in ["0.92", "0.93", "0.94", "0.95", "0.96", "0.97", "0.98", "0.99", "1.00"]
     "Citations: [CITATIONS]" where len(CITATIONS) > 100
-    '''
+    """
 ```
 
 **Relevance**: Inline constraints on generated content. The concept of embedding quality constraints directly into the generation request is relevant to Jerry's prompt engineering patterns.
@@ -1382,10 +1387,12 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
 
+
 class ValidationResult(Enum):
     PASS = "pass"
     FAIL = "fail"
     WARN = "warn"
+
 
 @dataclass(frozen=True)
 class ValidatorOutput:
@@ -1393,11 +1400,13 @@ class ValidatorOutput:
     message: str
     validator_id: str
 
+
 class QualityValidator(ABC):
     """Base class for composable quality validators."""
 
     @abstractmethod
     def validate(self, context: dict) -> ValidatorOutput: ...
+
 
 # src/quality/validators/artifact_presence.py
 class ArtifactPresenceValidator(QualityValidator):
@@ -1420,6 +1429,7 @@ class ArtifactPresenceValidator(QualityValidator):
             validator_id="artifact_presence",
         )
 
+
 # src/quality/validators/chain.py
 class ValidatorChain:
     """Compose multiple validators into a chain."""
@@ -1431,10 +1441,7 @@ class ValidatorChain:
         return [v.validate(context) for v in self._validators]
 
     def any_failures(self, context: dict) -> bool:
-        return any(
-            r.result == ValidationResult.FAIL
-            for r in self.validate_all(context)
-        )
+        return any(r.result == ValidationResult.FAIL for r in self.validate_all(context))
 ```
 
 ### Pattern 2: Programmable Rails (from NeMo Guardrails)
@@ -1496,6 +1503,7 @@ rails:
 # .jerry/enforcement/workflow_state.py
 from enum import Enum
 
+
 class WorkflowPhase(Enum):
     PLANNING = "planning"
     TESTING = "testing"
@@ -1503,6 +1511,7 @@ class WorkflowPhase(Enum):
     REVIEW = "review"
     REVISION = "revision"
     COMPLETE = "complete"
+
 
 VALID_TRANSITIONS = {
     WorkflowPhase.PLANNING: {WorkflowPhase.TESTING},
@@ -1512,6 +1521,7 @@ VALID_TRANSITIONS = {
     WorkflowPhase.REVISION: {WorkflowPhase.REVIEW},
     WorkflowPhase.COMPLETE: set(),
 }
+
 
 def enforce_transition(current: WorkflowPhase, target: WorkflowPhase) -> bool:
     """Check if workflow transition is valid."""
@@ -1570,6 +1580,7 @@ Layer 6: CI/CD Gating (GitHub Actions)
 
 ```python
 from pydantic import BaseModel, Field, field_validator
+
 
 class DeliverableMetadata(BaseModel):
     """Required metadata for any Jerry deliverable."""

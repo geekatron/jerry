@@ -273,6 +273,7 @@ Citation format in action items:
 4. **Verify chunk sizes after generation:**
    ```python
    import tiktoken
+
    enc = tiktoken.get_encoding("p50k_base")
    with open("chunks/chunk-001.json") as f:
        tokens = len(enc.encode(f.read()))

@@ -173,25 +173,38 @@ def main() -> int:
         content = engine.generate_reinforcement(prompt_context)
 
         # Output hook JSON with additionalContext
-        print(json.dumps({
-            "hookSpecificOutput": {
-                "hookEventName": "UserPromptSubmit",
-                "additionalContext": content.rendered_text,
-            }
-        }))
+        print(
+            json.dumps(
+                {
+                    "hookSpecificOutput": {
+                        "hookEventName": "UserPromptSubmit",
+                        "additionalContext": content.rendered_text,
+                    }
+                }
+            )
+        )
         return 0
 
     except Exception as e:
         # Fail-open: log error, output empty context
-        print(json.dumps({
-            "warning": f"UserPromptSubmit hook error: {e}",
-        }), file=sys.stderr)
-        print(json.dumps({
-            "hookSpecificOutput": {
-                "hookEventName": "UserPromptSubmit",
-                "additionalContext": "",
-            }
-        }))
+        print(
+            json.dumps(
+                {
+                    "warning": f"UserPromptSubmit hook error: {e}",
+                }
+            ),
+            file=sys.stderr,
+        )
+        print(
+            json.dumps(
+                {
+                    "hookSpecificOutput": {
+                        "hookEventName": "UserPromptSubmit",
+                        "additionalContext": "",
+                    }
+                }
+            )
+        )
         return 0
 
 
@@ -214,6 +227,7 @@ if __name__ == "__main__":
 Generates ultra-compact reinforcement content within the ~600 token
 budget to counteract L1 context rot.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -222,6 +236,7 @@ from dataclasses import dataclass, field
 @dataclass(frozen=True)
 class PromptContext:
     """Input context for reinforcement generation."""
+
     user_prompt: str = ""
     session_id: str = ""
     project_dir: str = ""
@@ -230,6 +245,7 @@ class PromptContext:
 @dataclass(frozen=True)
 class ReinforcementContent:
     """Output of the reinforcement engine."""
+
     rendered_text: str
     token_estimate: int
     blocks_included: list[str] = field(default_factory=list)
@@ -291,24 +307,37 @@ class PromptReinforcementEngine:
 
         # C4: Critical -- architecture changes, governance, public release
         c4_signals = [
-            "constitution", "governance", "jerry_constitution",
-            "public release", "architecture decision", "adr",
+            "constitution",
+            "governance",
+            "jerry_constitution",
+            "public release",
+            "architecture decision",
+            "adr",
         ]
         if any(signal in prompt_lower for signal in c4_signals):
             return "C4"
 
         # C3: Significant -- multi-file changes, API changes, rules changes
         c3_signals = [
-            ".claude/rules", "rules/", "architecture",
-            "breaking change", "api change", "interface change",
+            ".claude/rules",
+            "rules/",
+            "architecture",
+            "breaking change",
+            "api change",
+            "interface change",
         ]
         if any(signal in prompt_lower for signal in c3_signals):
             return "C3"
 
         # C1: Routine -- simple queries, small edits
         c1_signals = [
-            "read", "show", "list", "what is", "how do",
-            "explain", "help",
+            "read",
+            "show",
+            "list",
+            "what is",
+            "how do",
+            "explain",
+            "help",
         ]
         if any(signal in prompt_lower for signal in c1_signals):
             return "C1"
@@ -334,16 +363,27 @@ class PromptReinforcementEngine:
 
         # S-014: When deliverable expected
         deliverable_signals = [
-            "implement", "create", "build", "write", "design",
-            "produce", "generate", "deliver",
+            "implement",
+            "create",
+            "build",
+            "write",
+            "design",
+            "produce",
+            "generate",
+            "deliver",
         ]
         if any(s in prompt_lower for s in deliverable_signals):
             selected.append(self._content_blocks["scoring-requirement"])
 
         # S-003: When review/critique expected
         review_signals = [
-            "review", "critique", "evaluate", "assess", "audit",
-            "check", "validate",
+            "review",
+            "critique",
+            "evaluate",
+            "assess",
+            "audit",
+            "check",
+            "validate",
         ]
         if any(s in prompt_lower for s in review_signals):
             selected.append(self._content_blocks["steelman"])
@@ -364,7 +404,7 @@ class PromptReinforcementEngine:
         criticality: str,
     ) -> str:
         """Render selected blocks into the final reinforcement text."""
-        parts = [f"<enforcement-context criticality=\"{criticality}\">"]
+        parts = [f'<enforcement-context criticality="{criticality}">']
         for block in blocks:
             parts.append(block.content)
         parts.append("</enforcement-context>")
@@ -412,6 +452,7 @@ class PromptReinforcementEngine:
 @dataclass(frozen=True)
 class ContentBlock:
     """A single reinforcement content block."""
+
     block_id: str
     content: str
     priority: int  # 1=highest, 5=lowest
@@ -510,6 +551,7 @@ The content blocks are defined inline in `_build_content_blocks()` above for sim
 Reads external state to inform enforcement decisions.
 All I/O is encapsulated here to keep the engine pure.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -541,8 +583,7 @@ class ContextProvider:
             ".context/rules/",
             "docs/governance/",
         ]
-        return any(file_path.startswith(p) or file_path.endswith(p)
-                    for p in governance_prefixes)
+        return any(file_path.startswith(p) or file_path.endswith(p) for p in governance_prefixes)
 
     def _find_root(self) -> Path:
         """Find project root by looking for CLAUDE.md."""
@@ -776,9 +817,11 @@ from src.infrastructure.internal.enforcement.prompt_reinforcement_engine import 
 )
 
 engine = PromptReinforcementEngine()
-content = engine.generate_reinforcement(PromptContext(
-    user_prompt="Implement the login feature",
-))
+content = engine.generate_reinforcement(
+    PromptContext(
+        user_prompt="Implement the login feature",
+    )
+)
 
 # Platform-specific injection
 inject_into_system_prompt(content.rendered_text)
@@ -869,13 +912,14 @@ class PromptContext:
     session_id: str = ""
     project_dir: str = ""
 
+
 # ReinforcementContent -- output from engine
 @dataclass(frozen=True)
 class ReinforcementContent:
-    rendered_text: str        # The actual content to inject
-    token_estimate: int       # Estimated token count
+    rendered_text: str  # The actual content to inject
+    token_estimate: int  # Estimated token count
     blocks_included: list[str]  # Block IDs included
-    criticality_level: str    # C1/C2/C3/C4
+    criticality_level: str  # C1/C2/C3/C4
 ```
 
 ---

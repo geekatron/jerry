@@ -568,10 +568,10 @@ quality_score = 0
 
 while quality_score < 0.85 and iteration < 3:
     # Generate/refine
-    Task(ps-architect, f"{'Create' if iteration == 0 else 'Refine'} solution")
+    Task(ps - architect, f"{'Create' if iteration == 0 else 'Refine'} solution")
 
     # Critique
-    result = Task(ps-critic, "Evaluate solution quality, return score 0-1")
+    result = Task(ps - critic, "Evaluate solution quality, return score 0-1")
     quality_score = result.score
     iteration += 1
 

@@ -123,6 +123,7 @@ import webvtt
 from dataclasses import dataclass
 from typing import List, Optional
 
+
 @dataclass
 class Segment:
     id: int
@@ -131,17 +132,20 @@ class Segment:
     speaker: Optional[str]
     text: str
 
+
 def parse_vtt(file_path: str) -> List[Segment]:
     """Deterministically parse VTT file to canonical segments."""
     segments = []
     for idx, caption in enumerate(webvtt.read(file_path), start=1):
-        segments.append(Segment(
-            id=idx,
-            start_ms=timestamp_to_ms(caption.start),
-            end_ms=timestamp_to_ms(caption.end),
-            speaker=extract_speaker(caption.text),
-            text=clean_text(caption.text)
-        ))
+        segments.append(
+            Segment(
+                id=idx,
+                start_ms=timestamp_to_ms(caption.start),
+                end_ms=timestamp_to_ms(caption.end),
+                speaker=extract_speaker(caption.text),
+                text=clean_text(caption.text),
+            )
+        )
     return segments
 ```
 

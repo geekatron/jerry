@@ -624,14 +624,14 @@ pip install networkx==3.2.1 rdflib==7.0.0 faiss-cpu==1.7.4
 **Deliverables:**
 ```python
 # Entity extraction
-src/infrastructure/extraction/markdown_entities.py
+src / infrastructure / extraction / markdown_entities.py
 
 # Graph builder
-src/application/commands/build_knowledge_graph.py
+src / application / commands / build_knowledge_graph.py
 
 # Query interface
-src/application/queries/find_related_docs.py
-src/application/queries/semantic_search.py
+src / application / queries / find_related_docs.py
+src / application / queries / semantic_search.py
 ```
 
 **Success Criteria:**
@@ -651,10 +651,10 @@ src/application/queries/semantic_search.py
 **Deliverables:**
 ```python
 # RAG implementation
-src/interface/rag/simple_rag.py
+src / interface / rag / simple_rag.py
 
 # Agent integration
-skills/knowledge-search/SKILL.md
+skills / knowledge - search / SKILL.md
 ```
 
 **Success Criteria:**

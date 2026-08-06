@@ -501,7 +501,7 @@ Perform a full integrity audit on EPIC-001 worktracker hierarchy:
 5. **ID Format:** Check naming conventions
 
 Generate a comprehensive audit report with actionable remediation plan.
-"""
+""",
 )
 ```
 </example_invocation>

@@ -47,6 +47,7 @@ from eventsourcing.application import Application
 from eventsourcing.domain import Aggregate, event
 from eventsourcing.persistence import IntegrityError
 
+
 class ShoppingCart(Aggregate):
     def __init__(self):
         self.items = []
@@ -54,6 +55,7 @@ class ShoppingCart(Aggregate):
     @event("ItemAdded")
     def add_item(self, item_name: str, quantity: int):
         self.items.append({"name": item_name, "quantity": quantity})
+
 
 class ShoppingApp(Application):
     def create_cart(self) -> str:
@@ -65,6 +67,7 @@ class ShoppingApp(Application):
         cart = self.repository.get(cart_id)
         cart.add_item(item_name=item_name, quantity=quantity)
         self.save(cart)
+
 
 # Concurrency detection in action:
 app = ShoppingApp()

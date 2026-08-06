@@ -41,7 +41,7 @@ from eventsourcing.persistence import IntegrityError
 old: Dog = app.repository.get(dog_id, version=3)
 
 # Attempt to modify and save the stale aggregate
-old.add_trick(trick='future')
+old.add_trick(trick="future")
 try:
     app.save(old)
 except IntegrityError:

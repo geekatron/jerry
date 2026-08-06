@@ -74,17 +74,17 @@ message = client.messages.create(
 
 **Tool use (JSON schema definitions):**
 ```python
-tools = [{
-    "name": "get_weather",
-    "description": "Get the current weather",
-    "input_schema": {
-        "type": "object",
-        "properties": {
-            "location": {"type": "string", "description": "City name"}
+tools = [
+    {
+        "name": "get_weather",
+        "description": "Get the current weather",
+        "input_schema": {
+            "type": "object",
+            "properties": {"location": {"type": "string", "description": "City name"}},
+            "required": ["location"],
         },
-        "required": ["location"]
     }
-}]
+]
 
 message = client.messages.create(
     model="claude-sonnet-4-5-20250929",
@@ -103,10 +103,12 @@ if message.stop_reason == "tool_use":
         messages=[
             {"role": "user", "content": "Weather in SF?"},
             {"role": "assistant", "content": message.content},
-            {"role": "user", "content": [
-                {"type": "tool_result", "tool_use_id": tool_use.id,
-                 "content": "72F and sunny"}
-            ]},
+            {
+                "role": "user",
+                "content": [
+                    {"type": "tool_result", "tool_use_id": tool_use.id, "content": "72F and sunny"}
+                ],
+            },
         ],
         tools=tools,
     )
@@ -168,6 +170,7 @@ Simple async interface for one-off queries:
 import anyio
 from claude_agent_sdk import query, ClaudeAgentOptions, AssistantMessage, TextBlock
 
+
 async def main():
     options = ClaudeAgentOptions(
         system_prompt="You are a helpful assistant",
@@ -180,6 +183,7 @@ async def main():
             for block in message.content:
                 if isinstance(block, TextBlock):
                     print(block.text)
+
 
 anyio.run(main)
 ```
@@ -235,20 +239,17 @@ options = ClaudeAgentOptions(
             description="Expert code review specialist.",
             prompt="You are a code review specialist...",
             tools=["Read", "Grep", "Glob"],
-            model="sonnet"
+            model="sonnet",
         ),
         "test-runner": AgentDefinition(
             description="Runs and analyzes test suites.",
             prompt="You are a test execution specialist...",
-            tools=["Bash", "Read", "Grep"]
-        )
-    }
+            tools=["Bash", "Read", "Grep"],
+        ),
+    },
 )
 
-async for message in query(
-    prompt="Review the authentication module",
-    options=options
-):
+async for message in query(prompt="Review the authentication module", options=options):
     if hasattr(message, "result"):
         print(message.result)
 ```
@@ -262,18 +263,15 @@ Custom tools defined as Python functions, running in-process (no separate subpro
 ```python
 from claude_agent_sdk import tool, create_sdk_mcp_server
 
+
 @tool("add", "Add two numbers", {"a": float, "b": float})
 async def add(args):
     return {"content": [{"type": "text", "text": f"Sum: {args['a'] + args['b']}"}]}
 
-calculator = create_sdk_mcp_server(
-    name="calculator", version="1.0.0", tools=[add]
-)
 
-options = ClaudeAgentOptions(
-    mcp_servers={"calc": calculator},
-    allowed_tools=["mcp__calc__add"]
-)
+calculator = create_sdk_mcp_server(name="calculator", version="1.0.0", tools=[add])
+
+options = ClaudeAgentOptions(mcp_servers={"calc": calculator}, allowed_tools=["mcp__calc__add"])
 ```
 
 Benefits: No IPC overhead, single process, easier debugging, type safety [GH-1].
@@ -284,6 +282,7 @@ Deterministic processing at specific agent loop points:
 
 ```python
 from claude_agent_sdk import ClaudeAgentOptions, HookMatcher
+
 
 async def check_bash_command(input_data, tool_use_id, context):
     if input_data["tool_name"] == "Bash":
@@ -298,6 +297,7 @@ async def check_bash_command(input_data, tool_use_id, context):
             }
     return {}
 
+
 options = ClaudeAgentOptions(
     hooks={"PreToolUse": [HookMatcher(matcher="Bash", hooks=[check_bash_command])]}
 )
@@ -309,11 +309,11 @@ Available hook events include `PreToolUse` and `SubagentStop` [C7-2, GH-1].
 
 ```python
 from claude_agent_sdk import (
-    ClaudeSDKError,        # Base error
-    CLINotFoundError,      # Claude Code CLI not installed
-    CLIConnectionError,    # Connection issues
-    ProcessError,          # Process failed (includes exit_code)
-    CLIJSONDecodeError,    # JSON parsing issues
+    ClaudeSDKError,  # Base error
+    CLINotFoundError,  # Claude Code CLI not installed
+    CLIConnectionError,  # Connection issues
+    ProcessError,  # Process failed (includes exit_code)
+    CLIJSONDecodeError,  # JSON parsing issues
 )
 ```
 

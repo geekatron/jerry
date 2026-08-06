@@ -196,10 +196,12 @@ schema_version: "1.0.0"
 import yaml
 import json
 
+
 def get_yaml_schema_version(path: str) -> str:
     with open(path) as f:
         data = yaml.safe_load(f)
     return data.get("schema_version", "unknown")
+
 
 def get_json_schema_version(path: str) -> str:
     with open(path) as f:

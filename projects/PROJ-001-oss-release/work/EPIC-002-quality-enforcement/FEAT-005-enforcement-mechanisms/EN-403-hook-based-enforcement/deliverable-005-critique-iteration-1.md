@@ -127,6 +127,7 @@ An adversary could evade detection with:
 ```python
 # Aliased importlib
 import importlib as il
+
 il.import_module("src.infrastructure.adapters")
 
 # exec-based import
@@ -134,6 +135,7 @@ exec("from src.infrastructure import adapters")
 
 # getattr-based access
 import sys
+
 sys.modules.get("src.infrastructure.adapters")
 
 # Importlib via variable

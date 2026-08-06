@@ -75,7 +75,7 @@ invocation = {
     "diagram_type": "hierarchy",
     "depth": 3,
     "include_status": True,
-    "output_format": "mermaid"
+    "output_format": "mermaid",
 }
 ```
 

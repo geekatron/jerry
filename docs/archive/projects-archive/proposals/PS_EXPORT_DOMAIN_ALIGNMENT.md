@@ -122,6 +122,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import Optional
 
+
 class IAuditable(ABC):
     """
     Interface for entities requiring audit trail.
@@ -198,6 +199,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Dict, List, Any, Optional
 
+
 @dataclass
 class EntityBase(IAuditable, IVersioned):
     """
@@ -212,41 +214,41 @@ class EntityBase(IAuditable, IVersioned):
     """
 
     # Identity (Graph-Ready) - ID is a strongly-typed object
-    id: "JerryId"                 # Strongly typed, extends VertexId
+    id: "JerryId"  # Strongly typed, extends VertexId
     uri: "JerryUri" = field(init=False)  # Full resource URI (SPEC-001), computed from id
-    slug: str                     # URL-safe identifier (≤75 chars, kebab-case)
+    slug: str  # URL-safe identifier (≤75 chars, kebab-case)
 
     # Display
-    name: str                     # Human-readable (≤80 chars)
-    short_description: str        # Brief summary (≤200 chars, 1 sentence)
-    long_description: str         # Detailed content (Markdown, unlimited)
+    name: str  # Human-readable (≤80 chars)
+    short_description: str  # Brief summary (≤200 chars, 1 sentence)
+    long_description: str  # Detailed content (Markdown, unlimited)
 
     # Provenance (IAuditable)
-    created_on: datetime          # Creation timestamp (ISO 8601)
-    updated_on: datetime          # Last modification (ISO 8601)
-    created_by: str               # User/system that created ("user:alice" or "system:scheduler")
-    updated_by: str               # User/system that last modified
-    session_id: str               # Session that created/modified
+    created_on: datetime  # Creation timestamp (ISO 8601)
+    updated_on: datetime  # Last modification (ISO 8601)
+    created_by: str  # User/system that created ("user:alice" or "system:scheduler")
+    updated_by: str  # User/system that last modified
+    session_id: str  # Session that created/modified
 
     # Change Detection (IVersioned)
-    content_hash: str             # SHA-256 of content fields (16 hex chars)
+    content_hash: str  # SHA-256 of content fields (16 hex chars)
     hash_algorithm: str = "sha256"  # Algorithm used for hashing
-    version: str = ""             # Computed: "{timestamp}_{hash[:8]}"
+    version: str = ""  # Computed: "{timestamp}_{hash[:8]}"
 
     # Graph Properties
-    label: str = ""               # Vertex label for graph storage
+    label: str = ""  # Vertex label for graph storage
     properties: Dict[str, Any] = field(default_factory=dict)  # Additional vertex properties
 
     # Extensibility (NEW - per feedback)
     metadata: Dict[str, str] = field(default_factory=dict)  # Key-value for extensibility
-    tags: List[str] = field(default_factory=list)           # Categorization and filtering
+    tags: List[str] = field(default_factory=list)  # Categorization and filtering
 
     def __post_init__(self):
         """Compute derived fields."""
         if not self.version:
             self.version = self._compute_version()
         # Compute URI from ID (see SPEC-001: Jerry URI Specification)
-        object.__setattr__(self, 'uri', self._compute_uri())
+        object.__setattr__(self, "uri", self._compute_uri())
 
     def _compute_version(self) -> str:
         """
@@ -265,11 +267,12 @@ class EntityBase(IAuditable, IVersioned):
         Example: jer:jer:work-tracker:task:task-042+a1b2c3d4
         """
         from src.domain.identity import JerryUri  # Deferred import
+
         return JerryUri.for_entity(
             domain=self.label.lower().replace(" ", "-"),  # e.g., "work-tracker"
-            entity_type=self.id.prefix,                   # e.g., "task"
-            entity_id=self.id.full_form,                  # e.g., "task-042"
-            version=self.content_hash[:8] if self.content_hash else None
+            entity_type=self.id.prefix,  # e.g., "task"
+            entity_id=self.id.full_form,  # e.g., "task-042"
+            version=self.content_hash[:8] if self.content_hash else None,
         )
 
     @classmethod
@@ -289,7 +292,7 @@ class EntityBase(IAuditable, IVersioned):
 
         serialized = json.dumps(content_fields, sort_keys=True, default=str)
         hasher = hashlib.new(algorithm)
-        hasher.update(serialized.encode('utf-8'))
+        hasher.update(serialized.encode("utf-8"))
         return hasher.hexdigest()[:16]
 ```
 
@@ -312,9 +315,10 @@ class JerryId:
     - Evans, E. (2003). Domain-Driven Design. Value Objects chapter.
     - Vernon, V. (2013). Implementing DDD. Identity chapter.
     """
-    prefix: str       # Entity type prefix (task, phase, c, e, etc.)
-    sequence: int     # Sequence number within prefix
-    uuid: str = ""    # Optional UUID for global uniqueness
+
+    prefix: str  # Entity type prefix (task, phase, c, e, etc.)
+    sequence: int  # Sequence number within prefix
+    uuid: str = ""  # Optional UUID for global uniqueness
 
     def __post_init__(self):
         """Validate ID components."""
@@ -355,21 +359,28 @@ class JerryId:
 # Type-specific aliases for compile-time safety
 class TaskId(JerryId):
     """Strongly typed Task identifier."""
+
     def __init__(self, sequence: int, uuid: str = ""):
         super().__init__(prefix="task", sequence=sequence, uuid=uuid)
 
+
 class PhaseId(JerryId):
     """Strongly typed Phase identifier."""
+
     def __init__(self, sequence: int, uuid: str = ""):
         super().__init__(prefix="phase", sequence=sequence, uuid=uuid)
 
+
 class PlanId(JerryId):
     """Strongly typed Plan identifier."""
+
     def __init__(self, sequence: int, uuid: str = ""):
         super().__init__(prefix="plan", sequence=sequence, uuid=uuid)
 
+
 class ConstraintId(JerryId):
     """Strongly typed Constraint identifier."""
+
     def __init__(self, sequence: int, uuid: str = ""):
         super().__init__(prefix="c", sequence=sequence, uuid=uuid)
 ```
@@ -551,10 +562,11 @@ class Edge:
 
     TinkerPop Prior Art: Edge is an Element with id, label, properties
     """
-    id: str                       # Unique edge identifier
-    label: str                    # Relationship type (e.g., "CONTAINS")
-    from_vertex_id: str           # Source vertex ID
-    to_vertex_id: str             # Target vertex ID
+
+    id: str  # Unique edge identifier
+    label: str  # Relationship type (e.g., "CONTAINS")
+    from_vertex_id: str  # Source vertex ID
+    to_vertex_id: str  # Target vertex ID
     properties: Dict[str, Any] = field(default_factory=dict)
 
     # Audit (optional for edges)

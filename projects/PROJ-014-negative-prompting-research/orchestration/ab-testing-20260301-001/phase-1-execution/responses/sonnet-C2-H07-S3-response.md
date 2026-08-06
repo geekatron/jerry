@@ -155,6 +155,7 @@ class RedisCacheAdapter(ICachePort):
             db: Redis database index.
         """
         import redis  # Import deferred to infrastructure boundary
+
         self._client = redis.Redis(host=host, port=port, db=db)
 
     def get(self, key: str) -> Optional[Any]:
@@ -167,6 +168,7 @@ class RedisCacheAdapter(ICachePort):
             The deserialized cached value, or None if not present.
         """
         import pickle
+
         raw = self._client.get(key)
         if raw is None:
             return None
@@ -181,6 +183,7 @@ class RedisCacheAdapter(ICachePort):
             ttl_seconds: Time-to-live in seconds.
         """
         import pickle
+
         self._client.setex(key, ttl_seconds, pickle.dumps(value))
 ```
 

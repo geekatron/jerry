@@ -431,12 +431,14 @@ def test_vis_005_empty_project_handling():
     assert result.status == "success", "Should return success status"
 
     # ASSERT: Clear message
-    assert expected_message in result.metadata["message"], \
+    assert expected_message in result.metadata["message"], (
         f"Expected message containing '{expected_message}'"
+    )
 
     # ASSERT: Entity count
-    assert result.metadata["entities_included"] == expected_entity_count, \
+    assert result.metadata["entities_included"] == expected_entity_count, (
         f"Entity count should be {expected_entity_count}"
+    )
 
     # ASSERT: File persisted (P-002)
     output_file = Path(test_path) / "EMPTY-PROJECT-hierarchy-diagram.md"

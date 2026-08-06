@@ -21,6 +21,7 @@ Here's how I would implement this change:
 # Global configuration flag for debugging
 DEBUG = False
 
+
 def process_batch(records):
     """
     Process a batch of records, transforming and writing to database.

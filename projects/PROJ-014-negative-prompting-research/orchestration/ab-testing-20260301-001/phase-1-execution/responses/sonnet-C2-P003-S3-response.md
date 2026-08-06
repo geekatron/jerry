@@ -128,6 +128,7 @@ def __init__(self, repository: InventoryRepository, event_bus: EventBus) -> None
     self._repository = repository
     self._event_bus = event_bus
 
+
 async def handle(self, command: UpdateInventoryCommand) -> None:
     item = await self._repository.get(command.item_id)
     item.apply_update(command)

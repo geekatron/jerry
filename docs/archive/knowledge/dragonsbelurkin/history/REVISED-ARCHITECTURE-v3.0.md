@@ -151,8 +151,9 @@ Per [ADR-001](ADR-001-event-sourcing-cqrs.md), chosen:
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic, Optional
 
-TAggregate = TypeVar('TAggregate')
-TId = TypeVar('TId')
+TAggregate = TypeVar("TAggregate")
+TId = TypeVar("TId")
+
 
 class IRepository(ABC, Generic[TAggregate, TId]):
     """
@@ -201,6 +202,7 @@ class IProblemStatementRepository(IRepository[ProblemStatement, PhaseId]):
     Inherits from generic IRepository<TAggregate, TId>.
     No additional methods - aggregate-specific logic is in the aggregate itself.
     """
+
     pass
 ```
 
@@ -210,12 +212,14 @@ class IProblemStatementRepository(IRepository[ProblemStatement, PhaseId]):
 @dataclass(frozen=True)
 class StreamEvent:
     """Event with metadata"""
+
     event: DomainEvent
     event_id: str
     stream_id: str
     version: int  # Event version in stream
     timestamp: datetime
     metadata: Dict[str, Any]  # ECWVersion, Fingerprint, CreatedBy, etc.
+
 
 class IEventStore(ABC):
     """
@@ -230,7 +234,7 @@ class IEventStore(ABC):
         stream_id: str,
         events: List[DomainEvent],
         expected_version: int,
-        metadata: Dict[str, Any]
+        metadata: Dict[str, Any],
     ) -> None:
         """
         Append events to stream atomically.
@@ -247,11 +251,7 @@ class IEventStore(ABC):
         pass
 
     @abstractmethod
-    def read(
-        self,
-        stream_id: str,
-        from_version: int = 0
-    ) -> List[StreamEvent]:
+    def read(self, stream_id: str, from_version: int = 0) -> List[StreamEvent]:
         """
         Read events from stream.
 
@@ -282,12 +282,7 @@ class ISnapshotStore(ABC):
     """
 
     @abstractmethod
-    def save_snapshot(
-        self,
-        stream_id: str,
-        aggregate: ProblemStatement,
-        at_version: int
-    ) -> None:
+    def save_snapshot(self, stream_id: str, aggregate: ProblemStatement, at_version: int) -> None:
         """
         Save aggregate snapshot at specific version.
 
@@ -299,10 +294,7 @@ class ISnapshotStore(ABC):
         pass
 
     @abstractmethod
-    def get_snapshot(
-        self,
-        stream_id: str
-    ) -> Optional[Tuple[ProblemStatement, int]]:
+    def get_snapshot(self, stream_id: str) -> Optional[Tuple[ProblemStatement, int]]:
         """
         Get latest snapshot.
 
@@ -324,7 +316,7 @@ class IUnitOfWork(ABC):
     """
 
     @abstractmethod
-    def __enter__(self) -> 'IUnitOfWork':
+    def __enter__(self) -> "IUnitOfWork":
         """Start unit of work"""
         pass
 
@@ -370,19 +362,20 @@ class ISpecification(ABC, Generic[T]):
         pass
 
     @abstractmethod
-    def and_(self, other: 'ISpecification[T]') -> 'ISpecification[T]':
+    def and_(self, other: "ISpecification[T]") -> "ISpecification[T]":
         """Combine with AND"""
         pass
 
     @abstractmethod
-    def or_(self, other: 'ISpecification[T]') -> 'ISpecification[T]':
+    def or_(self, other: "ISpecification[T]") -> "ISpecification[T]":
         """Combine with OR"""
         pass
 
     @abstractmethod
-    def not_(self) -> 'ISpecification[T]':
+    def not_(self) -> "ISpecification[T]":
         """Negate"""
         pass
+
 
 # Example Specifications
 class ByPhaseIdSpec(ISpecification[ProblemStatement]):
@@ -391,6 +384,7 @@ class ByPhaseIdSpec(ISpecification[ProblemStatement]):
 
     def is_satisfied_by(self, ps: ProblemStatement) -> bool:
         return ps.phase_id == self.phase_id
+
 
 class WithStatusSpec(ISpecification[ProblemStatement]):
     def __init__(self, status: str):
@@ -414,6 +408,7 @@ class DomainEvent(ABC):
 
     Events are immutable, past-tense facts.
     """
+
     event_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     occurred_at: datetime = field(default_factory=datetime.utcnow)
 
@@ -436,6 +431,7 @@ class DomainEvent(ABC):
 @dataclass(frozen=True)
 class ProblemStatementCreated(DomainEvent):
     """Problem statement was created"""
+
     phase_id: PhaseId
     title: str
     what: str
@@ -445,9 +441,11 @@ class ProblemStatementCreated(DomainEvent):
     def event_type(self) -> str:
         return "ProblemStatementCreated"
 
+
 @dataclass(frozen=True)
 class ConstraintAdded(DomainEvent):
     """Constraint was added to problem statement"""
+
     phase_id: PhaseId
     constraint_id: str
     description: str
@@ -459,9 +457,11 @@ class ConstraintAdded(DomainEvent):
     def event_type(self) -> str:
         return "ConstraintAdded"
 
+
 @dataclass(frozen=True)
 class ConstraintStatusUpdated(DomainEvent):
     """Constraint status changed"""
+
     phase_id: PhaseId
     constraint_id: str
     old_status: str
@@ -470,9 +470,11 @@ class ConstraintStatusUpdated(DomainEvent):
     def event_type(self) -> str:
         return "ConstraintStatusUpdated"
 
+
 @dataclass(frozen=True)
 class QuestionAdded(DomainEvent):
     """Question was added"""
+
     phase_id: PhaseId
     question_id: str
     question: str
@@ -482,9 +484,11 @@ class QuestionAdded(DomainEvent):
     def event_type(self) -> str:
         return "QuestionAdded"
 
+
 @dataclass(frozen=True)
 class QuestionAnswered(DomainEvent):
     """Question was answered"""
+
     phase_id: PhaseId
     question_id: str
     answer: str
@@ -492,9 +496,11 @@ class QuestionAnswered(DomainEvent):
     def event_type(self) -> str:
         return "QuestionAnswered"
 
+
 @dataclass(frozen=True)
 class ExplorationEntryAdded(DomainEvent):
     """Exploration entry was logged"""
+
     phase_id: PhaseId
     date: str
     event_name: str
@@ -504,9 +510,11 @@ class ExplorationEntryAdded(DomainEvent):
     def event_type(self) -> str:
         return "ExplorationEntryAdded"
 
+
 @dataclass(frozen=True)
 class ProblemStatementStatusUpdated(DomainEvent):
     """Problem statement status changed"""
+
     phase_id: PhaseId
     old_status: str
     new_status: str
@@ -525,6 +533,7 @@ class ProblemStatementStatusUpdated(DomainEvent):
 from dataclasses import dataclass, field
 from typing import List
 from datetime import datetime
+
 
 @dataclass
 class ProblemStatement:
@@ -573,8 +582,8 @@ class ProblemStatement:
         who: List[str],
         created_by: str,
         ecw_version: str,
-        fingerprint: str
-    ) -> 'ProblemStatement':
+        fingerprint: str,
+    ) -> "ProblemStatement":
         """
         Create new problem statement (factory method).
 
@@ -589,17 +598,13 @@ class ProblemStatement:
             who=who,
             caused_by=created_by,
             ecw_version=ecw_version,
-            fingerprint=fingerprint
+            fingerprint=fingerprint,
         )
         ps._raise_event(event)
         return ps
 
     def add_constraint(
-        self,
-        constraint: Constraint,
-        added_by: str,
-        ecw_version: str,
-        fingerprint: str
+        self, constraint: Constraint, added_by: str, ecw_version: str, fingerprint: str
     ) -> None:
         """
         Add constraint to problem statement.
@@ -620,17 +625,12 @@ class ProblemStatement:
             mitigation=constraint.mitigation,
             caused_by=added_by,
             ecw_version=ecw_version,
-            fingerprint=fingerprint
+            fingerprint=fingerprint,
         )
         self._raise_event(event)
 
     def answer_question(
-        self,
-        question_id: str,
-        answer: str,
-        answered_by: str,
-        ecw_version: str,
-        fingerprint: str
+        self, question_id: str, answer: str, answered_by: str, ecw_version: str, fingerprint: str
     ) -> None:
         """
         Answer a question.
@@ -651,7 +651,7 @@ class ProblemStatement:
             answer=answer,
             caused_by=answered_by,
             ecw_version=ecw_version,
-            fingerprint=fingerprint
+            fingerprint=fingerprint,
         )
         self._raise_event(event)
 
@@ -660,11 +660,7 @@ class ProblemStatement:
             self.update_status("UNDERSTOOD", answered_by, ecw_version, fingerprint)
 
     def update_status(
-        self,
-        new_status: str,
-        updated_by: str,
-        ecw_version: str,
-        fingerprint: str
+        self, new_status: str, updated_by: str, ecw_version: str, fingerprint: str
     ) -> None:
         """
         Update problem statement status.
@@ -683,7 +679,7 @@ class ProblemStatement:
             new_status=new_status,
             caused_by=updated_by,
             ecw_version=ecw_version,
-            fingerprint=fingerprint
+            fingerprint=fingerprint,
         )
         self._raise_event(event)
 
@@ -718,7 +714,7 @@ class ProblemStatement:
                 impact=event.impact,
                 discovered=event.discovered,
                 status=event.status,
-                mitigation=event.mitigation
+                mitigation=event.mitigation,
             )
             self.constraints.append(constraint)
             self.updated_by = event.caused_by
@@ -730,8 +726,7 @@ class ProblemStatement:
                 # Create new question with answer (immutable)
                 answered_question = question.answer_with(event.answer)
                 self.questions = [
-                    answered_question if q.id == event.question_id else q
-                    for q in self.questions
+                    answered_question if q.id == event.question_id else q for q in self.questions
                 ]
             self.updated_by = event.caused_by
             self.updated_on = event.occurred_at
@@ -829,6 +824,7 @@ class ProblemStatementListItem:
     updated_on: datetime
     updated_by: str
 
+
 class ProblemStatementListProjection(IProjection):
     def __init__(self, store: IProjectionStore):
         self.store = store
@@ -843,7 +839,7 @@ class ProblemStatementListProjection(IProjection):
                 question_count=0,
                 unanswered_questions=0,
                 updated_on=event.occurred_at,
-                updated_by=event.caused_by
+                updated_by=event.caused_by,
             )
             self.store.save("ps_list", str(event.phase_id), item)
 
@@ -859,10 +855,12 @@ class ProblemStatementListProjection(IProjection):
     def reset(self) -> None:
         self.store.clear("ps_list")
 
+
 # 2. Problem Statement Detail View (for "get by id")
 @dataclass
 class ProblemStatementDetailView:
     """Complete problem statement for display"""
+
     phase_id: str
     title: str
     what: str
@@ -879,9 +877,11 @@ class ProblemStatementDetailView:
     ecw_version: str
     fingerprint: str
 
+
 class ProblemStatementDetailProjection(IProjection):
     # Similar to list projection but builds complete view
     pass
+
 
 # 3. Constraint Search View (for filtering)
 @dataclass
@@ -891,6 +891,7 @@ class ConstraintSearchItem:
     description: str
     status: str
     impact: str
+
 
 class ConstraintSearchProjection(IProjection):
     # Builds searchable index of constraints across all problem statements
@@ -906,12 +907,9 @@ class ConstraintSearchProjection(IProjection):
 ```python
 # Example: Add Constraint Use Case
 
+
 class AddConstraintUseCase(IAddConstraintUseCase):
-    def __init__(
-        self,
-        repository: IProblemStatementRepository,
-        unit_of_work: IUnitOfWork
-    ):
+    def __init__(self, repository: IProblemStatementRepository, unit_of_work: IUnitOfWork):
         self.repository = repository
         self.uow = unit_of_work
 
@@ -928,13 +926,13 @@ class AddConstraintUseCase(IAddConstraintUseCase):
                 description=request.description,
                 impact=request.impact,
                 discovered=request.discovered,
-                status="HYPOTHESIS"
+                status="HYPOTHESIS",
             )
             ps.add_constraint(
                 constraint,
                 added_by=request.updated_by,
                 ecw_version=request.ecw_version,
-                fingerprint=request.fingerprint
+                fingerprint=request.fingerprint,
             )
 
             # 3. Register for commit
@@ -943,16 +941,14 @@ class AddConstraintUseCase(IAddConstraintUseCase):
             # 4. Commit (appends events, updates snapshot, publishes domain events)
             self.uow.commit()
 
-        return AddConstraintResponse(
-            success=True,
-            constraint_id=request.constraint_id
-        )
+        return AddConstraintResponse(success=True, constraint_id=request.constraint_id)
 ```
 
 ### Read Side (Queries)
 
 ```python
 # Example: List Problem Statements Query
+
 
 class ListProblemStatementsQueryHandler:
     def __init__(self, projection_store: IProjectionStore):

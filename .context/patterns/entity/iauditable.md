@@ -32,6 +32,7 @@ Define a protocol for audit metadata that all entities implement.
 from typing import Protocol
 from datetime import datetime
 
+
 class IAuditable(Protocol):
     """Tracking metadata for entity creation and modification.
 
@@ -89,6 +90,7 @@ class IAuditable(Protocol):
 @dataclass
 class AggregateRoot(ABC):
     """Base class implementing IAuditable."""
+
     _created_by: str = "System"
     _created_at: datetime = field(default_factory=datetime.utcnow)
     _updated_by: str = "System"

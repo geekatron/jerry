@@ -433,7 +433,7 @@ Create file at: skills/eng-team/output/ENG-0042/eng-architect-payment-threat-mod
 ## TASK
 Produce a threat model for the payment service using STRIDE analysis
 with DREAD risk scoring.
-"""
+""",
 )
 ```
 

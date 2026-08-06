@@ -157,7 +157,7 @@ repo = FilesystemCheckpointRepository(
 
 System test `TestCheckpointWithOrchestration::test_checkpoint_includes_orchestration_state` (line 272):
 ```python
-file_adapter=AtomicFileAdapter(lock_dir=tmp_path / "locks"),
+file_adapter = (AtomicFileAdapter(lock_dir=tmp_path / "locks"),)
 ```
 
 **Assessment: CONFIRMED.** All `AtomicFileAdapter` instantiations in the three test files now scope lock directories to `tmp_path`. No uses of `AtomicFileAdapter()` without `lock_dir` were observed in the deliverable files. Docstring rationale is present in the integration fixture. The fix directly addresses the xdist interference risk identified in iteration 4.

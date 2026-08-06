@@ -129,13 +129,11 @@ class CreateProjectCommandHandler:
         """
         if not command.title or not command.title.strip():
             raise ValueError(
-                "Project title must be non-empty. "
-                "Provide a descriptive title for the project."
+                "Project title must be non-empty. Provide a descriptive title for the project."
             )
         if len(command.title) > 200:
             raise ValueError(
-                f"Project title must be at most 200 characters, "
-                f"got {len(command.title)}."
+                f"Project title must be at most 200 characters, got {len(command.title)}."
             )
         if len(command.description) > 2000:
             raise ValueError(
@@ -144,8 +142,7 @@ class CreateProjectCommandHandler:
             )
         if not command.owner_id or not command.owner_id.strip():
             raise ValueError(
-                "Project owner_id must be non-empty. "
-                "Provide the identifier of the project owner."
+                "Project owner_id must be non-empty. Provide the identifier of the project owner."
             )
 ```
 

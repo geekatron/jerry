@@ -86,8 +86,10 @@ from markdown_it import MarkdownIt
 import mdformat
 
 # 1. Parse a real Jerry entity file
-with open("projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/"
-          "FEAT-001-ast-strategy/SPIKE-002-feasibility/SPIKE-002-feasibility.md") as f:
+with open(
+    "projects/PROJ-005-markdown-ast/work/EPIC-001-markdown-ast/"
+    "FEAT-001-ast-strategy/SPIKE-002-feasibility/SPIKE-002-feasibility.md"
+) as f:
     source = f.read()
 
 md = MarkdownIt()

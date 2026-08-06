@@ -487,7 +487,7 @@ pass_criteria:
 def evaluate_test_case(test_case, agent_output):
     prompt = f"""
     Evaluate the agent output against these criteria:
-    {test_case['pass_criteria']}
+    {test_case["pass_criteria"]}
 
     Agent output:
     {agent_output}

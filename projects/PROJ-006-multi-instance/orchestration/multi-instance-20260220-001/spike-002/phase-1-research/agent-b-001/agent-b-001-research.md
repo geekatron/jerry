@@ -202,6 +202,7 @@ GitPython v3.0.0+ supports worktree operations, but the API is a thin wrapper ar
 **Worktree creation:**
 ```python
 from git import Repo
+
 repo = Repo("/path/to/main/repo")
 repo.git.worktree("add", "/path/to/worktree", "branch-name")
 ```
@@ -610,7 +611,9 @@ Worktrees on the same machine can read each other's files directly via filesyste
 
 ```python
 # From coordinator, read Instance A's artifact
-artifact_path = Path("/path/to/worktree-a/projects/PROJ-006/orchestration/.../agent-a-001-research.md")
+artifact_path = Path(
+    "/path/to/worktree-a/projects/PROJ-006/orchestration/.../agent-a-001-research.md"
+)
 content = artifact_path.read_text()
 ```
 

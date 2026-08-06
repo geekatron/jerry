@@ -88,14 +88,14 @@ class Currency:
         """Validate currency code format and decimal places."""
         if not (len(self.code) == 3 and self.code.isascii() and self.code.isupper()):
             from src.shared_kernel.exceptions import ValidationError
+
             raise ValidationError(
                 f"Currency code must be 3 uppercase ASCII letters, got '{self.code}'"
             )
         if self.decimal_places < 0:
             from src.shared_kernel.exceptions import ValidationError
-            raise ValidationError(
-                f"decimal_places must be non-negative, got {self.decimal_places}"
-            )
+
+            raise ValidationError(f"decimal_places must be non-negative, got {self.decimal_places}")
 ```
 
 **`money.py`:**
@@ -122,12 +122,13 @@ class Money:
         """Validate amount type and round to currency precision."""
         if not isinstance(self.amount, Decimal):
             from src.shared_kernel.exceptions import InvariantViolationError
+
             raise InvariantViolationError("amount must be a Decimal instance")
 
         # Round to currency's decimal places using banker's rounding
         quantizer = Decimal(10) ** -self.currency.decimal_places
         rounded = self.amount.quantize(quantizer, rounding=ROUND_HALF_EVEN)
-        object.__setattr__(self, 'amount', rounded)
+        object.__setattr__(self, "amount", rounded)
 
     def add(self, other: Money) -> Money:
         """Add two Money instances (currencies must match)."""
@@ -159,6 +160,7 @@ class Money:
         """Ensure both Money instances have matching currencies."""
         if self.currency != other.currency:
             from src.shared_kernel.exceptions import InvariantViolationError
+
             raise InvariantViolationError(
                 f"Cannot operate on {self.currency.code} and {other.currency.code}"
             )
@@ -196,15 +198,18 @@ class ExchangeRate:
         """Validate that currencies are distinct and rate is positive."""
         if self.from_currency == self.to_currency:
             from src.shared_kernel.exceptions import ValidationError
+
             raise ValidationError("from_currency and to_currency must be distinct")
         if self.rate <= 0:
             from src.shared_kernel.exceptions import ValidationError
+
             raise ValidationError(f"rate must be positive, got {self.rate}")
 
     def convert(self, money: Money) -> Money:
         """Convert Money from source to target currency using this exchange rate."""
         if money.currency != self.from_currency:
             from src.shared_kernel.exceptions import InvariantViolationError
+
             raise InvariantViolationError(
                 f"Expected {self.from_currency.code}, got {money.currency.code}"
             )

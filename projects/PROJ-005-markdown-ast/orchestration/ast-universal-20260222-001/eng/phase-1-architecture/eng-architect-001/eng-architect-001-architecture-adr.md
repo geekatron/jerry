@@ -167,22 +167,27 @@ Each metadata format (YAML frontmatter, blockquote frontmatter, XML sections, HT
 ```python
 # src/domain/markdown_ast/yaml_frontmatter.py
 
+
 @dataclass(frozen=True)
 class YamlFrontmatterField:
     """Single field from YAML frontmatter."""
+
     key: str
     value: str | int | float | bool | list | None
     value_type: str  # "str", "int", "float", "bool", "list", "null"
 
+
 @dataclass(frozen=True)
 class YamlFrontmatterResult:
     """Complete YAML frontmatter extraction result."""
+
     fields: tuple[YamlFrontmatterField, ...]
-    raw_yaml: str          # The raw YAML text between --- delimiters
-    start_line: int        # 0-based line of opening ---
-    end_line: int          # 0-based line of closing ---
+    raw_yaml: str  # The raw YAML text between --- delimiters
+    start_line: int  # 0-based line of opening ---
+    end_line: int  # 0-based line of closing ---
     parse_error: str | None  # None if parsing succeeded
     parse_warnings: tuple[str, ...] = ()  # Duplicate key warnings, type coercion notes
+
 
 class YamlFrontmatter:
     """Extract and validate YAML frontmatter from --- delimited blocks."""
@@ -213,27 +218,39 @@ class YamlFrontmatter:
 ```python
 # src/domain/markdown_ast/xml_section.py
 
+
 @dataclass(frozen=True)
 class XmlSection:
     """Single XML-tagged section from an agent definition body."""
-    tag_name: str           # e.g., "identity", "methodology"
-    content: str            # Text content between opening and closing tags
-    start_line: int         # 0-based line of <tag>
-    end_line: int           # 0-based line of </tag>
+
+    tag_name: str  # e.g., "identity", "methodology"
+    content: str  # Text content between opening and closing tags
+    start_line: int  # 0-based line of <tag>
+    end_line: int  # 0-based line of </tag>
+
 
 @dataclass(frozen=True)
 class XmlSectionResult:
     """Complete XML section extraction result."""
+
     sections: tuple[XmlSection, ...]
     parse_error: str | None  # None if parsing succeeded
+
 
 class XmlSectionParser:
     """Extract XML-tagged sections using regex, NOT an XML parser."""
 
-    ALLOWED_TAGS: frozenset[str] = frozenset({
-        "identity", "purpose", "input", "capabilities",
-        "methodology", "output", "guardrails",
-    })
+    ALLOWED_TAGS: frozenset[str] = frozenset(
+        {
+            "identity",
+            "purpose",
+            "input",
+            "capabilities",
+            "methodology",
+            "output",
+            "guardrails",
+        }
+    )
 
     @staticmethod
     def extract(doc: JerryDocument, bounds: InputBounds | None = None) -> XmlSectionResult:
@@ -254,25 +271,32 @@ class XmlSectionParser:
 ```python
 # src/domain/markdown_ast/html_comment.py
 
+
 @dataclass(frozen=True)
 class HtmlCommentField:
     """Single key-value pair from an HTML comment metadata block."""
+
     key: str
     value: str
     line_number: int
 
+
 @dataclass(frozen=True)
 class HtmlCommentBlock:
     """Complete HTML comment metadata extraction result."""
+
     fields: tuple[HtmlCommentField, ...]
     raw_comment: str
     line_number: int
 
+
 @dataclass(frozen=True)
 class HtmlCommentResult:
     """Complete HTML comment metadata extraction result."""
+
     blocks: tuple[HtmlCommentBlock, ...]
     parse_error: str | None  # None if parsing succeeded
+
 
 class HtmlCommentMetadata:
     """Extract structured metadata from HTML comments in ADRs and templates."""
@@ -304,15 +328,17 @@ Use a **path-first, structure-fallback** detection strategy with an explicit `Do
 
 from enum import Enum
 
+
 class DocumentType(Enum):
     """Jerry markdown file type classification."""
+
     AGENT_DEFINITION = "agent_definition"
     SKILL_DEFINITION = "skill_definition"
     RULE_FILE = "rule_file"
     ADR = "adr"
     STRATEGY_TEMPLATE = "strategy_template"
     WORKTRACKER_ENTITY = "worktracker_entity"
-    FRAMEWORK_CONFIG = "framework_config"      # CLAUDE.md, AGENTS.md
+    FRAMEWORK_CONFIG = "framework_config"  # CLAUDE.md, AGENTS.md
     ORCHESTRATION_ARTIFACT = "orchestration_artifact"
     PATTERN_DOCUMENT = "pattern_document"
     KNOWLEDGE_DOCUMENT = "knowledge_document"
@@ -328,31 +354,31 @@ class DocumentTypeDetector:
     # Ordered list: first match wins. More specific patterns before broader ones.
     PATH_PATTERNS: list[tuple[str, DocumentType]] = [
         # 1. Most specific patterns first
-        ("skills/*/agents/*.md",           DocumentType.AGENT_DEFINITION),
-        ("skills/*/SKILL.md",              DocumentType.SKILL_DEFINITION),
-        (".context/rules/*.md",            DocumentType.RULE_FILE),
-        (".claude/rules/*.md",             DocumentType.RULE_FILE),
-        ("docs/design/*.md",              DocumentType.ADR),
+        ("skills/*/agents/*.md", DocumentType.AGENT_DEFINITION),
+        ("skills/*/SKILL.md", DocumentType.SKILL_DEFINITION),
+        (".context/rules/*.md", DocumentType.RULE_FILE),
+        (".claude/rules/*.md", DocumentType.RULE_FILE),
+        ("docs/design/*.md", DocumentType.ADR),
         (".context/templates/adversarial/*.md", DocumentType.STRATEGY_TEMPLATE),
         # 2. Worktracker patterns (multiple paths)
-        ("projects/*/WORKTRACKER.md",      DocumentType.WORKTRACKER_ENTITY),
-        ("projects/**/work/**/*.md",       DocumentType.WORKTRACKER_ENTITY),
+        ("projects/*/WORKTRACKER.md", DocumentType.WORKTRACKER_ENTITY),
+        ("projects/**/work/**/*.md", DocumentType.WORKTRACKER_ENTITY),
         # 3. Framework config (exact filenames)
-        ("CLAUDE.md",                      DocumentType.FRAMEWORK_CONFIG),
-        ("AGENTS.md",                      DocumentType.FRAMEWORK_CONFIG),
+        ("CLAUDE.md", DocumentType.FRAMEWORK_CONFIG),
+        ("AGENTS.md", DocumentType.FRAMEWORK_CONFIG),
         # 4. Broader patterns last
         ("projects/*/orchestration/**/*.md", DocumentType.ORCHESTRATION_ARTIFACT),
-        ("docs/knowledge/**/*.md",         DocumentType.KNOWLEDGE_DOCUMENT),
+        ("docs/knowledge/**/*.md", DocumentType.KNOWLEDGE_DOCUMENT),
     ]
 
     # Structural cue priority order for conflicting signals.
     # When multiple cues match, higher priority wins.
     STRUCTURAL_CUE_PRIORITY: list[tuple[str, DocumentType]] = [
-        ("---",              DocumentType.AGENT_DEFINITION),  # YAML delimiters
-        ("> **",            DocumentType.WORKTRACKER_ENTITY), # Blockquote frontmatter
-        ("<identity>",       DocumentType.AGENT_DEFINITION),  # XML sections
-        ("<!-- L2-REINJECT", DocumentType.RULE_FILE),         # Reinject directives
-        ("<!--",            DocumentType.ADR),                # HTML comments (last)
+        ("---", DocumentType.AGENT_DEFINITION),  # YAML delimiters
+        ("> **", DocumentType.WORKTRACKER_ENTITY),  # Blockquote frontmatter
+        ("<identity>", DocumentType.AGENT_DEFINITION),  # XML sections
+        ("<!-- L2-REINJECT", DocumentType.RULE_FILE),  # Reinject directives
+        ("<!--", DocumentType.ADR),  # HTML comments (last)
     ]
 
     @classmethod
@@ -384,19 +410,22 @@ Create a `UniversalDocument` class that wraps `JerryDocument` and adds type-spec
 ```python
 # src/domain/markdown_ast/universal_document.py
 
+
 @dataclass(frozen=True)
 class UniversalParseResult:
     """Complete parse result from UniversalDocument."""
+
     document_type: DocumentType
-    jerry_document: JerryDocument              # Always present
+    jerry_document: JerryDocument  # Always present
     yaml_frontmatter: YamlFrontmatterResult | None
     blockquote_frontmatter: BlockquoteFrontmatter | None
-    xml_sections: tuple[XmlSection, ...] | None       # tuple, NOT list
+    xml_sections: tuple[XmlSection, ...] | None  # tuple, NOT list
     html_comments: tuple[HtmlCommentBlock, ...] | None  # tuple, NOT list
     reinject_directives: tuple[ReinjectDirective, ...] | None  # tuple, NOT list
-    nav_entries: tuple[NavEntry, ...] | None           # tuple, NOT list
-    type_detection_warning: str | None         # Set when path/structure mismatch (M-14)
-    parse_errors: tuple[str, ...] = ()         # Aggregated errors from all parsers (DD-9)
+    nav_entries: tuple[NavEntry, ...] | None  # tuple, NOT list
+    type_detection_warning: str | None  # Set when path/structure mismatch (M-14)
+    parse_errors: tuple[str, ...] = ()  # Aggregated errors from all parsers (DD-9)
+
 
 class UniversalDocument:
     """Unified facade for parsing any Jerry markdown file type."""
@@ -466,6 +495,7 @@ Extend the existing schema registry pattern in `schema.py` with a `SchemaRegistr
 
 from types import MappingProxyType
 
+
 class SchemaRegistry:
     """Registry for file-type schemas with dynamic registration and freeze support."""
 
@@ -518,6 +548,7 @@ class SchemaRegistry:
     def list_types(self) -> list[str]:
         """Return all registered entity type names."""
         return sorted(self._schemas.keys())
+
 
 # Module-level default registry (backward compatible)
 _DEFAULT_REGISTRY = SchemaRegistry()
@@ -590,10 +621,10 @@ Use regex-based string scanning to extract XML-tagged sections. Do NOT use any X
 
 ```python
 _SECTION_PATTERN = re.compile(
-    r'^<(?P<tag>[a-z][a-z_-]*)>\s*\n'   # Opening tag on its own line
-    r'(?P<content>.*?)'                   # Non-greedy content capture
-    r'\n</(?P=tag)>\s*$',                 # Matching closing tag on its own line
-    re.MULTILINE | re.DOTALL
+    r"^<(?P<tag>[a-z][a-z_-]*)>\s*\n"  # Opening tag on its own line
+    r"(?P<content>.*?)"  # Non-greedy content capture
+    r"\n</(?P=tag)>\s*$",  # Matching closing tag on its own line
+    re.MULTILINE | re.DOTALL,
 )
 ```
 
@@ -629,12 +660,12 @@ Extract HTML comments matching the ADR metadata pattern (`<!-- key: value | key:
 ```python
 # ADR metadata pattern: <!-- PS-ID: value | ENTRY: value | AGENT: value -->
 _METADATA_COMMENT_PATTERN = re.compile(
-    r'<!--\s*(?!(?i)L2-REINJECT:)'  # Case-insensitive negative lookahead
-    r'(?P<body>.*?'                  # Non-greedy body (NOT [^>]*)
-    r'(?:\w+\s*:\s*[^|]*?)'         # At least one key: value pair
-    r'(?:\s*\|\s*\w+\s*:\s*[^|]*?)*'  # Optional additional | key: value pairs
-    r')\s*-->',                      # First --> terminates (M-13)
-    re.MULTILINE
+    r"<!--\s*(?!(?i)L2-REINJECT:)"  # Case-insensitive negative lookahead
+    r"(?P<body>.*?"  # Non-greedy body (NOT [^>]*)
+    r"(?:\w+\s*:\s*[^|]*?)"  # At least one key: value pair
+    r"(?:\s*\|\s*\w+\s*:\s*[^|]*?)*"  # Optional additional | key: value pairs
+    r")\s*-->",  # First --> terminates (M-13)
+    re.MULTILINE,
 )
 ```
 
@@ -656,23 +687,25 @@ Create a dedicated `InputBounds` configuration class that all parsers accept as 
 ```python
 # src/domain/markdown_ast/input_bounds.py
 
+
 @dataclass(frozen=True)
 class InputBounds:
     """Configurable resource limits for parser input validation."""
 
-    max_file_bytes: int = 1_048_576         # 1 MB (M-05)
-    max_yaml_block_bytes: int = 32_768      # 32 KB pre-parse (M-07)
-    max_yaml_result_bytes: int = 65_536     # 64 KB post-parse (M-20, closes temporal gap)
-    max_alias_count: int = 10               # Max YAML anchor/alias references (M-20)
-    max_frontmatter_keys: int = 100         # (M-16)
-    max_nesting_depth: int = 5              # (M-06)
-    max_section_count: int = 20             # (M-16)
-    max_comment_count: int = 50             # (M-16)
-    max_value_length: int = 10_000          # characters (M-17)
-    max_reinject_count: int = 50            # (M-16)
+    max_file_bytes: int = 1_048_576  # 1 MB (M-05)
+    max_yaml_block_bytes: int = 32_768  # 32 KB pre-parse (M-07)
+    max_yaml_result_bytes: int = 65_536  # 64 KB post-parse (M-20, closes temporal gap)
+    max_alias_count: int = 10  # Max YAML anchor/alias references (M-20)
+    max_frontmatter_keys: int = 100  # (M-16)
+    max_nesting_depth: int = 5  # (M-06)
+    max_section_count: int = 20  # (M-16)
+    max_comment_count: int = 50  # (M-16)
+    max_value_length: int = 10_000  # characters (M-17)
+    max_reinject_count: int = 50  # (M-16)
 
     # Default singleton
     DEFAULT: ClassVar[InputBounds]
+
 
 InputBounds.DEFAULT = InputBounds()
 ```
@@ -714,11 +747,18 @@ class YamlFrontmatter:
             # ... post-parse checks ...
             return YamlFrontmatterResult(fields=..., parse_error=None)
         except yaml.scanner.ScannerError as e:
-            return YamlFrontmatterResult(fields=(), parse_error=f"YAML scan error at line {e.problem_mark.line}: {e.problem}")
+            return YamlFrontmatterResult(
+                fields=(), parse_error=f"YAML scan error at line {e.problem_mark.line}: {e.problem}"
+            )
         except yaml.parser.ParserError as e:
-            return YamlFrontmatterResult(fields=(), parse_error=f"YAML parse error at line {e.problem_mark.line}: {e.problem}")
+            return YamlFrontmatterResult(
+                fields=(),
+                parse_error=f"YAML parse error at line {e.problem_mark.line}: {e.problem}",
+            )
         except yaml.constructor.ConstructorError as e:
-            return YamlFrontmatterResult(fields=(), parse_error=f"YAML construction error: {e.problem}")
+            return YamlFrontmatterResult(
+                fields=(), parse_error=f"YAML construction error: {e.problem}"
+            )
 ```
 
 ### Rationale

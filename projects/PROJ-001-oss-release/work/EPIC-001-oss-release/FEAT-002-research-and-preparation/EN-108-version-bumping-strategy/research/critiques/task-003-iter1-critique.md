@@ -350,6 +350,7 @@ jobs:
 # Instead of bash regex, use Python commitizen library
 from commitizen import git
 
+
 def get_bump_type_from_commits(since_ref: str) -> str:
     """Use commitizen to parse commits and determine bump type."""
     commits = git.get_commits(start=since_ref)

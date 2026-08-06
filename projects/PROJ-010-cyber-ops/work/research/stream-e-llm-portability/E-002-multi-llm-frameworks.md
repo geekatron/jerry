@@ -196,7 +196,7 @@ agent = Agent(
     model="gemini-2.0-flash",
     instruction="You are a cybersecurity threat analyst...",
     tools=[search_threats, classify_ioc],
-    sub_agents=[detail_agent, report_agent]
+    sub_agents=[detail_agent, report_agent],
 )
 ```
 
@@ -266,6 +266,7 @@ agent = Agent(
 ```python
 class ThreatAnalysis(dspy.Signature):
     """Analyze a security event and classify the threat level."""
+
     event_description: str = dspy.InputField()
     threat_level: str = dspy.OutputField(desc="critical/high/medium/low")
     classification: str = dspy.OutputField(desc="MITRE ATT&CK technique ID")

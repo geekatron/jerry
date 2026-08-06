@@ -258,6 +258,7 @@ class DependencyValidator:
 
         # Existence check
         from src.work_tracking.domain.value_objects.work_item_id import WorkItemId
+
         dependency = self._repository.get(WorkItemId(dependency_id))
         if dependency is None:
             raise InvariantViolationError(
@@ -466,6 +467,7 @@ class QualityValidator:
     def validate(self, item):
         self.last_result = ...  # Side effect!
 
+
 # CORRECT: Stateless service
 class QualityValidator:
     def validate(self, item, metrics) -> ValidationResult:
@@ -479,6 +481,7 @@ class QualityValidator:
 class QualityValidator:
     def validate(self, item):
         coverage = requests.get(f"http://ci/coverage/{item.id}")  # HTTP call!
+
 
 # CORRECT: Infrastructure injected as port
 class QualityValidator:

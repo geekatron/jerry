@@ -215,6 +215,7 @@ _MODEL_CONTEXT_WINDOWS: dict[str, int] = {
     "claude-haiku-4-5": 200_000,
 }
 
+
 def get_context_window_tokens(self) -> int:
     """Get context window size using canonical detection priority.
 

@@ -1,8 +1,8 @@
 # TASK-002: Skip uv-dependent tests in pip CI environments
 
 > **Type:** task
-> **Status:** DONE
-> **Priority:** HIGH
+> **Status:** completed
+> **Priority:** high
 > **Created:** 2026-02-11
 > **Completed:** 2026-02-11
 > **Parent:** BUG-006
@@ -15,14 +15,14 @@
 
 | Section | Purpose |
 |---------|---------|
-| [Content](#content) | Description and acceptance criteria |
+| [Summary](#summary) | Description and acceptance criteria |
 | [Evidence](#evidence) | Deliverables and verification |
 | [Related Items](#related-items) | Parent and related work |
 | [History](#history) | Status changes |
 
 ---
 
-## Content
+## Summary
 
 ### Description
 
@@ -45,12 +45,14 @@ Class-level decorator covers all methods in the class:
 ```python
 import shutil
 
+
 @pytest.mark.skipif(
     shutil.which("uv") is None,
     reason="uv not available in this environment",
 )
 class TestValidationScriptIntegration:
     """Contract: validate_plugin_manifests.py must validate all three manifests."""
+
     ...
 ```
 

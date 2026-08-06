@@ -146,7 +146,7 @@ This is expected and correct behavior for in-repo files. The risk is for user-su
 # Direct API usage (not through CLI):
 result = UniversalDocument.parse(
     content=open("/tmp/evil/skills/x/agents/evil.md").read(),
-    file_path="/tmp/evil/skills/x/agents/evil.md"
+    file_path="/tmp/evil/skills/x/agents/evil.md",
 )
 # detect() is called with the raw untrusted path
 # _normalize_path strips to "skills/x/agents/evil.md"
@@ -464,11 +464,12 @@ if len(parts) != 2:
     # Multiple ** segments are not supported. Log and return False to avoid
     # incorrect matches from fnmatch's non-recursive ** behavior.
     import warnings
+
     warnings.warn(
         f"Pattern '{pattern}' contains multiple '**' segments; "
         "recursive glob matching is not supported for this pattern. "
         "Returns False (no match).",
-        stacklevel=2
+        stacklevel=2,
     )
     return False
 ```
@@ -555,11 +556,18 @@ No security concern. UNKNOWN is a safe sentinel. Nav-only parsing is intentional
 The `_ROOT_FILES` extraction at lines 304–315:
 
 ```python
-_ROOT_FILES = frozenset({
-    "CLAUDE.md", "AGENTS.md", "README.md", "CONTRIBUTING.md",
-    "CODE_OF_CONDUCT.md", "SECURITY.md", "GOVERNANCE.md",
-    "SOUNDTRACK.md",
-})
+_ROOT_FILES = frozenset(
+    {
+        "CLAUDE.md",
+        "AGENTS.md",
+        "README.md",
+        "CONTRIBUTING.md",
+        "CODE_OF_CONDUCT.md",
+        "SECURITY.md",
+        "GOVERNANCE.md",
+        "SOUNDTRACK.md",
+    }
+)
 basename = path.rsplit("/", 1)[-1] if "/" in path else path
 if basename in _ROOT_FILES and "/" in path:
     is_under_known_root = any(path.startswith(m) for m in root_markers)
@@ -893,7 +901,7 @@ nav_result = validate_nav_table(doc)
 output = {
     "is_valid": nav_result.is_valid,
     "schema_valid": True,  # hardcoded True when no schema provided
-    "schema_violations": []
+    "schema_violations": [],
 }
 return 0
 ```

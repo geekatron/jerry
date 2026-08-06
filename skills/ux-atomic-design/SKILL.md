@@ -202,7 +202,7 @@ Construct an atomic design component inventory for the checkout flow.
 
 ## MANDATORY PERSISTENCE (P-002)
 Create file at: projects/${JERRY_PROJECT}/engagements/UX-0001/ux-atomic-architect-checkout-flow.md
-"""
+""",
 )
 ```
 

@@ -205,6 +205,7 @@ Architecture tests validate one-class-per-file:
 ```python
 # tests/architecture/test_layer_boundaries.py
 
+
 def test_one_class_per_file():
     """Each Python file should contain at most one public class."""
     for file in Path("src").rglob("*.py"):

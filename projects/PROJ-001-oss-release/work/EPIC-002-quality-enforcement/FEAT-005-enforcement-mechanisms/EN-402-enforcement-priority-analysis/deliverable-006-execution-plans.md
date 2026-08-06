@@ -178,15 +178,18 @@ tests/
 ```python
 # src/infrastructure/internal/enforcement/ast_boundary_validator.py
 
+
 @dataclass(frozen=True)
 class ImportViolation:
     """A detected import boundary violation."""
+
     file_path: Path
     line_number: int
     import_module: str
     source_layer: str
     target_layer: str
     rule_violated: str
+
 
 class ASTBoundaryValidator:
     """Validates Python import boundaries using AST analysis.
@@ -240,14 +243,17 @@ class ASTBoundaryValidator:
 ```python
 # src/infrastructure/internal/enforcement/boundary_rules.py
 
+
 @dataclass(frozen=True)
 class BoundaryRule:
     """A single import boundary rule."""
+
     name: str
     source_layer_patterns: list[str]  # e.g., ["src.*.domain", "src.domain"]
     forbidden_target_patterns: list[str]  # e.g., ["src.*.infrastructure"]
     description: str
     severity: str = "error"  # "error" or "warning"
+
 
 def get_jerry_boundary_rules() -> list[BoundaryRule]:
     """Return Jerry's hexagonal architecture boundary rules.
@@ -329,30 +335,39 @@ Usage:
 ```python
 # tests/architecture/test_layer_boundaries.py
 
+
 class TestDomainLayerBoundaries:
     """Domain must not import application, infrastructure, or interface."""
 
-    @pytest.mark.parametrize("context", [
-        "session_management", "work_tracking", "transcript", "configuration"
-    ])
+    @pytest.mark.parametrize(
+        "context", ["session_management", "work_tracking", "transcript", "configuration"]
+    )
     def test_domain_has_no_infrastructure_imports(self, context): ...
     def test_domain_has_no_application_imports(self, context): ...
     def test_domain_has_no_interface_imports(self, context): ...
 
+
 class TestApplicationLayerBoundaries:
     """Application must not import infrastructure or interface."""
+
     ...
+
 
 class TestSharedKernelBoundaries:
     """Shared kernel must not import infrastructure or interface."""
+
     ...
+
 
 class TestCompositionRootExclusivity:
     """Only bootstrap.py may import infrastructure adapters."""
+
     ...
+
 
 class TestDynamicImportDetection:
     """Flag importlib/__import__ usage as warnings."""
+
     ...
 ```
 

@@ -206,10 +206,7 @@ class SnapshottingWorkItemRepository:
             return
 
         # Append events
-        stored_events = [
-            self._to_stored_event(event, stream_id)
-            for event in domain_events
-        ]
+        stored_events = [self._to_stored_event(event, stream_id) for event in domain_events]
         expected_version = aggregate.version - len(domain_events)
 
         try:
@@ -258,10 +255,7 @@ class SnapshottingWorkItemRepository:
         )
 
         if stored_events:
-            domain_events = [
-                self._to_domain_event(stored)
-                for stored in stored_events
-            ]
+            domain_events = [self._to_domain_event(stored) for stored in stored_events]
             work_item.apply_events(domain_events)
 
         return work_item
@@ -273,10 +267,7 @@ class SnapshottingWorkItemRepository:
         if not stored_events:
             return None
 
-        domain_events = [
-            self._to_domain_event(stored)
-            for stored in stored_events
-        ]
+        domain_events = [self._to_domain_event(stored) for stored in stored_events]
 
         return WorkItem.load_from_history(domain_events)
 
@@ -297,6 +288,7 @@ class SnapshottingWorkItemRepository:
     def _to_stored_event(self, event, stream_id: str):
         """Convert domain event to stored event format."""
         from src.work_tracking.domain.ports.event_store import StoredEvent
+
         return StoredEvent(
             stream_id=stream_id,
             version=0,
@@ -364,12 +356,10 @@ class WorkItem(AggregateRoot):
         instance._dependency_ids = list(state["dependency_ids"])
         instance._created_at = datetime.fromisoformat(state["created_at"])
         instance._started_at = (
-            datetime.fromisoformat(state["started_at"])
-            if state["started_at"] else None
+            datetime.fromisoformat(state["started_at"]) if state["started_at"] else None
         )
         instance._completed_at = (
-            datetime.fromisoformat(state["completed_at"])
-            if state["completed_at"] else None
+            datetime.fromisoformat(state["completed_at"]) if state["completed_at"] else None
         )
 
         # Set version and initialize events list
@@ -395,6 +385,7 @@ class WorkItem(AggregateRoot):
 # Snapshot every N events
 SNAPSHOT_INTERVAL = 10
 
+
 def save(self, aggregate):
     # ... save events ...
     if aggregate.version % self.SNAPSHOT_INTERVAL == 0:
@@ -406,6 +397,7 @@ def save(self, aggregate):
 ```python
 # Snapshot if last snapshot is older than threshold
 SNAPSHOT_AGE_THRESHOLD = timedelta(hours=1)
+
 
 def save(self, aggregate):
     # ... save events ...
@@ -419,6 +411,7 @@ def save(self, aggregate):
 ```python
 # Snapshot if many events since last snapshot
 MAX_EVENTS_SINCE_SNAPSHOT = 20
+
 
 def get(self, id):
     snapshot = self._get_snapshot(id)

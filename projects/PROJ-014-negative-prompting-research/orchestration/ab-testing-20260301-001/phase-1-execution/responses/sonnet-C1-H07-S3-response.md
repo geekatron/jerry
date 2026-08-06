@@ -388,7 +388,9 @@ def test_cache_miss_calls_reader_and_populates_cache() -> None:
     result = handler.handle(ReadInventoryQuery(inventory_id="42"))
 
     mock_reader.get_inventory.assert_called_once_with("42")
-    mock_cache.set.assert_called_once_with("inventory:42", {"id": "42", "name": "Widget"}, ttl_seconds=60)
+    mock_cache.set.assert_called_once_with(
+        "inventory:42", {"id": "42", "name": "Widget"}, ttl_seconds=60
+    )
     assert result == {"id": "42", "name": "Widget"}
 ```
 

@@ -53,24 +53,14 @@ class DateRange:
     def __post_init__(self) -> None:
         """Validate date range invariants."""
         if self.end is not None and self.end < self.start:
-            raise ValueError(
-                f"End date ({self.end}) cannot be before start date ({self.start})"
-            )
+            raise ValueError(f"End date ({self.end}) cannot be before start date ({self.start})")
 
         # Ensure UTC timezone
         if self.start.tzinfo is None:
-            object.__setattr__(
-                self,
-                'start',
-                self.start.replace(tzinfo=timezone.utc)
-            )
+            object.__setattr__(self, "start", self.start.replace(tzinfo=timezone.utc))
 
         if self.end is not None and self.end.tzinfo is None:
-            object.__setattr__(
-                self,
-                'end',
-                self.end.replace(tzinfo=timezone.utc)
-            )
+            object.__setattr__(self, "end", self.end.replace(tzinfo=timezone.utc))
 
     @classmethod
     def starting_now(cls) -> DateRange:
@@ -230,10 +220,7 @@ class Address:
 
     def is_same_city(self, other: Address) -> bool:
         """Check if same city."""
-        return (
-            self.city.lower() == other.city.lower()
-            and self.state.lower() == other.state.lower()
-        )
+        return self.city.lower() == other.city.lower() and self.state.lower() == other.state.lower()
 ```
 
 ---
@@ -271,7 +258,7 @@ class Money:
             raise ValueError("Currency is required")
 
         # Normalize currency to uppercase
-        object.__setattr__(self, 'currency', self.currency.upper())
+        object.__setattr__(self, "currency", self.currency.upper())
 
     @classmethod
     def usd(cls, amount: float | Decimal | str) -> Money:
@@ -341,9 +328,7 @@ class Money:
     def _ensure_same_currency(self, other: Money) -> None:
         """Ensure currencies match for operations."""
         if self.currency != other.currency:
-            raise ValueError(
-                f"Currency mismatch: {self.currency} vs {other.currency}"
-            )
+            raise ValueError(f"Currency mismatch: {self.currency} vs {other.currency}")
 
     def __str__(self) -> str:
         return f"{self.currency} {self.amount:.2f}"
@@ -388,9 +373,7 @@ class QualityMetrics:
     def __post_init__(self) -> None:
         """Validate metrics."""
         if not 0.0 <= self.test_coverage <= 1.0:
-            raise ValueError(
-                f"Test coverage must be between 0 and 1, got {self.test_coverage}"
-            )
+            raise ValueError(f"Test coverage must be between 0 and 1, got {self.test_coverage}")
 
     @classmethod
     def incomplete(cls) -> QualityMetrics:
@@ -561,12 +544,11 @@ def schedule_work(
     end_date: datetime,
     start_time: time,
     end_time: time,
-) -> None:
-    ...
+) -> None: ...
+
 
 # CORRECT: Composite value object
-def schedule_work(time_slot: TimeSlot) -> None:
-    ...
+def schedule_work(time_slot: TimeSlot) -> None: ...
 ```
 
 ### 2. Mutable Composite
@@ -576,6 +558,7 @@ def schedule_work(time_slot: TimeSlot) -> None:
 class DateRange:
     def extend(self, days: int) -> None:
         self.end += timedelta(days=days)  # Mutation!
+
 
 # CORRECT: Immutable with new instance
 class DateRange:

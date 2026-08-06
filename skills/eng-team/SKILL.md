@@ -177,7 +177,7 @@ Task(
 Produce a threat model for the payment service using STRIDE analysis
 with DREAD risk scoring. Include architecture diagrams, trust boundaries,
 data flow analysis, and prioritized threat matrix.
-"""
+""",
 )
 ```
 

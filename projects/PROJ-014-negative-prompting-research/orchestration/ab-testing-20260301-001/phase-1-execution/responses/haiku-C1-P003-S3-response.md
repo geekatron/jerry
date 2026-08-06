@@ -55,10 +55,8 @@ def __init__(self, event_bus: EventBus, redis_client=None):
     self.redis = redis_client or RedisClient()
     self.event_bus = event_bus
     # Subscribe to inventory update events for cache invalidation
-    self.event_bus.subscribe(
-        event_type=InventoryUpdated,
-        handler=self._on_inventory_updated
-    )
+    self.event_bus.subscribe(event_type=InventoryUpdated, handler=self._on_inventory_updated)
+
 
 def _on_inventory_updated(self, event: InventoryUpdated) -> None:
     """Invalidate cache entry when inventory is updated via domain event."""

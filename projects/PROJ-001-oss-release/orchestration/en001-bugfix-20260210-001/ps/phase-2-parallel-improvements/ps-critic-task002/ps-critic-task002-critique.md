@@ -60,11 +60,13 @@ def test_marketplace_json_with_keywords_passes_validation(self, marketplace_sche
     # Arrange - create valid manifest
     valid_marketplace = {
         "name": "test-marketplace",
-        "plugins": [{
-            "name": "test-plugin",
-            "source": "./test",
-            "keywords": ["problem-solving", "work-tracking", "agents", "workflows"]
-        }]
+        "plugins": [
+            {
+                "name": "test-plugin",
+                "source": "./test",
+                "keywords": ["problem-solving", "work-tracking", "agents", "workflows"],
+            }
+        ],
     }
 
     # Act & Assert - should validate without errors
@@ -162,11 +164,16 @@ Tests don't verify malformed JSON handling (e.g., trailing commas, syntax errors
 
 **Example of High-Quality Test:**
 ```python
-def test_all_manifests_pass_validation(self, validation_script_path: Path, project_root: Path) -> None:
+def test_all_manifests_pass_validation(
+    self, validation_script_path: Path, project_root: Path
+) -> None:
     """Test that all three manifests pass the validation script."""
     result = subprocess.run(
         ["python3", str(validation_script_path)],
-        capture_output=True, text=True, cwd=str(project_root), timeout=30,
+        capture_output=True,
+        text=True,
+        cwd=str(project_root),
+        timeout=30,
     )
 
     # Assert with context
@@ -436,7 +443,9 @@ assert "pattern" in str(exc_info.value).lower() or "does not match" in str(exc_i
 **Recommended:**
 ```python
 # Extract helper function
-def assert_schema_error_about(exc_info: pytest.ExceptionInfo, error_type: str, field_path: list[str] | None = None) -> None:
+def assert_schema_error_about(
+    exc_info: pytest.ExceptionInfo, error_type: str, field_path: list[str] | None = None
+) -> None:
     """Assert that ValidationError is about specific schema constraint."""
     error = exc_info.value
     error_msg = error.message.lower()
@@ -458,6 +467,7 @@ def assert_schema_error_about(exc_info: pytest.ExceptionInfo, error_type: str, f
     if field_path:
         actual_path = list(error.absolute_path)
         assert actual_path == field_path, f"Expected error at {field_path}, got {actual_path}"
+
 
 # Usage
 assert_schema_error_about(exc_info, error_type="pattern", field_path=["plugins", 0, "keywords", 0])

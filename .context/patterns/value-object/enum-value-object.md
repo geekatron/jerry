@@ -220,9 +220,7 @@ class WorkType(Enum):
             return cls(value.lower())
         except ValueError:
             valid = [t.value for t in cls]
-            raise ValueError(
-                f"Invalid work type '{value}'. Valid types: {valid}"
-            )
+            raise ValueError(f"Invalid work type '{value}'. Valid types: {valid}")
 
     def __str__(self) -> str:
         return self.value
@@ -292,6 +290,7 @@ class ProcessingState(Enum):
 def set_status(self, status: WorkItemStatus) -> None:
     """Type checker ensures only valid status values."""
     self._status = status
+
 
 # Type error caught at development time
 set_status("invalid")  # Type error: expected WorkItemStatus
@@ -415,6 +414,7 @@ class WorkItem:
     def complete(self):
         self.status = "done"  # Typo risk!
 
+
 # CORRECT: Type-safe enum
 class WorkItem:
     def __init__(self):
@@ -431,8 +431,10 @@ class WorkItem:
 def can_start(status: WorkItemStatus) -> bool:
     return status == WorkItemStatus.PENDING
 
+
 def can_complete(status: WorkItemStatus) -> bool:
     return status == WorkItemStatus.IN_PROGRESS
+
 
 # CORRECT: Transition logic in enum
 class WorkItemStatus(Enum):

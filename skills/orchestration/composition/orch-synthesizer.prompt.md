@@ -351,7 +351,7 @@ Create file at: `projects/{project_id}/synthesis/{workflow_id}-final-synthesis.m
 9. Include complete artifact registry
 10. Verify synthesis score >= 0.92 (H-13) before marking COMPLETE
 11. Update workflow status to COMPLETE
-"""
+""",
 )
 ```
 

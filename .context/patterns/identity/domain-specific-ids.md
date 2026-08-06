@@ -45,17 +45,18 @@ VertexId (base)
 from dataclasses import dataclass
 from uuid import uuid4
 
+
 @dataclass(frozen=True)
 class TaskId(VertexId):
     """Strongly typed Task identifier."""
 
     @classmethod
-    def generate(cls) -> 'TaskId':
+    def generate(cls) -> "TaskId":
         """Generate a new TaskId with TASK- prefix."""
         return cls(f"TASK-{uuid4().hex[:8]}")
 
     @classmethod
-    def from_string(cls, value: str) -> 'TaskId':
+    def from_string(cls, value: str) -> "TaskId":
         """Parse TaskId from string, validating format."""
         if not value.startswith("TASK-"):
             raise ValueError(f"Invalid TaskId format: {value}")
@@ -67,11 +68,11 @@ class PhaseId(VertexId):
     """Strongly typed Phase identifier."""
 
     @classmethod
-    def generate(cls) -> 'PhaseId':
+    def generate(cls) -> "PhaseId":
         return cls(f"PHASE-{uuid4().hex[:8]}")
 
     @classmethod
-    def from_string(cls, value: str) -> 'PhaseId':
+    def from_string(cls, value: str) -> "PhaseId":
         if not value.startswith("PHASE-"):
             raise ValueError(f"Invalid PhaseId format: {value}")
         return cls(value)
@@ -82,11 +83,11 @@ class PlanId(VertexId):
     """Strongly typed Plan identifier."""
 
     @classmethod
-    def generate(cls) -> 'PlanId':
+    def generate(cls) -> "PlanId":
         return cls(f"PLAN-{uuid4().hex[:8]}")
 
     @classmethod
-    def from_string(cls, value: str) -> 'PlanId':
+    def from_string(cls, value: str) -> "PlanId":
         if not value.startswith("PLAN-"):
             raise ValueError(f"Invalid PlanId format: {value}")
         return cls(value)
@@ -97,17 +98,18 @@ class KnowledgeId(VertexId):
     """Strongly typed Knowledge item identifier."""
 
     @classmethod
-    def generate(cls) -> 'KnowledgeId':
+    def generate(cls) -> "KnowledgeId":
         return cls(f"KNOW-{uuid4().hex[:8]}")
 
 
 @dataclass(frozen=True)
 class ActorId(VertexId):
     """Actor identifier with type and instance."""
+
     actor_type: str = "SYSTEM"
 
     @classmethod
-    def create(cls, actor_type: str, instance_id: str) -> 'ActorId':
+    def create(cls, actor_type: str, instance_id: str) -> "ActorId":
         return cls(f"ACTOR-{actor_type}-{instance_id}", actor_type)
 
 
@@ -116,7 +118,7 @@ class EventId(VertexId):
     """Event identifier."""
 
     @classmethod
-    def generate(cls) -> 'EventId':
+    def generate(cls) -> "EventId":
         return cls(f"EVT-{uuid4().hex[:8]}")
 ```
 

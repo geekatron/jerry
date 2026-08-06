@@ -184,6 +184,7 @@ The `generate()` method signature is deliberately simple. If future requirements
 # Current (static)
 def generate(self) -> str: ...
 
+
 # Future (dynamic, backward-compatible)
 def generate(self, *, project_context: str | None = None) -> str: ...
 ```
@@ -205,6 +206,7 @@ try:
     from src.infrastructure.internal.enforcement.session_quality_context import (
         SessionQualityContextGenerator,
     )
+
     QUALITY_CONTEXT_AVAILABLE = True
 except Exception:
     QUALITY_CONTEXT_AVAILABLE = False
@@ -359,6 +361,7 @@ try:
     from src.infrastructure.internal.enforcement.session_quality_context import (
         SessionQualityContextGenerator,
     )
+
     QUALITY_CONTEXT_AVAILABLE = True
 except Exception:
     QUALITY_CONTEXT_AVAILABLE = False

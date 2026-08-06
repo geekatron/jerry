@@ -531,6 +531,7 @@ def compute_effective_tier(orchestrator_tier: int, worker_tier: int) -> int:
     """FR-SEC-008: Worker effective tier = MIN(orchestrator, worker)."""
     return min(orchestrator_tier, worker_tier)
 
+
 def validate_delegation(orchestrator: AgentDef, worker: AgentDef) -> GateDecision:
     """L3-G09: Delegation gate checks."""
     # 1. P-003: Worker must not have Task tool

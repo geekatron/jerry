@@ -176,6 +176,7 @@ class WorkItemId:
     def generate(cls, sequence: int) -> "WorkItemId":
         return cls(f"WORK-{sequence:03d}")
 
+
 # Status - Enum with transition validation
 class Status(Enum):
     PENDING = "pending"
@@ -280,11 +281,11 @@ class WorkItem:
 ```python
 @dataclass
 class CreateWorkItemCommand:
-    title: str                          # Required
-    description: str = ""               # Optional
-    type: str = "task"                  # Default to task
-    priority: str = "medium"            # Default priority
-    parent_id: str | None = None        # Optional parent
+    title: str  # Required
+    description: str = ""  # Optional
+    type: str = "task"  # Default to task
+    priority: str = "medium"  # Default priority
+    parent_id: str | None = None  # Optional parent
     tags: list[str] = field(default_factory=list)
 
     def validate(self) -> None:
@@ -308,14 +309,14 @@ class CreateWorkItemCommand:
 ```python
 @dataclass
 class ListWorkItemsQuery:
-    status: list[str] | None = None     # Filter by status
-    priority: list[str] | None = None   # Filter by priority
-    type: list[str] | None = None       # Filter by type
-    parent_id: str | None = None        # Filter by parent
-    limit: int = 50                     # Pagination
-    offset: int = 0                     # Pagination
-    sort_by: str = "created_at"         # Sort field
-    sort_order: str = "desc"            # asc/desc
+    status: list[str] | None = None  # Filter by status
+    priority: list[str] | None = None  # Filter by priority
+    type: list[str] | None = None  # Filter by type
+    parent_id: str | None = None  # Filter by parent
+    limit: int = 50  # Pagination
+    offset: int = 0  # Pagination
+    sort_by: str = "created_at"  # Sort field
+    sort_order: str = "desc"  # asc/desc
 ```
 
 ### 1.6 Ports and Adapters (Hexagonal Architecture)
@@ -334,6 +335,7 @@ class IWorkItemRepository(Protocol):
     def exists(self, id: WorkItemId) -> bool: ...
     def next_id(self) -> WorkItemId: ...
 
+
 # IEventStore - Event Sourcing Port
 class IEventStore(Protocol):
     def append(self, aggregate_id: str, events: list[DomainEvent]) -> None: ...
@@ -341,15 +343,18 @@ class IEventStore(Protocol):
     def get_events_since(self, aggregate_id: str, version: int) -> list[DomainEvent]: ...
     def get_all_events(self) -> list[DomainEvent]: ...
 
+
 # IEventDispatcher - Pub/Sub Port
 class IEventDispatcher(Protocol):
     def dispatch(self, event: DomainEvent) -> None: ...
     def dispatch_all(self, events: list[DomainEvent]) -> None: ...
     def subscribe(self, event_type: str, handler: Callable) -> None: ...
 
+
 # IUnitOfWork - Transaction Port
 class IUnitOfWork(Protocol):
     work_items: IWorkItemRepository
+
     def __enter__(self) -> "IUnitOfWork": ...
     def __exit__(self, exc_type, exc_val, exc_tb) -> None: ...
     def commit(self) -> None: ...
@@ -488,6 +493,7 @@ class KnowledgeItemId(VertexId):
     def km_type(self) -> KnowledgeType:
         return KnowledgeType(self.value.split("-")[0])
 
+
 # Pattern - ADR-style knowledge content
 @dataclass(frozen=True)
 class Pattern:
@@ -504,6 +510,7 @@ class Pattern:
         md += f"## Solution\n\n{self.solution}\n\n"
         md += f"## Consequences\n\n{self.consequences}\n\n"
         return md
+
 
 # Lesson - AAR-style learning
 @dataclass(frozen=True)
@@ -584,32 +591,41 @@ class IKnowledgeRepository(ABC):
     @abstractmethod
     def find_by_id(self, id: KnowledgeItemId) -> Optional[KnowledgeItem]: ...
     @abstractmethod
-    def find_by_type(self, km_type: KnowledgeType,
-                     status: Optional[KnowledgeStatus] = None) -> List[KnowledgeItem]: ...
+    def find_by_type(
+        self, km_type: KnowledgeType, status: Optional[KnowledgeStatus] = None
+    ) -> List[KnowledgeItem]: ...
     @abstractmethod
-    def find_related(self, item_id: KnowledgeItemId,
-                     max_depth: int = 2) -> List[KnowledgeItem]: ...
+    def find_related(self, item_id: KnowledgeItemId, max_depth: int = 2) -> List[KnowledgeItem]: ...
+
 
 # ISemanticIndex - Vector Search Port
 class ISemanticIndex(ABC):
     @abstractmethod
     def index(self, item: KnowledgeItem) -> None: ...
     @abstractmethod
-    def search(self, query: str, top_k: int = 5,
-               filters: dict = None) -> List[Tuple[KnowledgeItemId, float]]: ...
+    def search(
+        self, query: str, top_k: int = 5, filters: dict = None
+    ) -> List[Tuple[KnowledgeItemId, float]]: ...
     @abstractmethod
     def reindex(self, items: List[KnowledgeItem]) -> None: ...
+
 
 # IGraphStore - Graph Operations Port
 class IGraphStore(ABC):
     @abstractmethod
     def add_vertex(self, item: KnowledgeItem) -> None: ...
     @abstractmethod
-    def add_edge(self, from_id: KnowledgeItemId, to_id: KnowledgeItemId,
-                 label: str, properties: Dict[str, Any] = None) -> Edge: ...
+    def add_edge(
+        self,
+        from_id: KnowledgeItemId,
+        to_id: KnowledgeItemId,
+        label: str,
+        properties: Dict[str, Any] = None,
+    ) -> Edge: ...
     @abstractmethod
-    def traverse(self, start_id: KnowledgeItemId, edge_label: str,
-                 max_depth: int = 2) -> List[KnowledgeItemId]: ...
+    def traverse(
+        self, start_id: KnowledgeItemId, edge_label: str, max_depth: int = 2
+    ) -> List[KnowledgeItemId]: ...
     @abstractmethod
     def export_rdf(self, format: str = "turtle") -> str: ...
 ```
@@ -774,11 +790,13 @@ Both domains use strongly-typed identifiers extending a common base:
 class VertexId:
     value: str
 
+
 # Work Tracker
 @dataclass(frozen=True)
 class WorkItemId(VertexId):
     # Pattern: WORK-001, WORK-002
     prefix: ClassVar[str] = "WORK"
+
 
 # Knowledge Management
 @dataclass(frozen=True)
@@ -870,12 +888,9 @@ The following table maps entities across domains and identifies their relationsh
 ```python
 # Query: What patterns were applied to complete WORK-042?
 def get_applied_patterns(graph: IGraphStore, task_id: WorkItemId) -> list[Pattern]:
-    pattern_ids = graph.traverse(
-        start_id=task_id,
-        edge_label="APPLIED_PATTERN",
-        max_depth=1
-    )
+    pattern_ids = graph.traverse(start_id=task_id, edge_label="APPLIED_PATTERN", max_depth=1)
     return [km_repo.find_by_id(pid) for pid in pattern_ids]
+
 
 # Query: What lessons emerged from PHASE-001?
 def get_phase_lessons(graph: IGraphStore, phase_id: PhaseId) -> list[Lesson]:
@@ -893,18 +908,13 @@ def get_phase_lessons(graph: IGraphStore, phase_id: PhaseId) -> list[Lesson]:
 # Query: Which tasks applied pattern PAT-001?
 def get_pattern_applications(graph: IGraphStore, pattern_id: KnowledgeItemId) -> list[Task]:
     # Reverse traversal via incoming edges
-    task_ids = graph.traverse_incoming(
-        end_id=pattern_id,
-        edge_label="APPLIED_PATTERN"
-    )
+    task_ids = graph.traverse_incoming(end_id=pattern_id, edge_label="APPLIED_PATTERN")
     return [wt_repo.get(tid) for tid in task_ids]
+
 
 # Query: Which plan depends on assumption ASM-003?
 def get_dependent_plans(graph: IGraphStore, assumption_id: KnowledgeItemId) -> list[Plan]:
-    plan_ids = graph.traverse_incoming(
-        end_id=assumption_id,
-        edge_label="DEPENDS_ON_ASSUMPTION"
-    )
+    plan_ids = graph.traverse_incoming(end_id=assumption_id, edge_label="DEPENDS_ON_ASSUMPTION")
     return [wt_repo.get_plan(pid) for pid in plan_ids]
 ```
 
@@ -992,8 +1002,9 @@ class AARPromptHandler:
     Prompt for After-Action Review and capture as Lesson.
     """
 
-    def __init__(self, event_dispatcher: IEventDispatcher,
-                 capture_handler: CaptureKnowledgeHandler):
+    def __init__(
+        self, event_dispatcher: IEventDispatcher, capture_handler: CaptureKnowledgeHandler
+    ):
         self.capture_handler = capture_handler
         event_dispatcher.subscribe("WorkItemCompleted", self.handle)
 
@@ -1006,7 +1017,7 @@ class AARPromptHandler:
                     title=f"Lesson from {event.aggregate_id}",
                     km_type=KnowledgeType.LESSON,
                     content=lesson,
-                    evidence_refs=[str(JerryUri.for_task(event.aggregate_id))]
+                    evidence_refs=[str(JerryUri.for_task(event.aggregate_id))],
                 )
                 self.capture_handler.handle(command)
 
@@ -1037,9 +1048,9 @@ class EnrichedGetWorkItemHandler:
     Enhanced WorkItem query that includes related knowledge.
     """
 
-    def __init__(self, wt_repo: IWorkItemRepository,
-                 km_repo: IKnowledgeRepository,
-                 graph: IGraphStore):
+    def __init__(
+        self, wt_repo: IWorkItemRepository, km_repo: IKnowledgeRepository, graph: IGraphStore
+    ):
         self.wt_repo = wt_repo
         self.km_repo = km_repo
         self.graph = graph
@@ -1070,7 +1081,7 @@ class EnrichedGetWorkItemHandler:
             work_item=WorkItemDTO.from_entity(item),
             applied_patterns=patterns,
             learned_lessons=lessons,
-            related_assumptions=assumptions
+            related_assumptions=assumptions,
         )
 ```
 
@@ -1093,16 +1104,21 @@ Cross-domain commands create relationships between contexts.
 @dataclass
 class ApplyPatternToTaskCommand:
     """Command to record that a task applied a pattern."""
+
     task_id: str
     pattern_id: str
     applied_by: str = "system:agent"
     notes: str = ""
 
+
 class ApplyPatternToTaskHandler:
-    def __init__(self, wt_repo: IWorkItemRepository,
-                 km_repo: IKnowledgeRepository,
-                 graph: IGraphStore,
-                 event_publisher: DomainEventPublisher):
+    def __init__(
+        self,
+        wt_repo: IWorkItemRepository,
+        km_repo: IKnowledgeRepository,
+        graph: IGraphStore,
+        event_publisher: DomainEventPublisher,
+    ):
         self.wt_repo = wt_repo
         self.km_repo = km_repo
         self.graph = graph
@@ -1126,8 +1142,8 @@ class ApplyPatternToTaskHandler:
             properties={
                 "applied_by": command.applied_by,
                 "applied_at": datetime.utcnow().isoformat(),
-                "notes": command.notes
-            }
+                "notes": command.notes,
+            },
         )
 
         # Add note to task
@@ -1139,7 +1155,7 @@ class ApplyPatternToTaskHandler:
             from_id=task.id,
             to_id=pattern.id,
             relation_type="APPLIED_PATTERN",
-            created_by=command.applied_by
+            created_by=command.applied_by,
         )
         self.event_publisher.publish(event)
 ```
@@ -1505,6 +1521,7 @@ Both domains need:
 
 # Jerry Year 1-2: IndexFlatL2
 import faiss
+
 index = faiss.IndexFlatL2(1536)  # Exact search
 index.add(embeddings)
 
@@ -1535,6 +1552,7 @@ from rdflib.namespace import RDF, RDFS, XSD
 
 JERRY = Namespace("https://jerry.framework/ontology/")
 
+
 def workitem_to_rdf(item: WorkItem) -> Graph:
     g = Graph()
     uri = URIRef(item.uri)
@@ -1548,6 +1566,7 @@ def workitem_to_rdf(item: WorkItem) -> Graph:
         g.add((uri, JERRY.partOf, URIRef(item.parent_id.uri)))
 
     return g
+
 
 # Serialize to Turtle
 turtle_str = g.serialize(format="turtle")
@@ -1866,10 +1885,14 @@ class WorkItem:
 
     # Factory methods
     @classmethod
-    def create(cls, title: str, type: WorkItemType = WorkItemType.TASK,
-               priority: Priority = Priority.MEDIUM,
-               parent_id: WorkItemId | None = None,
-               id: WorkItemId | None = None) -> "WorkItem":
+    def create(
+        cls,
+        title: str,
+        type: WorkItemType = WorkItemType.TASK,
+        priority: Priority = Priority.MEDIUM,
+        parent_id: WorkItemId | None = None,
+        id: WorkItemId | None = None,
+    ) -> "WorkItem":
         """Factory method to create new WorkItem."""
         ...
 
@@ -2087,6 +2110,7 @@ class Pattern:
         forces: Optional competing concerns
         alternatives: Optional other options considered
     """
+
     context: str
     problem: str
     solution: str
@@ -2095,6 +2119,7 @@ class Pattern:
     alternatives: list[str] | None = None
 
     def to_markdown(self) -> str: ...
+
 
 @dataclass(frozen=True)
 class Lesson:
@@ -2108,6 +2133,7 @@ class Lesson:
         impact: Magnitude of learning (LOW, MEDIUM, HIGH)
         confidence: How certain we are (0.0-1.0)
     """
+
     what_happened: str
     what_learned: str
     prevention: str
@@ -2115,6 +2141,7 @@ class Lesson:
     confidence: float = 1.0
 
     def to_markdown(self) -> str: ...
+
 
 @dataclass(frozen=True)
 class Assumption:
@@ -2128,6 +2155,7 @@ class Assumption:
         confidence: How confident we are (0.0-1.0)
         review_date: When to re-evaluate (ISO 8601)
     """
+
     statement: str
     impact_if_wrong: str
     validation_path: str

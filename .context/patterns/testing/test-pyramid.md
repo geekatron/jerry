@@ -197,9 +197,7 @@ def test_domain_has_no_infrastructure_imports():
         imports = extract_imports(file_path)
 
         for imp in imports:
-            assert "infrastructure" not in imp, (
-                f"{file_path.name} imports infrastructure: {imp}"
-            )
+            assert "infrastructure" not in imp, f"{file_path.name} imports infrastructure: {imp}"
 
 
 def test_application_has_no_interface_imports():
@@ -210,9 +208,7 @@ def test_application_has_no_interface_imports():
         imports = extract_imports(file_path)
 
         for imp in imports:
-            assert "interface" not in imp, (
-                f"{file_path.name} imports interface: {imp}"
-            )
+            assert "interface" not in imp, f"{file_path.name} imports interface: {imp}"
 
 
 def test_composition_root_is_only_infrastructure_importer():
@@ -232,8 +228,7 @@ def test_composition_root_is_only_infrastructure_importer():
                 infrastructure_importers.append(file_path.name)
 
     assert not infrastructure_importers, (
-        f"Files importing infrastructure (should be bootstrap only): "
-        f"{infrastructure_importers}"
+        f"Files importing infrastructure (should be bootstrap only): {infrastructure_importers}"
     )
 ```
 
@@ -259,18 +254,14 @@ def test_create_and_complete_workflow():
     dispatcher = create_test_command_dispatcher()
 
     # Act - create task
-    create_events = dispatcher.dispatch(
-        CreateWorkItemCommand(title="Test Task", priority="high")
-    )
+    create_events = dispatcher.dispatch(CreateWorkItemCommand(title="Test Task", priority="high"))
     task_id = create_events[0].work_item_id
 
     # Act - start task
     dispatcher.dispatch(StartWorkItemCommand(work_item_id=task_id))
 
     # Act - complete task
-    complete_events = dispatcher.dispatch(
-        CompleteWorkItemCommand(work_item_id=task_id)
-    )
+    complete_events = dispatcher.dispatch(CompleteWorkItemCommand(work_item_id=task_id))
 
     # Assert
     assert len(complete_events) == 1

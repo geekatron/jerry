@@ -35,11 +35,13 @@
 from stix2 import MemoryStore
 import requests
 
+
 def get_attack_data(domain):
     stix_json = requests.get(
         f"https://raw.githubusercontent.com/mitre-attack/attack-stix-data/master/{domain}/{domain}.json"
     ).json()
     return MemoryStore(stix_data=stix_json["objects"])
+
 
 enterprise_src = get_attack_data("enterprise-attack")
 mobile_src = get_attack_data("mobile-attack")
@@ -60,7 +62,7 @@ mobile_src = get_attack_data("mobile-attack")
 from mitreattack.stix20 import MitreAttackData
 
 mitre_attack_data = MitreAttackData("enterprise-attack.json")
-technique = mitre_attack_data.get_object_by_attack_id('T1134', 'attack-pattern')
+technique = mitre_attack_data.get_object_by_attack_id("T1134", "attack-pattern")
 tactic = mitre_attack_data.get_object_by_attack_id("TA0001")
 mitigations = mitre_attack_data.get_mitigations(remove_revoked_deprecated=True)
 ```

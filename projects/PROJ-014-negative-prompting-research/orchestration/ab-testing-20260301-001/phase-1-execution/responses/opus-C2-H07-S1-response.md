@@ -138,6 +138,7 @@ from src.domain.services.InventoryDomainService import InventoryDomainService
 
 # ... within the composition root factory function ...
 
+
 def create_inventory_domain_service() -> InventoryDomainService:
     """Create InventoryDomainService with all dependencies wired."""
     audit_log_adapter = SqliteAuditLogAdapter(

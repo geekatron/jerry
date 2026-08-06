@@ -113,6 +113,7 @@ def _payload(self) -> dict[str, Any]:
         "priority": self.priority,
     }
 
+
 # Reality shows (src/shared_kernel/domain_event.py:117-126):
 def _payload(self) -> dict[str, Any]:
     """
@@ -137,6 +138,7 @@ class ConcurrencyError(DomainError):
     def __init__(self, expected_version: int, actual_version: int) -> None:
         self.expected_version = expected_version
         self.actual_version = actual_version
+
 
 # Reality: src/shared_kernel/exceptions.py:59-68
 class ConcurrencyError(DomainError):

@@ -168,16 +168,18 @@ from ..value_objects import Pattern, Lesson, Assumption
 
 class KnowledgeType(Enum):
     """Type classification for knowledge items."""
-    PATTERN = "PAT"      # Reusable solution to recurring problem
-    LESSON = "LES"       # Experience and learning from past work
-    ASSUMPTION = "ASM"   # Belief that requires validation
+
+    PATTERN = "PAT"  # Reusable solution to recurring problem
+    LESSON = "LES"  # Experience and learning from past work
+    ASSUMPTION = "ASM"  # Belief that requires validation
 
 
 class KnowledgeStatus(Enum):
     """Lifecycle status for knowledge items."""
-    DRAFT = auto()        # Being captured, not yet validated
-    VALIDATED = auto()    # Reviewed and confirmed as accurate
-    DEPRECATED = auto()   # No longer applicable or superseded
+
+    DRAFT = auto()  # Being captured, not yet validated
+    VALIDATED = auto()  # Reviewed and confirmed as accurate
+    DEPRECATED = auto()  # No longer applicable or superseded
 
 
 @dataclass(frozen=True)
@@ -187,9 +189,7 @@ class KnowledgeItemId(VertexId):
     def __post_init__(self):
         # Validate format: PAT-001, LES-042, ASM-003
         if not self.value.startswith(("PAT-", "LES-", "ASM-")):
-            raise ValueError(
-                f"KnowledgeItemId must start with PAT-, LES-, or ASM-: {self.value}"
-            )
+            raise ValueError(f"KnowledgeItemId must start with PAT-, LES-, or ASM-: {self.value}")
 
     @classmethod
     def generate(cls, km_type: KnowledgeType, sequence: int) -> "KnowledgeItemId":
@@ -228,15 +228,15 @@ class KnowledgeItem(Vertex):
     uri: JerryUri = field(init=False)
 
     # Core properties
-    title: str                          # Human-readable name (max 80 chars)
-    km_type: KnowledgeType              # PAT, LES, or ASM
+    title: str  # Human-readable name (max 80 chars)
+    km_type: KnowledgeType  # PAT, LES, or ASM
     status: KnowledgeStatus = KnowledgeStatus.DRAFT
 
     # Type-specific content (value objects)
     content: Pattern | Lesson | Assumption  # Discriminated union by km_type
 
     # Context and applicability
-    context: str = ""                   # When/where this applies
+    context: str = ""  # When/where this applies
     tags: List[str] = field(default_factory=list)
 
     # Relationships (stored as edges in graph)
@@ -269,8 +269,8 @@ class KnowledgeItem(Vertex):
                 domain="knowledge",
                 entity_type=self.km_type.value.lower(),
                 entity_id=self.id.value,
-                version=self.content_hash[:8] if self.content_hash else None
-            )
+                version=self.content_hash[:8] if self.content_hash else None,
+            ),
         )
 
         # Populate vertex properties for graph storage
@@ -344,13 +344,13 @@ class Pattern:
     Based on: Architecture Decision Record (ADR) format
     """
 
-    context: str            # Situation where problem occurs
-    problem: str            # Challenge to be solved
-    solution: str           # Approach that addresses problem
-    consequences: str       # Trade-offs and implications
+    context: str  # Situation where problem occurs
+    problem: str  # Challenge to be solved
+    solution: str  # Approach that addresses problem
+    consequences: str  # Trade-offs and implications
 
     # Optional: Forces and alternatives
-    forces: List[str] = None       # Competing concerns
+    forces: List[str] = None  # Competing concerns
     alternatives: List[str] = None  # Other options considered
 
     def to_markdown(self) -> str:
@@ -372,6 +372,7 @@ class Pattern:
 
 # src/domain/knowledge/value_objects/lesson.py
 
+
 @dataclass(frozen=True)
 class Lesson:
     """
@@ -381,12 +382,12 @@ class Lesson:
     Based on: After-Action Review (AAR) format
     """
 
-    what_happened: str      # Specific situation or incident
-    what_learned: str       # Insight gained from experience
-    prevention: str         # How to avoid or repeat outcome
+    what_happened: str  # Specific situation or incident
+    what_learned: str  # Insight gained from experience
+    prevention: str  # How to avoid or repeat outcome
 
     # Optional: Impact and confidence
-    impact: str = ""        # Magnitude of learning (LOW, MEDIUM, HIGH)
+    impact: str = ""  # Magnitude of learning (LOW, MEDIUM, HIGH)
     confidence: float = 1.0  # How certain we are (0.0-1.0)
 
     def to_markdown(self) -> str:
@@ -406,6 +407,7 @@ class Lesson:
 
 # src/domain/knowledge/value_objects/assumption.py
 
+
 @dataclass(frozen=True)
 class Assumption:
     """
@@ -415,13 +417,13 @@ class Assumption:
     Based on: Risk management and architectural assumptions
     """
 
-    statement: str          # What we're assuming to be true
-    impact_if_wrong: str    # Consequences if assumption proves false
-    validation_path: str    # How to verify or invalidate
+    statement: str  # What we're assuming to be true
+    impact_if_wrong: str  # Consequences if assumption proves false
+    validation_path: str  # How to verify or invalidate
 
     # Optional: Confidence and monitoring
     confidence: float = 0.5  # How confident we are (0.0-1.0)
-    review_date: str = ""    # When to re-evaluate (ISO 8601)
+    review_date: str = ""  # When to re-evaluate (ISO 8601)
 
     def to_markdown(self) -> str:
         """Serialize to markdown format."""
@@ -479,9 +481,7 @@ class IKnowledgeRepository(ABC):
 
     @abstractmethod
     def find_by_type(
-        self,
-        km_type: KnowledgeType,
-        status: Optional[KnowledgeStatus] = None
+        self, km_type: KnowledgeType, status: Optional[KnowledgeStatus] = None
     ) -> List[KnowledgeItem]:
         """Find all items of a specific type and optional status."""
         pass
@@ -492,11 +492,7 @@ class IKnowledgeRepository(ABC):
         pass
 
     @abstractmethod
-    def find_related(
-        self,
-        item_id: KnowledgeItemId,
-        max_depth: int = 2
-    ) -> List[KnowledgeItem]:
+    def find_related(self, item_id: KnowledgeItemId, max_depth: int = 2) -> List[KnowledgeItem]:
         """
         Find knowledge items related to given item.
 
@@ -548,10 +544,7 @@ class ISemanticIndex(ABC):
 
     @abstractmethod
     def search(
-        self,
-        query: str,
-        top_k: int = 5,
-        filters: dict = None
+        self, query: str, top_k: int = 5, filters: dict = None
     ) -> List[Tuple[KnowledgeItemId, float]]:
         """
         Semantic search for similar knowledge items.
@@ -611,7 +604,7 @@ class IGraphStore(ABC):
         from_id: KnowledgeItemId,
         to_id: KnowledgeItemId,
         label: str,
-        properties: Dict[str, Any] = None
+        properties: Dict[str, Any] = None,
     ) -> Edge:
         """
         Create relationship between knowledge items.
@@ -626,10 +619,7 @@ class IGraphStore(ABC):
 
     @abstractmethod
     def traverse(
-        self,
-        start_id: KnowledgeItemId,
-        edge_label: str,
-        max_depth: int = 2
+        self, start_id: KnowledgeItemId, edge_label: str, max_depth: int = 2
     ) -> List[KnowledgeItemId]:
         """
         Graph traversal from starting vertex.
@@ -640,10 +630,7 @@ class IGraphStore(ABC):
         pass
 
     @abstractmethod
-    def export_rdf(
-        self,
-        format: str = "turtle"
-    ) -> str:
+    def export_rdf(self, format: str = "turtle") -> str:
         """
         Export knowledge graph as RDF.
 
@@ -677,7 +664,10 @@ class IGraphStore(ABC):
 from dataclasses import dataclass
 from typing import Optional
 from ....domain.knowledge.entities import (
-    KnowledgeItem, KnowledgeItemId, KnowledgeType, KnowledgeStatus
+    KnowledgeItem,
+    KnowledgeItemId,
+    KnowledgeType,
+    KnowledgeStatus,
 )
 from ....domain.knowledge.value_objects import Pattern, Lesson, Assumption
 from ....domain.knowledge.ports import IKnowledgeRepository, ISemanticIndex, IGraphStore
@@ -688,6 +678,7 @@ from ..events import KnowledgeItemCreated
 @dataclass
 class CaptureKnowledgeCommand:
     """Command to capture new knowledge item."""
+
     title: str
     km_type: KnowledgeType
     content: Pattern | Lesson | Assumption
@@ -717,7 +708,7 @@ class CaptureKnowledgeHandler:
         repository: IKnowledgeRepository,
         semantic_index: ISemanticIndex,
         graph_store: IGraphStore,
-        event_publisher: DomainEventPublisher
+        event_publisher: DomainEventPublisher,
     ):
         self.repository = repository
         self.semantic_index = semantic_index
@@ -758,18 +749,14 @@ class CaptureKnowledgeHandler:
 
         # Create relationship edges
         for related_id in item.related_items:
-            self.graph_store.add_edge(
-                from_id=item.id,
-                to_id=related_id,
-                label="REFERENCES"
-            )
+            self.graph_store.add_edge(from_id=item.id, to_id=related_id, label="REFERENCES")
 
         # Emit event
         event = KnowledgeItemCreated(
             item_id=item_id,
             km_type=command.km_type,
             title=command.title,
-            created_by=command.created_by
+            created_by=command.created_by,
         )
         self.event_publisher.publish(event)
 
@@ -779,9 +766,11 @@ class CaptureKnowledgeHandler:
 ```python
 # src/application/knowledge/commands/validate_knowledge.py
 
+
 @dataclass
 class ValidateKnowledgeCommand:
     """Command to validate knowledge item."""
+
     item_id: KnowledgeItemId
     validated_by: str = "system:validator"
 
@@ -797,11 +786,7 @@ class ValidateKnowledgeHandler:
     4. Emit KnowledgeItemValidated event
     """
 
-    def __init__(
-        self,
-        repository: IKnowledgeRepository,
-        event_publisher: DomainEventPublisher
-    ):
+    def __init__(self, repository: IKnowledgeRepository, event_publisher: DomainEventPublisher):
         self.repository = repository
         self.event_publisher = event_publisher
 
@@ -819,19 +804,18 @@ class ValidateKnowledgeHandler:
         self.repository.save(item)
 
         # Emit event
-        event = KnowledgeItemValidated(
-            item_id=command.item_id,
-            validated_by=command.validated_by
-        )
+        event = KnowledgeItemValidated(item_id=command.item_id, validated_by=command.validated_by)
         self.event_publisher.publish(event)
 ```
 
 ```python
 # src/application/knowledge/commands/deprecate_knowledge.py
 
+
 @dataclass
 class DeprecateKnowledgeCommand:
     """Command to deprecate knowledge item."""
+
     item_id: KnowledgeItemId
     reason: str
     deprecated_by: str = "system:km"
@@ -853,7 +837,7 @@ class DeprecateKnowledgeHandler:
         self,
         repository: IKnowledgeRepository,
         semantic_index: ISemanticIndex,
-        event_publisher: DomainEventPublisher
+        event_publisher: DomainEventPublisher,
     ):
         self.repository = repository
         self.semantic_index = semantic_index
@@ -877,9 +861,7 @@ class DeprecateKnowledgeHandler:
 
         # Emit event
         event = KnowledgeItemDeprecated(
-            item_id=command.item_id,
-            reason=command.reason,
-            deprecated_by=command.deprecated_by
+            item_id=command.item_id, reason=command.reason, deprecated_by=command.deprecated_by
         )
         self.event_publisher.publish(event)
 ```
@@ -898,6 +880,7 @@ from ....domain.knowledge.ports import IKnowledgeRepository, ISemanticIndex
 @dataclass
 class SearchKnowledgeQuery:
     """Query for semantic knowledge search."""
+
     query_text: str
     km_type: Optional[KnowledgeType] = None
     top_k: int = 5
@@ -907,6 +890,7 @@ class SearchKnowledgeQuery:
 @dataclass
 class KnowledgeSearchResult:
     """Result of semantic search."""
+
     item: KnowledgeItem
     similarity_score: float
     excerpt: str  # Relevant snippet
@@ -925,11 +909,7 @@ class SearchKnowledgeHandler:
     CQRS: Query handler for read operation
     """
 
-    def __init__(
-        self,
-        repository: IKnowledgeRepository,
-        semantic_index: ISemanticIndex
-    ):
+    def __init__(self, repository: IKnowledgeRepository, semantic_index: ISemanticIndex):
         self.repository = repository
         self.semantic_index = semantic_index
 
@@ -938,9 +918,7 @@ class SearchKnowledgeHandler:
         filters = {"type": query.km_type.value} if query.km_type else {}
 
         matches = self.semantic_index.search(
-            query=query.query_text,
-            top_k=query.top_k,
-            filters=filters
+            query=query.query_text, top_k=query.top_k, filters=filters
         )
 
         # Load full items and create results
@@ -955,7 +933,7 @@ class SearchKnowledgeHandler:
                     KnowledgeSearchResult(
                         item=item,
                         similarity_score=score,
-                        excerpt=self._extract_excerpt(item, query.query_text)
+                        excerpt=self._extract_excerpt(item, query.query_text),
                     )
                 )
 
@@ -970,9 +948,11 @@ class SearchKnowledgeHandler:
 ```python
 # src/application/knowledge/queries/get_related_knowledge.py
 
+
 @dataclass
 class GetRelatedKnowledgeQuery:
     """Query for related knowledge items."""
+
     item_id: KnowledgeItemId
     max_depth: int = 2
     include_deprecated: bool = False
@@ -991,20 +971,13 @@ class GetRelatedKnowledgeHandler:
     Uses: Graph traversal (NetworkX adapter)
     """
 
-    def __init__(
-        self,
-        repository: IKnowledgeRepository,
-        graph_store: IGraphStore
-    ):
+    def __init__(self, repository: IKnowledgeRepository, graph_store: IGraphStore):
         self.repository = repository
         self.graph_store = graph_store
 
     def handle(self, query: GetRelatedKnowledgeQuery) -> List[KnowledgeItem]:
         # Graph traversal
-        related_ids = self.repository.find_related(
-            item_id=query.item_id,
-            max_depth=query.max_depth
-        )
+        related_ids = self.repository.find_related(item_id=query.item_id, max_depth=query.max_depth)
 
         # Load items
         items = [self.repository.find_by_id(id) for id in related_ids]
@@ -1012,10 +985,7 @@ class GetRelatedKnowledgeHandler:
 
         # Filter deprecated if needed
         if not query.include_deprecated:
-            items = [
-                item for item in items
-                if item.status != KnowledgeStatus.DEPRECATED
-            ]
+            items = [item for item in items if item.status != KnowledgeStatus.DEPRECATED]
 
         return items
 ```
@@ -1023,9 +993,11 @@ class GetRelatedKnowledgeHandler:
 ```python
 # src/application/knowledge/queries/traverse_knowledge_graph.py
 
+
 @dataclass
 class TraverseKnowledgeGraphQuery:
     """Query for graph traversal patterns."""
+
     start_id: KnowledgeItemId
     edge_label: str  # REFERENCES, APPLIES_TO, VALIDATES, etc.
     max_depth: int = 2
@@ -1049,9 +1021,7 @@ class TraverseKnowledgeGraphHandler:
 
     def handle(self, query: TraverseKnowledgeGraphQuery) -> List[KnowledgeItemId]:
         return self.graph_store.traverse(
-            start_id=query.start_id,
-            edge_label=query.edge_label,
-            max_depth=query.max_depth
+            start_id=query.start_id, edge_label=query.edge_label, max_depth=query.max_depth
         )
 ```
 
@@ -1075,6 +1045,7 @@ class KnowledgeItemCreated(DomainEvent):
     - type: jer:jer:knowledge:facts/KnowledgeItemCreated
     - source: jer:jer:knowledge:system
     """
+
     item_id: KnowledgeItemId
     km_type: KnowledgeType
     title: str
@@ -1097,6 +1068,7 @@ class KnowledgeItemCreated(DomainEvent):
 @dataclass
 class KnowledgeItemValidated(DomainEvent):
     """Event: Knowledge item validated and approved."""
+
     item_id: KnowledgeItemId
     validated_by: str
     timestamp: datetime = None
@@ -1117,6 +1089,7 @@ class KnowledgeItemValidated(DomainEvent):
 @dataclass
 class KnowledgeItemDeprecated(DomainEvent):
     """Event: Knowledge item marked as no longer applicable."""
+
     item_id: KnowledgeItemId
     reason: str
     deprecated_by: str
@@ -1138,6 +1111,7 @@ class KnowledgeItemDeprecated(DomainEvent):
 @dataclass
 class KnowledgeRelationCreated(DomainEvent):
     """Event: Relationship created between knowledge items."""
+
     from_id: KnowledgeItemId
     to_id: KnowledgeItemId
     relation_type: str  # REFERENCES, APPLIES_TO, VALIDATES, etc.

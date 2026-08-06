@@ -179,7 +179,7 @@ Load pattern reference: skills/prompt-engineering/rules/npt-pattern-reference.md
 ## TASK
 Generate NPT-009 formatted constraints for the specified intent.
 Persist output to: {output_path}
-"""
+""",
 )
 ```
 

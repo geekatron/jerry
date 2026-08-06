@@ -412,7 +412,7 @@ The implementation report's WI-005 description states "DD-10 type normalization"
 
 The `STRUCTURAL_CUE_PRIORITY` list at lines 90-96:
 ```python
-("---", DocumentType.AGENT_DEFINITION),
+(("---", DocumentType.AGENT_DEFINITION),)
 ```
 
 This performs a simple `"---" in content` check. Any markdown file containing a horizontal rule (`---`) or any triple-dash sequence (common in markdown documents, table separators, etc.) will match this cue and be classified as `AGENT_DEFINITION` during structure-only detection.

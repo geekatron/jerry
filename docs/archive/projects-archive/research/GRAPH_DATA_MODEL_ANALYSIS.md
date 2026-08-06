@@ -158,13 +158,17 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, Optional, TypeVar, Generic
 from enum import Enum, auto
 
+
 class Cardinality(Enum):
     """Property cardinality for VertexProperty (TinkerPop alignment)."""
-    SINGLE = auto()   # Replace existing value
-    LIST = auto()     # Allow duplicates
-    SET = auto()      # No duplicates
 
-T = TypeVar('T')
+    SINGLE = auto()  # Replace existing value
+    LIST = auto()  # Allow duplicates
+    SET = auto()  # No duplicates
+
+
+T = TypeVar("T")
+
 
 @dataclass
 class Property(Generic[T]):
@@ -173,6 +177,7 @@ class Property(Generic[T]):
 
     Aligned with TinkerPop Property interface.
     """
+
     key: str
     value: T
 
@@ -191,6 +196,7 @@ class VertexProperty(Generic[T]):
     Reference: https://tinkerpop.apache.org/javadocs/current/core/
                org/apache/tinkerpop/gremlin/structure/VertexProperty.html
     """
+
     id: str  # VertexProperty is an Element with its own ID
     key: str
     value: T
@@ -219,6 +225,7 @@ class EdgeProperty(Property[T]):
 
     Edges in TinkerPop use simple Property (no meta-properties).
     """
+
     pass
 ```
 
@@ -414,11 +421,13 @@ from dataclasses import dataclass, field
 from typing import Dict, Any, List, Optional, TypeVar, Generic
 from datetime import datetime
 
-T = TypeVar('T')
+T = TypeVar("T")
+
 
 @dataclass(frozen=True)
 class VertexId:
     """Base class for strongly-typed vertex identifiers."""
+
     value: str
 
     def __post_init__(self):
@@ -429,6 +438,7 @@ class VertexId:
 @dataclass(frozen=True)
 class EdgeId:
     """Strongly-typed edge identifier."""
+
     value: str
 
     @classmethod
@@ -445,6 +455,7 @@ class Vertex(ABC):
     Aligned with Apache TinkerPop property graph model.
     Reference: https://tinkerpop.apache.org/docs/current/reference/
     """
+
     id: VertexId
     label: str
     properties: Dict[str, Any] = field(default_factory=dict)
@@ -471,10 +482,11 @@ class Edge:
     Aligned with Apache TinkerPop edge model.
     Reference: https://tinkerpop.apache.org/docs/current/reference/
     """
+
     id: EdgeId
     label: str
     out_vertex: VertexId  # Source (tail)
-    in_vertex: VertexId   # Target (head)
+    in_vertex: VertexId  # Target (head)
     properties: Dict[str, Any] = field(default_factory=dict)
 
     @classmethod
@@ -483,7 +495,7 @@ class Edge:
         label: str,
         out_vertex: VertexId,
         in_vertex: VertexId,
-        properties: Optional[Dict[str, Any]] = None
+        properties: Optional[Dict[str, Any]] = None,
     ) -> "Edge":
         """Factory method for edge creation."""
         edge_id = EdgeId.generate(out_vertex, label, in_vertex)
@@ -492,7 +504,7 @@ class Edge:
             label=label,
             out_vertex=out_vertex,
             in_vertex=in_vertex,
-            properties=properties or {}
+            properties=properties or {},
         )
 ```
 
@@ -504,6 +516,7 @@ class Edge:
 from dataclasses import dataclass
 import uuid
 from ..graph.primitives import VertexId
+
 
 @dataclass(frozen=True)
 class PlanId(VertexId):
@@ -550,12 +563,13 @@ class SubtaskId(VertexId):
     Strongly typed Subtask identifier.
     Composite key: parent TaskId + sequence number.
     """
+
     task_id: TaskId
     sequence: int
 
     def __post_init__(self):
         # Override value from composite
-        object.__setattr__(self, 'value', f"{self.task_id.value}.{self.sequence}")
+        object.__setattr__(self, "value", f"{self.task_id.value}.{self.sequence}")
 
     @classmethod
     def create(cls, task_id: TaskId, sequence: int) -> "SubtaskId":
@@ -566,6 +580,7 @@ class SubtaskId(VertexId):
 
 ```python
 # src/domain/graph/edge_labels.py
+
 
 class EdgeLabels:
     """
@@ -717,7 +732,8 @@ from abc import ABC, abstractmethod
 from typing import Optional, List, TypeVar, Generic
 from ..graph.primitives import Vertex, Edge, VertexId
 
-T = TypeVar('T', bound=Vertex)
+T = TypeVar("T", bound=Vertex)
+
 
 class IGraphRepository(ABC, Generic[T]):
     """
@@ -787,6 +803,7 @@ from typing import Dict, Any
 import uuid
 from ..graph.primitives import Vertex, VertexId
 
+
 @dataclass(frozen=True)
 class EventId(VertexId):
     """Strongly typed Event identifier."""
@@ -833,7 +850,7 @@ class CloudEventVertex(Vertex):
             "datacontenttype": self.datacontenttype,
             "data": self.data,
             "aggregate_type": self.aggregate_type,
-            "sequence": self.sequence
+            "sequence": self.sequence,
         }
 ```
 

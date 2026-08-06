@@ -85,6 +85,7 @@ from datetime import datetime
 @dataclass
 class OrderRecord:
     """Infrastructure-layer database record. Internal to the adapter."""
+
     id: str
     status: str
     timestamp: datetime

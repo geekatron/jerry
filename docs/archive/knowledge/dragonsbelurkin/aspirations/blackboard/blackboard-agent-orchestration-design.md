@@ -783,13 +783,15 @@ class BlackboardProjectionRebuilder:
         self._clear_projection()
 
         # Replay all blackboard events in order
-        events = event_store.get_events_by_type([
-            "AgentSignalPosted",
-            "AgentSignalClaimed",
-            "AgentSignalCompleted",
-            "AgentSignalFailed",
-            "AgentSignalExpired"
-        ])
+        events = event_store.get_events_by_type(
+            [
+                "AgentSignalPosted",
+                "AgentSignalClaimed",
+                "AgentSignalCompleted",
+                "AgentSignalFailed",
+                "AgentSignalExpired",
+            ]
+        )
 
         for event in events:
             self._apply_event(event)
@@ -805,6 +807,7 @@ class BlackboardProjectionRebuilder:
 @dataclass
 class PostSignalCommand:
     """Command to post a new agent signal."""
+
     ps_id: str
     entry_id: str
     signal_type: str
@@ -812,16 +815,20 @@ class PostSignalCommand:
     prompt: str
     target_capabilities: List[str]
 
+
 @dataclass
 class ClaimSignalCommand:
     """Command for agent to claim a signal."""
+
     signal_id: str
     agent_id: str
     capability_score: float
 
+
 @dataclass
 class CompleteSignalCommand:
     """Command to mark signal as complete."""
+
     signal_id: str
     agent_id: str
     artifact_path: str
@@ -834,17 +841,22 @@ class CompleteSignalCommand:
 @dataclass
 class GetOpenSignalsQuery:
     """Query for open signals matching capabilities."""
+
     capabilities: List[str]
     limit: int = 10
+
 
 @dataclass
 class GetSignalByIdQuery:
     """Query for specific signal."""
+
     signal_id: str
+
 
 @dataclass
 class WatchSignalsQuery:
     """Query to watch for signal completions."""
+
     signal_types: List[str]
     since: Optional[datetime] = None
 ```
@@ -858,6 +870,7 @@ class WatchSignalsQuery:
 ```python
 from abc import ABC, abstractmethod
 from typing import Optional, List
+
 
 class IBlackboardRepository(ABC):
     """Port interface for blackboard persistence."""

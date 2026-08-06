@@ -171,6 +171,7 @@ class InventoryUpdatedCacheInvalidator:
 # src/infrastructure/caching/InventoryCache.py
 # ADD this method to the existing class:
 
+
 async def invalidate(self, item_id: str) -> None:
     """Remove the cached entry for item_id, forcing a fresh load on next read."""
     self._store.pop(item_id, None)

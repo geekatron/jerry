@@ -130,9 +130,7 @@ class WorkItem(AggregateRoot):
                 self._completed_at = event.timestamp
 
             case _:
-                raise UnknownEventTypeError(
-                    f"Unknown event type: {type(event).__name__}"
-                )
+                raise UnknownEventTypeError(f"Unknown event type: {type(event).__name__}")
 ```
 
 ---
@@ -271,12 +269,14 @@ def _apply(self, event: DomainEvent) -> None:
         case StatusChanged():
             self._status = WorkItemStatus(event.new_status)
 
+
 # WRONG: Non-deterministic (uses current time)
 def _apply(self, event: DomainEvent) -> None:
     match event:
         case StatusChanged():
             self._status = WorkItemStatus(event.new_status)
             self._updated_at = datetime.now()  # NON-DETERMINISTIC!
+
 
 # CORRECT: Use timestamp from event
 def _apply(self, event: DomainEvent) -> None:
@@ -367,6 +367,7 @@ def _apply(self, event: DomainEvent) -> None:
             ...
         case _:
             pass  # Unknown events silently ignored!
+
 
 # CORRECT: Fail explicitly
 def _apply(self, event: DomainEvent) -> None:

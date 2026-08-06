@@ -470,6 +470,7 @@ The 229 hook-related tests cover:
 **Recommendation:** Add a YAML parser step in `_build_resumption_state()` to extract structured fields:
 ```python
 import yaml
+
 doc = yaml.safe_load(content)
 return {
     "current_phase": doc.get("current_phase"),

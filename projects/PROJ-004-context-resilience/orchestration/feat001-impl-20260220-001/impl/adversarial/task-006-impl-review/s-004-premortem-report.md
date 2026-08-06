@@ -144,13 +144,13 @@ critical_threshold = 0.30
 inverts the expected ordering. The classification logic:
 
 ```python
-if fill_percentage >= emergency:       # 0.88 (default)
+if fill_percentage >= emergency:  # 0.88 (default)
     return EMERGENCY
-if fill_percentage >= critical:        # 0.30 (misconfigured)
+if fill_percentage >= critical:  # 0.30 (misconfigured)
     return CRITICAL
-if fill_percentage >= warning:         # 0.40 (misconfigured)
+if fill_percentage >= warning:  # 0.40 (misconfigured)
     return WARNING
-if fill_percentage >= nominal:         # 0.55 (default)
+if fill_percentage >= nominal:  # 0.55 (default)
     return LOW
 return NOMINAL
 ```
@@ -200,7 +200,7 @@ The test `test_endswith_not_substring` correctly tests the endswith boundary, bu
 **Root cause:**
 
 ```python
-explicit = self._config.get(key)          # returns raw Any
+explicit = self._config.get(key)  # returns raw Any
 if explicit is not None:
     try:
         return int(explicit), "config"

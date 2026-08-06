@@ -493,11 +493,14 @@ class GraphPort(ABC):
     @abstractmethod
     def traverse(self, start: str, pattern: TraversalPattern) -> List[Node]: ...
 
+
 # NetworkX adapter
 class NetworkXAdapter(GraphPort):
     def __init__(self):
         import networkx as nx
+
         self._graph = nx.MultiDiGraph()
+
     # ... implementation
 ```
 
@@ -526,11 +529,14 @@ class VectorStorePort(ABC):
     @abstractmethod
     def search(self, query_vector: np.ndarray, k: int) -> List[SearchResult]: ...
 
+
 # FAISS adapter
 class FAISSAdapter(VectorStorePort):
     def __init__(self, dimension: int):
         import faiss
+
         self._index = faiss.IndexFlatL2(dimension)
+
     # ... implementation
 ```
 

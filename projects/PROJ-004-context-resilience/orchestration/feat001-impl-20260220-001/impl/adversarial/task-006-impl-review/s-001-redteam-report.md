@@ -366,9 +366,9 @@ _MAX_CONTEXT_WINDOW_TOKENS: int = 2_000_000  # 2x known maximum
 value = int(explicit)
 if value <= 0 or value > _MAX_CONTEXT_WINDOW_TOKENS:
     logger.warning(
-        "Invalid context_window_tokens=%d (must be 1 to %d); "
-        "falling through to auto-detection.",
-        value, _MAX_CONTEXT_WINDOW_TOKENS,
+        "Invalid context_window_tokens=%d (must be 1 to %d); falling through to auto-detection.",
+        value,
+        _MAX_CONTEXT_WINDOW_TOKENS,
     )
 else:
     return value, "config"
@@ -389,9 +389,10 @@ if context_window <= 0 or context_window > _MAX_CONTEXT_WINDOW_TOKENS:
 value = self._config.get_float(key, default=default)
 if not (0.0 < value <= 1.0):
     logger.warning(
-        "Threshold %r=%r is outside valid range (0.0, 1.0]; "
-        "using default %r.",
-        tier, value, default,
+        "Threshold %r=%r is outside valid range (0.0, 1.0]; using default %r.",
+        tier,
+        value,
+        default,
     )
     return default
 return value
@@ -409,6 +410,7 @@ Add `get_context_window() -> tuple[int, str]` to the port and adapter that retur
 
 ```python
 from typing import Literal
+
 context_window_source: Literal["config", "env-1m-detection", "default"] = "default"
 ```
 

@@ -397,9 +397,8 @@ User                  Claude               CLI Subprocess      Blackboard       
 from ecw.application.services.blackboard_repository import BlackboardRepository
 from ecw.infrastructure.adapters.secondary.messaging.event_publisher import EventPublisher
 
-def create_blackboard_service(
-    config: Optional[StorageConfig] = None
-) -> BlackboardService:
+
+def create_blackboard_service(config: Optional[StorageConfig] = None) -> BlackboardService:
     """Create configured BlackboardService with event publishing."""
     event_store, _ = get_configured_stores(config)
     event_publisher = EventPublisher()
@@ -409,9 +408,7 @@ def create_blackboard_service(
     event_publisher.register(dispatcher)
 
     repository = BlackboardRepository(
-        event_store=event_store,
-        event_publisher=event_publisher,
-        sidequest="ecw"
+        event_store=event_store, event_publisher=event_publisher, sidequest="ecw"
     )
 
     return BlackboardService(repository)
@@ -450,7 +447,7 @@ class SubAgentDispatcher(IEventSubscriber):
         return "sub-agent-dispatcher"
 
     def on_event(self, event: CloudEvent) -> None:
-        if event['type'] == 'ecw.blackboard.AgentSignalPosted':
+        if event["type"] == "ecw.blackboard.AgentSignalPosted":
             # Write signal file for main context to pick up
             signal_data = event.data
             signal_file = Path(f".ecw/signals/pending/{signal_data['signal_id']}.json")
@@ -481,6 +478,7 @@ For scenarios where CLI and main context are truly isolated:
 def write_signal_request(signal_data: dict):
     signal_file = Path(f".ecw/signals/requests/{uuid4()}.json")
     signal_file.write_text(json.dumps(signal_data))
+
 
 # Main context polls for signals (in SessionStart or periodic)
 def process_pending_signals():

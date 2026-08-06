@@ -75,6 +75,7 @@
 
 ```python
 from src.domain.markdown_ast.input_bounds import InputBounds
+
 b = InputBounds.DEFAULT
 # This raises FrozenInstanceError -- as claimed:
 # b.max_file_bytes = 999  # FrozenInstanceError
@@ -158,9 +159,7 @@ The critical combination: `re.DOTALL` causes `.` to match newlines; `re.MULTILIN
 
 From `ast_commands.py` lines 62-64:
 ```python
-_ENFORCE_PATH_CONTAINMENT: bool = os.environ.get(
-    "JERRY_DISABLE_PATH_CONTAINMENT", ""
-) != "1"
+_ENFORCE_PATH_CONTAINMENT: bool = os.environ.get("JERRY_DISABLE_PATH_CONTAINMENT", "") != "1"
 ```
 
 This is a **module-level constant** evaluated at import time. Setting `JERRY_DISABLE_PATH_CONTAINMENT=1` before importing `ast_commands` disables path containment for the entire lifetime of the process. The steelman characterizes this as "test compatibility." But:

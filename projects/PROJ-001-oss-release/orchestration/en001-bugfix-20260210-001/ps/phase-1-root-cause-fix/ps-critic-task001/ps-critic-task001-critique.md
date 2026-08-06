@@ -409,6 +409,7 @@ print('✓ Valid')
 **Actual Test:** Check validator version:
 ```python
 import jsonschema
+
 print(jsonschema.__version__)  # If < 4.0, may not fully support 2020-12
 ```
 

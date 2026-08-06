@@ -212,7 +212,7 @@ class RedisCacheAdapter(CachePort):
             value = self._client.get(key)
             if value is None:
                 return None
-            return json.loads(value.decode('utf-8'))
+            return json.loads(value.decode("utf-8"))
         except (redis.ConnectionError, json.JSONDecodeError):
             # Cache miss or parsing error; caller handles gracefully
             return None
@@ -220,11 +220,7 @@ class RedisCacheAdapter(CachePort):
     def set(self, key: str, value: Any, ttl_seconds: int) -> None:
         """Store a value in Redis cache with TTL."""
         try:
-            self._client.setex(
-                key,
-                ttl_seconds,
-                json.dumps(value)
-            )
+            self._client.setex(key, ttl_seconds, json.dumps(value))
         except redis.ConnectionError:
             # Silently fail if Redis is unavailable
             # Handler continues without caching
@@ -307,6 +303,7 @@ def test_read_inventory_with_caching():
 
 ```python
 from unittest.mock import Mock
+
 
 def test_read_inventory_cache_hit():
     # Mock the port

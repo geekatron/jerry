@@ -14,6 +14,11 @@ ACTIVITY: DEVELOPMENT
 INPUT: TASK-001 (requirements), TASK-002 (mode design), TASK-003 (invocation protocol)
 -->
 
+> **Type:** task
+> **Status:** completed
+> **Priority:** critical
+> **Created:** 2026-02-13
+> **Parent:** EN-304
 > **Version:** 1.0.0
 > **Agent:** ps-architect-304
 > **Quality Target:** >= 0.92
@@ -298,8 +303,19 @@ def validate_mode_registry(registry):
     """Validate all mode definitions conform to required schema."""
     REQUIRED_FIELDS = {"strategy", "description", "criticality", "token_budget"}
     VALID_TIERS = {"Ultra-Low", "Low", "Low-Medium", "Medium"}
-    VALID_STRATEGIES = {"S-001", "S-002", "S-003", "S-004", "S-007",
-                        "S-010", "S-011", "S-012", "S-013", "S-014", "none (v2.2.0 default)"}
+    VALID_STRATEGIES = {
+        "S-001",
+        "S-002",
+        "S-003",
+        "S-004",
+        "S-007",
+        "S-010",
+        "S-011",
+        "S-012",
+        "S-013",
+        "S-014",
+        "none (v2.2.0 default)",
+    }
     errors = []
 
     for mode_name, definition in registry.items():

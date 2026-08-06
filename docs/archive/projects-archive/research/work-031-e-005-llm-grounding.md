@@ -306,6 +306,7 @@ class HybridVertex(Vertex):
     """
     Vertex with both property graph and vector retrieval support.
     """
+
     embedding: Optional[List[float]] = None  # 768-dim vector (e.g., text-embedding-3-small)
     embedding_model: str = "text-embedding-3-small"
     last_embedded_at: datetime = None
@@ -604,7 +605,7 @@ class JerryKnowledgeRetriever:
         query: str,
         domains: List[str] = ["all"],
         max_results: int = 5,
-        include_graph: bool = True
+        include_graph: bool = True,
     ) -> List[RetrievalResult]:
         """
         Retrieve knowledge from Jerry's hybrid RAG system.

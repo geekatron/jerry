@@ -402,6 +402,7 @@ class CompleteWorkItemHandler:
             raise InvalidStateError()
         work_item._status = "done"  # Direct mutation!
 
+
 # CORRECT: Delegate to domain
 class CompleteWorkItemHandler:
     def handle(self, command):
@@ -416,6 +417,7 @@ class CompleteWorkItemHandler:
 class GetWorkItemHandler:
     def handle(self, query) -> WorkItem:  # Domain entity!
         return self._repo.get(query.id)
+
 
 # CORRECT: Return DTO
 class GetWorkItemHandler:

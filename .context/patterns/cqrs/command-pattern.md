@@ -188,6 +188,7 @@ def create_command_dispatcher() -> CommandDispatcher:
 
     return CommandDispatcher(handlers)
 
+
 # Usage in CLI adapter
 class CLIAdapter:
     def __init__(self, command_dispatcher: ICommandDispatcher) -> None:
@@ -264,6 +265,7 @@ class CreateTaskCommand:
         if not self.title:
             raise ValueError()  # Logic in command!
 
+
 # CORRECT: Handler validates
 class CreateTaskCommandHandler:
     def handle(self, command: CreateTaskCommand):
@@ -278,6 +280,7 @@ class CreateTaskCommandHandler:
 class CreateTaskCommand:
     def execute(self) -> Task:  # Returns data!
         return Task(...)
+
 
 # CORRECT: Command returns events, query reads data
 events = handler.handle(CreateTaskCommand(...))

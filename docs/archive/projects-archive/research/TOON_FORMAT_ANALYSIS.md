@@ -288,7 +288,8 @@ Invalid escapes (e.g., `\u0041`, `\/`) cause decode errors.
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic
 
-T = TypeVar('T')
+T = TypeVar("T")
+
 
 class SerializationPort(ABC, Generic[T]):
     """Port for entity serialization."""
@@ -315,6 +316,7 @@ class SerializationPort(ABC, Generic[T]):
 # src/infrastructure/adapters/toon_adapter.py
 from toon import encode, decode
 from ..domain.ports.serialization import SerializationPort
+
 
 class ToonSerializationAdapter(SerializationPort[T]):
     """TOON serialization adapter for LLM-optimized output."""

@@ -408,7 +408,7 @@ def evaluate_compliance(test_case, response) -> float:
         principle=test_case.principle,
         expected=test_case.expected_behavior,
         actual=response,
-        criteria=test_case.pass_criteria
+        criteria=test_case.pass_criteria,
     )
     return score
 ```

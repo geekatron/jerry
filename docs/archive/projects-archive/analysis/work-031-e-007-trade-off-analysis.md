@@ -412,9 +412,10 @@ Scoring each option on 1-5 scale (1=poor, 5=excellent):
 
 2. **Automated Serializer Testing:**
    ```python
-   @pytest.mark.parametrize("serializer", [
-       JsonSerializer, ToonSerializer, JsonLdSerializer, RdfSerializer, GraphSonSerializer
-   ])
+   @pytest.mark.parametrize(
+       "serializer",
+       [JsonSerializer, ToonSerializer, JsonLdSerializer, RdfSerializer, GraphSonSerializer],
+   )
    def test_round_trip(serializer):
        task = Task(title="Test")
        serialized = serializer.serialize(task)
@@ -502,24 +503,24 @@ Scoring each option on 1-5 scale (1=poor, 5=excellent):
 
        def validate_compatibility(self, entity_version: str) -> bool:
            # Major version changes break compatibility
-           return entity_version.split('.')[0] == self.CURRENT.split('.')[0]
+           return entity_version.split(".")[0] == self.CURRENT.split(".")[0]
    ```
 
 2. **Forward Migration Scripts:**
    ```python
    # migrations/001_add_blocking_reason.py
    def migrate(graph: Graph):
-       for task in graph.V().hasLabel('Task'):
-           if not task.has('blocking_reason'):
-               task.property('blocking_reason', None)
+       for task in graph.V().hasLabel("Task"):
+           if not task.has("blocking_reason"):
+               task.property("blocking_reason", None)
    ```
 
 3. **Rollback Migration Scripts:**
    ```python
    # migrations/001_add_blocking_reason_rollback.py
    def rollback(graph: Graph):
-       for task in graph.V().hasLabel('Task'):
-           task.properties('blocking_reason').drop()
+       for task in graph.V().hasLabel("Task"):
+           task.properties("blocking_reason").drop()
    ```
 
 4. **Schema Changelog (Constitutional Requirement P-030):**
@@ -531,7 +532,7 @@ Scoring each option on 1-5 scale (1=poor, 5=excellent):
    ```python
    def test_blocking_tasks_traversal():
        # Ensure traversal works across schema versions
-       blocked_tasks = g.V(task_id).out('BLOCKS').toList()
+       blocked_tasks = g.V(task_id).out("BLOCKS").toList()
        assert len(blocked_tasks) > 0
    ```
 

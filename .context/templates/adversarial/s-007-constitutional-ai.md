@@ -380,8 +380,11 @@ Scoring criteria for evaluating S-007 execution quality:
 ```python
 # src/application/commands/create_project_command_handler.py
 from application.ports import ICommandHandler
-from infrastructure.adapters.filesystem_project_adapter import FilesystemProjectAdapter  # CC-001 violation
+from infrastructure.adapters.filesystem_project_adapter import (
+    FilesystemProjectAdapter,
+)  # CC-001 violation
 from domain.project import Project
+
 
 class CreateProjectCommandHandler(ICommandHandler):
     def handle(self, command):  # CC-002 violation (no type hints per H-11)

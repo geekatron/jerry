@@ -151,10 +151,9 @@ Two `logger.warning()` calls exist in the C-06 code path:
 **Log statement 1 (oversized content):**
 ```python
 logger.warning(
-    "C-06: Rejected L2-REINJECT marker (rank=%s): "
-    "content length %d exceeds max %d",
-    match.group(1),      # rank number
-    len(marker_content), # integer
+    "C-06: Rejected L2-REINJECT marker (rank=%s): content length %d exceeds max %d",
+    match.group(1),  # rank number
+    len(marker_content),  # integer
     PromptReinforcementEngine._MAX_MARKER_CONTENT_LENGTH,  # integer constant
 )
 ```
@@ -162,8 +161,7 @@ logger.warning(
 **Log statement 2 (injection pattern):**
 ```python
 logger.warning(
-    "C-06: Rejected L2-REINJECT marker (rank=%s): "
-    "content matches injection pattern",
+    "C-06: Rejected L2-REINJECT marker (rank=%s): content matches injection pattern",
     match.group(1),  # rank number
 )
 ```

@@ -83,8 +83,7 @@ The remediation re-scopes the pip-audit responsibility from the Phase 1 audit ar
 
 ```python
 has_copyright = any(
-    line.startswith(COPYRIGHT_PREFIX) and COPYRIGHT_HOLDER in line
-    for line in head_lines
+    line.startswith(COPYRIGHT_PREFIX) and COPYRIGHT_HOLDER in line for line in head_lines
 )
 ```
 

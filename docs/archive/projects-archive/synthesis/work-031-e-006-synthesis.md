@@ -225,10 +225,7 @@ Implement multi-layer supernode prevention:
 ```python
 class SupernodeValidator:
     def validate_vertex_degree(
-        self,
-        vertex_id: VertexId,
-        edge_label: str,
-        edge_count: int
+        self, vertex_id: VertexId, edge_label: str, edge_count: int
     ) -> ValidationResult:
         if edge_count >= 1000:
             return Error(f"Supernode detected: {vertex_id}")
@@ -456,16 +453,16 @@ If Not Supported: Emit warning, log to CloudEvents
 Implement HTTP content negotiation based on Accept header:
 
 ```python
-@app.route('/jer/work-tracker/task/<task_id>')
+@app.route("/jer/work-tracker/task/<task_id>")
 def resolve_task_uri(task_id: str):
-    accept = request.headers.get('Accept', 'application/json')
+    accept = request.headers.get("Accept", "application/json")
 
-    if 'application/ld+json' in accept:
+    if "application/ld+json" in accept:
         return jsonify(task_as_jsonld), 200
-    elif 'text/turtle' in accept:
+    elif "text/turtle" in accept:
         return task_as_turtle, 200
-    elif 'text/html' in accept:
-        return render_template('task.html'), 200
+    elif "text/html" in accept:
+        return render_template("task.html"), 200
     else:
         return jsonify(task_as_json), 200
 ```
@@ -699,7 +696,7 @@ class ValidationPipeline:
         results.append(self.schema_validator.validate(entity))
 
         # Layer 2: SHACL constraints (if RDF serializable)
-        if hasattr(entity, 'to_rdf'):
+        if hasattr(entity, "to_rdf"):
             results.append(self.shacl_validator.validate(entity.to_rdf()))
 
         # Layer 3: Supernode detection (if graph vertex)
@@ -710,7 +707,7 @@ class ValidationPipeline:
         results.append(self.uri_validator.validate(entity.uri))
 
         # Layer 5: Grounding verification (if LLM-generated)
-        if entity.metadata.get('llm_generated'):
+        if entity.metadata.get("llm_generated"):
             results.append(self.grounding_validator.verify(entity))
 
         return ValidationResult.combine(results)

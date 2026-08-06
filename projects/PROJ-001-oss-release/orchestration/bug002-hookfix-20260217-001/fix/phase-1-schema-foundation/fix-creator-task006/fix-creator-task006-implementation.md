@@ -212,9 +212,7 @@ for schema_file in schemas_dir.glob("*.schema.json"):
 resolver = RefResolver.from_schema(base_schema, store=store)
 
 # Load event-specific schema
-session_schema = json.loads(
-    (schemas_dir / "session-start-output.schema.json").read_text()
-)
+session_schema = json.loads((schemas_dir / "session-start-output.schema.json").read_text())
 validator = Draft202012Validator(session_schema, resolver=resolver)
 
 # Validate hook output
@@ -222,8 +220,8 @@ hook_output = {
     "systemMessage": "Jerry Framework: Project active",
     "hookSpecificOutput": {
         "hookEventName": "SessionStart",
-        "additionalContext": "Project context here"
-    }
+        "additionalContext": "Project context here",
+    },
 }
 
 errors = list(validator.iter_errors(hook_output))
@@ -240,9 +238,8 @@ else:
 import pytest
 from jsonschema import Draft202012Validator
 
-def test_session_start_output_conforms_to_schema(
-    session_start_schema, hook_output
-):
+
+def test_session_start_output_conforms_to_schema(session_start_schema, hook_output):
     """Contract test: SessionStart output must match schema."""
     validator = Draft202012Validator(session_start_schema)
     errors = list(validator.iter_errors(hook_output))

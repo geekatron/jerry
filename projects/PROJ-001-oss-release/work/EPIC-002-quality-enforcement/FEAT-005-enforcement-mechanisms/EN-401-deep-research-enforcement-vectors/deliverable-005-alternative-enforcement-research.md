@@ -159,6 +159,7 @@ from mcp.types import Tool, TextContent
 
 server = Server("jerry-enforcement")
 
+
 @server.tool()
 async def write_file_with_quality_gate(
     file_path: str,
@@ -179,11 +180,13 @@ async def write_file_with_quality_gate(
     """
     # Enforcement gate
     if file_path.startswith("src/") and not quality_evidence:
-        return [TextContent(
-            type="text",
-            text="BLOCKED: Writing to src/ requires quality_evidence. "
-                 "Provide a reference to a quality review artifact."
-        )]
+        return [
+            TextContent(
+                type="text",
+                text="BLOCKED: Writing to src/ requires quality_evidence. "
+                "Provide a reference to a quality review artifact.",
+            )
+        ]
 
     # If validation passes, perform the actual write
     Path(file_path).parent.mkdir(parents=True, exist_ok=True)
@@ -211,6 +214,7 @@ async def get_enforcement_rules() -> str:
     rules = load_project_enforcement_rules(project)
     return format_rules_as_context(rules)
 
+
 @server.resource("jerry://enforcement/compliance-status")
 async def get_compliance_status() -> str:
     """Provide current compliance status for the session."""
@@ -219,7 +223,7 @@ async def get_compliance_status() -> str:
     Quality Compliance Dashboard:
     - Quality reviews completed: {status.reviews_completed}
     - Quality score documented: {status.score_documented}
-    - Skills invoked: {', '.join(status.skills_invoked)}
+    - Skills invoked: {", ".join(status.skills_invoked)}
     - Artifacts persisted: {status.artifacts_persisted}
     - Overall compliance: {status.compliance_percentage}%
     """
@@ -261,7 +265,7 @@ async def quality_review_prompt(
                 3. List specific findings (strengths and weaknesses)
                 4. Provide actionable revision recommendations
                 5. Verdict: APPROVE (>=0.92) / REVISE (<0.92)
-                """
+                """,
             ),
         )
     ]
@@ -365,25 +369,19 @@ def validate_python_content(file_path: str, content: str) -> tuple[bool, str]:
     if "src/domain/" in file_path:
         forbidden_imports = check_domain_imports(tree)
         if forbidden_imports:
-            violations.append(
-                f"Domain layer cannot import from: {forbidden_imports}"
-            )
+            violations.append(f"Domain layer cannot import from: {forbidden_imports}")
 
     if "src/application/" in file_path:
         forbidden_imports = check_application_imports(tree)
         if forbidden_imports:
-            violations.append(
-                f"Application layer cannot import from: {forbidden_imports}"
-            )
+            violations.append(f"Application layer cannot import from: {forbidden_imports}")
 
     # Check 2: Type hints on public functions
     for node in ast.walk(tree):
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
             if not node.name.startswith("_"):
                 if node.returns is None:
-                    violations.append(
-                        f"Public function '{node.name}' missing return type hint"
-                    )
+                    violations.append(f"Public function '{node.name}' missing return type hint")
 
     # Check 3: Docstrings on public classes
     for node in ast.walk(tree):
@@ -395,21 +393,17 @@ def validate_python_content(file_path: str, content: str) -> tuple[bool, str]:
                     and isinstance(node.body[0].value, ast.Constant)
                     and isinstance(node.body[0].value.value, str)
                 ):
-                    violations.append(
-                        f"Public class '{node.name}' missing docstring"
-                    )
+                    violations.append(f"Public class '{node.name}' missing docstring")
 
     # Check 4: One-class-per-file
     public_classes = [
-        node for node in ast.walk(tree)
-        if isinstance(node, ast.ClassDef)
-        and not node.name.startswith("_")
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, ast.ClassDef) and not node.name.startswith("_")
     ]
     if len(public_classes) > 1:
         class_names = [c.name for c in public_classes]
-        violations.append(
-            f"One-class-per-file violation: found {class_names}"
-        )
+        violations.append(f"One-class-per-file violation: found {class_names}")
 
     if violations:
         return False, "; ".join(violations)
@@ -541,11 +535,11 @@ ENFORCEMENT:
     "current_state": "IMPLEMENTING",
     "transitions": [
         {"from": "PLANNING", "to": "RESEARCHING", "timestamp": "..."},
-        {"from": "RESEARCHING", "to": "IMPLEMENTING", "timestamp": "..."}
+        {"from": "RESEARCHING", "to": "IMPLEMENTING", "timestamp": "..."},
     ],
     "blocked_transitions": [],
     "quality_score": null,
-    "reviews_completed": 0
+    "reviews_completed": 0,
 }
 ```
 
@@ -611,12 +605,14 @@ class RuntimeConstraintChecker:
         for name, check_fn, level in self.constraints:
             result = check_fn(proposed_action)
             if not result.satisfied:
-                violations.append(ConstraintViolation(
-                    constraint=name,
-                    level=level,
-                    message=result.message,
-                    proposed_action=proposed_action,
-                ))
+                violations.append(
+                    ConstraintViolation(
+                        constraint=name,
+                        level=level,
+                        message=result.message,
+                        proposed_action=proposed_action,
+                    )
+                )
         return violations
 ```
 
@@ -666,18 +662,18 @@ class AgentContract:
 create_implementation_contract = AgentContract(
     action_name="create_implementation",
     preconditions=[
-        lambda: plan_exists(),                    # Plan must exist
-        lambda: requirements_defined(),           # Requirements must be defined
-        lambda: not is_workflow_state("BLOCKED"), # Not in blocked state
+        lambda: plan_exists(),  # Plan must exist
+        lambda: requirements_defined(),  # Requirements must be defined
+        lambda: not is_workflow_state("BLOCKED"),  # Not in blocked state
     ],
     postconditions=[
-        lambda: test_file_exists(),               # Test file must exist
-        lambda: docstrings_present(),             # All public functions documented
-        lambda: type_hints_present(),             # All public functions typed
+        lambda: test_file_exists(),  # Test file must exist
+        lambda: docstrings_present(),  # All public functions documented
+        lambda: type_hints_present(),  # All public functions typed
     ],
     invariants=[
         lambda: architecture_boundaries_respected(),  # No layer violations
-        lambda: one_class_per_file(),                 # File organization rule
+        lambda: one_class_per_file(),  # File organization rule
     ],
 )
 ```
@@ -1023,11 +1019,13 @@ def detect_anomalies(tool_log: list[ToolEvent]) -> list[Anomaly]:
         preceding = [e for e in tool_log if e.timestamp < write.timestamp]
         test_reads = [e for e in preceding if "test" in e.path.lower()]
         if not test_reads:
-            anomalies.append(Anomaly(
-                type="implementation_without_test_context",
-                event=write,
-                severity="MEDIUM",
-            ))
+            anomalies.append(
+                Anomaly(
+                    type="implementation_without_test_context",
+                    event=write,
+                    severity="MEDIUM",
+                )
+            )
 
     return anomalies
 ```

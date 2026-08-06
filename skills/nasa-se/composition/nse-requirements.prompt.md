@@ -92,6 +92,7 @@ use the `/ast` skill instead of regex or raw text parsing.
 5. **Extracting status and parent from existing requirements docs:**
    ```python
    from skills.ast.scripts.ast_ops import query_frontmatter
+
    fm = query_frontmatter("projects/${JERRY_PROJECT}/requirements/PROJ-002-e-101-propulsion-reqs.md")
    # Returns: {"Type": "story", "Status": "baselined", "Parent": "EPIC-001", ...}
    status = fm.get("Status", "")
@@ -102,7 +103,10 @@ use the `/ast` skill instead of regex or raw text parsing.
 6. **Validating nav table compliance of requirements documents (H-23/H-24):**
    ```python
    from skills.ast.scripts.ast_ops import validate_nav_table_file
-   result = validate_nav_table_file("projects/${JERRY_PROJECT}/requirements/PROJ-002-e-101-propulsion-reqs.md")
+
+   result = validate_nav_table_file(
+       "projects/${JERRY_PROJECT}/requirements/PROJ-002-e-101-propulsion-reqs.md"
+   )
    # Returns: {"is_valid": bool, "missing_entries": [...], "orphaned_entries": [...]}
    # Missing nav entries indicate incomplete document structure
    ```
@@ -110,6 +114,7 @@ use the `/ast` skill instead of regex or raw text parsing.
 7. **Parsing requirements doc structure for completeness assessment:**
    ```python
    from skills.ast.scripts.ast_ops import parse_file
+
    info = parse_file("projects/${JERRY_PROJECT}/requirements/PROJ-002-e-101-propulsion-reqs.md")
    # Returns: {"heading_count": N, "has_frontmatter": bool, "node_types": [...]}
    # Use heading_count to verify required sections present (L0/L1/L2 + Traceability)

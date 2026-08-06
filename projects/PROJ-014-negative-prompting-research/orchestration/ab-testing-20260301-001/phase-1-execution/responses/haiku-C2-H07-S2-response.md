@@ -84,6 +84,7 @@ class OrderDTO:
     Infrastructure adapters convert their concrete types (e.g., OrderRecord)
     to this DTO at the boundary.
     """
+
     id: str
     status: str
     timestamp: datetime
@@ -132,6 +133,7 @@ from src.application.ports.order_repository import IOrderRepository
 @dataclass
 class OrderRecord:
     """Internal database record representation."""
+
     id: str
     status: str
     timestamp: datetime
@@ -146,11 +148,7 @@ class OrderDatabaseAdapter(IOrderRepository):
         record: OrderRecord = self._query_database(order_id)
 
         # Convert internal record to DTO at boundary
-        return OrderDTO(
-            id=record.id,
-            status=record.status,
-            timestamp=record.timestamp
-        )
+        return OrderDTO(id=record.id, status=record.status, timestamp=record.timestamp)
 
     def _query_database(self, order_id: str) -> OrderRecord:
         """Internal database query returning OrderRecord."""

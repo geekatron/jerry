@@ -225,18 +225,23 @@ Per Alistair Cockburn (pattern creator, 2005):
 from abc import ABC, abstractmethod
 from typing import Protocol
 
+
 class IWorkItemRepository(Protocol):
     """Secondary Port - Driven by application"""
+
     def save(self, item: WorkItem) -> None: ...
     def get(self, id: WorkItemId) -> WorkItem | None: ...
+
 
 # Domain Entity
 from dataclasses import dataclass, field
 from uuid import UUID, uuid4
 
+
 @dataclass
 class WorkItem:
     """Aggregate Root"""
+
     id: UUID = field(default_factory=uuid4)
     title: str = ""
     status: str = "pending"
@@ -246,9 +251,11 @@ class WorkItem:
             raise DomainError("Already completed")
         self.status = "completed"
 
+
 # Adapter (Infrastructure)
 class SQLiteWorkItemRepository:
     """Secondary Adapter - Implements Port"""
+
     def __init__(self, db_path: str):
         self.conn = sqlite3.connect(db_path)
 

@@ -291,10 +291,7 @@ Each pattern entry follows the format: Name, Identifier, Definition, When to Use
 **Example:**
 ```python
 # DSPy programmatic enforcement (not a prompt fragment):
-dspy.Assert(
-    len(response.citations) >= 1,
-    "Every factual claim must have at least one citation."
-)
+dspy.Assert(len(response.citations) >= 1, "Every factual claim must have at least one citation.")
 ```
 
 **Evidence Base:**

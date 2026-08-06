@@ -13,6 +13,11 @@ PROJECT: PROJ-001-oss-release
 ACTIVITY: DEVELOPMENT
 -->
 
+> **Type:** task
+> **Status:** completed
+> **Priority:** critical
+> **Created:** 2026-02-13
+> **Parent:** EN-307
 > **Version:** 1.0.0
 > **Agent:** ps-architect-307
 > **Quality Target:** >= 0.92
@@ -420,7 +425,7 @@ You are the orch-tracker agent (v3.0.0).
 - **Quality Score:** {score | null}
 - **Iteration:** {iteration_number | null}
 - **Checkpoint Trigger:** {trigger | null}
-"""
+""",
 )
 ```
 

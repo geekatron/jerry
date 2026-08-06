@@ -534,7 +534,7 @@ Validate the authentication requirements document against:
 3. NPR 7123.1D Process 2 requirements
 
 Provide compliance score, findings, and remediation recommendations.
-"""
+""",
 )
 ```
 </example_complete_invocation>

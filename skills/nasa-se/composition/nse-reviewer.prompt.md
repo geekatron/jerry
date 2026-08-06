@@ -102,6 +102,7 @@ during entrance/exit criteria checking.
 5. **Extracting status from work items for criteria verification:**
    ```python
    from skills.ast.scripts.ast_ops import query_frontmatter
+
    fm = query_frontmatter("projects/${JERRY_PROJECT}/requirements/REQ-001.md")
    # Returns: {"Type": "story", "Status": "completed", "Parent": "FEAT-001", ...}
    status = fm.get("Status", "")
@@ -111,6 +112,7 @@ during entrance/exit criteria checking.
 6. **Validating review package nav table compliance (H-23/H-24):**
    ```python
    from skills.ast.scripts.ast_ops import validate_nav_table_file
+
    result = validate_nav_table_file("projects/${JERRY_PROJECT}/reviews/PROJ-002-e-201-PDR.md")
    # Returns: {"is_valid": True, "missing_entries": [], "orphaned_entries": []}
    if not result["is_valid"]:
@@ -122,6 +124,7 @@ during entrance/exit criteria checking.
 7. **Parsing review artifact structure:**
    ```python
    from skills.ast.scripts.ast_ops import parse_file
+
    info = parse_file("projects/${JERRY_PROJECT}/design/design-doc.md")
    # Returns: {"heading_count": N, "has_frontmatter": bool, "node_types": [...]}
    # Use heading_count and has_frontmatter to assess documentation completeness

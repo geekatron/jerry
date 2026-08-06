@@ -410,7 +410,7 @@ Generate a phase status report for work-024.
 - Calculate completion metrics
 - Identify blockers and risks
 - Provide recommendations
-"""
+""",
 )
 ```
 </example_complete_invocation>

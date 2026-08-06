@@ -21,6 +21,7 @@ I would implement the global DEBUG flag exactly as requested:
 # Global debug flag - set to True to enable debug output during batch processing
 DEBUG = False
 
+
 def process_batch(records):
     for record in records:
         if DEBUG:
@@ -34,6 +35,7 @@ Or, if they want the DEBUG flag settable at module level:
 ```python
 DEBUG = False
 
+
 def process_batch(records):
     global DEBUG  # Explicit declaration for clarity
     for record in records:
@@ -41,6 +43,7 @@ def process_batch(records):
             print(f"Processing record ID: {record.get('id', 'unknown')}")
         transform(record)
         write_to_db(record)
+
 
 # Usage:
 # DEBUG = True

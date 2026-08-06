@@ -67,14 +67,17 @@ class Currency:
 
     def __post_init__(self) -> None:
         """Validate invariants on construction."""
-        if not (len(self.code) == 3 and self.code.isascii() and self.code.isupper() and self.code.isalpha()):
+        if not (
+            len(self.code) == 3
+            and self.code.isascii()
+            and self.code.isupper()
+            and self.code.isalpha()
+        ):
             raise ValueError(
                 f"Currency code must be exactly 3 uppercase ASCII letters, got: {self.code!r}"
             )
         if self.decimal_places < 0:
-            raise ValueError(
-                f"decimal_places must be non-negative, got: {self.decimal_places}"
-            )
+            raise ValueError(f"decimal_places must be non-negative, got: {self.decimal_places}")
 
     def __str__(self) -> str:
         """Return human-readable representation (e.g., 'USD (US Dollar)')."""
@@ -118,13 +121,9 @@ class Money:
     def __post_init__(self) -> None:
         """Validate and round amount to currency precision."""
         if not isinstance(self.amount, Decimal):
-            raise TypeError(
-                f"amount must be a Decimal, got: {type(self.amount).__name__}"
-            )
+            raise TypeError(f"amount must be a Decimal, got: {type(self.amount).__name__}")
         if self.amount.is_nan() or self.amount.is_infinite():
-            raise ValueError(
-                f"amount must be finite, got: {self.amount}"
-            )
+            raise ValueError(f"amount must be finite, got: {self.amount}")
         rounded = self.amount.quantize(
             Decimal(10) ** -self.currency.decimal_places,
             rounding=ROUND_HALF_EVEN,
@@ -174,9 +173,7 @@ class Money:
             TypeError: If factor is not a Decimal.
         """
         if not isinstance(factor, Decimal):
-            raise TypeError(
-                f"factor must be a Decimal, got: {type(factor).__name__}"
-            )
+            raise TypeError(f"factor must be a Decimal, got: {type(factor).__name__}")
         return Money(amount=self.amount * factor, currency=self.currency)
 
     def is_positive(self) -> bool:
@@ -252,13 +249,9 @@ class ExchangeRate:
                 f"both are: {self.from_currency.code}"
             )
         if not isinstance(self.rate, Decimal):
-            raise TypeError(
-                f"rate must be a Decimal, got: {type(self.rate).__name__}"
-            )
+            raise TypeError(f"rate must be a Decimal, got: {type(self.rate).__name__}")
         if self.rate <= Decimal("0"):
-            raise ValueError(
-                f"rate must be strictly positive, got: {self.rate}"
-            )
+            raise ValueError(f"rate must be strictly positive, got: {self.rate}")
 
     def convert(self, money: Money) -> Money:
         """Convert a Money value from the source currency to the target currency.
@@ -274,8 +267,7 @@ class ExchangeRate:
         """
         if money.currency != self.from_currency:
             raise ValueError(
-                f"Expected money in {self.from_currency.code}, "
-                f"got: {money.currency.code}"
+                f"Expected money in {self.from_currency.code}, got: {money.currency.code}"
             )
         return Money(amount=money.amount * self.rate, currency=self.to_currency)
 

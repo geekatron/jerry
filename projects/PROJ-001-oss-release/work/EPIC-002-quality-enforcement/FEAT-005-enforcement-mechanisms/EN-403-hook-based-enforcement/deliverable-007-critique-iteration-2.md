@@ -279,7 +279,9 @@ The original RT-002 attack vector exploited the fact that `evaluate_edit()` unco
 
 # Step 2: Adversary uses Edit to add non-compliant import
 old_string = "from dataclasses import dataclass"
-new_string = "from dataclasses import dataclass\nfrom src.infrastructure.adapters import SomeAdapter"
+new_string = (
+    "from dataclasses import dataclass\nfrom src.infrastructure.adapters import SomeAdapter"
+)
 ```
 
 **Result:** BLOCKED. The engine reads the existing file, applies the replacement, parses the resulting AST, and detects the infrastructure import in a domain-layer file. The `_check_import_boundary()` method catches it. L3 enforcement is operational.

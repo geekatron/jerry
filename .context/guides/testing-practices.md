@@ -406,9 +406,11 @@ def complete(self) -> None:
     self._validate_can_complete()
     self._transition_to(Status.COMPLETED)
 
+
 def _validate_can_complete(self) -> None:
     if self.status != Status.IN_PROGRESS:
         raise InvalidStateError(...)
+
 
 def _transition_to(self, target: Status) -> None:
     self.status = target
@@ -482,6 +484,7 @@ def test_create_work_item_when_valid_input_then_item_created():
     assert isinstance(events[0], WorkItemCreated)
     assert events[0].title == "Implement login"
 
+
 def test_complete_work_item_when_in_progress_then_status_completed():
     """Happy path: Completing in-progress item succeeds."""
     item = WorkItem.create(title="Test")
@@ -490,6 +493,7 @@ def test_complete_work_item_when_in_progress_then_status_completed():
     item.complete()
 
     assert item.status == Status.COMPLETED
+
 
 def test_list_work_items_when_items_exist_then_returns_list():
     """Happy path: Query returns items."""
@@ -523,12 +527,14 @@ def test_create_work_item_when_empty_title_then_raises_validation_error():
 
     assert "title" in str(exc_info.value)
 
+
 def test_complete_work_item_when_not_in_progress_then_raises_error():
     """Negative: Cannot complete if not started."""
     item = WorkItem.create(title="Test")
 
     with pytest.raises(InvalidStateError):
         item.complete()
+
 
 def test_get_work_item_when_not_found_then_raises_not_found_error():
     """Negative: Missing item raises error."""
@@ -560,12 +566,14 @@ def test_create_work_item_when_max_length_title_then_succeeds():
 
     assert len(item.title) == 500
 
+
 def test_create_work_item_when_unicode_emoji_title_then_succeeds():
     """Edge: Unicode and emoji in title."""
     title = "Fix bug 🐛 in module"
     item = WorkItem.create(title=title)
 
     assert item.title == title
+
 
 def test_list_work_items_when_no_items_then_returns_empty_list():
     """Edge: Empty repository returns empty list."""
@@ -575,6 +583,7 @@ def test_list_work_items_when_no_items_then_returns_empty_list():
     result = handler.handle(ListWorkItemsQuery())
 
     assert result == []
+
 
 def test_work_item_with_1000_subtasks_then_handles_correctly():
     """Edge: Large number of subtasks."""
@@ -743,6 +752,7 @@ def calculate_priority_score(priority: Priority, urgency: Urgency) -> int:
     """Pure function: no side effects."""
     return priority.value * urgency.value
 
+
 def test_calculate_priority_score_BAD(mocker):
     """BAD: Mocking a pure function."""
     mocker.patch("calculate_priority_score", return_value=42)
@@ -778,6 +788,7 @@ class InMemoryWorkItemRepository(IRepository):
 
     def get(self, id: str) -> WorkItem | None:
         return self._items.get(id)
+
 
 # Test: Use in-memory implementation
 def test_handler_workflow_with_in_memory_repo():
@@ -882,6 +893,7 @@ def test_work_item_can_be_started():
     item.start()
     assert item.status == Status.IN_PROGRESS
 
+
 def test_work_item_can_be_completed():
     item = WorkItem.create(title="Test")
     item.start()
@@ -940,8 +952,8 @@ def test_create_work_item_sets_all_properties():
 ```python
 def complete(self) -> None:
     if self.status != Status.IN_PROGRESS:  # Line 1
-        raise InvalidStateError(...)        # Line 2
-    self.status = Status.COMPLETED          # Line 3
+        raise InvalidStateError(...)  # Line 2
+    self.status = Status.COMPLETED  # Line 3
 ```
 
 **Coverage scenarios**:
@@ -1065,10 +1077,12 @@ def test_only_bootstrap_imports_infrastructure_adapters():
 import pytest
 from src.domain.aggregates.work_item import WorkItem
 
+
 @pytest.fixture
 def sample_work_item() -> WorkItem:
     """Create a sample work item for testing."""
     return WorkItem.create(title="Sample Work Item")
+
 
 @pytest.fixture
 def in_progress_work_item(sample_work_item: WorkItem) -> WorkItem:

@@ -218,7 +218,7 @@ Design the AI-first interaction pattern for the recommendation engine.
 
 ## MANDATORY PERSISTENCE (P-002)
 Create file at: projects/${JERRY_PROJECT}/engagements/UX-0001/ux-ai-design-guide-recommendation-engine.md
-"""
+""",
 )
 ```
 

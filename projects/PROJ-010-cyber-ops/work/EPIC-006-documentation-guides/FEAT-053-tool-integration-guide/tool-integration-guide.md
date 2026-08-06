@@ -99,6 +99,7 @@ All adapter types implement this interface:
 ```python
 from cyberops.adapters import ToolParams, StructuredResult
 
+
 class CyberOpsAdapter:
     """Base interface for all tool adapters."""
 
@@ -250,6 +251,7 @@ import subprocess
 from cyberops.adapters.base import CyberOpsAdapter, ToolParams, StructuredResult
 from cyberops.adapters.normalizers import NmapNormalizer
 
+
 class NmapAdapter(CyberOpsAdapter):
     """CLI adapter for Nmap network scanner."""
 
@@ -259,11 +261,29 @@ class NmapAdapter(CyberOpsAdapter):
 
     # Command allowlist -- ONLY these flags are permitted
     ALLOWED_FLAGS = {
-        "-sS", "-sT", "-sU", "-sV", "-sC", "-O",
-        "-p", "-Pn", "--open", "-oX", "-oN",
-        "--top-ports", "--min-rate", "--max-rate",
-        "-T0", "-T1", "-T2", "-T3", "-T4",
-        "-A", "--script", "-n", "-v",
+        "-sS",
+        "-sT",
+        "-sU",
+        "-sV",
+        "-sC",
+        "-O",
+        "-p",
+        "-Pn",
+        "--open",
+        "-oX",
+        "-oN",
+        "--top-ports",
+        "--min-rate",
+        "--max-rate",
+        "-T0",
+        "-T1",
+        "-T2",
+        "-T3",
+        "-T4",
+        "-A",
+        "--script",
+        "-n",
+        "-v",
     }
 
     def is_available(self) -> bool:
@@ -287,15 +307,13 @@ class NmapAdapter(CyberOpsAdapter):
             base_flag = flag.split("=")[0] if "=" in flag else flag
             if base_flag not in self.ALLOWED_FLAGS:
                 return ValidationResult(
-                    valid=False,
-                    error=f"Flag '{base_flag}' not in command allowlist"
+                    valid=False, error=f"Flag '{base_flag}' not in command allowlist"
                 )
         # Verify target is in scope (for /red-team)
         if params.scope_validation_required:
             if not self.scope_oracle.validate_target(params.target):
                 return ValidationResult(
-                    valid=False,
-                    error=f"Target '{params.target}' is outside authorized scope"
+                    valid=False, error=f"Target '{params.target}' is outside authorized scope"
                 )
         return ValidationResult(valid=True)
 
@@ -310,7 +328,7 @@ class NmapAdapter(CyberOpsAdapter):
                 verification_guidance=[
                     "Install nmap: https://nmap.org/download.html",
                     "Verify installation: nmap --version",
-                ]
+                ],
             )
 
         validation = self.validate_params(params)
@@ -376,6 +394,7 @@ class NmapAdapter(CyberOpsAdapter):
 # cyberops/adapters/normalizers/nmap_normalizer.py
 from libnmap.parser import NmapParser
 from cyberops.adapters.schema import Finding, Location, Severity
+
 
 class NmapNormalizer:
     """Normalize Nmap XML output to the common Finding schema."""
@@ -445,6 +464,7 @@ import httpx
 from cyberops.adapters.base import CyberOpsAdapter, ToolParams, StructuredResult
 from cyberops.adapters.credentials import CredentialBroker
 
+
 class SonarQubeAdapter(CyberOpsAdapter):
     """API adapter for SonarQube code quality platform."""
 
@@ -487,7 +507,7 @@ class SonarQubeAdapter(CyberOpsAdapter):
                 verification_guidance=[
                     f"Verify SonarQube is running at {self.base_url}",
                     "Check API token in credential store",
-                ]
+                ],
             )
 
         token = self.credential_broker.get_token()
@@ -572,6 +592,7 @@ import json
 
 mcp = FastMCP("semgrep-security")
 
+
 @mcp.tool()
 def scan_code(
     target_path: str,
@@ -588,10 +609,13 @@ def scan_code(
         output_format: Output format (sarif or json)
     """
     cmd = [
-        "semgrep", "scan",
-        "--config", config,
+        "semgrep",
+        "scan",
+        "--config",
+        config,
         f"--{output_format}",
-        "--severity", severity,
+        "--severity",
+        severity,
         target_path,
     ]
 
@@ -606,6 +630,7 @@ def scan_code(
     if output_format == "sarif":
         return json.loads(result.stdout)
     return json.loads(result.stdout)
+
 
 @mcp.tool()
 def generate_rule(
@@ -623,16 +648,20 @@ def generate_rule(
         severity: Rule severity (ERROR, WARNING, INFO)
     """
     rule = {
-        "rules": [{
-            "id": f"custom-rule-{hash(pattern) % 10000}",
-            "pattern": pattern,
-            "message": message,
-            "languages": [language],
-            "severity": severity,
-        }]
+        "rules": [
+            {
+                "id": f"custom-rule-{hash(pattern) % 10000}",
+                "pattern": pattern,
+                "message": message,
+                "languages": [language],
+                "severity": severity,
+            }
+        ]
     }
     import yaml
+
     return yaml.dump(rule, default_flow_style=False)
+
 
 if __name__ == "__main__":
     mcp.run()
@@ -662,6 +691,7 @@ Library adapters integrate Python packages directly, avoiding subprocess overhea
 from cyberops.adapters.base import CyberOpsAdapter, ToolParams, StructuredResult
 from cyberops.adapters.credentials import CredentialBroker
 
+
 class ImpacketAdapter(CyberOpsAdapter):
     """Library adapter for Impacket protocol library."""
 
@@ -672,6 +702,7 @@ class ImpacketAdapter(CyberOpsAdapter):
         """Check if impacket is importable."""
         try:
             import impacket
+
             return True
         except ImportError:
             return False
@@ -733,17 +764,19 @@ class ImpacketAdapter(CyberOpsAdapter):
             findings = []
             for share in shares:
                 share_name = share["shi1_netname"][:-1]  # Remove null terminator
-                findings.append(Finding(
-                    id=f"impacket-smb-{params.target}-{share_name}",
-                    source_tool="impacket",
-                    severity=Severity.INFO,
-                    category="DISCOVERY",
-                    title=f"SMB Share: {share_name}",
-                    description=f"SMB share '{share_name}' accessible on {params.target}",
-                    location=Location(host=params.target, port=445, protocol="tcp"),
-                    confidence=0.95,
-                    raw_data={"share_name": share_name, "remark": share["shi1_remark"]},
-                ))
+                findings.append(
+                    Finding(
+                        id=f"impacket-smb-{params.target}-{share_name}",
+                        source_tool="impacket",
+                        severity=Severity.INFO,
+                        category="DISCOVERY",
+                        title=f"SMB Share: {share_name}",
+                        description=f"SMB share '{share_name}' accessible on {params.target}",
+                        location=Location(host=params.target, port=445, protocol="tcp"),
+                        confidence=0.95,
+                        raw_data={"share_name": share_name, "remark": share["shi1_remark"]},
+                    )
+                )
 
             return StructuredResult(
                 status="success",
@@ -783,6 +816,7 @@ class ImpacketAdapter(CyberOpsAdapter):
 # tests/adapters/test_nmap_adapter.py
 import pytest
 from cyberops.adapters.cli.nmap_adapter import NmapAdapter
+
 
 class TestNmapAdapter:
     """Tests for the Nmap CLI adapter."""
@@ -831,9 +865,7 @@ class TestNmapAdapter:
         )
         # --script is allowed, "exploit" as a separate arg would be treated as target
         # Actual dangerous flags:
-        result = adapter.validate_params(
-            ToolParams(target="10.0.0.1", flags=["--interactive"])
-        )
+        result = adapter.validate_params(ToolParams(target="10.0.0.1", flags=["--interactive"]))
         assert result.valid is False
 
     def test_shell_false_enforced(self, mock_subprocess):
@@ -846,9 +878,7 @@ class TestNmapAdapter:
     def test_timeout_enforcement(self, mock_subprocess_timeout):
         """Verify timeout produces correct result."""
         adapter = NmapAdapter()
-        result = adapter.execute(
-            ToolParams(target="10.0.0.1", flags=["-sV"], timeout=5)
-        )
+        result = adapter.execute(ToolParams(target="10.0.0.1", flags=["-sV"], timeout=5))
         assert result.status == "timeout"
 
     def test_scope_validation_for_red_team(self, mock_scope_oracle):
@@ -918,11 +948,13 @@ adapters:
 adapter = adapter_registry.get("metasploit")
 
 # Search for exploit modules matching a CVE
-result = adapter.execute(ToolParams(
-    operation="module_search",
-    query="cve:2026-1234",
-    module_type="exploit",
-))
+result = adapter.execute(
+    ToolParams(
+        operation="module_search",
+        query="cve:2026-1234",
+        module_type="exploit",
+    )
+)
 
 if result.status == "success":
     # Agent reasons about available exploits
@@ -965,10 +997,12 @@ if not adapter.is_available():
     # Level 1/2 fallback: use OWASP ZAP instead or provide DAST methodology
     zap_adapter = adapter_registry.get("owasp_zap")
     if zap_adapter.is_available():
-        result = zap_adapter.execute(ToolParams(
-            operation="active_scan",
-            target_url="https://app.example.com",
-        ))
+        result = zap_adapter.execute(
+            ToolParams(
+                operation="active_scan",
+                target_url="https://app.example.com",
+            )
+        )
     else:
         # Level 2: pure methodology guidance
         analysis.evidence_level = "unvalidated"
@@ -976,11 +1010,13 @@ if not adapter.is_available():
         return analysis
 
 # Burp Suite is available -- run scan
-result = adapter.execute(ToolParams(
-    operation="active_scan",
-    target_url="https://app.example.com",
-    scan_config="default",
-))
+result = adapter.execute(
+    ToolParams(
+        operation="active_scan",
+        target_url="https://app.example.com",
+        scan_config="default",
+    )
+)
 
 if result.status == "success":
     # Findings are normalized to the common schema
@@ -1029,28 +1065,30 @@ When the MCP server is configured, the agent can invoke Semgrep directly through
 adapter = adapter_registry.get("semgrep")
 
 # Run SAST scan with security audit rules
-result = adapter.execute(ToolParams(
-    operation="scan",
-    target_path="./src",
-    config="p/security-audit",
-    output_format="sarif",
-    severity="ERROR,WARNING",
-))
+result = adapter.execute(
+    ToolParams(
+        operation="scan",
+        target_path="./src",
+        config="p/security-audit",
+        output_format="sarif",
+        severity="ERROR,WARNING",
+    )
+)
 
 if result.status == "success":
     # SARIF output is parsed directly (native SARIF support)
-    critical_findings = [
-        f for f in result.findings if f.severity == Severity.CRITICAL
-    ]
+    critical_findings = [f for f in result.findings if f.severity == Severity.CRITICAL]
 
     # Bidirectional: agent can also GENERATE custom rules
-    custom_rule = adapter.execute(ToolParams(
-        operation="generate_rule",
-        pattern="$X == $X",
-        language="python",
-        message="Comparison of expression with itself is always true",
-        severity="WARNING",
-    ))
+    custom_rule = adapter.execute(
+        ToolParams(
+            operation="generate_rule",
+            pattern="$X == $X",
+            language="python",
+            message="Comparison of expression with itself is always true",
+            severity="WARNING",
+        )
+    )
 
     # Write the custom rule for future scans
     # This is unique to YAML-first tools like Semgrep

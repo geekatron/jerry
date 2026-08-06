@@ -134,6 +134,7 @@ Junction points require absolute paths. The `/bootstrap` skill must resolve path
 import os
 from pathlib import Path
 
+
 def create_junction(source: Path, target: Path) -> None:
     """Create Windows junction point."""
     # Junction requires absolute paths
@@ -172,6 +173,7 @@ import shutil
 import hashlib
 from pathlib import Path
 
+
 def sync_with_copy(source: Path, target: Path) -> None:
     """Copy files with hash-based drift detection."""
     if target.exists():
@@ -182,6 +184,7 @@ def sync_with_copy(source: Path, target: Path) -> None:
     hash_file = target / ".sync-hash"
     hash_value = compute_directory_hash(source)
     hash_file.write_text(hash_value)
+
 
 def check_drift(source: Path, target: Path) -> bool:
     """Check if source has changed since last sync."""
@@ -279,6 +282,7 @@ import platform
 import os
 from pathlib import Path
 
+
 def bootstrap_sync(source: Path, target: Path) -> str:
     """Platform-aware sync strategy."""
     system = platform.system()
@@ -299,13 +303,14 @@ def bootstrap_sync(source: Path, target: Path) -> str:
         # Unknown platform - use file copy as fallback
         return copy_with_drift_detection(source, target)
 
+
 def windows_developer_mode_enabled() -> bool:
     """Check if Windows Developer Mode is enabled."""
     import winreg
+
     try:
         key = winreg.OpenKey(
-            winreg.HKEY_LOCAL_MACHINE,
-            r"SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock"
+            winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock"
         )
         value, _ = winreg.QueryValueEx(key, "AllowDevelopmentWithoutDevLicense")
         return value == 1

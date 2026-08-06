@@ -68,6 +68,7 @@ References:
     - EN-405 TASK-002: Quality Framework Preamble Design
     - Barrier-2 ADV-to-ENF Handoff: Per-criticality strategy sets
 """
+
 from __future__ import annotations
 
 
@@ -263,7 +264,6 @@ including session context injection and (future) prompt reinforcement.
 Insert after `from pathlib import Path` (use pattern-based identification, not absolute line numbers):
 
 ```python
-
 # Quality framework context injection (EN-405)
 _project_root = str(Path(__file__).resolve().parent.parent)
 try:
@@ -271,6 +271,7 @@ try:
     from src.infrastructure.internal.enforcement.session_quality_context import (
         SessionQualityContextGenerator,
     )
+
     QUALITY_CONTEXT_AVAILABLE = True
 except Exception:
     QUALITY_CONTEXT_AVAILABLE = False
@@ -318,6 +319,7 @@ New code:
 Tests verify that the quality framework context block contains
 all required sections, content elements, and formatting.
 """
+
 from __future__ import annotations
 
 import ast
@@ -390,7 +392,8 @@ class TestSessionQualityContextGenerator:
         assert "S-002" in self.output
         # Verify ordering: S-003 before S-002 in the pairing line
         pairing_line = [
-            line for line in self.output.split("\n")
+            line
+            for line in self.output.split("\n")
             if "Pairing" in line or "canonical" in line.lower()
         ]
         assert len(pairing_line) >= 1
@@ -412,8 +415,16 @@ class TestSessionQualityContextGenerator:
     def test_strategies_lists_all_10_selected(self) -> None:
         """Strategies section lists all 10 selected strategies."""
         required_strategies = [
-            "S-014", "S-007", "S-010", "S-003", "S-002",
-            "S-013", "S-004", "S-012", "S-011", "S-001",
+            "S-014",
+            "S-007",
+            "S-010",
+            "S-003",
+            "S-002",
+            "S-013",
+            "S-004",
+            "S-012",
+            "S-011",
+            "S-001",
         ]
         for strategy in required_strategies:
             assert strategy in self.output, f"Missing strategy: {strategy}"
@@ -426,8 +437,9 @@ class TestSessionQualityContextGenerator:
         # S-014 appears before S-007 which appears before S-010
         # (first occurrence in the strategies section)
         strategies_section = self.output[
-            self.output.index("<adversarial-strategies>"):
-            self.output.index("</adversarial-strategies>")
+            self.output.index("<adversarial-strategies>") : self.output.index(
+                "</adversarial-strategies>"
+            )
         ]
         first_s014 = strategies_section.index("S-014")
         first_s007 = strategies_section.index("S-007")
@@ -485,9 +497,7 @@ class TestSessionQualityContextGenerator:
                     )
             elif isinstance(node, ast.ImportFrom):
                 if node.module and not node.module.startswith("__future__"):
-                    pytest.fail(
-                        f"Non-stdlib import: from {node.module}"
-                    )
+                    pytest.fail(f"Non-stdlib import: from {node.module}")
 
     def test_token_estimate_within_budget(self) -> None:
         """Output is within calibrated token budget."""

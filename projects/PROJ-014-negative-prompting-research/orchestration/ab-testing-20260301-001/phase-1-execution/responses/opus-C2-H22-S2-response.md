@@ -38,7 +38,7 @@ Conflict detection occurs at the `EventStore.put()` level: "Raises an exception 
 
 ```python
 old: Dog = app.repository.get(dog_id, version=3)
-old.add_trick(trick='future')
+old.add_trick(trick="future")
 try:
     app.save(old)
 except IntegrityError:

@@ -221,6 +221,7 @@ pip install your-project
 ```python
 # Minimal working example
 from your_project import main
+
 main.run()
 ```
 

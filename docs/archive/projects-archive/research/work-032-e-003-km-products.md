@@ -1055,6 +1055,7 @@ Jerry filesystem ←→ Git ←→ Wiki.js
 # src/infrastructure/knowledge/vector_store.py
 from chromadb import Client  # Example: using Chroma
 
+
 class VectorKnowledgeStore:
     """Semantic search over Jerry's knowledge base."""
 

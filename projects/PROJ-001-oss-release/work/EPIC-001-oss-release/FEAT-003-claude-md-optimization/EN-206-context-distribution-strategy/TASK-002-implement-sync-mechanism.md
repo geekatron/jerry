@@ -72,6 +72,7 @@ The implementation will depend on the chosen strategy:
 # Pseudo-code for platform detection
 import platform
 
+
 def sync_context_to_claude():
     system = platform.system()
 

@@ -174,9 +174,9 @@
 **Domain Layer (Zero Dependencies):**
 ```python
 # Port definitions (contracts only, no implementations)
-src/domain/ports/graph_port.py          # Graph operations interface
-src/domain/ports/knowledge_port.py      # Semantic/RDF operations interface
-src/domain/ports/vector_store_port.py   # Vector search interface
+src / domain / ports / graph_port.py  # Graph operations interface
+src / domain / ports / knowledge_port.py  # Semantic/RDF operations interface
+src / domain / ports / vector_store_port.py  # Vector search interface
 ```
 - ✅ Pure Python abstractions
 - ✅ No external library imports
@@ -185,9 +185,9 @@ src/domain/ports/vector_store_port.py   # Vector search interface
 **Infrastructure Layer (Adapter Implementations):**
 ```python
 # Adapters implement domain ports
-src/infrastructure/graph/networkx_adapter.py      # NetworkX implementation
-src/infrastructure/knowledge/rdflib_adapter.py    # RDFLib implementation
-src/infrastructure/embeddings/faiss_adapter.py    # FAISS implementation
+src / infrastructure / graph / networkx_adapter.py  # NetworkX implementation
+src / infrastructure / knowledge / rdflib_adapter.py  # RDFLib implementation
+src / infrastructure / embeddings / faiss_adapter.py  # FAISS implementation
 ```
 - ✅ External dependencies isolated to infrastructure
 - ✅ Swappable implementations (NetworkX → igraph → Neo4j)
@@ -196,9 +196,9 @@ src/infrastructure/embeddings/faiss_adapter.py    # FAISS implementation
 **Application Layer (Use Cases):**
 ```python
 # CQRS pattern maintained
-src/application/commands/build_knowledge_graph.py  # Write operation
-src/application/queries/find_related_docs.py       # Read operation
-src/application/queries/semantic_search.py         # Read operation
+src / application / commands / build_knowledge_graph.py  # Write operation
+src / application / queries / find_related_docs.py  # Read operation
+src / application / queries / semantic_search.py  # Read operation
 ```
 - ✅ CQRS separation preserved
 - ✅ Use cases orchestrate domain via ports

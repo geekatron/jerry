@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **style:** reformat 324 Markdown files repo-wide (.context/, docs/, skills/, runbooks/, projects/) for ruff 0.16.1's new Markdown code-block formatting — no formatter exclusions (an initial projects/ exclusion was rejected in review as a shortcut and reverted) (PROJ-024 EN-010/TASK-036, #339)
+- **docs(proj-001):** conform 8 legacy pre-schema task entities to the current worktracker schema (enum vocabulary DONE→completed / HIGH→high, backfilled frontmatter derived from each file's own metadata, `## Content`→`## Summary` heading renames); rename 3 adversarial-critic reports whose `EN-` filename prefixes falsely triggered entity schema validation (#339)
+- **deps(dev):** bump uv-minor-patch group — ruff 0.15.22→0.16.1, filelock 3.31.0→3.32.2, bump-my-version 1.4.1→1.5.0, pre-commit 4.6.0→4.6.1 (Dependabot #334)
+
 ### Security
 - **fix(deps):** constrain `click>=8.3.3` (resolves 8.4.2) via `[tool.uv]` constraints — remediates PYSEC-2026-2132 command injection in `click.edit()`, the sole finding keeping the daily scheduled scan red since ~2026-07-18 (#336)
 - **fix(ci):** create the missing `security-alert` GitHub label — the scheduled scan's rolling-alert issue step had failed on every run since ~2026-07-18 because the label was never created; alerting now proven end-to-end (run 31039187847 → alert issue #335)

@@ -48,6 +48,7 @@ I would create:
 # src/domain/ports/AuditLogPort.py (new file)
 from abc import ABC, abstractmethod
 
+
 class AuditLogPort(ABC):
     """Port for audit logging. Implemented by infrastructure adapters."""
 
@@ -61,6 +62,7 @@ Then in `src/domain/services/InventoryDomainService.py`:
 
 ```python
 from src.domain.ports.AuditLogPort import AuditLogPort
+
 
 class InventoryDomainService:
     def __init__(self, audit_log: AuditLogPort):

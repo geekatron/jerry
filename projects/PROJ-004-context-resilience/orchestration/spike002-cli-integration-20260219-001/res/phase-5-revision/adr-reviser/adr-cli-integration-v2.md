@@ -161,11 +161,21 @@ Hook scripts become thin wrappers. Each script reads stdin from Claude Code, cal
 ```python
 #!/usr/bin/env python3
 """UserPromptSubmit hook wrapper. Delegates to jerry hooks prompt-submit."""
+
 import subprocess
 import sys
 
 result = subprocess.run(
-    ["uv", "run", "--directory", "${CLAUDE_PLUGIN_ROOT}", "jerry", "--json", "hooks", "prompt-submit"],
+    [
+        "uv",
+        "run",
+        "--directory",
+        "${CLAUDE_PLUGIN_ROOT}",
+        "jerry",
+        "--json",
+        "hooks",
+        "prompt-submit",
+    ],
     input=sys.stdin.buffer.read(),
     capture_output=True,
     timeout=4,  # 4s subprocess budget within 5s hook timeout
@@ -535,16 +545,18 @@ Error handling:
 # src/context_monitoring/domain/value_objects/threshold_tier.py
 from enum import Enum
 
+
 class ThresholdTier(Enum):
     """Context fill severity level.
 
     Ordered by increasing severity. Each tier maps to a configured
     threshold percentage and triggers different response behaviors.
     """
-    NOMINAL = "nominal"      # Below 55% -- normal operation
-    LOW = "low"              # 55-70% -- tracking only
-    WARNING = "warning"      # 70-80% -- recommended actions
-    CRITICAL = "critical"    # 80-88% -- urgent actions + checkpoint reminder
+
+    NOMINAL = "nominal"  # Below 55% -- normal operation
+    LOW = "low"  # 55-70% -- tracking only
+    WARNING = "warning"  # 70-80% -- recommended actions
+    CRITICAL = "critical"  # 80-88% -- urgent actions + checkpoint reminder
     EMERGENCY = "emergency"  # Above 88% -- immediate preservation protocol
 ```
 
@@ -552,6 +564,7 @@ class ThresholdTier(Enum):
 # src/context_monitoring/domain/value_objects/fill_estimate.py
 from dataclasses import dataclass
 from .threshold_tier import ThresholdTier
+
 
 @dataclass(frozen=True, slots=True)
 class FillEstimate:
@@ -563,6 +576,7 @@ class FillEstimate:
         context_window_size: Total context window capacity
         threshold_tier: Current severity level
     """
+
     fill_percentage: float
     input_tokens: int
     context_window_size: int
@@ -574,6 +588,7 @@ class FillEstimate:
 from dataclasses import dataclass
 from typing import Any
 from .fill_estimate import FillEstimate
+
 
 @dataclass(frozen=True, slots=True)
 class CheckpointData:
@@ -587,6 +602,7 @@ class CheckpointData:
         resumption_state: Data from ORCHESTRATION.yaml (None if unavailable)
         session_info: Project and environment metadata
     """
+
     checkpoint_id: str
     timestamp: str
     compaction_sequence: int
@@ -601,12 +617,14 @@ class CheckpointData:
 # src/context_monitoring/application/ports/transcript_reader.py
 from typing import Protocol
 
+
 class ITranscriptReader(Protocol):
     """Port for reading transcript token data.
 
     Implementations parse transcript files to extract the latest
     input_tokens value for context fill estimation.
     """
+
     def read_latest_tokens(self, transcript_path: str) -> int:
         """Read the most recent input_tokens value from the transcript.
 
@@ -629,12 +647,14 @@ from pathlib import Path
 from typing import Protocol
 from src.context_monitoring.domain.value_objects.checkpoint_data import CheckpointData
 
+
 class ICheckpointRepository(Protocol):
     """Port for checkpoint persistence operations.
 
     Implementations manage checkpoint files for pre-compaction
     state capture and post-compaction resumption.
     """
+
     def save(self, data: CheckpointData) -> Path:
         """Persist a checkpoint.
 
@@ -675,12 +695,14 @@ class ICheckpointRepository(Protocol):
 # src/context_monitoring/application/ports/threshold_configuration.py
 from typing import Protocol
 
+
 class IThresholdConfiguration(Protocol):
     """Port for reading context monitoring threshold configuration.
 
     Implementations bridge to the configuration infrastructure
     (e.g., LayeredConfigAdapter) for threshold values.
     """
+
     def get_threshold(self, tier: str) -> float:
         """Get the threshold percentage for a given tier.
 
