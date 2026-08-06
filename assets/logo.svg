@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <!-- The Peak: mountain motif from Saucer Boy visual identity -->
+  <path d="M24 4 L44 40 L4 40 Z" fill="none" stroke="white" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M24 4 L30 16 L26 14 L24 18 L22 14 L18 16 Z" fill="none" stroke="white" stroke-width="1.5" stroke-linejoin="round" opacity="0.6"/>
+</svg>

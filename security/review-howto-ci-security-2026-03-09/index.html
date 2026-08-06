@@ -1,0 +1,2482 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Framework for behavior/workflow guardrails. Accrues knowledge, wisdom, experience.">
+      
+      
+        <meta name="author" content="Geekatron">
+      
+      
+        <link rel="canonical" href="https://jerry.geekatron.org/security/review-howto-ci-security-2026-03-09/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Security Review: CI Pipeline How-To Guides - Jerry Framework</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/saucer-boy.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="saucer-boy" data-md-color-primary="deep-purple" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#security-review-ci-pipeline-how-to-guides" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Jerry Framework" class="md-header__button md-logo" aria-label="Jerry Framework" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Jerry Framework
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Security Review: CI Pipeline How-To Guides
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="saucer-boy" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="saucer-boy-dark" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/geekatron/jerry" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    geekatron/jerry
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Jerry Framework" class="md-nav__button md-logo" aria-label="Jerry Framework" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    Jerry Framework
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/geekatron/jerry" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    geekatron/jerry
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INSTALLATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../BOOTSTRAP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bootstrap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started Runbook
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/problem-solving/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Problem Solving
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/orchestration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/transcript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transcript Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/PLUGIN-DEVELOPMENT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plugin Development
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../howto/update-sha-pinned-action/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Update a SHA-Pinned Action
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../howto/add-ci-job/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Add a New CI Job
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../howto/add-github-actions-dependency/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Add a GitHub Actions Dependency
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CLAUDE-MD-GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLAUDE.md Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ci-cd-pipeline-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD Pipeline Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/claude-code-permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claude Code Permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../schemas/SCHEMA_VERSIONING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schema Versioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../schemas/SESSION_CONTEXT_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Session Context Schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Explanation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Explanation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/ci-cd-supply-chain-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD Supply Chain Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/permission-security-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Permission & Security Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Articles
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Articles
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Articles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_2" id="__nav_6_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Archive
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Archive
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/archive/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_3" id="__nav_6_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Categories
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Categories
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/category/prompting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prompting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/category/quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/single-vs-multi-agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single vs. Multi-Agent Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/adversarial-strategy-catalog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adversarial Strategy Catalog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/strategy-selection-enforcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Strategy Selection & Enforcement (ADRs)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/adversarial-deep-dives/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adversarial Quality Deep Dives
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/skill-compliance-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Skill Compliance Framework
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/governance-constitutional-ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Governance & Constitutional AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/context-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Context Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/oss-methodology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OSS Methodology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/architecture-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/claude-code-ecosystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claude Code Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/negative-prompting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Negative Prompting & Constraint Enforcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7_13" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_13" id="__nav_7_13_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM Deception Study
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    LLM Deception Study
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/llm-deception/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/llm-deception/the-85-problem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 85% Problem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/llm-deception/methodology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methodology & Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/llm-deception/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture & Recommendations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Governance
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Governance
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../governance/JERRY_CONSTITUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jerry Constitution
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#l0-executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L0 Executive Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#l1-technical-findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L1 Technical Findings
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="L1 Technical Findings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#finding-001-high-add-ci-jobmd-step-2-permission-guidance-is-incomplete-and-will-produce-over-privileged-jobs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FINDING-001 — High: add-ci-job.md Step 2 permission guidance is incomplete and will produce over-privileged jobs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finding-002-high-add-github-actions-dependencymd-trustworthiness-checklist-omits-permission-scope-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FINDING-002 — High: add-github-actions-dependency.md trustworthiness checklist omits permission scope review
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finding-003-medium-add-ci-jobmd-step-8-uses-inline-needsresult-in-a-run-block-without-explaining-the-safe-use-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FINDING-003 — Medium: add-ci-job.md Step 8 uses inline ${{ needs.*.result }} in a run: block without explaining the safe-use boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finding-004-medium-update-sha-pinned-actionmd-step-3-does-not-warn-about-lightweight-tags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FINDING-004 — Medium: update-sha-pinned-action.md Step 3 does not warn about lightweight tags
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finding-005-low-add-ci-jobmd-uv-version-example-0109-is-inconsistent-with-what-the-step-says-to-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FINDING-005 — Low: add-ci-job.md uv version example (0.10.9) is inconsistent with what the step says to check
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#l1-sha-cross-reference-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L1 SHA Cross-Reference Verification
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#l1-clchk-001-pattern-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L1 CLCHK-001 Pattern Verification
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#l1-permission-scoping-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L1 Permission Scoping Verification
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#l2-strategic-implications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L2 Strategic Implications
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification Checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="security-review-ci-pipeline-how-to-guides">Security Review: CI Pipeline How-To Guides<a class="headerlink" href="#security-review-ci-pipeline-how-to-guides" title="Permanent link">&para;</a></h1>
+<p><strong>Reviewer:</strong> eng-security
+<strong>Date:</strong> 2026-03-09
+<strong>Scope:</strong> Three Diataxis how-to guides for CI pipeline security controls
+<strong>Files reviewed:</strong>
+- <code>docs/howto/update-sha-pinned-action.md</code>
+- <code>docs/howto/add-ci-job.md</code>
+- <code>docs/howto/add-github-actions-dependency.md</code>
+- <code>docs/reference/ci-cd-pipeline-security.md</code> (reference baseline)</p>
+<hr />
+<h2 id="l0-executive-summary">L0 Executive Summary<a class="headerlink" href="#l0-executive-summary" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Severity</th>
+<th>Count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>High</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Low</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Info</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall assessment:</strong> Two findings require correction before these guides are published. Both High-severity findings will produce insecure configurations if followed literally. The CLCHK-001 pattern is correctly described in <code>add-ci-job.md</code>. SHA values in the examples cross-check correctly against <code>ci.yml</code> and the reference table. The trustworthiness checklist has one material gap.</p>
+<p><strong>Top 3 risk areas:</strong></p>
+<ol>
+<li>The <code>add-ci-job.md</code> guide instructs contributors to add new jobs without job-level <code>permissions:</code> blocks in a workflow that has only workflow-level permissions — producing jobs that silently inherit over-broad access.</li>
+<li>The <code>add-github-actions-dependency.md</code> trustworthiness checklist does not require contributors to examine whether the action requests excessive permissions, which is the primary risk vector for a malicious or compromised third-party action.</li>
+<li>The <code>ci-success</code> gate pattern in <code>add-ci-job.md</code> shows inline <code>${{ needs.*.result }}</code> expressions in a <code>run:</code> block — this does not expose user-controlled content, but the guide does not explain why those specific expressions are safe to inline, creating a risk that contributors apply the exception too broadly.</li>
+</ol>
+<p><strong>Recommended immediate actions:</strong></p>
+<ol>
+<li>Add a corrective note to <code>add-ci-job.md</code> Step 2 explaining that new jobs must declare job-level <code>permissions:</code> explicitly because the workflow's top-level block grants <code>pull-requests: write</code>, which new jobs should not inherit unless required.</li>
+<li>Add an <code>actions/permissions</code> check to the trustworthiness checklist in <code>add-github-actions-dependency.md</code>.</li>
+<li>Add a clarifying note in <code>add-ci-job.md</code> Step 8 explaining why <code>${{ needs.*.result }}</code> is safe to inline but <code>${{ github.event.* }}</code> is not.</li>
+</ol>
+<hr />
+<h2 id="l1-technical-findings">L1 Technical Findings<a class="headerlink" href="#l1-technical-findings" title="Permanent link">&para;</a></h2>
+<h3 id="finding-001-high-add-ci-jobmd-step-2-permission-guidance-is-incomplete-and-will-produce-over-privileged-jobs">FINDING-001 — High: <code>add-ci-job.md</code> Step 2 permission guidance is incomplete and will produce over-privileged jobs<a class="headerlink" href="#finding-001-high-add-ci-jobmd-step-2-permission-guidance-is-incomplete-and-will-produce-over-privileged-jobs" title="Permanent link">&para;</a></h3>
+<p><strong>File:</strong> <code>docs/howto/add-ci-job.md</code>, lines 28-38 (Step 2)
+<strong>CWE:</strong> CWE-250 (Execution with Unnecessary Privileges)
+<strong>CVSS 3.1 Base Score:</strong> 6.5 (AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N) — exploitable if a compromised action is added to the over-privileged job</p>
+<p><strong>Evidence:</strong></p>
+<p><code>ci.yml</code> declares workflow-level permissions at lines 15-17:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">permissions</span><span class="p">:</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">contents</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">read</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="nt">pull-requests</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">write</span>
+</code></pre></div></p>
+<p>These are workflow-level defaults. Any job that does not declare its own <code>permissions:</code> block inherits this set. The guide's Step 2 example shows <code>contents: read</code> only, which is correct for read-only jobs. However, the guide does not warn contributors that:</p>
+<ul>
+<li>The workflow-level default includes <code>pull-requests: write</code></li>
+<li>A new job that omits <code>permissions:</code> entirely — or that the contributor believes has only <code>contents: read</code> — actually inherits <code>pull-requests: write</code></li>
+<li>The guide's prose ("Set <code>permissions</code> to the minimum the job requires") does not prevent a contributor from seeing the example and thinking "my job doesn't need anything special, I'll skip this step"</li>
+</ul>
+<p>The guide's "Do not use floating tags" instruction is good, but if a contributor adds a job without a <code>permissions:</code> block because they forget Step 2, that job silently has <code>pull-requests: write</code> and the ability to post or modify PR comments. This is relevant whenever a job contains a compromised or malicious action step.</p>
+<p><strong>Reproduction:</strong> Add a new job to <code>ci.yml</code> following the guide, omit the <code>permissions:</code> block, push a branch with a pull request. The job runs with <code>contents: read</code> and <code>pull-requests: write</code> inherited from the workflow top level.</p>
+<p><strong>Remediation:</strong></p>
+<p>In Step 2, add an explicit warning that <code>permissions:</code> is mandatory (not optional) on every new job in this workflow, because the workflow-level default includes <code>pull-requests: write</code>. Change the guidance to:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Every new job MUST declare an explicit `permissions:` block.
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>The workflow&#39;s top-level permissions include `pull-requests: write`.
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>Any job that omits a `permissions:` block inherits this, even if the job
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>does not need to write to pull requests.
+</code></pre></div>
+<p>Additionally, show both the "read-only job" case and the "PR-comment job" case side by side so contributors know the two patterns, rather than only the read-only pattern.</p>
+<hr />
+<h3 id="finding-002-high-add-github-actions-dependencymd-trustworthiness-checklist-omits-permission-scope-review">FINDING-002 — High: <code>add-github-actions-dependency.md</code> trustworthiness checklist omits permission scope review<a class="headerlink" href="#finding-002-high-add-github-actions-dependencymd-trustworthiness-checklist-omits-permission-scope-review" title="Permanent link">&para;</a></h3>
+<p><strong>File:</strong> <code>docs/howto/add-github-actions-dependency.md</code>, lines 18-26 (trustworthiness checklist)
+<strong>CWE:</strong> CWE-250 (Execution with Unnecessary Privileges), CWE-829 (Inclusion of Functionality from Untrusted Control Sphere)
+<strong>CVSS 3.1 Base Score:</strong> 7.1 (AV:N/AC:H/PR:N/UI:R/S:C/C:H/I:H/A:N) — a third-party action that requests <code>contents: write</code> or <code>id-token: write</code> can exfiltrate secrets or push commits</p>
+<p><strong>Evidence:</strong></p>
+<p>The checklist asks contributors to evaluate:
+- Is the publisher GitHub-owned or widely recognised?
+- Is the latest release recent (within 12 months)?
+- Does it have stars and fork activity?
+- Is there a <code>SECURITY.md</code>?
+- Can <code>actions/github-script</code> substitute?</p>
+<p>What it does not ask:
+- What permissions does the action request at runtime?
+- Does the action's source code call <code>GITHUB_TOKEN</code>-dependent APIs beyond what its documented purpose requires?</p>
+<p>A third-party action that passes all five existing checklist items can still silently request <code>id-token: write</code> (for OIDC token exfiltration) or <code>contents: write</code> (to push commits or create tags). These permissions are granted at the job level, not by the action itself, so the checklist's current framing places all trust on reputation signals rather than on what the code actually does.</p>
+<p>The checklist also uses "more than one" as the rejection threshold for the first four items. An action can fail two of the four reputation checks (e.g., no <code>SECURITY.md</code>, low star count) and still pass the gate. For a supply-chain security control, a single "no" on the publisher identity check alone should be a hard stop.</p>
+<p><strong>Reproduction:</strong> A contributor evaluates an action published by a small but recognised vendor with a recent release and a moderate star count — passes 3 of 4 reputation items, no <code>SECURITY.md</code>. The checklist allows addition. The action's <code>action.yml</code> uses <code>GITHUB_TOKEN</code> to read and push branches. No step in the guide surfaces this.</p>
+<p><strong>Remediation:</strong></p>
+<p>Add the following items to the trustworthiness checklist:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>- Read the action&#39;s `action.yml`. What `GITHUB_TOKEN` scopes does it use?
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>  Is that scope necessary for the action&#39;s documented purpose?
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>- Does the action&#39;s source code contain outbound network calls beyond
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>  its documented functionality (telemetry, unexpected endpoints)?
+</code></pre></div>
+<p>Also tighten the rejection threshold: failing the publisher identity check (first item — not GitHub-owned or verified organisation) should be a hard stop, not merely one vote toward "more than one no."</p>
+<hr />
+<h3 id="finding-003-medium-add-ci-jobmd-step-8-uses-inline-needsresult-in-a-run-block-without-explaining-the-safe-use-boundary">FINDING-003 — Medium: <code>add-ci-job.md</code> Step 8 uses inline <code>${{ needs.*.result }}</code> in a <code>run:</code> block without explaining the safe-use boundary<a class="headerlink" href="#finding-003-medium-add-ci-jobmd-step-8-uses-inline-needsresult-in-a-run-block-without-explaining-the-safe-use-boundary" title="Permanent link">&para;</a></h3>
+<p><strong>File:</strong> <code>docs/howto/add-ci-job.md</code>, lines 139-142 and 153-157 (Step 8)
+<strong>CWE:</strong> CWE-77 (Command Injection) — risk is from contributor misapplication, not from the pattern itself
+<strong>CVSS 3.1 Base Score:</strong> 4.0 (AV:N/AC:H/PR:L/UI:N/S:U/C:L/I:L/A:N) — indirect; the current pattern is safe but the guidance creates a precedent that contributors may apply incorrectly</p>
+<p><strong>Evidence:</strong></p>
+<p><code>add-ci-job.md</code> Step 6 (CLCHK-001) correctly teaches contributors to move <code>${{ github.event.* }}</code> values into env blocks to prevent shell injection. This is well described.</p>
+<p>Step 8 then shows <code>${{ needs.lint.result }}</code> and <code>${{ needs.my-new-job.result }}</code> used directly inside a <code>run:</code> block:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="l l-Scalar l-Scalar-Plain">if [[ &quot;${{ needs.lint.result }}&quot; != &quot;success&quot; ]] || \</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">   </span><span class="l l-Scalar l-Scalar-Plain">[[ &quot;${{ needs.my-new-job.result }}&quot; != &quot;success&quot; ]]; then</span>
+</code></pre></div></p>
+<p>This is consistent with how <code>ci.yml</code> works at lines 599-621. The <code>needs.*.result</code> value is a GitHub Actions-controlled enum (<code>success</code>, <code>failure</code>, <code>cancelled</code>, <code>skipped</code>) that cannot carry user-supplied content, so inline use is safe.</p>
+<p>However, the guide teaches CLCHK-001 in Step 6 but then uses inline <code>${{ }}</code> expressions in Step 8 without explaining why these are safe while PR title values are not. A contributor who reads Step 8 first, or who infers the rule from Step 8's example, may conclude that inlining <code>${{ }}</code> is acceptable in general and violate CLCHK-001 by inlining <code>${{ github.event.pull_request.title }}</code> in their own <code>run:</code> scripts.</p>
+<p>The actual <code>ci.yml</code> has the same pattern (lines 599-621 use inline <code>needs.*.result</code> without env blocks), which is correct. The documentation does not contradict the implementation — but it creates a gap that can be exploited via misunderstanding.</p>
+<p><strong>Remediation:</strong></p>
+<p>In Step 8, add a brief parenthetical that explains the safe-use boundary:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>Note: `needs.*.result` values are safe to inline because they are
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>GitHub Actions-controlled enums (success/failure/cancelled/skipped)
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>that cannot carry user-supplied content. Apply the env-block rule
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>(Step 6) to any expression that can contain user-controlled strings,
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>such as PR titles, branch names, or commit messages.
+</code></pre></div>
+<hr />
+<h3 id="finding-004-medium-update-sha-pinned-actionmd-step-3-does-not-warn-about-lightweight-tags">FINDING-004 — Medium: <code>update-sha-pinned-action.md</code> Step 3 does not warn about lightweight tags<a class="headerlink" href="#finding-004-medium-update-sha-pinned-actionmd-step-3-does-not-warn-about-lightweight-tags" title="Permanent link">&para;</a></h3>
+<p><strong>File:</strong> <code>docs/howto/update-sha-pinned-action.md</code>, lines 55-71 (Step 3)
+<strong>CWE:</strong> CWE-494 (Download of Code Without Integrity Check) — partial; the step resolves the right SHA for annotated tags but does not address the lightweight tag case
+<strong>CVSS 3.1 Base Score:</strong> 4.2 (AV:N/AC:H/PR:L/UI:R/S:U/C:L/I:L/A:N)</p>
+<p><strong>Evidence:</strong></p>
+<p>The guide correctly describes the annotated tag dereference problem and shows the <code>^{}</code> technique for resolving annotated tags to their commit SHA. It then states: "Use the SHA from the <code>^{}</code> line (the dereferenced commit SHA)."</p>
+<p>This is correct for annotated tags. But for lightweight tags (which many action maintainers use), <code>git ls-remote</code> returns exactly one line with no <code>^{}</code> suffix — the one SHA returned is the commit SHA directly. The troubleshooting section at line 134-135 addresses this correctly when two lines appear, but does not address what to do when only one line appears.</p>
+<p>A contributor who has only ever worked with lightweight-tagged actions may follow the instruction "use the <code>^{}</code> line" and fail to find such a line, becoming confused and potentially using an incorrect SHA or abandoning the process.</p>
+<p>This is not a security vulnerability in itself — both paths (annotated and lightweight) ultimately resolve to a commit SHA — but the incomplete description could cause a contributor to distrust a correct single-line result and attempt workarounds.</p>
+<p><strong>Remediation:</strong></p>
+<p>Update Step 3 to document both cases:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>For lightweight tags, `git ls-remote` returns exactly one line. That SHA
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>is the commit SHA — use it directly. No `^{}` dereference is needed.
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>For annotated tags, `git ls-remote` returns two lines (one for the tag
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>object, one with `^{}`). Use the SHA from the `^{}` line.
+</code></pre></div>
+<p>The troubleshooting section already handles the "two lines" case correctly and does not need to change.</p>
+<hr />
+<h3 id="finding-005-low-add-ci-jobmd-uv-version-example-0109-is-inconsistent-with-what-the-step-says-to-check">FINDING-005 — Low: <code>add-ci-job.md</code> uv version example (<code>0.10.9</code>) is inconsistent with what the step says to check<a class="headerlink" href="#finding-005-low-add-ci-jobmd-uv-version-example-0109-is-inconsistent-with-what-the-step-says-to-check" title="Permanent link">&para;</a></h3>
+<p><strong>File:</strong> <code>docs/howto/add-ci-job.md</code>, lines 53-63 (Step 4)
+<strong>CWE:</strong> N/A (documentation accuracy issue, not a security vulnerability pattern)
+<strong>CVSS 3.1 Base Score:</strong> 2.0 (informational)</p>
+<p><strong>Evidence:</strong></p>
+<p>Step 4 says: "install <code>uv</code> with <code>version: \"0.10.9\"</code> pinned." The version string <code>0.10.9</code> is hardcoded in the example and matches the current value in <code>ci.yml</code> (line 129, 172, 195, 220, etc.) and the reference doc. This is correct today.</p>
+<p>The guide does not tell contributors where to find the current pinned <code>uv</code> version to use when adding a new job in the future. The reference doc's UV Binary Pinning section documents the value (<code>0.10.9</code>) and the authoritative source, but the how-to guide does not link to it. A contributor adding a new job months from now may copy the stale <code>0.10.9</code> from the guide rather than reading the current value from the reference doc.</p>
+<p>This is low severity because the version is intentionally pinned (drift is caught by Dependabot or the frozen lockfile), but the guide should direct contributors to the canonical source.</p>
+<p><strong>Remediation:</strong></p>
+<p>In Step 4, add: "Check the current pinned version in the <a href="../../reference/ci-cd-pipeline-security/#uv-binary-pinning">UV Binary Pinning section</a> rather than copying the example value, which may be stale."</p>
+<hr />
+<h2 id="l1-sha-cross-reference-verification">L1 SHA Cross-Reference Verification<a class="headerlink" href="#l1-sha-cross-reference-verification" title="Permanent link">&para;</a></h2>
+<p>Cross-checked all SHA values in the how-to guides against <code>ci.yml</code> and <code>docs/reference/ci-cd-pipeline-security.md</code>.</p>
+<table>
+<thead>
+<tr>
+<th>SHA reference</th>
+<th>Location in guide</th>
+<th>SHA in ci.yml</th>
+<th>Match</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8</code></td>
+<td><code>add-ci-job.md</code> Step 3</td>
+<td>Line 32</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td><code>astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86</code></td>
+<td><code>add-ci-job.md</code> Step 4</td>
+<td>Line 127</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td><code>softprops/action-gh-release@da05d552573ad5aba039eaac05058a918a7bf631</code></td>
+<td><code>add-github-actions-dependency.md</code> Step 3</td>
+<td>Not in ci.yml (used in release.yml)</td>
+<td>Reference doc confirms: v2.2.2</td>
+</tr>
+<tr>
+<td><code>actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0</code></td>
+<td><code>update-sha-pinned-action.md</code> Step 4</td>
+<td>Line 32</td>
+<td>PASS</td>
+</tr>
+</tbody>
+</table>
+<p>All SHA values in the examples match the reference doc's SHA-to-version mapping table. No stale or fabricated SHAs detected.</p>
+<hr />
+<h2 id="l1-clchk-001-pattern-verification">L1 CLCHK-001 Pattern Verification<a class="headerlink" href="#l1-clchk-001-pattern-verification" title="Permanent link">&para;</a></h2>
+<p>Reviewed the CLCHK-001 description in <code>add-ci-job.md</code> Step 6 against the actual implementation in <code>ci.yml</code> lines 544-584.</p>
+<p><strong>Guide description (Step 6):</strong> "declare it in an <code>env:</code> block on the step. Never inline <code>${{ github.event.* }}</code> directly inside a <code>run:</code> script."</p>
+<p><strong>Actual <code>ci.yml</code> implementation (lines 549-552):</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nt">env</span><span class="p">:</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">  </span><span class="nt">PR_TITLE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ github.event.pull_request.title }}</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">  </span><span class="nt">PR_ACTOR</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ github.actor }}</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">  </span><span class="nt">BASE_SHA</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ github.event.pull_request.base.sha }}</span>
+</code></pre></div></p>
+<p><strong>Assessment:</strong> The description is accurate and the example in the guide matches the canonical pattern in <code>ci.yml</code>. The <code>github.actor</code> value is included in the env block in both the guide and <code>ci.yml</code>, which is correct — <code>github.actor</code> can carry usernames containing characters that would cause problems in some shell contexts. The guide's scope note ("GitHub context values that are safe constants (e.g., <code>github.event_name</code>, <code>github.ref</code>, <code>github.sha</code>) may be inlined only when they cannot carry user-controlled content") is technically accurate, though see FINDING-003 for the gap this creates with the Step 8 pattern.</p>
+<p><strong>No vulnerability found in the CLCHK-001 description itself.</strong></p>
+<hr />
+<h2 id="l1-permission-scoping-verification">L1 Permission Scoping Verification<a class="headerlink" href="#l1-permission-scoping-verification" title="Permanent link">&para;</a></h2>
+<p><strong>Workflow-level permissions in <code>ci.yml</code>:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nt">permissions</span><span class="p">:</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">  </span><span class="nt">contents</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">read</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">  </span><span class="nt">pull-requests</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">write</span>
+</code></pre></div></p>
+<p><strong>Job-level permissions declared:</strong> Zero jobs in <code>ci.yml</code> declare an explicit <code>permissions:</code> block. All jobs inherit the workflow-level grant.</p>
+<p><strong>Guide instruction (Step 2 of <code>add-ci-job.md</code>):</strong> "Set <code>permissions</code> to the minimum the job requires."</p>
+<p><strong>Assessment:</strong> The guide's instruction is correct in principle. However, the existing <code>ci.yml</code> jobs do not follow it — none declare job-level permissions. The guide is teaching a practice that is not enforced by example in the actual workflow file. A contributor looking at <code>ci.yml</code> for guidance will find no job-level <code>permissions:</code> blocks and may follow the existing pattern (omit them) rather than the guide's instruction.</p>
+<p>This is the root cause of FINDING-001. The guide's Step 2 text is sound, but it lacks the warning that the workflow-level grant includes <code>pull-requests: write</code>, which makes explicit job-level declarations security-relevant for any new job that does not need PR write access.</p>
+<hr />
+<h2 id="l2-strategic-implications">L2 Strategic Implications<a class="headerlink" href="#l2-strategic-implications" title="Permanent link">&para;</a></h2>
+<p><strong>Systemic pattern:</strong> Both High-severity findings share a root cause: the guides teach correct security controls but do not adequately explain the threat model that motivates them. Step 2 says "minimum required" without explaining what the default is. The trustworthiness checklist asks about reputation without asking about capability. Contributors who follow the instructions correctly get the right behavior, but contributors who skip a step or apply partial reasoning get an insecure configuration.</p>
+<p><strong>Architectural observation:</strong> The <code>ci.yml</code> workflow has workflow-level <code>permissions:</code> that include <code>pull-requests: write</code>. This grant exists because the <code>coverage-report</code> job (PR-only) posts coverage comments. A more robust architecture would remove the workflow-level <code>pull-requests: write</code> grant and add it only to <code>coverage-report</code> at the job level. This would make the default for new jobs safe-by-default — a job without a <code>permissions:</code> block would inherit only <code>contents: read</code>. Fixing this architectural issue would eliminate the precondition for FINDING-001 entirely.</p>
+<p><strong>Documentation quality note:</strong> The guides are well structured. The CLCHK-001 description is clear and matches the implementation. The SHA pinning mechanics are accurate. The two High findings are gaps in threat-model framing, not errors in the technical content. Closing them requires adding approximately 3-4 sentences to each affected step.</p>
+<hr />
+<h2 id="verification-checklist">Verification Checklist<a class="headerlink" href="#verification-checklist" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SHA values in examples match ci.yml</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>SHA values in examples match reference doc</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>CLCHK-001 env-block pattern correctly described</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>No inline <code>${{ github.event.* }}</code> in run: blocks in guides</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Permission scoping instructions technically correct</td>
+<td>PASS (with gap — see FINDING-001)</td>
+</tr>
+<tr>
+<td>Trustworthiness checklist covers key vectors</td>
+<td>PARTIAL (see FINDING-002)</td>
+</tr>
+<tr>
+<td>uv version consistent with reference doc</td>
+<td>PASS (with staleness risk — see FINDING-005)</td>
+</tr>
+<tr>
+<td>Annotated tag dereference correctly described</td>
+<td>PASS (with lightweight tag gap — see FINDING-004)</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+  
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 Geekatron — Apache License 2.0
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+  <div class="md-footer-meta__inner md-grid" style="text-align: center; padding-bottom: 0.5rem;">
+    <span class="sb-tagline">Quality with soul.</span>
+  </div>
+
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

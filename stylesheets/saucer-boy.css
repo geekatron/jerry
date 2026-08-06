@@ -1,0 +1,197 @@
+/*
+ * Saucer Boy Theme — Jerry Framework
+ *
+ * Translates the terminal-native Saucer Boy visual identity to web.
+ * Design source: docs/design/saucer-boy-visual-identity.md (FEAT-003)
+ *
+ * Principles:
+ *   - Deep purple primary (existing brand anchor)
+ *   - Amber accent (existing brand anchor)
+ *   - Green/Yellow/Red state colors for admonitions
+ *   - Cyan for code/reference elements
+ *   - Earned decoration: minimal custom CSS, let Material do the work
+ */
+
+/* --------------------------------------------------------------------------
+   Light mode: saucer-boy
+   -------------------------------------------------------------------------- */
+[data-md-color-scheme="saucer-boy"] {
+  /* Primary: Deep Purple */
+  --md-primary-fg-color:        #512DA8;
+  --md-primary-fg-color--light: #7E57C2;
+  --md-primary-fg-color--dark:  #311B92;
+  --md-primary-bg-color:        #fff;
+
+  /* Accent: Amber */
+  --md-accent-fg-color:         #FFB300;
+  --md-accent-fg-color--transparent: rgba(255, 179, 0, 0.1);
+  --md-accent-bg-color:         #fff;
+
+  /* Default background */
+  --md-default-bg-color:        #FFFFFF;
+  --md-default-fg-color:        rgba(0, 0, 0, 0.87);
+
+  /* Code: Cyan tint (maps to rule IDs/paths in terminal palette) */
+  --md-code-bg-color:           #F5F2F9;
+  --md-code-fg-color:           #37474F;
+  --md-code-hl-color:           rgba(81, 45, 168, 0.1);
+
+  /* Typeset */
+  --md-typeset-a-color:         #512DA8;
+
+  /* Footer */
+  --md-footer-bg-color:         #311B92;
+  --md-footer-bg-color--dark:   #1A0E4B;
+  --md-footer-fg-color:         rgba(255, 255, 255, 0.87);
+  --md-footer-fg-color--light:  rgba(255, 255, 255, 0.54);
+  --md-footer-fg-color--lighter: rgba(255, 255, 255, 0.32);
+}
+
+/* --------------------------------------------------------------------------
+   Dark mode: saucer-boy-dark
+   Built on slate with purple-shifted hue
+   -------------------------------------------------------------------------- */
+[data-md-color-scheme="saucer-boy-dark"] {
+  color-scheme: dark;
+  --md-hue: 270;
+
+  /* Primary: Deep Purple (lighter for dark bg) */
+  --md-primary-fg-color:        #7E57C2;
+  --md-primary-fg-color--light: #B39DDB;
+  --md-primary-fg-color--dark:  #512DA8;
+  --md-primary-bg-color:        #fff;
+
+  /* Accent: Amber */
+  --md-accent-fg-color:         #FFB300;
+  --md-accent-fg-color--transparent: rgba(255, 179, 0, 0.1);
+  --md-accent-bg-color:         rgba(0, 0, 0, 0.87);
+
+  /* Dark background with purple shift */
+  --md-default-bg-color:        #1A1025;
+  --md-default-bg-color--light: #241535;
+  --md-default-bg-color--lighter: rgba(26, 16, 37, 0.26);
+  --md-default-bg-color--lightest: rgba(26, 16, 37, 0.07);
+  --md-default-fg-color:        rgba(255, 255, 255, 0.87);
+  --md-default-fg-color--light: rgba(255, 255, 255, 0.54);
+  --md-default-fg-color--lighter: rgba(255, 255, 255, 0.32);
+  --md-default-fg-color--lightest: rgba(255, 255, 255, 0.12);
+
+  /* Code: dark with purple tint */
+  --md-code-bg-color:           #241535;
+  --md-code-bg-color--light:    rgba(36, 21, 53, 0.9);
+  --md-code-bg-color--lighter:  rgba(36, 21, 53, 0.54);
+  --md-code-fg-color:           #B0BEC5;
+  --md-code-hl-color:           rgba(126, 87, 194, 0.15);
+
+  /* Typeset */
+  --md-typeset-color:           var(--md-default-fg-color);
+  --md-typeset-a-color:         #B39DDB;
+  --md-typeset-table-color:     rgba(255, 255, 255, 0.12);
+  --md-typeset-table-color--light: rgba(255, 255, 255, 0.035);
+  --md-typeset-kbd-color:       rgba(255, 255, 255, 0.12);
+  --md-typeset-kbd-accent-color: rgba(255, 255, 255, 0.2);
+  --md-typeset-kbd-border-color: #1A1025;
+  --md-typeset-mark-color:      rgba(68, 138, 255, 0.3);
+
+  /* Admonitions */
+  --md-admonition-fg-color:     var(--md-default-fg-color);
+  --md-admonition-bg-color:     var(--md-default-bg-color);
+
+  /* Shadows — dark mode needs subtler depth cues */
+  --md-shadow-z1: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.2), 0 0 0.05rem rgba(0, 0, 0, 0.1);
+  --md-shadow-z2: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.3), 0 0 0.05rem rgba(0, 0, 0, 0.15);
+  --md-shadow-z3: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.4), 0 0 0.05rem rgba(0, 0, 0, 0.15);
+
+  /* Code syntax highlighting — matches Material slate scheme */
+  --md-code-hl-color:           #2977ff;
+  --md-code-hl-color--light:    rgba(41, 119, 255, 0.1);
+  --md-code-hl-number-color:    #e6695b;
+  --md-code-hl-special-color:   #f06090;
+  --md-code-hl-function-color:  #c973d9;
+  --md-code-hl-constant-color:  #9383e2;
+  --md-code-hl-keyword-color:   #6791e0;
+  --md-code-hl-string-color:    #2fb170;
+  --md-code-hl-name-color:      var(--md-code-fg-color);
+  --md-code-hl-operator-color:  var(--md-default-fg-color--light);
+  --md-code-hl-punctuation-color: var(--md-default-fg-color--light);
+  --md-code-hl-comment-color:   var(--md-default-fg-color--light);
+  --md-code-hl-generic-color:   var(--md-default-fg-color--light);
+  --md-code-hl-variable-color:  var(--md-default-fg-color--light);
+
+  /* Footer */
+  --md-footer-bg-color:         #0D0818;
+  --md-footer-bg-color--dark:   #060410;
+  --md-footer-fg-color:         rgba(255, 255, 255, 0.87);
+  --md-footer-fg-color--light:  rgba(255, 255, 255, 0.54);
+  --md-footer-fg-color--lighter: rgba(255, 255, 255, 0.32);
+}
+
+/* --------------------------------------------------------------------------
+   Admonitions: state colors from terminal palette
+   Green=PASS, Yellow=REVISE, Red=REJECTED, Cyan=rules/paths
+   -------------------------------------------------------------------------- */
+
+/* Success admonitions: Green (PASS) */
+:root {
+  --md-admonition-icon--success: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>');
+}
+
+/* --------------------------------------------------------------------------
+   Dark mode: readability fixes
+   -------------------------------------------------------------------------- */
+
+/* Link underlines — color alone insufficient at ~2.1:1 contrast (WCAG 3:1) */
+[data-md-color-scheme="saucer-boy-dark"] .md-typeset a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
+  text-decoration-color: rgba(179, 157, 219, 0.4);
+}
+
+[data-md-color-scheme="saucer-boy-dark"] .md-typeset a:hover {
+  text-decoration-color: var(--md-accent-fg-color);
+}
+
+/* Halation reduction — soften pure white on dark bg for long-form reading */
+[data-md-color-scheme="saucer-boy-dark"] .md-typeset {
+  --md-default-fg-color: rgba(255, 255, 255, 0.82);
+}
+
+[data-md-color-scheme="saucer-boy-dark"] .md-content .md-typeset p {
+  line-height: 1.8;
+}
+
+/* Blockquote visibility — left border + subtle background */
+[data-md-color-scheme="saucer-boy-dark"] .md-typeset blockquote {
+  border-left: 3px solid var(--md-accent-fg-color);
+  background: rgba(255, 179, 0, 0.04);
+  padding: 0.5em 1em;
+}
+
+/* Checkbox visibility */
+[data-md-color-scheme="saucer-boy-dark"] .md-typeset .task-list-indicator::before {
+  border-color: rgba(255, 255, 255, 0.54);
+}
+
+/* --------------------------------------------------------------------------
+   Blog post styling
+   Clean, not decorative — matches the earned decoration principle
+   -------------------------------------------------------------------------- */
+.md-post__meta {
+  color: var(--md-default-fg-color--light);
+}
+
+/* Subtle separator between posts */
+.md-post + .md-post {
+  border-top: 1px solid var(--md-default-fg-color--lightest);
+  padding-top: 1.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   Tagline in footer
+   -------------------------------------------------------------------------- */
+.sb-tagline {
+  font-style: italic;
+  opacity: 0.7;
+  font-size: 0.8rem;
+}

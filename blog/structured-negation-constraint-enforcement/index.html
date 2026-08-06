@@ -1,0 +1,3049 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Framework for behavior/workflow guardrails. Accrues knowledge, wisdom, experience.">
+      
+      
+        <meta name="author" content="Geekatron">
+      
+      
+        <link rel="canonical" href="https://jerry.geekatron.org/blog/structured-negation-constraint-enforcement/">
+      
+      
+        <link rel="prev" href="../why-structured-prompting-works/">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Structured Negation in LLM Constraint Enforcement - Jerry Framework</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/saucer-boy.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="saucer-boy" data-md-color-primary="deep-purple" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#structured-negation-in-llm-constraint-enforcement" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Jerry Framework" class="md-header__button md-logo" aria-label="Jerry Framework" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Jerry Framework
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Structured Negation in LLM Constraint Enforcement
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="saucer-boy" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="saucer-boy-dark" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/geekatron/jerry" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    geekatron/jerry
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Jerry Framework" class="md-nav__button md-logo" aria-label="Jerry Framework" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    Jerry Framework
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/geekatron/jerry" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    geekatron/jerry
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INSTALLATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../BOOTSTRAP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bootstrap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started Runbook
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/problem-solving/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Problem Solving
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/orchestration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/transcript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transcript Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/PLUGIN-DEVELOPMENT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plugin Development
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../howto/update-sha-pinned-action/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Update a SHA-Pinned Action
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../howto/add-ci-job/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Add a New CI Job
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../howto/add-github-actions-dependency/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Add a GitHub Actions Dependency
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CLAUDE-MD-GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLAUDE.md Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ci-cd-pipeline-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD Pipeline Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/claude-code-permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claude Code Permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../schemas/SCHEMA_VERSIONING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schema Versioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../schemas/SESSION_CONTEXT_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Session Context Schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Explanation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Explanation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/ci-cd-supply-chain-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD Supply Chain Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/permission-security-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Permission & Security Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Articles
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Articles
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Articles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_2" id="__nav_6_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Archive
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Archive
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../archive/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_3" id="__nav_6_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Categories
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Categories
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../category/prompting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prompting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../category/quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/single-vs-multi-agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single vs. Multi-Agent Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/adversarial-strategy-catalog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adversarial Strategy Catalog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/strategy-selection-enforcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Strategy Selection & Enforcement (ADRs)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/adversarial-deep-dives/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adversarial Quality Deep Dives
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/skill-compliance-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Skill Compliance Framework
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/governance-constitutional-ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Governance & Constitutional AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/context-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Context Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/oss-methodology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OSS Methodology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/architecture-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/claude-code-ecosystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claude Code Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/negative-prompting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Negative Prompting & Constraint Enforcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7_13" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_13" id="__nav_7_13_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM Deception Study
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    LLM Deception Study
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/llm-deception/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/llm-deception/the-85-problem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 85% Problem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/llm-deception/methodology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methodology & Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/llm-deception/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture & Recommendations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Governance
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Governance
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../governance/JERRY_CONSTITUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jerry Constitution
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#research-background" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Research Background
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Research Background">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-hypothesis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Hypothesis
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methodology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Methodology
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Findings
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Key Findings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-60-claim-untested-not-disproven" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The 60% Claim: Untested, Not Disproven
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#blunt-prohibition-is-the-worst-formulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Blunt Prohibition Is the Worst Formulation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#structured-negation-achieves-100-compliance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Structured Negation Achieves 100% Compliance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conditional-go-not-unconditional-mandate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CONDITIONAL GO, Not Unconditional Mandate
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-npt-pattern-taxonomy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The NPT Pattern Taxonomy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The NPT Pattern Taxonomy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#technique-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Technique Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pattern-catalog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pattern Catalog
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-two-patterns-that-matter-most" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Two Patterns That Matter Most
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#practical-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Practical Application
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Practical Application">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#using-the-prompt-engineering-skill" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using the /prompt-engineering Skill
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deciding-between-npt-009-and-npt-013" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deciding Between NPT-009 and NPT-013
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#upgrading-existing-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Upgrading Existing Constraints
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-in-jerry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation in Jerry
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation in Jerry">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#architecture-decision-records" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture Decision Records
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#features-delivered" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Features Delivered
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-prompt-engineering-skill" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The /prompt-engineering Skill
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-the-research-did-not-change" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the Research Did Not Change
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="References">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#primary-research-artifacts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Primary Research Artifacts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architecture-decision-records_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture Decision Records
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-academic-citations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Academic Citations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+  <div class="md-content md-content--post" data-md-component="content">
+    <div class="md-sidebar md-sidebar--post" data-md-component="sidebar" data-md-type="navigation">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner md-post">
+          <nav class="md-nav md-nav--primary">
+            <div class="md-post__back">
+              <div class="md-nav__title md-nav__container">
+                <a href="../" class="md-nav__link">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+                  <span class="md-ellipsis">
+                    Back to index
+                  </span>
+                </a>
+              </div>
+            </div>
+            
+              <div class="md-post__authors md-typeset">
+                
+                  <div class="md-profile md-post__profile">
+                    <span class="md-author md-author--long">
+                      <img src="https://github.com/geekatron.png" alt="Geekatron">
+                    </span>
+                    <span class="md-profile__description">
+                      <strong>
+                        
+                          Geekatron
+                        
+                      </strong>
+                      <br>
+                      Creator of the Jerry Framework
+                    </span>
+                  </div>
+                
+              </div>
+            
+            <ul class="md-post__meta md-nav__list">
+              <li class="md-nav__item md-nav__item--section">
+                <div class="md-post__title">
+                  <span class="md-ellipsis">
+                    Metadata
+                  </span>
+                </div>
+                <nav class="md-nav">
+                  <ul class="md-nav__list">
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5z"/></svg>
+                        <time datetime="2026-03-01 00:00:00+00:00" class="md-ellipsis">March 1, 2026</time>
+                      </div>
+                    </li>
+                    
+                    
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 3v15h3V3zm3 2 4 13 3-1-4-13zM5 5v13h3V5zM3 19v2h18v-2z"/></svg>
+                          <span class="md-ellipsis">
+                            in
+                            
+                              <a href="../category/prompting/">Prompting</a>, 
+                              <a href="../category/quality/">Quality</a></span>
+                        </div>
+                      </li>
+                    
+                    
+                      
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7z"/></svg>
+                          <span class="md-ellipsis">
+                            
+                              9 min read
+                            
+                          </span>
+                        </div>
+                      </li>
+                    
+                  </ul>
+                </nav>
+              </li>
+            </ul>
+            
+          </nav>
+          
+        </div>
+      </div>
+    </div>
+    <article class="md-content__inner md-typeset">
+      
+        
+  
+
+
+
+  
+  
+
+
+<h1 id="structured-negation-in-llm-constraint-enforcement">Structured Negation in LLM Constraint Enforcement<a class="headerlink" href="#structured-negation-in-llm-constraint-enforcement" title="Permanent link">&para;</a></h1>
+<p>Does "NEVER do X" work better than "Always do Y"? PROJ-014 spent six research phases and a controlled A/B test finding out. The short answer: it depends entirely on how you write the NEVER.</p>
+<p><strong>The core finding:</strong> NPT-013 structured negation -- a constraint format that pairs a prohibition with its consequence and a constructive alternative -- achieves 100% compliance across all tested conditions. Positive-only framing achieves 92.2%. The difference is statistically significant (McNemar exact p=0.016, n=270 matched pairs across three Claude models).</p>
+<p><strong>The format that works:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>NEVER {action} -- Consequence: {cascading impact}. Instead: {actionable alternative}.
+</code></pre></div>
+<p><strong>The format that does not:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Don&#39;t do X.
+</code></pre></div>
+<p>Standalone blunt prohibitions -- "NEVER do X" with nothing else -- are the <em>worst</em> formulation available. Worse than positive-only framing, worse than any structured alternative. Peer-reviewed evidence from AAAI 2026 and EMNLP 2024 is unambiguous on this. When you add consequence documentation and a constructive alternative, the picture reverses: structured negation never underperforms positive-only framing and demonstrably prevents violations on the constraint types where compliance is hardest.</p>
+<p>This article covers what the research found, the taxonomy it produced, and how to apply the findings.</p>
+<!-- more -->
+
+<h2 id="research-background">Research Background<a class="headerlink" href="#research-background" title="Permanent link">&para;</a></h2>
+<h3 id="the-problem">The Problem<a class="headerlink" href="#the-problem" title="Permanent link">&para;</a></h3>
+<p>LLM-based agent frameworks live on behavioral constraints -- rules like "never spawn recursive subagents" or "always persist output to files." These constraints are expressed as natural language instructions in system prompts, rule files, and agent definitions. The question is whether the <em>framing</em> of those constraints affects how reliably the LLM follows them.</p>
+<p>The conventional wisdom was split. Anthropic's published guidance generally recommends positive framing ("tell the model what to do, not what to avoid"). At the same time, Anthropic's own Claude Code rule files contain 33 instances of NEVER/MUST NOT/DO NOT across 10 files, all in the highest enforcement tier. The Jerry Framework itself had 36 negative constraint instances across 17 rule files at the start of this research, with 22 of those (61%) being bare "NEVER X" statements -- no consequence, no alternative.</p>
+<h3 id="the-hypothesis">The Hypothesis<a class="headerlink" href="#the-hypothesis" title="Permanent link">&para;</a></h3>
+<p>PROJ-014 started with two claims to test:</p>
+<ol>
+<li><strong>Claim A:</strong> Negative unambiguous prompting reduces hallucination by 60%.</li>
+<li><strong>Claim B:</strong> Negative prompting achieves better results than explicit positive prompting.</li>
+</ol>
+<p>These were split into independently testable questions and pursued through a six-phase pipeline.</p>
+<h3 id="methodology">Methodology<a class="headerlink" href="#methodology" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Focus</th>
+<th>Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Phase 1</td>
+<td>Literature survey</td>
+<td>75 unique sources across academic, industry, and vendor documentation</td>
+</tr>
+<tr>
+<td>Phase 2</td>
+<td>Claim validation and comparative effectiveness</td>
+<td>Research question bifurcation; null finding on 60% claim</td>
+</tr>
+<tr>
+<td>Phase 3</td>
+<td>Taxonomy development</td>
+<td>14-pattern NPT taxonomy (NPT-001 through NPT-014)</td>
+</tr>
+<tr>
+<td>Phase 4</td>
+<td>Jerry Framework application analysis</td>
+<td>130 specific upgrade recommendations across 5 domains</td>
+</tr>
+<tr>
+<td>Phase 5</td>
+<td>Architecture decisions</td>
+<td>4 ADRs governing framework evolution</td>
+</tr>
+<tr>
+<td>Phase 6</td>
+<td>Final synthesis</td>
+<td>Implementation roadmap and consolidated findings</td>
+</tr>
+</tbody>
+</table>
+<p>After the six-phase research, TASK-025 ran a controlled A/B test: 270 blind invocations across three Claude models (Haiku, Sonnet, Opus), testing 10 constraints under 3 framing conditions with 3 pressure scenarios each. All quality gate scores across the research pipeline met or exceeded the 0.92 threshold, with most scoring above 0.950.</p>
+<hr />
+<h2 id="key-findings">Key Findings<a class="headerlink" href="#key-findings" title="Permanent link">&para;</a></h2>
+<h3 id="the-60-claim-untested-not-disproven">The 60% Claim: Untested, Not Disproven<a class="headerlink" href="#the-60-claim-untested-not-disproven" title="Permanent link">&para;</a></h3>
+<p>The primary claim -- that negative prompting reduces hallucination by 60% -- has no evidential basis. A systematic search across 75 sources found zero controlled evidence for this specific effect size. The claim entered the project as a hypothesis. It is not disproven; it is simply unestablished.</p>
+<h3 id="blunt-prohibition-is-the-worst-formulation">Blunt Prohibition Is the Worst Formulation<a class="headerlink" href="#blunt-prohibition-is-the-worst-formulation" title="Permanent link">&para;</a></h3>
+<p>This is the single most actionable finding. It does not depend on further experimentation. Peer-reviewed evidence establishes that standalone NEVER/MUST NOT statements without consequence documentation produce inferior behavioral outcomes versus any structured alternative:</p>
+<ul>
+<li>Liu's team at AAAI 2026 documented instruction hierarchy failure under standalone negative constraints.</li>
+<li>Wen's team at EMNLP 2024 found a +7.3-8% compliance improvement with structured versus blunt negative framing.</li>
+<li>arXiv T3 evidence: 55% improvement for affirmative directive pairing versus standalone negation.</li>
+</ul>
+<p>At the start of this research, 61% of all negative constraints in the Jerry Framework (22 out of 36) used this blunt prohibition format. Every one was an upgrade candidate.</p>
+<h3 id="structured-negation-achieves-100-compliance">Structured Negation Achieves 100% Compliance<a class="headerlink" href="#structured-negation-achieves-100-compliance" title="Permanent link">&para;</a></h3>
+<p>The A/B test produced a consistent ordering across all three Claude models:</p>
+<table>
+<thead>
+<tr>
+<th>Framing Condition</th>
+<th>Format</th>
+<th>Violation Rate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C3: Structured negation (NPT-013)</td>
+<td>NEVER + consequence + alternative</td>
+<td>0.0% (0/90)</td>
+</tr>
+<tr>
+<td>C2: Blunt prohibition (NPT-014)</td>
+<td>NEVER X (no context)</td>
+<td>2.2% (2/90)</td>
+</tr>
+<tr>
+<td>C1: Positive-only (NPT-007)</td>
+<td>Always do Y</td>
+<td>7.8% (7/90)</td>
+</tr>
+</tbody>
+</table>
+<p>The pooled McNemar exact p-value for C1 versus C3 is 0.016, significant at alpha=0.05 and surviving Bonferroni correction for three pairwise comparisons (adjusted alpha=0.0167). The effect size (pi_d=0.078) is modest but nonzero, with a 95% confidence interval of 0.023 to 0.133.</p>
+<p>Two additional findings from the A/B test worth holding onto:</p>
+<p>67% of all violations (6 of 9) occurred on a single constraint type -- H22, behavioral timing. Structured negation eliminated this vulnerability entirely. And the lower-capability models benefit most: Haiku showed the largest C1-to-C3 improvement (10 percentage points) and was the only model with C2 violations. The framing benefit concentrates where compliance is hardest.</p>
+<h3 id="conditional-go-not-unconditional-mandate">CONDITIONAL GO, Not Unconditional Mandate<a class="headerlink" href="#conditional-go-not-unconditional-mandate" title="Permanent link">&para;</a></h3>
+<p>The A/B test reached a CONDITIONAL GO via the pre-specified PG-003 contingency pathway. The framing effect is real and statistically significant, but the effect size fell slightly below the pre-registered minimum (0.078 observed versus 0.10 threshold). That means NPT-013 adoption is justified on <em>convention-alignment</em> grounds -- structured negation never performs worse and demonstrably prevents violations -- not on an effectiveness-determined mandate.</p>
+<p>The practical implication: if you are deciding whether to use structured negation in your own work, the evidence says it is safe and beneficial, not that it is categorically required. The benefit concentrates on the constraints and conditions where compliance is already at risk.</p>
+<hr />
+<h2 id="the-npt-pattern-taxonomy">The NPT Pattern Taxonomy<a class="headerlink" href="#the-npt-pattern-taxonomy" title="Permanent link">&para;</a></h2>
+<p>The research produced a 14-pattern taxonomy organizing how negative constraints can be expressed, sorted into seven technique types.</p>
+<h3 id="technique-types">Technique Types<a class="headerlink" href="#technique-types" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A1</td>
+<td>Prohibition-only</td>
+<td>Standalone negation without structure</td>
+</tr>
+<tr>
+<td>A2</td>
+<td>Structured prohibition</td>
+<td>Negation with consequence, scope, or decomposition</td>
+</tr>
+<tr>
+<td>A3</td>
+<td>Augmented prohibition</td>
+<td>Negation enhanced with examples, alternatives, or justification</td>
+</tr>
+<tr>
+<td>A4</td>
+<td>Enforcement-tier prohibition</td>
+<td>Negation tied to enforcement mechanism (L2 re-injection, constitutional triplet)</td>
+</tr>
+<tr>
+<td>A5</td>
+<td>Programmatic enforcement</td>
+<td>Code-level or infrastructure-level constraint enforcement</td>
+</tr>
+<tr>
+<td>A6</td>
+<td>Training-time constraint</td>
+<td>Model-internal behavioral intervention (RLHF, fine-tuning)</td>
+</tr>
+<tr>
+<td>A7</td>
+<td>Meta-prompting</td>
+<td>Constraint priming and atomic decomposition</td>
+</tr>
+</tbody>
+</table>
+<h3 id="pattern-catalog">Pattern Catalog<a class="headerlink" href="#pattern-catalog" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>Name</th>
+<th>Type</th>
+<th>Evidence</th>
+<th>Recommendation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NPT-001</td>
+<td>Model-Internal Behavioral Intervention</td>
+<td>A6</td>
+<td>T1 (peer-reviewed)</td>
+<td>Foundation model fine-tuning; requires model access</td>
+</tr>
+<tr>
+<td>NPT-002</td>
+<td>Instruction Hierarchy Prioritization</td>
+<td>A6</td>
+<td>T1</td>
+<td>System prompt structural enforcement</td>
+</tr>
+<tr>
+<td>NPT-003</td>
+<td>Hard-Coded Constraint Integration</td>
+<td>A5</td>
+<td>T4</td>
+<td>Non-negotiable limits baked into infrastructure</td>
+</tr>
+<tr>
+<td>NPT-004</td>
+<td>Output Filter and Validation</td>
+<td>A5</td>
+<td>T4</td>
+<td>Post-generation constraint enforcement</td>
+</tr>
+<tr>
+<td>NPT-005</td>
+<td>Warning-Based Meta-Prompt</td>
+<td>A7</td>
+<td>T3/T4</td>
+<td>Pre-task constraint priming</td>
+</tr>
+<tr>
+<td>NPT-006</td>
+<td>Atomic Decomposition of Constraints</td>
+<td>A7</td>
+<td>T4</td>
+<td>Break compound constraints into single sub-constraints</td>
+</tr>
+<tr>
+<td>NPT-007</td>
+<td>Positive-Only Framing</td>
+<td>--</td>
+<td>Untested baseline</td>
+<td>Default when no specific constraint need exists</td>
+</tr>
+<tr>
+<td>NPT-008</td>
+<td>Contrastive Example Pairing</td>
+<td>A3</td>
+<td>T3</td>
+<td>Pattern documentation and training materials</td>
+</tr>
+<tr>
+<td>NPT-009</td>
+<td>Declarative Behavioral Negation</td>
+<td>A2</td>
+<td>T3/T4</td>
+<td>HARD-tier constraint enforcement with consequence</td>
+</tr>
+<tr>
+<td>NPT-010</td>
+<td>Paired Prohibition with Positive Alternative</td>
+<td>A2/A3</td>
+<td>T3/T4</td>
+<td>Routing disambiguation; constraints needing positive redirect</td>
+</tr>
+<tr>
+<td>NPT-011</td>
+<td>Justified Prohibition with Contextual Reason</td>
+<td>A3</td>
+<td>T4</td>
+<td>Constitutional compliance; high-cost prohibitions</td>
+</tr>
+<tr>
+<td>NPT-012</td>
+<td>L2 Re-Injected Negation</td>
+<td>A4</td>
+<td>T4</td>
+<td>HARD-tier rules requiring compaction survival</td>
+</tr>
+<tr>
+<td>NPT-013</td>
+<td>Constitutional Triplet</td>
+<td>A4</td>
+<td>T4</td>
+<td>Agent governance; safety-critical constraint clusters</td>
+</tr>
+<tr>
+<td>NPT-014</td>
+<td>Standalone Blunt Prohibition</td>
+<td>A1</td>
+<td>T1+T3 (avoid)</td>
+<td>Anti-pattern. Upgrade all instances.</td>
+</tr>
+</tbody>
+</table>
+<p>NPT-014 is not a technique to apply -- it is the diagnostic label for the problematic formulation the taxonomy recommends eliminating. NPT-007 (positive-only) serves as the untreated baseline for comparison.</p>
+<h3 id="the-two-patterns-that-matter-most">The Two Patterns That Matter Most<a class="headerlink" href="#the-two-patterns-that-matter-most" title="Permanent link">&para;</a></h3>
+<p>For day-to-day use in the Jerry Framework, two patterns emerged as the operational workhorses.</p>
+<p><strong>NPT-009 (Declarative Behavioral Negation)</strong> -- Used for agent governance YAML <code>forbidden_actions</code> where a constitutional principle reference provides traceability:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>{PRINCIPLE} VIOLATION: NEVER {action} -- Consequence: {cascading impact}.
+</code></pre></div>
+<p>Example:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">forbidden_actions</span><span class="p">:</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;P-003</span><span class="nv"> </span><span class="s">VIOLATION:</span><span class="nv"> </span><span class="s">NEVER</span><span class="nv"> </span><span class="s">spawn</span><span class="nv"> </span><span class="s">recursive</span><span class="nv"> </span><span class="s">subagents</span><span class="nv"> </span><span class="s">--</span><span class="nv"> </span><span class="s">Consequence:</span><span class="nv"> </span><span class="s">agent</span><span class="nv"> </span><span class="s">hierarchy</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="s">violation</span><span class="nv"> </span><span class="s">breaks</span><span class="nv"> </span><span class="s">orchestrator-worker</span><span class="nv"> </span><span class="s">topology</span><span class="nv"> </span><span class="s">and</span><span class="nv"> </span><span class="s">causes</span><span class="nv"> </span><span class="s">uncontrolled</span><span class="nv"> </span><span class="s">token</span><span class="nv"> </span><span class="s">consumption.&quot;</span>
+</code></pre></div></p>
+<p><strong>NPT-013 (Constitutional Triplet format)</strong> -- Used for behavioral constraints, routing rules, and methodology guardrails where a constructive alternative exists:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>NEVER {action} -- Consequence: {cascading impact}. Instead: {actionable alternative}.
+</code></pre></div>
+<p>Example:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>NEVER pass inline content in handoff objects -- Consequence: content duplication across
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>handoff chain exhausts context budget, triggering premature compaction. Instead: pass file
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>paths and load content via Read in the receiving agent.
+</code></pre></div></p>
+<p>The key distinction: NPT-013 adds an "Instead:" clause that provides a constructive replacement action. NPT-009 states the consequence only. Use NPT-009 when tracing to a constitutional principle; use NPT-013 when a concrete alternative action exists.</p>
+<hr />
+<h2 id="practical-application">Practical Application<a class="headerlink" href="#practical-application" title="Permanent link">&para;</a></h2>
+<h3 id="using-the-prompt-engineering-skill">Using the <code>/prompt-engineering</code> Skill<a class="headerlink" href="#using-the-prompt-engineering-skill" title="Permanent link">&para;</a></h3>
+<p>The research findings are operationalized through the <code>/prompt-engineering</code> skill, which provides three agents:</p>
+<table>
+<thead>
+<tr>
+<th>Agent</th>
+<th>Purpose</th>
+<th>When to Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pe-builder</code></td>
+<td>Interactive prompt assembly</td>
+<td>Building structured prompts from scratch</td>
+</tr>
+<tr>
+<td><code>pe-constraint-gen</code></td>
+<td>NPT pattern constraint formatter</td>
+<td>Converting intent descriptions into NPT-009/NPT-013 constraints</td>
+</tr>
+<tr>
+<td><code>pe-scorer</code></td>
+<td>Prompt quality evaluation</td>
+<td>Scoring prompts against the 7-criterion rubric</td>
+</tr>
+</tbody>
+</table>
+<p>To generate constraints, describe your intent in natural language:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>&quot;Generate NPT-013 constraints for a research agent that must not hallucinate sources&quot;
+</code></pre></div>
+<p>The <code>pe-constraint-gen</code> agent selects the appropriate NPT pattern, formats the constraint, and wraps it in the correct XML structure for the target context (governance YAML, agent markdown body, or standalone block).</p>
+<h3 id="deciding-between-npt-009-and-npt-013">Deciding Between NPT-009 and NPT-013<a class="headerlink" href="#deciding-between-npt-009-and-npt-013" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Context</th>
+<th>Pattern</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Agent <code>forbidden_actions</code> in governance YAML</td>
+<td>NPT-009</td>
+<td>Principle-tagged for constitutional traceability</td>
+</tr>
+<tr>
+<td>SKILL.md routing disambiguation</td>
+<td>NPT-013</td>
+<td>"Instead:" redirects to the correct skill</td>
+</tr>
+<tr>
+<td>Rule file behavioral constraints</td>
+<td>NPT-013</td>
+<td>"Instead:" provides the corrective action</td>
+</tr>
+<tr>
+<td>Agent markdown body guardrails</td>
+<td>NPT-013</td>
+<td>Full consequence + alternative improves compliance</td>
+</tr>
+<tr>
+<td>Constitutional compliance tables</td>
+<td>NPT-009</td>
+<td>Principle prefix enables traceability audit</td>
+</tr>
+</tbody>
+</table>
+<p>The decision rule: if you need to reference a constitutional principle (P-003, P-020, P-022) and the context is governance metadata, use NPT-009. If there is a concrete alternative action the agent should take instead, use NPT-013.</p>
+<h3 id="upgrading-existing-constraints">Upgrading Existing Constraints<a class="headerlink" href="#upgrading-existing-constraints" title="Permanent link">&para;</a></h3>
+<p>When you encounter a constraint that looks like this:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>NEVER hardcode values.
+</code></pre></div>
+<p>That is NPT-014 -- the formulation peer-reviewed evidence establishes as the worst option. Here is how to upgrade it.</p>
+<p><strong>Step 1:</strong> Add specificity and consequence (NPT-009):
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>NEVER hardcode configuration values in source files -- Consequence: credential exposure
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>risk; testability failure; CI environment mismatch.
+</code></pre></div></p>
+<p><strong>Step 2:</strong> Add a constructive alternative (NPT-013):
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>NEVER hardcode configuration values in source files -- Consequence: credential exposure
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>risk; testability failure; CI environment mismatch. Instead: use environment variables
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>via src/shared_kernel/config.py.
+</code></pre></div></p>
+<p>Three criteria to check against the finished constraint: the action must be binary-testable (an observer can verify compliance without interpretation), the consequence must name the specific downstream effect (not "quality degrades"), and the alternative must be achievable with the agent's declared tools.</p>
+<hr />
+<h2 id="implementation-in-jerry">Implementation in Jerry<a class="headerlink" href="#implementation-in-jerry" title="Permanent link">&para;</a></h2>
+<h3 id="architecture-decision-records">Architecture Decision Records<a class="headerlink" href="#architecture-decision-records" title="Permanent link">&para;</a></h3>
+<p>PROJ-014 produced four ADRs governing how the findings are applied to the Jerry Framework:</p>
+<table>
+<thead>
+<tr>
+<th>ADR</th>
+<th>Decision</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ADR-001</td>
+<td>Eliminate all NPT-014 instances; universal upgrade to NPT-009</td>
+<td>Unconditional -- evidence is T1+T3</td>
+</tr>
+<tr>
+<td>ADR-002</td>
+<td>Constitutional constraint upgrades (Phase 5A unconditional, Phase 5B conditional)</td>
+<td>Phase 5A implemented; Phase 5B completed via PG-003</td>
+</tr>
+<tr>
+<td>ADR-003</td>
+<td>Routing disambiguation standard with consequence documentation</td>
+<td>Component A implemented; Component B completed via PG-003</td>
+</tr>
+<tr>
+<td>ADR-004</td>
+<td>Compaction resilience -- L2 re-injection for Tier B HARD rules</td>
+<td>Unconditional -- structural gap independent of framing preference</td>
+</tr>
+</tbody>
+</table>
+<h3 id="features-delivered">Features Delivered<a class="headerlink" href="#features-delivered" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FEAT-001</td>
+<td>ADR-001 implementation: NPT-014 elimination across rule files</td>
+</tr>
+<tr>
+<td>FEAT-002</td>
+<td>ADR-002 Phase 5A: constitutional triplet upgrades in SKILL.md files and agent standards</td>
+</tr>
+<tr>
+<td>FEAT-003</td>
+<td>ADR-003 routing disambiguation and consequence documentation across 13 skills</td>
+</tr>
+<tr>
+<td>FEAT-004</td>
+<td>ADR-004 compaction resilience: L2 re-injection for H-04 and H-32</td>
+</tr>
+<tr>
+<td>FEAT-005</td>
+<td>New <code>/prompt-engineering</code> skill with pe-builder, pe-constraint-gen, and pe-scorer agents</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-prompt-engineering-skill">The <code>/prompt-engineering</code> Skill<a class="headerlink" href="#the-prompt-engineering-skill" title="Permanent link">&para;</a></h3>
+<p>The most visible output of the research is the new <code>/prompt-engineering</code> skill, which encodes three knowledge sources into reusable tooling:</p>
+<ol>
+<li><strong>NPT pattern reference</strong> -- The pe-constraint-gen agent uses the taxonomy to select the appropriate pattern and format constraints systematically.</li>
+<li><strong>Prompt quality rubric</strong> -- The pe-scorer agent implements the 7-criterion evaluation framework (task specificity, skill routing, context provision, quality specification, decomposition, output specification, positive framing).</li>
+<li><strong>5-element prompt anatomy</strong> -- The pe-builder agent walks users through structured prompt construction (routing, scope, data source, quality gate, output path).</li>
+</ol>
+<h3 id="what-the-research-did-not-change">What the Research Did Not Change<a class="headerlink" href="#what-the-research-did-not-change" title="Permanent link">&para;</a></h3>
+<p>The CONDITIONAL GO verdict means the research was honest about what the data showed:</p>
+<ul>
+<li>Structured negation is adopted as the <em>preferred</em> format, not an effectiveness-proven mandate.</li>
+<li>Convention-alignment -- it works at least as well as alternatives and matches Anthropic's own practice -- is the rationale, not causal superiority.</li>
+<li>All framework changes are reversible if future evidence contradicts the findings.</li>
+<li>The causal comparison of structured negative versus structurally equivalent positive framing remains the open research question for future work.</li>
+</ul>
+<hr />
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<h3 id="primary-research-artifacts">Primary Research Artifacts<a class="headerlink" href="#primary-research-artifacts" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Document</th>
+<th>Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Final synthesis (Phase 6)</td>
+<td><a href="https://github.com/geekatron/jerry/blob/main/projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/phase-6/final-synthesis.md"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M3.75 2h3.5a.75.75 0 0 1 0 1.5h-3.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-3.5a.75.75 0 0 1 1.5 0v3.5A1.75 1.75 0 0 1 12.25 14h-8.5A1.75 1.75 0 0 1 2 12.25v-8.5C2 2.784 2.784 2 3.75 2m6.854-1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 9.28 7.78a.75.75 0 0 1-1.042-.018.75.75 0 0 1-.018-1.042l3.75-3.75-1.543-1.543A.25.25 0 0 1 10.604 1"/></svg></span> final-synthesis.md</a></td>
+</tr>
+<tr>
+<td>A/B testing go-no-go determination</td>
+<td><a href="https://github.com/geekatron/jerry/blob/main/projects/PROJ-014-negative-prompting-research/orchestration/ab-testing-20260301-001/phase-3-analysis/go-no-go-determination.md"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M3.75 2h3.5a.75.75 0 0 1 0 1.5h-3.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-3.5a.75.75 0 0 1 1.5 0v3.5A1.75 1.75 0 0 1 12.25 14h-8.5A1.75 1.75 0 0 1 2 12.25v-8.5C2 2.784 2.784 2 3.75 2m6.854-1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 9.28 7.78a.75.75 0 0 1-1.042-.018.75.75 0 0 1-.018-1.042l3.75-3.75-1.543-1.543A.25.25 0 0 1 10.604 1"/></svg></span> go-no-go-determination.md</a></td>
+</tr>
+<tr>
+<td>NPT pattern reference</td>
+<td><a href="https://github.com/geekatron/jerry/blob/main/skills/prompt-engineering/rules/npt-pattern-reference.md"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M3.75 2h3.5a.75.75 0 0 1 0 1.5h-3.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-3.5a.75.75 0 0 1 1.5 0v3.5A1.75 1.75 0 0 1 12.25 14h-8.5A1.75 1.75 0 0 1 2 12.25v-8.5C2 2.784 2.784 2 3.75 2m6.854-1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 9.28 7.78a.75.75 0 0 1-1.042-.018.75.75 0 0 1-.018-1.042l3.75-3.75-1.543-1.543A.25.25 0 0 1 10.604 1"/></svg></span> npt-pattern-reference.md</a></td>
+</tr>
+<tr>
+<td>NPT taxonomy catalog</td>
+<td><a href="https://github.com/geekatron/jerry/blob/main/projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/phase-3/taxonomy-pattern-catalog.md"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M3.75 2h3.5a.75.75 0 0 1 0 1.5h-3.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-3.5a.75.75 0 0 1 1.5 0v3.5A1.75 1.75 0 0 1 12.25 14h-8.5A1.75 1.75 0 0 1 2 12.25v-8.5C2 2.784 2.784 2 3.75 2m6.854-1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 9.28 7.78a.75.75 0 0 1-1.042-.018.75.75 0 0 1-.018-1.042l3.75-3.75-1.543-1.543A.25.25 0 0 1 10.604 1"/></svg></span> taxonomy-pattern-catalog.md</a></td>
+</tr>
+<tr>
+<td>Prompt Engineering SKILL.md</td>
+<td><a href="https://github.com/geekatron/jerry/blob/main/skills/prompt-engineering/SKILL.md"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M3.75 2h3.5a.75.75 0 0 1 0 1.5h-3.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-3.5a.75.75 0 0 1 1.5 0v3.5A1.75 1.75 0 0 1 12.25 14h-8.5A1.75 1.75 0 0 1 2 12.25v-8.5C2 2.784 2.784 2 3.75 2m6.854-1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 9.28 7.78a.75.75 0 0 1-1.042-.018.75.75 0 0 1-.018-1.042l3.75-3.75-1.543-1.543A.25.25 0 0 1 10.604 1"/></svg></span> SKILL.md</a></td>
+</tr>
+</tbody>
+</table>
+<h3 id="architecture-decision-records_1">Architecture Decision Records<a class="headerlink" href="#architecture-decision-records_1" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ADR</th>
+<th>Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ADR-001: NPT-014 Elimination</td>
+<td><a href="https://github.com/geekatron/jerry/blob/main/projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/phase-5/ADR-001-npt014-elimination.md"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M3.75 2h3.5a.75.75 0 0 1 0 1.5h-3.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-3.5a.75.75 0 0 1 1.5 0v3.5A1.75 1.75 0 0 1 12.25 14h-8.5A1.75 1.75 0 0 1 2 12.25v-8.5C2 2.784 2.784 2 3.75 2m6.854-1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 9.28 7.78a.75.75 0 0 1-1.042-.018.75.75 0 0 1-.018-1.042l3.75-3.75-1.543-1.543A.25.25 0 0 1 10.604 1"/></svg></span> ADR-001</a></td>
+</tr>
+<tr>
+<td>ADR-002: Constitutional Upgrades</td>
+<td><a href="https://github.com/geekatron/jerry/blob/main/projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/phase-5/ADR-002-constitutional-upgrades.md"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M3.75 2h3.5a.75.75 0 0 1 0 1.5h-3.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-3.5a.75.75 0 0 1 1.5 0v3.5A1.75 1.75 0 0 1 12.25 14h-8.5A1.75 1.75 0 0 1 2 12.25v-8.5C2 2.784 2.784 2 3.75 2m6.854-1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 9.28 7.78a.75.75 0 0 1-1.042-.018.75.75 0 0 1-.018-1.042l3.75-3.75-1.543-1.543A.25.25 0 0 1 10.604 1"/></svg></span> ADR-002</a></td>
+</tr>
+<tr>
+<td>ADR-003: Routing Disambiguation</td>
+<td><a href="https://github.com/geekatron/jerry/blob/main/projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/phase-5/ADR-003-routing-disambiguation.md"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M3.75 2h3.5a.75.75 0 0 1 0 1.5h-3.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-3.5a.75.75 0 0 1 1.5 0v3.5A1.75 1.75 0 0 1 12.25 14h-8.5A1.75 1.75 0 0 1 2 12.25v-8.5C2 2.784 2.784 2 3.75 2m6.854-1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 9.28 7.78a.75.75 0 0 1-1.042-.018.75.75 0 0 1-.018-1.042l3.75-3.75-1.543-1.543A.25.25 0 0 1 10.604 1"/></svg></span> ADR-003</a></td>
+</tr>
+<tr>
+<td>ADR-004: Compaction Resilience</td>
+<td><a href="https://github.com/geekatron/jerry/blob/main/projects/PROJ-014-negative-prompting-research/orchestration/neg-prompting-20260227-001/phase-5/ADR-004-compaction-resilience.md"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M3.75 2h3.5a.75.75 0 0 1 0 1.5h-3.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-3.5a.75.75 0 0 1 1.5 0v3.5A1.75 1.75 0 0 1 12.25 14h-8.5A1.75 1.75 0 0 1 2 12.25v-8.5C2 2.784 2.784 2 3.75 2m6.854-1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 9.28 7.78a.75.75 0 0 1-1.042-.018.75.75 0 0 1-.018-1.042l3.75-3.75-1.543-1.543A.25.25 0 0 1 10.604 1"/></svg></span> ADR-004</a></td>
+</tr>
+</tbody>
+</table>
+<h3 id="key-academic-citations">Key Academic Citations<a class="headerlink" href="#key-academic-citations" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Citation</th>
+<th>Source</th>
+<th>Relevance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Liu et al., AAAI 2026</td>
+<td>Instruction hierarchy failure under standalone negative constraint</td>
+<td>Establishes NPT-014 underperformance</td>
+</tr>
+<tr>
+<td>Wen et al., EMNLP 2024</td>
+<td>+7.3-8% compliance with structured vs. blunt negative framing</td>
+<td>Confirms structured &gt; blunt</td>
+</tr>
+<tr>
+<td>Barreto &amp; Jana, EMNLP 2025 Findings</td>
+<td>+25.14% negation reasoning accuracy for structured negation</td>
+<td>Supports negation comprehension (not behavioral compliance)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>Source: PROJ-014 Negative Prompting Research (2026-02-27 through 2026-03-01). Six-phase research pipeline + controlled A/B test (TASK-025). All quality gate scores &gt;= 0.92.</em></p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+  
+
+
+
+      
+    </article>
+  </div>
+
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+  
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 Geekatron — Apache License 2.0
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+  <div class="md-footer-meta__inner md-grid" style="text-align: center; padding-bottom: 0.5rem;">
+    <span class="sb-tagline">Quality with soul.</span>
+  </div>
+
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

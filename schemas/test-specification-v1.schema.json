@@ -1,0 +1,132 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jerry-framework.dev/schemas/test-specification/v1.0.0",
+  "title": "Jerry Test Specification Schema",
+  "description": "Validates BDD test specification (Feature file) YAML frontmatter produced by the tspec-generator agent. Implements Clark transformation output structure. Source: skills/test-spec/rules/clark-transformation-rules.md, skills/test-spec/SKILL.md.",
+  "type": "object",
+  "required": [
+    "source_use_case",
+    "source_title",
+    "source_detail_level",
+    "source_goal_level",
+    "generated_by",
+    "generated_at",
+    "scenario_count",
+    "coverage",
+    "version"
+  ],
+  "properties": {
+    "source_use_case": {
+      "type": "string",
+      "pattern": "^UC-[A-Z]+-\\d{3}$",
+      "description": "Source use case identifier. Must reference a valid use case ID. Format: UC-{DOMAIN}-{NNN}."
+    },
+    "source_title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Title of the source use case. Verbatim from $.title per RULE-C1-01."
+    },
+    "source_detail_level": {
+      "type": "string",
+      "enum": ["ESSENTIAL_OUTLINE", "FULLY_DESCRIBED"],
+      "description": "Detail level of the source use case at generation time. Restricted to ESSENTIAL_OUTLINE and FULLY_DESCRIBED by this enum; BRIEFLY_DESCRIBED and BULLETED_OUTLINE are excluded from the enum and will fail schema validation if present. Clark transformation requires >= ESSENTIAL_OUTLINE per RULE-IV-02."
+    },
+    "source_goal_level": {
+      "type": "string",
+      "enum": ["SUMMARY", "USER_GOAL", "SUBFUNCTION"],
+      "description": "Goal level of the source use case. Determines coverage target: USER_GOAL=100%, SUBFUNCTION=80%, SUMMARY=60%."
+    },
+    "generated_by": {
+      "const": "tspec-generator",
+      "description": "Generator agent identifier. Always tspec-generator for Clark transformation output."
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 generation timestamp."
+    },
+    "scenario_count": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Total number of Gherkin scenarios generated. Must equal coverage.mapped_flows. Note: JSON Schema cannot enforce cross-field equality at the schema level; tspec-generator MUST verify scenario_count == coverage.mapped_flows as a post_completion_check (verify_scenario_count_equals_coverage_mapped_flows) before writing the Feature file."
+    },
+    "coverage": {
+      "type": "object",
+      "required": [
+        "basic_flow_mapped",
+        "total_flows",
+        "mapped_flows"
+      ],
+      "properties": {
+        "basic_flow_mapped": {
+          "type": "boolean",
+          "description": "Whether the basic flow has been mapped to a happy-path scenario. Must be true for valid output."
+        },
+        "alternative_flows_mapped": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Count of alternative flows (AF-{NN}) mapped to scenarios."
+        },
+        "extensions_mapped": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Count of extensions (EXT-{step}{letter}) mapped to scenarios."
+        },
+        "total_flows": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Total number of flows in the source use case (1 basic + alternatives + extensions)."
+        },
+        "mapped_flows": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of flows successfully mapped to Gherkin scenarios."
+        },
+        "coverage_percentage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Mapped flows / total flows * 100. Optional; computable from mapped_flows and total_flows."
+        }
+      },
+      "additionalProperties": false,
+      "description": "Flow-to-scenario coverage metrics per RULE-C7-01 traceability matrix."
+    },
+    "slice_id": {
+      "type": ["string", "null"],
+      "description": "UC 2.0 slice identifier if this test spec targets a specific slice. Null for full use case coverage."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version in MAJOR.MINOR.PATCH format."
+    },
+    "quality": {
+      "type": "object",
+      "properties": {
+        "all_scenarios_traceable": {
+          "type": "boolean",
+          "description": "Whether every generated scenario traces back to a source flow via the traceability matrix."
+        },
+        "no_orphan_flows": {
+          "type": "boolean",
+          "description": "Whether all source flows have at least one corresponding scenario."
+        },
+        "coverage_target_met": {
+          "type": "boolean",
+          "description": "Whether coverage meets goal-level target. USER_GOAL requires 100%, SUBFUNCTION 80%, SUMMARY 60%."
+        }
+      },
+      "additionalProperties": false,
+      "description": "Traceability quality flags set by tspec-generator self-validation."
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Generation warnings (e.g., low-confidence step type mappings, missing extension conditions)."
+    }
+  },
+  "additionalProperties": false
+}

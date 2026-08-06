@@ -1,0 +1,3121 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Framework for behavior/workflow guardrails. Accrues knowledge, wisdom, experience.">
+      
+      
+        <meta name="author" content="Geekatron">
+      
+      
+        <link rel="canonical" href="https://jerry.geekatron.org/audits/h32-parity-audit-20260330/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>H-32 GitHub Issue Parity Audit - Jerry Framework</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/saucer-boy.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="saucer-boy" data-md-color-primary="deep-purple" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#h-32-github-issue-parity-audit" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Jerry Framework" class="md-header__button md-logo" aria-label="Jerry Framework" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Jerry Framework
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              H-32 GitHub Issue Parity Audit
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="saucer-boy" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="saucer-boy-dark" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/geekatron/jerry" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    geekatron/jerry
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Jerry Framework" class="md-nav__button md-logo" aria-label="Jerry Framework" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    Jerry Framework
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/geekatron/jerry" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    geekatron/jerry
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INSTALLATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../BOOTSTRAP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bootstrap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started Runbook
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/problem-solving/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Problem Solving
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/orchestration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/transcript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transcript Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/PLUGIN-DEVELOPMENT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plugin Development
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../howto/update-sha-pinned-action/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Update a SHA-Pinned Action
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../howto/add-ci-job/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Add a New CI Job
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../howto/add-github-actions-dependency/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Add a GitHub Actions Dependency
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CLAUDE-MD-GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLAUDE.md Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ci-cd-pipeline-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD Pipeline Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/claude-code-permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claude Code Permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../schemas/SCHEMA_VERSIONING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schema Versioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../schemas/SESSION_CONTEXT_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Session Context Schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Explanation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Explanation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/ci-cd-supply-chain-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD Supply Chain Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/permission-security-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Permission & Security Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Articles
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Articles
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Articles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_2" id="__nav_6_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Archive
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Archive
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/archive/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_3" id="__nav_6_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Categories
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Categories
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/category/prompting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prompting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/category/quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/single-vs-multi-agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single vs. Multi-Agent Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/adversarial-strategy-catalog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adversarial Strategy Catalog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/strategy-selection-enforcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Strategy Selection & Enforcement (ADRs)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/adversarial-deep-dives/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adversarial Quality Deep Dives
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/skill-compliance-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Skill Compliance Framework
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/governance-constitutional-ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Governance & Constitutional AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/context-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Context Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/oss-methodology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OSS Methodology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/architecture-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/claude-code-ecosystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claude Code Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/negative-prompting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Negative Prompting & Constraint Enforcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7_13" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_13" id="__nav_7_13_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM Deception Study
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    LLM Deception Study
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/llm-deception/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/llm-deception/the-85-problem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 85% Problem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/llm-deception/methodology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methodology & Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/llm-deception/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture & Recommendations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Governance
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Governance
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../governance/JERRY_CONSTITUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jerry Constitution
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#document-sections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Document Sections
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#critical-state-mismatches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Critical: State Mismatches
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#major-open-issues-without-worktracker-entities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Major: Open Issues Without Worktracker Entities
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Major: Open Issues Without Worktracker Entities">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bugs-highest-priority-open-bugs-must-have-worktracker-entity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bugs (Highest Priority — Open bugs MUST have worktracker entity)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#epics-features-open-no-worktracker-entity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Epics / Features (Open — No Worktracker Entity)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#research-enhancements-open-no-worktracker-entity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Research / Enhancements (Open — No Worktracker Entity)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#note-on-open-issues-with-worktracker-coverage-correctly-tracked" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Note on Open Issues With Worktracker Coverage (Correctly Tracked)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#info-correctly-synced-pairs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Info: Correctly Synced Pairs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Info: Correctly Synced Pairs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#additional-info-items" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Additional Info Items
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#remediation-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Remediation Plan
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Remediation Plan">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#priority-1-critical-state-mismatches-effort-low-status-field-updates-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Priority 1: Critical State Mismatches (Effort: Low — status field updates only)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#priority-2-critical-state-mismatches-effort-medium-requires-investigation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Priority 2: Critical State Mismatches (Effort: Medium — requires investigation)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#priority-3-major-h-32-violations-bug-entities-needed-effort-low-per-item" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Priority 3: Major H-32 Violations — Bug Entities Needed (Effort: Low per item)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#priority-4-major-h-32-violations-proj-023-e2e-cluster-effort-medium" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Priority 4: Major H-32 Violations — PROJ-023 E2E Cluster (Effort: Medium)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#priority-5-major-h-32-violations-enhancements-effort-low-per-item" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Priority 5: Major H-32 Violations — Enhancements (Effort: Low per item)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#priority-6-info-items-effort-trivial" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Priority 6: Info Items (Effort: Trivial)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#audit-coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Audit Coverage
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Audit Coverage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#projects-audited" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Projects Audited
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coverage-gaps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coverage Gaps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h-32-rule-scope-note" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H-32 Rule Scope Note
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#findings-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Findings Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="h-32-github-issue-parity-audit">H-32 GitHub Issue Parity Audit<a class="headerlink" href="#h-32-github-issue-parity-audit" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Type:</strong> audit-report
+<strong>Generated:</strong> 2026-03-30T00:00:00Z
+<strong>Agent:</strong> wt-auditor
+<strong>Audit Type:</strong> h32-parity (full cross-project)
+<strong>Scope:</strong> All projects in repository (20 WORKTRACKER files, all entity files)
+<strong>Rule:</strong> H-32 — All worktracker bugs, stories, enablers, and tasks MUST have a corresponding GitHub Issue. Both MUST be kept in sync.</p>
+</blockquote>
+<hr />
+<h2 id="document-sections">Document Sections<a class="headerlink" href="#document-sections" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Section</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#summary">Summary</a></td>
+<td>Coverage metrics, issue counts, verdict</td>
+</tr>
+<tr>
+<td><a href="#critical-state-mismatches">Critical: State Mismatches</a></td>
+<td>Closed GH issue but worktracker entity not completed</td>
+</tr>
+<tr>
+<td><a href="#major-open-issues-without-worktracker-entities">Major: Open Issues Without Worktracker Entities</a></td>
+<td>H-32 violations: open GH issues with no entity</td>
+</tr>
+<tr>
+<td><a href="#info-correctly-synced-pairs">Info: Correctly Synced Pairs</a></td>
+<td>Verified synced pairs for completeness</td>
+</tr>
+<tr>
+<td><a href="#remediation-plan">Remediation Plan</a></td>
+<td>Prioritized action list</td>
+</tr>
+<tr>
+<td><a href="#audit-coverage">Audit Coverage</a></td>
+<td>Files checked, projects surveyed</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Projects Audited</strong></td>
+<td>20</td>
+</tr>
+<tr>
+<td><strong>Open GitHub Issues</strong></td>
+<td>35</td>
+</tr>
+<tr>
+<td><strong>Closed GitHub Issues</strong></td>
+<td>54</td>
+</tr>
+<tr>
+<td><strong>Worktracker Entities with GH Issue Refs</strong></td>
+<td>37 entities across 16 projects</td>
+</tr>
+<tr>
+<td><strong>CRITICAL: GH closed but entity not completed</strong></td>
+<td>8</td>
+</tr>
+<tr>
+<td><strong>MAJOR: Open GH issue with no worktracker entity</strong></td>
+<td>23</td>
+</tr>
+<tr>
+<td><strong>INFO: Correctly synced pairs</strong></td>
+<td>22</td>
+</tr>
+<tr>
+<td><strong>Verdict</strong></td>
+<td><strong>FAILED</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="critical-state-mismatches">Critical: State Mismatches<a class="headerlink" href="#critical-state-mismatches" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p>GH issue is CLOSED but worktracker entity is not in a terminal state (completed/done).
+These represent stale worktracker entries where the GH issue was resolved without updating the worktracker.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>GH Issue</th>
+<th>GH State</th>
+<th>Entity File</th>
+<th>Entity Status</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C-001</td>
+<td><a href="https://github.com/geekatron/jerry/issues/46">#46</a></td>
+<td>CLOSED</td>
+<td><code>projects/PROJ-001-oss-release/work/EPIC-001-oss-release/BUG-013-hook-uv-sync-wrong-directory/BUG-013-hook-uv-sync-wrong-directory.md</code></td>
+<td><code>in_progress</code></td>
+<td>BUG-013: SessionStart hook uv sync runs in wrong directory. GH issue closed but entity has open checklist items and in_progress status.</td>
+</tr>
+<tr>
+<td>C-002</td>
+<td><a href="https://github.com/geekatron/jerry/issues/109">#109</a></td>
+<td>CLOSED</td>
+<td><code>projects/PROJ-021-use-case/work/EPIC-021-001-use-case-capability-build/EPIC-021-001-use-case-capability-build.md</code></td>
+<td><code>in_progress</code></td>
+<td>EPIC-021-001: Use Case Capability Build. GH issue closed (#109: "Build use case capability") but epic is in_progress. The epic's AC may still be open.</td>
+</tr>
+<tr>
+<td>C-003</td>
+<td><a href="https://github.com/geekatron/jerry/issues/113">#113</a></td>
+<td>CLOSED</td>
+<td><code>projects/PROJ-017-portability/work/EPIC-017-001-platform-portability/FEAT-017-001-shell-command-portability/BUG-017-001-statusline-python3/BUG-017-001.md</code></td>
+<td><code>pending</code></td>
+<td>BUG-017-001: statusLine command uses python3 which fails on Windows. GH #113 closed but entity still pending. Superseded by PROJ-024 fix.</td>
+</tr>
+<tr>
+<td>C-004</td>
+<td><a href="https://github.com/geekatron/jerry/issues/116">#116</a></td>
+<td>CLOSED</td>
+<td><code>projects/PROJ-017-portability/work/EPIC-017-001-platform-portability/FEAT-017-002-file-system-portability/BUG-017-004-missing-gitattributes/BUG-017-004.md</code></td>
+<td><code>pending</code></td>
+<td>BUG-017-004: Missing .gitattributes. GH #116 closed (fix delivered via EN-005-gitattributes in PROJ-024) but PROJ-017 entity still pending. Duplicate tracking.</td>
+</tr>
+<tr>
+<td>C-005</td>
+<td><a href="https://github.com/geekatron/jerry/issues/117">#117</a></td>
+<td>CLOSED</td>
+<td><code>projects/PROJ-017-portability/work/EPIC-017-001-platform-portability/FEAT-017-002-file-system-portability/BUG-017-005-hardcoded-path-separator/BUG-017-005.md</code></td>
+<td><code>pending</code></td>
+<td>BUG-017-005: hardcoded forward slash in file_repository.py. GH #117 closed (fixed in PROJ-024 BUG-006) but PROJ-017 entity still pending.</td>
+</tr>
+<tr>
+<td>C-006</td>
+<td><a href="https://github.com/geekatron/jerry/issues/118">#118</a></td>
+<td>CLOSED</td>
+<td><code>projects/PROJ-017-portability/work/EPIC-017-001-platform-portability/FEAT-017-001-shell-command-portability/BUG-017-006-macos-symlink-resolution/BUG-017-006.md</code></td>
+<td><code>pending</code></td>
+<td>BUG-017-006: verify-symlinks.sh macOS fallback assumes python3. GH #118 closed but PROJ-017 entity still pending.</td>
+</tr>
+<tr>
+<td>C-007</td>
+<td><a href="https://github.com/geekatron/jerry/issues/138">#138</a></td>
+<td>CLOSED</td>
+<td><code>projects/PROJ-022-user-experience-skill/WORKTRACKER.md</code></td>
+<td><code>ACTIVE</code></td>
+<td>PROJ-022 UX skill WORKTRACKER. GH #138 ("feat: Add /user-experience skill") is CLOSED but WORKTRACKER.md says ACTIVE with 0/8 epics complete, 0/26 features complete. The GH issue tracked the feature request; the project was never delivered.</td>
+</tr>
+<tr>
+<td>C-008</td>
+<td><a href="https://github.com/geekatron/jerry/issues/153">#153</a></td>
+<td>CLOSED</td>
+<td><code>projects/PROJ-030-bugs/work/EN-001-ci-pipeline-hardening.md</code></td>
+<td><code>in_progress</code></td>
+<td>EN-001: CI pipeline security hardening. GH #153 closed but enabler is in_progress. TASK-003 (pre_tool_use consolidation) and TASK-004 (permission reference) are still in_progress. The GH issue may have been closed prematurely or tracks a subset of the enabler scope.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="major-open-issues-without-worktracker-entities">Major: Open Issues Without Worktracker Entities<a class="headerlink" href="#major-open-issues-without-worktracker-entities" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p>GH issue is OPEN but no worktracker entity references it.
+This is an H-32 violation: the open issue has no SSOT entry in the worktracker.</p>
+</blockquote>
+<h3 id="bugs-highest-priority-open-bugs-must-have-worktracker-entity">Bugs (Highest Priority — Open bugs MUST have worktracker entity)<a class="headerlink" href="#bugs-highest-priority-open-bugs-must-have-worktracker-entity" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>GH Issue</th>
+<th>Title</th>
+<th>Severity Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M-001</td>
+<td><a href="https://github.com/geekatron/jerry/issues/223">#223</a></td>
+<td>BUG-023-003: E2E smoke tests bypass skill layer, cover only 8/33 tools</td>
+<td>CRITICAL priority label — no worktracker entity in any project</td>
+</tr>
+<tr>
+<td>M-002</td>
+<td><a href="https://github.com/geekatron/jerry/issues/199">#199</a></td>
+<td>bug: uc-slicer append-only re-invocation lacks duplicate slice_id conflict detection</td>
+<td>Bug in /use-case skill, no worktracker entity</td>
+</tr>
+<tr>
+<td>M-003</td>
+<td><a href="https://github.com/geekatron/jerry/issues/198">#198</a></td>
+<td>bug: cd-generator banned-term check false positives on domain vocabulary under 60 chars</td>
+<td>Bug in /contract-design skill, no worktracker entity</td>
+</tr>
+<tr>
+<td>M-004</td>
+<td><a href="https://github.com/geekatron/jerry/issues/197">#197</a></td>
+<td>bug: tspec-analyst uses live UC as coverage denominator instead of generation-time snapshot</td>
+<td>Bug in /test-spec skill, no worktracker entity</td>
+</tr>
+<tr>
+<td>M-005</td>
+<td><a href="https://github.com/geekatron/jerry-wt/issues/196">#196</a></td>
+<td>bug: tspec-analyst has no cross-slice aggregate coverage mechanism</td>
+<td>Bug in /test-spec skill, no worktracker entity</td>
+</tr>
+<tr>
+<td>M-006</td>
+<td><a href="https://github.com/geekatron/jerry/issues/195">#195</a></td>
+<td>bug: tspec-generator silently skips extensions with unrecognized outcome values</td>
+<td>Bug in /test-spec skill, no worktracker entity</td>
+</tr>
+<tr>
+<td>M-007</td>
+<td><a href="https://github.com/geekatron/jerry/issues/34">#34</a></td>
+<td>Filename too long</td>
+<td>Old open bug, no worktracker entity</td>
+</tr>
+</tbody>
+</table>
+<h3 id="epics-features-open-no-worktracker-entity">Epics / Features (Open — No Worktracker Entity)<a class="headerlink" href="#epics-features-open-no-worktracker-entity" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>GH Issue</th>
+<th>Title</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M-008</td>
+<td><a href="https://github.com/geekatron/jerry/issues/218">#218</a></td>
+<td>EPIC-023-010: E2E Engagement Validation Suite</td>
+<td>CRITICAL priority. References imply a PROJ-023 worktracker but no project directory exists. References found only in non-entity orchestration files.</td>
+</tr>
+<tr>
+<td>M-009</td>
+<td><a href="https://github.com/geekatron/jerry/issues/221">#221</a></td>
+<td>FEAT-023-014: Real E2E Engagement Lifecycle</td>
+<td>CRITICAL priority. Part of EPIC-023 cluster. No worktracker entity.</td>
+</tr>
+<tr>
+<td>M-010</td>
+<td><a href="https://github.com/geekatron/jerry/issues/222">#222</a></td>
+<td>FEAT-023-015: Engagement Gate System</td>
+<td>HIGH priority. Part of EPIC-023 cluster. No worktracker entity.</td>
+</tr>
+<tr>
+<td>M-011</td>
+<td><a href="https://github.com/geekatron/jerry/issues/220">#220</a></td>
+<td>FEAT-023-013: Full 33-Tool Smoke Test Matrix</td>
+<td>HIGH priority. Part of EPIC-023 cluster. No worktracker entity.</td>
+</tr>
+<tr>
+<td>M-012</td>
+<td><a href="https://github.com/geekatron/jerry/issues/219">#219</a></td>
+<td>FEAT-023-012: Vulnerable Target Infrastructure</td>
+<td>HIGH priority. Part of EPIC-023 cluster. No worktracker entity.</td>
+</tr>
+<tr>
+<td>M-013</td>
+<td><a href="https://github.com/geekatron/jerry/issues/194">#194</a></td>
+<td>epic: PROJ-021 C4 Tournament -- 6 Remaining Major Findings (0.926 → 0.95)</td>
+<td>Open enhancement for PROJ-021. No dedicated worktracker entity.</td>
+</tr>
+<tr>
+<td>M-014</td>
+<td><a href="https://github.com/geekatron/jerry/issues/192">#192</a></td>
+<td>enhancement: configurable output base path for skill agents</td>
+<td>Open enhancement. No worktracker entity.</td>
+</tr>
+<tr>
+<td>M-015</td>
+<td><a href="https://github.com/geekatron/jerry/issues/208">#208</a></td>
+<td>feat(rainbow-series): /blue-team Defensive Cybersecurity Skill Suite</td>
+<td>Open feature. No worktracker entity or project.</td>
+</tr>
+<tr>
+<td>M-016</td>
+<td><a href="https://github.com/geekatron/jerry/issues/200">#200</a></td>
+<td>enhancement: use-case SKILL.md missing Activity 5 entry in Common Workflows</td>
+<td>Open docs/enhancement. No worktracker entity.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="research-enhancements-open-no-worktracker-entity">Research / Enhancements (Open — No Worktracker Entity)<a class="headerlink" href="#research-enhancements-open-no-worktracker-entity" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>GH Issue</th>
+<th>Title</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M-017</td>
+<td><a href="https://github.com/geekatron/jerry/issues/190">#190</a></td>
+<td>deps: Upgrade pytest-bdd + gherkin-official when pytest-bdd removes upper bound</td>
+<td>Tech debt, open. No worktracker entity.</td>
+</tr>
+<tr>
+<td>M-018</td>
+<td><a href="https://github.com/geekatron/jerry/issues/144">#144</a></td>
+<td>feat(ux): Make UX skill output paths configurable via shared resolution utility</td>
+<td>Enhancement. No worktracker entity.</td>
+</tr>
+<tr>
+<td>M-019</td>
+<td><a href="https://github.com/geekatron/jerry/issues/143">#143</a></td>
+<td>PROJ: Public benchmarking framework — raw Claude vs Jerry</td>
+<td>Research project. No worktracker entity.</td>
+</tr>
+<tr>
+<td>M-020</td>
+<td><a href="https://github.com/geekatron/jerry/issues/140">#140</a></td>
+<td>evals?</td>
+<td>Research item. No worktracker entity.</td>
+</tr>
+<tr>
+<td>M-021</td>
+<td><a href="https://github.com/geekatron/jerry/issues/101">#101</a></td>
+<td>Research and define strategy for deploying Claude Code instances as PR listeners</td>
+<td>Research. No worktracker entity.</td>
+</tr>
+<tr>
+<td>M-022</td>
+<td><a href="https://github.com/geekatron/jerry/issues/100">#100</a></td>
+<td>Audit and update root README.md to be accurate</td>
+<td>Open. No dedicated worktracker entity.</td>
+</tr>
+<tr>
+<td>M-023</td>
+<td><a href="https://github.com/geekatron/jerry/issues/98">#98</a></td>
+<td>Extract project tracker to its own repo</td>
+<td>Open architectural proposal. No worktracker entity.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="note-on-open-issues-with-worktracker-coverage-correctly-tracked">Note on Open Issues With Worktracker Coverage (Correctly Tracked)<a class="headerlink" href="#note-on-open-issues-with-worktracker-coverage-correctly-tracked" title="Permanent link">&para;</a></h3>
+<p>The following open GH issues DO have worktracker entities with matching open/in-progress status and are <strong>not violations</strong>:</p>
+<ul>
+<li><strong>#53</strong> (Cartesian product bug) → BUG-001 PROJ-007 <code>pending</code> — OK</li>
+<li><strong>#114</strong> (PowerShell migration scripts) → BUG-017-002 PROJ-017 <code>pending</code> — OK</li>
+<li><strong>#115</strong> (Windows symlink docs) → BUG-017-003 PROJ-017 <code>pending</code> — OK</li>
+<li><strong>#119</strong> (/tmp in docstrings) → BUG-017-007 PROJ-017 <code>pending</code> — OK</li>
+<li><strong>#130</strong> (Docs audit) → WORKTRACKER PROJ-015 <code>Complete</code> — but see <strong>INFO-001</strong> below</li>
+<li><strong>#135</strong> (PROJ-016 documentation writing) → referenced in PROJ-030 drafts only, not as entity</li>
+<li><strong>#175</strong> (documentation freshness approach) → referenced in PROJ-030 strategic plan, not entity</li>
+<li><strong>#179</strong> (Claude Code permission reference) → TASK-004 PROJ-030 <code>in_progress</code> — OK</li>
+<li><strong>#80</strong> (orchestration phases 6-9) → referenced in PROJ-001 EPIC visualization, not entity</li>
+</ul>
+<hr />
+<h2 id="info-correctly-synced-pairs">Info: Correctly Synced Pairs<a class="headerlink" href="#info-correctly-synced-pairs" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p>GH issue state matches worktracker entity status.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>GH Issue</th>
+<th>GH State</th>
+<th>Entity</th>
+<th>Entity Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/geekatron/jerry/issues/38">#38</a></td>
+<td>CLOSED</td>
+<td>BUG-011 PROJ-001</td>
+<td><code>done</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/geekatron/jerry/issues/51">#51</a></td>
+<td>CLOSED</td>
+<td>BUG-001 PROJ-004</td>
+<td><code>completed</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/geekatron/jerry/issues/62">#62</a></td>
+<td>CLOSED</td>
+<td>FEAT-001 PROJ-004</td>
+<td><code>completed</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/geekatron/jerry/issues/63">#63</a></td>
+<td>CLOSED</td>
+<td>FEAT-002 PROJ-004</td>
+<td><code>completed</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/geekatron/jerry/issues/75">#75</a></td>
+<td>CLOSED</td>
+<td>BUG-003 PROJ-005</td>
+<td><code>completed</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/geekatron/jerry/issues/68">#68</a></td>
+<td>CLOSED</td>
+<td>PROJ-010 WORKTRACKER</td>
+<td><code>COMPLETED</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/geekatron/jerry/issues/99">#99</a></td>
+<td>CLOSED</td>
+<td>EPIC-013-001 PROJ-013</td>
+<td><code>completed</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/geekatron/jerry/issues/111">#111</a></td>
+<td>CLOSED</td>
+<td>BUG-001 PROJ-030</td>
+<td><code>completed</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/geekatron/jerry/issues/132">#132</a></td>
+<td>CLOSED</td>
+<td>BUG-002 PROJ-030</td>
+<td><code>completed</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/geekatron/jerry/issues/151">#151</a></td>
+<td>CLOSED</td>
+<td>BUG-003 PROJ-030</td>
+<td><code>completed</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/geekatron/jerry/issues/177">#177</a></td>
+<td>CLOSED</td>
+<td>STORY-023 PROJ-024</td>
+<td><code>completed</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/geekatron/jerry/issues/178">#178</a></td>
+<td>CLOSED</td>
+<td>STORY-024 PROJ-024</td>
+<td><code>completed</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/geekatron/jerry/issues/180">#180</a></td>
+<td>CLOSED</td>
+<td>BUG-004 PROJ-030</td>
+<td><code>completed</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/geekatron/jerry/issues/181">#181</a></td>
+<td>CLOSED</td>
+<td>BUG-005 PROJ-030</td>
+<td><code>completed</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/geekatron/jerry/issues/182">#182</a></td>
+<td>CLOSED</td>
+<td>TASK-005 PROJ-030</td>
+<td><code>completed</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/geekatron/jerry/issues/193">#193</a></td>
+<td>CLOSED</td>
+<td>STORY-025 PROJ-024</td>
+<td><code>completed</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/geekatron/jerry/issues/213">#213</a></td>
+<td>CLOSED</td>
+<td>BUG-007 PROJ-024</td>
+<td><code>completed</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/geekatron/jerry/issues/214">#214</a></td>
+<td>CLOSED</td>
+<td>BUG-005 PROJ-024</td>
+<td><code>completed</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/geekatron/jerry/issues/217">#217</a></td>
+<td>CLOSED</td>
+<td>STORY-011 PROJ-024</td>
+<td><code>completed</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/geekatron/jerry/issues/226">#226</a></td>
+<td>CLOSED</td>
+<td>BUG-001 PROJ-024</td>
+<td><code>completed</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/geekatron/jerry/issues/227">#227</a></td>
+<td>CLOSED</td>
+<td>BUG-002 PROJ-024</td>
+<td><code>completed</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/geekatron/jerry/issues/228">#228</a></td>
+<td>CLOSED</td>
+<td>BUG-003 PROJ-024</td>
+<td><code>completed</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="additional-info-items">Additional Info Items<a class="headerlink" href="#additional-info-items" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Issue</th>
+<th>Observation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>INFO-001</td>
+<td><a href="https://github.com/geekatron/jerry/issues/130">#130</a></td>
+<td>OPEN GH issue but WORKTRACKER PROJ-015 says <code>Complete</code>. Inverse of a CRITICAL — the worktracker is ahead of GH. Close GH #130 to re-sync.</td>
+</tr>
+<tr>
+<td>INFO-002</td>
+<td><a href="https://github.com/geekatron/jerry/issues/96">#96</a></td>
+<td>"Slim down agent definitions" — open GH issue, no entity. Conceptually in scope of ongoing work but not formally tracked.</td>
+</tr>
+<tr>
+<td>INFO-003</td>
+<td><a href="https://github.com/geekatron/jerry/issues/116">#116</a></td>
+<td>Closed GH issue referenced by TWO entities: EN-005 PROJ-024 (completed, correct) and BUG-017-004 PROJ-017 (pending, stale). PROJ-017 entity is a duplicate; the fix landed via PROJ-024.</td>
+</tr>
+<tr>
+<td>INFO-004</td>
+<td><a href="https://github.com/geekatron/jerry/issues/117">#117</a></td>
+<td>Same as INFO-003 — closed GH issue referenced by BUG-006 PROJ-024 (completed, correct) and BUG-017-005 PROJ-017 (pending, stale).</td>
+</tr>
+<tr>
+<td>INFO-005</td>
+<td><a href="https://github.com/geekatron/jerry/issues/135">#135</a></td>
+<td>Open GH issue "PROJ-016: User-facing documentation writing" with project number in title. PROJ-016-documentation-writing WORKTRACKER exists but does not contain a GH Issue reference field pointing to #135.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="remediation-plan">Remediation Plan<a class="headerlink" href="#remediation-plan" title="Permanent link">&para;</a></h2>
+<h3 id="priority-1-critical-state-mismatches-effort-low-status-field-updates-only">Priority 1: Critical State Mismatches (Effort: Low — status field updates only)<a class="headerlink" href="#priority-1-critical-state-mismatches-effort-low-status-field-updates-only" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>C-001 (Effort: low):</strong> Mark BUG-013 <code>projects/PROJ-001-oss-release/work/EPIC-001-oss-release/BUG-013-hook-uv-sync-wrong-directory/BUG-013-hook-uv-sync-wrong-directory.md</code> as <code>completed</code>. GH #46 is closed; partial checklist items are moot.</li>
+<li><strong>C-003 (Effort: low):</strong> Mark BUG-017-001 <code>projects/PROJ-017-portability/...BUG-017-001.md</code> as <code>completed</code> or <code>cancelled</code>. GH #113 is closed; fix delivered via separate PROJ-024 track.</li>
+<li><strong>C-004 (Effort: low):</strong> Mark BUG-017-004 <code>projects/PROJ-017-portability/...BUG-017-004.md</code> as <code>completed</code>. GH #116 closed; fix delivered via EN-005-gitattributes in PROJ-024.</li>
+<li><strong>C-005 (Effort: low):</strong> Mark BUG-017-005 <code>projects/PROJ-017-portability/...BUG-017-005.md</code> as <code>completed</code>. GH #117 closed; fix delivered via BUG-006 in PROJ-024.</li>
+<li><strong>C-006 (Effort: low):</strong> Mark BUG-017-006 <code>projects/PROJ-017-portability/...BUG-017-006.md</code> as <code>completed</code>. GH #118 closed.</li>
+<li><strong>C-008 (Effort: medium):</strong> For EN-001 CI hardening (<code>projects/PROJ-030-bugs/work/EN-001-ci-pipeline-hardening.md</code>): either (a) complete the remaining TASK-003 and TASK-004 sub-tasks and mark EN-001 <code>completed</code>, or (b) if GH #153 was closed as partial-scope, add a note to the entity and keep tracking remaining tasks under new GH issues. GH #179 (TASK-004) is already open and correctly tracked.</li>
+</ol>
+<h3 id="priority-2-critical-state-mismatches-effort-medium-requires-investigation">Priority 2: Critical State Mismatches (Effort: Medium — requires investigation)<a class="headerlink" href="#priority-2-critical-state-mismatches-effort-medium-requires-investigation" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>C-002 (Effort: medium):</strong> EPIC-021-001 <code>in_progress</code> vs GH #109 CLOSED. Determine if the epic's remaining work (content quality tournament, 6 open findings from GH #194) should remain under PROJ-021 or be tracked as a new issue. If EPIC scope is complete, mark <code>completed</code>. If ongoing, the epic may need to track GH #194 instead.</li>
+<li><strong>C-007 (Effort: low):</strong> PROJ-022 UX skill WORKTRACKER says <code>ACTIVE</code> but GH #138 is CLOSED. The GH issue tracked the feature request decision ("add UX skill"), not the implementation. The WORKTRACKER's ACTIVE status is correct for ongoing implementation. Close GH #138 cleanly or open a new implementation tracking issue. Add that new issue reference to WORKTRACKER.md.</li>
+</ol>
+<h3 id="priority-3-major-h-32-violations-bug-entities-needed-effort-low-per-item">Priority 3: Major H-32 Violations — Bug Entities Needed (Effort: Low per item)<a class="headerlink" href="#priority-3-major-h-32-violations-bug-entities-needed-effort-low-per-item" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>M-001 (Effort: low):</strong> Create worktracker entity for GH #223 (E2E smoke tests bypass skill layer). Create <code>BUG</code> entity in an appropriate project (PROJ-023 or PROJ-024). Link entity to #223.</li>
+<li><strong>M-002 to M-006 (Effort: low each):</strong> Create worktracker entities for GH bugs #199, #198, #197, #196, #195 (use-case/test-spec/contract-design skill bugs). These belong in PROJ-021 (use-case skill project) or a new PROJ-025-bugfix project. Each needs a <code>BUG</code> entity file with <code>GitHub Issue: [#NNN]</code> reference.</li>
+<li><strong>M-007 (Effort: low):</strong> Create worktracker entity for GH #34 (Filename too long). Oldest open bug — determine if still relevant; if so, create <code>BUG</code> entity with #34 reference.</li>
+</ol>
+<h3 id="priority-4-major-h-32-violations-proj-023-e2e-cluster-effort-medium">Priority 4: Major H-32 Violations — PROJ-023 E2E Cluster (Effort: Medium)<a class="headerlink" href="#priority-4-major-h-32-violations-proj-023-e2e-cluster-effort-medium" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>M-008 to M-012 (Effort: medium collectively):</strong> Issues #218, #219, #220, #221, #222 form the EPIC-023 E2E Engagement Validation Suite cluster. These appear to be planned work with no corresponding project directory. Action: create <code>projects/PROJ-023-e2e-validation/</code> with WORKTRACKER.md, create entity files for EPIC-023-010, FEAT-023-012 through FEAT-023-015, and link each to its GH issue.</li>
+</ol>
+<h3 id="priority-5-major-h-32-violations-enhancements-effort-low-per-item">Priority 5: Major H-32 Violations — Enhancements (Effort: Low per item)<a class="headerlink" href="#priority-5-major-h-32-violations-enhancements-effort-low-per-item" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>M-013 (Effort: low):</strong> GH #194 (PROJ-021 C4 tournament remaining findings). Create a STORY or TASK entity in PROJ-021 worktracker.</li>
+<li><strong>M-014 (Effort: low):</strong> GH #192 (configurable output base path). Create EN or STORY entity in PROJ-024 or new project. Link to #192.</li>
+<li><strong>M-015 to M-023 (Effort: low each):</strong> For each remaining MAJOR item (#208, #200, #190, #144, #143, #140, #101, #100, #98), either: (a) create a worktracker entity if the work is planned/active, or (b) add a <code>wontfix</code> label to the GH issue and note "Not tracked in worktracker — backlog only" if not planned.</li>
+</ol>
+<h3 id="priority-6-info-items-effort-trivial">Priority 6: Info Items (Effort: Trivial)<a class="headerlink" href="#priority-6-info-items-effort-trivial" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>INFO-001 (Effort: trivial):</strong> Close GH #130 — PROJ-015 docs audit is <code>Complete</code> in the worktracker. GH issue is stale open.</li>
+<li><strong>INFO-003 and INFO-004 (Effort: trivial):</strong> Mark PROJ-017 stale duplicate entities (BUG-017-004, BUG-017-005) as <code>completed</code> or add note: "Fixed via PROJ-024 track. GH issue closed."</li>
+<li><strong>INFO-005 (Effort: trivial):</strong> Add <code>GitHub Issue: [#135](https://github.com/geekatron/jerry/issues/135)</code> to <code>projects/PROJ-016-documentation-writing/WORKTRACKER.md</code> header.</li>
+</ol>
+<hr />
+<h2 id="audit-coverage">Audit Coverage<a class="headerlink" href="#audit-coverage" title="Permanent link">&para;</a></h2>
+<h3 id="projects-audited">Projects Audited<a class="headerlink" href="#projects-audited" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Project</th>
+<th>WORKTRACKER</th>
+<th>GH Issue Refs</th>
+<th>Coverage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PROJ-001-oss-release</td>
+<td>Yes</td>
+<td>BUG-011 (#38), BUG-013 (#46)</td>
+<td>Partial — many entities lack GH refs</td>
+</tr>
+<tr>
+<td>PROJ-002-roadmap-next</td>
+<td>Yes</td>
+<td>None found</td>
+<td>No GH Issue refs</td>
+</tr>
+<tr>
+<td>PROJ-003-je-ne-sais-quoi</td>
+<td>Yes</td>
+<td>None found</td>
+<td>No GH Issue refs</td>
+</tr>
+<tr>
+<td>PROJ-004-context-resilience</td>
+<td>Yes</td>
+<td>BUG-001 (#51), FEAT-001 (#62), FEAT-002 (#63)</td>
+<td>Covered</td>
+</tr>
+<tr>
+<td>PROJ-005-markdown-ast</td>
+<td>Yes</td>
+<td>BUG-003 (#75)</td>
+<td>Partial</td>
+</tr>
+<tr>
+<td>PROJ-006-multi-instance</td>
+<td>Yes</td>
+<td>None found</td>
+<td>No GH Issue refs</td>
+</tr>
+<tr>
+<td>PROJ-007-agent-patterns</td>
+<td>Yes</td>
+<td>BUG-001 (#53)</td>
+<td>Covered</td>
+</tr>
+<tr>
+<td>PROJ-008-agentic-security</td>
+<td>Yes</td>
+<td>None found</td>
+<td>No GH Issue refs</td>
+</tr>
+<tr>
+<td>PROJ-009-llm-deception-research</td>
+<td>Yes</td>
+<td>None found</td>
+<td>No GH Issue refs (research project, expected)</td>
+</tr>
+<tr>
+<td>PROJ-010-cyber-ops</td>
+<td>Yes</td>
+<td>#68</td>
+<td>Covered — completed</td>
+</tr>
+<tr>
+<td>PROJ-011-saucer-boy-articles</td>
+<td>Yes</td>
+<td>None found</td>
+<td>No GH Issue refs (content project, expected)</td>
+</tr>
+<tr>
+<td>PROJ-013-diataxis</td>
+<td>Yes</td>
+<td>#99</td>
+<td>Covered — completed</td>
+</tr>
+<tr>
+<td>PROJ-014-negative-prompting-research</td>
+<td>Yes</td>
+<td>#122 (research artifact ref)</td>
+<td>Partial — EPIC-005 in_progress, #122 closed</td>
+</tr>
+<tr>
+<td>PROJ-015-documentation-audit</td>
+<td>Yes</td>
+<td>#130</td>
+<td>State mismatch (INFO-001)</td>
+</tr>
+<tr>
+<td>PROJ-016-documentation-writing</td>
+<td>Yes</td>
+<td>None in WORKTRACKER</td>
+<td>Missing #135 ref (INFO-005)</td>
+</tr>
+<tr>
+<td>PROJ-017-portability</td>
+<td>Yes</td>
+<td>#113-119 (7 entities)</td>
+<td>Multiple mismatches (C-003 to C-006)</td>
+</tr>
+<tr>
+<td>PROJ-020-feature-enhancements</td>
+<td>Yes</td>
+<td>None found</td>
+<td>No GH Issue refs</td>
+</tr>
+<tr>
+<td>PROJ-021-use-case</td>
+<td>Yes</td>
+<td>#109</td>
+<td>EPIC in_progress vs closed GH (C-002)</td>
+</tr>
+<tr>
+<td>PROJ-022-user-experience-skill</td>
+<td>Yes</td>
+<td>#138</td>
+<td>State mismatch (C-007)</td>
+</tr>
+<tr>
+<td>PROJ-024-tactical-work</td>
+<td>Yes</td>
+<td>#177, #178, #193, #213, #214, #217, #226, #227, #228</td>
+<td>All synced correctly</td>
+</tr>
+<tr>
+<td>PROJ-030-bugs</td>
+<td>Yes</td>
+<td>#111, #132, #151, #153, #180, #181, #182</td>
+<td>Partial mismatches (C-008)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="coverage-gaps">Coverage Gaps<a class="headerlink" href="#coverage-gaps" title="Permanent link">&para;</a></h3>
+<p>The following entity types were NOT audited for GH Issue presence (no <code>GitHub Issue:</code> field found):</p>
+<ul>
+<li>PROJ-001-oss-release: extensive FEAT-<em> and EN-</em> entities without GH refs (pre-H-32 work)</li>
+<li>PROJ-002, PROJ-003, PROJ-006, PROJ-008: no GH refs found — these projects predate or are exempt from H-32 enforcement (non-jerry-repo projects or purely internal research)</li>
+<li>PROJ-014 EPIC-005 <code>in_progress</code> references GH #122 (CLOSED) — this is a research artifact reference, not a direct entity tracker; acceptable but noted</li>
+</ul>
+<h3 id="h-32-rule-scope-note">H-32 Rule Scope Note<a class="headerlink" href="#h-32-rule-scope-note" title="Permanent link">&para;</a></h3>
+<p>H-32 applies specifically when the active repository is <code>geekatron/jerry</code>. All 20 projects audited are within this repository's worktree. Projects PROJ-009 (research), PROJ-011 (articles), and PROJ-006 (multi-instance) contain no GH Issue refs but are likely content/research projects where H-32 was not enforced — this is an acceptable gap unless those projects contain bugs or stories.</p>
+<hr />
+<h2 id="findings-summary">Findings Summary<a class="headerlink" href="#findings-summary" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Severity</th>
+<th>Count</th>
+<th>Root Cause</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CRITICAL (closed GH, entity not terminal)</td>
+<td>8</td>
+<td>Fixes delivered without updating worktracker status</td>
+</tr>
+<tr>
+<td>MAJOR (open GH, no entity)</td>
+<td>23</td>
+<td>Issues created but worktracker entity never created</td>
+</tr>
+<tr>
+<td>INFO</td>
+<td>5</td>
+<td>Minor sync gaps, stale duplicates</td>
+</tr>
+<tr>
+<td><strong>TOTAL</strong></td>
+<td><strong>36</strong></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Primary systemic gap:</strong> The H-32 enforcement is one-directional. When issues are fixed and closed, worktracker entities are often not updated. And when new GH issues are filed, corresponding worktracker entities are frequently not created. The 23 MAJOR violations represent a large backlog of GH issues that exist outside the worktracker SSOT entirely.</p>
+<hr />
+<p><em>Audit generated: 2026-03-30 | Agent: wt-auditor v1.0.0 | Fix Mode: report (no auto-fixes applied)</em></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+  
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 Geekatron — Apache License 2.0
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+  <div class="md-footer-meta__inner md-grid" style="text-align: center; padding-bottom: 0.5rem;">
+    <span class="sb-tagline">Quality with soul.</span>
+  </div>
+
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

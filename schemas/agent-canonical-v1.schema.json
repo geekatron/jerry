@@ -1,0 +1,309 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jerry-framework.dev/schemas/agent-canonical/v1.0.0",
+  "title": "Jerry Canonical Agent Definition Schema",
+  "description": "Validates .agent.yaml canonical source files for Jerry Framework agents. Canonical format is the SSOT from which vendor-specific agent files are generated via jerry agents build.",
+  "type": "object",
+  "required": ["name", "version", "description", "skill", "identity", "tools", "tool_tier", "guardrails", "constitution"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z]+-[a-z]+(-[a-z]+)*$",
+      "description": "Agent identifier in kebab-case matching filename without extension. (AD-M-001)"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version MAJOR.MINOR.PATCH. (AD-M-002)"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 1024,
+      "description": "WHAT+WHEN+triggers description. (AD-M-003)"
+    },
+    "skill": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Parent skill directory name (e.g., problem-solving, eng-team)."
+    },
+    "identity": {
+      "type": "object",
+      "required": ["role", "expertise", "cognitive_mode"],
+      "properties": {
+        "role": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Clear, singular role title. Unique within parent skill. (PR-001)"
+        },
+        "expertise": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 2,
+          "description": "Domain competencies. Minimum 2 entries, specific not generic. (PR-003)"
+        },
+        "cognitive_mode": {
+          "type": "string",
+          "enum": ["divergent", "convergent", "integrative", "systematic", "forensic"],
+          "description": "Reasoning approach. (PR-002)"
+        }
+      },
+      "additionalProperties": true
+    },
+    "persona": {
+      "type": "object",
+      "properties": {
+        "tone": {
+          "type": "string",
+          "description": "Output voice tone. Free-form string."
+        },
+        "communication_style": {
+          "type": "string",
+          "description": "Communication approach. Free-form string."
+        },
+        "audience_level": {
+          "type": "string",
+          "enum": ["adaptive", "expert", "intermediate", "beginner"]
+        },
+        "character": {
+          "type": "string",
+          "description": "Extended persona description."
+        }
+      },
+      "additionalProperties": true,
+      "description": "Output voice configuration. (PR-005)"
+    },
+    "model": {
+      "type": "object",
+      "required": ["tier"],
+      "properties": {
+        "tier": {
+          "type": "string",
+          "enum": ["reasoning_high", "reasoning_standard", "fast"],
+          "description": "Abstract model tier. Mapped to vendor-specific models at build time."
+        },
+        "preferences": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Ordered vendor-specific model preferences (e.g., anthropic/opus, openai/gpt-4o)."
+        }
+      },
+      "additionalProperties": true
+    },
+    "tools": {
+      "type": "object",
+      "required": ["native"],
+      "properties": {
+        "native": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "file_read",
+              "file_write",
+              "file_edit",
+              "file_search_glob",
+              "file_search_content",
+              "shell_execute",
+              "web_search",
+              "web_fetch",
+              "notebook_edit",
+              "agent_delegate"
+            ]
+          },
+          "description": "Abstract native tool capability names. Mapped to vendor-specific tool names at build time."
+        },
+        "mcp": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "MCP server names (e.g., context7, memory-keeper)."
+        },
+        "forbidden": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Abstract tool names this agent must NOT have."
+        }
+      },
+      "additionalProperties": true
+    },
+    "tool_tier": {
+      "type": "string",
+      "enum": ["T1", "T2", "T3", "T4", "T5"],
+      "description": "Security tier classification. T1=Read-Only, T2=Read-Write, T3=External, T4=Persistent, T5=Full."
+    },
+    "guardrails": {
+      "type": "object",
+      "required": ["fallback_behavior"],
+      "properties": {
+        "input_validation": {
+          "oneOf": [
+            {
+              "type": "array",
+              "minItems": 1
+            },
+            {
+              "type": "object"
+            }
+          ],
+          "description": "Input format validation rules. (SR-002)"
+        },
+        "output_filtering": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Output safety filters. (SR-003)"
+        },
+        "fallback_behavior": {
+          "type": "string",
+          "pattern": "^[a-z_]+$",
+          "description": "Error recovery strategy. (SR-009)"
+        }
+      },
+      "additionalProperties": true
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "required": {
+          "type": "boolean",
+          "description": "Whether the agent must produce an output artifact."
+        },
+        "location": {
+          "type": "string",
+          "description": "Artifact file path template with variables."
+        },
+        "template": {
+          "type": "string",
+          "description": "Output template reference."
+        },
+        "levels": {
+          "oneOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["L0", "L1", "L2"]
+              }
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "content": { "type": "string" }
+                }
+              }
+            }
+          ],
+          "description": "Supported output disclosure levels. (PR-008)"
+        },
+        "formats": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["markdown", "yaml", "json", "text", "mermaid", "structured_yaml", "text/plain", "text/x-ascii-art"]
+          },
+          "description": "Supported output format types."
+        }
+      },
+      "if": {
+        "properties": { "required": { "const": true } }
+      },
+      "then": {
+        "required": ["location"]
+      },
+      "additionalProperties": true
+    },
+    "constitution": {
+      "type": "object",
+      "required": ["principles_applied", "forbidden_actions"],
+      "properties": {
+        "reference": {
+          "type": "string",
+          "description": "Path to constitution document."
+        },
+        "principles_applied": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 3,
+          "description": "Constitutional principles. Must include P-003, P-020, P-022. (SR-001)"
+        },
+        "forbidden_actions": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 3,
+          "description": "Actions the agent must not perform. Must reference P-003, P-020, P-022. (AR-012)"
+        }
+      },
+      "additionalProperties": true
+    },
+    "validation": {
+      "type": "object",
+      "properties": {
+        "post_completion_checks": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": true,
+      "description": "Post-completion validation checks. (QR-003)"
+    },
+    "portability": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "minimum_context_window": {
+          "type": "integer",
+          "minimum": 4096
+        },
+        "reasoning_strategy": {
+          "type": "string",
+          "enum": ["adaptive", "explicit_cot", "none"]
+        },
+        "body_format": {
+          "type": "string",
+          "enum": ["xml", "markdown", "rccf"],
+          "description": "Prompt body format for vendor transformation."
+        }
+      },
+      "additionalProperties": true,
+      "description": "Cross-vendor portability configuration."
+    },
+    "enforcement": {
+      "type": "object",
+      "properties": {
+        "tier": {
+          "type": "string",
+          "enum": ["hard", "medium", "soft"]
+        },
+        "escalation_path": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "session_context": {
+      "type": "object",
+      "properties": {
+        "schema": { "type": "string" },
+        "on_receive": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "on_send": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": true,
+      "description": "Handoff protocol configuration. (HR-001, HR-002)"
+    },
+    "prior_art": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Referenced prior art citations."
+    }
+  },
+  "additionalProperties": true
+}

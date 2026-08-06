@@ -1,0 +1,2502 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Framework for behavior/workflow guardrails. Accrues knowledge, wisdom, experience.">
+      
+      
+        <meta name="author" content="Geekatron">
+      
+      
+        <link rel="canonical" href="https://jerry.geekatron.org/explanation/permission-security-model/">
+      
+      
+        <link rel="prev" href="../ci-cd-supply-chain-security/">
+      
+      
+        <link rel="next" href="../../blog/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Permission & Security Model - Jerry Framework</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/saucer-boy.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="saucer-boy" data-md-color-primary="deep-purple" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#about-jerrys-permission-and-security-model" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Jerry Framework" class="md-header__button md-logo" aria-label="Jerry Framework" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Jerry Framework
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Permission & Security Model
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="saucer-boy" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="saucer-boy-dark" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/geekatron/jerry" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    geekatron/jerry
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Jerry Framework" class="md-nav__button md-logo" aria-label="Jerry Framework" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    Jerry Framework
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/geekatron/jerry" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    geekatron/jerry
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INSTALLATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../BOOTSTRAP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bootstrap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started Runbook
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/problem-solving/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Problem Solving
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/orchestration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/transcript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transcript Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/PLUGIN-DEVELOPMENT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plugin Development
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../howto/update-sha-pinned-action/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Update a SHA-Pinned Action
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../howto/add-ci-job/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Add a New CI Job
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../howto/add-github-actions-dependency/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Add a GitHub Actions Dependency
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CLAUDE-MD-GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLAUDE.md Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ci-cd-pipeline-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD Pipeline Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/claude-code-permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claude Code Permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../schemas/SCHEMA_VERSIONING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schema Versioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../schemas/SESSION_CONTEXT_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Session Context Schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Explanation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Explanation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ci-cd-supply-chain-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD Supply Chain Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Permission & Security Model
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Permission & Security Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#document-sections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Document Sections
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Context
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-three-layers-and-their-responsibilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Three Layers and Their Responsibilities
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-blanket-bash-permission-is-intentional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Blanket Bash Permission is Intentional
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-fail-open-philosophy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Fail-Open Philosophy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#permission-inheritance-and-the-skill-gap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Permission Inheritance and the Skill Gap
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-skill-permission-namespace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Skill Permission Namespace
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-anti-pattern-per-command-bash-patterns-in-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Anti-Pattern: Per-Command Bash Patterns in Settings
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#connections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connections
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alternative-perspectives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alternative Perspectives
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Articles
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Articles
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Articles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_2" id="__nav_6_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Archive
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Archive
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/archive/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_3" id="__nav_6_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Categories
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Categories
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/category/prompting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prompting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/category/quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/single-vs-multi-agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single vs. Multi-Agent Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/adversarial-strategy-catalog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adversarial Strategy Catalog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/strategy-selection-enforcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Strategy Selection & Enforcement (ADRs)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/adversarial-deep-dives/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adversarial Quality Deep Dives
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/skill-compliance-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Skill Compliance Framework
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/governance-constitutional-ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Governance & Constitutional AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/context-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Context Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/oss-methodology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OSS Methodology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/architecture-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/claude-code-ecosystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claude Code Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/negative-prompting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Negative Prompting & Constraint Enforcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7_13" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_13" id="__nav_7_13_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM Deception Study
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    LLM Deception Study
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/llm-deception/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/llm-deception/the-85-problem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 85% Problem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/llm-deception/methodology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methodology & Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/llm-deception/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture & Recommendations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Governance
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Governance
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../governance/JERRY_CONSTITUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jerry Constitution
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#document-sections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Document Sections
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Context
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-three-layers-and-their-responsibilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Three Layers and Their Responsibilities
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-blanket-bash-permission-is-intentional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Blanket Bash Permission is Intentional
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-fail-open-philosophy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Fail-Open Philosophy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#permission-inheritance-and-the-skill-gap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Permission Inheritance and the Skill Gap
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-skill-permission-namespace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Skill Permission Namespace
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-anti-pattern-per-command-bash-patterns-in-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Anti-Pattern: Per-Command Bash Patterns in Settings
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#connections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connections
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alternative-perspectives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alternative Perspectives
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="about-jerrys-permission-and-security-model">About Jerry's Permission and Security Model<a class="headerlink" href="#about-jerrys-permission-and-security-model" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p>Jerry enforces security through a three-layer model where Claude Code settings provide coarse access control, a hook-based SecurityEnforcementEngine provides deterministic command blocking, and a PreToolEnforcementEngine provides architecture boundary validation. The blanket <code>Bash</code> permission in <code>settings.json</code> is an intentional design decision, not an oversight.</p>
+<p><strong>Scope:</strong> This document explains why Jerry grants blanket Bash permission and how the hook-based enforcement pipeline compensates. It does not cover the architecture validation rules themselves (H-07, H-10), the staleness detection system, or the prompt reinforcement engine -- those are related but separate enforcement concerns.</p>
+</blockquote>
+<!-- Quality criteria: skills/diataxis/rules/diataxis-standards.md Section 1 (E-01 through E-07) -->
+<!-- Anti-patterns to avoid: EAP-01 (instructional creep), EAP-05 (unbounded scope) -->
+<!-- Voice: Thoughtful, discursive, contextual. No imperative instructions. See Section 5. -->
+
+<h2 id="document-sections">Document Sections<a class="headerlink" href="#document-sections" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Section</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#context">Context</a></td>
+<td>Why this design decision matters and what problem it solves</td>
+</tr>
+<tr>
+<td><a href="#the-three-layers-and-their-responsibilities">The Three Layers and Their Responsibilities</a></td>
+<td>How settings, security hooks, and architecture hooks divide enforcement</td>
+</tr>
+<tr>
+<td><a href="#why-blanket-bash-permission-is-intentional">Why Blanket Bash Permission is Intentional</a></td>
+<td>The design rationale behind granting unrestricted Bash access at the settings layer</td>
+</tr>
+<tr>
+<td><a href="#the-fail-open-philosophy">The Fail-Open Philosophy</a></td>
+<td>Why enforcement errors result in approval rather than blocking</td>
+</tr>
+<tr>
+<td><a href="#permission-inheritance-and-the-skill-gap">Permission Inheritance and the Skill Gap</a></td>
+<td>How permissions propagate to subagents and skills, and where they break down</td>
+</tr>
+<tr>
+<td><a href="#the-skill-permission-namespace">The Skill Permission Namespace</a></td>
+<td>How <code>Skill()</code> entries work and why the fully-qualified form matters</td>
+</tr>
+<tr>
+<td><a href="#the-anti-pattern-per-command-bash-patterns-in-settings">The Anti-Pattern: Per-Command Bash Patterns in Settings</a></td>
+<td>Why adding fine-grained Bash permissions to settings.json makes security worse</td>
+</tr>
+<tr>
+<td><a href="#connections">Connections</a></td>
+<td>How this topic relates to other Jerry systems</td>
+</tr>
+<tr>
+<td><a href="#alternative-perspectives">Alternative Perspectives</a></td>
+<td>Acknowledging the case for settings-level restrictions</td>
+</tr>
+<tr>
+<td><a href="#related">Related</a></td>
+<td>Links to reference, investigation, and implementation files</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
+<p>A future developer -- or a future Claude Code session -- looking at Jerry's <code>.claude/settings.json</code> and seeing <code>"Bash"</code> in the allow list might reasonably conclude this is a security gap. The instinct to replace it with a curated list of <code>Bash(git *)</code>, <code>Bash(uv *)</code>, <code>Bash(cat *)</code> patterns feels like an obvious improvement. It is not. It would actively degrade both security coverage and operational reliability.</p>
+<p>This explanation exists because the permission model's design rationale is non-obvious. The safety of blanket Bash permission depends on understanding what happens <em>after</em> Claude Code grants access -- specifically, the hook-based enforcement pipeline that evaluates every Bash invocation before it executes. Without that context, the settings file looks negligent. With it, the settings file looks like what it is: the coarsest layer in a defense-in-depth architecture where the real security work happens elsewhere.</p>
+<p>The decision to use blanket Bash permission was not made at the start of the project. It emerged from the consolidation of <code>scripts/pre_tool_use.py</code> into the structured enforcement engine (issue #150, ADR-150-001). Before that consolidation, the pre-tool-use logic was a standalone Python script with inline rule definitions. The move to an injectable, testable engine architecture made it possible to provide stronger security guarantees than settings patterns ever could -- and made the settings-level patterns redundant.</p>
+<hr />
+<h2 id="the-three-layers-and-their-responsibilities">The Three Layers and Their Responsibilities<a class="headerlink" href="#the-three-layers-and-their-responsibilities" title="Permanent link">&para;</a></h2>
+<p>Jerry's security enforcement operates across three distinct layers, each with a different scope, mechanism, and failure mode. Understanding why each layer exists -- and what it is <em>not</em> responsible for -- is essential to understanding why the overall model works.</p>
+<p><strong>Layer 1: Claude Code Settings</strong> (<code>settings.json</code> and <code>settings.local.json</code>) provides coarse-grained tool access control. The <code>permissions.allow</code>, <code>permissions.deny</code>, and <code>permissions.ask</code> arrays determine whether Claude Code will permit, block, or prompt for approval before invoking a tool. This layer operates at the tool-name level: it knows that a Bash command is being requested, but it evaluates command content only through pattern matching against the permission string. The evaluation order is <code>deny &gt; ask &gt; allow</code>, and deny is absolute -- no allow entry at any scope overrides a denial. Jerry's committed <code>settings.json</code> allows <code>Bash</code> without qualification, meaning all shell commands pass this layer without prompting.</p>
+<p><strong>Layer 2: SecurityEnforcementEngine</strong> (<code>src/infrastructure/internal/enforcement/security_enforcement_engine.py</code>) provides deterministic, pattern-based command blocking through the <code>PreToolUse</code> hook. Every time Claude Code attempts to invoke a Write, Edit, MultiEdit, NotebookEdit, or Bash tool, the hook fires and the security engine evaluates the request against a codified rule set. For Bash commands, this includes blocking destructive <code>rm</code> patterns (recursive force-delete targeting <code>/</code> or <code>~</code>), download-then-execute chains (<code>curl</code> piped to <code>bash</code>), <code>eval</code> invocations, disk formatting commands (<code>mkfs</code>, <code>dd</code>), force pushes to protected branches (<code>main</code>, <code>master</code>), null byte injection attempts, and <code>cd</code> commands that would corrupt the working directory. For file writes, it blocks writes to system paths (<code>/etc</code>, <code>/usr</code>, <code>~/.ssh</code>, <code>~/.aws</code>), credential files (<code>.env</code>, <code>.pem</code>, <code>.key</code>, <code>id_rsa</code>), and paths containing null bytes. The rule definitions live in <code>SecurityRules</code> as frozen dataclass tuples -- immutable at runtime, injectable for testing.</p>
+<p><strong>Layer 3: PreToolEnforcementEngine</strong> (<code>src/infrastructure/internal/enforcement/pre_tool_enforcement_engine.py</code>) provides AST-based architecture boundary validation. This layer parses Python source code and enforces structural rules: import boundary violations (H-07, domain cannot import from infrastructure), one-class-per-file (H-10), and governance file modification escalation (auto-C3 or auto-C4 for changes to constitution or rules files). This layer operates on the <em>content</em> of file writes and edits, not on shell commands.</p>
+<p>All three layers are invoked through a single handler (<code>HooksPreToolUseHandler</code>) that processes the <code>PreToolUse</code> hook event. The security engine runs first because its checks are cheap (string matching and regex), and a security block terminates evaluation immediately. The architecture engine runs second, performing the more expensive AST parsing only if the security check passed. The staleness detector runs third, adding warnings about stale orchestration state.</p>
+<p>The key insight is that these layers are not redundant -- they operate on different dimensions of the same request. Layer 1 decides <em>whether a tool type is accessible</em>. Layer 2 decides <em>whether a specific command is dangerous</em>. Layer 3 decides <em>whether the content being written is architecturally valid</em>.</p>
+<hr />
+<h2 id="why-blanket-bash-permission-is-intentional">Why Blanket Bash Permission is Intentional<a class="headerlink" href="#why-blanket-bash-permission-is-intentional" title="Permanent link">&para;</a></h2>
+<p>The decision to allow all Bash commands at the settings layer rests on three observations about how Claude Code's permission system interacts with hook-based enforcement.</p>
+<p>The first observation is that <strong>per-command Bash patterns in settings are redundant with the SecurityEnforcementEngine</strong>. Consider the alternative: instead of <code>"Bash"</code> in the allow list, one might write <code>Bash(git *)</code>, <code>Bash(uv *)</code>, <code>Bash(cat *)</code>, <code>Bash(ls *)</code>, <code>Bash(find *)</code>, and so on. Each pattern would need to anticipate every legitimate command Claude Code might need to execute. The SecurityEnforcementEngine already does the inverse -- it blocks the small, well-defined set of <em>dangerous</em> commands rather than trying to enumerate the large, open-ended set of <em>safe</em> ones. The deny-list approach is more robust because dangerous commands are a finite, knowable set, while legitimate commands are effectively unbounded. An allowlist at the settings level would inevitably miss a legitimate command, creating a failure that is invisible during normal operation and catastrophic during background execution.</p>
+<p>The second observation is that <strong>the SecurityEnforcementEngine has a test suite; settings patterns have none</strong>. The security engine's test file (<code>tests/unit/enforcement/test_security_enforcement_engine.py</code>) contains 29 test functions with extensive parametrized expansion covering blocked paths, dangerous commands, bypass vectors, force push protection, null byte injection, and download-execute detection. Each rule's behavior is verified against specific inputs. Settings-level patterns, by contrast, are untestable strings -- there is no mechanism to write a test that verifies <code>Bash(git *)</code> correctly blocks <code>git push --force origin main</code> while allowing <code>git push origin feature/xyz</code>. The enforcement engine can verify this distinction; the settings pattern cannot.</p>
+<p>The third observation is that <strong>background agents and subagents cannot prompt interactively</strong>. When a command matches <code>ask</code> rather than <code>allow</code>, Claude Code pauses and waits for the user to approve or deny. This works in an interactive session. In a background agent or a skill invoked via the Task tool, there is no user to prompt. An unlisted command does not gracefully degrade to a prompt -- it fails. Adding per-command patterns to the allow list means that any command not explicitly listed will hard-fail in non-interactive contexts. Blanket Bash permission avoids this failure mode entirely, delegating security to the hook layer that executes deterministically regardless of the interaction context.</p>
+<hr />
+<h2 id="the-fail-open-philosophy">The Fail-Open Philosophy<a class="headerlink" href="#the-fail-open-philosophy" title="Permanent link">&para;</a></h2>
+<p>Both enforcement engines -- security and architecture -- are fail-open by design. When an internal error occurs during evaluation (a regex compilation failure, an unexpected input type, an AST parse error), the engine returns an approval decision rather than a block. This is a deliberate engineering trade-off, not a safety oversight.</p>
+<p>The reasoning is that the enforcement layer should never become a reliability risk to the development workflow. A security engine bug that blocks all Bash commands would be more disruptive than the threats it prevents. The fail-open design bounds the blast radius of enforcement bugs: the worst case is that a dangerous command passes through (equivalent to not having the enforcement layer at all), not that all commands are blocked (equivalent to a denial-of-service on the developer).</p>
+<p>This works because the enforcement engine is a <em>defense-in-depth</em> layer, not the <em>sole</em> security mechanism. Claude Code itself imposes constraints through its training, system prompt, and tool-use policies. The SecurityEnforcementEngine adds a deterministic check on top of those probabilistic constraints. If the deterministic check fails open, the probabilistic constraints still apply. If the deterministic check succeeds, it catches patterns that probabilistic constraints might miss -- like subtle variations on destructive commands that an LLM might not recognize as dangerous.</p>
+<p>The implementation makes this explicit. The top-level <code>evaluate</code> method wraps <code>_evaluate_internal</code> in a bare <code>except Exception</code> that returns <code>_APPROVE</code>. Pattern library errors are similarly caught and swallowed. The non-string type guard for <code>file_path</code> and <code>command</code> inputs returns approval rather than raising. Every failure path converges on the same outcome: approval.</p>
+<p>However, only <em>internal errors</em> trigger fail-open behavior. A command that <em>deterministically matches</em> a dangerous pattern -- <code>rm -rf /</code>, <code>curl | bash</code>, <code>eval</code> -- is always blocked. The fail-open boundary is between "the engine encountered an unexpected condition" and "the engine successfully evaluated the input and found a violation." The former approves; the latter blocks.</p>
+<hr />
+<h2 id="permission-inheritance-and-the-skill-gap">Permission Inheritance and the Skill Gap<a class="headerlink" href="#permission-inheritance-and-the-skill-gap" title="Permanent link">&para;</a></h2>
+<p>Claude Code's permission model has an inheritance asymmetry that directly shapes Jerry's security architecture. Subagents -- agents invoked via the Task tool -- inherit the parent conversation's permission context. A subagent in a session where <code>Bash</code> is allowed can execute Bash commands without additional prompting. This inheritance is documented by Anthropic and works as expected.</p>
+<p>Skills, however, have a separate permission mechanism that does not reliably inherit parent permissions. GitHub issue #18950 reports that Bash permissions granted in the parent session do not propagate into skill execution contexts. A Bash command that executes without prompting in the main session may prompt (or fail silently in background mode) when executed from within a skill.</p>
+<p>This asymmetry explains the <code>PreToolUse</code> hook entry in <code>.claude/settings.local.json</code> that matches <code>WebFetch|WebSearch</code> and returns a <code>permissionDecision: "allow"</code> response. This hook is defense-in-depth for the skill permission inheritance gap. Even though <code>WebSearch</code> and <code>WebFetch</code> appear in the <code>settings.json</code> allow list, the hook ensures that the permission decision propagates into skill and subagent contexts where the settings-level permission might not reach. The hook's <code>permissionDecisionReason</code> field documents this rationale explicitly.</p>
+<p>The PreToolUse hooks defined in the plugin's <code>hooks.json</code> fire for all execution contexts -- the main session, subagents, and skills. The hook event payload includes <code>agent_id</code> and <code>agent_type</code> fields that identify the invoking context. Because hooks are executed as external processes by the Claude Code runtime itself, they are not subject to the same inheritance gaps that affect settings-level permissions. This is why the hook-based enforcement model is more reliable than the settings-level permission model for security enforcement: hooks fire universally, settings permissions may not propagate.</p>
+<hr />
+<h2 id="the-skill-permission-namespace">The Skill Permission Namespace<a class="headerlink" href="#the-skill-permission-namespace" title="Permanent link">&para;</a></h2>
+<p>Jerry's <code>.claude/settings.local.json</code> uses <code>Skill(jerry:*)</code> to pre-approve all skills registered under the <code>jerry</code> plugin namespace. This pattern deserves explanation because the namespace behavior is not immediately obvious from Claude Code's documentation.</p>
+<p>Plugin skills register under a <code>plugin-name:skill-name</code> namespace to prevent naming conflicts. A skill named <code>adversary</code> in the <code>jerry</code> plugin becomes <code>jerry:adversary</code> at the plugin level. The <code>Skill(jerry:*)</code> wildcard matches all skills whose name begins with <code>jerry:</code>, covering both current and future Jerry skills without requiring individual entries.</p>
+<p>Empirical testing (documented in the BUG-005 investigation) confirmed that both <code>Skill(adversary)</code> (short form) and <code>Skill(jerry:adversary)</code> (fully-qualified form) produce the same approval behavior. Claude Code's runtime writes the short form when auto-adding "don't ask again" entries during interactive use. The fully-qualified form, however, is the only collision-safe approach -- if another plugin also registered a skill named <code>adversary</code>, the short form would be ambiguous while the qualified form would unambiguously target the Jerry skill.</p>
+<p>Jerry uses the fully-qualified <code>Skill(jerry:*)</code> wildcard rather than individual <code>Skill(adversary)</code>, <code>Skill(problem-solving)</code> entries because the wildcard provides forward compatibility. Adding a new skill to the Jerry plugin does not require a corresponding settings.local.json update. The trade-off is that this grants blanket skill approval -- there is no mechanism to selectively deny a specific Jerry skill while allowing others through the wildcard. For Jerry's use case, where all skills are first-party and trusted, this trade-off is appropriate.</p>
+<hr />
+<h2 id="the-anti-pattern-per-command-bash-patterns-in-settings">The Anti-Pattern: Per-Command Bash Patterns in Settings<a class="headerlink" href="#the-anti-pattern-per-command-bash-patterns-in-settings" title="Permanent link">&para;</a></h2>
+<p>The most likely well-intentioned mistake a developer or future session could make is to replace <code>"Bash"</code> in <code>settings.json</code> with a curated set of <code>Bash(command *)</code> entries. This section explains why this apparent improvement would make security worse while degrading reliability.</p>
+<p>Adding per-command patterns creates a false sense of security. A pattern like <code>Bash(git *)</code> appears to restrict Bash to only git commands, but the SecurityEnforcementEngine already blocks the actually dangerous git operations (force push to protected branches) while allowing all safe ones. The settings pattern adds no security value over the hook -- it merely duplicates a subset of the hook's logic in an untestable format.</p>
+<p>More importantly, adding patterns <em>removes</em> the safety net for background agents. Any command not covered by an explicit <code>Bash(command *)</code> entry will fail silently in non-interactive contexts. The failure is not obvious during development because interactive sessions degrade gracefully to a prompt. The developer adds their curated list, tests it interactively (everything seems to work because they approve any prompts), and ships it. Background agents then break on the first command that was not anticipated -- perhaps a <code>wc</code> invocation in a line-counting step, or a <code>head</code> command in a file inspection, or a <code>date</code> invocation in a timestamp generation. These failures are intermittent, context-dependent, and difficult to diagnose because they manifest as missing output rather than error messages.</p>
+<p>The correct mental model is: settings.json controls <em>tool category access</em> (can this session use Bash at all?), while the SecurityEnforcementEngine controls <em>command-level safety</em> (is this specific command dangerous?). Mixing these concerns -- putting command-level decisions in the tool-category layer -- creates gaps in both.</p>
+<hr />
+<h2 id="connections">Connections<a class="headerlink" href="#connections" title="Permanent link">&para;</a></h2>
+<p>This topic connects to:</p>
+<ul>
+<li>
+<p><strong>The enforcement architecture (L1-L5):</strong> The three-layer permission model maps to layers L1 and L3 in Jerry's five-layer enforcement architecture defined in <code>quality-enforcement.md</code>. L1 (session start) loads the rules that inform the enforcement engines. L3 (pre-tool) is where both the SecurityEnforcementEngine and PreToolEnforcementEngine operate -- deterministic gating that is immune to context rot because it executes as external hook processes, not as LLM context.</p>
+</li>
+<li>
+<p><strong>The auto-escalation rules (AE-001 through AE-005):</strong> The PreToolEnforcementEngine's governance file detection directly implements AE-001 (constitution modifications trigger auto-C4) and AE-002 (rules file modifications trigger auto-C3). The criticality escalation field in <code>EnforcementDecision</code> carries this information from the hook back to the Claude Code session, where it affects quality gate thresholds and review requirements.</p>
+</li>
+<li>
+<p><strong>The context monitoring system:</strong> The staleness detector that runs as the third step in the <code>HooksPreToolUseHandler</code> pipeline connects the pre-tool enforcement to the orchestration state management. A stale <code>ORCHESTRATION.yaml</code> file triggers a warning that prevents agents from operating on outdated workflow state -- a different kind of safety concern than command blocking, but served by the same hook infrastructure.</p>
+</li>
+</ul>
+<hr />
+<h2 id="alternative-perspectives">Alternative Perspectives<a class="headerlink" href="#alternative-perspectives" title="Permanent link">&para;</a></h2>
+<p>There is a legitimate argument for settings-level Bash restrictions in environments where the hook infrastructure is not available or not trusted. If Jerry's enforcement engines were removed or broken, the blanket Bash permission would leave no safety net between Claude Code's probabilistic judgment and the shell. In a deployment where the plugin hooks are not installed -- perhaps someone is using the Jerry repository without the plugin, or the hook registration is misconfigured -- the settings-level permission is the only control point.</p>
+<p>A defense-in-depth purist might argue that <em>both</em> layers should enforce restrictions: settings patterns as the outer perimeter, hooks as the inner checkpoint. This is a reasonable position in theory. In practice, the asymmetry between interactive and background execution modes means that settings-level restrictions carry an operational cost (background agent failures) that hook-level restrictions do not. The decision to rely on hooks rather than settings for command-level security is a trade-off that prioritizes operational reliability over defense-in-depth layering -- a trade-off that is justified by the hook layer's test coverage and deterministic execution model.</p>
+<p>It is also worth noting that Claude Code's permission system is evolving. The deprecated <code>:*</code> suffix syntax, the undocumented <code>allowed_tools</code>/<code>require_approval</code> field names discovered during the BUG-005 investigation, and the skill permission inheritance gap (GitHub #18950) all suggest that the settings-level permission system is not yet fully stable. Building security-critical logic on top of a changing API surface introduces maintenance risk. The hook-based enforcement engine, by contrast, is fully within Jerry's control and tested against known bypass vectors.</p>
+<hr />
+<h2 id="related">Related<a class="headerlink" href="#related" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Reference:</strong> <a href="../../reference/claude-code-permissions/">Claude Code Permission Syntax Reference</a> -- Technical specification of permission patterns, evaluation order, and settings file format</li>
+<li><strong>Reference:</strong> <code>src/infrastructure/internal/enforcement/security_rules.py</code> -- The frozen rule definitions that the SecurityEnforcementEngine evaluates against</li>
+<li><strong>Reference:</strong> <code>src/infrastructure/internal/enforcement/security_enforcement_engine.py</code> -- The Layer 2 enforcement implementation</li>
+<li><strong>Reference:</strong> <code>src/infrastructure/internal/enforcement/pre_tool_enforcement_engine.py</code> -- The Layer 3 architecture enforcement implementation</li>
+<li><strong>Reference:</strong> <code>src/interface/cli/hooks/hooks_pre_tool_use_handler.py</code> -- The CLI handler that orchestrates all three enforcement steps</li>
+<li><strong>Investigation:</strong> <code>projects/PROJ-030-bugs/work/BUG-005-skill-permission-pattern.md</code> -- The investigation that produced the empirical findings about Skill() permission behavior</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+  
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 Geekatron — Apache License 2.0
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+  <div class="md-footer-meta__inner md-grid" style="text-align: center; padding-bottom: 0.5rem;">
+    <span class="sb-tagline">Quality with soul.</span>
+  </div>
+
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

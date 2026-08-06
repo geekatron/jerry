@@ -1,0 +1,2513 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Framework for behavior/workflow guardrails. Accrues knowledge, wisdom, experience.">
+      
+      
+        <meta name="author" content="Geekatron">
+      
+      
+        <link rel="canonical" href="https://jerry.geekatron.org/explanation/ci-cd-supply-chain-security/">
+      
+      
+        <link rel="prev" href="../../schemas/SESSION_CONTEXT_GUIDE/">
+      
+      
+        <link rel="next" href="../permission-security-model/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>CI/CD Supply Chain Security - Jerry Framework</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/saucer-boy.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="saucer-boy" data-md-color-primary="deep-purple" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#about-the-jerry-framework-cicd-supply-chain-security-model" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Jerry Framework" class="md-header__button md-logo" aria-label="Jerry Framework" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Jerry Framework
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              CI/CD Supply Chain Security
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="saucer-boy" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="saucer-boy-dark" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/geekatron/jerry" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    geekatron/jerry
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Jerry Framework" class="md-nav__button md-logo" aria-label="Jerry Framework" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    Jerry Framework
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/geekatron/jerry" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    geekatron/jerry
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INSTALLATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../BOOTSTRAP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bootstrap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started Runbook
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/problem-solving/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Problem Solving
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/orchestration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/transcript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transcript Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/PLUGIN-DEVELOPMENT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plugin Development
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../howto/update-sha-pinned-action/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Update a SHA-Pinned Action
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../howto/add-ci-job/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Add a New CI Job
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../howto/add-github-actions-dependency/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Add a GitHub Actions Dependency
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CLAUDE-MD-GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLAUDE.md Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/ci-cd-pipeline-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD Pipeline Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/claude-code-permissions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claude Code Permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../schemas/SCHEMA_VERSIONING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schema Versioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../schemas/SESSION_CONTEXT_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Session Context Schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Explanation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Explanation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD Supply Chain Security
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD Supply Chain Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#document-sections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Document Sections
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Context
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-supply-chain-as-an-attack-surface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Supply Chain as an Attack Surface
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-mutability-problem-with-git-tags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Mutability Problem with Git Tags
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-lockfile-as-a-security-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Lockfile as a Security Boundary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-infinite-loop-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Infinite Loop Problem
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#defense-in-depth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Defense in Depth
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-bug-003-story" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The BUG-003 Story
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#connections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connections
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alternative-perspectives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alternative Perspectives
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../permission-security-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Permission & Security Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Articles
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Articles
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Articles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_2" id="__nav_6_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Archive
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Archive
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/archive/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_3" id="__nav_6_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Categories
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Categories
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/category/prompting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prompting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/category/quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/single-vs-multi-agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single vs. Multi-Agent Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/adversarial-strategy-catalog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adversarial Strategy Catalog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/strategy-selection-enforcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Strategy Selection & Enforcement (ADRs)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/adversarial-deep-dives/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adversarial Quality Deep Dives
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/skill-compliance-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Skill Compliance Framework
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/governance-constitutional-ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Governance & Constitutional AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/context-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Context Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/oss-methodology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OSS Methodology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/architecture-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/claude-code-ecosystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claude Code Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/negative-prompting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Negative Prompting & Constraint Enforcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7_13" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_13" id="__nav_7_13_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM Deception Study
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    LLM Deception Study
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/llm-deception/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/llm-deception/the-85-problem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 85% Problem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/llm-deception/methodology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methodology & Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/llm-deception/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture & Recommendations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Governance
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Governance
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../governance/JERRY_CONSTITUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jerry Constitution
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#document-sections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Document Sections
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Context
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-supply-chain-as-an-attack-surface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Supply Chain as an Attack Surface
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-mutability-problem-with-git-tags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Mutability Problem with Git Tags
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-lockfile-as-a-security-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Lockfile as a Security Boundary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-infinite-loop-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Infinite Loop Problem
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#defense-in-depth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Defense in Depth
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-bug-003-story" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The BUG-003 Story
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#connections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connections
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alternative-perspectives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alternative Perspectives
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="about-the-jerry-framework-cicd-supply-chain-security-model">About the Jerry Framework CI/CD Supply Chain Security Model<a class="headerlink" href="#about-the-jerry-framework-cicd-supply-chain-security-model" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p>Understanding why the CI/CD pipeline is hardened the way it is -- the threat model, the trade-offs, and the defense-in-depth reasoning behind SHA pinning, lockfile freezing, and workflow loop prevention.</p>
+<p><strong>Scope:</strong> This document explains the security rationale behind the Jerry Framework's CI/CD supply chain controls. It does not cover how to update a pinned action SHA, how to configure Dependabot, or the exact syntax of each workflow file. For those details, see the companion reference at <code>docs/reference/ci-cd-pipeline-security.md</code>.</p>
+</blockquote>
+<h2 id="document-sections">Document Sections<a class="headerlink" href="#document-sections" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Section</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#context">Context</a></td>
+<td>Why CI/CD pipelines are worth defending</td>
+</tr>
+<tr>
+<td><a href="#the-supply-chain-as-an-attack-surface">The Supply Chain as an Attack Surface</a></td>
+<td>Threat model and real-world attack vectors</td>
+</tr>
+<tr>
+<td><a href="#the-mutability-problem-with-git-tags">The Mutability Problem with Git Tags</a></td>
+<td>Why SHA pinning over tag pinning</td>
+</tr>
+<tr>
+<td><a href="#the-lockfile-as-a-security-boundary">The Lockfile as a Security Boundary</a></td>
+<td>Why --frozen matters for reproducibility and integrity</td>
+</tr>
+<tr>
+<td><a href="#the-infinite-loop-problem">The Infinite Loop Problem</a></td>
+<td>Why the skip-bump guard exists and why identity matters</td>
+</tr>
+<tr>
+<td><a href="#defense-in-depth">Defense in Depth</a></td>
+<td>How the controls layer together</td>
+</tr>
+<tr>
+<td><a href="#the-bug-003-story">The BUG-003 Story</a></td>
+<td>How debugging one failure exposed systemic infrastructure debt</td>
+</tr>
+<tr>
+<td><a href="#connections">Connections</a></td>
+<td>How this topic relates to other parts of the Jerry Framework</td>
+</tr>
+<tr>
+<td><a href="#alternative-perspectives">Alternative Perspectives</a></td>
+<td>Trade-offs and other valid approaches</td>
+</tr>
+<tr>
+<td><a href="#related">Related</a></td>
+<td>Companion documentation in other Diataxis quadrants</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
+<p>A CI/CD pipeline is trusted infrastructure. It runs with elevated permissions -- pushing to protected branches, creating releases, uploading artifacts, accessing secrets. When developers think about security, they tend to focus on the code they write: input validation, authentication, authorization. The pipeline that builds and deploys that code receives far less scrutiny, despite the fact that a compromise at the build layer can inject malicious code into every artifact the pipeline produces.</p>
+<p>The Jerry Framework's CI/CD security posture was not designed proactively from day one. It emerged from a specific incident -- BUG-003, a version-bump workflow failure caused by a dirty lockfile -- that, once investigated, revealed a series of supply chain gaps spanning five workflow files. The controls documented here are the product of that investigation: a DevSecOps security review, a red-team attack surface analysis, and the subsequent EN-001 hardening enabler. Understanding this origin matters because it explains why these controls exist as a coherent system rather than as isolated configuration choices.</p>
+<hr />
+<h2 id="the-supply-chain-as-an-attack-surface">The Supply Chain as an Attack Surface<a class="headerlink" href="#the-supply-chain-as-an-attack-surface" title="Permanent link">&para;</a></h2>
+<p>Software supply chain attacks exploit the trust relationships between a project and the external code it depends on. A CI/CD pipeline has three distinct trust boundaries, each with its own attack vectors.</p>
+<p>The first boundary is <strong>action code</strong> -- the GitHub Actions that perform checkout, setup, upload, and release tasks. Every <code>uses:</code> line in a workflow file pulls code from an external repository and executes it inside the CI runner. That external code runs with whatever permissions the workflow grants: <code>contents: write</code>, access to secrets like <code>VERSION_BUMP_PAT</code>, and the ability to push directly to protected branches. If an attacker can change what code a <code>uses:</code> line resolves to, they gain code execution inside the pipeline.</p>
+<p>The second boundary is <strong>tool binaries</strong> -- the executables the pipeline downloads and runs. When a workflow installs <code>uv</code>, <code>bump-my-version</code>, <code>ruff</code>, or <code>pyright</code>, it is downloading binaries or packages from external registries (GitHub releases, PyPI) and executing them. A compromised <code>uv</code> binary, for example, could exfiltrate the <code>VERSION_BUMP_PAT</code> secret during what appears to be a routine <code>uv sync</code> call. A compromised <code>pip-audit</code> could suppress vulnerability findings -- the security scanning tool itself becoming the vulnerability.</p>
+<p>The third boundary is <strong>dependency resolution</strong> -- the transitive closure of Python packages that <code>uv sync</code> or <code>pip install</code> resolves. Dependency confusion attacks, typosquatting, and re-upload attacks all target this boundary. A package name that looks correct (<code>reuqests</code> instead of <code>requests</code>) or a legitimate-looking version that has been re-uploaded with malicious content can silently enter the dependency graph during resolution.</p>
+<p>These three boundaries are independent. Hardening one does not protect the others. A SHA-pinned GitHub Action still downloads an unpinned <code>uv</code> binary if the action's <code>version</code> input is set to <code>"latest"</code>. A locked dependency graph still executes inside an action whose code has been silently replaced via a tag force-push. This independence is why defense in depth -- layering controls across all three boundaries -- is the governing design principle for the Jerry pipeline.</p>
+<hr />
+<h2 id="the-mutability-problem-with-git-tags">The Mutability Problem with Git Tags<a class="headerlink" href="#the-mutability-problem-with-git-tags" title="Permanent link">&para;</a></h2>
+<p>Git tags are mutable references. A repository maintainer (or an attacker with push access) can delete a tag and recreate it pointing to a different commit. When a workflow file references an action by tag -- <code>uses: actions/checkout@v5</code> -- the tag <code>v5</code> resolves to whatever commit it happens to point to at the moment the runner fetches it. If that tag is force-pushed between one CI run and the next, the pipeline silently executes different code.</p>
+<p>This is not a theoretical risk. The <code>codecov/codecov-action</code> incident of 2021 demonstrated the attack in practice: a compromised bash uploader was served through the action's tag reference, affecting thousands of CI pipelines that trusted the tag to point to reviewed code.</p>
+<p>SHA references eliminate this class of attack entirely. A commit SHA is a content-addressed hash -- it resolves to exactly one commit, and that resolution is cryptographically immutable. Writing <code>uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8</code> means the pipeline will always fetch that exact commit. If the commit is deleted from the upstream repository, the workflow fails rather than silently executing different code. The failure mode is loud and debuggable; the tag-based failure mode is silent and undetectable.</p>
+<p>The trade-off is readability and maintenance burden. A 40-character hex string conveys no version information to a human reader. The Jerry convention addresses this with inline comments -- <code># v5.0.0</code> -- that preserve human readability without affecting the runtime reference. The maintenance burden -- tracking when new versions of pinned actions become available -- is handled by Dependabot, which monitors the <code>github-actions</code> ecosystem weekly and opens pull requests that update both the SHA and the version comment. This division of labor is deliberate: the pipeline gets cryptographic immutability; Dependabot absorbs the manual tracking cost.</p>
+<p>There is a subtlety here that is easy to miss. SHA-pinning the <code>astral-sh/setup-uv</code> action protects the action's code, but the action itself downloads a <code>uv</code> binary whose version is specified by a separate <code>version</code> input. When that input was <code>"latest"</code>, the action was immutable but the binary it installed was not. The Jerry pipeline pins <code>uv</code> to <code>"0.10.9"</code> precisely because this second-order trust boundary exists. The EN-001 security review identified this gap as HIGH severity because the <code>uv</code> binary runs in the version-bump job alongside the <code>VERSION_BUMP_PAT</code> secret -- a malicious binary at that execution point could exfiltrate the most privileged credential in the repository.</p>
+<hr />
+<h2 id="the-lockfile-as-a-security-boundary">The Lockfile as a Security Boundary<a class="headerlink" href="#the-lockfile-as-a-security-boundary" title="Permanent link">&para;</a></h2>
+<p>A lockfile is a snapshot of a resolved dependency graph. It records not just which packages are required, but which specific versions were selected and (in the case of <code>uv.lock</code>) their content hashes. When the resolver runs without a lockfile constraint, it performs full resolution: evaluating version bounds, platform markers, and the current Python interpreter to select a compatible set of packages. The result depends on the state of the package registry at the moment of resolution.</p>
+<p>The <code>--frozen</code> flag changes this behavior fundamentally. <code>uv sync --frozen</code> reads the existing lockfile verbatim and installs exactly what it describes. It does not contact PyPI. It does not evaluate version bounds against the current interpreter. If the lockfile is inconsistent with <code>pyproject.toml</code> -- because a dependency was added or a bound was changed -- <code>--frozen</code> fails with an error rather than silently updating the lockfile. The failure is the point: it forces the developer to regenerate the lockfile locally, commit it, and have it reviewed, rather than allowing CI to silently resolve to whatever packages happen to be available at build time.</p>
+<p>This matters for security because a lockfile that mutates during CI is a lockfile that the CI runner -- not a human -- decided to trust. If a compromised package version is published to PyPI between the time a developer commits their code and the time CI runs, bare <code>uv sync</code> will happily resolve to that compromised version. <code>uv sync --frozen</code> will not, because the compromised version is not in the committed lockfile.</p>
+<p>It also matters for reproducibility. The version-bump workflow uses <code>bump-my-version</code> with <code>allow_dirty = false</code>, which refuses to create a version-bump commit if the working directory contains uncommitted changes. When bare <code>uv sync</code> re-resolves dependencies against the CI runner's Python 3.14 interpreter -- which may differ from the developer's local Python version -- it updates platform markers and dependency bounds in <code>uv.lock</code>, making the working tree dirty. The version bump then fails. This is exactly what BUG-003 was: not a security incident, but a reproducibility failure whose root cause -- mutable dependency resolution in CI -- is the same mechanism that supply chain attacks exploit.</p>
+<p>The <code>--frozen</code> flag closes both risks with a single control. The lockfile becomes a security boundary: it defines the exact dependency graph that the pipeline is authorized to install, and any deviation from that graph is an error, not a silent update.</p>
+<hr />
+<h2 id="the-infinite-loop-problem">The Infinite Loop Problem<a class="headerlink" href="#the-infinite-loop-problem" title="Permanent link">&para;</a></h2>
+<p>The version-bump workflow runs on every push to <code>main</code>. It detects the conventional commit type (feat, fix, etc.), determines the appropriate version bump (major, minor, patch), applies the bump, commits the change, and pushes the commit back to <code>main</code>. That push to <code>main</code> triggers the workflow again.</p>
+<p>Without a guard, this creates an infinite loop: the bot pushes a version-bump commit, which triggers the workflow, which pushes another version-bump commit, which triggers the workflow, and so on until GitHub's concurrency limit or a human intervenes.</p>
+<p>The guard has two components, and the distinction between them matters.</p>
+<p>The first component is the <code>[skip-bump]</code> marker in the commit message. When <code>bump-my-version</code> creates its commit, the message contains <code>[skip-bump]</code>, and the workflow's <code>if</code> condition checks for this string. If present, the job does not run. This is straightforward and effective for push-triggered events. The EN-001 hardening extended this check to <code>workflow_dispatch</code> events as well, because a manual dispatch could otherwise double-bump a commit that already carried the marker.</p>
+<p>The second component is the <code>github.actor</code> check, and this is where the security reasoning becomes more nuanced. Before BUG-003, the skip-bump guard checked <code>github.event.head_commit.author.name</code> -- the Git author name configured in the commit metadata. The problem is that <code>git config user.name</code> is a client-side setting. Any developer with push access could set their local Git configuration to <code>user.name "github-actions[bot]"</code> and push a commit that the workflow would treat as a bot commit, suppressing the version bump. This is a commit-message-level spoofing vector.</p>
+<p><code>github.actor</code>, by contrast, is the authenticated identity set by GitHub based on the token used to push the commit. It cannot be set by the committer. When the version-bump workflow pushes its commit using the <code>VERSION_BUMP_PAT</code>, GitHub records the push actor as <code>github-actions[bot]</code>. This value is set by the platform, not by <code>git config</code>, and cannot be forged by a collaborator. The guard now checks <code>github.actor != 'github-actions[bot]'</code>, which is a platform-authenticated identity assertion rather than a self-declared claim.</p>
+<p>There is also an input validation concern. The <code>workflow_dispatch</code> trigger accepts a <code>prerelease</code> string input (e.g., "alpha", "beta", "rc"). Because this is a free-form string that eventually reaches a shell command, it is validated as alphanumeric-only before use. Without this validation, a carefully crafted prerelease label could inject shell commands via the <code>$PRERELEASE</code> variable interpolation. The alphanumeric regex (<code>^[a-zA-Z0-9]+$</code>) eliminates this vector.</p>
+<hr />
+<h2 id="defense-in-depth">Defense in Depth<a class="headerlink" href="#defense-in-depth" title="Permanent link">&para;</a></h2>
+<p>No single control protects against all supply chain attack vectors. The Jerry pipeline's security posture is the product of four controls that address different boundaries, and the value of the model lies in how they complement each other.</p>
+<p><strong>SHA pinning</strong> protects the action code boundary. It ensures that the GitHub Actions executed by the pipeline are the exact code that was reviewed when the SHA was committed. It does not protect against compromised tool binaries or dependencies -- those are separate trust boundaries.</p>
+<p><strong>Binary version pinning</strong> protects the tool integrity boundary. Pinning <code>uv</code> to <code>"0.10.9"</code> and <code>bump-my-version</code> to <code>"1.2.7"</code> ensures that the tools themselves are version-specific. This is weaker than SHA pinning (it relies on PyPI serving the same content for the same version number) but significantly stronger than <code>"latest"</code>, which delegates version selection to the upstream registry at runtime.</p>
+<p><strong>Lockfile freezing</strong> protects the dependency integrity boundary. <code>uv sync --frozen</code> ensures that the transitive dependency graph installed in CI is the one committed to the repository, not a runtime resolution that could incorporate compromised packages published after the commit.</p>
+<p><strong>Dependabot</strong> is the maintenance automation that makes the other controls sustainable. SHA pinning without Dependabot means pinned actions become stale and never receive security patches. Binary pinning without Dependabot means tool versions drift from upstream releases. Dependabot absorbs the manual tracking cost, opening pull requests that a human reviews before merging -- keeping the human in the approval loop while automating the discovery of available updates.</p>
+<p>Together, these four controls form a layered defense:</p>
+<ul>
+<li>A compromised GitHub Action is blocked by SHA pinning.</li>
+<li>A compromised tool binary is mitigated by version pinning (and the <code>--frozen</code> flag prevents a compromised <code>uv</code> from altering dependency resolution).</li>
+<li>A compromised PyPI package is blocked by lockfile freezing.</li>
+<li>Staleness and maintenance drift are addressed by Dependabot.</li>
+</ul>
+<p>Each control addresses a vector that the others do not. Removing any one layer leaves a specific attack surface undefended. This is the essence of defense in depth: redundancy across independent failure modes.</p>
+<hr />
+<h2 id="the-bug-003-story">The BUG-003 Story<a class="headerlink" href="#the-bug-003-story" title="Permanent link">&para;</a></h2>
+<p>The story of how these controls came to exist is instructive because it illustrates a pattern that recurs across software projects: a single, seemingly routine bug exposes systemic infrastructure debt that was invisible until something broke.</p>
+<p>BUG-003 was a CI failure. The version-bump workflow was failing because <code>uv sync</code> -- running without <code>--frozen</code> -- re-resolved dependencies against the GitHub Actions runner's Python 3.14 interpreter, which differed from the local development Python version. The lockfile was updated, the working tree became dirty, and <code>bump-my-version</code> (configured with <code>allow_dirty = false</code>) refused to proceed. The immediate fix was straightforward: add <code>--frozen</code> to every <code>uv sync</code> call in CI.</p>
+<p>But the investigation did not stop at the immediate fix. A DevSecOps security review examined the entire version-bump pipeline and found five additional findings. The <code>astral-sh/setup-uv</code> action was SHA-pinned, but the <code>uv</code> binary it installed was set to <code>"latest"</code> -- partially defeating the supply chain protection. All <code>actions/*</code> references used floating tags (<code>@v5</code>, <code>@v4</code>) rather than commit SHAs. The <code>bump-my-version</code> installation used an unversioned <code>uv tool install</code> command. The skip-bump guard relied on a spoofable Git author name. The <code>workflow_dispatch</code> trigger bypassed the skip-bump check entirely.</p>
+<p>A red-team reconnaissance analysis mapped the attack surface of the version-bump pipeline and classified it as medium-to-high: the pipeline held a Personal Access Token capable of bypassing branch protection, and the most credible attack path was a supply chain compromise of <code>bump-my-version</code> on PyPI -- which, at the time, was installed without any version pin.</p>
+<p>None of these findings were caused by BUG-003. They predated it. But they were invisible because the pipeline was working. The dirty-lockfile failure was the first crack in the facade, and the investigation that followed revealed the structural gaps behind it. This is a common pattern in infrastructure security: the absence of failures is not evidence of the absence of vulnerabilities. It takes a visible failure to motivate the investigation that finds the invisible ones.</p>
+<p>The EN-001 enabler that resulted from this investigation addressed all five findings in a single hardening pass. The resulting security posture -- SHA-pinned actions, version-pinned binaries, frozen lockfiles, platform-authenticated identity checks, input validation, and Dependabot automation -- is coherent because it was designed as a system, responding to a mapped threat model, rather than as individual point fixes applied in isolation.</p>
+<hr />
+<h2 id="connections">Connections<a class="headerlink" href="#connections" title="Permanent link">&para;</a></h2>
+<p>This topic connects to several other areas of the Jerry Framework:</p>
+<ul>
+<li>
+<p><strong>H-05 (UV-only Python environment):</strong> The CI pipeline's use of <code>uv sync --frozen</code> is the CI-side enforcement of the same principle that H-05 mandates for local development. H-05 prohibits direct <code>python</code> and <code>pip</code> invocations; the pipeline enforces this by using <code>uv run</code> for all project Python execution. All CI jobs use <code>uv sync --frozen</code> for dependency installation and <code>uv run</code> for tool execution — there are zero <code>pip install</code> commands in the pipeline. The security job audits the full dependency tree via <code>uv export --all-extras --no-emit-project</code> piped to <code>pip-audit</code>, ensuring every direct and transitive dependency is scanned against the PyPI advisory database.</p>
+</li>
+<li>
+<p><strong>The version-bump pipeline's relationship to the release pipeline:</strong> The version-bump workflow creates a commit and a tag. The tag push triggers the release workflow. This is a two-stage chain where the security of the release depends on the integrity of the version bump. A compromised version-bump commit could inject malicious content that the release workflow then packages and publishes. This is why the version-bump job has the most stringent security controls -- it is the pipeline's highest-privilege execution context.</p>
+</li>
+<li>
+<p><strong>Dependabot's role in the maintenance lifecycle:</strong> Dependabot is not a security tool in the traditional sense. It is a maintenance automation tool that makes security controls sustainable. The relationship is analogous to the role of testing in code quality: tests do not write correct code, but they make it sustainable to maintain correct code over time. Dependabot does not secure the pipeline, but it makes it sustainable to keep the pipeline secured.</p>
+</li>
+</ul>
+<hr />
+<h2 id="alternative-perspectives">Alternative Perspectives<a class="headerlink" href="#alternative-perspectives" title="Permanent link">&para;</a></h2>
+<p>The approach described here is not the only valid one, and it carries real trade-offs.</p>
+<p>SHA pinning adds visual noise to workflow files. A line like <code>uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8</code> is harder to read than <code>uses: actions/checkout@v5</code>. For projects with fewer security concerns -- small personal projects, internal tools with no external exposure -- tag-based references may be entirely appropriate. The Jerry Framework chose SHA pinning because its pipeline holds a PAT with branch-protection bypass privileges, which raises the stakes of a compromise. Not every project has this risk profile.</p>
+<p>An alternative to <code>uv sync --frozen</code> is to generate the lockfile in CI and validate it against the committed version. This approach detects drift without preventing resolution, which can be useful when the development team works across multiple Python versions and wants CI to surface lockfile inconsistencies. The Jerry team chose <code>--frozen</code> because the priority was preventing mutable resolution in CI, not detecting it -- but the alternative is reasonable for teams with different priorities.</p>
+<p>The <code>bump-my-version</code> installation via <code>uv tool install</code> with a version pin but without hash verification is an acknowledged gap. The EN-001 security review flagged it as MEDIUM severity. The trade-off is isolation: <code>uv tool install</code> keeps <code>bump-my-version</code> out of the project's virtual environment, which avoids dependency conflicts. Adding it to <code>pyproject.toml</code> and <code>uv.lock</code> would provide hash verification but would mix a CI-only tool into the project's dependency graph. The current approach accepts the residual risk of PyPI index integrity for the benefit of environment isolation.</p>
+<p>There is also a broader question about how much security investment is appropriate for a given project. The Jerry Framework is an open-source Claude Code plugin with a small team. Its threat model is not equivalent to a financial services platform or a package registry. However, the pipeline holds secrets (<code>VERSION_BUMP_PAT</code>) and publishes artifacts (release archives) that other teams consume. The security posture is calibrated to that specific risk profile -- not maximal, but proportionate to the trust boundaries the pipeline crosses.</p>
+<hr />
+<h2 id="related">Related<a class="headerlink" href="#related" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Reference:</strong> <a href="../../reference/ci-cd-pipeline-security/">CI/CD Pipeline Security Controls</a> -- Exact configurations, SHA-to-version mappings, and per-workflow control inventory</li>
+<li><strong>How-to:</strong> <a href="../../howto/add-ci-job/">Add a New CI Job</a> -- Step-by-step procedure for adding a job that meets all security controls</li>
+<li><strong>Work Item:</strong> EN-001: CI Pipeline Hardening (<code>projects/PROJ-030-bugs/work/EN-001-ci-pipeline-hardening.md</code>) -- The enabler that drove this work</li>
+<li><strong>Work Item:</strong> BUG-003: Version Bump uv.lock Dirty (<code>projects/PROJ-030-bugs/work/BUG-003-version-bump-uv-lock-dirty.md</code>) -- The bug that started the investigation</li>
+<li><strong>Security Review:</strong> EN-001 DevSecOps Security Review (<code>projects/PROJ-030-bugs/reviews/en-001-devsecops-security-review.md</code>) -- Full security assessment with per-file findings</li>
+<li><strong>Attack Surface Analysis:</strong> BUG-003 Red-Recon Attack Surface (<code>projects/PROJ-030-bugs/reviews/bug-003-red-recon-attack-surface.md</code>) -- Red-team reconnaissance of the version-bump pipeline</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+  
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 Geekatron — Apache License 2.0
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+  <div class="md-footer-meta__inner md-grid" style="text-align: center; padding-bottom: 0.5rem;">
+    <span class="sb-tagline">Quality with soul.</span>
+  </div>
+
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

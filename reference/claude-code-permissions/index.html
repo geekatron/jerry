@@ -1,0 +1,3364 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Framework for behavior/workflow guardrails. Accrues knowledge, wisdom, experience.">
+      
+      
+        <meta name="author" content="Geekatron">
+      
+      
+        <link rel="canonical" href="https://jerry.geekatron.org/reference/claude-code-permissions/">
+      
+      
+        <link rel="prev" href="../ci-cd-pipeline-security/">
+      
+      
+        <link rel="next" href="../../schemas/SCHEMA_VERSIONING/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Claude Code Permissions - Jerry Framework</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/saucer-boy.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="saucer-boy" data-md-color-primary="deep-purple" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#claude-code-permission-syntax-reference" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Jerry Framework" class="md-header__button md-logo" aria-label="Jerry Framework" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Jerry Framework
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Claude Code Permissions
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="saucer-boy" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="saucer-boy-dark" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/geekatron/jerry" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    geekatron/jerry
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Jerry Framework" class="md-nav__button md-logo" aria-label="Jerry Framework" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    Jerry Framework
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/geekatron/jerry" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    geekatron/jerry
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../INSTALLATION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../BOOTSTRAP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bootstrap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started Runbook
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/problem-solving/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Problem Solving
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/orchestration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/transcript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transcript Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../playbooks/PLUGIN-DEVELOPMENT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plugin Development
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../howto/update-sha-pinned-action/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Update a SHA-Pinned Action
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../howto/add-ci-job/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Add a New CI Job
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../howto/add-github-actions-dependency/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Add a GitHub Actions Dependency
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CLAUDE-MD-GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLAUDE.md Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ci-cd-pipeline-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD Pipeline Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claude Code Permissions
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claude Code Permissions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#document-sections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Document Sections
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#settings-file-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Settings File Format
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Settings File Format">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#documented-field-names" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documented field names
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finding-001-undocumented-field-names-in-jerrys-committed-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FINDING-001: Undocumented field names in Jerry's committed settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evaluation-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evaluation Order
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#settings-file-scope-and-precedence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Settings File Scope and Precedence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mcp-tool-permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MCP Tool Permissions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MCP Tool Permissions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mcp__server-name" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        mcp__server-name
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mcp__server-name__" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        mcp__server-name__*
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mcp__server-name__tool_name" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        mcp__server-name__tool_name
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#skill-permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Skill Permissions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Skill Permissions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#skillname" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Skill(name)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skillname_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Skill(name *)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skill-bare-in-deny-array" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Skill (bare, in deny array)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plugin-skill-namespace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plugin skill namespace
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finding-002-colon-namespaced-skill-permission-form" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FINDING-002: Colon-namespaced Skill permission form
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finding-003-skills-with-no-permission-entries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FINDING-003: Skills with no permission entries
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bash-command-permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bash Command Permissions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bash Command Permissions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bash-or-bash" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bash or Bash(*)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bashcommand-prefix-match-with-word-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bash(command *) — prefix match with word boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bashcommand-prefix-match-without-word-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bash(command*) — prefix match without word boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#argument-constraining-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Argument-constraining patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deprecated-suffix-syntax" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deprecated :* suffix syntax
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finding-004-deprecated-syntax-in-jerry-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FINDING-004: Deprecated :* syntax in Jerry settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#file-access-permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File Access Permissions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="File Access Permissions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#path-type-prefixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Path type prefixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#glob-wildcards" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Glob wildcards
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#jerry-configuration-findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Jerry Configuration Findings
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../schemas/SCHEMA_VERSIONING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schema Versioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../schemas/SESSION_CONTEXT_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Session Context Schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Explanation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Explanation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/ci-cd-supply-chain-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD Supply Chain Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/permission-security-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Permission & Security Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Articles
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Articles
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Articles
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_2" id="__nav_6_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Archive
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Archive
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/archive/2026/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2026
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_3" id="__nav_6_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Categories
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Categories
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/category/prompting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prompting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/category/quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quality
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/single-vs-multi-agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Single vs. Multi-Agent Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/adversarial-strategy-catalog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adversarial Strategy Catalog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/strategy-selection-enforcement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Strategy Selection & Enforcement (ADRs)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/adversarial-deep-dives/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adversarial Quality Deep Dives
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/skill-compliance-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Skill Compliance Framework
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/governance-constitutional-ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Governance & Constitutional AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/context-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Context Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/oss-methodology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OSS Methodology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/architecture-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/claude-code-ecosystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claude Code Ecosystem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/negative-prompting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Negative Prompting & Constraint Enforcement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7_13" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_13" id="__nav_7_13_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM Deception Study
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    LLM Deception Study
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/llm-deception/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/llm-deception/the-85-problem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 85% Problem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/llm-deception/methodology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methodology & Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../research/llm-deception/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture & Recommendations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Governance
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Governance
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../governance/JERRY_CONSTITUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jerry Constitution
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#document-sections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Document Sections
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#settings-file-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Settings File Format
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Settings File Format">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#documented-field-names" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documented field names
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finding-001-undocumented-field-names-in-jerrys-committed-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FINDING-001: Undocumented field names in Jerry's committed settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evaluation-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evaluation Order
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#settings-file-scope-and-precedence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Settings File Scope and Precedence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mcp-tool-permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MCP Tool Permissions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MCP Tool Permissions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mcp__server-name" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        mcp__server-name
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mcp__server-name__" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        mcp__server-name__*
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mcp__server-name__tool_name" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        mcp__server-name__tool_name
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#skill-permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Skill Permissions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Skill Permissions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#skillname" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Skill(name)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skillname_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Skill(name *)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skill-bare-in-deny-array" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Skill (bare, in deny array)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plugin-skill-namespace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plugin skill namespace
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finding-002-colon-namespaced-skill-permission-form" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FINDING-002: Colon-namespaced Skill permission form
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finding-003-skills-with-no-permission-entries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FINDING-003: Skills with no permission entries
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bash-command-permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bash Command Permissions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bash Command Permissions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bash-or-bash" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bash or Bash(*)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bashcommand-prefix-match-with-word-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bash(command *) — prefix match with word boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bashcommand-prefix-match-without-word-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bash(command*) — prefix match without word boundary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#argument-constraining-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Argument-constraining patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deprecated-suffix-syntax" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deprecated :* suffix syntax
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finding-004-deprecated-syntax-in-jerry-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FINDING-004: Deprecated :* syntax in Jerry settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#file-access-permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File Access Permissions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="File Access Permissions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#path-type-prefixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Path type prefixes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#glob-wildcards" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Glob wildcards
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#jerry-configuration-findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Jerry Configuration Findings
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="claude-code-permission-syntax-reference">Claude Code Permission Syntax Reference<a class="headerlink" href="#claude-code-permission-syntax-reference" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p>Specification of Claude Code permission syntax, settings file format, evaluation semantics, and Jerry-specific configuration findings.</p>
+</blockquote>
+<!-- Quality criteria: skills/diataxis/rules/diataxis-standards.md Section 1 (R-01 through R-07) -->
+<!-- Anti-patterns to avoid: RAP-01 (marketing claims), RAP-02 (instructions/recipes), RAP-03 (narrative explanation) -->
+<!-- Voice: Neutral, precise, austere. No opinions, no superlatives. See Section 5. -->
+
+<h2 id="document-sections">Document Sections<a class="headerlink" href="#document-sections" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Section</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#overview">Overview</a></td>
+<td>Scope, rule structure, and canonical sources</td>
+</tr>
+<tr>
+<td><a href="#settings-file-format">Settings File Format</a></td>
+<td>JSON schema, field names, and file locations</td>
+</tr>
+<tr>
+<td><a href="#evaluation-order">Evaluation Order</a></td>
+<td>deny &gt; ask &gt; allow precedence and first-match semantics</td>
+</tr>
+<tr>
+<td><a href="#settings-file-scope-and-precedence">Settings File Scope and Precedence</a></td>
+<td>Five-level hierarchy from managed to user scope</td>
+</tr>
+<tr>
+<td><a href="#mcp-tool-permissions">MCP Tool Permissions</a></td>
+<td><code>mcp__server-name__tool_name</code> pattern syntax</td>
+</tr>
+<tr>
+<td><a href="#skill-permissions">Skill Permissions</a></td>
+<td><code>Skill(name)</code> pattern syntax</td>
+</tr>
+<tr>
+<td><a href="#bash-command-permissions">Bash Command Permissions</a></td>
+<td><code>Bash(command pattern)</code> syntax and word-boundary behavior</td>
+</tr>
+<tr>
+<td><a href="#file-access-permissions">File Access Permissions</a></td>
+<td>Read, Write, Edit path patterns and glob wildcards</td>
+</tr>
+<tr>
+<td><a href="#jerry-configuration-findings">Jerry Configuration Findings</a></td>
+<td>Unverified fields and patterns in Jerry's committed settings</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>Claude Code enforces tool and resource access through a permission system declared in JSON settings files. Each permission entry is a string that identifies a tool or resource pattern. Permissions reside in three arrays within the <code>permissions</code> object: <code>allow</code>, <code>deny</code>, and <code>ask</code>.</p>
+<p>The JSON schema for Claude Code settings is published at <code>https://json.schemastore.org/claude-code-settings.json</code>.</p>
+<blockquote>
+<p>Source: <a href="https://code.claude.com/docs/en/settings">Claude Code Settings</a></p>
+<p>Source: <a href="https://code.claude.com/docs/en/permissions">Claude Code Permissions</a></p>
+</blockquote>
+<hr />
+<h2 id="settings-file-format">Settings File Format<a class="headerlink" href="#settings-file-format" title="Permanent link">&para;</a></h2>
+<p>Claude Code settings files use JSON. The canonical <code>permissions</code> object contains three arrays: <code>allow</code>, <code>deny</code>, and <code>ask</code>. Each array contains permission strings as defined in this document.</p>
+<h3 id="documented-field-names">Documented field names<a class="headerlink" href="#documented-field-names" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>permissions.allow</code></td>
+<td>array of strings</td>
+<td>Tools and resources permitted without user approval</td>
+</tr>
+<tr>
+<td><code>permissions.deny</code></td>
+<td>array of strings</td>
+<td>Tools and resources unconditionally blocked</td>
+</tr>
+<tr>
+<td><code>permissions.ask</code></td>
+<td>array of strings</td>
+<td>Tools and resources that require user approval before each use</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example (canonical format):</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p">{</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">&quot;permissions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="nt">&quot;allow&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;mcp__memory-keeper__*&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Bash(git status *)&quot;</span><span class="p">],</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="nt">&quot;deny&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Bash(rm *)&quot;</span><span class="p">],</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="nt">&quot;ask&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Bash(git push *)&quot;</span><span class="p">]</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="p">}</span>
+</code></pre></div>
+<blockquote>
+<p>Source: <a href="https://code.claude.com/docs/en/settings">Claude Code Settings</a></p>
+</blockquote>
+<h3 id="finding-001-undocumented-field-names-in-jerrys-committed-settings">FINDING-001: Undocumented field names in Jerry's committed settings<a class="headerlink" href="#finding-001-undocumented-field-names-in-jerrys-committed-settings" title="Permanent link">&para;</a></h3>
+<p>Jerry's <code>.claude/settings.json</code> uses <code>permissions.allowed_tools</code> and <code>permissions.require_approval</code>. These field names do not appear in the Claude Code official documentation. The documented field names are <code>permissions.allow</code>, <code>permissions.deny</code>, and <code>permissions.ask</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Observed field</th>
+<th>Documented equivalent</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>permissions.allowed_tools</code></td>
+<td><code>permissions.allow</code></td>
+<td>UNVERIFIED — may be legacy, undocumented, or silently ignored</td>
+</tr>
+<tr>
+<td><code>permissions.require_approval</code></td>
+<td><code>permissions.ask</code></td>
+<td>UNVERIFIED — may be legacy, undocumented, or silently ignored</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Required action:</strong> Validate both field names against the JSON schema at <code>https://json.schemastore.org/claude-code-settings.json</code>. Determine whether Claude Code parses, ignores, or errors on unrecognized field names.</p>
+<blockquote>
+<p>Source: <a href="https://code.claude.com/docs/en/settings">Claude Code Settings</a> — documented fields are <code>allow</code>, <code>deny</code>, <code>ask</code></p>
+</blockquote>
+<hr />
+<h2 id="evaluation-order">Evaluation Order<a class="headerlink" href="#evaluation-order" title="Permanent link">&para;</a></h2>
+<p>Claude Code resolves each permission check using the sequence: <code>deny</code> &gt; <code>ask</code> &gt; <code>allow</code>. The first matching rule in the highest-precedence array determines the outcome.</p>
+<table>
+<thead>
+<tr>
+<th>Precedence</th>
+<th>Array</th>
+<th>Outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 (highest)</td>
+<td><code>deny</code></td>
+<td>Access denied unconditionally</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>ask</code></td>
+<td>Claude pauses and requests user approval</td>
+</tr>
+<tr>
+<td>3 (lowest)</td>
+<td><code>allow</code></td>
+<td>Access granted without interruption</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Deny is absolute.</strong> When a tool matches a <code>deny</code> entry, no <code>allow</code> entry at any scope overrides the denial.</p>
+<p><strong>First match wins.</strong> Within a single array, evaluation stops at the first matching entry.</p>
+<blockquote>
+<p>Source: <a href="https://code.claude.com/docs/en/permissions">Claude Code Permissions</a> — direct quote: "Rules are evaluated in order: deny -&gt; ask -&gt; allow. The first matching rule wins, so deny rules always take precedence." and "If a tool is denied at any level, no other level can allow it."</p>
+</blockquote>
+<hr />
+<h2 id="settings-file-scope-and-precedence">Settings File Scope and Precedence<a class="headerlink" href="#settings-file-scope-and-precedence" title="Permanent link">&para;</a></h2>
+<p>Claude Code loads settings from up to five locations. Higher-precedence scopes win on scalar field conflicts. Permission arrays (<code>allow</code>, <code>deny</code>, <code>ask</code>) are merged across all scopes; deny rules win regardless of originating scope.</p>
+<table>
+<thead>
+<tr>
+<th>Precedence</th>
+<th>Scope name</th>
+<th>File path</th>
+<th>Committed to version control</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 (highest)</td>
+<td>Managed</td>
+<td>Controlled by deployment tooling</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Command line</td>
+<td>Flags passed to <code>claude</code> invocation</td>
+<td>N/A (session only)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Local project</td>
+<td><code>.claude/settings.local.json</code></td>
+<td>No (gitignored)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Shared project</td>
+<td><code>.claude/settings.json</code></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>5 (lowest)</td>
+<td>User</td>
+<td><code>~/.claude/settings.json</code></td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<p>Both <code>.claude/settings.json</code> and <code>.claude/settings.local.json</code> use the same JSON format. The only differences between them are scope, precedence position, and whether the file is committed to version control.</p>
+<blockquote>
+<p>Source: <a href="https://code.claude.com/docs/en/permissions">Claude Code Permissions</a> — Settings precedence section</p>
+</blockquote>
+<hr />
+<h2 id="mcp-tool-permissions">MCP Tool Permissions<a class="headerlink" href="#mcp-tool-permissions" title="Permanent link">&para;</a></h2>
+<p>MCP tool permission strings identify tools provided by Model Context Protocol servers. The string format encodes the server name and, optionally, a specific tool name.</p>
+<h3 id="mcp__server-name"><code>mcp__server-name</code><a class="headerlink" href="#mcp__server-name" title="Permanent link">&para;</a></h3>
+<p><strong>Type:</strong> string
+<strong>Scope:</strong> All tools from the named server</p>
+<p>Matches all tools exposed by <code>server-name</code>. Functionally equivalent to <code>mcp__server-name__*</code>.</p>
+<blockquote>
+<p>Source: <a href="https://code.claude.com/docs/en/permissions">Claude Code Permissions</a> — direct quote: "mcp__puppeteer matches any tool provided by the puppeteer server"</p>
+</blockquote>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">&quot;allow&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;mcp__memory-keeper&quot;</span><span class="p">]</span>
+</code></pre></div>
+<h3 id="mcp__server-name__"><code>mcp__server-name__*</code><a class="headerlink" href="#mcp__server-name__" title="Permanent link">&para;</a></h3>
+<p><strong>Type:</strong> string
+<strong>Scope:</strong> All tools from the named server
+<strong>Wildcard:</strong> <code>*</code> matches any tool name</p>
+<p>Explicit wildcard form. Functionally identical to the bare <code>mcp__server-name</code> form.</p>
+<blockquote>
+<p>Source: <a href="https://code.claude.com/docs/en/permissions">Claude Code Permissions</a> — direct quote: "mcp__puppeteer__* wildcard syntax that also matches all tools from the puppeteer server"</p>
+</blockquote>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">&quot;allow&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;mcp__memory-keeper__*&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;mcp__context7__*&quot;</span><span class="p">]</span>
+</code></pre></div>
+<h3 id="mcp__server-name__tool_name"><code>mcp__server-name__tool_name</code><a class="headerlink" href="#mcp__server-name__tool_name" title="Permanent link">&para;</a></h3>
+<p><strong>Type:</strong> string
+<strong>Scope:</strong> Single named tool from the named server</p>
+<p>Matches exactly the tool identified by <code>tool_name</code> on <code>server-name</code>. The tool name component uses the MCP server's own tool identifier.</p>
+<blockquote>
+<p>Source: <a href="https://code.claude.com/docs/en/permissions">Claude Code Permissions</a></p>
+</blockquote>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">&quot;allow&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="s2">&quot;mcp__context7__resolve-library-id&quot;</span><span class="p">,</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="s2">&quot;mcp__context7__query-docs&quot;</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="p">]</span>
+</code></pre></div>
+<hr />
+<h2 id="skill-permissions">Skill Permissions<a class="headerlink" href="#skill-permissions" title="Permanent link">&para;</a></h2>
+<p>Skill permission strings control access to Claude Code skills. The <code>Skill()</code> syntax accepts a name argument identifying the target skill.</p>
+<h3 id="skillname"><code>Skill(name)</code><a class="headerlink" href="#skillname" title="Permanent link">&para;</a></h3>
+<p><strong>Type:</strong> string
+<strong>Scope:</strong> Exact match against the skill's registered name
+<strong>Case-sensitive:</strong> Yes</p>
+<p>Matches the skill whose registered name equals <code>name</code> exactly.</p>
+<blockquote>
+<p>Source: <a href="https://code.claude.com/docs/en/skills">Claude Code Skills</a> — direct quote: "Permission syntax: Skill(name) for exact match, Skill(name *) for prefix match with any arguments."</p>
+</blockquote>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">&quot;allow&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Skill(worktracker)&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Skill(problem-solving)&quot;</span><span class="p">]</span>
+</code></pre></div>
+<h3 id="skillname_1"><code>Skill(name *)</code><a class="headerlink" href="#skillname_1" title="Permanent link">&para;</a></h3>
+<p><strong>Type:</strong> string
+<strong>Scope:</strong> Skills whose invocation begins with <code>name</code> (name, then space, then <code>*</code>)
+<strong>Wildcard:</strong> <code>*</code> matches any arguments passed after the prefix space</p>
+<p>The space before <code>*</code> is required. This form matches skill invocations where the name matches and additional arguments follow.</p>
+<blockquote>
+<p>Source: <a href="https://code.claude.com/docs/en/skills">Claude Code Skills</a> — direct quote: "Permission syntax: Skill(name) for exact match, Skill(name *) for prefix match with any arguments."</p>
+</blockquote>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">&quot;allow&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Skill(jerry *)&quot;</span><span class="p">]</span>
+</code></pre></div>
+<h3 id="skill-bare-in-deny-array"><code>Skill</code> (bare, in deny array)<a class="headerlink" href="#skill-bare-in-deny-array" title="Permanent link">&para;</a></h3>
+<p><strong>Type:</strong> string
+<strong>Scope:</strong> All skills</p>
+<p>When placed in a <code>deny</code> array without parentheses, denies all skill invocations. No <code>Skill(*)</code> wildcard form is documented in the Claude Code permission specification.</p>
+<blockquote>
+<p>Source: <a href="https://code.claude.com/docs/en/skills">Claude Code Skills</a></p>
+</blockquote>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nt">&quot;deny&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Skill&quot;</span><span class="p">]</span>
+</code></pre></div>
+<h3 id="plugin-skill-namespace">Plugin skill namespace<a class="headerlink" href="#plugin-skill-namespace" title="Permanent link">&para;</a></h3>
+<p>Plugin skills use a <code>plugin-name:skill-name</code> namespace. This namespace prevents naming conflicts with other skill levels.</p>
+<blockquote>
+<p>Source: <a href="https://code.claude.com/docs/en/skills">Claude Code Skills</a> — direct quote: "Plugin skills use a plugin-name:skill-name namespace, so they cannot conflict with other levels."</p>
+</blockquote>
+<h3 id="finding-002-colon-namespaced-skill-permission-form">FINDING-002: Colon-namespaced Skill permission form<a class="headerlink" href="#finding-002-colon-namespaced-skill-permission-form" title="Permanent link">&para;</a></h3>
+<p>Jerry's <code>.claude/settings.local.json</code> contains entries of the form <code>Skill(jerry:skill-name)</code>. The documented <code>Skill()</code> permission syntax specifies <code>Skill(name)</code> and <code>Skill(name *)</code>. The colon-namespaced form <code>Skill(jerry:name)</code> does not appear as a documented permission pattern.</p>
+<table>
+<thead>
+<tr>
+<th>Observed form</th>
+<th>Documentation basis</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Skill(jerry:adversary)</code></td>
+<td>Plugin skill namespace documented for skill identity, not confirmed as permission pattern</td>
+<td>UNVERIFIED</td>
+</tr>
+<tr>
+<td><code>Skill(adversary)</code></td>
+<td>Matches documented <code>Skill(name)</code> pattern</td>
+<td>Documented</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Required action:</strong> Test whether <code>Skill(jerry:adversary)</code> entries in <code>allow</code> produce different behavior from <code>Skill(adversary)</code> entries alone. Determine whether removing the colon-namespaced form breaks skill invocation approval.</p>
+<blockquote>
+<p>Source: <a href="https://code.claude.com/docs/en/skills">Claude Code Skills</a></p>
+</blockquote>
+<h3 id="finding-003-skills-with-no-permission-entries">FINDING-003: Skills with no permission entries<a class="headerlink" href="#finding-003-skills-with-no-permission-entries" title="Permanent link">&para;</a></h3>
+<p>Of the 16 registered Jerry skills, 9 have no entries in the <code>allow</code> array of <code>.claude/settings.local.json</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Skills with entries</th>
+<th>Skills without entries</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>adversary, nasa-se, problem-solving, orchestration, transcript, worktracker, prompt-engineering</td>
+<td>architecture, ast, diataxis, eng-team, pm-pmm, red-team, saucer-boy, saucer-boy-framework-voice, user-experience</td>
+</tr>
+</tbody>
+</table>
+<p>Per the Claude Code documentation, skills operate by default unless denied. The effect of the absence of <code>allow</code> entries — whether it triggers approval prompts or auto-approves — is untested for these 9 skills.</p>
+<p><strong>Required action:</strong> Determine whether explicit <code>Skill()</code> entries in <code>allow</code> are required to suppress approval prompts for skills that have no <code>deny</code> entry.</p>
+<blockquote>
+<p>Source: <a href="https://code.claude.com/docs/en/skills">Claude Code Skills</a></p>
+</blockquote>
+<hr />
+<h2 id="bash-command-permissions">Bash Command Permissions<a class="headerlink" href="#bash-command-permissions" title="Permanent link">&para;</a></h2>
+<p>Bash permission strings control which shell commands Claude Code may execute. The <code>Bash()</code> syntax accepts a pattern argument matched against the full command string.</p>
+<h3 id="bash-or-bash"><code>Bash</code> or <code>Bash(*)</code><a class="headerlink" href="#bash-or-bash" title="Permanent link">&para;</a></h3>
+<p><strong>Type:</strong> string
+<strong>Scope:</strong> All shell commands</p>
+<p>Grants or denies all Bash execution. The bare <code>Bash</code> and <code>Bash(*)</code> forms are equivalent.</p>
+<blockquote>
+<p>Source: <a href="https://code.claude.com/docs/en/permissions">Claude Code Permissions</a></p>
+</blockquote>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nt">&quot;allow&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Bash&quot;</span><span class="p">]</span>
+</code></pre></div>
+<h3 id="bashcommand-prefix-match-with-word-boundary"><code>Bash(command *)</code> — prefix match with word boundary<a class="headerlink" href="#bashcommand-prefix-match-with-word-boundary" title="Permanent link">&para;</a></h3>
+<p><strong>Type:</strong> string
+<strong>Scope:</strong> Commands whose text begins with the stated prefix followed by a space</p>
+<p>The space before <code>*</code> constitutes a word boundary. The pattern matches only when the literal prefix is followed by at least one space before additional characters.</p>
+<blockquote>
+<p>Source: <a href="https://code.claude.com/docs/en/permissions">Claude Code Permissions</a> — direct quote: "The space before * matters: Bash(ls <em>) matches ls -la but not lsof, while Bash(ls</em>) matches both."</p>
+</blockquote>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nt">&quot;allow&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Bash(npm run *)&quot;</span><span class="p">]</span>
+</code></pre></div>
+<p><code>Bash(ls *)</code> matches <code>ls -la</code> but does not match <code>lsof</code> or <code>lsblk</code>.</p>
+<h3 id="bashcommand-prefix-match-without-word-boundary"><code>Bash(command*)</code> — prefix match without word boundary<a class="headerlink" href="#bashcommand-prefix-match-without-word-boundary" title="Permanent link">&para;</a></h3>
+<p><strong>Type:</strong> string
+<strong>Scope:</strong> Commands whose text begins with the stated prefix as a bare substring</p>
+<p>Without a space before <code>*</code>, the pattern matches any command text starting with the literal prefix, including commands whose names extend the prefix without a separator.</p>
+<blockquote>
+<p>Source: <a href="https://code.claude.com/docs/en/permissions">Claude Code Permissions</a> — direct quote: "The space before * matters: Bash(ls <em>) matches ls -la but not lsof, while Bash(ls</em>) matches both."</p>
+</blockquote>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nt">&quot;allow&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Bash(ls*)&quot;</span><span class="p">]</span>
+</code></pre></div>
+<p><code>Bash(ls*)</code> matches <code>ls -la</code>, <code>lsof</code>, and <code>lsblk</code>.</p>
+<h3 id="argument-constraining-patterns">Argument-constraining patterns<a class="headerlink" href="#argument-constraining-patterns" title="Permanent link">&para;</a></h3>
+<p>The Claude Code documentation warns that Bash permission patterns intended to constrain which arguments are accepted are fragile and may not behave as expected across all invocation forms.</p>
+<blockquote>
+<p>Source: <a href="https://code.claude.com/docs/en/permissions">Claude Code Permissions</a> — direct quote: "Bash permission patterns that try to constrain command arguments are fragile"</p>
+</blockquote>
+<h3 id="deprecated-suffix-syntax">Deprecated <code>:*</code> suffix syntax<a class="headerlink" href="#deprecated-suffix-syntax" title="Permanent link">&para;</a></h3>
+<p>The <code>:*</code> suffix (e.g., <code>Bash(echo:*)</code>) is a legacy form. The documented replacement is a space before <code>*</code> (e.g., <code>Bash(echo *)</code>).</p>
+<blockquote>
+<p>Source: <a href="https://code.claude.com/docs/en/permissions">Claude Code Permissions</a> — direct quote: "The legacy :* suffix syntax is equivalent to * but is deprecated."</p>
+</blockquote>
+<h3 id="finding-004-deprecated-syntax-in-jerry-settings">FINDING-004: Deprecated <code>:*</code> syntax in Jerry settings<a class="headerlink" href="#finding-004-deprecated-syntax-in-jerry-settings" title="Permanent link">&para;</a></h3>
+<p>Jerry's <code>.claude/settings.local.json</code> contains multiple entries using the deprecated <code>:*</code> form, for example <code>Bash(echo:*)</code>, <code>Bash(ls:*)</code>, <code>Bash(find:*)</code>, and all <code>Bash(git ...:*)</code> entries.</p>
+<table>
+<thead>
+<tr>
+<th>Status</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DEPRECATED</td>
+<td>All <code>Bash(command:*)</code> entries use the deprecated <code>:*</code> suffix form</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Required action:</strong> Migrate all <code>Bash(command:*)</code> entries to <code>Bash(command *)</code> (space before <code>*</code>) per the documented replacement syntax.</p>
+<blockquote>
+<p>Source: <a href="https://code.claude.com/docs/en/permissions">Claude Code Permissions</a></p>
+</blockquote>
+<hr />
+<h2 id="file-access-permissions">File Access Permissions<a class="headerlink" href="#file-access-permissions" title="Permanent link">&para;</a></h2>
+<p>File access permission strings apply to the <code>Read</code>, <code>Write</code>, and <code>Edit</code> tool permissions. They accept gitignore-style glob patterns.</p>
+<h3 id="path-type-prefixes">Path type prefixes<a class="headerlink" href="#path-type-prefixes" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Prefix</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>//</code></td>
+<td>Absolute path from the filesystem root</td>
+</tr>
+<tr>
+<td><code>~/</code></td>
+<td>Path relative to the user's home directory</td>
+</tr>
+<tr>
+<td><code>/</code></td>
+<td>Path relative to the project root</td>
+</tr>
+<tr>
+<td><code>./</code> or bare name</td>
+<td>Path relative to the current working directory</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Source: <a href="https://code.claude.com/docs/en/permissions">Claude Code Permissions</a> — Read and Edit section</p>
+</blockquote>
+<h3 id="glob-wildcards">Glob wildcards<a class="headerlink" href="#glob-wildcards" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>Matches</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>*</code></td>
+<td>Any filename characters within a single directory level; does not cross directory boundaries</td>
+</tr>
+<tr>
+<td><code>**</code></td>
+<td>Any path segment including directory separators; crosses directory boundaries recursively</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Source: <a href="https://code.claude.com/docs/en/permissions">Claude Code Permissions</a></p>
+</blockquote>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nt">&quot;allow&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">  </span><span class="s2">&quot;Read(/src/**/*.py)&quot;</span><span class="p">,</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">  </span><span class="s2">&quot;Write(./.claude/settings.local.json)&quot;</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="p">]</span>
+</code></pre></div>
+<p><code>Read(/src/**/*.py)</code> matches any <code>.py</code> file at any depth under <code>src/</code>. <code>Read(/src/*.py)</code> matches only <code>.py</code> files directly inside <code>src/</code>.</p>
+<hr />
+<h2 id="jerry-configuration-findings">Jerry Configuration Findings<a class="headerlink" href="#jerry-configuration-findings" title="Permanent link">&para;</a></h2>
+<p>This section consolidates all FINDING entries from the sections above, cross-referenced for navigation.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Location</th>
+<th>Issue</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FINDING-001</td>
+<td><code>.claude/settings.json</code></td>
+<td><code>permissions.allowed_tools</code> and <code>permissions.require_approval</code> are not documented field names; documented names are <code>allow</code>, <code>deny</code>, <code>ask</code></td>
+<td>UNVERIFIED</td>
+<td>Validate against JSON schema at <code>https://json.schemastore.org/claude-code-settings.json</code></td>
+</tr>
+<tr>
+<td>FINDING-002</td>
+<td><code>.claude/settings.local.json</code></td>
+<td><code>Skill(jerry:name)</code> colon-namespaced form is not documented as a permission pattern</td>
+<td>UNVERIFIED</td>
+<td>Test whether removing colon-namespaced entries changes approval behavior</td>
+</tr>
+<tr>
+<td>FINDING-003</td>
+<td><code>.claude/settings.local.json</code></td>
+<td>9 of 16 registered skills have no <code>allow</code> entries; approval behavior for these skills is untested</td>
+<td>UNTESTED</td>
+<td>Determine whether absent <code>allow</code> entries trigger approval prompts</td>
+</tr>
+<tr>
+<td>FINDING-004</td>
+<td><code>.claude/settings.local.json</code></td>
+<td>All <code>Bash(command:*)</code> entries use the deprecated <code>:*</code> suffix form</td>
+<td>DEPRECATED</td>
+<td>Migrate to <code>Bash(command *)</code> (space before <code>*</code>)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="related">Related<a class="headerlink" href="#related" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Explanation:</strong> <a href="../design/">About Claude Code permission scopes and merge behavior</a> — Design rationale and architectural context</li>
+<li><strong>How-To Guide:</strong> <a href="../../.context/">How to add a new skill permission to Jerry settings</a> — Task-oriented configuration instructions</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+  
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 Geekatron — Apache License 2.0
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+  <div class="md-footer-meta__inner md-grid" style="text-align: center; padding-bottom: 0.5rem;">
+    <span class="sb-tagline">Quality with soul.</span>
+  </div>
+
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
