@@ -4,7 +4,7 @@
 > **Status:** completed
 > **Priority:** medium
 > **Created:** 2026-08-05
-> **Completed:** 2026-08-05
+> **Completed:** 2026-08-06
 > **Parent:** EN-010
 > **GitHub Issue:** [#339](https://github.com/geekatron/jerry/issues/339)
 
