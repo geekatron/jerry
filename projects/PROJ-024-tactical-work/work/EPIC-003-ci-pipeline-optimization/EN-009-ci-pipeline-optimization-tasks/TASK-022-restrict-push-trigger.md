@@ -4,7 +4,8 @@
 > **Status:** completed
 > **Priority:** high
 > **Created:** 2026-04-13
-> **Parent:** EPIC-003
+> **Completed:** 2026-04-13
+> **Parent:** EN-009
 > **GitHub Issue:** [#252](https://github.com/geekatron/jerry/issues/252)
 
 ## Document Sections

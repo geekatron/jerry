@@ -146,7 +146,7 @@ Research Anthropic's official Claude Code documentation, GitHub source, and comm
 | BUG-001 | Bug | Context Monitoring Tests Fail on 1M Context Window (GH #226) | completed | critical | 3 |
 | BUG-002 | Bug | Pygments CVE-2026-4539 Blocks Git Push (GH #227) | completed | critical | 1 |
 | BUG-003 | Bug | scripts/tests Isolation Failure (GH #228) | completed | high | 2 |
-| BUG-004 | Bug | Fix Cross-Project Reference in ADR (GH #228) | completed | high | 1 |
+| BUG-004 | Bug | Fix Cross-Project Reference in ADR | completed | high | 1 |
 | BUG-005 | Bug | Fix Hook Test Step Definitions (GH #214) | completed | high | 3 |
 | BUG-006 | Bug | Fix file_repository.py Hardcoded Path Separator (GH #117) | completed | medium | 1 |
 | BUG-007 | Bug | Fix Broken mkdocs Anchor Links (GH #213) | completed | high | 1 |
@@ -188,7 +188,7 @@ Research Anthropic's official Claude Code documentation, GitHub source, and comm
 - [STORY-023: Remove Deprecated scripts/pre_tool_use.py (GH #177)](./STORY-023-remove-deprecated-hook/STORY-023-remove-deprecated-hook.md)
 - [STORY-024: Consolidate Dual SubagentStop Hooks (GH #178)](./STORY-024-consolidate-subagent-hooks/STORY-024-consolidate-subagent-hooks.md)
 - [STORY-025: Add jerry schema validate CLI Command (GH #193)](./STORY-025-schema-validate-cli/STORY-025-schema-validate-cli.md)
-- [BUG-004: Fix Cross-Project Reference in ADR (GH #228)](./BUG-004-cross-project-ref/BUG-004-cross-project-ref.md)
+- [BUG-004: Fix Cross-Project Reference in ADR](./BUG-004-cross-project-ref/BUG-004-cross-project-ref.md)
 - [BUG-005: Fix Hook Test Step Definitions (GH #214)](./BUG-005-hook-test-step-defs/BUG-005-hook-test-step-defs.md)
 - [BUG-006: Fix file_repository.py Hardcoded Path Separator (GH #117)](./BUG-006-file-repo-path-sep/BUG-006-file-repo-path-sep.md)
 - [BUG-007: Fix Broken mkdocs Anchor Links (GH #213)](./BUG-007-broken-mkdocs-anchors/BUG-007-broken-mkdocs-anchors.md)

@@ -13,8 +13,7 @@ PURPOSE: Security-focused review of schema validation approach using /eng-team a
 > **Impact:** high
 > **Enabler Type:** compliance
 > **Created:** 2026-03-26T22:10:00Z
-> **Due:**
-> **Completed:**
+> **Completed:** 2026-03-26T00:00:00Z
 > **Parent:** FEAT-001
 > **Owner:** adam.nowak
 > **Effort:** 5

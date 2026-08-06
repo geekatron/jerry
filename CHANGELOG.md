@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Security
+- **fix(deps):** constrain `click>=8.3.3` (resolves 8.4.2) via `[tool.uv]` constraints — remediates PYSEC-2026-2132 command injection in `click.edit()`, the sole finding keeping the daily scheduled scan red since ~2026-07-18 (#336)
+- **fix(ci):** create the missing `security-alert` GitHub label — the scheduled scan's rolling-alert issue step had failed on every run since ~2026-07-18 because the label was never created; alerting now proven end-to-end (run 31039187847 → alert issue #335)
 - **fix(deps):** bump 5 transitive dependencies to patched versions via `[tool.uv]` constraints — urllib3 2.7.0, pip 26.1.2, pydantic-settings 2.14.2, msgpack 1.2.1, mako 1.3.12 — clearing 9 pip-audit advisories (PYSEC-2026-141/142, PYSEC-2026-196, CVE-2026-3219, CVE-2026-6357, GHSA-4xgf-cpjx-pc3j, GHSA-6v7p-g79w-8964, CVE-2026-44307) (#301)
 
 ### Removed
@@ -25,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **fix(ci):** scan full dependency tree via `uv export --all-extras` for pip-audit — replaces 3-package hand-picked list with complete lockfile audit (TASK-018)
 
 ### Changed
+- **docs(proj-024):** worktracker audit + remediation — evidence-based closure of 5 security-hardening items via 6 independent verifier reports, hierarchy restructure (container enablers EN-008/EN-009), 2 lost entities recreated, 30 completion dates backfilled from git evidence, manifest rebuilt (86/86 entities consistent, re-audit PASSED)
 - **refactor(ci):** remove redundant `test-pip` job (8 matrix cells) — uv test matrix provides equivalent coverage (TASK-016)
 - **refactor(ci):** consolidate 6 validation jobs (`lockfile-check`, `template-validation`, `frontmatter-validation`, `license-headers`, `version-sync`, `hard-rule-ceiling`) into single `validation` job (TASK-019)
 - **refactor(ci):** merge `lint` and `type-check` into `static-analysis` job with shared `uv sync --frozen --extra dev` (TASK-020)

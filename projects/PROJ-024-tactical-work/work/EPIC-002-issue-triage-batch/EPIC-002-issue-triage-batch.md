@@ -5,6 +5,7 @@
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-03-31
+> **Completed:** 2026-04-13
 > **Parent:** PROJ-024
 > **Branch:** `feat/PROJ-024-tactical-work-2`
 
@@ -43,7 +44,7 @@ This Epic is the **cross-session resumption artifact**. Any session on the `feat
 |-------------|-------|---------|-------------|
 | UC Pipeline Bugs | BUG-007, BUG-008, BUG-009, BUG-010, BUG-011 | PROJ-030 | 5 bugs in tspec-generator, tspec-analyst, uc-slicer, cd-generator |
 | Output Path Remediation | BUG-006, TASK-006, TASK-007, TASK-008, TASK-009, TASK-010, TASK-011, TASK-012, TASK-015, BUG-012, BUG-013, BUG-014 | PROJ-030 | 1 bug + 7 tasks + 1 schema task remediating hardcoded `skills/*/output/` paths across 13 skills; 3 follow-on bugs for pm-pmm paths, prompt-engineering variable, governance completeness |
-| Quick Wins | TASK-013, TASK-014 | PROJ-024 | 2 low-effort tasks with immediate value |
+| Quick Wins | [EN-008: Issue Triage Quick Wins](./EN-008-issue-triage-quick-wins/EN-008-issue-triage-quick-wins.md) (TASK-013, TASK-014) | PROJ-024 | 2 low-effort tasks with immediate value. EN-008 is EPIC-002's sole worktracker child in PROJ-024 — a retroactive container added 2026-08-05 (audit E-001/E-002/E-014) so TASK-013/TASK-014 have a containment-valid Epic→Enabler→Task chain; the PROJ-030 items above are tracked in PROJ-030's own worktracker |
 
 ---
 
@@ -82,7 +83,7 @@ This Epic is the **cross-session resumption artifact**. Any session on the `feat
 | BUG-012 | Bug | pm-pmm agents write to repo-root docs/pm-pmm/ instead of project-relative | completed | PROJ-030 | — | 3 | BUG-006 |
 | BUG-013 | Bug | prompt-engineering agents use {PROJECT_ID} instead of ${JERRY_PROJECT} | completed | PROJ-030 | — | 3 | BUG-006 |
 | BUG-014 | Bug | 12 agents lack governance YAML output section | completed | PROJ-030 | — | 3 | BUG-006 |
-| **Quick Wins** | | | | | | | |
+| **Quick Wins (children of [EN-008](./EN-008-issue-triage-quick-wins/EN-008-issue-triage-quick-wins.md))** | | | | | | | |
 | TASK-013 | Task | use-case SKILL.md missing Activity 5 entry | completed | PROJ-024 | #200 | 0 | — |
 | TASK-014 | Task | Orchestration scaffold cartesian product dirs | completed | PROJ-024 | #53 | 0 | — |
 
@@ -171,7 +172,7 @@ All 5 bugs are in agent definition `.md` files and transformation rule files —
 
 ### Phase 2: Output Path Remediation (~2-3 sessions)
 
-Per [ADR-output-path-resolution-001](../../../docs/design/ADR-output-path-resolution-001.md) migration guide:
+Per [ADR-output-path-resolution-001](../../../../docs/design/ADR-output-path-resolution-001.md) migration guide:
 
 **2-pre (schema):** TASK-015 — add `filename_pattern` to governance schema. MUST execute first so YAML validation accepts the new field.
 

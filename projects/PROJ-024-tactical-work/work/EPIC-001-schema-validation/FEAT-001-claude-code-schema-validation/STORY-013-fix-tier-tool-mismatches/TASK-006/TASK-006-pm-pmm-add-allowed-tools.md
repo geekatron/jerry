@@ -4,7 +4,19 @@
 > **Status:** completed
 > **Priority:** medium
 > **Created:** 2026-03-28T00:00:00Z
+> **Completed:** 2026-03-29T00:00:00Z
 > **Parent:** STORY-013
+
+---
+
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Summary](#summary) | Task scope |
+| [Description](#description) | Change detail |
+| [Acceptance Criteria](#acceptance-criteria) | Verifiable completion criteria |
+| [Files to Change](#files-to-change) | Affected files |
 
 ---
 

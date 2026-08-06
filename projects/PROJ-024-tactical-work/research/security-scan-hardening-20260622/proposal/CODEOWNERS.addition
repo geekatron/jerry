@@ -1,0 +1,19 @@
+# CODEOWNERS.addition
+#
+# These two lines must be APPENDED to the end of .github/CODEOWNERS
+# (after the existing entries) when promoting the security-audit action.
+#
+# SYNTAX NOTE (PM-010 fix): GitHub CODEOWNERS uses gitignore-style glob patterns.
+# The period in '.github/' is a LITERAL character — no backslash escaping needed
+# or valid. The live .github/CODEOWNERS uses the same unescaped style (e.g.,
+# .github/workflows/, .github/dependabot.yml). Using \.github/ would be incorrect
+# and GitHub may silently ignore the pattern, leaving the paths unprotected.
+#
+# To deploy: open .github/CODEOWNERS and append the two lines below the existing
+# '.context/rules/' and 'docs/governance/' entries. Owner handle matches the
+# existing CODEOWNERS entries in this repo.
+
+# Composite action and accept-list files — changes require maintainer review
+# to prevent supply-chain attacks via the action script or CVE suppression abuse.
+.github/actions/   @geekatron
+.github/security/  @geekatron
