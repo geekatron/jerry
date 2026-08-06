@@ -65,7 +65,7 @@ The Jerry CI pipeline has 29 jobs per PR run. A cross-skill assessment (eng-devs
 | Phase 3 — Supply Chain Hardening | EN-006 (12 tasks) | completed |
 | Phase 4 — Ruff 0.16.1 Formatting Alignment | EN-010 / TASK-036 (Dependabot PR #334, GH #339) | completed |
 
-> **Reopen/re-close note (2026-08-05):** epic was reopened from `completed` (original completion 2026-04-16, Phases 1–3) to host EN-010 — ruff 0.16's formatter behavior change had turned Dependabot PR #334's formatting check red. EN-010/TASK-036 delivered same day (commits 028f5294 + f891861d on the PR branch; PR #334 15/15 checks green; GH #339 closed), and the epic re-closed with `Completed: 2026-08-05`. Full reopen window documented here for auditability.
+> **Reopen/re-close note (2026-08-05/06):** epic was reopened from `completed` (original completion 2026-04-16, Phases 1–3) to host EN-010 — ruff 0.16's formatter behavior change had turned Dependabot PR #334's formatting check red. Initial delivery (commits 028f5294 + f891861d) included a projects/** formatter exclusion that the owner rejected in PR #340 review as a shortcut; corrected 2026-08-06 via commit 63dee470 (exclusion reverted, all projects/ files reformatted, 8 legacy entities schema-conformed, 3 misnamed reports renamed). PR #334 15/15 checks green with zero formatter exclusions; GH #339 closed. Full reopen window and the rejected-shortcut correction documented here for auditability.
 
 ---
 

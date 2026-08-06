@@ -28,10 +28,11 @@ Check out Dependabot PR [#334](https://github.com/geekatron/jerry/pull/334)'s br
 
 ## Acceptance Criteria
 
-- [x] `uv run ruff format .` applied on the PR #334 branch using its locked ruff 0.16.1 (157 live-doc files; archival `projects/` excluded via new `[tool.ruff.format]` config — see Evidence)
-- [x] `uv run ruff format --check .` exits 0 on the branch after the commit (CI-identical invocation: 1381 files in scope, all formatted)
+- [x] `uv run ruff format .` applied on the PR #334 branch using its locked ruff 0.16.1 — full repository, **no formatter exclusions** (324 files total: 157 live-doc + 167 projects/)
+- [x] `uv run ruff format --check .` exits 0 on the branch after the commits (CI-identical invocation: 5926 files in scope, all formatted)
 - [x] `uv run ruff check .` exits 0 — reformatting introduced no lint violations
 - [x] Commits pushed to `dependabot/uv/uv-minor-patch-15189980de`; PR #334 checks 15/15 green
+- [x] 8 legacy PROJ-001 task entities conformed to the current schema (values derived from their own metadata, none invented) and 3 misnamed critic reports renamed out of the entity-pattern namespace; markdown schema gate: 0 violations
 
 ---
 
@@ -39,11 +40,14 @@ Check out Dependabot PR [#334](https://github.com/geekatron/jerry/pull/334)'s br
 
 | Verification | Method | Result | Date |
 |-------------|--------|--------|------|
-| Reformat applied | `uv run ruff format` with branch-locked ruff 0.16.1 in isolated worktree | 324 files initially; scope-corrected to 157 live-doc files after excluding archival `projects/` | 2026-08-05 |
-| Scope correction | First commit attempt blocked by pre-commit markdown schema gate: formatting churn touched 11 legacy pre-schema PROJ-001 files (several not real entities). Root-cause fix: `[tool.ruff.format] exclude projects/**` + revert projects/ churn | Archival records untouched; live docs (.context/, docs/, skills/, runbooks/) reformatted | 2026-08-05 |
-| Format check | CI-identical `ruff format --check . --config=pyproject.toml` from repo root | exit 0 — "1381 files already formatted" | 2026-08-05 |
-| Lint | CI-identical `ruff check . --config=pyproject.toml` | exit 0 — "All checks passed!" | 2026-08-05 |
-| Delivery | Commits `028f5294` (reformat + formatter exclude) and `f891861d` (changelog entry — bot exemption for the Changelog check no longer applied once maintainer commits landed) pushed to the PR #334 branch | PR #334: **15/15 checks pass** | 2026-08-05 |
+| Reformat (live docs) | `uv run ruff format` with branch-locked ruff 0.16.1 in isolated worktree | 157 files (.context/, docs/, skills/, runbooks/) — commit `028f5294` | 2026-08-05 |
+| **Rejected shortcut (documented for audit)** | Commit `028f5294` also added a `[tool.ruff.format] exclude projects/**` after the schema gate flagged 11 legacy files. Owner review on PR #340: CHANGES_REQUESTED — "a short-cut taken to avoid work." | Exclusion **reverted** in commit `63dee470`; real fix below | 2026-08-05/06 |
+| Blast-radius measurement | Exclusion removed; formatter re-run over projects/ | 167 files reformat; 15 enter the schema gate by filename; 11 fail with 70 violations | 2026-08-06 |
+| Real fix — legacy entities | 8 PROJ-001 task entities conformed: enum vocab (`DONE`→`completed`, `HIGH`→`high`), `## Content`→`## Summary` heading renames, frontmatter backfills derived strictly from each file's own HTML-comment metadata / legacy YAML / footers / parent records | Schema gate: **12 files checked, 0 violations** | 2026-08-06 |
+| Real fix — misnamed reports | 3 adversarial-critic reports (`EN-903-critic-report*.md`, `EN-928-critic-report-iter2.md`) renamed via `git mv` to `critic-report-*` so filenames stop falsely claiming entity status; repo-wide grep: 0 inbound references | Gate correctly skips them | 2026-08-06 |
+| Format check | CI-identical `ruff format --check . --config=pyproject.toml` from repo root | exit 0 — "5926 files already formatted", no exclusions | 2026-08-06 |
+| Lint | CI-identical `ruff check . --config=pyproject.toml` | exit 0 — "All checks passed!" | 2026-08-06 |
+| Delivery | Commits `028f5294` (live-doc reformat), `f891861d` (changelog), `63dee470` (projects/ reformat + exclusion revert + legacy conformance) on the PR #334 branch | PR #334: **15/15 checks pass** | 2026-08-06 |
 
 ---
 
@@ -60,4 +64,5 @@ Check out Dependabot PR [#334](https://github.com/geekatron/jerry/pull/334)'s br
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-08-05 | in_progress | Created with EN-010; work begins immediately in the same session. |
-| 2026-08-05 | completed | Reformat delivered via commits 028f5294 + f891861d on the Dependabot branch; PR #334 15/15 checks green. Scope refined mid-task: archival projects/ tree excluded from formatter (root-cause fix) after the schema gate caught legacy-file churn. |
+| 2026-08-05 | completed | Initial delivery via commits 028f5294 + f891861d; PR #334 15/15 green — but included a projects/** formatter exclusion. |
+| 2026-08-06 | completed | Owner review (PR #340) rejected the exclusion as a shortcut. Corrected via commit 63dee470: exclusion reverted, all 167 projects/ files reformatted, 8 legacy entities conformed to schema, 3 misnamed critic reports renamed. PR #334 back to 15/15 green with zero formatter exclusions. |

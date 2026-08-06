@@ -53,10 +53,10 @@ Apply the new formatter's output as a formatting-only commit pushed directly ont
 
 ## Acceptance Criteria
 
-- [x] Formatting-only commit pushed to the Dependabot PR #334 branch; `ruff format --check` passes with ruff 0.16.1 (commit 028f5294)
+- [x] Formatting commits pushed to the Dependabot PR #334 branch; `ruff format --check` passes with ruff 0.16.1 over the full repository with no exclusions (commits 028f5294, 63dee470)
 - [x] `ruff check` (lint) still passes after reformatting — no new violations introduced
 - [x] All CI checks on PR #334 are green (15/15 pass, including full test matrix)
-- [x] No behavioral changes: diff contains only formatting + `[tool.ruff.format]` exclude config + changelog entry (full test suite green on PR #334)
+- [x] No behavioral changes: diff contains only formatting, legacy-entity schema conformance, 3 report renames, and changelog entries (full test suite green on PR #334)
 
 ---
 
@@ -65,4 +65,5 @@ Apply the new formatter's output as a formatting-only commit pushed directly ont
 | Date | Status | Notes |
 |------|--------|-------|
 | 2026-08-05 | in_progress | Created after owner merged PR #338 and asked why PR #334's CI was red. Root cause: ruff 0.16 formatter behavior change. GH issue #339 opened for H-32 parity. EPIC-003 reopened to host this enabler. |
-| 2026-08-05 | completed | TASK-036 delivered same session: 157 live-doc files reformatted + archival projects/ excluded from formatter (commits 028f5294, f891861d on the Dependabot branch). PR #334 15/15 checks green. GH #339 closed with evidence. |
+| 2026-08-05 | completed | TASK-036 initial delivery: 157 live-doc files reformatted, but with a projects/** formatter exclusion (commits 028f5294, f891861d). PR #334 15/15 green. GH #339 closed. |
+| 2026-08-06 | completed | Owner review on PR #340 rejected the exclusion (CHANGES_REQUESTED: shortcut to avoid work). Corrected in commit 63dee470: exclusion reverted, remaining 167 projects/ files reformatted, 8 legacy PROJ-001 entities schema-conformed, 3 misnamed critic reports renamed. PR #334 15/15 green with zero exclusions. |

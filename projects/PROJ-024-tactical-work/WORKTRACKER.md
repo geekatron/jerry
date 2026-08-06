@@ -81,7 +81,7 @@
 | EN-009 | Enabler | CI Pipeline Optimization Tasks (retroactive container; GH #252) | EPIC-003 | 2026-04-15 |
 | EPIC-003 | Epic | CI Pipeline Optimization (GH #252) — Phases 1–3 completed 2026-04-16; Phase 4 (ruff 0.16.1 alignment) completed 2026-08-05 | PROJ-024 | 2026-08-05 |
 | EN-010 | Enabler | Ruff 0.16.1 Formatting Alignment — unblocked Dependabot PR #334 (GH #339) | EPIC-003 | 2026-08-05 |
-| TASK-036 | Task | Reformat live docs with ruff 0.16.1 + exclude archival projects/ from formatter; PR #334 15/15 green (GH #339) | EN-010 | 2026-08-05 |
+| TASK-036 | Task | Reformat full repo with ruff 0.16.1 (no exclusions — initial projects/ exclusion rejected in review and reverted), conform 8 legacy entities, rename 3 misnamed reports; PR #334 15/15 green (GH #339) | EN-010 | 2026-08-06 |
 | TASK-016 | Task | Remove pip test matrix (8 jobs) | EN-009 | 2026-04-13 |
 | TASK-017 | Task | Migrate lint, type-check, security to uv | EN-009 | 2026-04-13 |
 | TASK-018 | Task | Fix pip-audit to scan full dependency tree | EN-009 | 2026-04-13 |
