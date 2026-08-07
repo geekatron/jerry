@@ -1,10 +1,11 @@
 # STORY-003: Phase 3 — Full C4 Adversarial Tournament of /nuclear-sop
 
 > **Type:** story
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-08-07T00:00:00Z
+> **Completed:** 2026-08-07T10:00:00Z
 > **Parent:** FEAT-001
 > **Owner:** geekatron
 > **GitHub Issue:** [#347](https://github.com/geekatron/jerry/issues/347)
@@ -37,10 +38,10 @@
 
 ## Acceptance Criteria
 
-- [ ] All 10 strategy reports exist, each produced by its own blind agent, grouped per the 6-group execution order
-- [ ] S-014 re-score exists with all 6 SSOT dimension scores, weighted composite, and PASS/REVISE/REJECTED band
-- [ ] Report documents the delta between the independent composite and the claimed 0.943 with an explanation of divergence
-- [ ] All artifacts persisted under `projects/PROJ-032-nuclear-sop-review/work/EPIC-001-pr269-review/FEAT-001-independent-review/STORY-003-c4-tournament/`
+- [x] All 10 strategy reports exist, each produced by its own blind agent, grouped per the 6-group execution order — 9 executor reports in `./strategies/` + S-014 score; selector plan at `./strategy-selection-plan.md` (workflow wf_ddffbd97-385, 11 agents, 0 errors)
+- [x] S-014 re-score exists with all 6 SSOT dimension scores, weighted composite, and PASS/REVISE/REJECTED band — composite **0.52 REJECTED** (completeness 0.62, internal consistency 0.35, methodological rigor 0.46, evidence quality 0.56, actionability 0.62, traceability 0.60); Critical-block active (33 Critical strategy findings)
+- [x] Report documents the delta between the independent composite and the claimed 0.943 — delta −0.423; the 0.943 figure is untraceable in the PR (nearest artifacts score narrower deliverables: 0.934/0.922/0.933); all upstream gates were self-scored by same-framework agents
+- [x] All artifacts persisted under `./` (11 files)
 
 ---
 
@@ -58,3 +59,4 @@
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-08-07T00:00:00Z | geekatron | pending | Story created; GH parity #347 |
+| 2026-08-07T10:00:00Z | geekatron | completed | Tournament complete: 89 findings (33 Critical) across 9 strategies; S-014 composite 0.52 REJECTED with Critical-block; claimed 0.943 untraceable. |
