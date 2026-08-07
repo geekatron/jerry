@@ -1,8 +1,8 @@
 ---
 name: nuclear-sop
-description: Nuclear-inspired standard operating procedure (SOP) skill for high-rigor, procedural execution of C2+ workflows. Provides pre-job briefing, step-by-step STAR self-checked execution with place-keeping and hold points, context-isolated independent verification, and mandatory post-job operating experience (OE) capture. WHEN: use for any workflow requiring mandatory pre-execution context loading, step-level compliance verification, named blocking hold points, and structured lessons-capture as required infrastructure. Triggers: nuclear sop, pre-job brief, STAR self-check, hold point, place-keeping, OE capture, nuclear procedure, nuclear workflow, nuclear rigor, nuclear discipline.
+description: "Nuclear-inspired standard operating procedure (SOP) skill for high-rigor, procedural execution of C2+ workflows. Provides pre-job briefing, step-by-step STAR self-checked execution with place-keeping and hold points, context-isolated independent verification, and mandatory post-job operating experience (OE) capture. WHEN: use for any workflow requiring mandatory pre-execution context loading, step-level compliance verification, named blocking hold points, and structured lessons-capture as required infrastructure. Triggers: nuclear sop, pre-job brief, STAR self-check, hold point, place-keeping, OE capture, nuclear procedure, nuclear workflow, nuclear rigor, nuclear discipline."
 version: "1.1.0"
-tools: Read, Write, Edit, Glob, Grep, Bash
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 activation-keywords:
   - "nuclear sop"
   - "nuclear procedure"
