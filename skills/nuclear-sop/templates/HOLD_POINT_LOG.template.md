@@ -13,6 +13,15 @@
 | Execution Started | `{ISO-8601}` |
 | PROCEDURE_STATE Path | `{path/to/PROCEDURE_STATE.yaml}` |
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Hold Point Events](#hold-point-events) | Append-only event table (one row per activation/resolution) |
+| [Column Definitions](#column-definitions) | Meaning and valid values for each event-table column |
+| [Example Entries](#example-entries) | Filled sample rows for each hold type |
+| [Hold Point Summary](#hold-point-summary) | End-of-execution totals cross-checked against PROCEDURE_STATE.yaml |
+
 ---
 
 ## Hold Point Events

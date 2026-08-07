@@ -37,7 +37,7 @@ sop-capture receives context from the preceding execution phase. Required inputs
 
 | Input | Source | Required |
 |-------|--------|---------|
-| `PROCEDURE_STATE.yaml` | Root of workflow working directory | REQUIRED -- must show `execution_log_final: true` |
+| `PROCEDURE_STATE.yaml` | Root of workflow working directory | REQUIRED -- `execution_log_final` must be set and resolve to an existing file |
 | Final execution log | Path from `PROCEDURE_STATE.yaml.execution_log_path` | REQUIRED -- must be the FINAL log, not a partial |
 | Workflow definition file | Path from `PROCEDURE_STATE.yaml.workflow_definition_path` | REQUIRED -- planned procedure for comparison |
 | Pre-job brief | `brief/pre-job-brief.md` | REQUIRED -- scope and acceptance criteria |
@@ -63,7 +63,7 @@ sop-capture receives context from the preceding execution phase. Required inputs
 
 **Write:** Used for: OE entry (two writes: local capture dir and docs/experience/), post-job brief. Write for OE entry is BLOCKED if any required field is missing or empty -- this is enforced before the Write call, not after.
 
-**Edit:** Used for: updating PROCEDURE_STATE.yaml status to COMPLETED with `completed_at` timestamp and `oe_entry_path`.
+**Edit:** Used for: appending the OE entry reference to the workflow definition Section 11 (Attachments); updating PROCEDURE_STATE.yaml status to COMPLETED with `completed_at` timestamp and `oe_entry_path`.
 
 **Bash:** Scoped to: date/timestamp generation (`date -u +"%Y-%m-%dT%H:%M:%SZ"`), file count queries for entry_id NNN sequencing.
 
@@ -95,10 +95,10 @@ sop-capture receives context from the preceding execution phase. Required inputs
 
 ## Step 1 (Mandatory): Execution Analysis
 
-**Verify FINAL execution log:** Before reading the execution log, confirm PROCEDURE_STATE.yaml field `execution_log_final` is `true`. If `execution_log_final` is `false` or absent: HALT. Do not proceed. Report to user: "Execution log is not marked FINAL. sop-executor must write the final log before sop-capture can proceed. Check PROCEDURE_STATE.yaml."
+**Verify FINAL execution log:** Before reading the execution log, confirm PROCEDURE_STATE.yaml field `execution_log_final` is set and resolves to an existing file. HALT unless `execution_log_final` is set and resolves to an existing file. Report to user: "Execution log is not marked FINAL (execution_log_final absent, null, or does not resolve to a file). sop-executor must write the final log before sop-capture can proceed. Check PROCEDURE_STATE.yaml."
 
 **Read required sources:**
-- FINAL execution log (path from PROCEDURE_STATE.yaml `execution_log_path`)
+- FINAL execution log (path from PROCEDURE_STATE.yaml `execution_log_final`)
 - PROCEDURE_STATE.yaml (full document -- source of truth for step completion)
 - Pre-job brief (planned scope, acceptance criteria, error traps identified)
 - Workflow definition (planned hold points, step annotations)
@@ -140,7 +140,7 @@ Classify `deviation_type` using the following decision rules. Apply the MOST SEV
 
 ## Step 3 (Mandatory): OE Entry Production
 
-**Schema validation (write-block enforcement):** Before calling Write, validate that every required field in the OE entry schema is populated and non-empty. If any required field is missing or empty: DO NOT call Write. Report the specific missing field to the user: "OE entry write blocked: required field `{field_name}` is missing or empty." The user may provide the missing value; only then proceed.
+**Schema validation (write-block enforcement):** Before writing the OE entry, validate that every required field in the OE entry schema is populated and non-empty. If any required field is missing or empty: DO NOT write. Report the specific missing field to the user: "OE entry write blocked: required field `{field_name}` is missing or empty." The user may provide the missing value; only then proceed.
 
 **Required OE entry fields (ALL must be non-empty for Write to proceed):**
 
@@ -158,7 +158,7 @@ Classify `deviation_type` using the following decision rules. Apply the MOST SEV
 | `quality_gate_final_score` | Final QG-HOLD score from PROCEDURE_STATE.yaml `qg_scores`; `null` if no QG-HOLD | Yes |
 
 **entry_id auto-generation:**
-1. Use Glob to count existing OE entry files for this `workflow_id` today: `capture/oe-entry-{workflow_id}-{YYYYMMDD}-*.yaml`
+1. Count existing OE entry files for this `workflow_id` today via pattern search: `capture/oe-entry-{workflow_id}-{YYYYMMDD}-*.yaml`
 2. NNN = count of existing entries + 1, zero-padded to 3 digits (001, 002, ...)
 3. Assemble: `{workflow_id}-{YYYYMMDD}-{NNN}`
 
@@ -206,11 +206,13 @@ OE entries in `docs/experience/` MUST contain only high-level summaries (SD-16).
 oe_entry_path: "docs/experience/{entry_id}.yaml"
 ```
 
+**Section 11 attachment (mandatory, before status COMPLETED):** Edit the workflow definition Section 11 (Attachments): append the OE entry reference `docs/experience/{entry_id}.yaml` (and the post-job brief path once written in Step 4). This is the step that fulfills the "runtime-written by sop-capture" contract declared in the workflow definition template and worked example.
+
 ---
 
 ## Step 4 (Mandatory): Post-Job Brief Generation and Completion
 
-**Write post-job brief:** Write `capture/post-job-brief.md` using the POST_JOB_BRIEF.template.md structure. The post-job brief integrates:
+**Write post-job brief:** Persist `capture/post-job-brief.md` using the POST_JOB_BRIEF.template.md structure. The post-job brief integrates:
 - Execution summary (from Step 1 analysis)
 - Deviation log (from Step 2 classification)
 - Hold point record with SR-05 anomaly notation (from Step 1 SR-05 check)
@@ -219,7 +221,7 @@ oe_entry_path: "docs/experience/{entry_id}.yaml"
 - Lessons learned (derived from root_cause and error_traps_encountered)
 - Improvement recommendations (derived from recommendation field)
 
-**Mark procedure complete:** Edit PROCEDURE_STATE.yaml:
+**Mark procedure complete:** Update PROCEDURE_STATE.yaml:
 ```yaml
 status: COMPLETED
 completed_at: "{ISO-8601 UTC timestamp}"
@@ -241,6 +243,7 @@ completed_at: "{ISO-8601 UTC timestamp}"
 |----------|------|-------------|
 | Local OE entry | `capture/oe-entry-{entry_id}.yaml` | Step 3 |
 | Persistent OE entry | `docs/experience/{entry_id}.yaml` | Step 3 |
+| Workflow definition Section 11 (Attachments) update | Workflow definition path (from PROCEDURE_STATE.yaml) | Step 3 (after OE writes) |
 | Post-job brief | `capture/post-job-brief.md` | Step 4 |
 | PROCEDURE_STATE.yaml (updated) | `PROCEDURE_STATE.yaml` | Steps 3 and 4 |
 
@@ -263,7 +266,7 @@ completed_at: "{ISO-8601 UTC timestamp}"
 <guardrails>
 **Input validation:**
 - PROCEDURE_STATE.yaml must exist and be readable before any step executes
-- `execution_log_final` must be `true` before reading the execution log (Step 1 gate)
+- `execution_log_final` must be set and resolve to an existing file before reading the execution log (Step 1 gate)
 - `criticality` field must be one of C1, C2, C3, C4 -- reject unrecognized values
 - For C3+, `iv_report_path` must be present and file must exist before Step 1
 
@@ -280,8 +283,8 @@ completed_at: "{ISO-8601 UTC timestamp}"
 | Failure | Response |
 |---------|---------|
 | PROCEDURE_STATE.yaml not found | Halt; report to user: "Cannot locate PROCEDURE_STATE.yaml. sop-capture requires an active procedure execution context. Provide the path or confirm the workflow execution directory." |
-| `execution_log_final: false` | Halt; do not read partial log; instruct user to have sop-executor finalize the log |
-| Required OE field missing | Block Write; report specific missing field; await user input |
+| `execution_log_final` absent, null, or not resolving to an existing file | Halt; do not read partial log; instruct user to have sop-executor finalize the log |
+| Required OE field missing | Block the write; report specific missing field; await user input |
 | OE entry write to docs/experience/ fails | Report failure; the local capture write is NOT sufficient alone; both writes are mandatory |
 | PROCEDURE_STATE.yaml update fails | Report failure; do not silently proceed to a COMPLETED status that was not recorded |
 | IV disposition REJECTED | Record REJECTED in OE entry; do NOT suppress; proceed with post-job brief generation |

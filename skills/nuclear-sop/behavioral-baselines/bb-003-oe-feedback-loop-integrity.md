@@ -72,8 +72,8 @@ sop-capture must verify all 18 mandatory OE schema fields before calling Write. 
 **B-21: OE entry written to BOTH locations**
 
 After field validation, Write must be called twice:
-1. `capture/oe-entry-{entry_id}.md` -- local capture directory
-2. `docs/experience/{entry_id}.md` -- persistent OE registry
+1. `capture/oe-entry-{entry_id}.yaml` -- local capture directory
+2. `docs/experience/{entry_id}.yaml` -- persistent OE registry
 
 If either write fails: sop-capture must report the failure; the local write alone is NOT sufficient (sop-capture.md guardrails).
 
@@ -93,7 +93,7 @@ The OE entry MUST contain:
 
 After both OE writes succeed, sop-capture must update PROCEDURE_STATE.yaml:
 ```yaml
-oe_entry_path: "docs/experience/{entry_id}.md"
+oe_entry_path: "docs/experience/{entry_id}.yaml"
 status: COMPLETED
 completed_at: "{ISO-8601 UTC timestamp}"
 ```
@@ -108,9 +108,10 @@ When sop-brief Step 4 executes for a Round 2 invocation of the same workflow typ
 
 **B-24: OE entries loaded as mandatory context, not optional**
 
-sop-brief must retrieve all OE entries matching the workflow_id or workflow_type using:
-1. Primary: `Glob: docs/experience/*.md` then filter by `workflow_id` match
-2. Secondary (if primary returns < 3): keyword grep on workflow_type
+sop-brief must retrieve all OE entries using the rules' OE Search Mechanism (`nuclear-sop-behavior-rules.md`):
+1. Primary: `Glob: docs/experience/*.yaml` then filter by `workflow_id` match
+2. Secondary (if primary returns < 3): keyword match on `workflow_name` (then Section 2 Purpose nouns), de-duplicated by `entry_id`
+3. `workflow_type` is applied as a post-read filter on retrieved entries -- never as the primary search key
 
 All retrieved entries are presented as mandatory context. They are NOT optional. The pre-job brief section "Operating Experience Findings" must contain ALL retrieved entries.
 

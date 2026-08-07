@@ -5,6 +5,11 @@
 version: "1.0.0"
 tool_tier: "T2"
 
+# ET-M-001 compliance: reasoning_effort: high (aligned with the skill's C3 quality gate tier
+# declared by its sibling agents sop-brief/sop-executor; sop-capture is a production agent in
+# the same C3 executions, not validation-only)
+reasoning_effort: high
+
 identity:
   role: "Post-job operating experience capture and mandatory OE schema enforcer"
   expertise:
@@ -38,7 +43,7 @@ capabilities:
 
 guardrails:
   input_validation:
-    - execution_log_final_check: "PROCEDURE_STATE.yaml field execution_log_final must be true before execution log is read"
+    - execution_log_final_check: "PROCEDURE_STATE.yaml field execution_log_final must be set and resolve to an existing file before the execution log is read"
     - criticality_enum: "^(C1|C2|C3|C4)$"
     - workflow_id_format: "non-empty string matching workflow definition metadata"
     - iv_report_required_for_c3plus: "For criticality C3 or C4, iv_report_path must be present and file must exist"
@@ -52,14 +57,21 @@ guardrails:
 
 output:
   required: true
-  location: "capture/oe-entry-{entry_id}.yaml and docs/experience/{entry_id}.yaml"
+  # AD-M-011: {execution_dir} is defined once in SKILL.md (Execution Directory) -- the caller-provided
+  # base path (Priority 2) defaulting to projects/${JERRY_PROJECT}/nuclear-sop/{workflow_id}/
+  location: "{execution_dir}/capture/oe-entry-{entry_id}.yaml"
+  filename_pattern: "oe-entry-{entry_id}.yaml"
   levels:
     - "L0"
     - "L1"
     - "L2"
   dual_write_mandatory: true
   dual_write_paths:
-    local: "capture/oe-entry-{entry_id}.yaml"
+    local: "{execution_dir}/capture/oe-entry-{entry_id}.yaml"
+    # AD-M-011 override (MEDIUM tier, documented justification): the persistent OE registry is
+    # repo-global (docs/experience/), not projects/${JERRY_PROJECT}/-anchored, because cross-project
+    # OE reuse is the design intent -- rules/nuclear-sop-behavior-rules.md (OE Search Mechanism)
+    # requires sop-brief to retrieve OE entries from ALL prior executions regardless of originating project.
     persistent: "docs/experience/{entry_id}.yaml"
 
 constitution:
@@ -74,6 +86,7 @@ validation:
   post_completion_checks:
     - "verify_oe_entry_written_to_capture_dir"
     - "verify_oe_entry_written_to_docs_experience"
+    - "verify_workflow_definition_section11_updated: Section 11 (Attachments) references docs/experience/{entry_id}.yaml"
     - "verify_procedure_state_status_completed"
     - "verify_post_job_brief_written"
     - "verify_all_required_oe_fields_non_empty"

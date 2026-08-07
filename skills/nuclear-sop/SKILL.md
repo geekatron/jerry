@@ -39,7 +39,7 @@ activation-keywords:
 |-------|----------|---------------------|
 | **L0 (Stakeholder)** | New users, workflow designers | [Purpose](#purpose), [When to Use](#when-to-use-this-skill), [Routing Disambiguation](#routing-disambiguation), [Quick Reference](#quick-reference) |
 | **L1 (Engineer)** | Developers invoking agents | [Available Agents](#available-agents), [Invoking an Agent](#invoking-an-agent), [Workflow Execution Sequence](#workflow-execution-sequence), [Security Considerations](#security-considerations), [File Structure](#file-structure) |
-| **L2 (Architect)** | Framework maintainers, governance leads | [H-36 Circuit Breaker Compliance](#h-36-circuit-breaker-compliance), [Constitutional Compliance](#constitutional-compliance), [References](#references), [Registration Content](#registration-content) |
+| **L2 (Architect)** | Framework maintainers, governance leads | [H-36 Circuit Breaker Compliance](#h-36-circuit-breaker-compliance), [P-003 Compliance](#p-003-compliance), [Constitutional Compliance](#constitutional-compliance), [References](#references), [Registration Content](#registration-content) |
 
 ---
 
@@ -226,22 +226,19 @@ The workflow definition file is the primary trust boundary (TB-1) in the nuclear
 
 ### STAR Validation Pre-Ship Gate
 
-**C3+ workflow status: APPROVED.** QG-E4 STAR A/B validation PASSED on 2026-04-20 with 3/3 catch rate (100%). The 4-hop mode (with sop-verifier) is fully implemented and operational per NS-H-08. The STAR self-checking protocol has been empirically validated: STAR-ON caught all 3 deliberate error traps (TRAP-01 path violation, TRAP-02 injection override, TRAP-03 filename masquerade); STAR-OFF caught 0/3. A/B delta: +100 percentage points.
+**C3+ status: WITHDRAWN pending re-validation** (QG-E4 evidence invalidated in PROJ-032 review; see remediation register REM-04). **Approved use: C1-C2 only.** The 2026-04-20 "3/3 catch rate" result was a simulation walkthrough (desk-check) of a fixture containing its own expected answers; it is not independent execution evidence and does not support lifting the C3+ restriction. The STAR self-checking protocol remains a behavioral claim, not a verified deterministic constraint.
 
 **QG-E4 Pre-Ship Gate:**
 
 | Field | Value |
 |-------|-------|
 | Owner | eng-qa-001 |
-| Target date | 30 days from skill registration |
 | Pass criteria | STAR-ON catch rate >= 60% on 3+ deliberate error traps; STAR-OFF catch rate 0% (confirming traps are functional) |
 | Test protocol | A/B comparison defined in `projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/eng/phase-4/eng-qa-001/test-strategy.md` Section 1.4 |
 | Test fixture | `skills/nuclear-sop/examples/c3-adr-workflow-definition.md` (TRAP-01, TRAP-02, TRAP-03) |
-| If QG-E4 PASSES | **PASSED (2026-04-20).** C3+ restriction lifted; NS-H-08 4-hop mode fully operational |
-| If QG-E4 FAILS | STAR reframed as "structural execution discipline" (audit trail value), not "error prevention mechanism"; C3+ use permitted with explicit P-022 disclosure that STAR catch rate is below validated threshold |
-| Result | **PASS — 3/3 catch rate (100%).** Evidence: `projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/validation/qg-e4/star-validation-results.md` |
+| Result | **INVALIDATED.** The 2026-04-20 result (`projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/validation/qg-e4/star-validation-results.md`) was a simulation walkthrough (desk-check), not independent execution evidence. Re-validation with blind fixtures and live executed runs is required before C3+ approval (PROJ-032 remediation register REM-04). |
 
-The /nuclear-sop skill is approved for all criticality levels (C1 through C4).
+**SEC-008 status:** REMEDIATED in the PROJ-032 maintainer patch (remediation register REM-12) — sop-verifier's hold-point consistency check is now fail-closed: a missing or unreadable PROCEDURE_STATE.yaml records a `STATE-FILE-UNAVAILABLE` anomaly and the disposition cannot be unconditional ACCEPT.
 
 ---
 
@@ -302,7 +299,30 @@ skills/nuclear-sop/
     c3-adr-workflow-definition.md     # Worked example: C3 ADR with nuclear rigor (STAR validation fixture)
   rules/
     nuclear-sop-behavior-rules.md     # Skill-scoped behavioral rules (this skill only)
+  behavioral-baselines/
+    bb-001-star-clean-execution.md    # Expected STAR behavior baseline
+    bb-002-user-hold-activation.md    # Expected hold point behavior baseline
+    bb-003-oe-feedback-loop-integrity.md  # Expected OE feedback behavior baseline
+  composition/                        # DERIVED ARTIFACTS -- see note below
+    {agent}.agent.yaml                # Derived canonical-format agent definitions (4 files)
+    {agent}.prompt.md                 # Derived system prompts (4 files)
+  docs/
+    tutorial-getting-started.md       # Tutorial
+    howto-guides.md                   # How-to guides
+    reference.md                      # Reference documentation
 ```
+
+> **Composition files are derived artifacts.** The normative source for each agent is `agents/{name}.md` + `agents/{name}.governance.yaml` — these are what `plugin.json` and Claude Code load. The `composition/` copies are derived; on conflict, the `agents/` pair wins.
+
+### Execution Directory (`{execution_dir}`)
+
+`{execution_dir}` is the base directory for all per-execution artifacts (PROCEDURE_STATE.yaml, HOLD_POINT_LOG.md, execution-log.md, `brief/`, `capture/`). Per the Unified Output Path Resolution Protocol (AD-M-011), it is the **caller-provided base path (Priority 2)**, defaulting to:
+
+```
+projects/${JERRY_PROJECT}/nuclear-sop/{workflow_id}/
+```
+
+when the caller provides no explicit path. Agent `output.location` declarations in the governance files reference `{execution_dir}` against this definition.
 
 ---
 
@@ -425,7 +445,7 @@ The main context orchestrates the full 3-hop or 4-hop sequence:
 | Baseline: OE loop | `skills/nuclear-sop/behavioral-baselines/bb-003-oe-feedback-loop-integrity.md` | Expected OE feedback behavior |
 | Spec synthesis | `projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-4/ps-synthesizer-001/skill-specification-synthesis.md` | Requirements SSOT (0.922) |
 | ADR-001 | `projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-3/ps-architect-001/ADR-001-nuclear-sop-skill-architecture.md` | Architecture decisions (0.933) |
-| QG-E4 results | `projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/validation/qg-e4/star-validation-results.md` | STAR A/B validation (3/3, 100%) |
+| QG-E4 results | `projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/validation/qg-e4/star-validation-results.md` | STAR A/B simulation walkthrough (desk-check; invalidated per PROJ-032 remediation register REM-04 — not independent execution evidence) |
 
 ### Nuclear Industry Source References
 
@@ -443,11 +463,11 @@ The main context orchestrates the full 3-hop or 4-hop sequence:
 
 > H-26 requirement: Registration artifacts must appear in SKILL.md so QG-E3 can verify their presence before registration is executed.
 >
-> **DEFERRED REGISTRATION NOTE:** These entries are applied to the live files (`CLAUDE.md`, `AGENTS.md`, `.context/rules/mandatory-skill-usage.md`) AFTER QG-E6 final review gate PASS. They are provided here as copy-ready content for that step. The skill is NOT registered and NOT live-routable until QG-E6 passes and the user applies these entries. Per P-020, the actual splicing is performed by the user, not by an agent.
+> **REGISTRATION STATUS: APPLIED.** The skill is registered in `CLAUDE.md` (Skills quick-reference table), `AGENTS.md` (Nuclear SOP Skill Agents section), `.context/rules/mandatory-skill-usage.md` (trigger map, priority 16), and `plugin.json` as part of PR #269. QG-E6 final review gate scored **0.934 PASS on 2026-04-14** — evidence: `projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/eng/phase-6/eng-reviewer-001/qg-e6-score.md`.
 
 ### CLAUDE.md Quick Reference Table Row
 
-Copy this row and splice it into the Skills table in `CLAUDE.md`:
+As registered in the Skills table in `CLAUDE.md`:
 
 ```
 | `/nuclear-sop` | Nuclear-inspired SOP execution: pre-job brief, STAR self-check, hold points, OE capture |
@@ -455,7 +475,7 @@ Copy this row and splice it into the Skills table in `CLAUDE.md`:
 
 ### AGENTS.md Entries
 
-Add these entries to `AGENTS.md` under a `/nuclear-sop` section:
+As registered in `AGENTS.md` under the "Nuclear SOP Skill Agents" section:
 
 ```markdown
 ### /nuclear-sop
@@ -470,8 +490,4 @@ Add these entries to `AGENTS.md` under a `/nuclear-sop` section:
 
 ### mandatory-skill-usage.md Trigger Map Row
 
-Copy this row (5-column format per RT-M-003) and splice it into the Trigger Map table in `.context/rules/mandatory-skill-usage.md`:
-
-```
-| nuclear sop, nuclear procedure, STAR self-check, pre-job brief, post-job brief, hold point, place-keeping, step sign-off, procedure compliance, continuous use, procedure use classification, operating experience capture, OE entry, nuclear rigor, nuclear discipline, sop brief, sop execute, sop capture, sop verify, nuclear workflow | adversarial, tournament, quality gate, transcript, VTT, SRT, penetration, exploit, code review | 12 | "nuclear procedure" OR "pre-job brief" OR "post-job brief" OR "STAR self-check" OR "hold point" (phrase match) | `/nuclear-sop` |
-```
+The live trigger map row is maintained in `.context/rules/mandatory-skill-usage.md` (Trigger Map table, priority 16) — that file is the SSOT for the `/nuclear-sop` routing row. No copy is duplicated here: a second copy would drift from the live row (it already had, before the PROJ-032 remediation removed it).

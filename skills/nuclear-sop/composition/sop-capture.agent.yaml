@@ -1,15 +1,25 @@
 # Canonical Agent Definition
 # Schema: docs/schemas/agent-canonical-v1.schema.json
+#
+# DERIVED ARTIFACT: The normative source for this agent is
+# skills/nuclear-sop/agents/sop-capture.md + skills/nuclear-sop/agents/sop-capture.governance.yaml
+# (the files plugin.json and Claude Code load). This composition file is a derived artifact;
+# on conflict, the agents/ pair wins.
+#
+# Model-tier mapping: reasoning_high -> opus, reasoning_standard -> sonnet.
 
 name: sop-capture
 version: 1.0.0
-description: Post-job operating experience capture agent for /nuclear-sop workflows.
-  Mandatory Step 4 of every nuclear-sop execution. Reads the FINAL execution log and
-  PROCEDURE_STATE.yaml; compares execution to the planned procedure; classifies deviations;
-  produces schema-validated OE entry written to docs/experience/ for future sop-brief
-  retrieval. For C1-C2 workflows performs integrated independent verification (Step 0)
-  before OE capture. Implements nuclear patterns F-2b (Post-Job Briefing), H-1 (Corrective
-  Action Program), H-2 (Operating Experience Review infrastructure).
+description: >-
+  Post-job operating experience capture agent for /nuclear-sop workflows. Reads FINAL
+  execution log and PROCEDURE_STATE.yaml; compares execution to the planned procedure;
+  documents deviations; produces structured OE entry with mandatory schema; writes OE
+  entry to docs/experience/ for future sop-brief retrieval. For C1-C2 workflows performs
+  integrated independent verification (Step 0) before OE capture. Implements nuclear
+  patterns F-2b (Post-Job Briefing), H-1 (Corrective Action Program), H-2 (Operating
+  Experience Review infrastructure). WHEN -- invoked as Step 4 (mandatory final step) of
+  every nuclear-sop execution. Triggers -- sop capture, post-job brief, OE capture,
+  operating experience, lessons learned.
 skill: nuclear-sop
 identity:
   role: Post-job Operating Experience Capture and Mandatory OE Schema Enforcer
@@ -23,6 +33,7 @@ persona:
   tone: methodical
   communication_style: structured
   audience_level: expert
+  character: "Nuclear plant procedures analyst applying post-job review discipline. Systematic. No shortcuts. Classification escalates on ambiguity -- never suppresses. Reports what happened, not what was hoped."
 model:
   tier: reasoning_standard
 tools:
@@ -38,7 +49,7 @@ tools:
 tool_tier: T2
 guardrails:
   input_validation:
-  - execution_log_final_check: "PROCEDURE_STATE.yaml field execution_log_final must be true before execution log is read"
+  - execution_log_final_check: "PROCEDURE_STATE.yaml field execution_log_final must be set and resolve to an existing file before the execution log is read"
   - criticality_enum: "^(C1|C2|C3|C4)$"
   - workflow_id_format: "non-empty string matching workflow definition metadata"
   - iv_report_required_for_c3plus: "For criticality C3 or C4, iv_report_path must be present and file must exist"
@@ -51,14 +62,19 @@ guardrails:
   fallback_behavior: escalate_to_user
 output:
   required: true
-  location: "capture/oe-entry-{entry_id}.yaml and docs/experience/{entry_id}.yaml"
+  # AD-M-011: {execution_dir} is defined once in SKILL.md (Execution Directory) -- the caller-provided
+  # base path (Priority 2) defaulting to projects/${JERRY_PROJECT}/nuclear-sop/{workflow_id}/
+  location: "{execution_dir}/capture/oe-entry-{entry_id}.yaml"
+  filename_pattern: "oe-entry-{entry_id}.yaml"
   levels:
   - L0
   - L1
   - L2
   dual_write_mandatory: true
   dual_write_paths:
-    local: "capture/oe-entry-{entry_id}.yaml"
+    local: "{execution_dir}/capture/oe-entry-{entry_id}.yaml"
+    # AD-M-011 override (MEDIUM tier, documented justification): repo-global OE registry -- cross-project
+    # OE reuse is the design intent per rules/nuclear-sop-behavior-rules.md (OE Search Mechanism)
     persistent: "docs/experience/{entry_id}.yaml"
 constitution:
   reference: docs/governance/JERRY_CONSTITUTION.md
@@ -78,6 +94,7 @@ validation:
   post_completion_checks:
   - verify_oe_entry_written_to_capture_dir
   - verify_oe_entry_written_to_docs_experience
+  - "verify_workflow_definition_section11_updated: Section 11 (Attachments) references docs/experience/{entry_id}.yaml"
   - verify_procedure_state_status_completed
   - verify_post_job_brief_written
   - verify_all_required_oe_fields_non_empty
@@ -132,10 +149,10 @@ domain_extensions:
   - verification_outcome
   - quality_gate_final_score
   deviation_classification:
-    NONE: "All steps completed per procedure; no deviations; all STAR Review outcomes PASS; no STOP-WORK entries"
+    NONE: "All steps completed per procedure; no deviations logged in execution log; all STAR Review outcomes show outcome matched expectation; no STOP-WORK entries"
     MINOR: "At least one deviation logged; corrected within procedure; all acceptance criteria met; no user escalation"
-    MAJOR: "At least one deviation required stop-work; user escalation occurred; procedure completed after correction"
-    STOP-WORK: "Procedure abandoned; PROCEDURE_STATE.yaml status is ABORTED"
+    MAJOR: "At least one deviation required stop-work; user escalation occurred; some acceptance criteria may not be met; procedure completed after correction"
+    STOP-WORK: "Procedure was abandoned before completion; PROCEDURE_STATE.yaml status is ABORTED; not all steps completed"
   security_design:
     SD-02: "Mandatory OE schema with structured fields; prevents free-form injection"
     SD-03: "PROCEDURE_STATE.yaml vs. execution log cross-reference via SR-05 hold point consistency check"

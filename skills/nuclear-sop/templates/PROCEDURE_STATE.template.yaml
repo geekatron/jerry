@@ -31,21 +31,27 @@ procedure_state:
 
   # --- Execution Status ---
   # REQUIRED. Updated after every state transition.
-  # Valid transitions (state machine):
+  # Valid transitions (state machine; SSOT: rules/nuclear-sop-behavior-rules.md "PROCEDURE_STATE.yaml State Machine"):
   #   INITIALIZING -> IN-PROGRESS (on user confirm start)
   #   IN-PROGRESS -> HELD (on hold point activation)
-  #   HELD -> IN-PROGRESS (on hold point release: APPROVE/WAIVE/AUTO-RELEASED/IV-PASSED)
+  #   HELD -> IN-PROGRESS (on hold point release: APPROVED/WAIVED/AUTO-RELEASED)
+  #   HELD -> ABORTED (on REJECT)
   #   IN-PROGRESS -> IV-PENDING (on IV-HOLD activation)
   #   IV-PENDING -> IV-PASSED (on sop-verifier ACCEPT disposition)
-  #   IV-PASSED -> IN-PROGRESS (on sop-executor advancing to next step after IV-PASSED)
-  #   IV-PENDING -> HELD (on sop-verifier REJECT; awaits revision before re-invoking sop-verifier)
-  #   IN-PROGRESS -> COMPLETED (on final step sign-off)
-  #   Any state -> RESUMING (on sop-executor loading this file for a RESUME execution before user confirmation)
+  #   IV-PENDING -> IV-REJECTED (on sop-verifier REJECT disposition)
+  #   IV-PASSED -> IN-PROGRESS (if revision steps remain)
+  #   IV-PASSED -> COMPLETED (if no further steps; set by sop-capture after OE entry write per NS-H-06)
+  #   IV-REJECTED -> IN-PROGRESS (return to sop-executor for revision)
+  #   IV-REJECTED -> ABORTED (after 3 rejections + user decision)
+  #   IN-PROGRESS -> COMPLETED (set by sop-capture after OE entry write; NS-H-06 -- sop-executor MUST NOT set COMPLETED)
+  #   INITIALIZING | IN-PROGRESS | HELD | IV-PENDING | IV-PASSED | IV-REJECTED -> RESUMING
+  #     (any non-terminal status; cross-session resume protocol -- sop-executor loading this file
+  #      for a RESUME execution before user confirmation)
   #   RESUMING -> IN-PROGRESS (on user confirmation of resume per P-020)
   #   RESUMING -> ABORTED (on resume validation failure: schema mismatch not accepted, or user declines to continue)
-  #   Any state -> ABORTED (on user ABORT decision or unrecoverable deviation)
+  #   Any non-terminal state -> ABORTED (on user ABORT decision or unrecoverable deviation)
   #
-  # Terminal states: COMPLETED, ABORTED (sop-executor will not resume from these)
+  # Terminal states: COMPLETED, ABORTED (no valid transitions out; sop-executor will not resume from these)
   status: "INITIALIZING"
   # Valid: INITIALIZING | IN-PROGRESS | HELD | RESUMING |
   #        IV-PENDING | IV-PASSED | IV-REJECTED | COMPLETED | ABORTED
@@ -67,7 +73,7 @@ procedure_state:
     # Each entry format:
     # - step: {step number}
     #   completed_at: "{ISO-8601 timestamp}"
-    #   outcome: "PASS | DEVIATION"    # PASS = STAR-REVIEW matched expectation; DEVIATION = stop-work event
+    #   outcome: "PASS | DEVIATION | WAIVED"    # PASS = STAR-REVIEW matched expectation; DEVIATION = stop-work event; WAIVED = step skipped by user WAIVE at a USER-HOLD (bb-002)
     #   star_record_path: "{path/to/execution-log.md}#{anchor}"  # Optional: section in execution log
 
   # --- Hold Point State ---
@@ -113,7 +119,9 @@ procedure_state:
   # --- Execution Log ---
   execution_log_path: "execution-log.md"  # Relative to execution directory
   execution_log_revision: 1               # Incremented if log is segmented across sessions
-  execution_log_final: null               # Set at COMPLETED to canonical final log path
+  execution_log_final: null               # Set by sop-executor at end of Phase 2 to the canonical final log path
+                                          # (status remains IN-PROGRESS; sop-capture HALTs unless this is set and
+                                          # resolves to an existing file, then sets COMPLETED per NS-H-06)
 
   # --- Stop-Work Events ---
   stop_work_count: 0                  # Total number of D-2 stop-work events in this execution

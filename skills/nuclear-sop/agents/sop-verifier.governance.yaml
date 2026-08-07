@@ -6,6 +6,9 @@
 version: "1.0.0"
 tool_tier: "T1"
 
+# ET-M-001: reasoning_effort intentionally omitted (default). sop-verifier is a validation-only
+# agent; ET-M-001 permits default for validation-only agents. Documented choice, not an oversight.
+
 identity:
   role: "Context-isolated independent verification agent (read-only)"
   expertise:
@@ -45,11 +48,13 @@ guardrails:
   fallback_behavior: "escalate_to_user"
 
 output:
-  required: true
+  # AD-M-011: no file output declared -- sop-verifier is T1 (read-only) and cannot write files.
+  # The IV report is returned as Task tool response content (see note).
+  required: false
   levels:
-    - "L0: Disposition -- single word (ACCEPT/REJECT/ACCEPT-WITH-CONDITIONS) plus one-sentence summary"
-    - "L1: Criteria Detail -- full acceptance criteria assessment table with per-criterion evidence"
-    - "L2: Anomalies and Conditions -- path cross-reference, anomalies detected, conditions or rejection findings"
+    - L0
+    - L1
+    - L2
   note: "T1 constraint: IV report is returned as Task tool response content; the main context is responsible for persisting it to PROCEDURE_STATE.yaml iv_report_path via Write"
 
 constitution:

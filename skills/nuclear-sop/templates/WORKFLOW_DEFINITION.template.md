@@ -2,6 +2,22 @@
 
 > **IMPORTANT: Workflow definitions are executable content.** sop-executor reads this file and issues tool calls based on step descriptions, WARNING/CAUTION blocks, and acceptance criteria embedded here. Treat this file with the same security rigor as a shell script. Before use, verify that no step directs the agent to read credential files, bypass hold points, or disable STAR self-checking. See SKILL.md Security Considerations (SR-06, TB-1).
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Section 1: Metadata](#section-1-metadata) | Workflow identity, version, criticality, authorship |
+| [Section 2: Purpose and Scope](#section-2-purpose-and-scope) | What the procedure achieves and its boundaries |
+| [Section 3: References](#section-3-references) | Source documents and related procedures |
+| [Section 4: Prerequisites](#section-4-prerequisites) | Conditions that must be true before execution (sop-brief Step 2) |
+| [Section 5: Initial Conditions](#section-5-initial-conditions) | Expected system state before Step 1 executes |
+| [Section 6: Limitations and Precautions](#section-6-limitations-and-precautions) | Constraints and safety considerations |
+| [Section 7: WARNINGs, CAUTIONs, and NOTEs](#section-7-warnings-cautions-and-notes) | Pre-placed annotations and their authority scope |
+| [Section 8: Performance Steps](#section-8-performance-steps) | Numbered execution steps with classifications and hold points |
+| [Section 9: Acceptance Criteria](#section-9-acceptance-criteria) | Verifiable completion criteria |
+| [Section 10: Sign-off and Verification Record](#section-10-sign-off-and-verification-record) | Runtime execution record (written by sop-executor) |
+| [Section 11: Attachments](#section-11-attachments) | Runtime attachments incl. OE entry reference (written by sop-capture) |
+
 ---
 
 ## Section 1: Metadata

@@ -33,6 +33,9 @@ agents_covered:
 | [Agent Selection Guide](#agent-selection-guide) | Decision table for choosing the right agent |
 | [Hold Point Reference](#hold-point-reference) | Three hold types with release conditions |
 | [Procedure Classification Reference](#procedure-classification-reference) | CONTINUOUS, REFERENCE, INFORMATION |
+| [PROCEDURE_STATE.yaml State Machine](#procedure_stateyaml-state-machine) | Valid statuses, transitions, and terminal states |
+| [Step Limits by Criticality](#step-limits-by-criticality) | Maximum steps per sop-executor invocation |
+| [OE Accumulation Thresholds](#oe-accumulation-thresholds) | WARNING and STOP thresholds for unsynthesized OE entries |
 | [Integration with Other Skills](#integration-with-other-skills) | When /nuclear-sop hands off to /problem-solving, /adversary, /orchestration |
 | [Common Workflows](#common-workflows) | Real invocation examples with expected artifacts |
 | [Quick Reference Table](#quick-reference-table) | Fast lookup for step sequences and key rules |
@@ -128,11 +131,13 @@ Use when ALL of these apply:
 - `skills/nuclear-sop/agents/sop-verifier.md` and `skills/nuclear-sop/agents/sop-verifier.governance.yaml`
 - `skills/nuclear-sop/agents/sop-capture.md` and `skills/nuclear-sop/agents/sop-capture.governance.yaml`
 
-**Composition files (canonical format):**
+**Composition files (derived artifacts):**
 - `skills/nuclear-sop/composition/sop-brief.agent.yaml` and `sop-brief.prompt.md`
 - `skills/nuclear-sop/composition/sop-executor.agent.yaml` and `sop-executor.prompt.md`
 - `skills/nuclear-sop/composition/sop-verifier.agent.yaml` and `sop-verifier.prompt.md`
 - `skills/nuclear-sop/composition/sop-capture.agent.yaml` and `sop-capture.prompt.md`
+
+> **Normative source note:** The agent definition files above (`agents/{name}.md` + `agents/{name}.governance.yaml`) are the normative source — they are what `plugin.json` and Claude Code load. The `composition/` files are derived artifacts; on conflict, the `agents/` pair wins.
 
 ---
 
@@ -557,11 +562,12 @@ Resume the nuclear-sop execution for workflow WF-ADR-001. PROCEDURE_STATE.yaml i
 **Invocation:**
 ```
 Use /nuclear-sop sop-capture to write the OE entry for workflow execution
-in {execution_dir}/. PROCEDURE_STATE.yaml shows status COMPLETED.
+in {execution_dir}/. PROCEDURE_STATE.yaml shows execution_log_final set
+(status IN-PROGRESS; sop-capture sets COMPLETED per NS-H-06).
 ```
 
 **sop-capture verifies (Step 1):**
-- `PROCEDURE_STATE.yaml execution_log_final: true` before reading execution log
+- `PROCEDURE_STATE.yaml execution_log_final` is set and resolves to an existing file before reading the execution log
 - For C3+: `iv_report_path` present and file exists
 
 ---
@@ -674,7 +680,7 @@ P-003 AGENT HIERARCHY:
 
 **Prompt Injection Surface (TB-1).** The workflow definition file is the primary trust boundary. Content read by sop-brief and sop-executor is injected into the agent's context. A malicious workflow definition can attempt to override agent behavior through embedded instructions. SEC-001 (WARNING/CAUTION injection guard) and SEC-002 (OE injection guard) are the primary mitigations.
 
-**STAR Validation Pre-Ship Gate.** The skill is NOT available for C3+ workflows until the STAR A/B validation gate (QG-E4) passes. STAR self-checking is a behavioral claim, not a verified deterministic constraint. Until QG-E4 passes (A/B comparison documenting STAR catch-rate), restrict to C1-C2 only.
+**STAR Validation Pre-Ship Gate.** The skill is NOT available for C3+ workflows: the QG-E4 STAR A/B evidence (2026-04-20) was a simulation walkthrough (desk-check) and was invalidated in the PROJ-032 independent review (remediation register REM-04); C3+ approval is WITHDRAWN pending re-validation with independent execution evidence. STAR self-checking is a behavioral claim, not a verified deterministic constraint. Restrict to C1-C2 only.
 
 ## References
 
@@ -688,10 +694,10 @@ P-003 AGENT HIERARCHY:
 | Post-job brief template | `skills/nuclear-sop/templates/POST_JOB_BRIEF.template.md` | OE capture output structure |
 | Hold point log template | `skills/nuclear-sop/templates/HOLD_POINT_LOG.template.md` | Hold point sign-off record |
 | Example: C3 ADR workflow | `skills/nuclear-sop/examples/c3-adr-workflow-definition.md` | Worked example with STAR traps (QG-E4 fixture) |
-| Composition: sop-brief | `skills/nuclear-sop/composition/sop-brief.agent.yaml` and `sop-brief.prompt.md` | Canonical agent definition |
-| Composition: sop-executor | `skills/nuclear-sop/composition/sop-executor.agent.yaml` and `sop-executor.prompt.md` | Canonical agent definition |
-| Composition: sop-verifier | `skills/nuclear-sop/composition/sop-verifier.agent.yaml` and `sop-verifier.prompt.md` | Canonical agent definition |
-| Composition: sop-capture | `skills/nuclear-sop/composition/sop-capture.agent.yaml` and `sop-capture.prompt.md` | Canonical agent definition |
+| Composition: sop-brief | `skills/nuclear-sop/composition/sop-brief.agent.yaml` and `sop-brief.prompt.md` | Derived composition artifact (normative source: `agents/`) |
+| Composition: sop-executor | `skills/nuclear-sop/composition/sop-executor.agent.yaml` and `sop-executor.prompt.md` | Derived composition artifact (normative source: `agents/`) |
+| Composition: sop-verifier | `skills/nuclear-sop/composition/sop-verifier.agent.yaml` and `sop-verifier.prompt.md` | Derived composition artifact (normative source: `agents/`) |
+| Composition: sop-capture | `skills/nuclear-sop/composition/sop-capture.agent.yaml` and `sop-capture.prompt.md` | Derived composition artifact (normative source: `agents/`) |
 | Spec synthesis | `projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-4/ps-synthesizer-001/skill-specification-synthesis.md` | Requirements SSOT (0.922) |
 | ADR-001 | `projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-3/ps-architect-001/ADR-001-nuclear-sop-skill-architecture.md` | Architecture decisions (0.933) |
 

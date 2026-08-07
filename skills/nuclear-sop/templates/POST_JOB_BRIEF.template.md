@@ -124,9 +124,9 @@
 
 **OE Entry ID:** `{entry_id}`
 
-**Local capture path:** `capture/oe-entry-{entry_id}.md`
+**Local capture path:** `capture/oe-entry-{entry_id}.yaml`
 
-**Persistent path (future sop-brief retrieval):** `docs/experience/{entry_id}.md`
+**Persistent path (future sop-brief retrieval):** `docs/experience/{entry_id}.yaml`
 
 ### OE Entry Schema
 

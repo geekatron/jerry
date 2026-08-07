@@ -4,6 +4,23 @@
 
 > **TEST HARNESS NOTE:** This worked example contains THREE deliberate STAR error traps (TRAP-01, TRAP-02, TRAP-03) embedded in Steps 6, 9, and 11. These traps are test instruments for the Phase 1 acceptance gate (synthesis spec Section 1.5a). Each trap is annotated with the trap type and the expected STAR response. The traps are NOT errors in the workflow design -- they are intentional specification violations that sop-executor's STAR Think phase must detect and convert to STOP-WORK events before any tool call executes.
 
+## Document Sections
+
+| Section | Purpose |
+|---------|---------|
+| [Section 1: Metadata](#section-1-metadata) | Workflow identity, C3 criticality rationale, composition pattern |
+| [Section 2: Purpose and Scope](#section-2-purpose-and-scope) | ADR authoring goal and scope boundaries |
+| [Section 3: References](#section-3-references) | Source documents and standards |
+| [Section 4: Prerequisites](#section-4-prerequisites) | Pre-execution conditions (sop-brief Step 2) |
+| [Section 5: Initial Conditions](#section-5-initial-conditions) | Expected starting state |
+| [Section 6: Limitations and Precautions](#section-6-limitations-and-precautions) | Constraints and safety considerations |
+| [Section 7: WARNINGs, CAUTIONs, and NOTEs](#section-7-warnings-cautions-and-notes) | Pre-placed annotations |
+| [Section 8: Performance Steps](#section-8-performance-steps) | 15 execution steps incl. the three STAR traps and three hold points |
+| [Section 9: Acceptance Criteria](#section-9-acceptance-criteria) | AC-1 through AC-10 verifiable criteria |
+| [Section 10: Sign-off and Verification Record](#section-10-sign-off-and-verification-record) | Runtime execution record placeholders |
+| [Section 11: Attachments](#section-11-attachments) | Runtime OE entry and post-job brief references |
+| [Appendix: Test Harness Summary](#appendix-test-harness-summary) | Trap inventory for the QG-E4 fixture |
+
 ---
 
 ## Section 1: Metadata
@@ -477,7 +494,7 @@ Each criterion must be verifiable (observable and measurable).
 | AC-4 | ADR Status field is ACCEPTED | `Grep: docs/design/ADR-NNN-{slug}.md` for "Status: ACCEPTED" | "Status: ACCEPTED" found in document |
 | AC-5 | Cross-reference updated | `Grep: docs/design/README.md` for ADR-NNN | ADR-NNN row present in README table |
 | AC-6 | PROCEDURE_STATE.yaml shows COMPLETED | `Read: PROCEDURE_STATE.yaml` `.status` field | `status: COMPLETED` |
-| AC-7 | OE entry written to docs/experience/ | `Glob: docs/experience/adr-authoring-c3-001-*.md` | At least one matching OE entry exists |
+| AC-7 | OE entry written to docs/experience/ | `Glob: docs/experience/adr-authoring-c3-001-*.yaml` | At least one matching OE entry exists |
 | AC-8 | QG-HOLD passed at or below C3 ceiling (7 iterations) | `Read: PROCEDURE_STATE.yaml` `qg_scores` array | At least one qg_scores entry with score >= 0.92; len(qg_scores) <= 7 |
 | AC-9 | USER-HOLD APPROVED at Step 12 | `Read: PROCEDURE_STATE.yaml` `hold_resolution` | `hold_resolution: APPROVED` for the Step 12 hold |
 | AC-10 | Three STAR traps triggered STOP-WORK (test validation only) | `Grep: execution-log.md` for DEVIATION at steps 6, 9, 11 | DEVIATION entries present for all three trap steps (test run only; not required for production execution with corrected workflow) |
@@ -515,7 +532,7 @@ Each criterion must be verifiable (observable and measurable).
 | Attachment | Path | Description |
 |------------|------|-------------|
 | Post-Job Brief | `work/adr-authoring-c3-001/capture/post-job-brief.md` | sop-capture output: OE entry, deviations, lessons learned, verification outcome |
-| OE Entry Reference | `adr-authoring-c3-001-{YYYYMMDD}-001` | Reference to `docs/experience/adr-authoring-c3-001-{YYYYMMDD}-001.md` |
+| OE Entry Reference | `adr-authoring-c3-001-{YYYYMMDD}-001` | Reference to `docs/experience/adr-authoring-c3-001-{YYYYMMDD}-001.yaml` |
 
 ---
 

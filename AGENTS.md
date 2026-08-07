@@ -11,6 +11,7 @@
 | [Agent Summary](#agent-summary) | Quick count by skill |
 | [Problem-Solving Skill Agents](#problem-solving-skill-agents) | ps-* agents (9 total) |
 | [NASA SE Skill Agents](#nasa-se-skill-agents) | nse-* agents (10 total) |
+| [Nuclear SOP Skill Agents](#nuclear-sop-skill-agents) | sop-* agents (4 total) |
 | [Orchestration Skill Agents](#orchestration-skill-agents) | orch-* agents (3 total) |
 | [Adversary Skill Agents](#adversary-skill-agents) | adv-* agents (3 total) |
 | [Worktracker Skill Agents](#worktracker-skill-agents) | wt-* agents (3 total) |
@@ -50,6 +51,7 @@ to specific skills. This provides:
 |----------|-------|-------|
 | Problem-Solving Agents | 9 | `/problem-solving` skill |
 | NASA SE Agents | 10 | `/nasa-se` skill |
+| Nuclear SOP Agents | 4 | `/nuclear-sop` skill |
 | Orchestration Agents | 3 | `/orchestration` skill |
 | Adversary Agents | 3 | `/adversary` skill |
 | Worktracker Agents | 3 | `/worktracker` skill |
@@ -65,13 +67,13 @@ to specific skills. This provides:
 | Use Case Agents | 2 | `/use-case` skill |
 | Test Spec Agents | 2 | `/test-spec` skill |
 | Contract Design Agents | 2 | `/contract-design` skill |
-| **Total** | **89** | |
+| **Total** | **93** | |
 
 > **Verification:** Agent counts verified against filesystem scan (`skills/*/agents/*.md`).
-> 82 total files found; 4 template/extension files excluded from counts:
-> `NSE_AGENT_TEMPLATE.md`, `NSE_EXTENSION.md`, `PS_AGENT_TEMPLATE.md`, `PS_EXTENSION.md`.
-> Per-skill sum: 9 + 10 + 3 + 3 + 3 + 5 + 3 + 1 + 10 + 11 + 5 + 6 + 3 + 11 + 2 + 2 + 2 = 89 invokable agents.
-> Last verified: 2026-03-09.
+> 93 total files found; no template/extension files remain in agents/ directories
+> (the formerly excluded `NSE_AGENT_TEMPLATE.md`, `NSE_EXTENSION.md`, `PS_AGENT_TEMPLATE.md`, `PS_EXTENSION.md` have been relocated).
+> Per-skill sum: 9 + 10 + 4 + 3 + 3 + 3 + 5 + 3 + 1 + 10 + 11 + 5 + 6 + 3 + 11 + 2 + 2 + 2 = 93 invokable agents.
+> Last verified: 2026-08-07.
 
 ---
 
@@ -525,7 +527,7 @@ Agents with MCP (Model Context Protocol) tool access for external documentation 
 | ts-parser | transcript | store, retrieve |
 | ts-extractor | transcript | store, retrieve |
 
-> **Not included (by design):** adv-* (self-contained strategy execution), sb-* (voice quality gate), wt-* (read-only auditing), ps-critic/ps-validator (quality evaluation), ps-reporter (report generation). eng-*/red-* agents do not use Memory-Keeper; their persistence model uses file-based output per P-002 (engagement-scoped output directories), not cross-session MCP storage.
+> **Not included (by design):** adv-* (self-contained strategy execution), sb-* (voice quality gate), wt-* (read-only auditing), ps-critic/ps-validator (quality evaluation), ps-reporter (report generation). eng-*/red-* agents do not use Memory-Keeper; their persistence model uses file-based output per P-002 (engagement-scoped output directories), not cross-session MCP storage. sop-* agents do not use MCP tools; their persistence model uses file-based output per P-002 (PROCEDURE_STATE.yaml, HOLD_POINT_LOG.md, dual-write OE entries), not cross-session MCP storage.
 
 ---
 

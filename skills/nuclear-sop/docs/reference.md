@@ -13,6 +13,7 @@
 | [Step Classification](#step-classification) | CONTINUOUS, REFERENCE, INFORMATION with default assignment rules |
 | [OE Entry Schema](#oe-entry-schema) | Every mandatory field with type, constraints, and purpose |
 | [State Machine](#state-machine) | Valid PROCEDURE_STATE.yaml status transitions and terminal states |
+| [Related](#related) | Related skill documents and templates |
 
 ---
 
@@ -299,7 +300,7 @@ Hold resolution values by type:
 |-------|------|---------|--------|--------|-------------|
 | `execution_log_path` | string | `"execution-log.md"` | sop-executor (init) | sop-capture | Path to the execution log, relative to the execution directory |
 | `execution_log_revision` | integer | `1` | sop-executor | sop-executor | Incremented when the log is segmented across sessions |
-| `execution_log_final` | boolean \| null | `null` | sop-executor | sop-capture | Set to `true` at COMPLETED status. sop-capture checks this before reading the log |
+| `execution_log_final` | string (path) \| null | `null` | sop-executor | sop-capture | Set by sop-executor at end of Phase 2 to the canonical final log path (status remains IN-PROGRESS; sop-capture sets COMPLETED per NS-H-06). sop-capture HALTs unless this is set and resolves to an existing file |
 
 ### Stop-Work Events
 
@@ -342,7 +343,7 @@ Rules are scoped to `/nuclear-sop` invocations only. They do not affect other Je
 | NS-H-05 | After STAR REVIEW detects a deviation, sop-executor must invoke stop-work: log the deviation, set status to HELD, and escalate to user. sop-executor must not attempt self-correction without user authority | sop-executor | Silent drift; deviation not captured in OE; P-020 violation |
 | NS-H-06 | sop-capture's OE write is blocked if any mandatory OE schema field is absent. sop-capture must not write a partial OE entry. A warn-then-write pattern is not compliant | sop-capture | Corrupted OE feedback loop; unsearchable entries |
 | NS-H-07 | sop-brief Step 1 is mandatory for every `/nuclear-sop` invocation. If a workflow definition cannot be located and the user declines Step 0 generation, the skill halts | sop-brief | Unbriefed execution; OE context not loaded; error traps not identified |
-| NS-H-08 | C3+ workflows must use 4-hop mode (sop-verifier via Task tool with fresh context). 3-hop mode is prohibited for C3+ criticality. QG-E4 PASSED (2026-04-20, 3/3 catch rate); C3+ is approved for all criticality levels | main context, sop-capture | Anchored verification applied to irreversible work |
+| NS-H-08 | C3+ workflows must use 4-hop mode (sop-verifier via Task tool with fresh context). 3-hop mode is prohibited for C3+ criticality. C3+ approval status: WITHDRAWN pending re-validation (QG-E4 evidence invalidated in PROJ-032 review; remediation register REM-04); approved use C1-C2 only | main context, sop-capture | Anchored verification applied to irreversible work |
 | NS-H-09 | When sop-executor reaches the step limit for its criticality level, it must stop, write `PROCEDURE_STATE.yaml` with status IN-PROGRESS, and hand off to the next sop-executor invocation. Execution must not continue past the step limit in a single invocation | sop-executor | Context exhaustion; STAR compliance degrades silently |
 | NS-H-10 | `PROCEDURE_STATE.yaml` must be updated after every completed step. sop-executor must not batch-update state at end of invocation | sop-executor | Lost place-keeping; resume reconstructs incorrect position |
 

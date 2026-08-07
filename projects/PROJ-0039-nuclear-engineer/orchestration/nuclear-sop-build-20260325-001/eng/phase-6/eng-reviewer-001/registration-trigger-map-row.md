@@ -23,10 +23,19 @@ MUST invoke `/nuclear-sop` for nuclear-inspired procedural execution requiring p
 
 ## Collision Analysis Summary
 
+> **CORRECTED / SUPERSEDED (2026-08-07, PROJ-032 remediation register REM-09):** The claim below that a
+> `"nuclear workflow"` compound trigger resolved the `/orchestration` collision was incorrect — no such
+> compound trigger existed in the drafted row above or in the applied row, so the documented activation
+> keyword "nuclear workflow" deterministically resolved to `/orchestration` (priority 1 vs. 16) under
+> routing Step 3. The live row in `.context/rules/mandatory-skill-usage.md` has since been extended with
+> `"nuclear workflow" OR "nuclear sop" (phrase match)` compound triggers; routing Step 2
+> (compound-trigger specificity overrides numeric priority) now resolves these phrases to `/nuclear-sop`.
+> The live trigger map row is the SSOT; this document is superseded by it.
+
 - **Zero unresolved collisions** across all 20 proposed keywords (verified against all existing trigger map entries)
 - **Three partial collisions resolved** by existing mechanisms:
   - "compliance" (standalone) -> `/nasa-se` via priority (5 vs. 12); "procedure compliance" -> `/nuclear-sop` via compound trigger
-  - "workflow" (standalone) -> `/orchestration` via priority (1 vs. 12); "nuclear workflow" -> `/nuclear-sop` via compound trigger
+  - "workflow" (standalone) -> `/orchestration` via priority (1 vs. 12); "nuclear workflow" -> `/nuclear-sop` via compound trigger *(INCORRECT as drafted — see correction note above)*
   - "quality gate" -> in nuclear-sop's NEGATIVE keyword list; yields to `/adversary`
 - **Standalone "sop" excluded** as positive keyword per integration analysis recommendation (enterprise acronym false-match risk)
 

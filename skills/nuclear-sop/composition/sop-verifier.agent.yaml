@@ -1,12 +1,20 @@
 # Canonical Agent Definition
 # Schema: docs/schemas/agent-canonical-v1.schema.json
+#
+# DERIVED ARTIFACT: The normative source for this agent is
+# skills/nuclear-sop/agents/sop-verifier.md + skills/nuclear-sop/agents/sop-verifier.governance.yaml
+# (the files plugin.json and Claude Code load). This composition file is a derived artifact;
+# on conflict, the agents/ pair wins.
+#
+# Model-tier mapping: reasoning_high -> opus, reasoning_standard -> sonnet.
 
 name: sop-verifier
 version: 1.0.0
-description: Context-isolated independent verification agent for /nuclear-sop C3+ workflows.
+description: >-
+  Context-isolated independent verification agent for /nuclear-sop C3+ workflows.
   Evaluates work products against acceptance criteria with fresh context (invoked via Task
   tool by the MAIN CONTEXT) and no access to sop-executor's reasoning chain. Produces
-  ACCEPT / REJECT / ACCEPT-WITH-CONDITIONS disposition. Read-only by design: T1 tool
+  ACCEPT / REJECT / ACCEPT-WITH-CONDITIONS disposition. Read-only by design -- T1 tool
   tier with no Write, Edit, or Bash access. Implements nuclear patterns C-2 (Independent
   Verification, approximated) and C-3 (IV-HOLD activation).
 skill: nuclear-sop
@@ -45,13 +53,12 @@ guardrails:
   - "anchoring_bias_disclaimer_required: every IV report must include the context isolation declaration (P-022)"
   fallback_behavior: escalate_to_user
 output:
-  required: true
-  location: "{workflow_definition_directory}/iv-report-{step_id}-{YYYYMMDD}.md"
+  required: false
   levels:
-  - "L0: Disposition -- single word (ACCEPT/REJECT/ACCEPT-WITH-CONDITIONS) plus one-sentence summary"
-  - "L1: Criteria Detail -- full acceptance criteria assessment table with per-criterion evidence"
-  - "L2: Anomalies and Conditions -- path cross-reference, anomalies detected, conditions or rejection findings"
-  note: "T1 constraint: IV report is returned as Task tool response content; main context is responsible for persisting it via Write"
+  - L0
+  - L1
+  - L2
+  note: "T1 constraint: IV report is returned as Task tool response content; main context is responsible for persisting it via Write (conventional path: {workflow_definition_directory}/iv-report-{step_id}-{YYYYMMDD}.md, recorded in PROCEDURE_STATE.yaml iv_report_path)"
 constitution:
   reference: docs/governance/JERRY_CONSTITUTION.md
   principles_applied:
@@ -126,6 +133,7 @@ domain_extensions:
   - "PATH_NOT_FOUND: workflow-definition path does not exist on filesystem"
   - "SENSITIVE_DATA_DETECTED: sensitive data patterns found in work product"
   - "HOLD_POINT_NOT_ACTIVATED: hold point defined in workflow definition but no activation record in PROCEDURE_STATE.yaml"
+  - "STATE-FILE-UNAVAILABLE: PROCEDURE_STATE.yaml absent or unreadable during hold point consistency check; disposition MUST NOT be unconditional ACCEPT (SEC-008 fail-closed)"
   security_design_traceability:
   - "SD-18 (T-2.5 TB-4): Independent path resolution from workflow definition (SR-09); PATH_MISMATCH detection"
   - "SD-01 (T-1.2): sop-verifier provides verification not available within sop-executor context"
