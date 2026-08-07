@@ -1,0 +1,8 @@
+# Issue #354: PROJ-032/BUG-005: nuclear-sop — expired internal routing-rule deadline needs an owner ruling (PR #269)
+
+**What this is about — owner input needed:** the skill's rule file contains a self-imposed governance deadline (2026-06-15) for a ruling on whether its internal four-agent sequence violates the framework's routing rule limiting a request to three agent-to-agent handoffs. That deadline passed with no ruling; the file's two fallback instructions contradict each other (one says keep the current mode, the other says revert), use different anchor dates, and cite a tracking work-item that does not exist anywhere.
+
+**The decision to make (owner):** does a *predetermined* internal agent sequence count as routing handoffs under the three-hop rule? Useful precedent from the review: the existing eng-team skill runs a predetermined 8-step sequence across 10 worker agents with no hop-ceiling machinery — adopting that reading ("predetermined sequences are not routing re-evaluations") resolves this issue outright and removes the skill's self-scheduled sunset clause. Whatever the ruling: encode it once, with one fallback behavior, one anchor date, and a fail-closed default, and track it as a real work item.
+
+---
+**Tracking:** severity critical; requires owner authority, not maintainer or contributor alone. Worktracker: `projects/PROJ-032-nuclear-sop-review/work/BUG-005-h36-governance-ruling` (register section REM-05). Full analysis with candidate designs: `remediation-register.md` in `projects/PROJ-032-nuclear-sop-review/work/EPIC-001-pr269-review/FEAT-002-remediation-verdict/STORY-004-remediation/` on branch `feat/proj-032-nuclear-sop-review`. Blocks merge of PR #269.

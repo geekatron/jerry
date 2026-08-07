@@ -6,6 +6,7 @@
 
 | ID | Type | Title | Status | Parent | GitHub |
 |----|------|-------|--------|--------|--------|
+| [STORY-006](./work/EPIC-001-pr269-review/FEAT-002-remediation-verdict/STORY-006-issue-quality/STORY-006-issue-quality.md) | story | Issue-quality hardening for PR #269 author handoff | in_progress | FEAT-002 | [#366](https://github.com/geekatron/jerry/issues/366) |
 | [BUG-001](./work/BUG-001-qg-hold-delegation-topology/BUG-001-qg-hold-delegation-topology.md) | bug | [REM-01] QG-HOLD and mid-procedure delegation topology (critical, DEFER-REWORK) | pending | STORY-004 | [#350](https://github.com/geekatron/jerry/issues/350) |
 | [BUG-002](./work/BUG-002-user-hold-runtime-model/BUG-002-user-hold-runtime-model.md) | bug | [REM-02] USER-HOLD mechanism and runtime execution model (critical, DEFER-REWORK) | pending | STORY-004 | [#351](https://github.com/geekatron/jerry/issues/351) |
 | [BUG-003](./work/BUG-003-trust-boundary-state-tamper/BUG-003-trust-boundary-state-tamper.md) | bug | [REM-03] Trust-boundary integrity and state tamper protection (critical, DEFER-REWORK) | pending | STORY-004 | [#352](https://github.com/geekatron/jerry/issues/352) |

@@ -1,0 +1,12 @@
+TITLE: PROJ-032/BUG-013: nuclear-sop — duplicate agent definitions drifted apart, weakening a security guard (fixed on your branch)
+
+**What this is:** one of seven mechanical fixes the maintainer applied directly to your PR #269 branch (`proj-0039-nuclear-engineer`) in commit `c07033ce`. Nothing for you to do unless you disagree — though whether the `composition/` copies should exist at all is yours to decide during rework.
+
+**What was wrong:** each agent ships in four representations on your branch (`agents/*.md`, `agents/*.governance.yaml`, `composition/*.agent.yaml`, `composition/*.prompt.md`) with no precedence rule, and they had drifted apart — worst of all on security behavior. The skill's own prompt-injection guard (its SEC-001 rule) shipped at three different strengths: full stop-work in the agent file, log-and-proceed in the composition prompt, and absent entirely from the composition YAML's forbidden actions. The verifier's composition prompt (214 lines against the 324-line agent file) dropped the caller-responsibility notice, the entire context-isolation contract, and the runtime self-delegation check. Other copies lost a Bash read-only restriction, routing trigger keywords, and deviation-classification rules. Meanwhile SKILL.md labeled the never-loaded `composition/` copy "canonical."
+
+**What the fix changed:** every `composition/` file now carries a header declaring it a **derived artifact** — the normative source is `agents/{name}.md` plus `agents/{name}.governance.yaml`, which is what `plugin.json` actually loads — and all drifted content was resynchronized from the strongest or most complete source: injection guard restored to full stop-work in every copy, isolation-contract text restored verbatim, and forbidden-action sets made identical across representations.
+
+**How to verify:** on `proj-0039-nuclear-engineer`, run `git diff c07033ce^ c07033ce -- skills/nuclear-sop/composition/ skills/nuclear-sop/agents/ skills/nuclear-sop/SKILL.md`. CI at that commit: 15/15 green — https://github.com/geekatron/jerry/actions/runs/31174766440.
+
+---
+**Tracking:** worktracker `projects/PROJ-032-nuclear-sop-review/work/BUG-013-composition-drift` (register section REM-13 in `remediation-register.md`, under `projects/PROJ-032-nuclear-sop-review/work/EPIC-001-pr269-review/FEAT-002-remediation-verdict/STORY-004-remediation/` on branch `feat/proj-032-nuclear-sop-review`). Fix is already on your branch; this issue stays open only until PR #269's disposition is decided.

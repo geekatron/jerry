@@ -1,8 +1,8 @@
 # DET Validation Report -- PR #269 (/nuclear-sop skill)
 
 > Deterministic validator run against PR head commit `bda64202` (branch `proj-0039-nuclear-engineer`).
-> Subject worktree: `/private/tmp/claude-502/.../scratchpad/pr269` (abbreviated below as `$PR269`).
-> Standards worktree: `/Users/adam.nowak/workspace/GitHub/geekatron/jerry-wt/feat/proj-032-nuclear-sop-review` (abbreviated as `$STD`).
+> Subject worktree: `«PR worktree»` (abbreviated below as `$PR269`).
+> Standards worktree: `«local-path»` (abbreviated as `$STD`).
 > Date: 2026-08-07. Runner: deterministic-validation subagent. All Python executed via `uv run` (H-05).
 
 ## Document Sections
@@ -171,7 +171,7 @@ Command: `uv run --project $PR269 python $PR269/scripts/validate_plugin_manifest
 
 ```
 Validating plugin manifests...
-Project root: /private/tmp/claude-502/-Users-adam-nowak-workspace-GitHub-geekatron-jerry-wt-feat-proj-032-nuclear-sop-review/c2f1165d-fb36-4d0f-a4cc-e9f50feffb64/scratchpad/pr269
+Project root: «PR worktree»
 
 [PASS] .claude-plugin/plugin.json
 [PASS] .claude-plugin/marketplace.json

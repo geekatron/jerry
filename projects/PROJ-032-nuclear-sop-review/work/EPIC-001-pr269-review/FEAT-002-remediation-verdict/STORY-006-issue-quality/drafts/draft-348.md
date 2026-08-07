@@ -1,0 +1,10 @@
+TITLE: PROJ-032 Phase 4: triage and maintainer fixes on the PR #269 branch — 7 clusters fixed, 7 handed back (internal tracking, no action needed)
+
+**What this is:** an internal review-tracking issue for Phase 4 of the maintainer's independent review of PR #269 (the `/nuclear-sop` skill on the PR branch `proj-0039-nuclear-engineer`). No action is needed from the PR author beyond the seven redesign issues already filed (#350–#356).
+
+**What the phase did:** consolidated the 114 critical/major findings from Phases 1–3 into 59 unique defects, grouped into 14 remediation clusters, and split them by who can fix them. Seven clusters were mechanical — false status text, schema-invalid metadata files, format drift, missing navigation tables — and the maintainer fixed them directly on the PR author's branch in commit `c07033ce`; CI at that head is fully green (15/15, run https://github.com/geekatron/jerry/actions/runs/31174766440), and each fix is documented per-cluster in issues #357–#363. The other seven clusters are design decisions only the contributor can make (who invokes agents mid-procedure, how user approval works at runtime, what replaces the invalidated validation evidence, and so on); they were deliberately left untouched, are tracked as issues #350–#356, and block merge. One conservative call inside the fixes: the skill's approval for higher-risk work was withdrawn because its validation evidence was invalidated — it is now approved for low-risk use only, stated consistently across its docs.
+
+**Where the detail lives:** `remediation-register.md` (full finding-to-cluster traceability and fix specifications) and `remediation-log.md` (fix trace, CI links, verification chain), both under `projects/PROJ-032-nuclear-sop-review/work/EPIC-001-pr269-review/FEAT-002-remediation-verdict/STORY-004-remediation/` on branch `feat/proj-032-nuclear-sop-review`.
+
+---
+**Tracking:** internal review-tracking issue. Worktracker: `projects/PROJ-032-nuclear-sop-review` — **STORY-004**. Stays open until the review branch `feat/proj-032-nuclear-sop-review` merges.

@@ -1,0 +1,14 @@
+# GitHub issue #361: PROJ-032/BUG-012: nuclear-sop — state machine specified three different ways; completion handoff type-broken (fixed on your branch)
+
+Assignees:
+
+**What this is:** one of seven mechanical fixes the maintainer applied directly to your PR #269 branch (`proj-0039-nuclear-engineer`) in commit `c07033ce`. Nothing for you to do unless you disagree with the fix.
+
+**What was wrong:** three contract breaks in the skill's execution-state tracking, on your branch. (1) The state machine was specified differently in the rules file, the state-file template, and a behavioral baseline — divergent transitions after verifier rejection, and a "WAIVED" outcome required by the baseline but absent from the template's allowed values. (2) The completion handoff was self-contradictory and type-broken: the executor agent set status COMPLETED before the capture agent ran (a transition the skill's own rules forbid) and recorded `execution_log_final` as a file path, while the capture agent's first step required it to be the literal boolean `true` and halts otherwise — a literal reading halts the mandatory capture phase of every single run. (3) The verifier's hold-point check read the state file only "if accessible," silently skipping when it is missing — the exact fail-open gap the PR's own compliance gate had flagged as remediation-required (its SEC-008 item), shipped unfixed.
+
+**What the fix changed:** transitions aligned to the rules file as the single source of truth (template and baseline now match); the executor leaves status IN-PROGRESS and sets `execution_log_final` to a path, the capture agent checks that the path resolves to a real file and remains the sole writer of COMPLETED; the verifier now fails closed — a missing or unreadable state file is recorded as an anomaly and blocks an unconditional ACCEPT.
+
+**How to verify:** on `proj-0039-nuclear-engineer`, run `git diff c07033ce^ c07033ce -- skills/nuclear-sop/`. CI at that commit: 15/15 green — https://github.com/geekatron/jerry/actions/runs/31174766440.
+
+---
+**Tracking:** worktracker `projects/PROJ-032-nuclear-sop-review/work/BUG-012-state-machine-contract` (register section REM-12 in `remediation-register.md`, under `projects/PROJ-032-nuclear-sop-review/work/EPIC-001-pr269-review/FEAT-002-remediation-verdict/STORY-004-remediation/` on branch `feat/proj-032-nuclear-sop-review`). Fix is already on your branch; this issue stays open only until PR #269's disposition is decided.
