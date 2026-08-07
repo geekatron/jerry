@@ -41,7 +41,7 @@ The CI security audit (`ci.yml`) correctly detects transitive CVEs, but the sche
 
 | ID | Type | Status |
 |----|------|--------|
-| FEAT-002 | Feature | in_progress — 6/9 children completed 2026-08-05 (BUG-008, STORY-026, STORY-027, STORY-029, STORY-030, TASK-035); open: STORY-028 (alert body defect), EN-007 (solely pending STORY-028's alerting criterion), BUG-009 (in_progress — click fix on branch, pending merge + green scan, GH #336) |
+| FEAT-002 | Feature | in_progress — 7/9 children completed (BUG-008, STORY-026, STORY-027, STORY-029, STORY-030, TASK-035 2026-08-05; BUG-009 2026-08-06); open: STORY-028 (AC-3 unproven, AC-4 body defect), EN-007 (solely pending STORY-028's alerting criterion) |
 
 ---
 
@@ -53,3 +53,4 @@ The CI security audit (`ci.yml`) correctly detects transitive CVEs, but the sche
 | 2026-06-23 | in_progress | FEAT-002 children delivered via PR #302 (81c7c61c) and PR #303 (e372e418), both merged 2026-06-23; reached main via merge PR #304 (687a3214) — evidence trail corrected 2026-08-05 |
 | 2026-08-05 | in_progress | Verification pass: BUG-008 + STORY-026/027/029/030 closed. Remaining open: STORY-028, EN-007/TASK-035, BUG-009 (new, GH #336). |
 | 2026-08-05 | in_progress | TASK-035 completed (owner enabled Dependabot; alerts API-confirmed). BUG-009 fix delivered on branch (click 8.4.2), in_progress pending merge + green scan. Open: STORY-028, EN-007, BUG-009. |
+| 2026-08-07 | in_progress | BUG-009 closed (resolved 2026-08-06: fix on main via PR #338, green scan 31079097567, #335 auto-closed). STORY-028 AC-2 runtime-proven. Open: STORY-028, EN-007. |
