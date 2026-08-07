@@ -1,10 +1,11 @@
 # STORY-004: Phase 4 — Remediation of Critical/Major Findings on PR #269
 
 > **Type:** story
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-08-07T00:00:00Z
+> **Completed:** 2026-08-07T13:45:00Z
 > **Parent:** FEAT-002
 > **Owner:** geekatron
 > **GitHub Issue:** [#348](https://github.com/geekatron/jerry/issues/348)
@@ -37,10 +38,10 @@ Convert Phase 1-3 Critical/Major findings into worktracker items (+ GitHub issue
 
 ## Acceptance Criteria
 
-- [ ] Every Critical/Major finding has a worktracker item and GitHub issue created before its fix commit
-- [ ] Every fix commit is pushed to `proj-0039-nuclear-engineer` and referenced from its finding item
-- [ ] PR #269 CI reports green at the post-remediation head
-- [ ] Findings that are intentionally NOT fixed carry a documented disposition (deferred/rejected with rationale)
+- [x] Every Critical/Major finding has a worktracker item and GitHub issue created before its fix commit — 114 findings → 14 clusters → BUG-001..014 / issues #350–#363, created prior to commit `c07033ce`
+- [x] Every fix commit is pushed to `proj-0039-nuclear-engineer` and referenced from its finding item — single commit `c07033ce` referenced from BUG-008..014 and issues #357–#363
+- [x] PR #269 CI reports green at the post-remediation head — 15/15, [run 31174766440](https://github.com/geekatron/jerry/actions/runs/31174766440)
+- [x] Findings that are intentionally NOT fixed carry a documented disposition — 7 DEFER-REWORK clusters (BUG-001..007, #350–#356) with per-cluster redesign rationale in the register
 
 ---
 
@@ -49,6 +50,7 @@ Convert Phase 1-3 Critical/Major findings into worktracker items (+ GitHub issue
 | Deliverable | Type | Link |
 |-------------|------|------|
 | Remediation log (finding -> issue -> commit -> CI) | Traceability artifact | ./remediation-log.md |
+| Remediation register (14 clusters, 114 findings) | Triage artifact | ./remediation-register.md |
 
 ---
 
@@ -57,3 +59,4 @@ Convert Phase 1-3 Critical/Major findings into worktracker items (+ GitHub issue
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-08-07T00:00:00Z | geekatron | pending | Story created; GH parity #348 |
+| 2026-08-07T13:45:00Z | geekatron | completed | FIX-NOW clusters REM-08..14 fixed in c07033ce, CI 15/15; DEFER-REWORK REM-01..07 dispositioned open (contributor redesign). |

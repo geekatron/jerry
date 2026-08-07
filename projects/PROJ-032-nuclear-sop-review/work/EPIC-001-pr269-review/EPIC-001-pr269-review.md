@@ -1,7 +1,8 @@
 # EPIC-001: PR #269 /nuclear-sop Review & Remediation
 
 > **Type:** epic
-> **Status:** in_progress
+> **Status:** completed
+> **Completed:** 2026-08-07T14:30:00Z
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-08-07T00:00:00Z
@@ -49,8 +50,8 @@ Independent, evidence-based review of external contributor PR [#269](https://git
 
 | ID | Title | Status | Priority | Progress |
 |----|-------|--------|----------|----------|
-| FEAT-001 | Independent review (Phases 1-3) | pending | high | 0% |
-| FEAT-002 | Remediation & verdict (Phases 4-5) | pending | high | 0% |
+| FEAT-001 | Independent review (Phases 1-3) | completed | high | 100% |
+| FEAT-002 | Remediation & verdict (Phases 4-5) | completed | high | 100% |
 
 ### Feature Links
 
@@ -64,9 +65,9 @@ Independent, evidence-based review of external contributor PR [#269](https://git
 | Metric | Value |
 |--------|-------|
 | **Total Features** | 2 |
-| **Completed Features** | 0 |
+| **Completed Features** | 2 |
 | **In Progress Features** | 0 |
-| **Feature Completion %** | 0% |
+| **Feature Completion %** | 100% |
 
 ---
 
@@ -83,3 +84,4 @@ Independent, evidence-based review of external contributor PR [#269](https://git
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-08-07T00:00:00Z | geekatron | in_progress | Epic created; review session kicked off |
+| 2026-08-07T14:30:00Z | geekatron | completed | Verdict REWORK delivered to PR #269. Review: 0.52 vs claimed 0.943; remediation c07033ce CI 15/15; 7 redesign blockers open (#350-#356). DEFER-REWORK bugs BUG-001..007 remain open intentionally — they track the contributor's rework, not this epic's scope. |

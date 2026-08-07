@@ -1,11 +1,12 @@
 # BUG-008: Registration and status truth reconciliation [REM-08]
 
 > **Type:** bug
-> **Status:** in_progress
+> **Status:** completed
 > **Priority:** critical
 > **Impact:** high
 > **Severity:** critical
 > **Created:** 2026-08-07T11:30:00Z
+> **Completed:** 2026-08-07T13:30:00Z
 > **Found In:** PR #269 head bda64202 (branch proj-0039-nuclear-engineer)
 > **GitHub Issue:** [#357](https://github.com/geekatron/jerry/issues/357)
 
@@ -34,13 +35,13 @@ Affected files: `skills/nuclear-sop/SKILL.md`, `skills/nuclear-sop/PLAYBOOK.md` 
 
 ## Acceptance Criteria
 
-- [ ] SKILL.md's DEFERRED REGISTRATION NOTE replaced with a "REGISTRATION STATUS: APPLIED" note citing the applied surfaces and qg-e6-score.md (0.934 PASS, 2026-04-14) by resolvable path; all "NOT registered"/"NOT live-routable"/"user applies these entries" sentences removed.
-- [ ] Stale priority-12 copy-ready trigger-row block deleted and replaced with a pointer naming `.context/rules/mandatory-skill-usage.md` as the live SSOT row (no second copy that can drift).
-- [ ] C3+ status reconciled conservatively: SKILL.md states "C3+ status: WITHDRAWN pending re-validation ... Approved use: C1-C2 only"; "empirically validated ... 3/3 catch rate (100%)" reworded to "simulation walkthrough (desk-check); not independent execution evidence"; PLAYBOOK.md keeps the C1-C2 restriction citing the PROJ-032 invalidation; stale future-tense QG-E4 scaffolding removed from SKILL.md's gate table.
-- [ ] SEC-008 noted as OPEN with remediation tracked in REM-12; no unconditional C1-C4 approval asserted anywhere.
-- [ ] Validation greps pass: `grep -rn "NOT registered\|NOT live-routable\|priority.*12" skills/nuclear-sop/SKILL.md` → 0 hits; `grep -rn "approved for all criticality\|C1 through C4" skills/nuclear-sop/` → 0 unqualified hits; SKILL.md and PLAYBOOK.md state the same C1-C2 restriction.
-- [ ] Fix commit pushed to proj-0039-nuclear-engineer and referenced here.
-- [ ] PR #269 CI green at post-fix head.
+- [x] SKILL.md's DEFERRED REGISTRATION NOTE replaced with a "REGISTRATION STATUS: APPLIED" note citing the applied surfaces and qg-e6-score.md (0.934 PASS, 2026-04-14) by resolvable path; all "NOT registered"/"NOT live-routable"/"user applies these entries" sentences removed. (verified 2026-08-07)
+- [x] Stale priority-12 copy-ready trigger-row block deleted and replaced with a pointer naming `.context/rules/mandatory-skill-usage.md` as the live SSOT row (no second copy that can drift). (verified 2026-08-07)
+- [x] C3+ status reconciled conservatively: SKILL.md states "C3+ status: WITHDRAWN pending re-validation ... Approved use: C1-C2 only"; "empirically validated ... 3/3 catch rate (100%)" reworded to "simulation walkthrough (desk-check); not independent execution evidence"; PLAYBOOK.md keeps the C1-C2 restriction citing the PROJ-032 invalidation; stale future-tense QG-E4 scaffolding removed from SKILL.md's gate table. (verified 2026-08-07)
+- [x] SEC-008 noted as OPEN with remediation tracked in REM-12; no unconditional C1-C4 approval asserted anywhere. (verified 2026-08-07)
+- [x] Validation greps pass: `grep -rn "NOT registered\|NOT live-routable\|priority.*12" skills/nuclear-sop/SKILL.md` → 0 hits; `grep -rn "approved for all criticality\|C1 through C4" skills/nuclear-sop/` → 0 unqualified hits; SKILL.md and PLAYBOOK.md state the same C1-C2 restriction. (verified 2026-08-07)
+- [x] Fix commit pushed to proj-0039-nuclear-engineer and referenced here. — commit c07033ce
+- [x] PR #269 CI green at post-fix head. — 15/15, run 31174766440
 
 ## Related Items
 

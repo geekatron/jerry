@@ -1,10 +1,11 @@
 # STORY-005: Phase 5 — Merge/Rework/Reject Verdict for PR #269
 
 > **Type:** story
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-08-07T00:00:00Z
+> **Completed:** 2026-08-07T14:30:00Z
 > **Parent:** FEAT-002
 > **Owner:** geekatron
 > **GitHub Issue:** [#349](https://github.com/geekatron/jerry/issues/349)
@@ -37,9 +38,9 @@ Synthesize Phases 1-4 into a terminal recommendation (merge / rework / reject) f
 
 ## Acceptance Criteria
 
-- [ ] Verdict document exists at `projects/PROJ-032-nuclear-sop-review/work/EPIC-001-pr269-review/FEAT-002-remediation-verdict/STORY-005-verdict/pr269-verdict.md` with an unambiguous merge/rework/reject recommendation
-- [ ] Every claim in the verdict links to a persisted Phase 1-4 artifact or an observable (commit, CI run, issue)
-- [ ] Recommendation summary is posted to PR #269 as a review comment
+- [x] Verdict document exists at `./pr269-verdict.md` with an unambiguous recommendation — **REWORK**
+- [x] Every claim in the verdict links to a persisted Phase 1-4 artifact or an observable — L1 evidence chain cites all phase reports, commit `c07033ce`, CI run 31174766440, issues #350–#363
+- [x] Recommendation summary posted to PR #269 — [comment](https://github.com/geekatron/jerry/pull/269#issuecomment-5216673422)
 
 ---
 
@@ -56,3 +57,4 @@ Synthesize Phases 1-4 into a terminal recommendation (merge / rework / reject) f
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-08-07T00:00:00Z | geekatron | pending | Story created; GH parity #349 |
+| 2026-08-07T14:30:00Z | geekatron | completed | Verdict REWORK synthesized and posted to PR #269. Merge path: resolve/descope #350-#356 + independent re-review >= 0.92 with zero open Criticals. |

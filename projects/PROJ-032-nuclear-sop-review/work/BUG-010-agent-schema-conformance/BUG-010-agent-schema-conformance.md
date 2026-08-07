@@ -1,11 +1,12 @@
 # BUG-010: Agent definition schema and standards conformance [REM-10]
 
 > **Type:** bug
-> **Status:** in_progress
+> **Status:** completed
 > **Priority:** critical
 > **Impact:** high
 > **Severity:** critical
 > **Created:** 2026-08-07T11:30:00Z
+> **Completed:** 2026-08-07T13:30:00Z
 > **Found In:** PR #269 head bda64202 (branch proj-0039-nuclear-engineer)
 > **GitHub Issue:** [#359](https://github.com/geekatron/jerry/issues/359)
 
@@ -34,14 +35,14 @@ Affected files: `skills/nuclear-sop/agents/sop-brief.governance.yaml`, `sop-veri
 
 ## Acceptance Criteria
 
-- [ ] `composition/sop-verifier.agent.yaml` parses (block-scalar or quoted description) and output.levels uses `[L0, L1, L2]`; the same levels fix mirrored in `sop-verifier.governance.yaml`.
-- [ ] post_completion_checks entries rewritten as plain strings in `sop-brief.governance.yaml` and `composition/sop-brief.agent.yaml`; on_send line 92 quoted.
-- [ ] `sop-verifier.governance.yaml` sets `output.required: false`; sop-brief section-numbering corrected (.md Step 1.6, purpose, identity + domain_extensions A-3 of both YAMLs): sections 4/5/9 validated, 7-8 assigned to sop-executor.
-- [ ] AD-M-011 output declarations added: sop-brief `projects/${JERRY_PROJECT}/`-anchored location + filename_pattern; `{execution_dir}` defined once in SKILL.md/rules and referenced by sop-executor; sop-capture's two explicit paths with documented MEDIUM-tier override justification; sop-verifier declares none.
-- [ ] Domain-layer sections reworded to capability language with tool syntax relocated to `<capabilities>`; `reasoning_effort: high` added to sop-executor.governance.yaml, the other three set or documented per ET-M-001.
-- [ ] Validation passes: 0 schema errors for all four governance files; yaml.safe_load succeeds on all four composition agent.yaml files; tool-name grep in domain sections → 0 hits.
-- [ ] Fix commit pushed to proj-0039-nuclear-engineer and referenced here.
-- [ ] PR #269 CI green at post-fix head.
+- [x] `composition/sop-verifier.agent.yaml` parses (block-scalar or quoted description) and output.levels uses `[L0, L1, L2]`; the same levels fix mirrored in `sop-verifier.governance.yaml`. (verified 2026-08-07)
+- [x] post_completion_checks entries rewritten as plain strings in `sop-brief.governance.yaml` and `composition/sop-brief.agent.yaml`; on_send line 92 quoted. (verified 2026-08-07)
+- [x] `sop-verifier.governance.yaml` sets `output.required: false`; sop-brief section-numbering corrected (.md Step 1.6, purpose, identity + domain_extensions A-3 of both YAMLs): sections 4/5/9 validated, 7-8 assigned to sop-executor. (verified 2026-08-07)
+- [x] AD-M-011 output declarations added: sop-brief `projects/${JERRY_PROJECT}/`-anchored location + filename_pattern; `{execution_dir}` defined once in SKILL.md/rules and referenced by sop-executor; sop-capture's two explicit paths with documented MEDIUM-tier override justification; sop-verifier declares none. (verified 2026-08-07)
+- [x] Domain-layer sections reworded to capability language with tool syntax relocated to `<capabilities>`; `reasoning_effort: high` added to sop-executor.governance.yaml, the other three set or documented per ET-M-001. (verified 2026-08-07)
+- [x] Validation passes: 0 schema errors for all four governance files; yaml.safe_load succeeds on all four composition agent.yaml files; tool-name grep in domain sections → 0 hits. (verified 2026-08-07)
+- [x] Fix commit pushed to proj-0039-nuclear-engineer and referenced here. — commit c07033ce
+- [x] PR #269 CI green at post-fix head. — 15/15, run 31174766440
 
 ## Related Items
 

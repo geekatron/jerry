@@ -1,11 +1,12 @@
 # BUG-012: State machine and completion contract reconciliation [REM-12]
 
 > **Type:** bug
-> **Status:** in_progress
+> **Status:** completed
 > **Priority:** critical
 > **Impact:** high
 > **Severity:** critical
 > **Created:** 2026-08-07T11:30:00Z
+> **Completed:** 2026-08-07T13:30:00Z
 > **Found In:** PR #269 head bda64202 (branch proj-0039-nuclear-engineer)
 > **GitHub Issue:** [#361](https://github.com/geekatron/jerry/issues/361)
 
@@ -35,12 +36,12 @@ Affected files: `skills/nuclear-sop/templates/PROCEDURE_STATE.template.yaml`, `s
 
 ## Acceptance Criteria
 
-- [ ] Template transitions aligned to the rules SSOT: IV-PENDING → IV-PASSED | IV-REJECTED (HELD only as the documented consequence after IV-REJECTED, per the rules); IV-REJECTED added to the transitions section; outcome comment reads `PASS | DEVIATION | WAIVED`; "Any state → RESUMING" replaced with the rules' enumerated predecessors.
-- [ ] Completion contract fixed: the executor never sets COMPLETED (leaves IN-PROGRESS, sets `execution_log_final: <path>`); sop-capture Step 1 HALTs unless execution_log_final is set and resolves to an existing file; sop-capture Step 4 remains the sole writer of COMPLETED; template comments and composition twins match.
-- [ ] sop-verifier Step 6 (both copies) fail-closed: absent/unreadable state file → record `ANOMALY: STATE-FILE-UNAVAILABLE` in the verification report, and the disposition MUST NOT be unconditional ACCEPT; SEC-008 status updated wherever tracked (see BUG-008/REM-08 item 4).
-- [ ] Validation passes: every status in the template's valid-status list appears in ≥1 transition; bb-002 patterns re-run clean against the template; `grep -n "execution_log_final" skills/nuclear-sop/` shows path semantics only; `grep -n "if accessible"` in both sop-verifier copies → 0 hits.
-- [ ] Fix commit pushed to proj-0039-nuclear-engineer and referenced here.
-- [ ] PR #269 CI green at post-fix head.
+- [x] Template transitions aligned to the rules SSOT: IV-PENDING → IV-PASSED | IV-REJECTED (HELD only as the documented consequence after IV-REJECTED, per the rules); IV-REJECTED added to the transitions section; outcome comment reads `PASS | DEVIATION | WAIVED`; "Any state → RESUMING" replaced with the rules' enumerated predecessors. (verified 2026-08-07)
+- [x] Completion contract fixed: the executor never sets COMPLETED (leaves IN-PROGRESS, sets `execution_log_final: <path>`); sop-capture Step 1 HALTs unless execution_log_final is set and resolves to an existing file; sop-capture Step 4 remains the sole writer of COMPLETED; template comments and composition twins match. (verified 2026-08-07)
+- [x] sop-verifier Step 6 (both copies) fail-closed: absent/unreadable state file → record `ANOMALY: STATE-FILE-UNAVAILABLE` in the verification report, and the disposition MUST NOT be unconditional ACCEPT; SEC-008 status updated wherever tracked (see BUG-008/REM-08 item 4). (verified 2026-08-07)
+- [x] Validation passes: every status in the template's valid-status list appears in ≥1 transition; bb-002 patterns re-run clean against the template; `grep -n "execution_log_final" skills/nuclear-sop/` shows path semantics only; `grep -n "if accessible"` in both sop-verifier copies → 0 hits. (verified 2026-08-07)
+- [x] Fix commit pushed to proj-0039-nuclear-engineer and referenced here. — commit c07033ce
+- [x] PR #269 CI green at post-fix head. — 15/15, run 31174766440
 
 ## Related Items
 

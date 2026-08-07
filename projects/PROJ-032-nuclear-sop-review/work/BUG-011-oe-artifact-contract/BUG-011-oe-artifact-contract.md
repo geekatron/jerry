@@ -1,11 +1,12 @@
 # BUG-011: OE artifact contract alignment [REM-11]
 
 > **Type:** bug
-> **Status:** in_progress
+> **Status:** completed
 > **Priority:** critical
 > **Impact:** high
 > **Severity:** critical
 > **Created:** 2026-08-07T11:30:00Z
+> **Completed:** 2026-08-07T13:30:00Z
 > **Found In:** PR #269 head bda64202 (branch proj-0039-nuclear-engineer)
 > **GitHub Issue:** [#360](https://github.com/geekatron/jerry/issues/360)
 
@@ -34,14 +35,14 @@ Affected files: `skills/nuclear-sop/templates/POST_JOB_BRIEF.template.md`, `skil
 
 ## Acceptance Criteria
 
-- [ ] `templates/POST_JOB_BRIEF.template.md` lines 127-129 use `.yaml` for both paths (`capture/oe-entry-{entry_id}.yaml`, `docs/experience/{entry_id}.yaml`).
-- [ ] bb-003 globs `docs/experience/*.yaml` (line 112, B-21/B-24), with B-24's retrieval rewritten to the rules' protocol (Glob `*.yaml`, then filter by workflow_id).
-- [ ] Example glob patterns (lines 480/518), AC-7 (`docs/experience/adr-authoring-c3-001-*.yaml`), and the Section 11 reference all use `.yaml`.
-- [ ] `agents/sop-brief.md` Step 4 uses the workflow_id-primary search protocol (workflow_type as post-read filter); composition twins mirrored.
-- [ ] `agents/sop-capture.md` gains the explicit Section 11 append step (after OE write, before status COMPLETED) plus the matching output-artifacts row, mirrored in governance post_completion_checks and composition twins.
-- [ ] Validation passes: `grep -rn "experience/.*\.md\|oe-entry-.*\.md" skills/nuclear-sop/` → 0 hits; bb-003 checks executable against a sample `.yaml` entry; AC-7 glob matches sop-capture's declared write path; sop-brief and rules describe the identical search protocol.
-- [ ] Fix commit pushed to proj-0039-nuclear-engineer and referenced here.
-- [ ] PR #269 CI green at post-fix head.
+- [x] `templates/POST_JOB_BRIEF.template.md` lines 127-129 use `.yaml` for both paths (`capture/oe-entry-{entry_id}.yaml`, `docs/experience/{entry_id}.yaml`). (verified 2026-08-07)
+- [x] bb-003 globs `docs/experience/*.yaml` (line 112, B-21/B-24), with B-24's retrieval rewritten to the rules' protocol (Glob `*.yaml`, then filter by workflow_id). (verified 2026-08-07)
+- [x] Example glob patterns (lines 480/518), AC-7 (`docs/experience/adr-authoring-c3-001-*.yaml`), and the Section 11 reference all use `.yaml`. (verified 2026-08-07)
+- [x] `agents/sop-brief.md` Step 4 uses the workflow_id-primary search protocol (workflow_type as post-read filter); composition twins mirrored. (verified 2026-08-07)
+- [x] `agents/sop-capture.md` gains the explicit Section 11 append step (after OE write, before status COMPLETED) plus the matching output-artifacts row, mirrored in governance post_completion_checks and composition twins. (verified 2026-08-07)
+- [x] Validation passes: `grep -rn "experience/.*\.md\|oe-entry-.*\.md" skills/nuclear-sop/` → 0 hits; bb-003 checks executable against a sample `.yaml` entry; AC-7 glob matches sop-capture's declared write path; sop-brief and rules describe the identical search protocol. (verified 2026-08-07)
+- [x] Fix commit pushed to proj-0039-nuclear-engineer and referenced here. — commit c07033ce
+- [x] PR #269 CI green at post-fix head. — 15/15, run 31174766440
 
 ## Related Items
 

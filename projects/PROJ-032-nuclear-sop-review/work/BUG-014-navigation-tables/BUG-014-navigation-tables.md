@@ -1,11 +1,12 @@
 # BUG-014: Navigation tables [REM-14]
 
 > **Type:** bug
-> **Status:** in_progress
+> **Status:** completed
 > **Priority:** critical
 > **Impact:** high
 > **Severity:** critical
 > **Created:** 2026-08-07T11:30:00Z
+> **Completed:** 2026-08-07T13:30:00Z
 > **Found In:** PR #269 head bda64202 (branch proj-0039-nuclear-engineer)
 > **GitHub Issue:** [#363](https://github.com/geekatron/jerry/issues/363)
 
@@ -34,11 +35,11 @@ Affected files: `skills/nuclear-sop/templates/WORKFLOW_DEFINITION.template.md`, 
 
 ## Acceptance Criteria
 
-- [ ] A "Document Sections" table (`| Section | Purpose |` with NAV-006 anchor links) added after the frontmatter/intro of each of the three G1 files, listing every `##` heading.
-- [ ] The missing rows added to the existing nav tables of SKILL.md ("## P-003 Compliance"), PLAYBOOK.md (PROCEDURE_STATE.yaml State Machine, Step Limits by Criticality, OE Accumulation Thresholds), and docs/reference.md ("## Related").
-- [ ] Validation passes: for each of the six files, every `##` heading has a nav-table row and every anchor resolves (lowercase, hyphens, special chars stripped); `/ast` or markdown-lint nav check passes.
-- [ ] Fix commit pushed to proj-0039-nuclear-engineer and referenced here.
-- [ ] PR #269 CI green at post-fix head.
+- [x] A "Document Sections" table (`| Section | Purpose |` with NAV-006 anchor links) added after the frontmatter/intro of each of the three G1 files, listing every `##` heading. (verified 2026-08-07)
+- [x] The missing rows added to the existing nav tables of SKILL.md ("## P-003 Compliance"), PLAYBOOK.md (PROCEDURE_STATE.yaml State Machine, Step Limits by Criticality, OE Accumulation Thresholds), and docs/reference.md ("## Related"). (verified 2026-08-07)
+- [x] Validation passes: for each of the six files, every `##` heading has a nav-table row and every anchor resolves (lowercase, hyphens, special chars stripped); `/ast` or markdown-lint nav check passes. (verified 2026-08-07)
+- [x] Fix commit pushed to proj-0039-nuclear-engineer and referenced here. — commit c07033ce
+- [x] PR #269 CI green at post-fix head. — 15/15, run 31174766440
 
 ## Related Items
 
