@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **fix(ci):** scan full dependency tree via `uv export --all-extras` for pip-audit — replaces 3-package hand-picked list with complete lockfile audit (TASK-018)
 
 ### Changed
+- **docs(proj-024):** worktracker traceability for the ruff 0.16.1 formatting alignment — EN-010/TASK-036 entities with full evidence chain including the review-rejected `projects/**` formatter-exclusion shortcut and its correction; EPIC-003 Phase 4 reopen/re-close window documented (#339)
 - **docs(proj-024):** worktracker audit + remediation — evidence-based closure of 5 security-hardening items via 6 independent verifier reports, hierarchy restructure (container enablers EN-008/EN-009), 2 lost entities recreated, 30 completion dates backfilled from git evidence, manifest rebuilt (86/86 entities consistent, re-audit PASSED)
 - **refactor(ci):** remove redundant `test-pip` job (8 matrix cells) — uv test matrix provides equivalent coverage (TASK-016)
 - **refactor(ci):** consolidate 6 validation jobs (`lockfile-check`, `template-validation`, `frontmatter-validation`, `license-headers`, `version-sync`, `hard-rule-ceiling`) into single `validation` job (TASK-019)
