@@ -43,8 +43,8 @@ Three-lens independent review of the `/nuclear-sop` skill at PR #269 head (`bda6
 | ID | Title | Status | Priority | GitHub |
 |----|-------|--------|----------|--------|
 | STORY-001 | Phase 1 — Standards compliance validation | completed | high | [#345](https://github.com/geekatron/jerry/issues/345) |
-| STORY-002 | Phase 2 — Engineering review | in_progress | high | [#346](https://github.com/geekatron/jerry/issues/346) |
-| STORY-003 | Phase 3 — Full C4 adversarial tournament | pending | high | [#347](https://github.com/geekatron/jerry/issues/347) |
+| STORY-002 | Phase 2 — Engineering review | completed | high | [#346](https://github.com/geekatron/jerry/issues/346) |
+| STORY-003 | Phase 3 — Full C4 adversarial tournament | in_progress | high | [#347](https://github.com/geekatron/jerry/issues/347) |
 
 ### Story Links
 
@@ -59,8 +59,8 @@ Three-lens independent review of the `/nuclear-sop` skill at PR #269 head (`bda6
 | Metric | Value |
 |--------|-------|
 | **Total Stories** | 3 |
-| **Completed Stories** | 1 |
-| **Completion %** | 33% |
+| **Completed Stories** | 2 |
+| **Completion %** | 67% |
 
 ---
 

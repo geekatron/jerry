@@ -1,10 +1,11 @@
 # STORY-002: Phase 2 — Engineering Review of /nuclear-sop
 
 > **Type:** story
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-08-07T00:00:00Z
+> **Completed:** 2026-08-07T08:25:00Z
 > **Parent:** FEAT-001
 > **Owner:** geekatron
 > **GitHub Issue:** [#346](https://github.com/geekatron/jerry/issues/346)
@@ -42,9 +43,9 @@
 
 ## Acceptance Criteria
 
-- [ ] Review report covers all three lenses (methodology, prompts, security) for every file in `skills/nuclear-sop/`
-- [ ] Each finding carries severity (Critical/Major/Minor), file path, and concrete evidence
-- [ ] Report exists at `projects/PROJ-032-nuclear-sop-review/work/EPIC-001-pr269-review/FEAT-001-independent-review/STORY-002-engineering-review/phase-2-eng-review.md`
+- [x] Review report covers all three lenses (methodology, prompts, security) for every file in `skills/nuclear-sop/` — 14 methodology + 7 prompt + 9 security findings
+- [x] Each finding carries severity (Critical/Major/Minor), file path, and concrete evidence — P2-001..P2-030
+- [x] Report exists at `./phase-2-eng-review.md` — 30 findings (4 Critical / 16 Major / 10 Minor), verdict NO-GO at head `bda64202`
 
 ---
 
@@ -61,3 +62,4 @@
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-08-07T00:00:00Z | geekatron | pending | Story created; GH parity #346 |
+| 2026-08-07T08:25:00Z | geekatron | completed | eng-reviewer (blind, max effort): 30 findings 4C/16M/10m, NO-GO at bda64202. Top: USER-HOLD unimplementable (P2-015), mid-procedure delegation impossible (P2-001), verifier authority-source inversion (P2-022), NS-H-01 non-terminating (P2-002). |
