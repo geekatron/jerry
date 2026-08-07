@@ -16,10 +16,6 @@
 | EPIC-001 | Epic | Claude Code Schema Validation | in_progress | PROJ-024 |
 | FEAT-001 | Feature | Claude Code Schema Validation Research and Refinement | in_progress | EPIC-001 |
 | EN-004 | Enabler | Memory-Keeper Collision Detection Enhancement | pending | FEAT-001 |
-| EPIC-004 | Epic | Dependency Security-Scan Pipeline Hardening | in_progress | PROJ-024 |
-| FEAT-002 | Feature | Security-scan pipeline hardening | in_progress | EPIC-004 |
-| EN-007 | Enabler | Dependency security-scan pipeline hardening (6/7 ACs done; open solely pending STORY-028's alerting criterion) | in_progress | FEAT-002 |
-| STORY-028 | Story | Add owner alerting via an auto-managed rolling GitHub issue (verified 60% — AC-4 failed, AC-2/AC-3 unproven) | in_progress | FEAT-002 |
 
 ## Completed
 
@@ -107,4 +103,8 @@
 | STORY-029 | Story | Fix the silent-failure guard to verify a meaningful audit (not just non-empty output) | FEAT-002 | 2026-08-05 |
 | STORY-030 | Story | Remediate the 9 current transitive CVEs (mako→1.3.12, urllib3→2.7.0, msgpack→1.2.1, pydantic-settings→2.14.2, pip→26.1.2) | FEAT-002 | 2026-08-05 |
 | TASK-035 | Task | Confirm Dependabot security updates + vulnerability alerts enabled in repo Settings — owner enabled alerts/malware alerts/security updates; alerts API-confirmed | EN-007 | 2026-08-05 |
+| STORY-028 | Story | Owner alerting via auto-managed rolling GitHub issue — create/update/close + detailed body all runtime-proven (staged test, alert issue #365) (GH #301) | FEAT-002 | 2026-08-07 |
+| EN-007 | Enabler | Dependency security-scan pipeline hardening — all 7 ACs done (GH #301) | FEAT-002 | 2026-08-07 |
+| FEAT-002 | Feature | Security-scan pipeline hardening — 9/9 children complete (GH #301) | EPIC-004 | 2026-08-07 |
+| EPIC-004 | Epic | Dependency Security-Scan Pipeline Hardening — fully delivered (GH #301) | PROJ-024 | 2026-08-07 |
 | BUG-009 | Bug | click 8.3.1 transitive command injection PYSEC-2026-2132 — fixed via click>=8.3.3 (resolves 8.4.2); green scan 31079097567 + #335 auto-closed 2026-08-06 (#336) | FEAT-002 | 2026-08-06 |

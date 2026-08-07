@@ -1,10 +1,11 @@
 # EPIC-004: Dependency Security-Scan Pipeline Hardening
 
 > **Type:** epic
-> **Status:** in_progress
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-06-22
+> **Completed:** 2026-08-07
 > **Parent:** PROJ-024
 > **GitHub Issue:** [#301](https://github.com/geekatron/jerry/issues/301)
 
@@ -41,7 +42,7 @@ The CI security audit (`ci.yml`) correctly detects transitive CVEs, but the sche
 
 | ID | Type | Status |
 |----|------|--------|
-| FEAT-002 | Feature | in_progress — 7/9 children completed (BUG-008, STORY-026, STORY-027, STORY-029, STORY-030, TASK-035 2026-08-05; BUG-009 2026-08-06); open: STORY-028 (AC-3 unproven, AC-4 body defect), EN-007 (solely pending STORY-028's alerting criterion) |
+| FEAT-002 | Feature | completed 2026-08-07 — — 7/9 children completed (BUG-008, STORY-026, STORY-027, STORY-029, STORY-030, TASK-035 2026-08-05; BUG-009 2026-08-06); open: STORY-028 (AC-3 unproven, AC-4 body defect), EN-007 (solely pending STORY-028's alerting criterion) |
 
 ---
 
@@ -54,3 +55,4 @@ The CI security audit (`ci.yml`) correctly detects transitive CVEs, but the sche
 | 2026-08-05 | in_progress | Verification pass: BUG-008 + STORY-026/027/029/030 closed. Remaining open: STORY-028, EN-007/TASK-035, BUG-009 (new, GH #336). |
 | 2026-08-05 | in_progress | TASK-035 completed (owner enabled Dependabot; alerts API-confirmed). BUG-009 fix delivered on branch (click 8.4.2), in_progress pending merge + green scan. Open: STORY-028, EN-007, BUG-009. |
 | 2026-08-07 | in_progress | BUG-009 closed (resolved 2026-08-06: fix on main via PR #338, green scan 31079097567, #335 auto-closed). STORY-028 AC-2 runtime-proven. Open: STORY-028, EN-007. |
+| 2026-08-07 | completed | FEAT-002 completed (all 9 children done, STORY-028 runtime-proven via staged test). EPIC-004 fully delivered; umbrella issue #301 to close on merge of this closure. |

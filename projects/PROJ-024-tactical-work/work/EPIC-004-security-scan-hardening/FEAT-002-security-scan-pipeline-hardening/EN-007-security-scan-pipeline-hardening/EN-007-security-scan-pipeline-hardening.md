@@ -1,11 +1,12 @@
 # EN-007: Dependency Security-Scan Pipeline Hardening
 
 > **Type:** enabler
-> **Status:** in_progress
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Enabler Type:** infrastructure
 > **Created:** 2026-06-22
+> **Completed:** 2026-08-07
 > **Parent:** FEAT-002
 > **GitHub Issue:** [#301](https://github.com/geekatron/jerry/issues/301)
 
@@ -91,7 +92,7 @@ Implement in layers: fix the root defect first (BUG-008), then unify the scans (
 - [x] Scheduled scan detects the same CVEs as the CI scan (parity verified by running both and comparing output) — BUG-008 closed 2026-08-05
 - [x] Single composite action is the shared audit implementation for both CI and scheduled scan — STORY-026 closed 2026-08-05
 - [x] Owner-governed CVE accept-list exists with at least one entry format validated (package, CVE, expiry, rationale) — STORY-027 closed 2026-08-05
-- [ ] Rolling GitHub issue is auto-created or updated when new CVEs are found by the scheduled scan — STORY-028 open (issue creation proven via #335; body content AC failed, update/auto-close branches unproven)
+- [x] Rolling GitHub issue is auto-created or updated when new CVEs are found by the scheduled scan — STORY-028 completed 2026-08-07 (create/update/close all runtime-proven; body details + date fixed via PR #364)
 - [x] Silent-failure guard rejects a run that audits zero packages (not merely non-empty output) — STORY-029 closed 2026-08-05
 - [x] All 9 known transitive CVEs are resolved or explicitly accepted with documented rationale and expiry — STORY-030 closed 2026-08-05 (post-remediation click CVE tracked separately as BUG-009 / GH #336)
 - [x] Dependabot security updates and vulnerability alerts are confirmed enabled in repo Settings — TASK-035 completed 2026-08-05 (owner enabled alerts + malware alerts + security updates; alerts API-confirmed)
@@ -115,3 +116,4 @@ Implement in layers: fix the root defect first (BUG-008), then unify the scans (
 | 2026-06-23 | in_progress | Stories/BUG delivered via PR #302 (commit 81c7c61c) and PR #303 (commit e372e418), both merged 2026-06-23 (evidence trail corrected 2026-08-05); TASK-035 pending manual repo-settings action |
 | 2026-08-05 | in_progress | Code merged via PR #302/#303 → main (merge PR #304, commit 687a3214). Sibling items closed after wt-verifier verification: BUG-008, STORY-026, STORY-027, STORY-029, STORY-030. EN-007 stays open solely pending TASK-035 — Dependabot alerts/security fixes externally confirmed NOT enabled (API 404), so the manual action is genuinely outstanding. |
 | 2026-08-05 | in_progress | TASK-035 completed: owner enabled Dependabot alerts, malware alerts, and security updates (alerts API-confirmed; grouped updates deliberately left off). EN-007 now open solely pending its rolling-issue alerting criterion, which is tracked by STORY-028 (alert body content defect + unproven update/auto-close branches). 6/7 acceptance criteria satisfied. |
+| 2026-08-07 | completed | STORY-028 (the last open child / alerting criterion) closed after runtime proof via owner-authorized staged test. All EN-007 acceptance criteria satisfied; enabler completed. |
