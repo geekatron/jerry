@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **feat(nuclear-sop):** `/nuclear-sop` skill — nuclear-inspired standard-operating-procedure execution for high-rigor workflows: 4 agents (sop-brief, sop-executor, sop-verifier, sop-capture) with STAR self-checking, hold points, place-keeping, and operating-experience capture; agents registered in plugin.json (#269)
+
 ### Changed
 - **style:** reformat 324 Markdown files repo-wide (.context/, docs/, skills/, runbooks/, projects/) for ruff 0.16.1's new Markdown code-block formatting — no formatter exclusions (an initial projects/ exclusion was rejected in review as a shortcut and reverted) (PROJ-024 EN-010/TASK-036, #339)
 - **docs(proj-001):** conform 8 legacy pre-schema task entities to the current worktracker schema (enum vocabulary DONE→completed / HIGH→high, backfilled frontmatter derived from each file's own metadata, `## Content`→`## Summary` heading renames); rename 3 adversarial-critic reports whose `EN-` filename prefixes falsely triggered entity schema validation (#339)
