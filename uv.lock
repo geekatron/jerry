@@ -503,7 +503,7 @@ wheels = [
 
 [[package]]
 name = "jerry"
-version = "0.31.7"
+version = "0.31.8"
 source = { editable = "." }
 dependencies = [
     { name = "filelock" },
