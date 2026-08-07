@@ -88,10 +88,18 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          SCAN_DATE: ${{ github.run_started_at }}
+          # STORY-028 AC-4: the pip-audit findings table, surfaced by the
+          # composite action's vuln-details output.
+          VULN_DETAILS: ${{ steps.audit.outputs.vuln-details }}
         run: |
           ISSUE_TITLE="Security Alert: CVEs found in dependency tree"
           LABEL="security-alert"
+
+          # STORY-028 AC-4: compute the scan date in-shell. The previous
+          # `github.run_started_at` context expression does not exist in the
+          # GitHub Actions `github` context (only run_id/run_number/run_attempt),
+          # so it rendered to an empty Date field. `date -u` is authoritative.
+          SCAN_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
 
           # Search for an existing open issue with this title and label.
           EXISTING=$(gh issue list \
@@ -102,10 +110,24 @@ jobs:
             --jq ".[] | select(.title == \"$ISSUE_TITLE\") | .number" \
             | head -1)
 
+          # STORY-028 AC-4: include the actual findings (package, version,
+          # CVE/advisory ID, fix version, description) in the body, not just a
+          # link to the run. Fall back to the run link if the details output is
+          # empty (defensive — e.g. the D5 guard failed before findings parsed).
+          if [[ -n "$VULN_DETAILS" ]]; then
+            FINDINGS_SECTION="**Findings (pip-audit):**
+
+          \`\`\`
+          ${VULN_DETAILS}
+          \`\`\`"
+          else
+            FINDINGS_SECTION="pip-audit detected unfixed CVEs in the dependency tree. Check the [workflow run]($RUN_URL) for the full list."
+          fi
+
           BODY_FRAGMENT="**Scan run:** $RUN_URL
           **Date:** $SCAN_DATE
 
-          pip-audit detected unfixed CVEs in the dependency tree. Check the [workflow run]($RUN_URL) for the full list.
+          ${FINDINGS_SECTION}
 
           **Remediation:** bump the affected packages to their fixed versions. If no fix exists yet, add an entry to \`.github/security/audit-allowlist.yml\` with a tracking ticket and a \`review_by\` date no more than 90 days out."
 

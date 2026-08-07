@@ -99,6 +99,13 @@ outputs:
     description: "'true' if the audit passed with no unfixed vulnerabilities; 'false' otherwise."
     value: ${{ steps.audit.outputs.clean }}
 
+  vuln-details:
+    description: >
+      When vuln-found is 'true', the pip-audit findings table (package, version,
+      CVE/advisory ID, fix versions, description) for inclusion in downstream
+      alerts. Empty string when the audit is clean.
+    value: ${{ steps.audit.outputs.vuln-details }}
+
 runs:
   using: composite
   steps:
@@ -259,12 +266,27 @@ runs:
           echo "No known unfixed vulnerabilities found." >> "$GITHUB_STEP_SUMMARY"
           echo "vuln-found=false" >> "$GITHUB_OUTPUT"
           echo "clean=true" >> "$GITHUB_OUTPUT"
+          echo "vuln-details=" >> "$GITHUB_OUTPUT"
         else
           echo "::warning::pip-audit found vulnerabilities in the dependency tree"
           cat /tmp/pip-audit-output.txt >> "$GITHUB_STEP_SUMMARY"
           # Set outputs BEFORE the conditional exit below.
           echo "vuln-found=true" >> "$GITHUB_OUTPUT"
           echo "clean=false" >> "$GITHUB_OUTPUT"
+
+          # STORY-028 AC-4: expose the findings (package/version/CVE ID/fix
+          # version/description) so the rolling alert issue lists them instead
+          # of only linking to the run. Multiline value via the heredoc form of
+          # GITHUB_OUTPUT. A random delimiter prevents a crafted package
+          # description from prematurely closing the block. pip-audit output is
+          # our own locked dependency tree (trusted), but the random delimiter
+          # is defense-in-depth and the GitHub-recommended pattern.
+          VULN_DELIM="VULN_DETAILS_$(openssl rand -hex 8)"
+          {
+            echo "vuln-details<<${VULN_DELIM}"
+            cat /tmp/pip-audit-output.txt
+            echo "${VULN_DELIM}"
+          } >> "$GITHUB_OUTPUT"
 
           if [[ "${{ inputs.fail-on-vuln }}" == "true" ]]; then
             echo "::error::pip-audit found unfixed vulnerabilities (fail-on-vuln=true)"
