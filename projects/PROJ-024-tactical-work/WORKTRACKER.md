@@ -13,6 +13,7 @@
 
 | ID | Type | Title | Status | Parent |
 |----|------|-------|--------|--------|
+| BUG-010 | Bug | jerry ast rejects all files outside the plugin's own install tree — containment root from __file__ instead of user project root (#337) | in_progress | FEAT-001 |
 | EPIC-001 | Epic | Claude Code Schema Validation | in_progress | PROJ-024 |
 | FEAT-001 | Feature | Claude Code Schema Validation Research and Refinement | in_progress | EPIC-001 |
 | EN-004 | Enabler | Memory-Keeper Collision Detection Enhancement | pending | FEAT-001 |

@@ -1022,3 +1022,108 @@ class TestMainAstRouting:
         with patch("sys.stdout", new_callable=StringIO):
             result = _handle_ast(FakeArgs(), json_output=False)
         assert result == 1
+
+
+# =============================================================================
+# BUG-010 (GH #337): Path containment must anchor to the USER'S project root,
+# not the plugin's own install tree. M-08/M-10 security checks stay intact.
+# =============================================================================
+
+
+class TestBug010ProjectRootContainment:
+    """Containment anchored to CLAUDE_PROJECT_DIR/cwd, never to __file__."""
+
+    def test_get_repo_root_when_claude_project_dir_set_then_returns_user_root(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """Root resolution honors CLAUDE_PROJECT_DIR instead of walking __file__."""
+        # Arrange
+        user_root = tmp_path / "user-project"
+        user_root.mkdir()
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(user_root))
+
+        # Act
+        root = ast_commands_module._get_repo_root()
+
+        # Assert
+        assert root == user_root
+
+    def test_containment_when_file_in_user_project_then_allowed(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """A file inside the user's project root validates even though it is far
+        outside the Jerry install tree (the exact GH #337 repro)."""
+        # Arrange
+        user_root = tmp_path / "user-project"
+        (user_root / "projects" / "PROJ-001-example").mkdir(parents=True)
+        target = user_root / "projects" / "PROJ-001-example" / "PLAN.md"
+        target.write_text("# Plan\n", encoding="utf-8")
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(user_root))
+
+        # Act
+        resolved, error = ast_commands_module._check_path_containment(str(target))
+
+        # Assert
+        assert error is None
+        assert resolved == target.resolve()
+
+    def test_containment_when_relative_path_in_cwd_project_then_allowed(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """Relative paths resolve against cwd and pass when cwd is the project root."""
+        # Arrange
+        monkeypatch.delenv("CLAUDE_PROJECT_DIR", raising=False)
+        monkeypatch.chdir(tmp_path)
+        target = tmp_path / "PLAN.md"
+        target.write_text("# Plan\n", encoding="utf-8")
+
+        # Act
+        resolved, error = ast_commands_module._check_path_containment("PLAN.md")
+
+        # Assert
+        assert error is None
+        assert resolved == target.resolve()
+
+    def test_containment_when_file_outside_project_root_then_rejected(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """M-08 preserved: paths outside the resolved project root are rejected."""
+        # Arrange
+        user_root = tmp_path / "user-project"
+        user_root.mkdir()
+        outside = tmp_path / "elsewhere"
+        outside.mkdir()
+        target = outside / "escape.md"
+        target.write_text("# Escape\n", encoding="utf-8")
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(user_root))
+
+        # Act
+        resolved, error = ast_commands_module._check_path_containment(str(target))
+
+        # Assert
+        assert resolved is None
+        assert error is not None
+        assert "escapes" in error
+
+    def test_containment_when_symlink_escapes_project_root_then_rejected(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """M-10 preserved: symlinks pointing outside the project root are rejected."""
+        # Arrange
+        user_root = tmp_path / "user-project"
+        user_root.mkdir()
+        outside = tmp_path / "secret"
+        outside.mkdir()
+        real_file = outside / "real.md"
+        real_file.write_text("# Real\n", encoding="utf-8")
+        link = user_root / "innocent.md"
+        link.symlink_to(real_file)
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(user_root))
+
+        # Act
+        resolved, error = ast_commands_module._check_path_containment(str(link))
+
+        # Assert
+        assert resolved is None
+        assert error is not None
+        assert "escapes" in error

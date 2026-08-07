@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove all `pip install` instructions from docs, error messages, and CI comments — replaced with `uv add`/`uv tool install`/`uv run`
 
 ### Fixed
+- **BUG-010**: `jerry ast` commands rejected every file outside the plugin's own install tree — the path-containment root was resolved from `ast_commands.py`'s `__file__` instead of the user's project. Containment now anchors to `CLAUDE_PROJECT_DIR`/cwd via the new shared resolver `src/interface/cli/project_root.py` (also used by `jerry config`), with M-08/M-10 path and symlink containment fully preserved (#337)
 - **fix(ci):** correct `cyclonedx-py` output flag from `--outfile` to `-o` — fixes v0.31.4 release SBOM generation failure
 - Migrate 7 enum classes from `(str, Enum)` to `StrEnum` in `docs/schemas/types/session_context.py` — Python 3.11+ modernization, unblocks ruff 0.15.10 UP042 rule
 - **fix(ci):** replace bare `python3 -m py_compile` with `uv run python -m py_compile` in plugin-validation — closes last H-05 violation

@@ -48,6 +48,7 @@ from src.domain.markdown_ast import (
     validate_document,
     validate_nav_table,
 )
+from src.interface.cli.project_root import get_project_root
 
 # ---------------------------------------------------------------------------
 # Path containment constants (WI-018, M-08, M-10)
@@ -156,21 +157,18 @@ def node_to_dict(node: SyntaxTreeNode) -> dict[str, Any]:
 
 
 def _get_repo_root() -> Path:
-    """Determine the repository root directory.
+    """Determine the containment root for path checks (BUG-010, GH #337).
 
-    Uses the location of this file to walk up to the repository root.
-    The repository root is identified by the presence of ``pyproject.toml``.
+    Delegates to the shared CLI project-root resolution
+    (``CLAUDE_PROJECT_DIR`` env var, else the current working directory) so
+    containment anchors to the USER'S repository — never to the Jerry
+    installation's own tree, which made every ``ast`` command reject files
+    in real user projects.
 
     Returns:
-        Resolved absolute path to the repository root.
+        Resolved absolute path to the user's project root.
     """
-    current = Path(__file__).resolve()
-    for parent in current.parents:
-        if (parent / "pyproject.toml").exists():
-            return parent
-    # Fallback: use 4 levels up from ast_commands.py
-    # (src/interface/cli/ast_commands.py -> root)
-    return Path(__file__).resolve().parents[3]
+    return get_project_root().resolve()
 
 
 def _check_path_containment(file_path: str) -> tuple[Path | None, str | None]:

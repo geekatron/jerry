@@ -986,13 +986,15 @@ class CLIAdapter:
     def _get_project_root(self) -> Path:
         """Get the project root directory.
 
+        Delegates to the shared CLI resolver (BUG-010: single source of truth
+        for project-root resolution across CLI namespaces).
+
         Returns:
             Path to project root
         """
-        project_dir = os.environ.get("CLAUDE_PROJECT_DIR")
-        if project_dir:
-            return Path(project_dir)
-        return Path.cwd()
+        from src.interface.cli.project_root import get_project_root
+
+        return get_project_root()
 
     def _create_config_adapter(self) -> Any:
         """Create a LayeredConfigAdapter for config commands.
