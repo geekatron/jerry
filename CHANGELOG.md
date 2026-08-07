@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- **docs(proj-024):** close EPIC-004 (security-scan pipeline hardening) — STORY-028 alerting runtime-proven via owner-authorized staged test (alert issue created with detailed body + valid date, then reused via comment, no duplicate); EN-007, FEAT-002, EPIC-004 all completed; closes umbrella issue #301
 - **docs(proj-024):** close BUG-009 (click CVE) with pipeline evidence — resolved 2026-08-06 (fix on main via PR #338, green scheduled scan 31079097567, alert issue #335 auto-closed); records first runtime proof of STORY-028's auto-close criterion (#336)
 - **style:** reformat 324 Markdown files repo-wide (.context/, docs/, skills/, runbooks/, projects/) for ruff 0.16.1's new Markdown code-block formatting — no formatter exclusions (an initial projects/ exclusion was rejected in review as a shortcut and reverted) (PROJ-024 EN-010/TASK-036, #339)
 - **docs(proj-001):** conform 8 legacy pre-schema task entities to the current worktracker schema (enum vocabulary DONE→completed / HIGH→high, backfilled frontmatter derived from each file's own metadata, `## Content`→`## Summary` heading renames); rename 3 adversarial-critic reports whose `EN-` filename prefixes falsely triggered entity schema validation (#339)

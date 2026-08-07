@@ -1,10 +1,11 @@
 # STORY-028: Add Owner Alerting via an Auto-Managed Rolling GitHub Issue
 
 > **Type:** story
-> **Status:** in_progress
+> **Status:** completed
 > **Priority:** medium
 > **Impact:** high
 > **Created:** 2026-06-22
+> **Completed:** 2026-08-07
 > **Parent:** FEAT-002
 > **GitHub Issue:** [#301](https://github.com/geekatron/jerry/issues/301)
 
@@ -39,8 +40,8 @@ Currently, the scheduled scan exits with a non-zero code when CVEs are found, bu
 
 - [x] When the scheduled scan detects CVEs not on the accept-list, it creates or updates a GitHub issue with title `Security Scan: Open CVEs` (or equivalent canonical title) listing the CVE details — PASS: manual dispatch run 31039187847 auto-created issue [#335](https://github.com/geekatron/jerry/issues/335) at 2026-08-05T19:24:39Z with the `security-alert` label
 - [x] When a subsequent scan run finds no unaccepted CVEs, it closes the rolling issue automatically — PROVEN 2026-08-06: scheduled run [31079097567](https://github.com/geekatron/jerry/actions/runs/31079097567) ran clean (post click-fix merge) and auto-closed issue #335 at 06:58:22Z
-- [ ] The rolling issue is reused across multiple runs (not duplicated per run) — identified by a stable label or title search — create path proven (exactly one issue exists); the update-existing-issue/comment branch never runtime-proven
-- [x] The issue body includes at minimum: package name, affected version, CVE ID, and available fix version for each finding — CODE-COMPLETE 2026-08-07: composite action now exposes a `vuln-details` output (the pip-audit `--desc` findings table); `security-scan.yml` embeds it in a fenced code block and computes the date in-shell (`date -u`) instead of the non-existent `github.run_started_at` context. Verified by rendering the exact shell body in simulation (date populated + full findings table + fence at column 0). Full runtime proof pending the next real CVE event (not forced — no vulnerability injected)
+- [x] The rolling issue is reused across multiple runs (not duplicated per run) — identified by a stable label or title search — RUNTIME-PROVEN 2026-08-07: staged controlled test (owner-authorized) dispatched the scan twice against a throwaway branch pinned to vulnerable click 8.3.1; run 1 (31207042351) created alert issue #365, run 2 (31207161180) commented on the SAME issue #365 with no duplicate created
+- [x] The issue body includes at minimum: package name, affected version, CVE ID, and available fix version for each finding — RUNTIME-PROVEN 2026-08-07 (PR #364 code + staged test): composite action exposes a `vuln-details` output (pip-audit `--desc` table); `security-scan.yml` embeds it in a fenced code block and computes the date in-shell (`date -u`, replacing the non-existent `github.run_started_at` context). Alert issue #365 (from the controlled test) rendered a populated Date and the full finding (click 8.3.1 / PYSEC-2026-2132 / fix 8.3.3 / description)
 - [x] The issue creation/update step uses only the `issues:write` permission (no broader permissions needed) — PASS: workflow `permissions:` block is `contents: read` + `issues: write` only
 
 ---
@@ -96,3 +97,4 @@ Currently, the scheduled scan exits with a non-zero code when CVEs are found, bu
 | 2026-08-05 | in_progress | Label created (B60205); dispatch run 31039187847 auto-created alert issue #335 (AC-1 PASS), AC-5 PASS. wt-verifier verdict NOT_READY 60%. **Remaining work:** AC-4 FAILED (issue body lacks package/version/CVE ID/fix version; empty Date from invalid `github.run_started_at` expression in `security-scan.yml`); AC-2 (auto-close on clean scan) and AC-3 (update-existing-issue branch) never runtime-proven. |
 | 2026-08-06 | in_progress | (recorded 2026-08-07 during pipeline verification) AC-2 RUNTIME-PROVEN: first clean scheduled run 31079097567 (06:57 UTC, post click-fix merge) auto-closed alert issue #335 at 06:58:22Z. **Remaining work:** AC-3 (update-existing-issue branch) unproven, AC-4 body-content defect. |
 | 2026-08-07 | in_progress | AC-4 CODE-COMPLETE: fixed the two body defects — (1) empty Date (`github.run_started_at` is not a real GitHub Actions context property; replaced with in-shell `date -u`), (2) missing CVE details (composite action `security-audit` now emits a `vuln-details` multiline output carrying the pip-audit `--desc` findings table; `security-scan.yml` embeds it in a fenced block). Rendered-body simulation confirms date + findings table + column-0 fence; empty-details fallback preserves the run link. Remaining: AC-3 + AC-4 await runtime proof from the next real CVE (a vulnerability was NOT injected to force one). |
+| 2026-08-07 | completed | AC-3 + AC-4 RUNTIME-PROVEN via owner-authorized staged test. PR #364 (body/date fix) merged to main. Throwaway branch pinned vulnerable click 8.3.1; scan run 31207042351 created alert issue #365 with a populated Date and the full finding (click 8.3.1 / PYSEC-2026-2132 / fix 8.3.3); scan run 31207161180 commented on the SAME #365 (no duplicate) — proving the rolling-issue reuse path. Test branch + issue #365 cleaned up; main unaffected. All 5 ACs satisfied → STORY-028 completed. |
