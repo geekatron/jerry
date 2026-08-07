@@ -1,10 +1,11 @@
 # STORY-001: Phase 1 — Standards Compliance Validation of /nuclear-sop
 
 > **Type:** story
-> **Status:** pending
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-08-07T00:00:00Z
+> **Completed:** 2026-08-07T07:55:00Z
 > **Parent:** FEAT-001
 > **Owner:** geekatron
 > **GitHub Issue:** [#345](https://github.com/geekatron/jerry/issues/345)
@@ -42,10 +43,10 @@ Validate, at PR head `bda64202`: the 4 agent `.md` files + `.governance.yaml` co
 
 ## Acceptance Criteria
 
-- [ ] All 8 agent files (4 .md + 4 .governance.yaml) have recorded schema-validation results against `agent-governance-v1.schema.json` and the official-frontmatter field list
-- [ ] Every H-34/H-35/H-25/H-26 check outcome (pass or violation) is recorded per artifact with rule ID
-- [ ] Tool tier declarations are checked against the ADR-STORY015-001 tier model and output paths against AD-M-011, with deviations listed as findings
-- [ ] Findings report exists at `projects/PROJ-032-nuclear-sop-review/work/EPIC-001-pr269-review/FEAT-001-independent-review/STORY-001-standards-compliance/phase-1-standards-report.md` with Critical/Major/Minor severity per finding
+- [x] All 8 agent files (4 .md + 4 .governance.yaml) have recorded schema-validation results against `agent-governance-v1.schema.json` and the official-frontmatter field list — see `det-validation.md` (direct Draft 2020-12 validation; sop-brief 4 errors, sop-verifier 2 errors, sop-executor/sop-capture PASS)
+- [x] Every H-34/H-35/H-25/H-26 check outcome (pass or violation) is recorded per artifact with rule ID — per-artifact rule outcome matrix in `phase-1-standards-report.md`
+- [x] Tool tier declarations are checked against the ADR-STORY015-001 tier model and output paths against AD-M-011, with deviations listed as findings — P1-013 (AD-M-011, all four agents)
+- [x] Findings report exists at `phase-1-standards-report.md` with Critical/Major/Minor severity per finding — 6 Critical / 15 Major / 11 Minor (32 total, P1-001..P1-032)
 
 ---
 
@@ -53,7 +54,10 @@ Validate, at PR head `bda64202`: the 4 agent `.md` files + `.governance.yaml` co
 
 | Deliverable | Type | Link |
 |-------------|------|------|
-| Phase 1 standards report | Review artifact | ./phase-1-standards-report.md |
+| Phase 1 consolidated standards report (32 findings) | Review artifact | ./phase-1-standards-report.md |
+| Deterministic validator outputs (verbatim) | Evidence | ./det-validation.md |
+| Per-agent compliance audits (4) | Evidence | ./agent-sop-{brief,executor,verifier,capture}-compliance.md |
+| Skill structure audit | Evidence | ./skill-structure-compliance.md |
 
 ---
 
@@ -62,3 +66,4 @@ Validate, at PR head `bda64202`: the 4 agent `.md` files + `.governance.yaml` co
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-08-07T00:00:00Z | geekatron | pending | Story created; GH parity #345 |
+| 2026-08-07T07:55:00Z | geekatron | completed | 6 blind auditors + synthesis (workflow wf_638ff3ee-66b, 7 agents, 0 errors). 32 findings: 6 Critical, 15 Major, 11 Minor; 5 confirmed HARD-rule violations. All ACs verified against persisted artifacts. |
