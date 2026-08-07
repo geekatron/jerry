@@ -1,11 +1,12 @@
 # BUG-009: click 8.3.1 Transitive Command Injection in click.edit() (PYSEC-2026-2132)
 
 > **Type:** bug
-> **Status:** in_progress
+> **Status:** completed
 > **Priority:** high
 > **Impact:** medium
 > **Severity:** major
 > **Created:** 2026-08-05
+> **Completed:** 2026-08-06
 > **Parent:** FEAT-002
 > **Found In:** click 8.3.1 (transitive, via rich-click)
 > **Fix Version:** click 8.3.3
@@ -58,8 +59,8 @@ The transitive dependency `click` 8.3.1 (pulled in via `rich-click`) is affected
 
 - [x] `click` is constrained to `>=8.3.3` via `[tool.uv] constraint-dependencies` in `pyproject.toml` (pattern of commit e372e418) — added 2026-08-05
 - [x] `uv.lock` is re-locked and resolves click at 8.3.3 or later — resolves **8.4.2**
-- [ ] Scheduled scan (`security-scan.yml`) runs green (no unaccepted CVEs) — expected on next scheduled run (~06:00 UTC); local equivalent audit already clean (105 packages, 0 findings)
-- [ ] Rolling alert issue [#335](https://github.com/geekatron/jerry/issues/335) auto-closes on the first clean scan — pending that run
+- [x] Scheduled scan (`security-scan.yml`) runs green (no unaccepted CVEs) — PROVEN: scheduled run [31079097567](https://github.com/geekatron/jerry/actions/runs/31079097567) (2026-08-06T06:57 UTC) concluded success on main
+- [x] Rolling alert issue [#335](https://github.com/geekatron/jerry/issues/335) auto-closes on the first clean scan — PROVEN: auto-closed 2026-08-06T06:58:22Z by that run's close-when-clean step
 - [x] No new CVEs are introduced by the bump (scanner exits clean after re-lock) — `uv run --frozen pip-audit --skip-editable`: 105 packages audited, 0 vulnerabilities
 
 ---
@@ -85,3 +86,4 @@ The transitive dependency `click` 8.3.1 (pulled in via `rich-click`) is affected
 | 2026-08-05 | pending | Bug filed per owner decision (track-and-defer) during EPIC-004 verification pass; detected daily by scheduled scan since ~2026-07-18; GH issue #336 opened for H-32 parity |
 | 2026-08-05 | completed | Deferral reversed by owner: the CVE blocked all git pushes via the pre-push pip-audit hook (which does not read the accept-list). Fixed same-day: `click>=8.3.3` added to constraint-dependencies, lock resolves click 8.4.2, local audit clean (105 packages, 0 findings). Scheduled-scan green + #335 auto-close expected on next daily run. |
 | 2026-08-05 | in_progress | Closure reverted per owner review: fix (commit d715313c) is on the feature branch only, NOT on main — main's scan is still red, so AC-3/AC-4 cannot be true yet. GH #336 reopened; it auto-closes via the commit's "Closes #336" trailer when the branch merges. Cross-links added between #335 and #336. |
+| 2026-08-06 | completed | All ACs satisfied: fix reached main via PR #338 merge (2026-08-06T00:27Z, auto-closing GH #336 via commit trailer); first post-merge scheduled scan 31079097567 ran GREEN (06:57 UTC); alert issue #335 auto-closed 06:58:22Z. Closure recorded 2026-08-07 after pipeline verification. |

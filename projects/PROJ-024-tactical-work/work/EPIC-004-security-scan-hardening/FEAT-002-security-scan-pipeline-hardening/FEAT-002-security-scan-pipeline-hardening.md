@@ -112,7 +112,7 @@ Harden the dependency security-scan pipeline by inserting a Feature container th
 |----|------|-------|--------|----------|--------|
 | EN-007 | Enabler | Dependency security-scan pipeline hardening | in_progress | high | — |
 | BUG-008 | Bug | Scheduled security scan is false-green — audits only the local project, misses all transitive CVEs | completed (2026-08-05) | critical | — |
-| BUG-009 | Bug | click 8.3.1 transitive command injection in click.edit() — PYSEC-2026-2132 (GH #336) | in_progress (fix on branch; pending merge + green scan) | high | — |
+| BUG-009 | Bug | click 8.3.1 transitive command injection in click.edit() — PYSEC-2026-2132 (GH #336) | completed (2026-08-06) | high | — |
 | STORY-026 | Story | Unify CI + scheduled security audit into one shared composite action (DRY) | completed (2026-08-05) | high | — |
 | STORY-027 | Story | Add owner-governed CVE accept-list with mandatory expiry/re-review | completed (2026-08-05) | high | — |
 | STORY-028 | Story | Add owner alerting via an auto-managed rolling GitHub issue | in_progress | medium | — |
@@ -141,10 +141,10 @@ Harden the dependency security-scan pipeline by inserting a Feature container th
 +------------------------------------------------------------------+
 | Stories:   [################....] 80% (4/5 completed)              |
 | Enablers:  [....................] 0% (0/1 completed)               |
-| Bugs:      [##########..........] 50% (1/2 completed)              |
+| Bugs:      [####################] 100% (2/2 completed)             |
 | Tasks:     [####################] 100% (1/1 completed)             |
 +------------------------------------------------------------------+
-| Overall:   [#############.......] 67% (6/9 items)                  |
+| Overall:   [###############.....] 78% (7/9 items)                  |
 +------------------------------------------------------------------+
 ```
 
@@ -159,12 +159,12 @@ Harden the dependency security-scan pipeline by inserting a Feature container th
 | **Completed Enablers** | 0 |
 | **Open Enablers** | 1 (EN-007, in_progress — open solely pending STORY-028's alerting criterion) |
 | **Total Bugs** | 2 |
-| **Completed Bugs** | 1 (BUG-008 — closed 2026-08-05) |
-| **Open Bugs** | 1 (BUG-009, in_progress — fix on branch, pending merge + green scan) |
+| **Completed Bugs** | 2 (BUG-008 2026-08-05; BUG-009 2026-08-06) |
+| **Open Bugs** | 0 |
 | **Total Tasks** | 1 |
 | **Completed Tasks** | 1 (TASK-035 — closed 2026-08-05, Dependabot enabled by owner, alerts API-confirmed) |
 | **Open Tasks** | 0 |
-| **Completion %** | 67% (6/9 items) |
+| **Completion %** | 78% (7/9 items) |
 
 ---
 
@@ -192,3 +192,4 @@ Harden the dependency security-scan pipeline by inserting a Feature container th
 | 2026-08-05 | claude | in_progress | BUG-009 deferral reversed by owner (CVE blocked all pushes via pre-push pip-audit hook): click>=8.3.3 constraint added, lock resolves 8.4.2, local audit clean → BUG-009 completed. Open: STORY-028, EN-007/TASK-035. |
 | 2026-08-05 | claude | in_progress | BUG-009 closure reverted per owner review — fix is on the feature branch only, not main; BUG-009 back to in_progress until merge + green scheduled scan. GH #336 reopened (auto-closes on merge via commit trailer). Open: STORY-028, BUG-009, EN-007/TASK-035. |
 | 2026-08-05 | claude | in_progress | TASK-035 completed — owner enabled Dependabot alerts/malware alerts/security updates (alerts API-confirmed; grouped updates deliberately off). EN-007 open solely pending STORY-028's alerting criterion. Open: STORY-028, BUG-009, EN-007. |
+| 2026-08-07 | claude | in_progress | Pipeline verification (owner prompt): BUG-009 was already resolved 2026-08-06 — PR #338 merge put the fix on main (00:27Z), scheduled run 31079097567 ran GREEN (06:57Z), #335 auto-closed (06:58Z). BUG-009 closed with evidence; STORY-028 AC-2 (auto-close branch) now runtime-proven and checked. Open: STORY-028 (AC-3 unproven, AC-4 failed), EN-007. |
