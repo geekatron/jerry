@@ -299,9 +299,11 @@ class TestReadInventoryQueryHandler:
     def test_cache_miss_reads_from_repository_and_populates_cache(self) -> None:
         """Given an uncached item, when handle is called, then read from repo and cache."""
         cache = FakeCache()
-        repository = FakeRepository(data={
-            "item-002": {"id": "item-002", "quantity": 7},
-        })
+        repository = FakeRepository(
+            data={
+                "item-002": {"id": "item-002", "quantity": 7},
+            }
+        )
 
         handler = ReadInventoryQueryHandler(cache=cache, repository=repository)
         result = handler.handle("item-002")

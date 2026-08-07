@@ -44,9 +44,7 @@ print(
             "context": context,
             "work_items": signals.get("work_items", []),
             "summary": signals.get("summary", ""),
-            "status_transition": STATUS_TRANSITIONS.get(
-                signals.get("handoff_condition", ""), None
-            ),
+            "status_transition": STATUS_TRANSITIONS.get(signals.get("handoff_condition", ""), None),
         }
     )
 )

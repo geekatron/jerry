@@ -257,7 +257,7 @@ class CyberOpsAdapter:
                 evidence_level="none",
                 message=f"{self.tool_name} not found or not reachable",
                 findings=[],
-                verification_guidance=self.manual_verification_steps(params)
+                verification_guidance=self.manual_verification_steps(params),
             )
         # ... execute tool and return normalized findings
 ```

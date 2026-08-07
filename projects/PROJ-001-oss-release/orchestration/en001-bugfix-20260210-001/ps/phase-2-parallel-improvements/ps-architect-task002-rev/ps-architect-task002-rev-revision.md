@@ -44,9 +44,7 @@ The critique was fair, accurate, and identified legitimate (though minor) improv
 Extract a helper function to standardize error assertion patterns:
 ```python
 def assert_schema_error_about(
-    exc_info: pytest.ExceptionInfo,
-    error_type: str,
-    field_path: list[str] | None = None
+    exc_info: pytest.ExceptionInfo, error_type: str, field_path: list[str] | None = None
 ) -> None:
     """Assert that ValidationError is about specific schema constraint."""
     # ~30 lines of implementation

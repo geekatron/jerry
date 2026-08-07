@@ -173,9 +173,7 @@ class Base(DeclarativeBase):
 class StoredEvent(Base):
     __tablename__ = "events"
 
-    id: sa.orm.Mapped[UUID] = sa.orm.mapped_column(
-        sa.UUID, primary_key=True, default=uuid4
-    )
+    id: sa.orm.Mapped[UUID] = sa.orm.mapped_column(sa.UUID, primary_key=True, default=uuid4)
     aggregate_id: sa.orm.Mapped[UUID] = sa.orm.mapped_column(sa.UUID, nullable=False)
     # version is the position within the aggregate's stream, starting at 1
     version: sa.orm.Mapped[int] = sa.orm.mapped_column(sa.Integer, nullable=False)
@@ -198,12 +196,10 @@ class StoredEvent(Base):
 @dataclass
 class DomainEvent:
     aggregate_id: UUID
-    version: int          # OCC token -- position in stream
+    version: int  # OCC token -- position in stream
     event_type: str
     payload: dict[str, Any]
-    occurred_at: datetime = field(
-        default_factory=lambda: datetime.now(timezone.utc)
-    )
+    occurred_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class OptimisticConcurrencyError(Exception):
@@ -252,8 +248,7 @@ class EventStore:
         )
         if current != expected_version:
             raise OptimisticConcurrencyError(
-                f"Concurrency conflict: expected version {expected_version}, "
-                f"found {current}."
+                f"Concurrency conflict: expected version {expected_version}, found {current}."
             )
 
         try:
@@ -301,7 +296,7 @@ def with_retry(
         except OptimisticConcurrencyError:
             if attempt == max_retries - 1:
                 raise
-            time.sleep(backoff_seconds * (2 ** attempt))
+            time.sleep(backoff_seconds * (2**attempt))
     raise RuntimeError("Unreachable")
 
 

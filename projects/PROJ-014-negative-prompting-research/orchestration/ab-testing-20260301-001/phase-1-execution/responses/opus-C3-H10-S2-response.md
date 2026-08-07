@@ -117,9 +117,7 @@ class InvalidWorkItemStatusTransitionError(DomainError):
         """
         self.from_status = from_status
         self.to_status = to_status
-        super().__init__(
-            f"Cannot transition WorkItem from '{from_status}' to '{to_status}'"
-        )
+        super().__init__(f"Cannot transition WorkItem from '{from_status}' to '{to_status}'")
 ```
 
 ### `src/domain/exceptions/__init__.py`

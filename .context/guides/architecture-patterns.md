@@ -53,17 +53,20 @@ class IRepository(Protocol):
     def save(self, work_item: WorkItem) -> None: ...
     def get(self, id: str) -> WorkItem | None: ...
 
+
 # ADAPTER 1: PostgreSQL implementation
 class PostgresWorkItemAdapter(IRepository):
     def save(self, work_item: WorkItem) -> None:
         # PostgreSQL-specific code here
         ...
 
+
 # ADAPTER 2: Filesystem implementation
 class FilesystemWorkItemAdapter(IRepository):
     def save(self, work_item: WorkItem) -> None:
         # Filesystem-specific code here
         ...
+
 
 # ADAPTER 3: In-memory implementation (for tests)
 class InMemoryWorkItemAdapter(IRepository):
@@ -96,6 +99,7 @@ class InMemoryWorkItemAdapter(IRepository):
 class ICommandHandler(Protocol[TCommand, TResult]):
     def handle(self, command: TCommand) -> TResult: ...
 
+
 # Primary adapter (in interface layer)
 @click.command()
 def create_item(title: str, handler: ICommandHandler) -> None:
@@ -127,6 +131,7 @@ def create_item(title: str, handler: ICommandHandler) -> None:
 class IEventStore(Protocol):
     def append(self, stream_id: str, events: list[DomainEvent]) -> None: ...
     def read(self, stream_id: str) -> list[DomainEvent]: ...
+
 
 # Secondary adapter (in infrastructure)
 class InMemoryEventStore(IEventStore):
@@ -236,6 +241,7 @@ class CreateWorkItemCommand:
     title: str
     description: str | None = None
 
+
 class CreateWorkItemCommandHandler:
     def __init__(self, repository: IRepository) -> None:
         self._repository = repository
@@ -245,10 +251,12 @@ class CreateWorkItemCommandHandler:
         self._repository.save(work_item)
         return work_item.collect_events()  # Returns events, not data
 
+
 # QUERY (Read Side)
 @dataclass(frozen=True)
 class ListWorkItemsQuery:
     status: str | None = None
+
 
 @dataclass(frozen=True)
 class WorkItemDTO:
@@ -256,6 +264,7 @@ class WorkItemDTO:
     title: str
     status: str
     subtask_count: int  # Optimized projection
+
 
 class ListWorkItemsQueryHandler:
     def __init__(self, read_model: IWorkItemReadModel) -> None:
@@ -399,6 +408,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import ClassVar
 
+
 @dataclass(frozen=True)
 class WorkItemCompleted(DomainEvent):
     """Event raised when a work item is completed."""
@@ -526,6 +536,7 @@ class ISnapshotStore(Protocol):
     def save(self, aggregate_id: str, snapshot: Snapshot, version: int) -> None: ...
     def load(self, aggregate_id: str) -> tuple[Snapshot, int] | None: ...
 
+
 # Every 10 events, save a snapshot
 if len(events) % 10 == 0:
     snapshot = Snapshot(state=work_item.__dict__, version=work_item.version)
@@ -629,6 +640,7 @@ class CreateWorkItemCommandHandler:
         self._repository = FilesystemAdapter()  # Created here
         self._event_store = InMemoryEventStore()  # Created here
 
+
 class CLI:
     def __init__(self) -> None:
         self._handler = CreateWorkItemCommandHandler()  # Created here
@@ -661,6 +673,7 @@ def create_command_dispatcher() -> CommandDispatcher:
     dispatcher.register(CreateWorkItemCommand, create_handler.handle)
     return dispatcher
 
+
 # CLI just receives the dispatcher
 class CLI:
     def __init__(self, dispatcher: CommandDispatcher) -> None:
@@ -687,10 +700,12 @@ class CLI:
 ```python
 # src/bootstrap.py ✅ ALLOWED
 from src.infrastructure.adapters.persistence.filesystem_adapter import FilesystemAdapter
+
 repository = FilesystemAdapter()
 
 # src/application/handlers/handler.py ❌ FORBIDDEN
 from src.infrastructure.adapters.persistence.filesystem_adapter import FilesystemAdapter
+
 repository = FilesystemAdapter()  # Violates H-09
 ```
 
@@ -738,14 +753,18 @@ src/
 class WorkItemCompleted(DomainEvent):
     work_item_id: str
 
+
 # Other context subscribes
 class BillingContext:
     def on_work_item_completed(self, event: WorkItemCompleted) -> None:
         # Create invoice
         ...
 
+
 # ❌ BAD: Direct import across contexts
 from src.work_tracking.domain.aggregates.work_item import WorkItem
+
+
 class BillingContext:
     def create_invoice(self, work_item: WorkItem) -> None:  # Coupling!
         ...
@@ -770,6 +789,7 @@ from typing import Protocol, TypeVar
 
 TAggregate = TypeVar("TAggregate")
 TId = TypeVar("TId")
+
 
 class IRepository(Protocol[TAggregate, TId]):
     """Port interface for aggregate persistence."""
@@ -903,6 +923,7 @@ class InMemoryWorkItemRepository(IRepository[WorkItem, WorkItemId]):
 @dataclass(frozen=True)
 class RetrieveProjectContextQuery:
     """Query for retrieving full project context."""
+
     base_path: str
 ```
 
@@ -915,12 +936,15 @@ class RetrieveProjectContextQuery:
 @dataclass(frozen=True)
 class SessionCreated(DomainEvent):
     """Event emitted when a new session is created."""
+
     description: str = ""
     project_id: str | None = None
+
 
 @dataclass(frozen=True)
 class SessionCompleted(DomainEvent):
     """Event emitted when a session is successfully completed."""
+
     summary: str = ""
     completed_at: datetime = field(default_factory=_utc_now)
 ```
@@ -931,6 +955,7 @@ class SessionCompleted(DomainEvent):
 @dataclass(frozen=True)
 class DomainEvent:
     """Base class for all domain events."""
+
     aggregate_id: str
     aggregate_type: str
     event_id: str = field(default_factory=_generate_event_id)

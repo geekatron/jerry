@@ -1,27 +1,34 @@
-# Jerry Framework Security Scan Pipeline
-# Scheduled supply chain security scanning independent of PR activity.
+# Jerry Framework Security Scan Pipeline — Hardened version
+# ADR reference: (architect to fill in once ADR is assigned)
 #
-# PURPOSE:
-# The Dependabot config (#188) uses `allow: dependency-type: direct` which
-# means transitive dependency compromises do NOT generate Dependabot PRs.
-# This workflow compensates by running pip-audit on a schedule against the
-# current lockfile, catching known CVEs in transitive deps even when no
-# PR activity triggers CI.
+# CHANGES vs current security-scan.yml:
+#   1. pip-audit job now uses the composite action (fixes the E4 false-green bug:
+#      bare `uv run pip-audit` audited almost nothing; now exports the full lockfile
+#      via --all-extras --no-emit-project, identical to the proven ci.yml approach).
+#   2. Added "Create or update CVE alert issue" step driven by the action's
+#      vuln-found output (idempotent: updates the existing open issue rather than
+#      spawning duplicates on every daily run).
+#   3. Kept workflow_dispatch for manual immediate scans.
+#   4. Permissions: added issues:write for the auto-issue step (minimum necessary).
+#      The audit step itself only needs contents:read.
 #
-# Without this workflow, transitive CVE detection latency is unbounded
-# during low-activity periods (no PRs = no CI = no pip-audit runs).
-# With this workflow, maximum detection latency is 24 hours.
+# AUTO-ISSUE BEHAVIOUR:
+#   - Search for an existing open issue with the label "security-alert" and title
+#     prefix "Security Alert: CVEs found in dependency tree".
+#   - If found: append a comment with the current date and summary.
+#   - If not found: create a new issue with that title and label.
+#   - When a subsequent scan is clean: close the open security-alert issue (if any).
+#   - This gives the team a single rolling issue to watch rather than a flood of
+#     duplicate daily issues.
 #
-# C4 TOURNAMENT FINDINGS that drove this workflow's creation:
-#   S-001 RT-002 (Critical): pip-audit only ran on PR-triggered CI
-#   S-004 PM-001 (Critical): pip-audit silent failure removes detection layer
-#   S-012 FM-009 (Critical, RPN 280): 7-day transitive CVE detection gap
-#   S-013 IN-001 (Major): Unbounded latency with no parent dep PR
+# NOTE ON LABELS: the "security-alert" label must exist in the repo before this
+# workflow runs.  Create it once manually:
+#   gh label create "security-alert" --color "d93f0b" --description "Open CVE found in dependency tree"
 #
-# REFERENCES:
-#   - Dependabot config: .github/dependabot.yml (D3 CAVEAT)
-#   - Risk analysis: projects/PROJ-030-bugs/research/dependabot-risk-analysis.md
-#   - pip-audit docs: https://pypi.org/project/pip-audit/
+# SHA PINS (EN-001): All `uses:` lines are SHA-pinned with a version comment.
+# Pins for actions/checkout and astral-sh/setup-uv are taken verbatim from
+# existing workflow files.  The gh CLI is the GitHub-hosted runner's built-in
+# binary (no separate action pin needed for `gh`).
 
 name: Security Scan (Scheduled)
 
@@ -34,7 +41,7 @@ on:
 
 permissions:
   contents: read
-  security-events: write
+  issues: write   # Required for auto-issue creation/update/close step
 
 jobs:
   pip-audit:
@@ -42,49 +49,116 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # ----------------------------------------------------------------
+      # Checkout is required before the composite action (local action).
+      # ----------------------------------------------------------------
       - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@cec208311dfd045dd5311c1add060b2062131d57 # v8.0.0
-        with:
-          version: "0.10.9"
-
-      - name: Set up Python
-        run: uv python install 3.14
-
-      - name: Install dependencies
-        run: uv sync --frozen
-
-      # Run pip-audit against the locked dependency tree.
-      # --strict: treat warnings as errors (e.g., packages without metadata)
-      # --desc: include vulnerability descriptions in output
-      # Exit code 1 = vulnerabilities found; exit code 0 = clean
-      - name: Run pip-audit
+      # ----------------------------------------------------------------
+      # Unified audit composite action.
+      # fail-on-vuln: 'true' — the scheduled scan MUST go red on real CVEs
+      # so that the workflow run itself is a signal (email notifications,
+      # badge, run history).  The auto-issue step is an additional human
+      # alert channel; the run status is the machine alert channel.
+      # ----------------------------------------------------------------
+      - name: Run security audit
         id: audit
+        uses: ./.github/actions/security-audit
+        with:
+          fail-on-vuln: 'true'
+
+      # ----------------------------------------------------------------
+      # Auto-issue: open or update a single rolling CVE alert issue.
+      # Runs when pip-audit found vulnerabilities (vuln-found == 'true').
+      # Uses the built-in `gh` CLI (no action pin needed; gh is on PATH
+      # on all GitHub-hosted runners).
+      #
+      # FAIL-CLOSED: `if: always()` is REQUIRED here.  Without it, when
+      # the audit step exits non-zero (fail-on-vuln: 'true' + CVEs found),
+      # GitHub Actions skips all subsequent steps by default — meaning the
+      # issue is never created/updated in exactly the failure case it exists
+      # to handle. `always()` bypasses the skip gate; the vuln-found output
+      # condition then selects the correct branch.  The vuln-found output is
+      # set BEFORE the exit 1 in the action so it is readable here.
+      # ----------------------------------------------------------------
+      - name: Create or update CVE alert issue
+        if: always() && steps.audit.outputs.vuln-found == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          SCAN_DATE: ${{ github.run_started_at }}
         run: |
-          echo "## pip-audit Results" >> "$GITHUB_STEP_SUMMARY"
-          if uv run pip-audit --strict --desc 2>&1 | tee /tmp/pip-audit-output.txt; then
-            echo "No known vulnerabilities found." >> "$GITHUB_STEP_SUMMARY"
-            echo "result=clean" >> "$GITHUB_OUTPUT"
+          ISSUE_TITLE="Security Alert: CVEs found in dependency tree"
+          LABEL="security-alert"
+
+          # Search for an existing open issue with this title and label.
+          EXISTING=$(gh issue list \
+            --repo "$REPO" \
+            --label "$LABEL" \
+            --state open \
+            --json number,title \
+            --jq ".[] | select(.title == \"$ISSUE_TITLE\") | .number" \
+            | head -1)
+
+          BODY_FRAGMENT="**Scan run:** $RUN_URL
+          **Date:** $SCAN_DATE
+
+          pip-audit detected unfixed CVEs in the dependency tree. Check the [workflow run]($RUN_URL) for the full list.
+
+          **Remediation:** bump the affected packages to their fixed versions. If no fix exists yet, add an entry to \`.github/security/audit-allowlist.yml\` with a tracking ticket and a \`review_by\` date no more than 90 days out."
+
+          if [[ -n "$EXISTING" ]]; then
+            # Update existing issue with a new comment.
+            gh issue comment "$EXISTING" \
+              --repo "$REPO" \
+              --body "$BODY_FRAGMENT"
+            echo "Updated existing CVE alert issue #$EXISTING"
           else
-            echo "::error::pip-audit found vulnerabilities in the dependency tree"
-            cat /tmp/pip-audit-output.txt >> "$GITHUB_STEP_SUMMARY"
-            echo "result=vulnerable" >> "$GITHUB_OUTPUT"
-            exit 1
+            # Create a new issue.
+            gh issue create \
+              --repo "$REPO" \
+              --title "$ISSUE_TITLE" \
+              --label "$LABEL" \
+              --body "$BODY_FRAGMENT"
+            echo "Created new CVE alert issue"
           fi
 
-      # PM-001 mitigation: verify pip-audit actually ran (not silent failure)
-      - name: Verify pip-audit executed
-        if: always()
+      # ----------------------------------------------------------------
+      # Auto-close: if the scan is clean, close the open alert issue.
+      # This gives the team a clear signal that the dep tree is healthy
+      # again without requiring manual issue management.
+      #
+      # FAIL-CLOSED: `if: always()` mirrors the create/update step above.
+      # When the audit is clean the step exits 0, so always() is harmless
+      # here; it is included for symmetry and to protect against future
+      # changes that might make the audit step exit non-zero even on a
+      # clean run (e.g., D5 guard firing for a different reason).
+      # ----------------------------------------------------------------
+      - name: Close CVE alert issue when clean
+        if: always() && steps.audit.outputs.vuln-found == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          if [[ ! -f /tmp/pip-audit-output.txt ]]; then
-            echo "::error::pip-audit did not produce output — possible silent failure"
-            exit 1
+          ISSUE_TITLE="Security Alert: CVEs found in dependency tree"
+          LABEL="security-alert"
+
+          EXISTING=$(gh issue list \
+            --repo "$REPO" \
+            --label "$LABEL" \
+            --state open \
+            --json number,title \
+            --jq ".[] | select(.title == \"$ISSUE_TITLE\") | .number" \
+            | head -1)
+
+          if [[ -n "$EXISTING" ]]; then
+            gh issue close "$EXISTING" \
+              --repo "$REPO" \
+              --comment "Dependency tree is now clean. Closing this alert. [Scan run]($RUN_URL)"
+            echo "Closed CVE alert issue #$EXISTING (dependency tree is clean)"
+          else
+            echo "No open CVE alert issue to close. Dependency tree is clean."
           fi
-          LINE_COUNT=$(wc -l < /tmp/pip-audit-output.txt)
-          if [[ "$LINE_COUNT" -lt 1 ]]; then
-            echo "::error::pip-audit output is empty — possible silent failure"
-            exit 1
-          fi
-          echo "pip-audit executed successfully ($LINE_COUNT lines of output)"

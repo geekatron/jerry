@@ -101,9 +101,7 @@ class Priority:
             return cls(level)
         except ValueError:
             valid = [p.value for p in PriorityLevel]
-            raise ValueError(
-                f"Invalid priority '{value}'. Valid: {valid}"
-            )
+            raise ValueError(f"Invalid priority '{value}'. Valid: {valid}")
 
     @property
     def value(self) -> str:
@@ -115,8 +113,12 @@ class Priority:
 
         Priority order: critical > high > medium > low
         """
-        order = [PriorityLevel.LOW, PriorityLevel.MEDIUM,
-                 PriorityLevel.HIGH, PriorityLevel.CRITICAL]
+        order = [
+            PriorityLevel.LOW,
+            PriorityLevel.MEDIUM,
+            PriorityLevel.HIGH,
+            PriorityLevel.CRITICAL,
+        ]
         return order.index(self.level) > order.index(other.level)
 
     def __str__(self) -> str:
@@ -161,12 +163,10 @@ class Title:
             raise ValueError("Title cannot be empty")
 
         if len(normalized) > self.MAX_LENGTH:
-            raise ValueError(
-                f"Title exceeds maximum length of {self.MAX_LENGTH} characters"
-            )
+            raise ValueError(f"Title exceeds maximum length of {self.MAX_LENGTH} characters")
 
         # Set the normalized value
-        object.__setattr__(self, 'value', normalized)
+        object.__setattr__(self, "value", normalized)
 
     def __str__(self) -> str:
         return self.value
@@ -207,9 +207,7 @@ class Percentage:
     def __post_init__(self) -> None:
         """Validate percentage bounds."""
         if not 0 <= self.value <= 100:
-            raise ValueError(
-                f"Percentage must be between 0 and 100, got {self.value}"
-            )
+            raise ValueError(f"Percentage must be between 0 and 100, got {self.value}")
 
     @classmethod
     def zero(cls) -> Percentage:
@@ -379,6 +377,7 @@ def test_value_object_serialization():
 class Priority:
     level: str  # Can be changed!
 
+
 # CORRECT: Frozen
 @dataclass(frozen=True, slots=True)
 class Priority:
@@ -394,6 +393,7 @@ class Money:
     id: str  # Value objects have no identity!
     amount: Decimal
     currency: str
+
 
 # CORRECT: Pure value
 @dataclass(frozen=True)
@@ -412,6 +412,7 @@ class Priority:
 
     def get_sla(self, sla_service: SLAService):  # External dependency!
         return sla_service.get_sla_for(self.level)
+
 
 # CORRECT: Value object is pure
 @dataclass(frozen=True)

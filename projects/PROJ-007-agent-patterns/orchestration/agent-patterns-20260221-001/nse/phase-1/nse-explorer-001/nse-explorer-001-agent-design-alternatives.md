@@ -327,8 +327,7 @@ class PSResearcher(BaseAgent):
         return re.match(r"^[a-z]+-\d+$", ps_id) is not None
 
     @output(levels=["L0", "L1", "L2"])
-    def research(self, topic: str) -> ResearchReport:
-        ...
+    def research(self, topic: str) -> ResearchReport: ...
 ```
 
 **Pros:**

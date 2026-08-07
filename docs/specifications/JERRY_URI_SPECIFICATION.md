@@ -64,11 +64,11 @@ jer[+scheme_version]:<partition>:[tenant_id]:<domain>:[resource_type<:|/><resour
 import re
 
 JERRY_URI_PATTERN = re.compile(
-    r'^jer(?:\+(?P<scheme_version>\d+))?:'
-    r'(?P<partition>[a-z]+):'
-    r'(?:(?P<tenant_id>[a-z0-9-]+):)?'
-    r'(?P<domain>[a-z0-9-]+):'
-    r'(?P<path>.+?)(?:\+(?P<resource_version>[a-z0-9.-]+))?$'
+    r"^jer(?:\+(?P<scheme_version>\d+))?:"
+    r"(?P<partition>[a-z]+):"
+    r"(?:(?P<tenant_id>[a-z0-9-]+):)?"
+    r"(?P<domain>[a-z0-9-]+):"
+    r"(?P<path>.+?)(?:\+(?P<resource_version>[a-z0-9.-]+))?$"
 )
 ```
 
@@ -129,6 +129,7 @@ class JerryId:
     """
     Strongly-typed identity that generates Jerry URIs.
     """
+
     prefix: str
     sequence: int
     uuid: str = ""
@@ -332,6 +333,7 @@ from dataclasses import dataclass
 from typing import Optional
 import re
 
+
 @dataclass(frozen=True)
 class JerryUri:
     """
@@ -352,12 +354,12 @@ class JerryUri:
 
     # Pattern for parsing
     PATTERN = re.compile(
-        r'^jer(?:\+(?P<scheme_version>\d+))?:'
-        r'(?P<partition>[a-z]+):'
-        r'(?:(?P<tenant_id>[a-z0-9-]+):)?'
-        r'(?P<domain>[a-z0-9-]+):'
-        r'(?P<resource_path>.+?)(?:\+(?P<resource_version>[a-z0-9.-]+))?$',
-        re.IGNORECASE
+        r"^jer(?:\+(?P<scheme_version>\d+))?:"
+        r"(?P<partition>[a-z]+):"
+        r"(?:(?P<tenant_id>[a-z0-9-]+):)?"
+        r"(?P<domain>[a-z0-9-]+):"
+        r"(?P<resource_path>.+?)(?:\+(?P<resource_version>[a-z0-9.-]+))?$",
+        re.IGNORECASE,
     )
 
     def __str__(self) -> str:
@@ -389,12 +391,12 @@ class JerryUri:
             raise ValueError(f"Invalid Jerry URI: {uri}")
 
         return cls(
-            scheme_version=int(match.group('scheme_version') or 1),
-            partition=match.group('partition'),
-            tenant_id=match.group('tenant_id'),
-            domain=match.group('domain'),
-            resource_path=match.group('resource_path'),
-            resource_version=match.group('resource_version')
+            scheme_version=int(match.group("scheme_version") or 1),
+            partition=match.group("partition"),
+            tenant_id=match.group("tenant_id"),
+            domain=match.group("domain"),
+            resource_path=match.group("resource_path"),
+            resource_version=match.group("resource_version"),
         )
 
     @classmethod
@@ -404,29 +406,22 @@ class JerryUri:
         entity_type: str,
         entity_id: str,
         version: Optional[str] = None,
-        tenant_id: Optional[str] = None
+        tenant_id: Optional[str] = None,
     ) -> "JerryUri":
         """Factory for entity URIs."""
         return cls(
             domain=domain,
             resource_path=f"{entity_type}:{entity_id}",
             resource_version=version,
-            tenant_id=tenant_id
+            tenant_id=tenant_id,
         )
 
     @classmethod
     def for_action(
-        cls,
-        domain: str,
-        action_name: str,
-        tenant_id: Optional[str] = None
+        cls, domain: str, action_name: str, tenant_id: Optional[str] = None
     ) -> "JerryUri":
         """Factory for action/command URIs."""
-        return cls(
-            domain=domain,
-            resource_path=f"actions/{action_name}",
-            tenant_id=tenant_id
-        )
+        return cls(domain=domain, resource_path=f"actions/{action_name}", tenant_id=tenant_id)
 
     @classmethod
     def for_event(
@@ -434,15 +429,11 @@ class JerryUri:
         domain: str,
         event_name: str,
         path: Optional[str] = None,
-        tenant_id: Optional[str] = None
+        tenant_id: Optional[str] = None,
     ) -> "JerryUri":
         """Factory for event/fact URIs."""
         resource_path = f"facts/{path}/{event_name}" if path else f"facts/{event_name}"
-        return cls(
-            domain=domain,
-            resource_path=resource_path,
-            tenant_id=tenant_id
-        )
+        return cls(domain=domain, resource_path=resource_path, tenant_id=tenant_id)
 
     @classmethod
     def for_schema(
@@ -451,14 +442,14 @@ class JerryUri:
         entity_type: str,
         schema_name: str,
         version: str,
-        tenant_id: Optional[str] = None
+        tenant_id: Optional[str] = None,
     ) -> "JerryUri":
         """Factory for JSON Schema URIs."""
         return cls(
             domain=domain,
             resource_path=f"{entity_type}:{schema_name}",
             resource_version=version,
-            tenant_id=tenant_id
+            tenant_id=tenant_id,
         )
 
     # Comparison
@@ -490,7 +481,7 @@ class EntityBase(IAuditable, IVersioned):
             entity_type=self.id.prefix,
             entity_id=self.id.full_form,
             version=self.content_hash[:16] if self.content_hash else None,
-            tenant_id=self.id.tenant_id
+            tenant_id=self.id.tenant_id,
         )
 ```
 
@@ -499,26 +490,24 @@ class EntityBase(IAuditable, IVersioned):
 ```python
 from cloudevents.http import CloudEvent
 
-def create_domain_event(
-    source_entity: EntityBase,
-    event_name: str,
-    data: dict
-) -> CloudEvent:
+
+def create_domain_event(source_entity: EntityBase, event_name: str, data: dict) -> CloudEvent:
     """
     Create a CloudEvent with Jerry URI type.
     """
     event_type = JerryUri.for_event(
-        domain=source_entity.id.domain,
-        event_name=event_name,
-        tenant_id=source_entity.id.tenant_id
+        domain=source_entity.id.domain, event_name=event_name, tenant_id=source_entity.id.tenant_id
     )
 
-    return CloudEvent({
-        "specversion": "1.0",
-        "source": str(source_entity.uri),
-        "type": str(event_type),
-        "datacontenttype": "application/json",
-    }, data)
+    return CloudEvent(
+        {
+            "specversion": "1.0",
+            "source": str(source_entity.uri),
+            "type": str(event_type),
+            "datacontenttype": "application/json",
+        },
+        data,
+    )
 ```
 
 ---

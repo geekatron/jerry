@@ -181,9 +181,7 @@ class WorkItem(AggregateRoot):
         self._status.validate_transition(WorkItemStatus.DONE)
 
         if not quality_passed:
-            raise QualityGateError(
-                f"Work item {self._id} failed quality gate validation"
-            )
+            raise QualityGateError(f"Work item {self._id} failed quality gate validation")
 
         event = WorkItemCompleted(
             aggregate_id=self._id,
@@ -219,9 +217,7 @@ class WorkItem(AggregateRoot):
             priority: New priority level
         """
         if self._status.is_terminal:
-            raise InvalidStateError(
-                f"Cannot modify completed/cancelled work item {self._id}"
-            )
+            raise InvalidStateError(f"Cannot modify completed/cancelled work item {self._id}")
 
         event = PriorityChanged(
             aggregate_id=self._id,

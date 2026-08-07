@@ -309,6 +309,7 @@ No validation that the provided `document_type` is appropriate for the actual co
 **Attack vector:**
 ```python
 from src.domain.markdown_ast.schema import SCHEMA_REGISTRY
+
 SCHEMA_REGISTRY._schemas["story"] = poisoned_schema
 ```
 
@@ -486,9 +487,7 @@ Content truncation truncates at a character count boundary, not a Unicode code-p
 
 **Mechanism:** `_KV_PATTERN` in `html_comment.py` line 60-62:
 ```python
-_KV_PATTERN = re.compile(
-    r"(?P<key>[A-Za-z][A-Za-z0-9_-]*)\s*:\s*(?P<value>[^|]*?)(?:\s*\||$)"
-)
+_KV_PATTERN = re.compile(r"(?P<key>[A-Za-z][A-Za-z0-9_-]*)\s*:\s*(?P<value>[^|]*?)(?:\s*\||$)")
 ```
 
 The value group `[^|]*?` terminates at `|` (pipe separator) or end-of-string. However, `[^|]*?` with lazy quantifier in combination with `(?:\s*\||$)` allows the value to be empty string when the pipe immediately follows the colon.

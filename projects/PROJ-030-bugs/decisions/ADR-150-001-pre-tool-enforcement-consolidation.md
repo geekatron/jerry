@@ -218,6 +218,7 @@ on security block avoids unnecessary work.
 
 from typing import Protocol, runtime_checkable
 
+
 @runtime_checkable
 class IPatternLibrary(Protocol):
     """Port for loading and validating against security patterns.
@@ -248,6 +249,7 @@ class IPatternLibrary(Protocol):
 ```python
 # src/infrastructure/internal/enforcement/security_check_result.py
 
+
 @dataclass(frozen=True)
 class SecurityCheckResult:
     """Result of a single security check category.
@@ -258,6 +260,7 @@ class SecurityCheckResult:
         category: Which check category produced this result.
         severity: "block", "warn", or "approve".
     """
+
     passed: bool
     reason: str
     category: str  # "file_write", "bash_command", "git_operation", "pattern"
@@ -269,6 +272,7 @@ class SecurityCheckResult:
 ```python
 # src/infrastructure/internal/enforcement/pattern_validation_result.py
 
+
 @dataclass(frozen=True)
 class PatternValidationResult:
     """Result of pattern-based validation.
@@ -278,6 +282,7 @@ class PatternValidationResult:
         reason: Aggregated reason string.
         matches: Individual pattern matches for logging.
     """
+
     decision: str
     reason: str
     matches: list[PatternMatch] = field(default_factory=list)
@@ -287,6 +292,7 @@ class PatternValidationResult:
 
 ```python
 # src/infrastructure/internal/enforcement/security_enforcement_engine.py
+
 
 class SecurityEnforcementEngine:
     """Security enforcement engine for pre-tool-use validation.
@@ -335,6 +341,7 @@ class SecurityEnforcementEngine:
 ```python
 # src/infrastructure/internal/enforcement/security_rules.py
 
+
 @dataclass(frozen=True)
 class SecurityRules:
     """Static security rule definitions.
@@ -342,6 +349,7 @@ class SecurityRules:
     All fields are immutable frozen collections. Injectable for testing.
     Default values match the production rules from scripts/pre_tool_use.py.
     """
+
     blocked_write_paths: tuple[str, ...]
     sensitive_file_patterns: tuple[str, ...]
     dangerous_commands: tuple[str, ...]
@@ -422,9 +430,7 @@ def handle(self, stdin_json: str) -> int:
     # Step 1: Security enforcement (fail-open, runs first)
     #         Cheap checks. Early termination on block.
     try:
-        security_decision = self._security_engine.evaluate(
-            tool_name, tool_input
-        )
+        security_decision = self._security_engine.evaluate(tool_name, tool_input)
         if security_decision.action == "block":
             return self._emit_block(security_decision)
     except Exception:

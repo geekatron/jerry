@@ -207,9 +207,7 @@ for trusted in TRUSTED_REINJECT_PATHS:
 
 ```python
 # ast_commands.py lines 62-64
-_ENFORCE_PATH_CONTAINMENT: bool = os.environ.get(
-    "JERRY_DISABLE_PATH_CONTAINMENT", ""
-) != "1"
+_ENFORCE_PATH_CONTAINMENT: bool = os.environ.get("JERRY_DISABLE_PATH_CONTAINMENT", "") != "1"
 ```
 
 This module-level constant is evaluated at import time. Any process that sets `JERRY_DISABLE_PATH_CONTAINMENT=1` before running `jerry ast` commands will have ALL path containment, symlink resolution, and file size checks disabled for the entire process lifetime.
@@ -247,6 +245,7 @@ JERRY_DISABLE_PATH_CONTAINMENT=1 jerry ast frontmatter /proc/self/environ
 1. Restrict the env var bypass to test environments only, using a test-framework detection:
    ```python
    import sys
+
    _IN_TEST = "pytest" in sys.modules
    _ENFORCE_PATH_CONTAINMENT = _IN_TEST or os.environ.get("JERRY_DISABLE_PATH_CONTAINMENT", "") != "1"
    ```
@@ -368,9 +367,9 @@ Additionally, the function uses `doc.source.replace(target.raw_text, new_raw, 1)
 target_path = Path(file_path).resolve()
 
 # Compared with _read_file() (read path)
-resolved = Path(file_path).resolve()        # Path.resolve()
-realpath = Path(os.path.realpath(file_path)) # os.path.realpath()
-if resolved != realpath:                     # Symlink detection check
+resolved = Path(file_path).resolve()  # Path.resolve()
+realpath = Path(os.path.realpath(file_path))  # os.path.realpath()
+if resolved != realpath:  # Symlink detection check
     if not realpath.is_relative_to(repo_root):
         return None, f"Symlink target escapes..."
 ```
@@ -419,6 +418,7 @@ if target_path != realpath_write:
 def __init__(self) -> None:
     self._schemas: dict[str, EntitySchema] = {}  # Plain mutable dict
     self._frozen: bool = False
+
 
 # schema_registry.py lines 71-95
 def register(self, schema: EntitySchema) -> None:
@@ -640,7 +640,7 @@ Coverage of the security-critical path is 0%:
 # document_type.py lines 90-91
 STRUCTURAL_CUE_PRIORITY: list[tuple[str, DocumentType]] = [
     ("---", DocumentType.AGENT_DEFINITION),  # First priority
-    ...
+    ...,
 ]
 ```
 
@@ -653,13 +653,13 @@ More critically: a worktracker entity file (using `> **Type:** epic` pattern) th
 **Recommendation:** Refine the structural cue to specifically match YAML frontmatter delimiters (at line start, followed by key: value content) rather than any `---` occurrence:
 
 ```python
-("^---\n", DocumentType.AGENT_DEFINITION),  # Only at document start
+(("^---\n", DocumentType.AGENT_DEFINITION),)  # Only at document start
 ```
 
 Or use a more specific cue:
 
 ```python
-("---\nname:", DocumentType.AGENT_DEFINITION),
+(("---\nname:", DocumentType.AGENT_DEFINITION),)
 ```
 
 ---

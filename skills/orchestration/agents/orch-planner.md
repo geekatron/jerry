@@ -333,7 +333,7 @@ All artifact paths MUST use dynamic identifiers:
 - Base: `orchestration/{workflow_id}/`
 - Pipeline: `orchestration/{workflow_id}/{pipeline_alias}/{phase}/`
 - Barrier: `orchestration/{workflow_id}/cross-pollination/{barrier}/{direction}/`
-"""
+""",
 )
 ```
 </invocation>

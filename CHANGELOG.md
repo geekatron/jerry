@@ -7,19 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **style:** reformat 324 Markdown files repo-wide (.context/, docs/, skills/, runbooks/, projects/) for ruff 0.16.1's new Markdown code-block formatting — no formatter exclusions (an initial projects/ exclusion was rejected in review as a shortcut and reverted) (PROJ-024 EN-010/TASK-036, #339)
+- **docs(proj-001):** conform 8 legacy pre-schema task entities to the current worktracker schema (enum vocabulary DONE→completed / HIGH→high, backfilled frontmatter derived from each file's own metadata, `## Content`→`## Summary` heading renames); rename 3 adversarial-critic reports whose `EN-` filename prefixes falsely triggered entity schema validation (#339)
+- **deps(dev):** bump uv-minor-patch group — ruff 0.15.22→0.16.1, filelock 3.31.0→3.32.2, bump-my-version 1.4.1→1.5.0, pre-commit 4.6.0→4.6.1 (Dependabot #334)
+
+### Security
+- **fix(deps):** constrain `click>=8.3.3` (resolves 8.4.2) via `[tool.uv]` constraints — remediates PYSEC-2026-2132 command injection in `click.edit()`, the sole finding keeping the daily scheduled scan red since ~2026-07-18 (#336)
+- **fix(ci):** create the missing `security-alert` GitHub label — the scheduled scan's rolling-alert issue step had failed on every run since ~2026-07-18 because the label was never created; alerting now proven end-to-end (run 31039187847 → alert issue #335)
+- **fix(deps):** bump 5 transitive dependencies to patched versions via `[tool.uv]` constraints — urllib3 2.7.0, pip 26.1.2, pydantic-settings 2.14.2, msgpack 1.2.1, mako 1.3.12 — clearing 9 pip-audit advisories (PYSEC-2026-141/142, PYSEC-2026-196, CVE-2026-3219, CVE-2026-6357, GHSA-4xgf-cpjx-pc3j, GHSA-6v7p-g79w-8964, CVE-2026-44307) (#301)
+
+### Removed
+- Delete `requirements.txt`, `requirements-dev.txt`, `requirements-test.txt` — dead pip artifacts that triggered broken Dependabot PRs (#251); uv-only per H-05
+- Remove pip fallback from release archive — `release.yml` no longer bundles requirements files
+- Remove all `pip install` instructions from docs, error messages, and CI comments — replaced with `uv add`/`uv tool install`/`uv run`
+
 ### Fixed
+- **fix(ci):** correct `cyclonedx-py` output flag from `--outfile` to `-o` — fixes v0.31.4 release SBOM generation failure
 - Migrate 7 enum classes from `(str, Enum)` to `StrEnum` in `docs/schemas/types/session_context.py` — Python 3.11+ modernization, unblocks ruff 0.15.10 UP042 rule
+- **fix(ci):** replace bare `python3 -m py_compile` with `uv run python -m py_compile` in plugin-validation — closes last H-05 violation
 - **fix(ci):** scope `pull-requests:write` to `coverage-report` job only — eliminates PR write blast radius for 14 jobs (TASK-021)
 - **fix(ci):** restrict push triggers to `main`/`master` branches — closes untrusted-branch CI trigger attack surface (TASK-022)
 - **fix(ci):** migrate lint, type-check, security jobs to `uv sync --frozen` — eliminates 4 H-05 violations and closes supply chain gap (TASK-017)
 - **fix(ci):** scan full dependency tree via `uv export --all-extras` for pip-audit — replaces 3-package hand-picked list with complete lockfile audit (TASK-018)
 
 ### Changed
+- **docs(proj-024):** worktracker traceability for the ruff 0.16.1 formatting alignment — EN-010/TASK-036 entities with full evidence chain including the review-rejected `projects/**` formatter-exclusion shortcut and its correction; EPIC-003 Phase 4 reopen/re-close window documented (#339)
+- **docs(proj-024):** worktracker audit + remediation — evidence-based closure of 5 security-hardening items via 6 independent verifier reports, hierarchy restructure (container enablers EN-008/EN-009), 2 lost entities recreated, 30 completion dates backfilled from git evidence, manifest rebuilt (86/86 entities consistent, re-audit PASSED)
 - **refactor(ci):** remove redundant `test-pip` job (8 matrix cells) — uv test matrix provides equivalent coverage (TASK-016)
 - **refactor(ci):** consolidate 6 validation jobs (`lockfile-check`, `template-validation`, `frontmatter-validation`, `license-headers`, `version-sync`, `hard-rule-ceiling`) into single `validation` job (TASK-019)
 - **refactor(ci):** merge `lint` and `type-check` into `static-analysis` job with shared `uv sync --frozen --extra dev` (TASK-020)
 
 ### Added
+- ADR-secscan-hardening-001: dependency security-scan pipeline hardening — DRY composite audit action, owner CVE accept-list with `review_by` expiry, non-blocking CI policy, and the meaningful-audit guard (#301)
+- **feat(ci):** composite action `.github/actions/security-audit` — unified pip-audit scan with CVE accept-list, D5 meaningful-audit guard, and `vuln-found` output for downstream issue management (#301)
+- `.github/security/audit-allowlist.yml` — CVE accept-list with 90-day expiry enforcement; empty by default (all current CVEs have published fixes)
+- `scripts/security/audit_allowlist.py` — fail-closed parser for the accept-list: validates required fields, enforces 90-day cap, checks expiry, emits `--ignore-vuln` flags for pip-audit (#301)
+- **feat(ci):** `security-scan.yml` hardened — scheduled scan now uses composite action (fixes E4 false-green bug), adds auto-issue creation/update/close via `gh` CLI for rolling CVE alert management (#301)
+- CODEOWNERS entries for `.github/actions/` and `.github/security/` — requires maintainer review to prevent supply-chain attacks via action script or CVE suppression abuse (#301)
 - ADR-output-path-resolution-001: Unified Output Path Resolution Protocol (P1/P2/P3/P4 layered resolution chain)
 - AD-M-011 MEDIUM standard: agents SHOULD use project-relative output paths per ADR-output-path-resolution-001
 - `filename_pattern` field in agent-governance-v1.schema.json for Priority 2 base-path resolution

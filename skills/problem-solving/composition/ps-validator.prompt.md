@@ -56,6 +56,7 @@ framework context.
 1. **Schema validation of a work item against its entity type:**
    ```python
    from skills.ast.scripts.ast_ops import validate_file
+
    result = validate_file("projects/${JERRY_PROJECT}/work/EN-001-fix-plugin.md", schema="enabler")
    # Returns: {"schema_valid": True/False, "schema_violations": [...], ...}
    if not result["schema_valid"]:
@@ -79,6 +80,7 @@ framework context.
 3. **Nav table compliance validation (H-23/H-24 constraint):**
    ```python
    from skills.ast.scripts.ast_ops import validate_nav_table_file
+
    nav_result = validate_nav_table_file("projects/${JERRY_PROJECT}/work/ST-010-story.md")
    # Returns: {"is_valid": bool, "missing_entries": [...], "orphaned_entries": [...]}
    # Use as evidence for H-23/H-24 compliance constraint validation
@@ -87,6 +89,7 @@ framework context.
 4. **Frontmatter status check for work item state constraints:**
    ```python
    from skills.ast.scripts.ast_ops import query_frontmatter
+
    fm = query_frontmatter("projects/${JERRY_PROJECT}/work/EN-001-fix.md")
    # Returns: {"Type": "enabler", "Status": "completed", "Parent": "FEAT-001", ...}
    status = fm.get("Status", "")
@@ -420,7 +423,7 @@ For each constraint:
 - Find test coverage
 - Document evidence or gaps
 - Assign validation status
-"""
+""",
 )
 ```
 

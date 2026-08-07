@@ -305,7 +305,7 @@ Like humans with limited working memory, LLMs have an "attention budget" that de
 ```python
 # From Anthropic Cookbook
 def chunk_text(text, chunk_size=2000):
-    return [text[i:i+chunk_size] for i in range(0, len(text), chunk_size)]
+    return [text[i : i + chunk_size] for i in range(0, len(text), chunk_size)]
 ```
 
 **Contextual Embeddings** solve the "chunk lacks context" problem by adding relevant context to each chunk before embedding.

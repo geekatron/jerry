@@ -91,11 +91,14 @@ class Route(BaseModel):
         description="The agent best suited to handle this request"
     )
 
+
 router = llm.with_structured_output(Route)
-decision = router.invoke([
-    SystemMessage(content="Route to the appropriate agent based on the request."),
-    HumanMessage(content=state["input"]),
-])
+decision = router.invoke(
+    [
+        SystemMessage(content="Route to the appropriate agent based on the request."),
+        HumanMessage(content=state["input"]),
+    ]
+)
 ```
 
 **Evidence:** LangGraph official documentation, "Routing Workflow Example" (LangChain, 2025-2026, Source Reputation: High).
@@ -454,11 +457,16 @@ def route_decision(state: State):
         return "tech_agent"
     return "general_agent"
 
-graph.add_conditional_edges("classifier", route_decision, {
-    "billing_agent": "billing_agent",
-    "tech_agent": "tech_agent",
-    "general_agent": "general_agent",
-})
+
+graph.add_conditional_edges(
+    "classifier",
+    route_decision,
+    {
+        "billing_agent": "billing_agent",
+        "tech_agent": "tech_agent",
+        "general_agent": "general_agent",
+    },
+)
 ```
 
 **Evidence:** LangGraph official documentation (LangChain, 2025-2026, Source Reputation: High, Benchmark Score: 86.9). Context7 query results confirming routing workflow examples and Command API.

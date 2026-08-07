@@ -52,7 +52,12 @@ class Currency:
     decimal_places: int
 
     def __post_init__(self) -> None:
-        if not self.code or len(self.code) != 3 or not self.code.isalpha() or not self.code.isupper():
+        if (
+            not self.code
+            or len(self.code) != 3
+            or not self.code.isalpha()
+            or not self.code.isupper()
+        ):
             raise ValueError(
                 f"Currency code must be exactly 3 uppercase ASCII letters; got {self.code!r}"
             )
@@ -98,9 +103,7 @@ class Money:
 
     def __post_init__(self) -> None:
         if not isinstance(self.amount, Decimal):
-            raise TypeError(
-                f"Money.amount must be a Decimal; got {type(self.amount).__name__}"
-            )
+            raise TypeError(f"Money.amount must be a Decimal; got {type(self.amount).__name__}")
         sign, digits, exponent = self.amount.as_tuple()
         actual_decimal_places = -exponent if exponent < 0 else 0
         if actual_decimal_places > self.currency.decimal_places:
@@ -155,13 +158,9 @@ class ExchangeRate:
                 f"from_currency and to_currency must differ; both are {self.from_currency.code!r}."
             )
         if not isinstance(self.rate, Decimal):
-            raise TypeError(
-                f"ExchangeRate.rate must be a Decimal; got {type(self.rate).__name__}"
-            )
+            raise TypeError(f"ExchangeRate.rate must be a Decimal; got {type(self.rate).__name__}")
         if self.rate <= Decimal("0"):
-            raise ValueError(
-                f"ExchangeRate.rate must be positive; got {self.rate}"
-            )
+            raise ValueError(f"ExchangeRate.rate must be positive; got {self.rate}")
 
     def __str__(self) -> str:
         return (

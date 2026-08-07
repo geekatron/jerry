@@ -245,7 +245,7 @@ class InMemoryEventStore:
     ) -> Sequence[DomainEvent]:
         """Read events from stream."""
         events = self._streams.get(stream_id, [])
-        return events[from_version - 1:]
+        return events[from_version - 1 :]
 
 
 # File: src/infrastructure/adapters/external/os_environment_adapter.py
@@ -395,6 +395,7 @@ class CreateWorkItemHandler:
     def __init__(self):
         self._repo = FilesystemRepository()  # Concrete!
 
+
 # CORRECT: Handler depends on port
 class CreateWorkItemHandler:
     def __init__(self, repository: IWorkItemRepository):
@@ -408,6 +409,7 @@ class CreateWorkItemHandler:
 class IEventStore(Protocol):
     def execute_sql(self, query: str): ...  # SQL detail!
     def get_connection(): ...  # Connection detail!
+
 
 # CORRECT: Port is technology-agnostic
 class IEventStore(Protocol):

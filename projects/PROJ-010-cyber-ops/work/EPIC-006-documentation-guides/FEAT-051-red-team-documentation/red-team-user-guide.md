@@ -547,7 +547,7 @@ Create file at: skills/red-team/output/RED-0001/red-recon-network-enumeration.md
 
 ## TASK
 Perform network reconnaissance methodology guidance for the authorized target range.
-"""
+""",
 )
 ```
 

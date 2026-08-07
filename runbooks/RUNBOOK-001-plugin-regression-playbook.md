@@ -438,9 +438,9 @@ The `scripts/session_start.py` was a "legacy wrapper" that tried to run:
 
 ```python
 # All three paths required pip install -e .
-subprocess.run(['.venv/bin/jerry-session-start', ...])  # Entry point needs pip
-subprocess.run(['.venv/bin/python', '-m', 'src.interface.cli.session_start'])  # Needs venv
-subprocess.run([sys.executable, '-m', 'src.interface.cli.session_start'])  # Needs pip
+subprocess.run([".venv/bin/jerry-session-start", ...])  # Entry point needs pip
+subprocess.run([".venv/bin/python", "-m", "src.interface.cli.session_start"])  # Needs venv
+subprocess.run([sys.executable, "-m", "src.interface.cli.session_start"])  # Needs pip
 ```
 
 None of these work without `pip install -e .`, which users don't run.
@@ -474,7 +474,7 @@ And added PEP 723 metadata to `session_start.py`:
 |--------|------------|
 | Don't assume pip is available | Use uv run + PEP 723 |
 | Don't fail silently | Always print errors to stderr |
-| Test plugin mode | Run without `pip install -e .` |
+| Test plugin mode | Run via `uv run` without editable install |
 | Automate validation | CI job validates hook execution |
 
 ## Detection Improvements

@@ -217,6 +217,7 @@ EntityBase satisfies multiple protocols:
 ```python
 from typing import runtime_checkable, Protocol
 
+
 @runtime_checkable
 class IAuditable(Protocol):
     created_by: str
@@ -224,10 +225,13 @@ class IAuditable(Protocol):
     updated_by: str
     updated_at: datetime
 
+
 @runtime_checkable
 class IVersioned(Protocol):
     version: int
+
     def get_expected_version(self) -> int: ...
+
 
 # EntityBase satisfies both protocols
 entity = Task.create(title="Example")
@@ -272,7 +276,7 @@ print(task.created_at)  # 2026-01-11T10:00:00Z
 task.update_title("Research API", by="user-456")
 print(task.updated_by)  # "user-456"
 print(task.updated_at)  # 2026-01-11T10:05:00Z
-print(task.version)     # 1
+print(task.version)  # 1
 ```
 
 ---

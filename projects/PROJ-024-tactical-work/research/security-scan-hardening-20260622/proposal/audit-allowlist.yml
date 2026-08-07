@@ -1,0 +1,50 @@
+# Security Audit Accept-List
+# .github/security/audit-allowlist.yml
+#
+# PURPOSE: Temporarily suppress known CVEs that cannot be fixed immediately
+# (e.g., no upstream fix yet, mitigation in place, false positive).
+# Every entry MUST have a review_by date. An expired entry BLOCKS the pipeline
+# until it is either removed (fix applied) or renewed with justification.
+#
+# SCHEMA:
+#   accepted:
+#     - id:          <str>  REQUIRED. CVE / GHSA / PYSEC advisory identifier.
+#                           Use the exact ID that pip-audit reports.
+#     - package:     <str>  REQUIRED. Package name (informational; not parsed by tooling).
+#     - reason:      <str>  REQUIRED. Why we are accepting this risk right now.
+#                           Must name the mitigation or explain why no fix exists.
+#     - accepted_by: <str>  REQUIRED. GitHub username of the person who approved.
+#     - accepted_on: <date> REQUIRED. ISO 8601 date the entry was created (YYYY-MM-DD).
+#     - review_by:   <date> REQUIRED. ISO 8601 date by which this entry must be
+#                           re-evaluated. The pipeline FAILS if today > review_by.
+#                           Maximum: 90 days from accepted_on (team policy).
+#     - ticket:      <str>  REQUIRED. Tracking issue URL or ID (e.g. https://github.com/…/issues/N).
+#                           Use "none" only if no tracking system is available.
+#
+# WORKFLOW:
+#   1. CVE appears in pip-audit output and blocks CI.
+#   2. Verify: is there a published fix?  If yes -> bump the dep, do not add here.
+#   3. If no fix yet -> add entry below with review_by <= 90 days out.
+#   4. Open a tracking issue; paste its URL in the ticket field.
+#   5. On review_by date: re-assess. Either the fix exists (remove entry + bump dep)
+#      or renew with updated justification and new review_by date.
+#
+# EXAMPLE ENTRY (commented out — DO NOT uncomment; add real entries below):
+#
+# accepted:
+#   - id: CVE-2099-00000
+#     package: example-pkg
+#     reason: >
+#       No upstream fix available as of 2026-06-22. The vulnerable code path
+#       (XML deserialization) is never invoked in Jerry's usage of this library.
+#       Mitigation: input is always validated upstream by yaml.safe_load().
+#     accepted_by: geekatron
+#     accepted_on: 2026-06-22
+#     review_by:   2026-09-22   # 90 days; max allowed by team policy
+#     ticket: https://github.com/geekatron/jerry/issues/999
+#
+# NOTE: Today's 9 CVEs (mako, urllib3, idna, msgpack, pydantic-settings,
+# pymdown-extensions, pip) all have published fixes. NONE are accepted here.
+# Fix them by bumping the affected packages; do not add them to this file.
+
+accepted: []

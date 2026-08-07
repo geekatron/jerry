@@ -152,8 +152,8 @@ The following files are **BINARY files** with specific byte sequences designed t
 If files become corrupted, regenerate them using the Python script:
 ```python
 # Example regeneration (see test_data/scripts/generate_encoding_tests.py for full script)
-windows1252_content = b'WEBVTT\n\n...\n<v M\xfcller>The price is \x8050...'
-with open('windows1252_sample.vtt', 'wb') as f:
+windows1252_content = b"WEBVTT\n\n...\n<v M\xfcller>The price is \x8050..."
+with open("windows1252_sample.vtt", "wb") as f:
     f.write(windows1252_content)
 ```
 

@@ -88,7 +88,7 @@ class VTTParser:
             import webvtt
         except ImportError as e:
             raise ImportError(
-                "webvtt-py is required for VTT parsing. Install with: pip install webvtt-py"
+                "webvtt-py is required for VTT parsing. Install with: uv add webvtt-py"
             ) from e
 
         segments: list[ParsedSegment] = []

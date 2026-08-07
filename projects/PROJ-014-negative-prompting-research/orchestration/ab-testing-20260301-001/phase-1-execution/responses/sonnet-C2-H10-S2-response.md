@@ -110,7 +110,9 @@ If you want import ergonomics equivalent to a single module, you can add re-expo
 ```python
 from src.domain.exceptions.work_item_not_found_error import WorkItemNotFoundError
 from src.domain.exceptions.work_item_already_exists_error import WorkItemAlreadyExistsError
-from src.domain.exceptions.invalid_work_item_status_transition_error import InvalidWorkItemStatusTransitionError
+from src.domain.exceptions.invalid_work_item_status_transition_error import (
+    InvalidWorkItemStatusTransitionError,
+)
 
 __all__ = [
     "WorkItemNotFoundError",

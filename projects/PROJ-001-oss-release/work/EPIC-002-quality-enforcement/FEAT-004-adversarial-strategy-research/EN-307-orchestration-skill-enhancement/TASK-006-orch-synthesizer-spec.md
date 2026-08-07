@@ -13,6 +13,11 @@ PROJECT: PROJ-001-oss-release
 ACTIVITY: DEVELOPMENT
 -->
 
+> **Type:** task
+> **Status:** completed
+> **Priority:** critical
+> **Created:** 2026-02-13
+> **Parent:** EN-307
 > **Version:** 1.0.0
 > **Agent:** ps-architect-307
 > **Quality Target:** >= 0.92
@@ -265,7 +270,7 @@ The synthesis document now includes six new adversarial sections after the stand
 > **Document ID:** {PROJECT_ID}-SYNTH-FINAL
 > **Date:** {date}
 > **Workflow:** {workflow_id}
-> **Status:** COMPLETE
+> **Status**: COMPLETE
 
 ---
 
@@ -410,7 +415,7 @@ You are the orch-synthesizer agent (v3.0.0).
 
 ## MANDATORY PERSISTENCE (P-002)
 Create file at: `projects/{project_id}/synthesis/{workflow_id}-final-synthesis.md`
-"""
+""",
 )
 ```
 

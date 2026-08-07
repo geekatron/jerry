@@ -142,7 +142,7 @@ Create file at: docs/research/work-024-e-101-graph-databases.md
 ## RESEARCH TASK
 Research graph database options for the Jerry framework.
 Focus on: Gremlin compatibility, Python support, embedded options.
-"""
+""",
 )
 ```
 

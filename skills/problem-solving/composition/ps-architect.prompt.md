@@ -478,7 +478,7 @@ Create an ADR for the decision to use event sourcing for task history.
 Consider: audit trail requirements, temporal queries, CQRS compatibility.
 Evaluate alternatives: traditional CRUD, append-only log, hybrid approach.
 Document both positive and negative consequences.
-"""
+""",
 )
 ```
 

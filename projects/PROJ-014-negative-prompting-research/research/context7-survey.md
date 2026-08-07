@@ -264,17 +264,21 @@ class ContentFilterMiddleware(AgentMiddleware):
         for keyword in self.banned_keywords:
             if keyword in content:
                 return {
-                    "messages": [{"role": "assistant",
-                        "content": "I cannot process requests with inappropriate content."}],
-                    "jump_to": "end"
+                    "messages": [
+                        {
+                            "role": "assistant",
+                            "content": "I cannot process requests with inappropriate content.",
+                        }
+                    ],
+                    "jump_to": "end",
                 }
 ```
 This is structurally equivalent to a negative instruction ("do NOT process requests containing these keywords") but enforced programmatically rather than linguistically.
 
 **Positive constraint (transformation):** The `PIIMiddleware` provides positive alternatives to blocking:
 ```python
-PIIMiddleware("email", strategy="redact", apply_to_input=True),
-PIIMiddleware("credit_card", strategy="mask", apply_to_input=True),
+(PIIMiddleware("email", strategy="redact", apply_to_input=True),)
+(PIIMiddleware("credit_card", strategy="mask", apply_to_input=True),)
 ```
 The `strategy` parameter offers `"redact"`, `"mask"`, and `"hash"` -- positive transformations rather than outright prohibition.
 
@@ -417,7 +421,7 @@ When a `dspy.Suggest` assertion fires for query length:
 dspy.Suggest(
     len(query) <= 100,
     "Query should be short and less than 100 characters",
-    target_module=self.generate_query
+    target_module=self.generate_query,
 )
 ```
 

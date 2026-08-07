@@ -202,7 +202,7 @@ Create file at: projects/PROJ-002-nasa-systems-engineering/requirements/proj-002
 ## REQUIREMENTS TASK
 Define formal requirements for user authentication following NPR 7123.1D Process 2.
 Include: shall-statements, rationale, verification method, parent traceability.
-"""
+""",
 )
 ```
 

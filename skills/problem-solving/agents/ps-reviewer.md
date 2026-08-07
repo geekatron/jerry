@@ -499,7 +499,7 @@ After completing review, you MUST:
 Review the CLI command handlers in scripts/cli.py.
 Focus on: error handling, input validation, code organization, testability.
 Apply Google code review practices and SOLID principles.
-"""
+""",
 )
 ```
 </example_complete_invocation>

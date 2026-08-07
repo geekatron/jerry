@@ -369,9 +369,7 @@ def test_shared_kernel_has_no_context_imports():
 from src.work_tracking.domain.aggregates.work_item import WorkItem
 
 # CORRECT: Use integration events or ACL
-work_item_completed_event = await event_bus.subscribe(
-    "jerry.work_tracking.task.completed"
-)
+work_item_completed_event = await event_bus.subscribe("jerry.work_tracking.task.completed")
 ```
 
 ### 3. Bloated Shared Kernel

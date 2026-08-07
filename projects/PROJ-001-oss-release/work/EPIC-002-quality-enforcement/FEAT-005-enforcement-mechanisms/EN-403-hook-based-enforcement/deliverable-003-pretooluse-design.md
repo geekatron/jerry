@@ -186,6 +186,7 @@ Provides deterministic, context-rot-immune enforcement for
 tool operations. All decisions are derived from file system
 state and encoded rules, never from LLM context.
 """
+
 from __future__ import annotations
 
 import ast
@@ -196,6 +197,7 @@ from pathlib import Path
 @dataclass(frozen=True)
 class EnforcementDecision:
     """Result of an enforcement evaluation."""
+
     action: str  # "block", "warn", "approve"
     reason: str
     violations: list[str] = field(default_factory=list)
@@ -402,17 +404,13 @@ class PreToolEnforcementEngine:
             if isinstance(node, ast.Import):
                 for alias in node.names:
                     module_name = alias.name
-                    violation = self._check_import_boundary(
-                        source_layer, module_name, node.lineno
-                    )
+                    violation = self._check_import_boundary(source_layer, module_name, node.lineno)
                     if violation:
                         violations.append(violation)
             elif isinstance(node, ast.ImportFrom):
                 if node.module:
                     module_name = node.module
-                    violation = self._check_import_boundary(
-                        source_layer, module_name, node.lineno
-                    )
+                    violation = self._check_import_boundary(source_layer, module_name, node.lineno)
                     if violation:
                         violations.append(violation)
 
@@ -446,8 +444,7 @@ class PreToolEnforcementEngine:
 
         forbidden_layers = forbidden.get(source_layer, [])
         for forbidden_layer in forbidden_layers:
-            if (f"src.{forbidden_layer}" in import_module or
-                f".{forbidden_layer}." in import_module):
+            if f"src.{forbidden_layer}" in import_module or f".{forbidden_layer}." in import_module:
                 return (
                     f"Line {line_number}: {source_layer} layer imports from "
                     f"{forbidden_layer} layer ({import_module}). "
@@ -477,16 +474,21 @@ class PreToolEnforcementEngine:
         for parent_node in ast.walk(tree):
             if isinstance(parent_node, ast.If):
                 # Check if the test is TYPE_CHECKING
-                if (isinstance(parent_node.test, ast.Name) and
-                        parent_node.test.id == "TYPE_CHECKING"):
+                if (
+                    isinstance(parent_node.test, ast.Name)
+                    and parent_node.test.id == "TYPE_CHECKING"
+                ):
                     # Check if the import node is in the body
                     for child in ast.walk(parent_node):
                         if child is node:
                             return True
-                elif (isinstance(parent_node.test, ast.Attribute) and
-                      isinstance(parent_node.test.value, ast.Name)):
-                    if (parent_node.test.value.id == "typing" and
-                            parent_node.test.attr == "TYPE_CHECKING"):
+                elif isinstance(parent_node.test, ast.Attribute) and isinstance(
+                    parent_node.test.value, ast.Name
+                ):
+                    if (
+                        parent_node.test.value.id == "typing"
+                        and parent_node.test.attr == "TYPE_CHECKING"
+                    ):
                         for child in ast.walk(parent_node):
                             if child is node:
                                 return True
@@ -513,10 +515,12 @@ class PreToolEnforcementEngine:
         if isinstance(node.func, ast.Name) and node.func.id == "__import__":
             return True
         # importlib.import_module("module")
-        if (isinstance(node.func, ast.Attribute) and
-                node.func.attr == "import_module" and
-                isinstance(node.func.value, ast.Name) and
-                node.func.value.id == "importlib"):
+        if (
+            isinstance(node.func, ast.Attribute)
+            and node.func.attr == "import_module"
+            and isinstance(node.func.value, ast.Name)
+            and node.func.value.id == "importlib"
+        ):
             return True
         return False
 
@@ -599,6 +603,7 @@ class PreToolEnforcementEngine:
             from src.infrastructure.internal.enforcement.boundary_rules import (
                 get_jerry_boundary_rules,
             )
+
             return ASTBoundaryValidator(get_jerry_boundary_rules())
         except ImportError:
             return None  # Use inline validation
@@ -614,6 +619,7 @@ class PreToolEnforcementEngine:
 Contains governance file patterns, architecture check
 configurations, and other rule data used by the enforcement engine.
 """
+
 from __future__ import annotations
 
 # Files that trigger automatic C3+ escalation (REQ-403-061)
@@ -1001,9 +1007,9 @@ For Edit operations:
 # EnforcementDecision -- output from engine
 @dataclass(frozen=True)
 class EnforcementDecision:
-    action: str           # "block", "warn", "approve"
-    reason: str           # Human-readable explanation
-    violations: list[str] # Individual violation descriptions
+    action: str  # "block", "warn", "approve"
+    reason: str  # Human-readable explanation
+    violations: list[str]  # Individual violation descriptions
     criticality_escalation: str | None  # "C3", "C4" if escalated
 ```
 

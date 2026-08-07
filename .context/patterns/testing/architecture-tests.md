@@ -73,9 +73,7 @@ class TestDomainLayerBoundaries:
             imports = extract_imports(file_path)
 
             for imp in imports:
-                assert "infrastructure" not in imp, (
-                    f"{file_path} imports infrastructure: {imp}"
-                )
+                assert "infrastructure" not in imp, f"{file_path} imports infrastructure: {imp}"
 
     def test_domain_has_no_application_imports(self, domain_files):
         """Domain layer must not import from application layer."""
@@ -86,9 +84,7 @@ class TestDomainLayerBoundaries:
                 # Allow shared_kernel imports
                 if "shared_kernel" in imp:
                     continue
-                assert "application" not in imp, (
-                    f"{file_path} imports application: {imp}"
-                )
+                assert "application" not in imp, f"{file_path} imports application: {imp}"
 
     def test_domain_has_no_interface_imports(self, domain_files):
         """Domain layer must not import from interface layer."""
@@ -96,9 +92,7 @@ class TestDomainLayerBoundaries:
             imports = extract_imports(file_path)
 
             for imp in imports:
-                assert "interface" not in imp, (
-                    f"{file_path} imports interface: {imp}"
-                )
+                assert "interface" not in imp, f"{file_path} imports interface: {imp}"
 
     def test_domain_has_no_external_dependencies(self, domain_files):
         """Domain layer must only use stdlib and shared_kernel."""
@@ -123,12 +117,9 @@ class TestDomainLayerBoundaries:
 
             for imp in imports:
                 is_allowed = any(
-                    imp.startswith(prefix) or imp == prefix
-                    for prefix in allowed_prefixes
+                    imp.startswith(prefix) or imp == prefix for prefix in allowed_prefixes
                 )
-                assert is_allowed, (
-                    f"{file_path} imports disallowed module: {imp}"
-                )
+                assert is_allowed, f"{file_path} imports disallowed module: {imp}"
 
 
 class TestApplicationLayerBoundaries:
@@ -146,9 +137,7 @@ class TestApplicationLayerBoundaries:
             imports = extract_imports(file_path)
 
             for imp in imports:
-                assert "interface" not in imp, (
-                    f"{file_path} imports interface: {imp}"
-                )
+                assert "interface" not in imp, f"{file_path} imports interface: {imp}"
 
     def test_application_has_no_infrastructure_imports(self, application_files):
         """Application layer must not import from infrastructure (except ports)."""
@@ -159,9 +148,7 @@ class TestApplicationLayerBoundaries:
                 # Allow ports, not adapters
                 if "ports" in imp:
                     continue
-                assert "infrastructure" not in imp, (
-                    f"{file_path} imports infrastructure: {imp}"
-                )
+                assert "infrastructure" not in imp, f"{file_path} imports infrastructure: {imp}"
 ```
 
 ---
@@ -190,12 +177,8 @@ class TestCompositionRoot:
         imports = extract_imports(bootstrap_path)
 
         # Should have infrastructure imports
-        has_infrastructure = any(
-            "infrastructure" in imp for imp in imports
-        )
-        assert has_infrastructure, (
-            "bootstrap.py should import infrastructure adapters"
-        )
+        has_infrastructure = any("infrastructure" in imp for imp in imports)
+        assert has_infrastructure, "bootstrap.py should import infrastructure adapters"
 
     def test_cli_adapter_does_not_import_infrastructure(self):
         """CLI adapter receives dispatcher via DI, no infrastructure imports."""
@@ -227,8 +210,7 @@ class TestCompositionRoot:
                 if "ports" in imp:
                     continue
                 assert "adapters" not in imp, (
-                    f"{file_path} imports adapter directly: {imp}. "
-                    f"Should use port interface."
+                    f"{file_path} imports adapter directly: {imp}. Should use port interface."
                 )
 ```
 
@@ -258,9 +240,7 @@ class TestBoundedContextIsolation:
                 # shared_kernel is allowed
                 if "shared_kernel" in imp:
                     continue
-                assert "session_management" not in imp, (
-                    f"{file_path} imports across BC: {imp}"
-                )
+                assert "session_management" not in imp, f"{file_path} imports across BC: {imp}"
 
     def test_session_management_does_not_import_work_tracking(self):
         """session_management BC must not import from work_tracking."""
@@ -275,9 +255,7 @@ class TestBoundedContextIsolation:
             for imp in imports:
                 if "shared_kernel" in imp:
                     continue
-                assert "work_tracking" not in imp, (
-                    f"{file_path} imports across BC: {imp}"
-                )
+                assert "work_tracking" not in imp, f"{file_path} imports across BC: {imp}"
 
     def test_shared_kernel_has_no_bc_imports(self):
         """Shared kernel must not import from bounded contexts."""
@@ -290,9 +268,7 @@ class TestBoundedContextIsolation:
             imports = extract_imports(file_path)
 
             for imp in imports:
-                assert "work_tracking" not in imp, (
-                    f"shared_kernel imports work_tracking: {imp}"
-                )
+                assert "work_tracking" not in imp, f"shared_kernel imports work_tracking: {imp}"
                 assert "session_management" not in imp, (
                     f"shared_kernel imports session_management: {imp}"
                 )
@@ -389,14 +365,13 @@ class TestOneClassPerFile:
 
             tree = ast.parse(file_path.read_text())
             classes = [
-                node for node in ast.walk(tree)
-                if isinstance(node, ast.ClassDef)
-                and not node.name.startswith("_")
+                node
+                for node in ast.walk(tree)
+                if isinstance(node, ast.ClassDef) and not node.name.startswith("_")
             ]
 
             assert len(classes) <= 1, (
-                f"{file_path.name} has {len(classes)} public classes. "
-                f"Should have at most 1."
+                f"{file_path.name} has {len(classes)} public classes. Should have at most 1."
             )
 
     def test_aggregate_files_have_one_class(self):
@@ -412,16 +387,16 @@ class TestOneClassPerFile:
 
                 tree = ast.parse(file_path.read_text())
                 classes = [
-                    node for node in ast.walk(tree)
-                    if isinstance(node, ast.ClassDef)
-                    and not node.name.startswith("_")
+                    node
+                    for node in ast.walk(tree)
+                    if isinstance(node, ast.ClassDef) and not node.name.startswith("_")
                 ]
 
                 # Allow one aggregate + related exceptions
                 aggregate_classes = [
-                    c for c in classes
-                    if not c.name.endswith("Error")
-                    and not c.name.endswith("Exception")
+                    c
+                    for c in classes
+                    if not c.name.endswith("Error") and not c.name.endswith("Exception")
                 ]
 
                 assert len(aggregate_classes) <= 1, (

@@ -103,11 +103,13 @@ def test_marketplace_json_with_keywords_passes_validation(
     """Test that keywords field is accepted in marketplace plugin items."""
     valid_marketplace = {
         "name": "test-marketplace",
-        "plugins": [{
-            "name": "test-plugin",
-            "source": "./test",
-            "keywords": ["problem-solving", "work-tracking", "agents", "workflows"]
-        }]
+        "plugins": [
+            {
+                "name": "test-plugin",
+                "source": "./test",
+                "keywords": ["problem-solving", "work-tracking", "agents", "workflows"],
+            }
+        ],
     }
 
     jsonschema.validate(valid_marketplace, marketplace_schema)  # Should not raise
@@ -128,11 +130,13 @@ def test_marketplace_json_with_unknown_property_fails_validation(
     """Test that unknown properties in plugin items are rejected."""
     invalid_marketplace = {
         "name": "test-marketplace",
-        "plugins": [{
-            "name": "test-plugin",
-            "source": "./test",
-            "unknown_field": "should-fail"  # Not in schema
-        }]
+        "plugins": [
+            {
+                "name": "test-plugin",
+                "source": "./test",
+                "unknown_field": "should-fail",  # Not in schema
+            }
+        ],
     }
 
     with pytest.raises(jsonschema.ValidationError):

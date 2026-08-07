@@ -72,6 +72,7 @@ def handle(self, cmd: UpdateInventoryCommand) -> None:
     # Race condition: cache still holds old state here
     self._event_publisher.publish(InventoryUpdated(aggregate_id=cmd.id))
 
+
 # Fixed:
 def handle(self, cmd: UpdateInventoryCommand) -> None:
     inventory_aggregate = self._repository.get(cmd.id)

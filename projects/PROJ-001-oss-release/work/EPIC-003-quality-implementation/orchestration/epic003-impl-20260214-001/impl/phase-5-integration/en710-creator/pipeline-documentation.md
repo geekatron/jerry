@@ -354,7 +354,9 @@ Create a script in `scripts/` or a test in `tests/architecture/` that validates 
 ```python
 #!/usr/bin/env python3
 """Quality gate: {description}. Exit 0 = pass, Exit 1 = fail."""
+
 import sys
+
 
 def main() -> int:
     # Validation logic here
@@ -365,6 +367,7 @@ def main() -> int:
     print("All checks passed")
     return 0
 
+
 if __name__ == "__main__":
     sys.exit(main())
 ```
@@ -372,6 +375,8 @@ if __name__ == "__main__":
 **Test pattern** (for `tests/architecture/`):
 ```python
 """Architecture test: {description}."""
+
+
 class TestNewQualityGate:
     def test_rule_is_enforced(self) -> None:
         """Verify the quality rule holds."""

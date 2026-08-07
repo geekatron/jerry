@@ -839,10 +839,11 @@ Based on comprehensive industry research, here are specific recommendations for 
 ```python
 # Conceptual framework
 class EnforcementTier(Enum):
-    ADVISORY = 1   # Constitutional principles, system prompts
-    SOFT = 2       # Warnings, reflection, logging
-    MEDIUM = 3     # Tool restrictions, caps, escalation
-    HARD = 4       # Blocks, termination
+    ADVISORY = 1  # Constitutional principles, system prompts
+    SOFT = 2  # Warnings, reflection, logging
+    MEDIUM = 3  # Tool restrictions, caps, escalation
+    HARD = 4  # Blocks, termination
+
 
 class GuardrailPolicy:
     def __init__(self, tier: EnforcementTier, principle: str):
@@ -914,7 +915,7 @@ class SkillExecution:
             success_rate=self.metrics.success_rate,
             avg_quality=self.metrics.avg_quality,
             compliance_score=self.calculate_compliance(),
-            violations=self.violations
+            violations=self.violations,
         )
 
     def calculate_compliance(self) -> float:
@@ -1031,12 +1032,10 @@ If this skill violates principles:
 ```python
 import asyncio
 
+
 async def execute_with_guardrails(operation, guardrails):
     # Run operation and guardrails concurrently
-    results = await asyncio.gather(
-        operation(),
-        *[g.check() for g in guardrails if not g.blocking]
-    )
+    results = await asyncio.gather(operation(), *[g.check() for g in guardrails if not g.blocking])
 
     operation_result = results[0]
     guardrail_results = results[1:]

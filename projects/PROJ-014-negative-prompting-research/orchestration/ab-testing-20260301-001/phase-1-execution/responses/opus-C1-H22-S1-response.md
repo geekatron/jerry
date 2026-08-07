@@ -44,6 +44,7 @@ Here is the causal chain from your CI log excerpt:
 import os
 import pytest
 
+
 @pytest.fixture(autouse=True, scope="session")
 def validate_test_environment():
     required_vars = ["DATABASE_URL"]

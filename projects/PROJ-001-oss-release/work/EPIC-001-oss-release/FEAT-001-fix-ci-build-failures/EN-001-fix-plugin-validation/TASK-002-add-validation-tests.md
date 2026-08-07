@@ -1,8 +1,8 @@
 # TASK-002: Add tests for plugin manifest validation
 
 > **Type:** task
-> **Status:** DONE
-> **Priority:** HIGH
+> **Status:** completed
+> **Priority:** high
 > **Created:** 2026-02-10
 > **Parent:** BUG-001
 > **Owner:** —
@@ -14,14 +14,14 @@
 
 | Section | Purpose |
 |---------|---------|
-| [Content](#content) | Description and acceptance criteria |
+| [Summary](#summary) | Description and acceptance criteria |
 | [Evidence](#evidence) | Deliverables and verification |
 | [Related Items](#related-items) | Parent and related work |
 | [History](#history) | Status changes |
 
 ---
 
-## Content
+## Summary
 
 ### Description
 
@@ -47,8 +47,10 @@ Possible test cases:
 def test_marketplace_json_with_keywords_passes_validation():
     """keywords field should be accepted in marketplace plugin items."""
 
+
 def test_marketplace_json_with_unknown_property_fails_validation():
     """Truly unknown properties should still be rejected."""
+
 
 def test_all_manifests_pass_validation():
     """All three manifests pass the validation script."""

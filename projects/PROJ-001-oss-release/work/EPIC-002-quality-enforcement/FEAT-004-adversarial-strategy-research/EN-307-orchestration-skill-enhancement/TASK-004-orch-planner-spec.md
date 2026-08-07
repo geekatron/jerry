@@ -13,6 +13,11 @@ PROJECT: PROJ-001-oss-release
 ACTIVITY: DEVELOPMENT
 -->
 
+> **Type:** task
+> **Status:** completed
+> **Priority:** critical
+> **Created:** 2026-02-13
+> **Parent:** EN-307
 > **Version:** 1.0.0
 > **Agent:** ps-architect-307
 > **Quality Target:** >= 0.92
@@ -430,7 +435,7 @@ Create files at:
 - Auto-detect phases needing adversarial cycles
 - Generate creator-critic-revision groups per phase
 - Assign strategies per criticality level (see adversarial_cycle_protocol)
-"""
+""",
 )
 ```
 

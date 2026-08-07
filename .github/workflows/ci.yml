@@ -4,16 +4,15 @@
 # How-to guide: docs/howto/add-ci-job.md
 #
 # Triggers: push to main/master | PRs to main/master/claude/**
-# Permissions: contents:read (top-level); pull-requests:write (coverage-report only)
+# Permissions: contents:read only (no elevated permissions on any job)
 #
-# Jobs (9 definitions, ~17 on PR with matrix expansion):
+# Jobs (8 definitions, ~16 on PR with matrix expansion):
 #   static-analysis    — ruff check, ruff format, pyright (merged lint + type-check)
 #   security           — pip-audit full lockfile + banned YAML API check
 #   validation         — lockfile, rules, versions, headers, templates, frontmatter (6-in-1)
 #   plugin-validation  — plugin manifests, hook syntax, agent sync
 #   cli-integration    — subprocess tests, mkdocs e2e, jerry --help/--version
 #   test-uv            — pytest matrix: 3 OS x 4 Python (8 cells)
-#   coverage-report    — PR comment with coverage (PR-only)
 #   changelog-check    — CHANGELOG.md updated (PR-only)
 #   ci-success         — gate: aggregates all required job results
 
@@ -41,10 +40,10 @@ jobs:
     name: Static Analysis
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Install uv
-        uses: astral-sh/setup-uv@cec208311dfd045dd5311c1add060b2062131d57 # v8.0.0
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
           version: "0.10.9"
 
@@ -70,24 +69,14 @@ jobs:
     name: Security Scan
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@cec208311dfd045dd5311c1add060b2062131d57 # v8.0.0
+      - name: Run security audit
+        uses: ./.github/actions/security-audit
         with:
-          version: "0.10.9"
-
-      - name: Set up Python
-        run: uv python install 3.14
-
-      - name: Install dependencies
-        run: uv sync --frozen
-
-      - name: Export dependencies
-        run: uv export --no-hashes --frozen --all-extras --no-emit-project > /tmp/requirements.txt
-
-      - name: Audit dependencies
-        run: uv run pip-audit --requirement /tmp/requirements.txt --strict --desc
+          # NON-BLOCKING (D3): emits ::warning:: on CVEs but exits 0.
+          # Change to 'true' only with an ADR update — see header comment above.
+          fail-on-vuln: 'false'
 
       - name: Check for banned YAML APIs (M-04b)
         run: |
@@ -116,10 +105,10 @@ jobs:
     name: Validation Checks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Install uv
-        uses: astral-sh/setup-uv@cec208311dfd045dd5311c1add060b2062131d57 # v8.0.0
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
           version: "0.10.9"
 
@@ -157,15 +146,15 @@ jobs:
   # Plugin Validation (EN-005)
   # ===========================================================================
   # Validates plugin manifests and hook scripts
-  # Ensures session_start_hook.py runs standalone without pip install
+  # Ensures session_start_hook.py runs standalone via uv
   plugin-validation:
     name: Plugin Validation
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Install uv
-        uses: astral-sh/setup-uv@cec208311dfd045dd5311c1add060b2062131d57 # v8.0.0
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
           version: "0.10.9"
 
@@ -183,10 +172,10 @@ jobs:
           # EN-007: Hook wrappers are thin scripts that delegate to jerry CLI.
           # Validate they parse without errors (they will fail at runtime without
           # uv/jerry installed, but syntax must be valid).
-          python3 -m py_compile hooks/session-start.py
-          python3 -m py_compile hooks/pre-compact.py
-          python3 -m py_compile hooks/pre-tool-use.py
-          python3 -m py_compile hooks/user-prompt-submit.py
+          uv run python -m py_compile hooks/session-start.py
+          uv run python -m py_compile hooks/pre-compact.py
+          uv run python -m py_compile hooks/pre-tool-use.py
+          uv run python -m py_compile hooks/user-prompt-submit.py
 
       - name: Validate hook scripts syntax
         run: |
@@ -206,15 +195,15 @@ jobs:
   # CLI Integration Tests (EN-006)
   # ===========================================================================
   # Validates CLI commands via subprocess (plugin mode)
-  # Ensures `jerry` command works without pip install -e .
+  # Ensures `jerry` command works via uv run
   cli-integration:
     name: CLI Integration Tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Install uv
-        uses: astral-sh/setup-uv@cec208311dfd045dd5311c1add060b2062131d57 # v8.0.0
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
           version: "0.10.9"
 
@@ -274,10 +263,10 @@ jobs:
             python-version: "3.12"
 
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Install uv
-        uses: astral-sh/setup-uv@cec208311dfd045dd5311c1add060b2062131d57 # v8.0.0
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
           version: "0.10.9"
 
@@ -332,7 +321,7 @@ jobs:
             junit-uv-${{ matrix.python-version }}.xml
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2 # v6.0.0
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         if: matrix.python-version == '3.14' && matrix.os == 'ubuntu-latest'
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -348,38 +337,6 @@ jobs:
           path: junit-uv-${{ matrix.python-version }}.xml
 
   # ===========================================================================
-  # Coverage Report on PR
-  # ===========================================================================
-  # Uses uv coverage report (primary) for PR comments
-  coverage-report:
-    name: Coverage Report
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
-    needs: [test-uv]
-    if: github.event_name == 'pull_request'
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
-      - name: Download uv coverage artifact
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          name: coverage-report-uv
-
-      - name: Add coverage comment to PR
-        uses: MishaKav/pytest-coverage-comment@287292879eaaff04116f36d3eb1a670f6e5df1a4 # main (2026-03-09)
-        with:
-          pytest-xml-coverage-path: coverage.xml
-          junitxml-path: junit-uv-3.14.xml
-          title: "Coverage Report (uv)"
-          badge-title: "Coverage"
-          hide-badge: false
-          hide-report: false
-          create-new-comment: false
-          hide-comment: false
-
-  # ===========================================================================
   # Changelog Enforcement
   # ===========================================================================
   # Every PR to main must include a CHANGELOG.md update.
@@ -389,7 +346,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 

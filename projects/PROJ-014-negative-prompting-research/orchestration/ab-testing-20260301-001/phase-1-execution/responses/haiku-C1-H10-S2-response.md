@@ -120,9 +120,7 @@ class InvalidWorkItemStatusTransitionError(DomainError):
     def __init__(self, from_status: str, to_status: str) -> None:
         self.from_status = from_status
         self.to_status = to_status
-        super().__init__(
-            f"Transition from status {from_status} to {to_status} not allowed"
-        )
+        super().__init__(f"Transition from status {from_status} to {to_status} not allowed")
 ```
 
 ---

@@ -469,7 +469,7 @@ Research event sourcing patterns used in task management systems. Focus on:
 - Jerry-specific applicability
 
 Use Context7 for library-specific documentation (e.g., EventStore, Marten).
-"""
+""",
 )
 ```
 

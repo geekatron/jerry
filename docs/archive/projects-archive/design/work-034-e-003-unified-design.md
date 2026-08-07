@@ -45,13 +45,14 @@ Expected outcomes include: persistent task state across Claude Code sessions, au
 ```python
 class Actor(Enum):
     """All actors that interact with the unified system."""
-    USER = "user"                    # Human via CLI/Skill
-    ORCHESTRATOR = "orchestrator"    # Jerry orchestrator agent
+
+    USER = "user"  # Human via CLI/Skill
+    ORCHESTRATOR = "orchestrator"  # Jerry orchestrator agent
     PS_RESEARCHER = "ps-researcher"  # Problem-solving researcher
-    PS_ARCHITECT = "ps-architect"    # Problem-solving architect
-    PS_VALIDATOR = "ps-validator"    # Problem-solving validator
-    SYSTEM = "system"                # Automated triggers (timers, events)
-    HOOK = "hook"                    # Claude Code hooks
+    PS_ARCHITECT = "ps-architect"  # Problem-solving architect
+    PS_VALIDATOR = "ps-validator"  # Problem-solving validator
+    SYSTEM = "system"  # Automated triggers (timers, events)
+    HOOK = "hook"  # Claude Code hooks
 ```
 
 ### 1.2 WHAT: Components, Entities, and Interfaces
@@ -734,7 +735,7 @@ class IWorkItemRepository(Protocol):
         phase_id: PhaseId | None = None,
         status: str | None = None,
         limit: int = 100,
-        offset: int = 0
+        offset: int = 0,
     ) -> Iterator[Task]:
         """
         List tasks with optional filtering.
@@ -768,7 +769,7 @@ class IWorkItemRepository(Protocol):
         plan_id: PlanId | None = None,
         status: str | None = None,
         limit: int = 100,
-        offset: int = 0
+        offset: int = 0,
     ) -> Iterator[Phase]:
         """List phases with optional filtering."""
         ...
@@ -787,10 +788,7 @@ class IWorkItemRepository(Protocol):
         ...
 
     def list_plans(
-        self,
-        status: str | None = None,
-        limit: int = 100,
-        offset: int = 0
+        self, status: str | None = None, limit: int = 100, offset: int = 0
     ) -> Iterator[Plan]:
         """List plans with optional filtering."""
         ...
@@ -854,10 +852,7 @@ class IKnowledgeRepository(Protocol):
         ...
 
     def list_by_type(
-        self,
-        knowledge_type: KnowledgeType,
-        limit: int = 100,
-        offset: int = 0
+        self, knowledge_type: KnowledgeType, limit: int = 100, offset: int = 0
     ) -> Iterator[KnowledgeItem]:
         """
         List knowledge items of a specific type.
@@ -873,11 +868,7 @@ class IKnowledgeRepository(Protocol):
         ...
 
     def list_by_tags(
-        self,
-        tags: list[str],
-        match_all: bool = False,
-        limit: int = 100,
-        offset: int = 0
+        self, tags: list[str], match_all: bool = False, limit: int = 100, offset: int = 0
     ) -> Iterator[KnowledgeItem]:
         """
         List knowledge items with specified tags.
@@ -918,6 +909,7 @@ from src.domain.value_objects.ids import VertexId
 @dataclass(frozen=True)
 class Edge:
     """Represents a directed edge in the graph."""
+
     from_id: VertexId
     to_id: VertexId
     label: str
@@ -927,6 +919,7 @@ class Edge:
 @dataclass(frozen=True)
 class Vertex:
     """Represents a vertex in the graph."""
+
     id: VertexId
     label: str
     properties: dict[str, Any]
@@ -943,10 +936,7 @@ class IGraphStore(Protocol):
 
     # Vertex operations
     def add_vertex(
-        self,
-        id: VertexId,
-        label: str,
-        properties: dict[str, Any] | None = None
+        self, id: VertexId, label: str, properties: dict[str, Any] | None = None
     ) -> None:
         """
         Add a vertex to the graph.
@@ -973,11 +963,7 @@ class IGraphStore(Protocol):
         """
         ...
 
-    def update_vertex(
-        self,
-        id: VertexId,
-        properties: dict[str, Any]
-    ) -> None:
+    def update_vertex(self, id: VertexId, properties: dict[str, Any]) -> None:
         """
         Update vertex properties (merge, not replace).
 
@@ -1008,7 +994,7 @@ class IGraphStore(Protocol):
         from_id: VertexId,
         to_id: VertexId,
         label: str,
-        properties: dict[str, Any] | None = None
+        properties: dict[str, Any] | None = None,
     ) -> Edge:
         """
         Add a directed edge between vertices.
@@ -1031,7 +1017,7 @@ class IGraphStore(Protocol):
         self,
         from_id: VertexId | None = None,
         to_id: VertexId | None = None,
-        label: str | None = None
+        label: str | None = None,
     ) -> Iterator[Edge]:
         """
         Retrieve edges with optional filtering.
@@ -1046,12 +1032,7 @@ class IGraphStore(Protocol):
         """
         ...
 
-    def remove_edge(
-        self,
-        from_id: VertexId,
-        to_id: VertexId,
-        label: str
-    ) -> bool:
+    def remove_edge(self, from_id: VertexId, to_id: VertexId, label: str) -> bool:
         """
         Remove a specific edge.
 
@@ -1067,10 +1048,7 @@ class IGraphStore(Protocol):
 
     # Traversal operations
     def traverse(
-        self,
-        start_id: VertexId,
-        edge_label: str | None = None,
-        max_depth: int = 2
+        self, start_id: VertexId, edge_label: str | None = None, max_depth: int = 2
     ) -> list[VertexId]:
         """
         Traverse outgoing edges from a vertex.
@@ -1086,10 +1064,7 @@ class IGraphStore(Protocol):
         ...
 
     def traverse_incoming(
-        self,
-        end_id: VertexId,
-        edge_label: str | None = None,
-        max_depth: int = 2
+        self, end_id: VertexId, edge_label: str | None = None, max_depth: int = 2
     ) -> list[VertexId]:
         """
         Traverse incoming edges to a vertex.
@@ -1104,11 +1079,7 @@ class IGraphStore(Protocol):
         """
         ...
 
-    def shortest_path(
-        self,
-        from_id: VertexId,
-        to_id: VertexId
-    ) -> list[VertexId] | None:
+    def shortest_path(self, from_id: VertexId, to_id: VertexId) -> list[VertexId] | None:
         """
         Find the shortest path between two vertices.
 
@@ -1123,10 +1094,7 @@ class IGraphStore(Protocol):
 
     # Query operations
     def query_vertices(
-        self,
-        label: str | None = None,
-        properties: dict[str, Any] | None = None,
-        limit: int = 100
+        self, label: str | None = None, properties: dict[str, Any] | None = None, limit: int = 100
     ) -> Iterator[Vertex]:
         """
         Query vertices by label and/or properties.
@@ -1163,6 +1131,7 @@ from src.domain.value_objects.ids import VertexId
 @dataclass(frozen=True)
 class SearchResult:
     """Result from semantic search."""
+
     id: VertexId
     score: float  # Similarity score [0.0, 1.0]
     distance: float  # L2 distance
@@ -1177,12 +1146,7 @@ class ISemanticIndex(Protocol):
     - Future: PineconeSemanticIndex for cloud deployments
     """
 
-    def add(
-        self,
-        id: VertexId,
-        embedding: list[float],
-        metadata: dict | None = None
-    ) -> None:
+    def add(self, id: VertexId, embedding: list[float], metadata: dict | None = None) -> None:
         """
         Add an embedding to the index.
 
@@ -1196,11 +1160,7 @@ class ISemanticIndex(Protocol):
         """
         ...
 
-    def update(
-        self,
-        id: VertexId,
-        embedding: list[float]
-    ) -> None:
+    def update(self, id: VertexId, embedding: list[float]) -> None:
         """
         Update an existing embedding.
 
@@ -1226,10 +1186,7 @@ class ISemanticIndex(Protocol):
         ...
 
     def search(
-        self,
-        query_embedding: list[float],
-        k: int = 10,
-        threshold: float = 0.0
+        self, query_embedding: list[float], k: int = 10, threshold: float = 0.0
     ) -> list[SearchResult]:
         """
         Find k-nearest neighbors to the query embedding.
@@ -1245,10 +1202,7 @@ class ISemanticIndex(Protocol):
         ...
 
     def search_by_text(
-        self,
-        query_text: str,
-        k: int = 10,
-        threshold: float = 0.0
+        self, query_text: str, k: int = 10, threshold: float = 0.0
     ) -> list[SearchResult]:
         """
         Search using text (embedding generated internally).
@@ -1345,10 +1299,7 @@ class IEventStore(Protocol):
         ...
 
     def get_by_subject(
-        self,
-        subject: str,
-        after: datetime | None = None,
-        before: datetime | None = None
+        self, subject: str, after: datetime | None = None, before: datetime | None = None
     ) -> Iterator[CloudEventEnvelope]:
         """
         Retrieve events for a specific subject (entity).
@@ -1364,10 +1315,7 @@ class IEventStore(Protocol):
         ...
 
     def get_by_type(
-        self,
-        event_type: str,
-        after: datetime | None = None,
-        limit: int = 100
+        self, event_type: str, after: datetime | None = None, limit: int = 100
     ) -> Iterator[CloudEventEnvelope]:
         """
         Retrieve events of a specific type.
@@ -1386,7 +1334,7 @@ class IEventStore(Protocol):
         self,
         after: datetime | None = None,
         before: datetime | None = None,
-        types: list[str] | None = None
+        types: list[str] | None = None,
     ) -> Iterator[CloudEventEnvelope]:
         """
         Replay events for reconstruction.
@@ -1447,11 +1395,7 @@ class IRDFSerializer(Protocol):
     """
 
     def add_triple(
-        self,
-        subject: str,
-        predicate: str,
-        object_: str,
-        object_type: str = "uri"
+        self, subject: str, predicate: str, object_: str, object_type: str = "uri"
     ) -> None:
         """
         Add a triple to the graph.
@@ -1464,12 +1408,7 @@ class IRDFSerializer(Protocol):
         """
         ...
 
-    def add_entity(
-        self,
-        id: VertexId,
-        rdf_type: str,
-        properties: dict
-    ) -> None:
+    def add_entity(self, id: VertexId, rdf_type: str, properties: dict) -> None:
         """
         Add an entity with properties.
 
@@ -1612,11 +1551,7 @@ class IEventDispatcher(Protocol):
         """
         ...
 
-    def register(
-        self,
-        event_type: str,
-        handler: callable
-    ) -> None:
+    def register(self, event_type: str, handler: callable) -> None:
         """
         Register a handler for an event type.
 
@@ -1626,11 +1561,7 @@ class IEventDispatcher(Protocol):
         """
         ...
 
-    def unregister(
-        self,
-        event_type: str,
-        handler: callable
-    ) -> None:
+    def unregister(self, event_type: str, handler: callable) -> None:
         """
         Unregister a handler.
 

@@ -201,27 +201,34 @@ WORK-032 (Implementation Layer)
 # Port definitions
 class RDFSerializerPort(ABC):
     """Converts entities to RDF formats"""
+
     @abstractmethod
     def to_turtle(self, entity: EntityBase) -> str: ...
 
     @abstractmethod
     def to_jsonld(self, entity: EntityBase) -> dict: ...
 
+
 class RDFStorePort(ABC):
     """Stores and queries RDF triples"""
+
     @abstractmethod
     def add_triple(self, subject: str, predicate: str, object: str) -> None: ...
 
     @abstractmethod
     def query_sparql(self, query: str) -> QueryResult: ...
 
+
 # Adapters
 class RDFLibSerializerAdapter(RDFSerializerPort):
     """Use RDFLib for lightweight serialization (Phase 2)"""
+
     # Implementation with rdflib
+
 
 class PyoxigraphStoreAdapter(RDFStorePort):
     """Use pyoxigraph for embedded RDF storage (Phase 3)"""
+
     # Implementation with pyoxigraph
 ```
 
@@ -261,8 +268,11 @@ class PyoxigraphStoreAdapter(RDFStorePort):
 # NetworkX equivalent
 def get_blocking_tasks(graph: nx.MultiDiGraph, task_id: str) -> List[str]:
     """Get tasks blocked by task_id"""
-    return [target for source, target, data in graph.out_edges(task_id, data=True)
-            if data.get('label') == 'BLOCKS']
+    return [
+        target
+        for source, target, data in graph.out_edges(task_id, data=True)
+        if data.get("label") == "BLOCKS"
+    ]
 ```
 
 **Resolved**: Use NetworkX. Gremlin mentioned in WORK-031 is illustrative, not prescriptive.
@@ -390,15 +400,15 @@ class JerryValidationPipeline:
             results.append(self.supernode_validator.validate(entity))
 
         # Layer 3: Semantic integrity (WORK-031 + WORK-032)
-        if hasattr(entity, 'to_rdf'):
+        if hasattr(entity, "to_rdf"):
             results.append(self.shacl_validator.validate(entity.to_rdf()))
 
         # Layer 4: Process compliance (WORK-032)
-        if entity.metadata.get('work_item'):
+        if entity.metadata.get("work_item"):
             results.append(self.aar_validator.check_completed(entity))
 
         # Layer 5: Grounding verification (WORK-031)
-        if entity.metadata.get('llm_generated'):
+        if entity.metadata.get("llm_generated"):
             results.append(self.grounding_validator.verify(entity))
 
         return ValidationResult.combine(results)
@@ -422,16 +432,20 @@ from abc import ABC, abstractmethod
 from typing import List, Dict, Any
 import networkx as nx  # Type hint only, no import at runtime
 
+
 # Graph operations port (WORK-032 primary)
 class GraphPort(ABC):
     @abstractmethod
     def add_vertex(self, vertex_id: str, properties: Dict[str, Any]) -> None: ...
 
     @abstractmethod
-    def add_edge(self, source: str, target: str, label: str, properties: Dict[str, Any]) -> None: ...
+    def add_edge(
+        self, source: str, target: str, label: str, properties: Dict[str, Any]
+    ) -> None: ...
 
     @abstractmethod
     def traverse(self, start: str, direction: str, edge_label: str) -> List[str]: ...
+
 
 # RDF serialization port (WORK-031 primary)
 class RDFSerializerPort(ABC):
@@ -441,6 +455,7 @@ class RDFSerializerPort(ABC):
     @abstractmethod
     def to_jsonld(self, entity: EntityBase, context_url: str) -> dict: ...
 
+
 # RDF storage port (WORK-031 Phase 3)
 class RDFStorePort(ABC):
     @abstractmethod
@@ -449,13 +464,17 @@ class RDFStorePort(ABC):
     @abstractmethod
     def query_sparql(self, query: str) -> QueryResult: ...
 
+
 # Vector search port (WORK-032 primary)
 class VectorStorePort(ABC):
     @abstractmethod
     def add_vectors(self, ids: List[str], vectors: np.ndarray, metadata: List[dict]) -> None: ...
 
     @abstractmethod
-    def search(self, query_vector: np.ndarray, k: int, filter: dict = None) -> List[SearchResult]: ...
+    def search(
+        self, query_vector: np.ndarray, k: int, filter: dict = None
+    ) -> List[SearchResult]: ...
+
 
 # Knowledge port (WORK-032 semantic operations)
 class KnowledgePort(ABC):
@@ -471,8 +490,8 @@ class KnowledgePort(ABC):
 ```python
 # From WORK-032
 from networkx_adapter import NetworkXAdapter  # implements GraphPort
-from rdflib_adapter import RDFLibAdapter      # implements RDFSerializerPort
-from faiss_adapter import FAISSAdapter         # implements VectorStorePort
+from rdflib_adapter import RDFLibAdapter  # implements RDFSerializerPort
+from faiss_adapter import FAISSAdapter  # implements VectorStorePort
 
 # From WORK-031 (Phase 3)
 from pyoxigraph_adapter import PyoxigraphAdapter  # implements RDFStorePort
@@ -514,6 +533,7 @@ class Task(EntityBase):
     - Vector metadata (FAISS)
     - HTTP resource (Flask endpoint)
     """
+
     id: VertexId  # Jerry URI: jer:jer:work-tracker:task:TASK-042
     title: str
     status: str
@@ -521,10 +541,10 @@ class Task(EntityBase):
     # Netflix UDA: Multiple representations from single source
     def to_json(self) -> dict: ...
     def to_toon(self) -> str: ...
-    def to_jsonld(self, context: str) -> dict: ...   # WORK-031
-    def to_turtle(self) -> str: ...                  # WORK-031
-    def to_networkx_node(self) -> Tuple[str, dict]: ... # WORK-032
-    def to_vector_metadata(self) -> dict: ...        # WORK-032
+    def to_jsonld(self, context: str) -> dict: ...  # WORK-031
+    def to_turtle(self) -> str: ...  # WORK-031
+    def to_networkx_node(self) -> Tuple[str, dict]: ...  # WORK-032
+    def to_vector_metadata(self) -> dict: ...  # WORK-032
 ```
 
 **Implication**: Jerry URI scheme is the **integration keystone**. Already RDF-compatible (WORK-031), already used in Work Tracker (Phase 1).
@@ -571,6 +591,7 @@ class VectorRAG:
         results = self.vector_store.search(query_vector, k)
         return [self._load_document(r.id) for r in results]
 
+
 # Phase 3 (Q2-Q3 2026): Graph RAG
 class GraphRAG:
     def __init__(self, graph: GraphPort):
@@ -579,6 +600,7 @@ class GraphRAG:
     def retrieve(self, entity_id: str, hops: int = 2) -> List[Entity]:
         # Traverse BLOCKS, DEPENDS_ON, PART_OF edges
         return self.graph.traverse(entity_id, depth=hops)
+
 
 # Phase 3 (Q3 2026): Hybrid RAG (combines both)
 class HybridRAG:

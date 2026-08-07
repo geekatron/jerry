@@ -142,7 +142,7 @@ if path_type is not None:
         and structure_type != path_type
         and structure_type != DocumentType.UNKNOWN
     ):
-        warning = (...)
+        warning = ...
     return (path_type, warning)
 
 # No path match -- fall back to structure

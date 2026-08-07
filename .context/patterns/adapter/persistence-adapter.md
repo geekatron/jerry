@@ -305,7 +305,7 @@ class InMemoryRepository(Generic[TAggregate, TId]):
 
     def _key(self, id: TId) -> str:
         """Convert ID to storage key."""
-        if hasattr(id, 'value'):
+        if hasattr(id, "value"):
             return str(id.value)
         return str(id)
 
@@ -396,7 +396,7 @@ class JsonFileRepository:
 
     def _file_path(self, id: TId) -> Path:
         """Get file path for aggregate."""
-        id_str = id.value if hasattr(id, 'value') else str(id)
+        id_str = id.value if hasattr(id, "value") else str(id)
         return self._base / f"{id_str}.json"
 ```
 

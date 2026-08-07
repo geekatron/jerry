@@ -400,6 +400,7 @@ class EventStoreProjector:
     def _deserialize(self, stored_event) -> DomainEvent:
         """Convert stored event to domain event."""
         from src.work_tracking.domain.events.event_registry import EventRegistry
+
         return EventRegistry.deserialize(stored_event.data)
 ```
 
@@ -460,12 +461,14 @@ def test_projection_updates_indexes():
     projection = WorkItemListProjection()
 
     # Create and start
-    projection.handle(WorkItemCreated(
-        work_item_id="WORK-001",
-        title="Test",
-        work_type="task",
-        priority="high",
-    ))
+    projection.handle(
+        WorkItemCreated(
+            work_item_id="WORK-001",
+            title="Test",
+            work_type="task",
+            priority="high",
+        )
+    )
     projection.handle(WorkItemStarted(work_item_id="WORK-001"))
 
     # Verify indexes
@@ -516,6 +519,7 @@ class WorkItemProjection:
         if self._validate_business_rule(event):  # Business logic!
             self._model.items[event.id] = ...
 
+
 # CORRECT: Projection only transforms data
 class WorkItemProjection:
     def _on_WorkItemCreated(self, event):
@@ -530,6 +534,7 @@ class WorkItemProjection:
     def _on_WorkItemCreated(self, event):
         user = self._user_service.get(event.user_id)  # Query!
         self._model.items[event.id] = WorkItemEntry(user_name=user.name)
+
 
 # CORRECT: Store only event data, denormalize via events
 class WorkItemProjection:

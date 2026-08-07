@@ -164,6 +164,7 @@ try:
     from src.infrastructure.internal.enforcement.session_quality_context import (
         SessionQualityContextGenerator,
     )
+
     QUALITY_CONTEXT_AVAILABLE = True
 except Exception:
     QUALITY_CONTEXT_AVAILABLE = False
@@ -201,6 +202,7 @@ try:
     from src.infrastructure.internal.enforcement.session_quality_context import (
         SessionQualityContextGenerator,
     )
+
     QUALITY_CONTEXT_AVAILABLE = True
 except Exception:
     QUALITY_CONTEXT_AVAILABLE = False
@@ -265,11 +267,13 @@ finally:
 ```python
 """Integration test: backward compatibility for session_start_hook.py."""
 
+
 def test_bc_001_system_message_unchanged():
     """systemMessage identical with and without quality context."""
     # Run hook without quality module -> capture systemMessage
     # Deploy quality module -> run hook -> capture systemMessage
     # Assert identical
+
 
 def test_bc_009_works_without_module():
     """Hook works when SessionQualityContextGenerator not deployed."""
@@ -278,6 +282,7 @@ def test_bc_009_works_without_module():
     # Assert: valid JSON output
     # Assert: contains project context
     # Assert: does NOT contain <quality-framework>
+
 
 def test_bc_010_valid_json_all_scenarios():
     """Hook output is valid JSON in all scenarios."""
@@ -481,8 +486,10 @@ def test_hook_works_without_quality_module(monkeypatch):
 ```python
 def test_hook_continues_when_generator_raises(monkeypatch):
     """Hook produces valid output when generator raises an exception."""
+
     def broken_generate(self):
         raise RuntimeError("Generator broken")
+
     monkeypatch.setattr(SessionQualityContextGenerator, "generate", broken_generate)
     output = run_hook_with_valid_project()
     data = json.loads(output)

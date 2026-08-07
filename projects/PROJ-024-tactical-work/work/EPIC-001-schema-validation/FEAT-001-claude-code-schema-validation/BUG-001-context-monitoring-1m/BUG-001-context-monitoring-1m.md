@@ -3,10 +3,10 @@
 > **Type:** bug
 > **Status:** completed
 > **Priority:** critical
+> **Severity:** critical
 > **Impact:** critical
 > **Created:** 2026-03-30T00:00:00Z
-> **Due:**
-> **Completed:**
+> **Completed:** 2026-03-30T00:00:00Z
 > **Parent:** FEAT-001
 > **Owner:**
 > **Effort:** 3
@@ -19,16 +19,27 @@
 | Section | Purpose |
 |---------|---------|
 | [Summary](#summary) | What's broken |
+| [Steps to Reproduce](#steps-to-reproduce) | How to observe the failure |
 | [Root Cause](#root-cause) | Why it's broken |
 | [Affected Tests](#affected-tests) | Which tests fail |
 | [Acceptance Criteria](#acceptance-criteria) | Verification checklist |
 | [Dependencies](#dependencies) | Relationship to other work |
+| [History](#history) | Status changes |
 
 ---
 
 ## Summary
 
 20 context monitoring tests hardcode expectations for a 200K context window. The runtime now uses 1M (Opus 4.6). This blocks all commits via the pre-commit pytest hook. Confirmed pre-existing on clean branch.
+
+---
+
+## Steps to Reproduce
+
+1. Check out a clean branch at the time of discovery (2026-03-30, pre-fix).
+2. Run `uv run pytest tests/integration/test_context_monitoring_integration.py tests/integration/test_context_exhaustion_e2e.py tests/system/test_context_monitoring_system.py tests/e2e/test_context_monitoring_e2e.py`.
+3. Observe 20 failures: assertions expect a 200K context window while `ConfigThresholdAdapter.get_context_window_tokens()` returns 1,000,000, producing wrong tier classifications.
+4. Attempt any `git commit` — the pre-commit pytest hook fails on the same tests.
 
 ---
 
@@ -52,11 +63,13 @@
 
 ## Acceptance Criteria
 
-- [ ] All 20 currently-failing context monitoring tests pass
-- [ ] Tests use actual context window size (1M) or parameterize for multiple sizes
-- [ ] No new test failures introduced
-- [ ] Pre-commit pytest hook passes without `--no-verify`
-- [ ] `ConfigThresholdAdapter` correctly reports the active model's context window
+- [x] All 20 currently-failing context monitoring tests pass
+- [x] Tests use actual context window size (1M) or parameterize for multiple sizes
+- [x] No new test failures introduced
+- [x] Pre-commit pytest hook passes without `--no-verify`
+- [x] `ConfigThresholdAdapter` correctly reports the active model's context window
+
+> AC boxes backfilled 2026-08-05 (audit W-004a): work verified complete at closure 2026-03-30 — GitHub issue [#226](https://github.com/geekatron/jerry/issues/226) closed, and every commit since passes the pre-commit pytest hook (impossible while these 20 tests failed).
 
 ---
 
@@ -75,3 +88,4 @@
 | Date | Author | Status | Notes |
 |------|--------|--------|-------|
 | 2026-03-30 | adam.nowak | pending | Created from PROJ-024 session. 20 failures confirmed pre-existing on clean branch. |
+| 2026-03-30 | adam.nowak | completed | Fixed and closed — GH #226 closed; tests updated for 1M context window. (History row backfilled 2026-08-05 per audit W-004a.) |

@@ -188,9 +188,9 @@ entry = {
         "usage": {
             "input_tokens": 1,
             "cache_creation_input_tokens": 5000,
-            "cache_read_input_tokens": 145000
+            "cache_read_input_tokens": 145000,
         }
-    }
+    },
 }
 ```
 

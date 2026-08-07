@@ -143,10 +143,7 @@ class RetrieveProjectContextQueryHandler:
     def _list_projects(self, base_path: str) -> list[dict[str, str]]:
         """List available projects."""
         projects = self._repository.scan_projects(base_path)
-        return [
-            {"id": p.id, "status": p.status}
-            for p in projects
-        ]
+        return [{"id": p.id, "status": p.status} for p in projects]
 ```
 
 ---
@@ -272,6 +269,7 @@ def create_query_dispatcher() -> QueryDispatcher:
 
     return QueryDispatcher(handlers)
 
+
 # Usage in CLI adapter
 class CLIAdapter:
     def __init__(self, query_dispatcher: IQueryDispatcher) -> None:
@@ -343,6 +341,7 @@ class GetTaskQueryHandler:
     def handle(self, query: GetTaskQuery) -> Task:  # Domain entity!
         return self._repository.get(query.task_id)
 
+
 # CORRECT: Returns DTO
 class GetTaskQueryHandler:
     def handle(self, query: GetTaskQuery) -> TaskDTO:
@@ -362,6 +361,7 @@ class GetTaskQueryHandler:
     def handle(self, query: GetTaskQuery) -> TaskDTO:
         self._analytics.record_view(query.task_id)  # Side effect!
         return self._to_dto(task)
+
 
 # CORRECT: Query is pure read
 class GetTaskQueryHandler:

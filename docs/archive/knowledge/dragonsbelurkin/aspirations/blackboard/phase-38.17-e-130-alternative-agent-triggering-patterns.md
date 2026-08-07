@@ -160,10 +160,12 @@ LangGraph provides the most mature supervisor pattern for hierarchical agent orc
 from langgraph.types import Command
 from langgraph.graph import StateGraph, MessagesState, START, END
 
+
 def supervisor(state: MessagesState) -> Command[Literal["agent_1", "agent_2", END]]:
     # LLM determines which agent to route to
     response = model.invoke(...)
     return Command(goto=response["next_agent"])
+
 
 def agent_1(state: MessagesState) -> Command[Literal["supervisor"]]:
     response = model.invoke(...)
@@ -171,6 +173,7 @@ def agent_1(state: MessagesState) -> Command[Literal["supervisor"]]:
         goto="supervisor",
         update={"messages": [response]},
     )
+
 
 builder = StateGraph(MessagesState)
 builder.add_node(supervisor)
@@ -185,22 +188,16 @@ from langgraph_supervisor import create_supervisor
 
 # Team-level supervisors
 research_team = create_supervisor(
-    [research_agent, math_agent],
-    model=model,
-    supervisor_name="research_supervisor"
+    [research_agent, math_agent], model=model, supervisor_name="research_supervisor"
 ).compile(name="research_team")
 
 writing_team = create_supervisor(
-    [writing_agent, publishing_agent],
-    model=model,
-    supervisor_name="writing_supervisor"
+    [writing_agent, publishing_agent], model=model, supervisor_name="writing_supervisor"
 ).compile(name="writing_team")
 
 # Top-level supervisor managing teams
 top_level_supervisor = create_supervisor(
-    [research_team, writing_team],
-    model=model,
-    supervisor_name="top_level_supervisor"
+    [research_team, writing_team], model=model, supervisor_name="top_level_supervisor"
 ).compile(name="top_level_supervisor")
 ```
 
@@ -237,14 +234,14 @@ manager = Agent(
     role="Project Manager",
     goal="Coordinate team efforts and ensure project success",
     allow_delegation=True,
-    verbose=True
+    verbose=True,
 )
 
 researcher = Agent(
     role="Researcher",
     goal="Provide accurate research and analysis",
     allow_delegation=False,  # Specialists don't re-delegate
-    verbose=True
+    verbose=True,
 )
 
 crew = Crew(
@@ -252,7 +249,7 @@ crew = Crew(
     tasks=[project_task],
     process=Process.hierarchical,
     manager_llm="gpt-4o",  # Manager coordinates
-    verbose=True
+    verbose=True,
 )
 ```
 
@@ -262,8 +259,10 @@ from crewai.flow.flow import Flow, listen, start
 from crewai.flow.persistence import persist
 from pydantic import BaseModel
 
+
 class CounterState(BaseModel):
     value: int = 0
+
 
 @persist()  # Apply to entire flow class
 class PersistentCounterFlow(Flow[CounterState]):
@@ -276,6 +275,7 @@ class PersistentCounterFlow(Flow[CounterState]):
     def double(self, value):
         self.state.value = value * 2
         return self.state.value
+
 
 # State persists across runs
 flow1 = PersistentCounterFlow()
@@ -314,16 +314,13 @@ class GroupChatManager(RoutedAgent):
         history = self._format_history()
         roles = self._format_roles()
 
-        completion = await self._model_client.create([
-            SystemMessage(content=f"Select next role from {self._participant_topic_types}")
-        ])
+        completion = await self._model_client.create(
+            [SystemMessage(content=f"Select next role from {self._participant_topic_types}")]
+        )
 
         # Publish RequestToSpeak to selected agent
         selected_topic = self._select_from_completion(completion)
-        await self.publish_message(
-            RequestToSpeak(),
-            DefaultTopicId(type=selected_topic)
-        )
+        await self.publish_message(RequestToSpeak(), DefaultTopicId(type=selected_topic))
 ```
 
 **Agent Waiting for Turn:**
@@ -336,14 +333,12 @@ class BaseGroupChatAgent(RoutedAgent):
             UserMessage(content=f"Transferred to {self.id.type}", source="system")
         )
 
-        completion = await self._model_client.create(
-            [self._system_message] + self._chat_history
-        )
+        completion = await self._model_client.create([self._system_message] + self._chat_history)
 
         # Publish response back to group chat
         await self.publish_message(
             GroupChatMessage(body=UserMessage(content=completion.content)),
-            topic_id=DefaultTopicId(type=self._group_chat_topic_type)
+            topic_id=DefaultTopicId(type=self._group_chat_topic_type),
         )
 ```
 
@@ -354,6 +349,7 @@ Temporal provides industrial-strength workflow orchestration with signals for in
 **Wait Conditions for Synchronization:**
 ```python
 from temporalio import workflow
+
 
 @workflow.defn
 class GreetingWorkflow:
@@ -481,6 +477,7 @@ from pathlib import Path
 from dataclasses import dataclass
 from typing import Optional
 
+
 @dataclass
 class AgentSignal:
     source_agent: str
@@ -490,6 +487,7 @@ class AgentSignal:
     timestamp: str
     signature: str  # Hash for integrity
 
+
 class FileBasedSignalBus:
     def __init__(self, signal_dir: Path):
         self.signal_dir = signal_dir
@@ -497,7 +495,10 @@ class FileBasedSignalBus:
 
     def emit(self, signal: AgentSignal) -> Path:
         """Write signal to file for persistence"""
-        signal_file = self.signal_dir / f"{signal.source_agent}-to-{signal.target_agent}-{signal.timestamp}.json"
+        signal_file = (
+            self.signal_dir
+            / f"{signal.source_agent}-to-{signal.target_agent}-{signal.timestamp}.json"
+        )
         signal_file.write_text(json.dumps(signal.__dict__, indent=2))
         return signal_file
 
@@ -521,6 +522,7 @@ class FileBasedSignalBus:
 ```python
 import sqlite3
 from datetime import datetime
+
 
 class SQLiteBlackboard:
     def __init__(self, db_path: str):
@@ -547,7 +549,7 @@ class SQLiteBlackboard:
         now = datetime.utcnow().isoformat()
         cursor = self.conn.execute(
             "INSERT INTO blackboard_entries (entry_type, content, posted_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
-            (entry_type, content, agent_id, now, now)
+            (entry_type, content, agent_id, now, now),
         )
         self.conn.commit()
         return cursor.lastrowid
@@ -556,17 +558,17 @@ class SQLiteBlackboard:
         """Agent claims an entry if capable and entry is unclaimed"""
         cursor = self.conn.execute(
             "UPDATE blackboard_entries SET claimed_by = ?, status = 'CLAIMED', updated_at = ? WHERE id = ? AND claimed_by IS NULL",
-            (agent_id, datetime.utcnow().isoformat(), entry_id)
+            (agent_id, datetime.utcnow().isoformat(), entry_id),
         )
         self.conn.commit()
         return cursor.rowcount > 0
 
     def watch(self, entry_types: list[str]) -> list[dict]:
         """Watch for entries matching agent capabilities"""
-        placeholders = ','.join('?' * len(entry_types))
+        placeholders = ",".join("?" * len(entry_types))
         cursor = self.conn.execute(
             f"SELECT * FROM blackboard_entries WHERE entry_type IN ({placeholders}) AND status = 'OPEN'",
-            entry_types
+            entry_types,
         )
         return [dict(zip([d[0] for d in cursor.description], row)) for row in cursor.fetchall()]
 ```
@@ -578,11 +580,13 @@ import asyncio
 from dataclasses import dataclass
 from typing import TypeVar, Generic, Callable, Awaitable
 
-T = TypeVar('T')
+T = TypeVar("T")
+
 
 @dataclass
 class AgentFuture(Generic[T]):
     """Future representing pending agent result"""
+
     agent_id: str
     task_id: str
     _result: T | None = None
@@ -609,6 +613,7 @@ class AgentFuture(Generic[T]):
         if self._error:
             raise self._error
         return self._result
+
 
 class AgentOrchestrator:
     def __init__(self):
@@ -638,6 +643,7 @@ class AgentOrchestrator:
 ```python
 from claude_sdk import ClaudeSDKClient
 
+
 # Session creation and resumption
 async def session_workflow():
     client = ClaudeSDKClient()
@@ -659,6 +665,7 @@ async def session_workflow():
     forked = await client.fork_session(session_id)
     result3 = await forked.query("Try alternative approach")
 
+
 # Best practices for state management
 class SessionManager:
     def __init__(self, persistence_path: str):
@@ -668,11 +675,15 @@ class SessionManager:
     def checkpoint(self, workflow_id: str, state: dict):
         """Persist state for session recovery"""
         checkpoint_file = self.persistence_path / f"{workflow_id}.json"
-        checkpoint_file.write_text(json.dumps({
-            "workflow_id": workflow_id,
-            "state": state,
-            "timestamp": datetime.utcnow().isoformat()
-        }))
+        checkpoint_file.write_text(
+            json.dumps(
+                {
+                    "workflow_id": workflow_id,
+                    "state": state,
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
+        )
 
     def recover(self, workflow_id: str) -> dict | None:
         """Recover state after crash/restart"""

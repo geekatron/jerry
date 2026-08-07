@@ -164,7 +164,8 @@ class DomainToCloudEventConverter:
         # Extract aggregate and verb from class name
         # e.g., TaskCompleted -> task, completed
         import re
-        parts = re.findall(r'[A-Z][a-z]+', class_name)
+
+        parts = re.findall(r"[A-Z][a-z]+", class_name)
 
         if len(parts) >= 2:
             aggregate = parts[0].lower()
@@ -316,6 +317,7 @@ class TaskRepository:
     def save(self, task: Task) -> None:
         cloud_event = CloudEvent(type="...", source="...", data=...)
         self._event_store.append(cloud_event)
+
 
 # CORRECT: Domain events internally, convert at boundary
 class TaskRepository:

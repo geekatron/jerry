@@ -31,7 +31,7 @@ old_version: Dog = app.repository.get(dog_id, version=3)
 
 # Attempt to save the stale aggregate — this raises IntegrityError
 # because the current version is now 4, not 3
-old_version.add_trick(trick='sit')
+old_version.add_trick(trick="sit")
 try:
     app.save(old_version)
 except IntegrityError:
@@ -71,12 +71,12 @@ from eventsourcing.persistence import IntegrityError
 class BankAccount(Aggregate):
     INITIAL_VERSION = 1  # Explicit, but 1 is the default
 
-    @event('Opened')
+    @event("Opened")
     def __init__(self, owner: str) -> None:
         self.owner = owner
         self.balance = 0
 
-    @event('Deposited')
+    @event("Deposited")
     def deposit(self, amount: int) -> None:
         self.balance += amount
 
@@ -94,11 +94,11 @@ class BankingApp(Application):
 
 
 app = BankingApp()
-account_id = app.open_account(owner='Alice')
+account_id = app.open_account(owner="Alice")
 
 # Simulate concurrent conflict: retrieve stale version
-stale = app.repository.get(account_id)          # version=1
-app.deposit(account_id, 100)                    # version now=2
+stale = app.repository.get(account_id)  # version=1
+app.deposit(account_id, 100)  # version now=2
 
 # Attempting to save the stale version raises IntegrityError
 stale.deposit(50)
@@ -118,6 +118,7 @@ If you are implementing from scratch (e.g., with PostgreSQL directly), the patte
 ```python
 import psycopg2
 
+
 def append_events(conn, aggregate_id: str, expected_version: int, events: list) -> None:
     """
     Append events to the store, enforcing optimistic concurrency control.
@@ -133,7 +134,7 @@ def append_events(conn, aggregate_id: str, expected_version: int, events: list) 
                 INSERT INTO events (aggregate_id, version, event_type, payload)
                 VALUES (%s, %s, %s, %s)
                 """,
-                (aggregate_id, version, event_data['type'], event_data['payload'])
+                (aggregate_id, version, event_data["type"], event_data["payload"]),
             )
         conn.commit()
     # The UNIQUE constraint on (aggregate_id, version) does the work.

@@ -73,7 +73,7 @@ The ReDoS concern (T-03 in the ADR threat model) is assessed as Low severity -- 
 # lines 143-151 of security_enforcement_engine.py
 if blocked.startswith("~/"):
     suffix = blocked[1:]  # /.ssh, /.gnupg, /.aws
-    if suffix in canonical:          # <--- substring containment, not prefix
+    if suffix in canonical:  # <--- substring containment, not prefix
         return EnforcementDecision(
             action="block",
             reason=f"Writing to {blocked} is blocked for security",
@@ -165,10 +165,9 @@ if blocked.startswith("~/"):
     # as a full path component, not a substring.
     # canonical.startswith(x + suffix) or canonical == x + suffix pattern:
     import re as _re
+
     # Match: /<any>/<suffix_dir>/ or /<any>/<suffix_dir> at end
-    suffix_pattern = _re.compile(
-        r"(?:^|/)" + _re.escape(suffix.lstrip("/")) + r"(?:/|$)"
-    )
+    suffix_pattern = _re.compile(r"(?:^|/)" + _re.escape(suffix.lstrip("/")) + r"(?:/|$)")
     if suffix_pattern.search(canonical):
         return EnforcementDecision(...)
 ```
@@ -188,7 +187,7 @@ if blocked.startswith("~/"):
     # suffix_parts for "/.ssh" is [".ssh"]
     # Check if the suffix_parts sequence appears consecutively in parts
     for i in range(len(parts) - len(suffix_parts) + 1):
-        if parts[i:i+len(suffix_parts)] == suffix_parts:
+        if parts[i : i + len(suffix_parts)] == suffix_parts:
             return EnforcementDecision(...)
 ```
 
@@ -340,7 +339,7 @@ dangerous_commands: tuple[str, ...] = (
     "> /dev/sda",
     "mkfs",
     "dd if=",
-    "eval",         # prevent eval-based injection
+    "eval",  # prevent eval-based injection
 )
 ```
 
@@ -504,11 +503,13 @@ def _check_file_write(self, file_path: str) -> EnforcementDecision:
 #### Evidence
 
 ```python
-violations=[
-    # T-06: Log rule_id only, never matched text
-    f"Pattern match: {m.rule_id}"
-    for m in result.matches
-],
+violations = (
+    [
+        # T-06: Log rule_id only, never matched text
+        f"Pattern match: {m.rule_id}"
+        for m in result.matches
+    ],
+)
 ```
 
 The new engine logs only `rule_id` in the `violations` list. The original `scripts/pre_tool_use.py` logged the full `matches` list to stderr (line 326), which included `description` and `severity` fields and potentially matched text depending on the pattern library implementation. The new implementation is a correct security improvement.
@@ -538,10 +539,12 @@ This is correct: `canonical` is used, not the raw `file_path`. The `os.path.base
 However, line 170 in the block reason uses `os.path.basename(file_path)` (the original, non-canonicalized input):
 
 ```python
-reason=(
-    f"Writing to sensitive file ({pattern}) is blocked. "
-    f"File: {os.path.basename(file_path)}"  # <-- original file_path
-),
+reason = (
+    (
+        f"Writing to sensitive file ({pattern}) is blocked. "
+        f"File: {os.path.basename(file_path)}"  # <-- original file_path
+    ),
+)
 ```
 
 This means the reason message shown to the user may display a non-canonicalized filename (e.g., `../../../.env` instead of `.env`). This is an information quality issue, not a security bypass. The security decision is made on `canonical` (line 154); only the user-visible message uses the original. Informational finding only.

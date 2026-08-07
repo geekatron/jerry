@@ -176,6 +176,7 @@ EXCLUDED from sync (independent lifecycle):
 4. **`__version__` elimination** -- Replace all hardcoded `__version__ = "0.1.0"` with:
    ```python
    from importlib.metadata import version
+
    __version__ = version("jerry")
    ```
    This means the Python source files never need updating; they read the installed metadata at runtime.
@@ -262,6 +263,7 @@ Three files currently hardcode `__version__`:
 ```python
 try:
     from importlib.metadata import version
+
     __version__ = version("jerry")
 except Exception:
     __version__ = "dev"
@@ -361,14 +363,15 @@ The migration from hardcoded `__version__` to `importlib.metadata` will break ex
    The sync script should use the regex pattern `\(v\d+\.\d+\.\d+\)` to locate and replace the version inline. Specifically:
    ```python
    import re
-   pattern = r'\(v\d+\.\d+\.\d+\)'
-   replacement = f'(v{new_version})'
+
+   pattern = r"\(v\d+\.\d+\.\d+\)"
+   replacement = f"(v{new_version})"
    content = re.sub(pattern, replacement, content, count=1)
    ```
    **Risk mitigation**: If additional `(vX.Y.Z)` patterns are added to CLAUDE.md in the future, the `count=1` limit ensures only the first occurrence (the CLI version) is updated. For robustness, the script should additionally verify the match occurs on a line containing `**CLI**` to avoid false positives:
    ```python
-   pattern = r'(\*\*CLI\*\*\s+)\(v\d+\.\d+\.\d+\)'
-   replacement = rf'\1(v{new_version})'
+   pattern = r"(\*\*CLI\*\*\s+)\(v\d+\.\d+\.\d+\)"
+   replacement = rf"\1(v{new_version})"
    ```
    This anchored pattern is more resilient to document structure changes.
 

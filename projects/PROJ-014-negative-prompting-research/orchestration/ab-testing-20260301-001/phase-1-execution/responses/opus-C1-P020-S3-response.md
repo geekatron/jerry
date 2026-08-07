@@ -55,9 +55,7 @@ class ExportService:
         else:
             raise ValueError(f"Unsupported export format: {format}")
 
-    def export_filtered(
-        self, entity_type: str, filters: dict, format: str = "csv"
-    ) -> str:
+    def export_filtered(self, entity_type: str, filters: dict, format: str = "csv") -> str:
         """Export filtered records of the given entity type.
 
         Args:

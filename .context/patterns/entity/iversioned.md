@@ -31,6 +31,7 @@ Track a version number that increments on each save, enabling concurrency checks
 ```python
 from typing import Protocol
 
+
 class IVersioned(Protocol):
     """Optimistic concurrency control via version tracking.
 
@@ -93,6 +94,7 @@ class IVersioned(Protocol):
 @dataclass
 class AggregateRoot(ABC):
     """Base class implementing IVersioned."""
+
     _version: int = 0
 
     @property
@@ -116,7 +118,7 @@ class IEventStore(ABC):
         stream_id: str,
         events: List[DomainEvent],
         expected_version: int,  # From IVersioned.get_expected_version()
-        metadata: Dict[str, Any] = None
+        metadata: Dict[str, Any] = None,
     ) -> None:
         """
         Append events to stream atomically.
@@ -152,6 +154,7 @@ class ConcurrencyError(DomainError):
             f"Concurrency conflict: expected version {expected_version}, "
             f"actual version {actual_version}"
         )
+
 
 # Usage
 try:

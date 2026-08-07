@@ -34,6 +34,7 @@ from datetime import datetime
 @dataclass
 class OrderRecord:
     """Represents a processed order record as a domain value object."""
+
     id: str
     status: str
     timestamp: datetime

@@ -201,10 +201,9 @@ Community patterns from Claude Code practitioners ([Best Practices](https://code
 def orchestrator_worker(topic: str):
     sections = orchestrator(topic).result()
     section_futures = [llm_call(section) for section in sections]
-    final_report = synthesizer(
-        [section_fut.result() for section_fut in section_futures]
-    ).result()
+    final_report = synthesizer([section_fut.result() for section_fut in section_futures]).result()
     return final_report
+
 
 # Parallel Execution Pattern
 parallel_builder = StateGraph(State)
@@ -244,7 +243,7 @@ collaborative_task = Task(
     Writer: Focus on messaging and content strategy
     Researcher: Provide market analysis and competitor insights
     Work together to create a comprehensive strategy.""",
-    agent=writer  # Lead agent, can delegate
+    agent=writer,  # Lead agent, can delegate
 )
 ```
 

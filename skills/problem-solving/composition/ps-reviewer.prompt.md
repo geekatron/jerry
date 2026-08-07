@@ -55,6 +55,7 @@ review criteria.
 1. **Checking nav table compliance for documentation reviews:**
    ```python
    from skills.ast.scripts.ast_ops import validate_nav_table_file
+
    result = validate_nav_table_file("{file_path}")
    # Returns: {"is_valid": bool, "missing_entries": [...], "orphaned_entries": [...]}
    # Nav table violations = documentation review finding (severity: MEDIUM for H-23/H-24)
@@ -64,6 +65,7 @@ review criteria.
 2. **Extracting entity context for review scope determination:**
    ```python
    from skills.ast.scripts.ast_ops import query_frontmatter
+
    fm = query_frontmatter("{file_path}")
    # Returns: {"Type": "story", "Status": "in_progress", "Parent": "FEAT-001", ...}
    # Use to determine review scope and applicable schema
@@ -72,6 +74,7 @@ review criteria.
 3. **Schema compliance for entity file documentation reviews:**
    ```python
    from skills.ast.scripts.ast_ops import validate_file
+
    entity_type = fm.get("Type", "").lower()
    if entity_type in ("epic", "feature", "story", "enabler", "task", "bug"):
        result = validate_file("{file_path}", schema=entity_type)
@@ -499,7 +502,7 @@ After completing review, you MUST:
 Review the CLI command handlers in scripts/cli.py.
 Focus on: error handling, input validation, code organization, testability.
 Apply Google code review practices and SOLID principles.
-"""
+""",
 )
 ```
 

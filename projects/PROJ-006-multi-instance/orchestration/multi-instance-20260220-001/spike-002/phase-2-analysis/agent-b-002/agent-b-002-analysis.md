@@ -192,6 +192,7 @@ The state machine was verified against the following properties:
 import anyio
 from claude_agent_sdk import query, ClaudeAgentOptions, AssistantMessage, TextBlock
 
+
 async def dispatch_instance(worktree_path: str, project_id: str, prompt: str) -> dict:
     """Dispatch a single Claude instance to a worktree."""
     options = ClaudeAgentOptions(
@@ -222,11 +223,13 @@ async def dispatch_instance(worktree_path: str, project_id: str, prompt: str) ->
         "status": "completed",
     }
 
+
 async def dispatch_parallel(work_units: list[dict]) -> list[dict]:
     """Dispatch N instances in parallel using anyio task groups."""
     results = []
 
     async with anyio.create_task_group() as tg:
+
         async def run_and_collect(unit):
             result = await dispatch_instance(
                 worktree_path=unit["worktree_path"],
@@ -268,9 +271,13 @@ Monitoring is inherently streaming -- the async generator yields events as the i
 
 ```python
 from claude_agent_sdk import (
-    ClaudeSDKError, CLINotFoundError, CLIConnectionError,
-    ProcessError, CLIJSONDecodeError,
+    ClaudeSDKError,
+    CLINotFoundError,
+    CLIConnectionError,
+    ProcessError,
+    CLIJSONDecodeError,
 )
+
 
 async def dispatch_with_retry(unit: dict, max_retries: int = 2) -> dict:
     """Dispatch with retry on recoverable errors."""
@@ -283,14 +290,14 @@ async def dispatch_with_retry(unit: dict, max_retries: int = 2) -> dict:
         except CLIConnectionError:
             # Recoverable: retry after backoff
             if attempt < max_retries:
-                await anyio.sleep(2 ** attempt)
+                await anyio.sleep(2**attempt)
                 continue
             return {"status": "failed", "error": "connection_error", "recoverable": True}
         except ProcessError as e:
             # Check exit code for recoverability
             if e.exit_code in (1, 2):  # Transient errors
                 if attempt < max_retries:
-                    await anyio.sleep(2 ** attempt)
+                    await anyio.sleep(2**attempt)
                     continue
             return {"status": "failed", "error": f"process_error_{e.exit_code}"}
         except CLIJSONDecodeError:
@@ -317,6 +324,7 @@ import os
 import subprocess
 from pathlib import Path
 
+
 async def dispatch_cli_instance(
     worktree_path: str,
     project_id: str,
@@ -330,10 +338,15 @@ async def dispatch_cli_instance(
     env["JERRY_PROJECT"] = project_id
 
     cmd = [
-        "claude", "-p", prompt,
-        "--output-format", "json",
-        "--allowedTools", tools,
-        "--max-turns", "50",
+        "claude",
+        "-p",
+        prompt,
+        "--output-format",
+        "json",
+        "--allowedTools",
+        tools,
+        "--max-turns",
+        "50",
     ]
     if max_budget_usd is not None:
         cmd.extend(["--max-budget-usd", str(max_budget_usd)])
@@ -347,9 +360,7 @@ async def dispatch_cli_instance(
     )
 
     try:
-        stdout, stderr = await asyncio.wait_for(
-            proc.communicate(), timeout=timeout
-        )
+        stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=timeout)
     except asyncio.TimeoutError:
         proc.terminate()
         await asyncio.sleep(10)
@@ -393,6 +404,7 @@ async def dispatch_cli_instance(
         "status": "failed" if output.get("is_error") else "completed",
     }
 
+
 async def dispatch_parallel_cli(work_units: list[dict]) -> list[dict]:
     """Dispatch N CLI instances in parallel."""
     tasks = [
@@ -435,9 +447,13 @@ async def dispatch_cli_streaming(worktree_path: str, project_id: str, prompt: st
     env["JERRY_PROJECT"] = project_id
 
     proc = await asyncio.create_subprocess_exec(
-        "claude", "-p", prompt,
-        "--output-format", "stream-json",
-        "--allowedTools", "Read,Write,Edit,Bash,Glob,Grep",
+        "claude",
+        "-p",
+        prompt,
+        "--output-format",
+        "stream-json",
+        "--allowedTools",
+        "Read,Write,Edit,Bash,Glob,Grep",
         cwd=worktree_path,
         env=env,
         stdout=asyncio.subprocess.PIPE,
@@ -560,6 +576,7 @@ COMPLETED instances (N branches ready to merge)
 import subprocess
 from dataclasses import dataclass
 
+
 @dataclass
 class MergeCheck:
     branch: str
@@ -567,6 +584,7 @@ class MergeCheck:
     clean: bool
     tree_oid: str | None
     conflicts: list[str]
+
 
 def check_merge_conflicts(target: str, branch: str, repo_path: str) -> MergeCheck:
     """Check for merge conflicts without touching the working tree."""
@@ -599,18 +617,12 @@ def check_merge_conflicts(target: str, branch: str, repo_path: str) -> MergeChec
             conflicts=conflict_files,
         )
     else:
-        raise RuntimeError(
-            f"git merge-tree failed (exit {result.returncode}): {result.stderr}"
-        )
+        raise RuntimeError(f"git merge-tree failed (exit {result.returncode}): {result.stderr}")
 
-def plan_merge_order(
-    target: str, branches: list[str], repo_path: str
-) -> list[MergeCheck]:
+
+def plan_merge_order(target: str, branches: list[str], repo_path: str) -> list[MergeCheck]:
     """Plan merge order: cleanest branches first."""
-    checks = [
-        check_merge_conflicts(target, branch, repo_path)
-        for branch in branches
-    ]
+    checks = [check_merge_conflicts(target, branch, repo_path) for branch in branches]
     # Sort: clean first, then by conflict count ascending
     checks.sort(key=lambda c: (not c.clean, len(c.conflicts)))
     return checks

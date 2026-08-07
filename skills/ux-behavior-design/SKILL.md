@@ -201,7 +201,7 @@ Diagnose the behavioral bottleneck preventing users from completing checkout.
 
 ## MANDATORY PERSISTENCE (P-002)
 Create file at: projects/${JERRY_PROJECT}/engagements/UX-0001/ux-behavior-diagnostician-checkout-abandonment.md
-"""
+""",
 )
 ```
 

@@ -155,6 +155,7 @@ class WorkItem(AggregateRoot):
         event = StatusChanged(...)
         self._raise_event(event)
 
+
 # WRONG: External code creates event
 def start_work_item(item: WorkItem) -> None:
     item._status = WorkItemStatus.IN_PROGRESS  # Direct mutation

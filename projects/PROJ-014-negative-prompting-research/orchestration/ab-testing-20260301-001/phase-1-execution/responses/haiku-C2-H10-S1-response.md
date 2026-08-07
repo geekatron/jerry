@@ -58,9 +58,7 @@ class Money:
     def add(self, other: "Money") -> "Money":
         """Add another Money value (same currency required)."""
         if self.currency_code != other.currency_code:
-            raise ValueError(
-                f"Cannot add {other.currency_code} to {self.currency_code}"
-            )
+            raise ValueError(f"Cannot add {other.currency_code} to {self.currency_code}")
         return Money(self.amount + other.amount, self.currency_code)
 
     def multiply(self, factor: Decimal) -> "Money":

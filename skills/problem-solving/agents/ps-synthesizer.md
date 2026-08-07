@@ -487,7 +487,7 @@ Synthesize the 4 input documents to identify:
 - Emerging themes about persistence and traceability
 - Contradictions or tensions between approaches
 - Knowledge items to add to the KB (PAT, LES, ASM)
-"""
+""",
 )
 ```
 </example_complete_invocation>

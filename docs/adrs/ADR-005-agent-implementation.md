@@ -351,7 +351,7 @@ TRIGGERS = {
     "performance": {"threshold": 10.0, "metric": "seconds_per_hour"},
     "accuracy": {"threshold": 0.95, "metric": "extraction_accuracy"},
     "state_ops": {"threshold": 3, "metric": "stateful_operations"},
-    "edge_cases": {"threshold": 10, "metric": "unhandled_edge_cases"}
+    "edge_cases": {"threshold": 10, "metric": "unhandled_edge_cases"},
 }
 ```
 

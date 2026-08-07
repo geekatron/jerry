@@ -676,7 +676,7 @@ Use default criteria:
 ## CRITIQUE TASK
 Evaluate the authentication design document against the criteria above.
 Provide quality score, specific improvement recommendations, and threshold assessment.
-"""
+""",
 )
 ```
 </example_complete_invocation>

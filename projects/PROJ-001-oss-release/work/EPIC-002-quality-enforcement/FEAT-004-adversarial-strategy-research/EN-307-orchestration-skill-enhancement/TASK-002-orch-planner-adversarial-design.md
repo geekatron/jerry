@@ -13,6 +13,11 @@ PROJECT: PROJ-001-oss-release
 ACTIVITY: DESIGN
 -->
 
+> **Type:** task
+> **Status:** completed
+> **Priority:** critical
+> **Created:** 2026-02-13
+> **Parent:** EN-307
 > **Version:** 1.0.0
 > **Agent:** ps-architect-307
 > **Quality Target:** >= 0.92
@@ -255,26 +260,26 @@ def select_strategies(criticality, artifact_type, iteration, token_budget_state)
 
     if criticality == C2:
         iteration_map = {
-            1: ["S-002", "S-014"],                    # Challenge + Score
-            2: ["S-007", "S-014"],                    # Compliance + Score
-            3: ["S-003", "S-014"],                    # Strengthen + Score
+            1: ["S-002", "S-014"],  # Challenge + Score
+            2: ["S-007", "S-014"],  # Compliance + Score
+            3: ["S-003", "S-014"],  # Strengthen + Score
         }
         return iteration_map.get(iteration, strategies)
 
     if criticality == C3:
         iteration_map = {
-            1: ["S-002", "S-004", "S-014"],           # Challenge + Pre-Mortem + Score
+            1: ["S-002", "S-004", "S-014"],  # Challenge + Pre-Mortem + Score
             2: ["S-007", "S-012", "S-013", "S-014"],  # Compliance + FMEA + Inversion + Score
-            3: ["S-001", "S-003", "S-014"],            # Red Team + Steelman + Score
+            3: ["S-001", "S-003", "S-014"],  # Red Team + Steelman + Score
         }
         return iteration_map.get(iteration, strategies)
 
     if criticality == C4:
         # All strategies, phased across iterations
         iteration_map = {
-            1: ["S-002", "S-004", "S-007", "S-014"],              # Foundation
-            2: ["S-001", "S-012", "S-013", "S-011", "S-014"],     # Deep analysis
-            3: ["S-001", "S-003", "S-010", "S-011", "S-014"],     # Comprehensive final
+            1: ["S-002", "S-004", "S-007", "S-014"],  # Foundation
+            2: ["S-001", "S-012", "S-013", "S-011", "S-014"],  # Deep analysis
+            3: ["S-001", "S-003", "S-010", "S-011", "S-014"],  # Comprehensive final
         }
         return iteration_map.get(iteration, strategies)
 
@@ -286,8 +291,19 @@ def select_strategies(criticality, artifact_type, iteration, token_budget_state)
 > **CRITICAL (CE-003 fix):** The orch-planner MUST validate all assigned strategies against the ADR-EPIC002-001 selection set. Only the following 10 strategy IDs are valid: S-001, S-002, S-003, S-004, S-007, S-010, S-011, S-012, S-013, S-014. Any strategy ID not in this set (e.g., S-005 Dialectical Inquiry, which was explicitly EXCLUDED by the ADR) MUST be rejected with an error. This prevents legacy ORCHESTRATION.yaml examples from propagating excluded strategies.
 
 ```python
-VALID_STRATEGIES = {"S-001", "S-002", "S-003", "S-004", "S-007",
-                    "S-010", "S-011", "S-012", "S-013", "S-014"}
+VALID_STRATEGIES = {
+    "S-001",
+    "S-002",
+    "S-003",
+    "S-004",
+    "S-007",
+    "S-010",
+    "S-011",
+    "S-012",
+    "S-013",
+    "S-014",
+}
+
 
 def validate_strategy_assignment(strategies):
     """Reject any strategy not in the ADR-EPIC002-001 selection set."""
@@ -583,8 +599,7 @@ def generate_orchestration_plan(workflow_request, quality_enforcement_ssot):
             for iteration in range(1, min_iterations + 1):
                 # Critic group
                 strategies = select_strategies(
-                    criticality, phase.artifact_type, iteration,
-                    plan.constraints.token_budget_state
+                    criticality, phase.artifact_type, iteration, plan.constraints.token_budget_state
                 )
                 critic_group = generate_critic_group(
                     phase, group_id, iteration, strategies, threshold
@@ -594,9 +609,7 @@ def generate_orchestration_plan(workflow_request, quality_enforcement_ssot):
 
                 # Revision group (not for final iteration -- it's scoring-only)
                 if iteration < min_iterations:
-                    revision_group = generate_revision_group(
-                        phase, group_id, iteration
-                    )
+                    revision_group = generate_revision_group(phase, group_id, iteration)
                     plan.execution_queue.add(revision_group)
                     group_id += 1
 
@@ -616,8 +629,8 @@ def generate_orchestration_plan(workflow_request, quality_enforcement_ssot):
 
     # Step 7: Generate L2-REINJECT tags (IR-307-003)
     plan.l2_reinject_tags.append(
-        f'Quality gate >= {threshold}. Min {min_iterations} adversarial iterations. '
-        f'S-014 LLM-as-Judge scoring REQUIRED.'
+        f"Quality gate >= {threshold}. Min {min_iterations} adversarial iterations. "
+        f"S-014 LLM-as-Judge scoring REQUIRED."
     )
 
     return plan

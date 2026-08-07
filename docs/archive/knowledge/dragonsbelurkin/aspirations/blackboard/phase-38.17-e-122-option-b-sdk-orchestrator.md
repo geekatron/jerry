@@ -64,6 +64,7 @@ The Claude Agent SDK provides native support for multi-agent orchestration throu
 ```python
 from claude_agent_sdk import query, ClaudeAgentOptions, AgentDefinition
 
+
 async def research_review_synthesis_pipeline():
     async for message in query(
         prompt="Research, review, and synthesize findings on topic X",
@@ -74,22 +75,22 @@ async def research_review_synthesis_pipeline():
                     description="Research specialist for deep exploration",
                     prompt="You are a research agent. Explore topics thoroughly.",
                     tools=["Read", "Glob", "Grep", "WebSearch"],
-                    model="sonnet"
+                    model="sonnet",
                 ),
                 "ps-reviewer": AgentDefinition(
                     description="Quality reviewer for research validation",
                     prompt="You are a review agent. Validate research quality.",
                     tools=["Read", "Glob", "Grep"],
-                    model="sonnet"
+                    model="sonnet",
                 ),
                 "ps-synthesizer": AgentDefinition(
                     description="Synthesis agent for consolidating findings",
                     prompt="You are a synthesis agent. Consolidate research.",
                     tools=["Read", "Write"],
-                    model="opus"
-                )
-            }
-        )
+                    model="opus",
+                ),
+            },
+        ),
     ):
         if hasattr(message, "result"):
             print(message.result)
@@ -121,9 +122,9 @@ session_id = None
 
 async for message in query(
     prompt="Research phase: Analyze the codebase",
-    options=ClaudeAgentOptions(allowed_tools=["Read", "Glob"])
+    options=ClaudeAgentOptions(allowed_tools=["Read", "Glob"]),
 ):
-    if hasattr(message, 'subtype') and message.subtype == 'init':
+    if hasattr(message, "subtype") and message.subtype == "init":
         session_id = message.session_id
         print(f"Session started: {session_id}")
 ```
@@ -133,7 +134,7 @@ async for message in query(
 # Resume with full context from previous phase
 async for message in query(
     prompt="Review phase: Validate the research findings",
-    options=ClaudeAgentOptions(resume=session_id)
+    options=ClaudeAgentOptions(resume=session_id),
 ):
     if hasattr(message, "result"):
         print(message.result)
@@ -146,8 +147,8 @@ async for message in query(
     prompt="Try alternative synthesis approach",
     options=ClaudeAgentOptions(
         resume=session_id,
-        fork_session=True  # Creates new session ID
-    )
+        fork_session=True,  # Creates new session ID
+    ),
 ):
     pass
 ```
@@ -165,16 +166,16 @@ LangGraph provides several orchestration patterns that can inform our design:
 from langgraph.types import Command
 from langgraph.graph import StateGraph, MessagesState, START, END
 
+
 def supervisor(state: MessagesState) -> Command[Literal["researcher", "reviewer", END]]:
     response = model.invoke(state["messages"])
     return Command(goto=response["next_agent"])
 
+
 def researcher(state: MessagesState) -> Command[Literal["supervisor"]]:
     response = model.invoke(state["messages"])
-    return Command(
-        goto="supervisor",
-        update={"messages": [response]}
-    )
+    return Command(goto="supervisor", update={"messages": [response]})
+
 
 builder = StateGraph(MessagesState)
 builder.add_node(supervisor)
@@ -214,16 +215,16 @@ CrewAI implements a flexible coordinator-worker model with:
 roles = {
     "researcher": {
         "goal": "Gather comprehensive information",
-        "backstory": "Expert researcher with analytical skills"
+        "backstory": "Expert researcher with analytical skills",
     },
     "reviewer": {
         "goal": "Validate research quality and accuracy",
-        "backstory": "Detail-oriented quality specialist"
+        "backstory": "Detail-oriented quality specialist",
     },
     "synthesizer": {
         "goal": "Consolidate findings into actionable insights",
-        "backstory": "Strategic thinker skilled at synthesis"
-    }
+        "backstory": "Strategic thinker skilled at synthesis",
+    },
 }
 ```
 
@@ -249,14 +250,19 @@ roles = {
 # AutoGen pattern (conceptual)
 class ConversableAgent:
     """Foundation for conversational agents"""
+
     pass
+
 
 class AssistantAgent(ConversableAgent):
     """LLM-driven assistance"""
+
     pass
+
 
 class UserProxyAgent(ConversableAgent):
     """Human proxy with code execution"""
+
     pass
 ```
 
@@ -303,12 +309,13 @@ GOOD: Spin up fresh sub-agent with specific instruction
 **SDK Exception Hierarchy:**
 ```python
 from claude_agent_sdk import (
-    ClaudeSDKError,      # Base error
-    CLINotFoundError,    # Claude Code not installed
+    ClaudeSDKError,  # Base error
+    CLINotFoundError,  # Claude Code not installed
     CLIConnectionError,  # Connection issues
-    ProcessError,        # Process failed
+    ProcessError,  # Process failed
     CLIJSONDecodeError,  # JSON parsing issues
 )
+
 
 async def robust_query():
     try:
@@ -335,7 +342,7 @@ async def stop_on_critical_error(input_data, tool_use_id, context):
         return {
             "continue_": False,
             "stopReason": "Critical error detected",
-            "systemMessage": "Execution stopped for safety"
+            "systemMessage": "Execution stopped for safety",
         }
     return {"continue_": True}
 ```
@@ -501,21 +508,22 @@ AGENTS = {
         description="Research specialist for deep exploration of topics",
         prompt="You are the ps-researcher agent. Research thoroughly and document findings.",
         tools=["Read", "Glob", "Grep", "WebSearch", "WebFetch"],
-        model="sonnet"
+        model="sonnet",
     ),
     "ps-reviewer": AgentDefinition(
         description="Quality reviewer for research validation",
         prompt="You are the ps-reviewer agent. Validate research quality and completeness.",
         tools=["Read", "Glob", "Grep"],
-        model="sonnet"
+        model="sonnet",
     ),
     "ps-synthesizer": AgentDefinition(
         description="Synthesis agent for consolidating research into knowledge",
         prompt="You are the ps-synthesizer agent. Consolidate and synthesize findings.",
         tools=["Read", "Write"],
-        model="opus"
-    )
+        model="opus",
+    ),
 }
+
 
 async def orchestrate_research(topic: str, ps_id: str):
     """Three-phase research orchestration pipeline."""
@@ -525,27 +533,27 @@ async def orchestrate_research(topic: str, ps_id: str):
     async for message in query(
         prompt=f"Research: {topic}",
         options=ClaudeAgentOptions(
-            allowed_tools=["Read", "Glob", "Grep", "Task", "WebSearch"],
-            agents=AGENTS
-        )
+            allowed_tools=["Read", "Glob", "Grep", "Task", "WebSearch"], agents=AGENTS
+        ),
     ):
-        if hasattr(message, 'subtype') and message.subtype == 'init':
+        if hasattr(message, "subtype") and message.subtype == "init":
             session_id = message.session_id
 
     # Phase 2: Review (resume session)
     async for message in query(
         prompt="Review the research findings for quality and completeness",
-        options=ClaudeAgentOptions(resume=session_id)
+        options=ClaudeAgentOptions(resume=session_id),
     ):
         pass
 
     # Phase 3: Synthesize (resume session)
     async for message in query(
         prompt="Synthesize the validated research into knowledge items",
-        options=ClaudeAgentOptions(resume=session_id)
+        options=ClaudeAgentOptions(resume=session_id),
     ):
         if hasattr(message, "result"):
             return message.result
+
 
 if __name__ == "__main__":
     result = asyncio.run(orchestrate_research("SDK orchestration patterns", "phase-38.17"))

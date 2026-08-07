@@ -376,13 +376,13 @@ jerry knowledge search "semantic query text"
 **Deliverables:**
 ```python
 # RAG implementation
-src/interface/rag/simple_rag.py
+src / interface / rag / simple_rag.py
 
 # Agent integration
-skills/knowledge-search/SKILL.md
+skills / knowledge - search / SKILL.md
 
 # Use cases
-src/application/queries/knowledge_query.py  # "What do we know about X?"
+src / application / queries / knowledge_query.py  # "What do we know about X?"
 ```
 
 **Success Criteria:**

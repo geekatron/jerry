@@ -209,7 +209,7 @@ Replace `("## Status", DocumentType.ADR)` with a compound two-signal check. Sinc
 
 Option A -- Replace with the most distinctive ADR marker not shared with other types:
 ```python
-("## Decision\n", DocumentType.ADR),   # "Decision" is ADR-specific
+(("## Decision\n", DocumentType.ADR),)  # "Decision" is ADR-specific
 ```
 Note: Even "## Decision" could appear in other documents, but it is far less common than "## Status".
 
@@ -217,7 +217,7 @@ Option B -- Add a compound structural cue mechanism (requires API change to `_de
 ```python
 # New tuple format: (required_cue_1, optional_cue_2, doc_type)
 # Only matches if BOTH cues are present
-("## Status", "## Decision", DocumentType.ADR),
+(("## Status", "## Decision", DocumentType.ADR),)
 ```
 
 Option C -- Remove the `## Status` ADR cue entirely. With comprehensive path patterns, the ADR structural cue should rarely activate. The `docs/design/*.md` and `docs/adrs/*.md` patterns cover all known ADR locations. ADRs outside these paths should return UNKNOWN, not ADR.
@@ -292,8 +292,8 @@ Add ordering comments to the proposed `PATH_PATTERNS` to document WHY the orderi
 # A file under work/ is ALWAYS a worktracker entity even if its subdirectory
 # contains "orchestration" in the name. Violating this order causes WORKTRACKER_ENTITY
 # files to be misclassified as ORCHESTRATION_ARTIFACT (T-DT-02).
-("projects/*/WORKTRACKER.md", DocumentType.WORKTRACKER_ENTITY),
-("projects/*/work/**/*.md", DocumentType.WORKTRACKER_ENTITY),
+(("projects/*/WORKTRACKER.md", DocumentType.WORKTRACKER_ENTITY),)
+(("projects/*/work/**/*.md", DocumentType.WORKTRACKER_ENTITY),)
 ```
 
 ---
@@ -339,8 +339,8 @@ Search for all call sites:
 
 ```python
 # In tests/unit/domain/markdown_ast/test_document_type.py
-doc_type, warning = DocumentTypeDetector.detect(...)   # All 20+ test cases use this
-doc_type, _ = DocumentTypeDetector.detect(...)         # Pattern used in 5 tests
+doc_type, warning = DocumentTypeDetector.detect(...)  # All 20+ test cases use this
+doc_type, _ = DocumentTypeDetector.detect(...)  # Pattern used in 5 tests
 ```
 
 The regression test in eng-qa-test-strategy.md also uses `doc_type, warning = DocumentTypeDetector.detect(...)` (line 146 of strategy doc). All of these would fail if detect() returns a 3-tuple for UNKNOWN.
@@ -360,11 +360,13 @@ Option B -- Structured return type via dataclass (recommended):
 ```python
 from dataclasses import dataclass
 
+
 @dataclass(frozen=True)
 class DetectionResult:
     doc_type: DocumentType
     warning: str | None
     diagnostic: dict[str, str] | None = None
+
 
 # Callers use result.doc_type, result.warning, result.diagnostic
 ```
@@ -433,6 +435,7 @@ Verification:
 
 ```python
 import fnmatch
+
 # Wildcard in PATH, not in PATTERN
 fnmatch.fnmatch("skills/*/agents/evil.md", "skills/*/agents/*.md")
 # -> False (the literal "*" in path does not match against the pattern's "*")

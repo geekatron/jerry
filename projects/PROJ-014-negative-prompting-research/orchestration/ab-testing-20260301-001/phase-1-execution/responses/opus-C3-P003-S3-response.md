@@ -46,11 +46,11 @@ async def handle(self, command: UpdateInventoryCommand) -> Result:
     await self._repository.update(command.item_id, command.changes)  # line 34
 
     # Step 2: Publish domain event (fire-and-forget)
-    await self._event_bus.publish(                                    # line 38
+    await self._event_bus.publish(  # line 38
         InventoryUpdated(item_id=command.item_id, changes=command.changes)
     )
 
-    return Result.success(command.item_id)                            # line 42
+    return Result.success(command.item_id)  # line 42
 ```
 
 ### Evidence 3: Event subscriber performs invalidation but has no delivery guarantee
@@ -65,7 +65,7 @@ The `InventoryUpdated` event subscriber calls `cache.invalidate(event.item_id)` 
 @event_bus.subscribe(InventoryUpdated)
 async def on_inventory_updated(event: InventoryUpdated) -> None:
     try:
-        await cache.invalidate(event.item_id)    # line 22
+        await cache.invalidate(event.item_id)  # line 22
     except Exception:
         logger.warning(f"Cache invalidation failed for {event.item_id}")
         # No retry. Stale entry persists until TTL expiry.
@@ -105,6 +105,7 @@ async def handle(self, command: UpdateInventoryCommand) -> Result:
         InventoryUpdated(item_id=command.item_id, changes=command.changes)
     )
     return Result.success(command.item_id)
+
 
 # AFTER:
 async def handle(self, command: UpdateInventoryCommand) -> Result:

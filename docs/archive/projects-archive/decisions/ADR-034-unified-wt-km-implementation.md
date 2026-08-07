@@ -1447,7 +1447,7 @@ EDGE_PROPERTIES = {
     "LEARNED_FROM": {
         "created_at": str,  # ISO datetime
         "created_by": str,  # Jerry URI of actor
-        "aar_id": str,      # Reference to AAR response
+        "aar_id": str,  # Reference to AAR response
     },
     "APPLIED_PATTERN": {
         "applied_at": str,
@@ -1511,6 +1511,7 @@ EDGE_PROPERTIES = {
 import pytest
 from timeit import timeit
 
+
 class TestPerformanceBenchmarks:
     """Performance benchmarks for Phase 2 validation."""
 
@@ -1519,36 +1520,27 @@ class TestPerformanceBenchmarks:
         """Task CRUD should complete under 20ms P95."""
         times = []
         for _ in range(100):
-            times.append(timeit(
-                lambda: task_repository.save(sample_task),
-                number=1
-            ))
+            times.append(timeit(lambda: task_repository.save(sample_task), number=1))
         p95 = sorted(times)[95]
-        assert p95 < 0.020, f"P95 {p95*1000:.2f}ms exceeds 20ms target"
+        assert p95 < 0.020, f"P95 {p95 * 1000:.2f}ms exceeds 20ms target"
 
     @pytest.mark.benchmark
     def test_graph_traversal_p95(self, graph_store, sample_graph_500):
         """Graph traversal (depth 2) should complete under 10ms P95."""
         times = []
         for node_id in sample_graph_500.sample_nodes(100):
-            times.append(timeit(
-                lambda: graph_store.traverse(node_id, max_depth=2),
-                number=1
-            ))
+            times.append(timeit(lambda: graph_store.traverse(node_id, max_depth=2), number=1))
         p95 = sorted(times)[95]
-        assert p95 < 0.010, f"P95 {p95*1000:.2f}ms exceeds 10ms target"
+        assert p95 < 0.010, f"P95 {p95 * 1000:.2f}ms exceeds 10ms target"
 
     @pytest.mark.benchmark
     def test_semantic_search_p95(self, semantic_index, sample_embeddings_500):
         """Semantic search (k=5) should complete under 50ms P95."""
         times = []
         for query in sample_embeddings_500.sample_queries(100):
-            times.append(timeit(
-                lambda: semantic_index.search(query, k=5),
-                number=1
-            ))
+            times.append(timeit(lambda: semantic_index.search(query, k=5), number=1))
         p95 = sorted(times)[95]
-        assert p95 < 0.050, f"P95 {p95*1000:.2f}ms exceeds 50ms target"
+        assert p95 < 0.050, f"P95 {p95 * 1000:.2f}ms exceeds 50ms target"
 ```
 
 ---

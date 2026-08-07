@@ -149,19 +149,14 @@ async def list_tools() -> list[types.Tool]:
             description="Get current weather for a city",
             inputSchema={
                 "type": "object",
-                "properties": {
-                    "city": {"type": "string", "description": "City name"}
-                },
-                "required": ["city"]
+                "properties": {"city": {"type": "string", "description": "City name"}},
+                "required": ["city"],
             },
             outputSchema={
                 "type": "object",
-                "properties": {
-                    "temperature": {"type": "number"},
-                    "condition": {"type": "string"}
-                },
-                "required": ["temperature", "condition"]
-            }
+                "properties": {"temperature": {"type": "number"}, "condition": {"type": "string"}},
+                "required": ["temperature", "condition"],
+            },
         )
     ]
 ```
@@ -221,6 +216,7 @@ For agents using multiple MCP servers, naming hooks prevent collisions:
 def naming_hook(name: str, server_info) -> str:
     """Prefix component names with server name."""
     return f"{server_info.name}_{name}"
+
 
 async with ClientSessionGroup(component_name_hook=naming_hook) as group:
     await group.connect_to_server(weather_server)

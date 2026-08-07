@@ -731,6 +731,7 @@ components:
 from typing import Dict, Any, Optional
 from ..entities.task import Task
 
+
 class JsonLdSerializer:
     def __init__(self, context_url: str = "https://jerry.dev/contexts/worktracker.jsonld"):
         self.context_url = context_url
@@ -746,7 +747,7 @@ class JsonLdSerializer:
             "@context": self.context_url,
             "@id": entity.uri.to_string(),  # Jerry URI
             "@type": self._get_type(entity),
-            **base_json
+            **base_json,
         }
 
         return json_ld
@@ -827,22 +828,23 @@ from ..serialization.turtle import TurtleSerializer
 
 app = Flask(__name__)
 
-@app.route('/jer/work-tracker/task/<task_id>')
+
+@app.route("/jer/work-tracker/task/<task_id>")
 def resolve_task_uri(task_id: str):
     task = repository.find_by_id(task_id)
 
-    accept = request.headers.get('Accept', 'application/json')
+    accept = request.headers.get("Accept", "application/json")
 
-    if 'application/ld+json' in accept:
+    if "application/ld+json" in accept:
         serializer = JsonLdSerializer()
-        return jsonify(serializer.serialize(task)), 200, {'Content-Type': 'application/ld+json'}
+        return jsonify(serializer.serialize(task)), 200, {"Content-Type": "application/ld+json"}
 
-    elif 'text/turtle' in accept:
+    elif "text/turtle" in accept:
         serializer = TurtleSerializer()
-        return serializer.serialize(task), 200, {'Content-Type': 'text/turtle'}
+        return serializer.serialize(task), 200, {"Content-Type": "text/turtle"}
 
-    elif 'text/html' in accept:
-        return render_template('task.html', task=task), 200
+    elif "text/html" in accept:
+        return render_template("task.html", task=task), 200
 
     else:
         return jsonify(task.to_dict()), 200
@@ -947,6 +949,7 @@ jerry:TaskShape
 from pyshacl import validate
 from rdflib import Graph
 
+
 class ShaclValidator:
     def __init__(self, shapes_file: str):
         self.shapes = Graph().parse(shapes_file, format="turtle")
@@ -956,10 +959,7 @@ class ShaclValidator:
         data_graph = Graph().parse(data=task_rdf, format="json-ld")
 
         conforms, results_graph, results_text = validate(
-            data_graph,
-            shacl_graph=self.shapes,
-            inference='rdfs',
-            abort_on_first=False
+            data_graph, shacl_graph=self.shapes, inference="rdfs", abort_on_first=False
         )
 
         return conforms, results_graph, results_text
@@ -988,23 +988,12 @@ Claude will be the primary contributor.
 
 # LLM output (structured)
 {
-  "@context": "https://jerry.dev/contexts/worktracker.jsonld",
-  "@type": "Task",
-  "title": "Implement JSON-LD support",
-  "dependsOn": [
-    {
-      "@id": "jer:jer:specifications:SPEC-001",
-      "@type": "Specification"
-    }
-  ],
-  "conformsTo": {
-    "@id": "https://www.w3.org/TR/json-ld11/",
-    "@type": "TechnicalSpecification"
-  },
-  "contributor": {
-    "@id": "jer:jer:work-tracker:actor:claude",
-    "@type": "SoftwareApplication"
-  }
+    "@context": "https://jerry.dev/contexts/worktracker.jsonld",
+    "@type": "Task",
+    "title": "Implement JSON-LD support",
+    "dependsOn": [{"@id": "jer:jer:specifications:SPEC-001", "@type": "Specification"}],
+    "conformsTo": {"@id": "https://www.w3.org/TR/json-ld11/", "@type": "TechnicalSpecification"},
+    "contributor": {"@id": "jer:jer:work-tracker:actor:claude", "@type": "SoftwareApplication"},
 }
 ```
 

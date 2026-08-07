@@ -123,6 +123,7 @@ class OrderRecord:
         status: Lifecycle state of the order.
         timestamp: When the order was created or last modified.
     """
+
     id: str
     status: Literal["pending", "confirmed", "shipped", "delivered", "cancelled"]
     timestamp: datetime
@@ -204,6 +205,7 @@ class OrderDatabaseRecord:
     infrastructure details. It is NOT imported by application layer.
     The application layer uses the domain-level OrderRecord instead.
     """
+
     id: str
     status: Literal["pending", "confirmed", "shipped", "delivered", "cancelled"]
     timestamp: datetime
@@ -228,11 +230,7 @@ class OrderDatabaseAdapter:
         db_record = self._query_database(order_id)
 
         # Convert to domain type before returning
-        return OrderRecord(
-            id=db_record.id,
-            status=db_record.status,
-            timestamp=db_record.timestamp
-        )
+        return OrderRecord(id=db_record.id, status=db_record.status, timestamp=db_record.timestamp)
 
     def _query_database(self, order_id: str) -> OrderDatabaseRecord:
         """Internal method using database-specific record."""
@@ -282,6 +280,7 @@ class OrderRecord:
         status: Current lifecycle state.
         timestamp: Creation or last modification timestamp.
     """
+
     id: str
     status: Literal["pending", "confirmed", "shipped", "delivered", "cancelled"]
     timestamp: datetime
@@ -329,9 +328,7 @@ class ProcessOrderHandler:
         """Validate order is in a processable state."""
         valid_states = {"pending", "confirmed"}
         if order.status not in valid_states:
-            raise ValueError(
-                f"Order {order.id} in invalid state for processing: {order.status}"
-            )
+            raise ValueError(f"Order {order.id} in invalid state for processing: {order.status}")
 
     def _execute_workflow(self, order: OrderRecord) -> None:
         """Execute the order processing workflow."""
@@ -372,6 +369,7 @@ class OrderDatabaseRecord:
     database-specific attributes and implementation details.
     The adapter converts to domain OrderRecord before returning to callers.
     """
+
     id: str
     status: Literal["pending", "confirmed", "shipped", "delivered", "cancelled"]
     timestamp: datetime
@@ -405,11 +403,7 @@ class OrderDatabaseAdapter:
 
         # Convert to domain type before returning
         # This ensures application never sees OrderDatabaseRecord
-        return OrderRecord(
-            id=db_record.id,
-            status=db_record.status,
-            timestamp=db_record.timestamp
-        )
+        return OrderRecord(id=db_record.id, status=db_record.status, timestamp=db_record.timestamp)
 
     def save_order(self, order: OrderRecord) -> None:
         """
@@ -419,11 +413,7 @@ class OrderDatabaseAdapter:
             order: OrderRecord from domain layer.
         """
         # Convert domain type to database representation for persistence
-        db_record = OrderDatabaseRecord(
-            id=order.id,
-            status=order.status,
-            timestamp=order.timestamp
-        )
+        db_record = OrderDatabaseRecord(id=order.id, status=order.status, timestamp=order.timestamp)
         self._persist_to_database(db_record)
 
     def _query_database(self, order_id: str) -> OrderDatabaseRecord:
@@ -481,11 +471,7 @@ class TestProcessOrderHandler(unittest.TestCase):
         handler = ProcessOrderHandler()
 
         # Create order using domain type (not database-specific)
-        order = OrderRecord(
-            id="ORD-123",
-            status="pending",
-            timestamp=datetime.now()
-        )
+        order = OrderRecord(id="ORD-123", status="pending", timestamp=datetime.now())
 
         # Handler processes without needing infrastructure
         handler.process_order(order)
@@ -497,7 +483,7 @@ class TestProcessOrderHandler(unittest.TestCase):
         order = OrderRecord(
             id="ORD-456",
             status="shipped",  # Invalid for processing
-            timestamp=datetime.now()
+            timestamp=datetime.now(),
         )
 
         with self.assertRaises(ValueError):
@@ -526,7 +512,7 @@ from datetime import datetime
 from src.domain.ports.order_record import OrderRecord
 from src.infrastructure.adapters.OrderDatabaseAdapter import (
     OrderDatabaseAdapter,
-    OrderDatabaseRecord
+    OrderDatabaseRecord,
 )
 
 

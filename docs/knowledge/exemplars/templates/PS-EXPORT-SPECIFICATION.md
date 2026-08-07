@@ -63,6 +63,7 @@ The `hash` property enables change detection between exports. Computed from **co
 import hashlib
 import json
 
+
 def compute_entity_hash(entity: dict, content_fields: list[str]) -> str:
     """
     Compute content-based hash for change detection.
@@ -77,6 +78,7 @@ def compute_entity_hash(entity: dict, content_fields: list[str]) -> str:
     content = {k: v for k, v in entity.items() if k in content_fields}
     serialized = json.dumps(content, sort_keys=True, default=str)
     return hashlib.sha256(serialized.encode()).hexdigest()[:16]
+
 
 # Content fields per entity type
 HASH_FIELDS = {

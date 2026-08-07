@@ -33,8 +33,8 @@ This document presents the root cause analysis for the critical inventory servic
 def get(self, key: str) -> Optional[Dict]:
     if key in self._cache:
         entry = self._cache[key]
-        if time.time() - entry['timestamp'] < entry['ttl']:
-            return entry['data']  # Returns without checking invalidation signal
+        if time.time() - entry["timestamp"] < entry["ttl"]:
+            return entry["data"]  # Returns without checking invalidation signal
         else:
             del self._cache[key]
     return None
@@ -62,10 +62,7 @@ def execute(self, command: UpdateInventoryCommand) -> None:
     self._repository.save(inventory)
 
     # Event is published but not guaranteed to be processed
-    event = InventoryUpdated(
-        inventory_id=command.inventory_id,
-        timestamp=datetime.now()
-    )
+    event = InventoryUpdated(inventory_id=command.inventory_id, timestamp=datetime.now())
     self._event_bus.publish(event)
     # Control returns immediately; cache invalidation may not have occurred
 ```
@@ -93,6 +90,7 @@ class InventoryUpdatedSubscriber:
     def handle(self, event: InventoryUpdated) -> None:
         # This invalidation logic is defined but never called
         self._cache.invalidate(f"inventory_{event.inventory_id}")
+
 
 # Missing from bootstrap.py:
 # event_bus.subscribe(InventoryUpdated, InventoryUpdatedSubscriber(cache))
@@ -135,6 +133,7 @@ from src.infrastructure.caching import InventoryCache
 from src.domain.events import InventoryUpdated, InventoryUpdatedSubscriber
 from src.shared_kernel.event_bus import EventBus
 
+
 def bootstrap() -> Container:
     # ... existing code ...
 
@@ -161,6 +160,7 @@ def bootstrap() -> Container:
 ```python
 # Add to InventoryCache class (around line 90):
 
+
 def invalidate(self, key: str) -> None:
     """
     Explicitly invalidate a cache entry by key.
@@ -181,15 +181,13 @@ def invalidate(self, key: str) -> None:
 ```python
 # In execute() method, add synchronization after publish (lines 42-61):
 
+
 def execute(self, command: UpdateInventoryCommand) -> None:
     inventory = self._repository.get(command.inventory_id)
     inventory.update(command.updates)
     self._repository.save(inventory)
 
-    event = InventoryUpdated(
-        inventory_id=command.inventory_id,
-        timestamp=datetime.now()
-    )
+    event = InventoryUpdated(inventory_id=command.inventory_id, timestamp=datetime.now())
     self._event_bus.publish(event)
 
     # ADDED: Optional defensive cache invalidation in case event processing fails
@@ -250,10 +248,7 @@ def test_update_inventory_invalidates_cache_end_to_end():
     assert cached_inventory.name == "Old Name"
 
     # 3. Update inventory
-    service.update_inventory(UpdateInventoryCommand(
-        inventory_id=123,
-        updates={"name": "New Name"}
-    ))
+    service.update_inventory(UpdateInventoryCommand(inventory_id=123, updates={"name": "New Name"}))
 
     # 4. Query again (cache miss, should return updated data)
     updated_inventory = service.get_inventory(123)

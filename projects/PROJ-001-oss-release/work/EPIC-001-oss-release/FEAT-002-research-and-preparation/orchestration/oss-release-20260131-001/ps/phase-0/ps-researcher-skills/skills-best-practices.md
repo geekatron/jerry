@@ -338,11 +338,7 @@ User: /transcript meeting.vtt --output-dir ./output/
 
 **Option 4: Task Tool (Programmatic):**
 ```python
-Task(
-    description="ps-researcher: Graph databases",
-    subagent_type="general-purpose",
-    prompt="..."
-)
+Task(description="ps-researcher: Graph databases", subagent_type="general-purpose", prompt="...")
 ```
 
 #### 3.3 Context Injection Pattern

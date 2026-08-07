@@ -453,7 +453,7 @@ After completing analysis, you MUST:
 Apply 5 Whys methodology to identify the root cause of database query timeouts.
 Gather evidence from logs at /var/log/app/ and metrics in Grafana.
 Provide actionable recommendations with success criteria.
-"""
+""",
 )
 ```
 </example_complete_invocation>

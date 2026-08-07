@@ -110,7 +110,7 @@ This means any code that holds a reference to a `FrontmatterField` can mutate it
 **Attack Vector:** The `ast_modify()` function in `ast_commands.py` (lines 380-419) reads a file, parses it, modifies frontmatter, and writes back to the same path. The trust boundary document (Write-Back Path Diagram) acknowledges TOCTOU at [W1] ("re-verify in case of symlink race condition") but the actual code does NOT implement any TOCTOU mitigation:
 
 ```python
-source, exit_code = _read_file(file_path)   # READ
+source, exit_code = _read_file(file_path)  # READ
 doc = JerryDocument.parse(source)
 fm = extract_frontmatter(doc)
 new_doc = fm.set(key, value)
@@ -175,6 +175,7 @@ The threat model's "Strategic Implications" section (L2, point 3) acknowledges t
 Any code that can import `schema.py` can modify the registry at runtime:
 ```python
 from src.domain.markdown_ast.schema import _SCHEMA_REGISTRY
+
 _SCHEMA_REGISTRY["epic"] = permissive_schema  # Replace EPIC_SCHEMA
 ```
 

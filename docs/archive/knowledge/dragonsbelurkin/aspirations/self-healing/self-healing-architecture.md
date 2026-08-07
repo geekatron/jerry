@@ -530,7 +530,7 @@ class RetryPolicy:
 
     def get_delay(self, attempt: int) -> float:
         """Calculate delay for given attempt number."""
-        delay = self.initial_delay * (self.exponential_base ** attempt)
+        delay = self.initial_delay * (self.exponential_base**attempt)
         delay = min(delay, self.max_delay)
 
         if self.jitter:
@@ -551,13 +551,11 @@ class RetryPolicy:
 # wt.py integration point
 from domain.self_healing import SelfHealingDispatcher
 
+
 def main():
     dispatcher = SelfHealingDispatcher.create_default()
 
-    result = dispatcher.dispatch_natural(
-        intent=user_input,
-        tracker_path=tracker_file
-    )
+    result = dispatcher.dispatch_natural(intent=user_input, tracker_path=tracker_file)
 
     if result.recovered:
         print(f"✓ Recovered from: {result.recovery_strategy}")
@@ -573,6 +571,7 @@ def main():
 
 from domain.self_healing.enforcement import HookEnforcer
 
+
 def pre_tool_use(tool_name: str, tool_input: dict) -> int:
     """PreToolUse hook for initiative consent enforcement."""
 
@@ -581,7 +580,7 @@ def pre_tool_use(tool_name: str, tool_input: dict) -> int:
     decision = enforcer.check_tool_call(
         tool_name=tool_name,
         tool_input=tool_input,
-        existing_file=path_exists(tool_input.get("file_path"))
+        existing_file=path_exists(tool_input.get("file_path")),
     )
 
     if not decision.proceed:

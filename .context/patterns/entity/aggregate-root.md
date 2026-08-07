@@ -41,6 +41,7 @@ from typing import TYPE_CHECKING, Sequence
 if TYPE_CHECKING:
     from src.shared_kernel.domain_event import DomainEvent
 
+
 @dataclass
 class AggregateRoot(ABC):
     """Event-sourced aggregate base class.
@@ -150,6 +151,7 @@ from src.work_tracking.domain.events.work_item_events import (
 )
 from src.work_tracking.domain.value_objects.work_item_status import WorkItemStatus
 
+
 class WorkItem(AggregateRoot):
     """Work item aggregate root.
 
@@ -235,6 +237,7 @@ Aggregates should reference other aggregates by ID, not by object reference.
 class WorkItem:
     _parent_id: str | None  # ID reference
 
+
 # WRONG: Object reference
 class WorkItem:
     _parent: WorkItem  # Direct object reference
@@ -255,9 +258,7 @@ def complete(self) -> None:
     """Complete the work item."""
     # Enforce invariant: must be in_progress
     if self._status != WorkItemStatus.IN_PROGRESS:
-        raise InvalidStateError(
-            f"Cannot complete work item in {self._status} state"
-        )
+        raise InvalidStateError(f"Cannot complete work item in {self._status} state")
 
     # Raise event (invariant is satisfied)
     event = WorkItemCompleted(...)
@@ -290,6 +291,7 @@ For aggregates with many events, snapshots improve load time:
 ```python
 # Every 10 events, take a snapshot (per Design Canon)
 SNAPSHOT_FREQUENCY = 10
+
 
 def save(self, aggregate: WorkItem) -> None:
     events = aggregate.collect_events()
@@ -347,6 +349,7 @@ class WorkItem:
     def set_status(self, status: str) -> None:
         self._status = status  # No validation!
 
+
 # CORRECT: Business logic encapsulated
 class WorkItem:
     def complete(self) -> None:
@@ -365,6 +368,7 @@ class Project:
     documents: list[Document]
     comments: list[Comment]
     # Too many things!
+
 
 # CORRECT: Separate aggregates
 class Project:

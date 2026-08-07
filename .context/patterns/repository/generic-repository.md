@@ -102,6 +102,7 @@ class IRepository(Protocol[TAggregate, TId]):
 
 class RepositoryError(Exception):
     """Base error for repository operations."""
+
     pass
 
 
@@ -290,10 +291,10 @@ subtask_repo: ISubtaskRepository  # Subtasks accessed via WorkItem
 
 ```python
 # Repository is like a collection
-repo.get(id)      # Like dict.get()
-repo.save(item)   # Like set.add()
-repo.delete(id)   # Like set.remove()
-repo.exists(id)   # Like id in collection
+repo.get(id)  # Like dict.get()
+repo.save(item)  # Like set.add()
+repo.delete(id)  # Like set.remove()
+repo.exists(id)  # Like id in collection
 ```
 
 ### 3. Domain-Focused
@@ -384,6 +385,7 @@ class CrudRepository:
     def update(self, id: str, data: dict): ...
     def select(self, where: dict): ...
 
+
 # CORRECT: Domain-focused
 class IWorkItemRepository:
     def save(self, work_item: WorkItem): ...
@@ -397,6 +399,7 @@ class IWorkItemRepository:
 class WorkItemRepository:
     def save(self, item: WorkItemModel):
         self._session.add(item)  # No domain logic
+
 
 # CORRECT: Repository works with aggregates
 class WorkItemRepository:

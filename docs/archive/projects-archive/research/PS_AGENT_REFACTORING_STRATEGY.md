@@ -251,7 +251,7 @@ The ps-*.md agent portfolio implements a **specialized multi-agent system** foll
 # State management via output_key
 researcher_output = Task(
     agent="ps-researcher",
-    output_key="research_findings"  # Writes to session.state
+    output_key="research_findings",  # Writes to session.state
 )
 
 # Next agent reads from state

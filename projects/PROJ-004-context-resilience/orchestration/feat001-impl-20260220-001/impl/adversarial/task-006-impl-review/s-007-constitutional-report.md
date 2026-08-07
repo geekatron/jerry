@@ -263,7 +263,7 @@ tests, plus parameterized expansions). Total test count: 197 passing.
 explicit = self._config.get(key)
 if explicit is not None:
     try:
-        return int(explicit), "config"       # tested: TOML/env integer values
+        return int(explicit), "config"  # tested: TOML/env integer values
     except (ValueError, TypeError):
         pass  # fall through to auto-detection   <-- THIS BRANCH IS NOT TESTED
 ```

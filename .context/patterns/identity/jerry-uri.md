@@ -44,9 +44,11 @@ from dataclasses import dataclass
 from typing import Optional
 import re
 
+
 @dataclass(frozen=True)
 class JerryUri:
     """URI-based entity reference for cross-system identification."""
+
     entity_type: str
     entity_id: str
     sub_entity_type: Optional[str] = None
@@ -59,7 +61,7 @@ class JerryUri:
         return base
 
     @classmethod
-    def parse(cls, uri: str) -> 'JerryUri':
+    def parse(cls, uri: str) -> "JerryUri":
         """Parse a jerry:// URI string.
 
         Args:
@@ -71,7 +73,7 @@ class JerryUri:
         Raises:
             ValueError: If URI format is invalid
         """
-        pattern = r'^jerry://([^/]+)/([^/]+)(?:/([^/]+)/([^/]+))?$'
+        pattern = r"^jerry://([^/]+)/([^/]+)(?:/([^/]+)/([^/]+))?$"
         match = re.match(pattern, uri)
 
         if not match:
@@ -81,16 +83,16 @@ class JerryUri:
             entity_type=match.group(1),
             entity_id=match.group(2),
             sub_entity_type=match.group(3),
-            sub_entity_id=match.group(4)
+            sub_entity_id=match.group(4),
         )
 
-    def to_vertex_id(self) -> 'VertexId':
+    def to_vertex_id(self) -> "VertexId":
         """Convert to appropriate VertexId subclass."""
         id_mapping = {
-            'task': TaskId,
-            'phase': PhaseId,
-            'plan': PlanId,
-            'knowledge': KnowledgeId,
+            "task": TaskId,
+            "phase": PhaseId,
+            "plan": PlanId,
+            "knowledge": KnowledgeId,
         }
         id_class = id_mapping.get(self.entity_type, VertexId)
         return id_class(self.entity_id)
@@ -131,10 +133,7 @@ uri = JerryUri(entity_type="task", entity_id="a1b2c3d4")
 ```python
 # Reference phase within a plan
 uri = JerryUri(
-    entity_type="plan",
-    entity_id="xyz98765",
-    sub_entity_type="phase",
-    sub_entity_id="001"
+    entity_type="plan", entity_id="xyz98765", sub_entity_type="phase", sub_entity_id="001"
 )
 # jerry://plan/xyz98765/phase/001
 ```

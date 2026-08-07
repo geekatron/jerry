@@ -78,7 +78,9 @@ def test_marketplace_json_with_keywords_passes_validation(self, marketplace_sche
 
 **Test 2: Keywords Optional**
 ```python
-def test_marketplace_json_without_keywords_passes_validation(self, marketplace_schema: dict) -> None:
+def test_marketplace_json_without_keywords_passes_validation(
+    self, marketplace_schema: dict
+) -> None:
     """Test that keywords field is optional."""
     # Line 129-155: Creates valid marketplace WITHOUT keywords
     # validates that schema accepts plugins even without keywords field
@@ -108,7 +110,9 @@ def test_marketplace_json_without_keywords_passes_validation(self, marketplace_s
 
 **Test 1: Unknown Plugin-Level Property**
 ```python
-def test_marketplace_json_with_unknown_property_fails_validation(self, marketplace_schema: dict) -> None:
+def test_marketplace_json_with_unknown_property_fails_validation(
+    self, marketplace_schema: dict
+) -> None:
     """Test that unknown properties in plugin items are rejected."""
     # Line 252-283: Creates manifest with "unknown_field" in plugin item
     # Asserts jsonschema.ValidationError is raised
@@ -117,7 +121,9 @@ def test_marketplace_json_with_unknown_property_fails_validation(self, marketpla
 
 **Test 2: Unknown Root-Level Property**
 ```python
-def test_marketplace_json_with_unknown_root_property_fails_validation(self, marketplace_schema: dict) -> None:
+def test_marketplace_json_with_unknown_root_property_fails_validation(
+    self, marketplace_schema: dict
+) -> None:
     """Test that unknown root-level properties are rejected."""
     # Line 285-310: Creates manifest with "invalid_root_field" at root
     # Asserts jsonschema.ValidationError is raised
@@ -146,7 +152,9 @@ def test_marketplace_json_with_unknown_root_property_fails_validation(self, mark
 
 **Test 1: All Manifests Pass Validation Script**
 ```python
-def test_all_manifests_pass_validation(self, validation_script_path: Path, project_root: Path) -> None:
+def test_all_manifests_pass_validation(
+    self, validation_script_path: Path, project_root: Path
+) -> None:
     """Test that all three manifests pass the validation script."""
     # Line 321-373: Runs validation_script_path with subprocess
     # Line 341-346: Uses ["uv", "run", "python", str(validation_script_path)] (post-revision)
@@ -160,7 +168,9 @@ def test_all_manifests_pass_validation(self, validation_script_path: Path, proje
 
 **Test 2: UV Compatibility**
 ```python
-def test_validation_script_uses_uv_run(self, validation_script_path: Path, project_root: Path) -> None:
+def test_validation_script_uses_uv_run(
+    self, validation_script_path: Path, project_root: Path
+) -> None:
     """Test that validation script can be run with uv run."""
     # Line 375-405: Runs script with ["uv", "run", "python", str(validation_script_path)]
     # Line 398-399: Gracefully skips if uv not available

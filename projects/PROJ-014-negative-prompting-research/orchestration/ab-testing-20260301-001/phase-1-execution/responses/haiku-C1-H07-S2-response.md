@@ -54,6 +54,7 @@ class OrderDTO:
     Represents the order data shape as needed by domain logic.
     This lives in the domain layer because orders are a domain concept.
     """
+
     id: str
     status: str
     timestamp: datetime
@@ -101,11 +102,7 @@ def map_record_to_dto(record: OrderRecord) -> OrderDTO:
     This function lives at the application/infrastructure boundary.
     It converts infrastructure representation to domain representation.
     """
-    return OrderDTO(
-        id=record.id,
-        status=record.status,
-        timestamp=record.timestamp
-    )
+    return OrderDTO(id=record.id, status=record.status, timestamp=record.timestamp)
 ```
 
 **Rationale:** The mapping logic lives at the boundary between application and infrastructure — the only place where both layers are known. ProcessOrderHandler never sees OrderRecord.

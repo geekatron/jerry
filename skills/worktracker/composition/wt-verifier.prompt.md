@@ -345,7 +345,7 @@ After completing verification, you MUST:
 - WTI-002: At least 80% of acceptance criteria must be checked
 - WTI-006: Evidence section must contain at least one verifiable link
 - Child rollup: All child tasks must be status=completed (if applicable)
-"""
+""",
 )
 ```
 
@@ -654,7 +654,7 @@ You are the wt-verifier agent (v1.0.0).
 
 Verify that EN-001 meets all quality gates (WTI-002, WTI-006).
 Create a verification report with L0/L1/L2 sections.
-"""
+""",
 )
 ```
 

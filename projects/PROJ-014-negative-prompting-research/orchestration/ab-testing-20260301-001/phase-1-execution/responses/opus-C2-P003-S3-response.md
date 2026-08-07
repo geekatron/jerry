@@ -77,10 +77,9 @@ async def handle(self, command: UpdateInventoryCommand) -> None:
     await self.repository.save(inventory)
     await self.db.commit()
     await self.cache.invalidate(command.inventory_id)  # Race window here
-    await self.event_bus.publish(InventoryUpdated(
-        inventory_id=command.inventory_id,
-        updated_at=datetime.utcnow()
-    ))
+    await self.event_bus.publish(
+        InventoryUpdated(inventory_id=command.inventory_id, updated_at=datetime.utcnow())
+    )
 ```
 
 To:
@@ -101,10 +100,9 @@ async def handle(self, command: UpdateInventoryCommand) -> None:
     await self.db.commit()
 
     # Publish event for downstream subscribers and secondary cache warming
-    await self.event_bus.publish(InventoryUpdated(
-        inventory_id=command.inventory_id,
-        updated_at=datetime.utcnow()
-    ))
+    await self.event_bus.publish(
+        InventoryUpdated(inventory_id=command.inventory_id, updated_at=datetime.utcnow())
+    )
 ```
 
 **In `src/domain/events/InventoryUpdated.py` (subscriber side):**

@@ -491,7 +491,7 @@ After generating the diagram, you MUST:
 2. Include Mermaid code block with valid syntax
 3. Include metadata (entities_included, max_depth_reached)
 4. Apply Jerry status color conventions
-"""
+""",
 )
 ```
 

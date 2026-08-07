@@ -106,6 +106,7 @@ The research discusses orchestration patterns, state passing, and circuit breake
 class DomainError(Exception):
     """Base class for all domain errors."""
 
+
 class InvalidStateError(DomainError):
     """Operation invalid for current entity state."""
 ```

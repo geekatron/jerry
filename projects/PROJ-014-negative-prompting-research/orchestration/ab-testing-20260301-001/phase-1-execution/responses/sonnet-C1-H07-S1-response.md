@@ -42,7 +42,7 @@ class AuditLog(ABC):
 **File: `src/domain/services/InventoryDomainService.py`** (relevant excerpt — add the constructor parameter and call site)
 
 ```python
-from domain.ports.audit_log import AuditLog   # same layer: domain -> domain port
+from domain.ports.audit_log import AuditLog  # same layer: domain -> domain port
 
 
 class InventoryDomainService:
@@ -98,10 +98,10 @@ def build_inventory_domain_service() -> InventoryDomainService:
 **File: `src/infrastructure/adapters/SqliteAuditLogAdapter.py`** (add the ABC inheritance)
 
 ```python
-from domain.ports.audit_log import AuditLog   # infrastructure CAN import domain ports
+from domain.ports.audit_log import AuditLog  # infrastructure CAN import domain ports
 
 
-class SqliteAuditLogAdapter(AuditLog):         # declare implementation of the port
+class SqliteAuditLogAdapter(AuditLog):  # declare implementation of the port
     def log_domain_event(self, event_name: str, payload: dict) -> None:
         # existing implementation unchanged
         ...
