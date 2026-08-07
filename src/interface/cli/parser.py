@@ -566,6 +566,33 @@ def _add_transcript_namespace(
     )
 
 
+def _add_root_argument(parser: argparse.ArgumentParser) -> None:
+    """Add the shared ``--root`` containment-override flag to an ast subparser.
+
+    When supplied, path containment for this invocation is restricted to
+    exactly the resolved ``--root`` directory (BUG-010 scope widening, PR
+    #341 owner review) -- an explicit, user-discretion escape hatch so
+    ``jerry ast`` can be pointed anywhere. Jerry's containment check is
+    best-effort defense against accidental traversal, not a security
+    boundary against a user who has already chosen to grant the tool
+    broad access via ``--root``. Without this flag, the default allowed
+    roots are the user's project root plus OS temp/scratchpad directories
+    (see ``project_root.get_containment_roots``).
+
+    Args:
+        parser: The ast subcommand parser to add the flag to.
+    """
+    parser.add_argument(
+        "--root",
+        default=None,
+        help=(
+            "Restrict path containment to exactly this directory "
+            "(overrides the default project-root + temp-dir allowed set). "
+            "User discretion: use to run 'jerry ast' against any location."
+        ),
+    )
+
+
 def _add_ast_namespace(
     subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
 ) -> None:
@@ -576,6 +603,10 @@ def _add_ast_namespace(
         - render: Roundtrip parse-render a markdown file through mdformat.
         - validate: Validate a markdown file against a schema.
         - query: Query AST nodes by type and output structured JSON.
+
+    Every subcommand also accepts a shared ``--root`` flag (BUG-010 scope
+    widening, PR #341 owner review) that restricts path containment to
+    exactly the given directory for that invocation.
 
     References:
         - ST-004: Add jerry ast CLI Commands
@@ -603,6 +634,7 @@ def _add_ast_namespace(
         "file",
         help="Path to markdown file",
     )
+    _add_root_argument(parse_parser)
 
     # ast render
     render_parser = ast_subparsers.add_parser(
@@ -614,6 +646,7 @@ def _add_ast_namespace(
         "file",
         help="Path to markdown file",
     )
+    _add_root_argument(render_parser)
 
     # ast validate
     validate_parser = ast_subparsers.add_parser(
@@ -636,6 +669,7 @@ def _add_ast_namespace(
         default=False,
         help="Include detailed nav table entries in output.",
     )
+    _add_root_argument(validate_parser)
 
     # ast query
     query_parser = ast_subparsers.add_parser(
@@ -651,6 +685,7 @@ def _add_ast_namespace(
         "selector",
         help="Node type to query (e.g., heading, blockquote, paragraph)",
     )
+    _add_root_argument(query_parser)
 
     # ast frontmatter
     frontmatter_parser = ast_subparsers.add_parser(
@@ -662,6 +697,7 @@ def _add_ast_namespace(
         "file",
         help="Path to markdown file",
     )
+    _add_root_argument(frontmatter_parser)
 
     # ast modify
     modify_parser = ast_subparsers.add_parser(
@@ -683,6 +719,7 @@ def _add_ast_namespace(
         required=True,
         help="New value for the field.",
     )
+    _add_root_argument(modify_parser)
 
     # ast reinject
     reinject_parser = ast_subparsers.add_parser(
@@ -694,6 +731,7 @@ def _add_ast_namespace(
         "file",
         help="Path to markdown file",
     )
+    _add_root_argument(reinject_parser)
 
     # ast detect (RE-006: WI-017)
     detect_parser = ast_subparsers.add_parser(
@@ -705,6 +743,7 @@ def _add_ast_namespace(
         "file",
         help="Path to markdown file",
     )
+    _add_root_argument(detect_parser)
 
     # ast sections (RE-006: WI-017)
     sections_parser = ast_subparsers.add_parser(
@@ -716,6 +755,7 @@ def _add_ast_namespace(
         "file",
         help="Path to markdown file",
     )
+    _add_root_argument(sections_parser)
 
     # ast metadata (RE-006: WI-017)
     metadata_parser = ast_subparsers.add_parser(
@@ -727,6 +767,7 @@ def _add_ast_namespace(
         "file",
         help="Path to markdown file",
     )
+    _add_root_argument(metadata_parser)
 
 
 def _add_agents_namespace(
