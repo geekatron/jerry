@@ -172,23 +172,11 @@ If the owner merged at `c07033ce` despite this recommendation, they would accept
 
 ---
 
-## PR Comment Draft
+## PR Comment (as posted)
 
-> To be posted on PR #269 by the orchestrator. (~250 words)
+> Posted on PR #269 as [comment 5216673422](https://github.com/geekatron/jerry/pull/269#issuecomment-5216673422). Revised 2026-08-07 into self-contained plain language after owner feedback — internal codenames (strategy IDs, principle IDs, hold-point names) are spelled out or dropped, because the PR audience has no Jerry-governance context. Issues #350–#356 were likewise rewritten and retitled to be self-contained, each carrying its full design question inline.
 
----
-
-@contributor, @owner — the PROJ-032 independent review of PR #269 is complete. Recommendation: **REWORK** — keep the PR open; do not merge at the current head.
-
-First, the strengths, which are real: the pre-job/post-job discipline, the hold-point taxonomy, the behavioral baselines, and the candor of the P-022 disclosures were praised across all three review phases. The nuclear metaphor is sound and worth keeping.
-
-What the review found: three independent phases (standards audit, engineering review, C4 tournament with 9 adversarial strategies) converged on the same core defects. Independent S-014 scoring: **0.52** against the 0.92 gate. The 0.943 figure in the PR is not traceable to any artifact on the branch — if it was scored against a pre-registration snapshot, please attach that report; we have deliberately not treated the gap as bad faith.
-
-What we already fixed on your branch (commit `c07033ce`, CI 15/15 green): all mechanical defects — schema failures, registration/status contradictions, OE extension mismatch, state-machine contract, composition drift, navigation tables — and we conservatively withdrew C3+ approval to C1–C2 pending re-validation.
-
-What we could not fix for you — seven design decisions only you can make, in issues **#350–#356**: the QG-HOLD delegation topology under P-003, the USER-HOLD runtime model, the verifier/criticality trust anchor, blind QG-E4 re-validation, the H-36 ruling (owner input needed on this one), the OE lifecycle, and the command-gating model. Each issue states the exact question to answer.
-
-Merge path: resolve (or explicitly descope) all seven, then an independent fresh-context re-review at ≥ 0.92 with zero open Criticals, persisted in-PR. We would genuinely like to land this — it is one focused redesign cycle away.
+Content summary of the posted comment: what the skill is in plain words; recommendation (rework, not merge, not close) with the runtime-safety rationale; a Mermaid diagram of the merge path (fix-state → 7 design decisions → independent re-review ≥ 0.92 → merge); the three-pass review method and the 0.52-vs-0.943 score gap stated without jargon and without alleging bad faith; the maintainer fixes at `c07033ce` including the low-risk-only restriction; the seven design decisions with one-line plain descriptions each; and the merge conditions. Full text: the posted comment itself (single source of truth).
 
 ---
 
