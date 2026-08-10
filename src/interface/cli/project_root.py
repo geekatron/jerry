@@ -87,7 +87,22 @@ def build_layered_config_adapter(defaults: dict[str, Any]) -> Any:
 
     project_config_path = None
     if jerry_project:
-        project_config_path = root / "projects" / jerry_project / ".jerry" / "config.toml"
+        candidate = root / "projects" / jerry_project / ".jerry" / "config.toml"
+        projects_root = (root / "projects").resolve()
+        if candidate.resolve().is_relative_to(projects_root):
+            project_config_path = candidate
+        else:
+            # RED-BUG010 AC-18: a JERRY_PROJECT value containing '..' (or
+            # otherwise escaping the projects/ tree) must never steer the
+            # project-config read to a file outside the user's project
+            # tree. Fail CLOSED: drop the project-config layer entirely
+            # rather than trusting the traversed-to file.
+            print(
+                f"Warning: JERRY_PROJECT '{jerry_project}' resolves outside the "
+                "projects/ directory; ignoring the project-level config.toml "
+                "for this invocation.",
+                file=sys.stderr,
+            )
 
     return LayeredConfigAdapter(
         env_prefix="JERRY_",
@@ -108,14 +123,25 @@ def _load_trusted_roots() -> list[str]:
 
     Relative entries resolve against the current working directory when
     later converted to absolute paths by the caller -- a foot-gun for a
-    security-relevant config key; use absolute paths.
+    security-relevant config key; use absolute paths. Prefer the TOML
+    array form (``trusted_roots = ["/a", "/b"]``) over a comma-separated
+    string; a literal comma inside a string-form entry (e.g. ``"/a,b/x"``)
+    is split into two separate entries by the env/CSV parser.
+
+    Empty and whitespace-only entries -- however they arise (an unset
+    env var interpolated into ``JERRY_AST__TRUSTED_ROOTS``, a CSV
+    trailing comma, or a stray ``""`` in a TOML array) -- are dropped
+    here before they can reach path resolution. An unfiltered empty
+    entry would resolve to the current working directory
+    (``Path("").resolve() == Path.cwd()``), silently trusting cwd
+    (RED-BUG010 AC-11).
 
     Returns:
-        The raw, unresolved list of trusted-root path strings (possibly
-        empty).
+        The raw, unresolved list of non-blank trusted-root path strings
+        (possibly empty).
     """
     config = build_layered_config_adapter({"ast.trusted_roots": []})
-    return [str(entry) for entry in config.get_list("ast.trusted_roots", [])]
+    return [str(entry) for entry in config.get_list("ast.trusted_roots", []) if str(entry).strip()]
 
 
 def get_containment_roots(
@@ -150,12 +176,17 @@ def get_containment_roots(
     the JSON/render payload -- for ``explicit`` (R-3) and ``configured``
     (DD-1 symmetry extension) classifications; the invocation still
     proceeds (user discretion). The project root's own broadness is never
-    warned about (unchanged from prior behavior). Pass ``quiet=True`` to
-    suppress this warning entirely (C6).
+    warned about (unchanged from prior behavior). A relative
+    ``ast.trusted_roots`` entry is likewise honored, not rejected (owner
+    decision, RED-BUG010 AC-10), but emits its own one-line stderr
+    warning naming the resolved cwd-relative path so the effective trust
+    grant is never silent. Pass ``quiet=True`` to suppress all of these
+    warnings entirely (C6).
 
     Args:
         explicit_root: The user-supplied ``--root`` CLI value, or None.
-        quiet: When True, suppresses the broad-root stderr warning.
+        quiet: When True, suppresses the broad-root and relative-trusted-
+            root stderr warnings.
 
     Returns:
         An ordered list of ``ContainmentRoot`` entries. Exactly one entry
@@ -166,15 +197,29 @@ def get_containment_roots(
     """
     project_root = get_project_root().resolve()
 
+    relative_trusted: list[tuple[str, Path]] = []
     if explicit_root is not None:
         resolved_root = Path(explicit_root).resolve()
         roots = resolve_allowed_roots(project_root, [], resolved_root)
     else:
         trusted_raw = _load_trusted_roots()
-        trusted_resolved = [Path(entry).resolve() for entry in trusted_raw]
+        trusted_resolved = []
+        for entry in trusted_raw:
+            resolved_entry = Path(entry).resolve()
+            trusted_resolved.append(resolved_entry)
+            if not Path(entry).is_absolute():
+                relative_trusted.append((entry, resolved_entry))
         roots = resolve_allowed_roots(project_root, trusted_resolved, None)
 
     if not quiet:
+        for entry, resolved_entry in relative_trusted:
+            print(
+                f"Warning: configured trusted root '{entry}' (ast.trusted_roots) "
+                "is a relative path; resolved against the current working "
+                f"directory to '{resolved_entry}'. Use an absolute path to avoid "
+                "invocation-directory-dependent trust.",
+                file=sys.stderr,
+            )
         for root in roots:
             if not root.is_broad:
                 continue

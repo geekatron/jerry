@@ -369,6 +369,109 @@ class TestGetContainmentRoots:
         # Assert
         assert [r.path for r in roots] == [Path("relative/dir").resolve()]
 
+    # -------------------------------------------------------------------
+    # RED-BUG010 AC-11 (MEDIUM): a blank/whitespace ast.trusted_roots
+    # entry must never silently widen the allowed set to cwd.
+    # -------------------------------------------------------------------
+
+    def test_get_containment_roots_when_trusted_roots_env_blank_and_cwd_outside_project_then_cwd_not_trusted(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """Regression for AC-11 (end-to-end style, mirrors the report's CLI
+        PoC): a blank JERRY_AST__TRUSTED_ROOTS combined with a cwd that
+        differs from the project root must never cause cwd to enter the
+        allowed containment set."""
+        # Arrange
+        project_dir = tmp_path / "user-project"
+        project_dir.mkdir()
+        outside_dir = tmp_path / "cwd-outside-project"
+        outside_dir.mkdir()
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(project_dir))
+        monkeypatch.setenv("JERRY_AST__TRUSTED_ROOTS", "")
+        monkeypatch.chdir(outside_dir)
+
+        # Act
+        roots = get_containment_roots()
+
+        # Assert
+        assert len(roots) == 1
+        assert roots[0].path == project_dir.resolve()
+        assert outside_dir.resolve() not in [r.path for r in roots]
+
+    # -------------------------------------------------------------------
+    # RED-BUG010 AC-10 (LOW): relative ast.trusted_roots entries are
+    # honored (owner decision: warn-and-honor) but must emit a one-line
+    # stderr warning naming the resolved cwd-relative path.
+    # -------------------------------------------------------------------
+
+    def test_get_containment_roots_when_trusted_root_relative_then_still_trusted_and_warns(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        """A relative entry is still honored, but a stderr warning naming
+        the resolved cwd-relative path must fire; stdout stays untouched."""
+        # Arrange
+        project_dir = tmp_path / "user-project"
+        project_dir.mkdir()
+        cwd_dir = tmp_path / "invocation-cwd"
+        scratch_dir = cwd_dir / "scratch"
+        scratch_dir.mkdir(parents=True)
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(project_dir))
+        monkeypatch.chdir(cwd_dir)
+        monkeypatch.setattr(project_root_module, "_load_trusted_roots", lambda: ["scratch"])
+
+        # Act
+        roots = get_containment_roots()
+
+        # Assert
+        assert scratch_dir.resolve() in [r.path for r in roots]
+        captured = capsys.readouterr()
+        assert captured.out == ""
+        assert "Warning" in captured.err
+        assert str(scratch_dir.resolve()) in captured.err
+
+    def test_get_containment_roots_when_trusted_root_relative_and_quiet_then_warning_suppressed(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        """C6 symmetry: quiet=True suppresses the relative-trusted-root
+        warning too, while the trust decision itself is unaffected."""
+        # Arrange
+        project_dir = tmp_path / "user-project"
+        project_dir.mkdir()
+        cwd_dir = tmp_path / "invocation-cwd"
+        scratch_dir = cwd_dir / "scratch"
+        scratch_dir.mkdir(parents=True)
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(project_dir))
+        monkeypatch.chdir(cwd_dir)
+        monkeypatch.setattr(project_root_module, "_load_trusted_roots", lambda: ["scratch"])
+
+        # Act
+        roots = get_containment_roots(quiet=True)
+
+        # Assert
+        assert scratch_dir.resolve() in [r.path for r in roots]
+        captured = capsys.readouterr()
+        assert captured.out == ""
+        assert captured.err == ""
+
+    def test_get_containment_roots_when_trusted_root_absolute_then_no_relative_warning(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        """An absolute trusted root never triggers the relative-path warning."""
+        # Arrange
+        project_dir = tmp_path / "user-project"
+        project_dir.mkdir()
+        trusted_dir = tmp_path / "scratchpad"
+        trusted_dir.mkdir()
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(project_dir))
+        monkeypatch.setattr(project_root_module, "_load_trusted_roots", lambda: [str(trusted_dir)])
+
+        # Act
+        get_containment_roots()
+
+        # Assert
+        captured = capsys.readouterr()
+        assert captured.err == ""
+
 
 # =============================================================================
 # _load_trusted_roots -- I/O adapter reading ast.trusted_roots via the
@@ -465,6 +568,65 @@ class TestLoadTrustedRootsConfig:
         # Assert
         assert result == ["/env/level/dir"]
 
+    # -------------------------------------------------------------------
+    # RED-BUG010 AC-11 (MEDIUM): empty/whitespace/CSV-trailing-comma
+    # entries must be dropped before they can resolve to cwd.
+    # -------------------------------------------------------------------
+
+    def test_load_trusted_roots_when_env_var_is_empty_string_then_returns_empty_list(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """An empty JERRY_AST__TRUSTED_ROOTS must never surface as a
+        degenerate entry that later resolves to cwd."""
+        # Arrange
+        project_dir = tmp_path / "user-project"
+        project_dir.mkdir()
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(project_dir))
+        monkeypatch.setenv("JERRY_AST__TRUSTED_ROOTS", "")
+        monkeypatch.delenv("JERRY_PROJECT", raising=False)
+
+        # Act
+        result = _load_trusted_roots()
+
+        # Assert
+        assert result == []
+
+    def test_load_trusted_roots_when_env_var_is_whitespace_only_then_returns_empty_list(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """A whitespace-only entry is dropped, not treated as a declared root."""
+        # Arrange
+        project_dir = tmp_path / "user-project"
+        project_dir.mkdir()
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(project_dir))
+        monkeypatch.setenv("JERRY_AST__TRUSTED_ROOTS", "   ")
+        monkeypatch.delenv("JERRY_PROJECT", raising=False)
+
+        # Act
+        result = _load_trusted_roots()
+
+        # Assert
+        assert result == []
+
+    def test_load_trusted_roots_when_csv_trailing_comma_then_only_nonempty_entries_returned(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """A CSV trailing comma ("/a,") is parsed upstream to ["/a", ""];
+        the stray empty element must be filtered before it can resolve
+        to cwd."""
+        # Arrange
+        project_dir = tmp_path / "user-project"
+        project_dir.mkdir()
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(project_dir))
+        monkeypatch.setenv("JERRY_AST__TRUSTED_ROOTS", "/a,")
+        monkeypatch.delenv("JERRY_PROJECT", raising=False)
+
+        # Act
+        result = _load_trusted_roots()
+
+        # Assert
+        assert result == ["/a"]
+
 
 # =============================================================================
 # build_layered_config_adapter -- shared factory (DD-4)
@@ -490,3 +652,59 @@ class TestBuildLayeredConfigAdapter:
 
         # Assert
         assert adapter.get("ast.trusted_roots") == []
+
+
+# =============================================================================
+# RED-BUG010 AC-18 (MEDIUM): a '..'-laden JERRY_PROJECT value must not
+# steer the project-config file read outside the projects/ tree.
+# =============================================================================
+
+
+class TestBuildLayeredConfigAdapterProjectTraversal:
+    """JERRY_PROJECT traversal must not widen which config.toml is read."""
+
+    def test_load_trusted_roots_when_jerry_project_traverses_outside_projects_tree_then_project_layer_ignored(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """A '..'-laden JERRY_PROJECT value must not cause an outside
+        config.toml to be read as the project-config layer, even when a
+        real projects/ directory is present (the realistic case)."""
+        # Arrange
+        project_dir = tmp_path / "user-project"
+        (project_dir / "projects").mkdir(parents=True)
+        outside_jerry_dir = tmp_path / "elsewhere" / ".jerry"
+        outside_jerry_dir.mkdir(parents=True)
+        (outside_jerry_dir / "config.toml").write_text(
+            '[ast]\ntrusted_roots = ["/tmp/attacker-planted"]\n', encoding="utf-8"
+        )
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(project_dir))
+        monkeypatch.setenv("JERRY_PROJECT", "../../elsewhere")
+        monkeypatch.delenv("JERRY_AST__TRUSTED_ROOTS", raising=False)
+
+        # Act
+        result = _load_trusted_roots()
+
+        # Assert
+        assert result == []
+
+    def test_load_trusted_roots_when_jerry_project_is_normal_value_then_project_config_still_loads(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """No regression: a well-formed JERRY_PROJECT value still resolves
+        its project-level config.toml correctly."""
+        # Arrange
+        project_dir = tmp_path / "user-project"
+        proj_jerry_dir = project_dir / "projects" / "PROJ-024-tactical-work" / ".jerry"
+        proj_jerry_dir.mkdir(parents=True)
+        (proj_jerry_dir / "config.toml").write_text(
+            '[ast]\ntrusted_roots = ["/project/level/dir"]\n', encoding="utf-8"
+        )
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(project_dir))
+        monkeypatch.setenv("JERRY_PROJECT", "PROJ-024-tactical-work")
+        monkeypatch.delenv("JERRY_AST__TRUSTED_ROOTS", raising=False)
+
+        # Act
+        result = _load_trusted_roots()
+
+        # Assert
+        assert result == ["/project/level/dir"]
