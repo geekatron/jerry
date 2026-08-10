@@ -1,10 +1,11 @@
 # STORY-006: Issue-Quality Hardening for the PR #269 Author Handoff
 
 > **Type:** story
-> **Status:** in_progress
+> **Status:** completed
 > **Priority:** high
 > **Impact:** high
 > **Created:** 2026-08-07T19:00:00Z
+> **Completed:** 2026-08-10T00:00:00Z
 > **Parent:** FEAT-002
 > **Owner:** geekatron
 > **GitHub Issue:** [#366](https://github.com/geekatron/jerry/issues/366)
@@ -39,7 +40,7 @@ Owner-requested follow-up (2026-08-07): (a) assign author + agent to the seven r
 
 - [x] victorlau1 and malcolm-x-evo are assignees on #350–#356 (geekatron additionally on #354) — applied and verified via API 2026-08-07
 - [x] All 19 PROJ-032 issues have self-contained plain-language bodies with design question or fix description inline — 7 rewritten earlier, 12 rewritten this story, all 14 finding issues further revised through tournament rounds
-- [x] Each of the 14 finding issues has a persisted 10-strategy C4 tournament review — **11/14 at PASS >= 0.92; #354/#361/#363 plateaued at 0.90–0.91 with zero Critical findings** and were escalated to the owner per the plateau rule (RT-M-010) instead of iterating further; all Critical findings from all rounds resolved
+- [x] Each of the 14 finding issues has a persisted 10-strategy C4 tournament review with S-014 >= 0.92 and zero unresolved Critical findings — **14/14 PASS** (final three via owner-requested rounds 5-6: gap reconciliation + 3-judge median panel; #354 0.92, #361 0.93, #363 0.92)
 - [x] Issue texts revised on GitHub with before/after snapshots persisted — `snapshots/{issue-N, final/, published/}`, published 2026-08-07
 
 ---
@@ -60,3 +61,4 @@ Owner-requested follow-up (2026-08-07): (a) assign author + agent to the seven r
 |------|--------|--------|-------|
 | 2026-08-07T19:00:00Z | geekatron | in_progress | Story created on owner request; GH parity #366. Assignments to #350-#356 done and verified. |
 | 2026-08-07T21:30:00Z | geekatron | in_progress | Tournaments done: 218 agents, 0 errors; 11/14 issues PASS; 3 plateaued 0.90-0.91 (zero Critical) — published best texts, escalated to owner for accept-or-iterate decision. Story stays open pending that decision. |
+| 2026-08-10T00:00:00Z | geekatron | completed | Owner requested further rounds. Rounds 5-6 (gap reconciliation + 3-judge median panels, 20 agents, 0 errors): #354 0.92, #361 0.93, #363 0.92 — 14/14 PASS. Final texts published to GitHub; all ACs verified. |

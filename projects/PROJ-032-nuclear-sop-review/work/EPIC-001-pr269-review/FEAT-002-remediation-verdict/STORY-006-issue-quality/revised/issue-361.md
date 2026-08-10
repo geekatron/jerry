@@ -1,10 +1,12 @@
 TITLE: nuclear-sop: state machine specified three different ways; completion handoff type-broken (fixed on your branch) [PROJ-032/BUG-012]
 
+**Severity:** Critical (register section REM-12) | **Status:** applied on your branch, pending PR #269 disposition.
+
 **What this is:** one of seven mechanical fixes the maintainer applied directly to your PR #269 branch (`proj-0039-nuclear-engineer`) in commit `c07033ce`. Nothing for you to do unless you disagree; if so, comment on this issue before PR #269's disposition is decided.
 
 **What was wrong:** three contract breaks in the skill's execution-state tracking.
 
-1. The state machine differed across the rules file, the state-file template, and a behavioral baseline: divergent transitions after verifier rejection, and a "WAIVED" outcome the baseline requires but the template's allowed values omit.
+1. The state machine differed across the rules file, the state-file template, and a behavioral baseline: divergent transitions after verifier rejection, a "WAIVED" outcome the baseline requires but the template's allowed values omit, and a resume transition the template allowed from any state versus the rules' enumerated predecessors.
 2. The completion handoff was self-contradictory and type-broken. The executor agent set status COMPLETED before the capture agent ran, a transition the skill's own rules forbid. It also recorded `execution_log_final` as a file path, while the capture agent's first step halts unless it is the literal boolean `true`, halting the mandatory capture phase of every run.
 3. The verifier's hold-point check read the state file only "if accessible," silently skipping when missing: the fail-open gap the PR's own QG-E6 quality-gate report had flagged OPEN, RPN-144, REMEDIATION REQUIRED (tracked internally as finding SEC-008), shipped unfixed.
 

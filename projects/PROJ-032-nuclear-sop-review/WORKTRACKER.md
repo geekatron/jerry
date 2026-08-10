@@ -6,7 +6,6 @@
 
 | ID | Type | Title | Status | Parent | GitHub |
 |----|------|-------|--------|--------|--------|
-| [STORY-006](./work/EPIC-001-pr269-review/FEAT-002-remediation-verdict/STORY-006-issue-quality/STORY-006-issue-quality.md) | story | Issue-quality hardening for PR #269 author handoff | in_progress | FEAT-002 | [#366](https://github.com/geekatron/jerry/issues/366) |
 | [BUG-001](./work/BUG-001-qg-hold-delegation-topology/BUG-001-qg-hold-delegation-topology.md) | bug | [REM-01] QG-HOLD and mid-procedure delegation topology (critical, DEFER-REWORK) | pending | STORY-004 | [#350](https://github.com/geekatron/jerry/issues/350) |
 | [BUG-002](./work/BUG-002-user-hold-runtime-model/BUG-002-user-hold-runtime-model.md) | bug | [REM-02] USER-HOLD mechanism and runtime execution model (critical, DEFER-REWORK) | pending | STORY-004 | [#351](https://github.com/geekatron/jerry/issues/351) |
 | [BUG-003](./work/BUG-003-trust-boundary-state-tamper/BUG-003-trust-boundary-state-tamper.md) | bug | [REM-03] Trust-boundary integrity and state tamper protection (critical, DEFER-REWORK) | pending | STORY-004 | [#352](https://github.com/geekatron/jerry/issues/352) |
@@ -25,6 +24,7 @@
 | [FEAT-001](./work/EPIC-001-pr269-review/FEAT-001-independent-review/FEAT-001-independent-review.md) | feature | Independent review (Phases 1-3) | EPIC-001 | 2026-08-07 |
 | [STORY-004](./work/EPIC-001-pr269-review/FEAT-002-remediation-verdict/STORY-004-remediation/STORY-004-remediation.md) | story | Phase 4 — Remediation (7 FIX-NOW fixed c07033ce CI 15/15; 7 DEFER-REWORK open) | FEAT-002 | 2026-08-07 |
 | [STORY-005](./work/EPIC-001-pr269-review/FEAT-002-remediation-verdict/STORY-005-verdict/STORY-005-verdict.md) | story | Phase 5 — Verdict: REWORK (posted to PR #269) | FEAT-002 | 2026-08-07 |
+| [STORY-006](./work/EPIC-001-pr269-review/FEAT-002-remediation-verdict/STORY-006-issue-quality/STORY-006-issue-quality.md) | story | Issue-quality hardening — 14/14 issues PASS >= 0.92, assignees set | FEAT-002 | 2026-08-10 |
 | [FEAT-002](./work/EPIC-001-pr269-review/FEAT-002-remediation-verdict/FEAT-002-remediation-verdict.md) | feature | Remediation & verdict (Phases 4-5) | EPIC-001 | 2026-08-07 |
 | [EPIC-001](./work/EPIC-001-pr269-review/EPIC-001-pr269-review.md) | epic | PR #269 /nuclear-sop review & remediation — verdict REWORK | — | 2026-08-07 |
 | [BUG-008](./work/BUG-008-registration-status-truth/BUG-008-registration-status-truth.md) | bug | [REM-08] Registration and status truth reconciliation (critical, FIX-NOW; c07033ce, CI 15/15) | STORY-004 | 2026-08-07 |
