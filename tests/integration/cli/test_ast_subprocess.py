@@ -66,6 +66,26 @@ def env_with_pythonpath(project_root: Path) -> dict[str, str]:
 
 
 @pytest.fixture
+def env_with_containment_enabled(project_root: Path) -> dict[str, str]:
+    """Like env_with_pythonpath but leaves path containment ENABLED
+    (BUG-010 Option C, Section 4.E).
+
+    Unlike ``env_with_pythonpath``, this fixture does NOT set
+    ``JERRY_DISABLE_PATH_CONTAINMENT`` -- and explicitly pops it (and any
+    ``JERRY_AST__TRUSTED_ROOTS``/``JERRY_PROJECT`` residue) from the
+    inherited environment, so containment enforcement and config
+    precedence are deterministic for these black-box subprocess tests.
+    """
+    env = os.environ.copy()
+    existing = env.get("PYTHONPATH", "")
+    env["PYTHONPATH"] = f"{project_root}:{existing}" if existing else str(project_root)
+    env.pop("JERRY_DISABLE_PATH_CONTAINMENT", None)
+    env.pop("JERRY_AST__TRUSTED_ROOTS", None)
+    env.pop("JERRY_PROJECT", None)
+    return env
+
+
+@pytest.fixture
 def story_file(project_root: Path) -> Path:
     """Path to a real story entity file in the repo."""
     return (
@@ -482,3 +502,163 @@ class TestJerryAstValidateEnhanced:
         entry = data["nav_entries"][0]
         assert "section_name" in entry
         assert "anchor" in entry
+
+
+# =============================================================================
+# BUG-010 Option C: black-box containment regression via real subprocess
+# invocation with path containment ENABLED (not the module-wide
+# env_with_pythonpath fixture, which disables containment).
+# =============================================================================
+
+
+class TestOptionCContainmentSubprocess:
+    """End-to-end containment behavior via ``uv run jerry ast`` subprocess."""
+
+    def test_ast_parse_subprocess_when_file_in_tempdir_and_no_trusted_roots_then_rejected(
+        self,
+        project_root: Path,
+        env_with_containment_enabled: dict[str, str],
+        tmp_path: Path,
+    ) -> None:
+        """Black-box negative regression: a file outside the project root,
+        with no configured ast.trusted_roots, is rejected (exit code 2)."""
+        target = tmp_path / "outside.md"
+        target.write_text("# Outside\n", encoding="utf-8")
+
+        result = run_jerry_ast(["parse", str(target)], project_root, env_with_containment_enabled)
+
+        assert result.returncode == 2
+
+    def test_ast_parse_subprocess_when_file_in_configured_trusted_root_via_env_then_allowed(
+        self,
+        project_root: Path,
+        env_with_containment_enabled: dict[str, str],
+        tmp_path: Path,
+    ) -> None:
+        """A file inside a JERRY_AST__TRUSTED_ROOTS-declared directory is
+        allowed, even though it is outside the project root."""
+        trusted_dir = tmp_path / "trusted"
+        trusted_dir.mkdir()
+        target = trusted_dir / "scratchpad.md"
+        target.write_text("# Scratch\n", encoding="utf-8")
+
+        env = dict(env_with_containment_enabled)
+        env["JERRY_AST__TRUSTED_ROOTS"] = json.dumps([str(trusted_dir)])
+
+        result = run_jerry_ast(["parse", str(target)], project_root, env)
+
+        assert result.returncode == 0, f"stderr: {result.stderr}"
+        data = json.loads(result.stdout)
+        assert data["file"] == str(target)
+
+    def test_ast_parse_subprocess_when_quiet_flag_given_then_stderr_empty_despite_configured_root_match(
+        self,
+        project_root: Path,
+        env_with_containment_enabled: dict[str, str],
+        tmp_path: Path,
+    ) -> None:
+        """--quiet suppresses the R-4 configured-root transparency note."""
+        trusted_dir = tmp_path / "trusted"
+        trusted_dir.mkdir()
+        target = trusted_dir / "scratchpad.md"
+        target.write_text("# Scratch\n", encoding="utf-8")
+
+        env = dict(env_with_containment_enabled)
+        env["JERRY_AST__TRUSTED_ROOTS"] = json.dumps([str(trusted_dir)])
+
+        result = run_jerry_ast(["parse", str(target), "--quiet"], project_root, env)
+
+        assert result.returncode == 0, f"stderr: {result.stderr}"
+        assert result.stderr == ""
+
+    def test_ast_parse_subprocess_when_no_quiet_and_configured_root_match_then_stderr_has_note(
+        self,
+        project_root: Path,
+        env_with_containment_enabled: dict[str, str],
+        tmp_path: Path,
+    ) -> None:
+        """Without --quiet, a configured-root match prints the R-4
+        transparency note on stderr."""
+        trusted_dir = tmp_path / "trusted"
+        trusted_dir.mkdir()
+        target = trusted_dir / "scratchpad.md"
+        target.write_text("# Scratch\n", encoding="utf-8")
+
+        env = dict(env_with_containment_enabled)
+        env["JERRY_AST__TRUSTED_ROOTS"] = json.dumps([str(trusted_dir)])
+
+        result = run_jerry_ast(["parse", str(target)], project_root, env)
+
+        assert result.returncode == 0, f"stderr: {result.stderr}"
+        assert "configured trusted root" in result.stderr.lower()
+
+    def test_ast_modify_subprocess_when_symlink_swapped_before_write_then_rejected_and_file_unchanged(
+        self,
+        project_root: Path,
+        env_with_containment_enabled: dict[str, str],
+        tmp_path: Path,
+    ) -> None:
+        """End-to-end C2 regression: a symlink that initially resolves
+        inside a configured trusted root (so an earlier ``ast parse``
+        succeeds) is then repointed outside all allowed roots. A
+        subsequent ``ast modify`` on the same symlink is rejected -- the
+        write-time recheck uses the identical containment function as the
+        read-time check, re-resolving the symlink fresh, so it cannot
+        disagree with (or lag behind) the live filesystem state."""
+        trusted_dir = tmp_path / "trusted"
+        trusted_dir.mkdir()
+        inside_target = trusted_dir / "inside.md"
+        inside_target.write_text(
+            "# Entity\n\n> **Status:** pending\n\n## Details\n", encoding="utf-8"
+        )
+        outside_dir = tmp_path / "outside"
+        outside_dir.mkdir()
+        outside_target = outside_dir / "outside.md"
+        outside_target.write_text(
+            "# Entity\n\n> **Status:** pending\n\n## Details\n", encoding="utf-8"
+        )
+
+        link = trusted_dir / "entity.md"
+        link.symlink_to(inside_target)
+
+        env = dict(env_with_containment_enabled)
+        env["JERRY_AST__TRUSTED_ROOTS"] = json.dumps([str(trusted_dir)])
+
+        # Baseline: the symlink currently resolves inside the trusted
+        # root, so a read-only command succeeds.
+        baseline = run_jerry_ast(["parse", str(link)], project_root, env)
+        assert baseline.returncode == 0, f"stderr: {baseline.stderr}"
+
+        # Swap the symlink to point outside all allowed roots.
+        link.unlink()
+        link.symlink_to(outside_target)
+
+        # Act: ast modify on the now-escaping symlink must be rejected.
+        result = run_jerry_ast(
+            ["modify", str(link), "--key", "Status", "--value", "done"], project_root, env
+        )
+
+        # Assert
+        assert result.returncode == 2
+        assert outside_target.read_text(encoding="utf-8") == (
+            "# Entity\n\n> **Status:** pending\n\n## Details\n"
+        )
+
+    def test_ast_parse_subprocess_when_root_flag_and_broad_root_then_warns_on_stderr_and_succeeds(
+        self,
+        project_root: Path,
+        env_with_containment_enabled: dict[str, str],
+        tmp_path: Path,
+    ) -> None:
+        """--root '/' triggers the R-3 broad-root stderr warning but the
+        invocation still succeeds (user discretion), propagated end-to-end
+        through a real subprocess invocation."""
+        target = tmp_path / "file.md"
+        target.write_text("# File\n", encoding="utf-8")
+
+        result = run_jerry_ast(
+            ["parse", str(target), "--root", "/"], project_root, env_with_containment_enabled
+        )
+
+        assert result.returncode == 0, f"stderr: {result.stderr}"
+        assert "Warning" in result.stderr

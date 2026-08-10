@@ -26,7 +26,6 @@ Test Categories:
 from __future__ import annotations
 
 import json
-import os
 import sys
 import tempfile
 import uuid
@@ -968,6 +967,47 @@ class TestParserAstNamespace:
         args = parser.parse_args(["ast", command, *extra_args, "--root", "/x"])
         assert args.root == "/x"
 
+    # -------------------------------------------------------------------
+    # BUG-010 Option C, C6: --quiet flag on every ast subcommand.
+    # -------------------------------------------------------------------
+
+    def test_ast_quiet_flag_defaults_to_false(self) -> None:
+        """--quiet flag defaults to False when omitted."""
+        parser = create_parser()
+        args = parser.parse_args(["ast", "parse", "file.md"])
+        assert args.quiet is False
+
+    def test_ast_quiet_flag_parses_correctly(self) -> None:
+        """--quiet flag sets args.quiet to True when supplied."""
+        parser = create_parser()
+        args = parser.parse_args(["ast", "parse", "file.md", "--quiet"])
+        assert args.quiet is True
+
+    @pytest.mark.parametrize(
+        ("command", "extra_args"),
+        [
+            ("parse", ["file.md"]),
+            ("render", ["file.md"]),
+            ("validate", ["file.md"]),
+            ("query", ["file.md", "heading"]),
+            ("frontmatter", ["file.md"]),
+            ("modify", ["file.md", "--key", "Status", "--value", "done"]),
+            ("reinject", ["file.md"]),
+            ("detect", ["file.md"]),
+            ("sections", ["file.md"]),
+            ("metadata", ["file.md"]),
+        ],
+    )
+    def test_ast_quiet_flag_available_on_every_subcommand(
+        self, command: str, extra_args: list[str]
+    ) -> None:
+        """--quiet is available and parses identically on all 10 ast
+        subcommands. Prevents silent drift if a future subcommand is added
+        without the flag."""
+        parser = create_parser()
+        args = parser.parse_args(["ast", command, *extra_args, "--quiet"])
+        assert args.quiet is True
+
 
 # =============================================================================
 # Main Routing Integration Tests
@@ -1111,6 +1151,35 @@ class TestMainAstRouting:
                 result = main()
         assert result == 2
 
+    # -------------------------------------------------------------------
+    # BUG-010 Option C, C6: --quiet pass-through in main().
+    # -------------------------------------------------------------------
+
+    def test_main_routes_ast_parse_with_quiet_flag_suppresses_broad_root_warning(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: Path,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """main() threads --quiet through to ast_parse; a broad --root
+        (the filesystem/drive root, portable via Path.anchor) would
+        normally warn on stderr, but --quiet suppresses it."""
+        from src.interface.cli.main import main
+
+        monkeypatch.setattr(ast_commands_module, "_ENFORCE_PATH_CONTAINMENT", True)
+        md_file = tmp_path / "test.md"
+        md_file.write_text("# Hello\n", encoding="utf-8")
+
+        with patch(
+            "sys.argv",
+            ["jerry", "ast", "parse", str(md_file), "--root", str(tmp_path.anchor), "--quiet"],
+        ):
+            with patch("sys.stdout", new_callable=StringIO):
+                result = main()
+        assert result == 0
+        captured = capsys.readouterr()
+        assert captured.err == ""
+
 
 # =============================================================================
 # BUG-010 (GH #337): Path containment must anchor to the USER'S project root,
@@ -1119,7 +1188,19 @@ class TestMainAstRouting:
 
 
 class TestBug010ProjectRootContainment:
-    """Containment anchored to CLAUDE_PROJECT_DIR/cwd, never to __file__."""
+    """Containment anchored to CLAUDE_PROJECT_DIR/cwd, never to __file__.
+
+    BUG-010 Option C: the default allowed set is the project root plus
+    zero-or-more user-declared ``ast.trusted_roots`` entries -- no
+    directory is auto-trusted. Tests use
+    ``monkeypatch.setattr(project_root_module, "_load_trusted_roots", ...)``
+    as the seam for controlling configured trusted roots (replacing the
+    removed ``_HARDCODED_TMP``/``tempfile.gettempdir()`` monkeypatch seam).
+    """
+
+    def _no_configured_roots(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Force _load_trusted_roots() to return an empty list for this test."""
+        monkeypatch.setattr(project_root_module, "_load_trusted_roots", lambda: [])
 
     def test_get_repo_root_when_claude_project_dir_set_then_returns_user_root(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
@@ -1177,21 +1258,13 @@ class TestBug010ProjectRootContainment:
     ) -> None:
         """M-08 preserved: paths outside the resolved project root are rejected.
 
-        Reconciliation seam (BUG-010 T-3): pytest's tmp_path lives inside the
-        real tempfile.gettempdir() (and, on Linux CI, inside the real /tmp).
-        Under the widened default allowed roots, an "outside" fixture built
-        from tmp_path would otherwise silently PASS containment via the temp
-        default roots -- a false negative on this security-regression test.
-        Neutralizing both temp defaults via monkeypatch keeps `outside`
-        genuinely outside every allowed root, preserving the test's intent.
+        BUG-010 Option C: no directory is auto-trusted, so an "outside"
+        fixture built from tmp_path is genuinely outside every allowed
+        root (project root + zero configured trusted roots) without
+        needing to neutralize any temp-default seam.
         """
         # Arrange
-        monkeypatch.setattr(
-            project_root_module, "_HARDCODED_TMP", tmp_path / "does-not-exist-tmp-marker"
-        )
-        monkeypatch.setattr(
-            tempfile, "gettempdir", lambda: str(tmp_path / "controlled-tempdir-not-used-by-test")
-        )
+        self._no_configured_roots(monkeypatch)
         user_root = tmp_path / "user-project"
         user_root.mkdir()
         outside = tmp_path / "elsewhere"
@@ -1211,20 +1284,12 @@ class TestBug010ProjectRootContainment:
     def test_containment_when_symlink_escapes_project_root_then_rejected(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
-        """M-10 preserved: symlinks pointing outside the project root are rejected.
-
-        Reconciliation seam (BUG-010 T-3): see the seam rationale docstring
-        on ``test_containment_when_file_outside_project_root_then_rejected``
-        above -- the symlink target here is likewise built from tmp_path and
-        would otherwise fall inside the real default temp roots.
-        """
+        """M-10 preserved: symlinks pointing outside the project root are
+        rejected. BUG-010 Option C: no auto-trusted temp default exists,
+        so the symlink target here is genuinely outside every allowed
+        root without needing a neutralizing seam."""
         # Arrange
-        monkeypatch.setattr(
-            project_root_module, "_HARDCODED_TMP", tmp_path / "does-not-exist-tmp-marker"
-        )
-        monkeypatch.setattr(
-            tempfile, "gettempdir", lambda: str(tmp_path / "controlled-tempdir-not-used-by-test")
-        )
+        self._no_configured_roots(monkeypatch)
         user_root = tmp_path / "user-project"
         user_root.mkdir()
         outside = tmp_path / "secret"
@@ -1244,18 +1309,42 @@ class TestBug010ProjectRootContainment:
         assert "escapes" in error
 
     # -------------------------------------------------------------------
-    # Scope widening (PR #341 owner review, 2026-08-07): default allowed
-    # roots grow to include OS temp/scratchpad dirs; --root is an
-    # exclusive override. See eng-lead-implementation-plan.md T-2.
+    # BUG-010 Option C: default allowed roots are the project root plus
+    # zero-or-more user-declared ast.trusted_roots entries; --root is an
+    # exclusive override. See eng-lead-option-c-plan.md Section 4.C.
     # -------------------------------------------------------------------
 
-    def test_containment_when_file_in_gettempdir_with_different_project_dir_then_allowed(
+    def test_containment_when_file_in_configured_trusted_root_then_allowed(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
-        """Scratchpad scenario (owner's PR #341 review comment, literal repro):
-        a file under tempfile.gettempdir() validates even though
-        CLAUDE_PROJECT_DIR points to a completely different directory."""
+        """A file under a user-declared ast.trusted_roots entry validates
+        even though CLAUDE_PROJECT_DIR points to a different directory."""
         # Arrange
+        user_root = tmp_path / "user-project"
+        user_root.mkdir()
+        trusted_dir = tmp_path / "scratchpad"
+        trusted_dir.mkdir()
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(user_root))
+        monkeypatch.setattr(project_root_module, "_load_trusted_roots", lambda: [str(trusted_dir)])
+        target = trusted_dir / "scratch.md"
+        target.write_text("# Scratch\n", encoding="utf-8")
+
+        # Act
+        resolved, error = ast_commands_module._check_path_containment(str(target))
+
+        # Assert
+        assert error is None
+        assert resolved == target.resolve()
+
+    def test_containment_when_file_in_gettempdir_and_not_configured_then_rejected(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """CRITICAL negative regression: a file under tempfile.gettempdir()
+        is REJECTED by default -- the prior always-widen behavior is
+        removed. Only an explicitly configured ast.trusted_roots entry
+        (or --root) grants access outside the project root."""
+        # Arrange
+        self._no_configured_roots(monkeypatch)
         monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(tmp_path / "user-project"))
         scratch_dir = Path(tempfile.mkdtemp())
         target = scratch_dir / "scratchpad.md"
@@ -1266,22 +1355,24 @@ class TestBug010ProjectRootContainment:
             resolved, error = ast_commands_module._check_path_containment(str(target))
 
             # Assert
-            assert error is None
-            assert resolved == target.resolve()
+            assert resolved is None
+            assert error is not None
+            assert "escapes" in error
         finally:
             target.unlink(missing_ok=True)
             scratch_dir.rmdir()
 
     @pytest.mark.skipif(sys.platform == "win32", reason="/tmp is POSIX-only")
-    def test_containment_when_file_in_slash_tmp_then_allowed(
+    def test_containment_when_file_in_slash_tmp_and_not_configured_then_rejected(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
-        """A file under /tmp validates by default on POSIX systems, even
-        though gettempdir() may resolve elsewhere (e.g. $TMPDIR on macOS)."""
+        """Negative regression: a file under /tmp is REJECTED by default on
+        POSIX systems -- /tmp is never auto-trusted under Option C."""
         if not Path("/tmp").exists():
             pytest.skip("/tmp does not exist on this system")
 
         # Arrange
+        self._no_configured_roots(monkeypatch)
         monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(tmp_path / "user-project"))
         marker_dir = Path("/tmp") / f"jerry-test-{uuid.uuid4().hex}"
         marker_dir.mkdir()
@@ -1293,11 +1384,66 @@ class TestBug010ProjectRootContainment:
             resolved, error = ast_commands_module._check_path_containment(str(target))
 
             # Assert
-            assert error is None
-            assert resolved == target.resolve()
+            assert resolved is None
+            assert error is not None
+            assert "escapes" in error
         finally:
             target.unlink(missing_ok=True)
             marker_dir.rmdir()
+
+    def test_containment_when_symlink_target_in_configured_root_then_allowed(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """M-10: a symlink whose target resolves inside a configured
+        trusted root is allowed, even when the symlink itself lives
+        elsewhere (e.g. inside the project root)."""
+        # Arrange
+        trusted_dir = tmp_path / "configured-trusted"
+        trusted_dir.mkdir()
+        user_root = tmp_path / "user-project"
+        user_root.mkdir()
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(user_root))
+        monkeypatch.setattr(project_root_module, "_load_trusted_roots", lambda: [str(trusted_dir)])
+        real_file = trusted_dir / "real.md"
+        real_file.write_text("# Real\n", encoding="utf-8")
+        link = user_root / "innocent.md"
+        link.symlink_to(real_file)
+
+        # Act
+        resolved, error = ast_commands_module._check_path_containment(str(link))
+
+        # Assert
+        assert error is None
+        assert resolved == link.resolve()
+
+    def test_containment_when_symlink_escapes_all_configured_roots_then_rejected(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """M-10 holds even when the symlink itself sits inside an allowed
+        (configured) root: the target still must not escape ALL allowed
+        roots, not just the project root."""
+        # Arrange
+        configured_root = tmp_path / "configured-trusted"
+        configured_root.mkdir()
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(tmp_path / "user-project"))
+        monkeypatch.setattr(
+            project_root_module, "_load_trusted_roots", lambda: [str(configured_root)]
+        )
+
+        outside = tmp_path / "outside-everything"
+        outside.mkdir()
+        real_file = outside / "real.md"
+        real_file.write_text("# Real\n", encoding="utf-8")
+        link = configured_root / "innocent.md"
+        link.symlink_to(real_file)
+
+        # Act
+        resolved, error = ast_commands_module._check_path_containment(str(link))
+
+        # Assert
+        assert resolved is None
+        assert error is not None
+        assert "escapes" in error
 
     def test_containment_when_explicit_root_given_then_file_in_project_root_rejected(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
@@ -1328,7 +1474,7 @@ class TestBug010ProjectRootContainment:
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
         """Companion positive case: a matching --root allows the file even
-        though CLAUDE_PROJECT_DIR/tempdir defaults are irrelevant."""
+        though CLAUDE_PROJECT_DIR/configured trusted roots are irrelevant."""
         # Arrange
         user_root = tmp_path / "user-project"
         user_root.mkdir()
@@ -1344,34 +1490,6 @@ class TestBug010ProjectRootContainment:
         # Assert
         assert error is None
         assert resolved == target.resolve()
-
-    def test_containment_when_symlink_escapes_from_temp_root_then_rejected(
-        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-    ) -> None:
-        """M-10 holds even when the symlink itself sits inside an allowed
-        (controlled) temp root: the target still must not escape ALL
-        allowed roots, not just the project root."""
-        # Arrange: fully control the allowed temp root via the T-3 seam
-        controlled_tmp = tmp_path / "controlled-tmp"
-        controlled_tmp.mkdir()
-        monkeypatch.setattr(project_root_module, "_HARDCODED_TMP", controlled_tmp)
-        monkeypatch.setattr(tempfile, "gettempdir", lambda: str(controlled_tmp))
-        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(tmp_path / "user-project"))
-
-        outside = tmp_path / "outside-everything"
-        outside.mkdir()
-        real_file = outside / "real.md"
-        real_file.write_text("# Real\n", encoding="utf-8")
-        link = controlled_tmp / "innocent.md"
-        link.symlink_to(real_file)
-
-        # Act
-        resolved, error = ast_commands_module._check_path_containment(str(link))
-
-        # Assert
-        assert resolved is None
-        assert error is not None
-        assert "escapes" in error
 
     def test_read_file_when_root_argument_provided_then_threaded_to_containment_check(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
@@ -1403,13 +1521,13 @@ class TestBug010ProjectRootContainment:
     def test_ast_modify_when_root_given_and_write_target_outside_root_then_rejected_at_write_time(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
-        """Exercises the L507-514 write-time TOCTOU recheck in isolation: the
-        read step is mocked to succeed unconditionally (simulating a file
-        that already passed containment at read time), proving the
-        write-time recheck -- not the read-time check -- is what rejects a
-        mismatched --root immediately before the write. Regression guard
-        for the TOCTOU recheck being wired to the same `root` value as the
-        read (WI-020, M-21)."""
+        """Exercises the write-time TOCTOU recheck in isolation: the read
+        step is mocked to succeed unconditionally (simulating a file that
+        already passed containment at read time), proving the write-time
+        recheck -- not the read-time check -- is what rejects a mismatched
+        --root immediately before the write. Regression guard for the
+        TOCTOU recheck being wired to the same `root` value as the read
+        (WI-020, M-21)."""
         # Arrange
         monkeypatch.setattr(ast_commands_module, "_ENFORCE_PATH_CONTAINMENT", True)
         user_root = tmp_path / "user-project"
@@ -1428,26 +1546,103 @@ class TestBug010ProjectRootContainment:
         assert result == 2
         assert target.read_text(encoding="utf-8") == original  # unmodified
 
-    # -------------------------------------------------------------------
-    # R-4 (owner-resolved): stderr transparency note when containment
-    # matches via a temp/scratchpad root rather than the project root.
-    # Must not fire for project-root or explicit --root matches.
-    # -------------------------------------------------------------------
+    def test_ast_modify_when_symlink_swapped_between_read_and_write_then_rejected_at_write_time(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """C2 fix, the actual TOCTOU attack: a symlink resolves inside an
+        allowed root at read time, then is repointed outside all allowed
+        roots before the write executes. Because the write-time recheck
+        calls the IDENTICAL _check_path_containment function used at read
+        time (fresh os.path.realpath() resolution every call), the swap
+        is caught and the write is rejected -- the file on disk is
+        unmodified."""
+        # Arrange
+        monkeypatch.setattr(ast_commands_module, "_ENFORCE_PATH_CONTAINMENT", True)
+        user_root = tmp_path / "user-project"
+        user_root.mkdir()
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(user_root))
+        self._no_configured_roots(monkeypatch)
 
-    def test_check_path_containment_when_matched_via_temp_root_then_prints_transparency_note(
+        original = "# Entity\n\n> **Status:** pending\n\n## Details\n"
+        inside_target = user_root / "real-inside.md"
+        inside_target.write_text(original, encoding="utf-8")
+
+        outside_dir = tmp_path / "outside-everything"
+        outside_dir.mkdir()
+        outside_target = outside_dir / "real-outside.md"
+        outside_target.write_text(original, encoding="utf-8")
+
+        link = user_root / "entity.md"
+        link.symlink_to(inside_target)
+
+        # Read succeeds: symlink currently resolves inside the project root.
+        source, read_exit_code = ast_commands_module._read_file(str(link))
+        assert read_exit_code == 0
+        assert source == original
+
+        # Attacker swaps the symlink to point outside all allowed roots
+        # between the read and the write.
+        link.unlink()
+        link.symlink_to(outside_target)
+
+        # Act: ast_modify re-reads (mocked to reuse the already-read
+        # source, simulating a single logical invocation) then performs
+        # its own write-time recheck, which must re-resolve the live
+        # (now-swapped) symlink target.
+        with patch.object(ast_commands_module, "_read_file", return_value=(source, 0)):
+            result = ast_modify(str(link), "Status", "done")
+
+        # Assert
+        assert result == 2
+        assert outside_target.read_text(encoding="utf-8") == original  # unmodified
+        assert inside_target.read_text(encoding="utf-8") == original  # unmodified
+
+    def test_ast_modify_when_configured_root_match_then_transparency_note_prints_exactly_once(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
     ) -> None:
-        """R-4: when a file passes containment only via a temp/scratchpad
-        root (not the project root), a one-line stderr transparency note
-        fires -- stdout (the JSON/render payload channel) stays untouched."""
-        # Arrange: control the temp root via the T-3 seam so this file is
-        # genuinely outside the project root and inside a known temp root.
-        controlled_tmp = tmp_path / "controlled-tmp"
-        controlled_tmp.mkdir()
-        monkeypatch.setattr(project_root_module, "_HARDCODED_TMP", controlled_tmp)
-        monkeypatch.setattr(tempfile, "gettempdir", lambda: str(controlled_tmp))
+        """Regression proving the quiet=True internal write-time recheck
+        does not double-print the R-4 transparency note: it fires once at
+        read time (via _read_file) and is suppressed at write time (DD-3)."""
+        # Arrange
+        monkeypatch.setattr(ast_commands_module, "_ENFORCE_PATH_CONTAINMENT", True)
+        user_root = tmp_path / "user-project"
+        user_root.mkdir()
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(user_root))
+        trusted_dir = tmp_path / "configured-trusted"
+        trusted_dir.mkdir()
+        monkeypatch.setattr(project_root_module, "_load_trusted_roots", lambda: [str(trusted_dir)])
+        target = trusted_dir / "entity.md"
+        original = "# Entity\n\n> **Status:** pending\n\n## Details\n"
+        target.write_text(original, encoding="utf-8")
+
+        # Act
+        result = ast_modify(str(target), "Status", "done")
+
+        # Assert
+        assert result == 0
+        captured = capsys.readouterr()
+        assert captured.err.count("configured trusted root") == 1
+
+    # -------------------------------------------------------------------
+    # R-4 (generalized, BUG-010 Option C): stderr transparency note when
+    # containment matches via a configured trusted root rather than the
+    # project root. Must not fire for project-root or explicit --root
+    # matches.
+    # -------------------------------------------------------------------
+
+    def test_check_path_containment_when_matched_via_configured_root_then_prints_generalized_transparency_note(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        """R-4: when a file passes containment only via a configured
+        trusted root (not the project root), a one-line stderr
+        transparency note fires -- stdout (the JSON/render payload
+        channel) stays untouched."""
+        # Arrange
+        trusted_dir = tmp_path / "configured-trusted"
+        trusted_dir.mkdir()
         monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(tmp_path / "user-project"))
-        target = controlled_tmp / "scratch.md"
+        monkeypatch.setattr(project_root_module, "_load_trusted_roots", lambda: [str(trusted_dir)])
+        target = trusted_dir / "scratch.md"
         target.write_text("# Scratch\n", encoding="utf-8")
 
         # Act
@@ -1457,20 +1652,22 @@ class TestBug010ProjectRootContainment:
         assert error is None
         captured = capsys.readouterr()
         assert captured.out == ""
-        assert "temp" in captured.err.lower()
+        assert "configured trusted root" in captured.err.lower()
         assert captured.err.count("\n") == 1
 
     def test_check_path_containment_when_matched_via_project_root_then_no_transparency_note(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
     ) -> None:
         """R-4: no note fires when the file matches the project root (the
-        normal, expected case) -- only the temp-root fallback is noteworthy."""
+        normal, expected case) -- only a configured-root match is
+        noteworthy."""
         # Arrange
         user_root = tmp_path / "user-project"
         user_root.mkdir()
         target = user_root / "PLAN.md"
         target.write_text("# Plan\n", encoding="utf-8")
         monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(user_root))
+        self._no_configured_roots(monkeypatch)
 
         # Act
         resolved, error = ast_commands_module._check_path_containment(str(target))
@@ -1485,7 +1682,7 @@ class TestBug010ProjectRootContainment:
     ) -> None:
         """R-4: no note fires for an explicit --root match, even when the
         supplied root happens to be a temp-like directory -- transparency
-        notes are scoped to the DEFAULT-set fallback, not deliberate,
+        notes are scoped to the configured-root fallback, not deliberate,
         explicit user choice via --root."""
         # Arrange
         explicit_root = tmp_path / "explicit-temp-like-root"
@@ -1503,10 +1700,50 @@ class TestBug010ProjectRootContainment:
         captured = capsys.readouterr()
         assert captured.err == ""
 
+    def test_check_path_containment_when_quiet_true_then_suppresses_transparency_note(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        """C6: quiet=True suppresses the R-4 configured-root transparency
+        note."""
+        # Arrange
+        trusted_dir = tmp_path / "configured-trusted"
+        trusted_dir.mkdir()
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(tmp_path / "user-project"))
+        monkeypatch.setattr(project_root_module, "_load_trusted_roots", lambda: [str(trusted_dir)])
+        target = trusted_dir / "scratch.md"
+        target.write_text("# Scratch\n", encoding="utf-8")
+
+        # Act
+        resolved, error = ast_commands_module._check_path_containment(str(target), quiet=True)
+
+        # Assert
+        assert error is None
+        captured = capsys.readouterr()
+        assert captured.out == ""
+        assert captured.err == ""
+
+    def test_check_path_containment_when_quiet_true_then_suppresses_broad_root_warning(
+        self, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        """C6: quiet=True suppresses the R-3 broad-root warning, propagated
+        through the _check_path_containment boundary."""
+        # Arrange
+        target = tmp_path / "file.md"
+        target.write_text("# File\n", encoding="utf-8")
+
+        # Act
+        ast_commands_module._check_path_containment(
+            str(target), explicit_root=str(tmp_path.anchor), quiet=True
+        )
+
+        # Assert
+        captured = capsys.readouterr()
+        assert captured.err == ""
+
     # -------------------------------------------------------------------
     # R-3 (owner-resolved): broad --root stderr warning propagates through
     # _check_path_containment (unit-level coverage lives in
-    # test_project_root.py::TestBroadRootWarning).
+    # test_project_root.py::TestGetContainmentRoots).
     # -------------------------------------------------------------------
 
     def test_check_path_containment_when_explicit_root_is_broad_then_warns(
@@ -1528,179 +1765,29 @@ class TestBug010ProjectRootContainment:
 
 
 # =============================================================================
-# H-01 (RED-BUG010 red-team remediation, CWE-552/CWE-668/CWE-281): ownership
-# gate for temp-default-root matches only. Multi-user temp directories
-# (tempfile.gettempdir(), /tmp) are often shared and world-writable; without
-# an ownership check, jerry ast would read/write another user's file on a
-# shared/CI host under default configuration (no --root). The gate applies
-# ONLY to temp-default-root matches -- never to the project root or an
-# explicit --root match, both of which remain pure user-discretion.
+# DD-2 (owner-resolved: remove entirely): the H-01 ownership gate
+# (_check_temp_root_ownership, _is_temp_default_root_match,
+# _warn_if_temp_root_match) is deleted outright, not retained. Its sole
+# rationale -- safe auto-trust of shared, multi-tenant OS temp
+# directories -- no longer exists under Option C: a "configured" root is
+# never auto-trusted, it is a deliberate user declaration, structurally
+# identical in trust posture to --root (which has never had an ownership
+# gate). This regression guard replaces the deleted
+# TestTempRootOwnershipGate class (8 tests) to prevent silent
+# reintroduction of the removed machinery.
 # =============================================================================
 
 
-class TestTempRootOwnershipGate:
-    """H-01: st_uid/geteuid() ownership gate scoped to temp-default matches."""
+class TestOwnershipGateRemoved:
+    """DD-2: guard against silent reintroduction of the removed H-01 gate."""
 
-    def test_containment_when_temp_root_file_owned_by_current_user_then_allowed(
-        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    def test_ast_commands_module_when_imported_then_check_temp_root_ownership_is_not_defined(
+        self,
     ) -> None:
-        """The dominant deployment model: a temp-root file owned by the
-        current process user passes containment unchanged."""
-        # Arrange
-        controlled_tmp = tmp_path / "controlled-tmp"
-        controlled_tmp.mkdir()
-        monkeypatch.setattr(project_root_module, "_HARDCODED_TMP", controlled_tmp)
-        monkeypatch.setattr(tempfile, "gettempdir", lambda: str(controlled_tmp))
-        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(tmp_path / "user-project"))
-        target = controlled_tmp / "scratch.md"
-        target.write_text("# Scratch\n", encoding="utf-8")
-
-        # Act
-        resolved, error = ast_commands_module._check_path_containment(str(target))
-
-        # Assert
-        assert error is None
-        assert resolved == target.resolve()
-
-    @pytest.mark.skipif(sys.platform == "win32", reason="os.geteuid() is POSIX-only")
-    def test_containment_when_temp_root_file_owned_by_other_user_then_rejected(
-        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-    ) -> None:
-        """A temp-root match owned by a different UID than the current
-        process is REJECTED -- the H-01 fix. Simulated by monkeypatching
-        os.geteuid() to return a UID guaranteed to differ from the real
-        file owner, since constructing a genuinely foreign-owned file is
-        not possible in a single-user CI runner."""
-        # Arrange
-        controlled_tmp = tmp_path / "controlled-tmp"
-        controlled_tmp.mkdir()
-        monkeypatch.setattr(project_root_module, "_HARDCODED_TMP", controlled_tmp)
-        monkeypatch.setattr(tempfile, "gettempdir", lambda: str(controlled_tmp))
-        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(tmp_path / "user-project"))
-        target = controlled_tmp / "scratch.md"
-        target.write_text("# Scratch\n", encoding="utf-8")
-        real_uid = os.geteuid()
-        monkeypatch.setattr(os, "geteuid", lambda: real_uid + 1)
-
-        # Act
-        resolved, error = ast_commands_module._check_path_containment(str(target))
-
-        # Assert
-        assert resolved is None
-        assert error is not None
-        assert "owned by another user" in error
-
-    @pytest.mark.skipif(sys.platform == "win32", reason="os.geteuid() is POSIX-only")
-    def test_containment_when_project_root_file_and_foreign_uid_then_still_allowed(
-        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-    ) -> None:
-        """The ownership gate is scoped strictly to temp-default-root
-        matches: a project-root match is unaffected even when geteuid()
-        is monkeypatched to disagree with the file's real owner."""
-        # Arrange
-        user_root = tmp_path / "user-project"
-        user_root.mkdir()
-        target = user_root / "PLAN.md"
-        target.write_text("# Plan\n", encoding="utf-8")
-        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(user_root))
-        real_uid = os.geteuid()
-        monkeypatch.setattr(os, "geteuid", lambda: real_uid + 1)
-
-        # Act
-        resolved, error = ast_commands_module._check_path_containment(str(target))
-
-        # Assert
-        assert error is None
-        assert resolved == target.resolve()
-
-    @pytest.mark.skipif(sys.platform == "win32", reason="os.geteuid() is POSIX-only")
-    def test_containment_when_explicit_root_file_and_foreign_uid_then_still_allowed(
-        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-    ) -> None:
-        """The ownership gate does not apply to an explicit --root match
-        either -- that remains the user's own deliberate escape hatch."""
-        # Arrange
-        explicit_root = tmp_path / "explicit-root"
-        explicit_root.mkdir()
-        target = explicit_root / "scratch.md"
-        target.write_text("# Scratch\n", encoding="utf-8")
-        real_uid = os.geteuid()
-        monkeypatch.setattr(os, "geteuid", lambda: real_uid + 1)
-
-        # Act
-        resolved, error = ast_commands_module._check_path_containment(
-            str(target), explicit_root=str(explicit_root)
-        )
-
-        # Assert
-        assert error is None
-        assert resolved == target.resolve()
-
-    def test_check_temp_root_ownership_when_owned_by_current_user_then_none(
-        self, tmp_path: Path
-    ) -> None:
-        """Direct unit coverage of the ownership-gate helper: a
-        current-user-owned file yields no error."""
-        # Arrange
-        target = tmp_path / "scratch.md"
-        target.write_text("# Scratch\n", encoding="utf-8")
-
-        # Act
-        error = ast_commands_module._check_temp_root_ownership(target.resolve(), str(target))
-
-        # Assert
-        assert error is None
-
-    @pytest.mark.skipif(sys.platform == "win32", reason="os.geteuid() is POSIX-only")
-    def test_check_temp_root_ownership_when_owned_by_other_user_then_error(
-        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-    ) -> None:
-        """Direct unit coverage: a foreign-owned file yields a descriptive
-        error message referencing the offending path."""
-        # Arrange
-        target = tmp_path / "scratch.md"
-        target.write_text("# Scratch\n", encoding="utf-8")
-        real_uid = os.geteuid()
-        monkeypatch.setattr(os, "geteuid", lambda: real_uid + 1)
-
-        # Act
-        error = ast_commands_module._check_temp_root_ownership(target.resolve(), str(target))
-
-        # Assert
-        assert error is not None
-        assert "owned by another user" in error
-        assert str(target) in error
-
-    def test_check_temp_root_ownership_when_windows_then_skipped_without_crash(
-        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-    ) -> None:
-        """os.geteuid() does not exist on Windows; the gate MUST be
-        skipped there (guarded on os.name), never raise AttributeError.
-        Windows' per-user %TEMP% already isolates temp directories by
-        user under normal, non-elevated sessions."""
-        # Arrange
-        target = tmp_path / "scratch.md"
-        target.write_text("# Scratch\n", encoding="utf-8")
-        monkeypatch.setattr(os, "name", "nt")
-        monkeypatch.delattr(os, "geteuid", raising=False)
-
-        # Act
-        error = ast_commands_module._check_temp_root_ownership(target.resolve(), str(target))
-
-        # Assert
-        assert error is None
-
-    def test_check_temp_root_ownership_when_stat_oserror_then_fails_open(
-        self, tmp_path: Path
-    ) -> None:
-        """A stat() failure (e.g. the path vanished between checks) fails
-        open here -- the pre-existing size-check stat() later in
-        _check_path_containment applies its own OSError handling."""
-        # Arrange: a path that does not exist, so .stat() raises OSError.
-        missing = tmp_path / "does-not-exist.md"
-
-        # Act
-        error = ast_commands_module._check_temp_root_ownership(missing, str(missing))
-
-        # Assert
-        assert error is None
+        """_check_temp_root_ownership (and its supporting helpers) must not
+        exist on the ast_commands module -- Option C removes temp-default
+        auto-trust entirely, so the gate that protected it has no
+        remaining rationale."""
+        assert not hasattr(ast_commands_module, "_check_temp_root_ownership")
+        assert not hasattr(ast_commands_module, "_is_temp_default_root_match")
+        assert not hasattr(ast_commands_module, "_warn_if_temp_root_match")

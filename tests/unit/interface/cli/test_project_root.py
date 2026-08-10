@@ -1,34 +1,46 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2026 Adam Nowak
 
-"""Unit tests for the shared CLI project-root resolution helper (BUG-010, GH #337).
+"""Unit tests for the shared CLI project-root and containment I/O boundary
+(BUG-010 Option C, GH #337).
 
-The helper anchors path-containment and configuration lookups to the USER'S
-project root (``CLAUDE_PROJECT_DIR`` env var, else the current working
-directory) — never to the Jerry installation's own directory tree.
+``get_project_root()`` anchors path-containment and configuration lookups
+to the USER'S project root (``CLAUDE_PROJECT_DIR`` env var, else the
+current working directory) -- never to the Jerry installation's own
+directory tree.
 
-Also covers the BUG-010 scope-widening follow-up (PR #341 owner review,
-2026-08-07): ``get_containment_roots()`` widens the default allowed set to
-include OS temp/scratchpad directories, and supports an exclusive
-``--root`` override. Two owner-resolved stderr transparency behaviors are
-covered here at the ``get_containment_roots`` level:
-    - R-3: a one-line stderr WARNING when an explicit ``--root`` resolves
-      to an unusually broad location (filesystem/drive root or home dir).
+``get_containment_roots()`` is the I/O boundary around the pure
+``containment_policy.resolve_allowed_roots()`` decision core (BUG-010
+Option C): containment defaults to the project root plus zero-or-more
+**user-declared** ``ast.trusted_roots`` entries read through the shared
+``LayeredConfigAdapter`` (via ``build_layered_config_adapter()``). No
+directory is trusted unless the project owns it or the user explicitly
+configured it -- OS temp/scratchpad directories are never auto-trusted.
+
+Two owner-resolved stderr transparency behaviors are covered here at the
+``get_containment_roots`` level:
+    - R-3: a one-line stderr WARNING when an explicit ``--root`` (or,
+      DD-1, a ``configured`` root) resolves to an unusually broad location
+      (filesystem/drive root or home dir).
     - R-4: covered at the ``_check_path_containment`` level in
       ``test_ast_commands.py`` (requires knowledge of which specific root
       in the allowed set actually matched a given file).
+
+Pure predicate coverage for ``_is_broad_containment_root`` lives in
+``test_containment_policy.py`` (relocated, BUG-010 Option C Section 5).
 """
 
 from __future__ import annotations
 
 import tempfile
-from pathlib import Path, PureWindowsPath
+from pathlib import Path
 
 import pytest
 
 import src.interface.cli.project_root as project_root_module
 from src.interface.cli.project_root import (
-    _is_broad_containment_root,
+    _load_trusted_roots,
+    build_layered_config_adapter,
     get_containment_roots,
     get_project_root,
 )
@@ -97,173 +109,137 @@ class TestGetProjectRoot:
 
 
 # =============================================================================
-# BUG-010 scope widening (PR #341 owner review, 2026-08-07): default
-# containment roots extend to temp/scratchpad dirs; --root is an exclusive
-# override. See eng-lead-implementation-plan.md T-1.
+# BUG-010 Option C: default containment roots are the project root plus
+# zero-or-more user-declared ast.trusted_roots entries; --root is an
+# exclusive override. See eng-lead-option-c-plan.md Section 1.2.
 # =============================================================================
 
 
 class TestGetContainmentRoots:
-    """Default allowed set (project root + temp dirs) vs. exclusive --root."""
+    """Default allowed set (project root + configured trusted roots) vs. --root."""
 
-    def test_get_containment_roots_when_no_explicit_root_then_includes_resolved_project_root(
+    def _no_configured_roots(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Force _load_trusted_roots() to return an empty list for this test."""
+        monkeypatch.setattr(project_root_module, "_load_trusted_roots", lambda: [])
+
+    def test_get_containment_roots_when_no_explicit_root_and_no_config_then_returns_only_project_root(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
-        """Default set always contains the resolved project root."""
+        """With no --root and no configured trusted roots, the allowed set
+        contains exactly the project root."""
         # Arrange
         project_dir = tmp_path / "user-project"
         project_dir.mkdir()
         monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(project_dir))
+        self._no_configured_roots(monkeypatch)
 
         # Act
         roots = get_containment_roots()
 
         # Assert
-        assert project_dir.resolve() in roots
+        assert len(roots) == 1
+        assert roots[0].path == project_dir.resolve()
+        assert roots[0].classification == "project"
 
-    def test_get_containment_roots_when_no_explicit_root_then_includes_resolved_gettempdir(
-        self,
-    ) -> None:
-        """Default set always contains the resolved system temp directory."""
-        # Act
-        roots = get_containment_roots()
-
-        # Assert
-        assert Path(tempfile.gettempdir()).resolve() in roots
-
-    def test_get_containment_roots_when_hardcoded_tmp_exists_then_includes_it(
+    def test_get_containment_roots_when_no_explicit_root_then_never_includes_tempfile_gettempdir(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
-        """A monkeypatched, existing _HARDCODED_TMP is included in the default set."""
+        """Negative regression: the default set NEVER auto-trusts
+        tempfile.gettempdir() -- the always-widen behavior is removed."""
         # Arrange
-        existing = tmp_path / "hardcoded-tmp"
-        existing.mkdir()
-        monkeypatch.setattr(project_root_module, "_HARDCODED_TMP", existing)
+        project_dir = tmp_path / "user-project"
+        project_dir.mkdir()
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(project_dir))
+        self._no_configured_roots(monkeypatch)
 
         # Act
         roots = get_containment_roots()
 
         # Assert
-        assert existing.resolve() in roots
+        assert Path(tempfile.gettempdir()).resolve() not in [r.path for r in roots]
 
-    def test_get_containment_roots_when_hardcoded_tmp_absent_then_excludes_it(
+    @pytest.mark.skipif(not Path("/tmp").exists(), reason="/tmp does not exist on this system")
+    def test_get_containment_roots_when_no_explicit_root_then_never_includes_slash_tmp(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
-        """A monkeypatched, nonexistent _HARDCODED_TMP is excluded; set has exactly 2 entries."""
+        """Negative regression: the default set NEVER auto-trusts /tmp."""
         # Arrange
-        nonexistent = tmp_path / "does-not-exist"
-        monkeypatch.setattr(project_root_module, "_HARDCODED_TMP", nonexistent)
+        project_dir = tmp_path / "user-project"
+        project_dir.mkdir()
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(project_dir))
+        self._no_configured_roots(monkeypatch)
 
         # Act
         roots = get_containment_roots()
 
         # Assert
-        assert nonexistent.resolve() not in roots
-        assert len(roots) == 2
+        assert Path("/tmp").resolve() not in [r.path for r in roots]
 
-    def test_get_containment_roots_when_gettempdir_equals_hardcoded_tmp_then_deduplicated(
+    def test_get_containment_roots_when_trusted_roots_configured_in_toml_then_included_after_project_root(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
-        """When gettempdir() and _HARDCODED_TMP resolve to the same dir, no duplicate entries."""
+        """A trusted root declared in .jerry/config.toml is included after
+        the project root, classified 'configured'."""
         # Arrange
-        shared_tmp = tmp_path / "shared-tmp"
-        shared_tmp.mkdir()
-        monkeypatch.setattr(project_root_module, "_HARDCODED_TMP", shared_tmp)
-        monkeypatch.setattr(tempfile, "gettempdir", lambda: str(shared_tmp))
+        project_dir = tmp_path / "user-project"
+        project_dir.mkdir()
+        trusted_dir = tmp_path / "scratchpad"
+        trusted_dir.mkdir()
+        jerry_dir = project_dir / ".jerry"
+        jerry_dir.mkdir()
+        (jerry_dir / "config.toml").write_text(
+            f'[ast]\ntrusted_roots = ["{trusted_dir}"]\n', encoding="utf-8"
+        )
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(project_dir))
+        monkeypatch.delenv("JERRY_AST__TRUSTED_ROOTS", raising=False)
 
         # Act
         roots = get_containment_roots()
 
         # Assert
-        assert len(roots) == len(set(roots))
-        assert roots.count(shared_tmp.resolve()) == 1
+        assert [r.path for r in roots] == [project_dir.resolve(), trusted_dir.resolve()]
+        assert roots[1].classification == "configured"
 
-    def test_get_containment_roots_when_explicit_root_given_then_returns_exactly_that_root(
-        self, tmp_path: Path
+    def test_get_containment_roots_when_trusted_roots_configured_via_env_then_included(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
-        """An explicit_root produces a single-entry, exclusive allowed set."""
+        """A trusted root declared via JERRY_AST__TRUSTED_ROOTS is included."""
         # Arrange
-        explicit_dir = tmp_path / "some-dir"
+        project_dir = tmp_path / "user-project"
+        project_dir.mkdir()
+        trusted_dir = tmp_path / "scratchpad"
+        trusted_dir.mkdir()
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(project_dir))
+        monkeypatch.setenv("JERRY_AST__TRUSTED_ROOTS", f'["{trusted_dir}"]')
+
+        # Act
+        roots = get_containment_roots()
+
+        # Assert
+        assert trusted_dir.resolve() in [r.path for r in roots]
+        matched = next(r for r in roots if r.path == trusted_dir.resolve())
+        assert matched.classification == "configured"
+
+    def test_get_containment_roots_when_explicit_root_given_then_configured_trusted_roots_ignored(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """--root is exclusive: configured trusted roots are ignored when
+        an explicit root is supplied."""
+        # Arrange
+        project_dir = tmp_path / "user-project"
+        project_dir.mkdir()
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(project_dir))
+        monkeypatch.setenv("JERRY_AST__TRUSTED_ROOTS", str(tmp_path / "scratchpad"))
+        explicit_dir = tmp_path / "explicit"
         explicit_dir.mkdir()
 
         # Act
         roots = get_containment_roots(str(explicit_dir))
 
         # Assert
-        assert roots == [explicit_dir.resolve()]
-
-    def test_get_containment_roots_when_explicit_root_given_then_excludes_project_root_and_tempdir(
-        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-    ) -> None:
-        """explicit_root is exclusive -- project root and tempdir are NOT additive."""
-        # Arrange
-        project_dir = tmp_path / "user-project"
-        project_dir.mkdir()
-        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(project_dir))
-        explicit_dir = tmp_path / "unrelated-dir"
-        explicit_dir.mkdir()
-
-        # Act
-        roots = get_containment_roots(str(explicit_dir))
-
-        # Assert
-        assert project_dir.resolve() not in roots
-        assert Path(tempfile.gettempdir()).resolve() not in roots
-
-    def test_get_containment_roots_when_explicit_root_is_relative_then_resolved_against_cwd(
-        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-    ) -> None:
-        """A relative explicit_root resolves the same way Path.resolve() would."""
-        # Arrange
-        monkeypatch.chdir(tmp_path)
-        (tmp_path / "relative" / "dir").mkdir(parents=True)
-
-        # Act
-        roots = get_containment_roots("relative/dir")
-
-        # Assert
-        assert roots == [Path("relative/dir").resolve()]
-
-
-# =============================================================================
-# R-3 (owner-resolved): warn on stderr when an explicit --root resolves to
-# an unusually broad location (filesystem/drive root or home directory).
-# Cross-platform detection via Path.parts/Path.anchor (not hard-coded "/").
-# =============================================================================
-
-
-class TestBroadRootWarning:
-    """R-3: stderr WARNING when --root is a filesystem/drive root or $HOME."""
-
-    def test_is_broad_containment_root_when_posix_filesystem_root_then_true(self) -> None:
-        """The POSIX filesystem root '/' is broad."""
-        assert _is_broad_containment_root(Path("/")) is True
-
-    def test_is_broad_containment_root_when_windows_drive_root_then_true(self) -> None:
-        """A Windows-style drive root (e.g. C:\\) is broad -- portable detection
-        via Path.parts/Path.anchor, verified directly against a PureWindowsPath
-        so this assertion holds regardless of the host OS running the test."""
-        assert _is_broad_containment_root(PureWindowsPath("C:\\")) is True
-
-    def test_is_broad_containment_root_when_home_directory_then_true(
-        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-    ) -> None:
-        """The user's home directory is broad."""
-        # Arrange
-        fake_home = tmp_path / "home-dir"
-        fake_home.mkdir()
-        monkeypatch.setattr(Path, "home", classmethod(lambda cls: fake_home))
-
-        # Act / Assert
-        assert _is_broad_containment_root(fake_home.resolve()) is True
-
-    def test_is_broad_containment_root_when_ordinary_subdirectory_then_false(
-        self, tmp_path: Path
-    ) -> None:
-        """An ordinary project subdirectory is not broad."""
-        ordinary = tmp_path / "some" / "project" / "dir"
-        ordinary.mkdir(parents=True)
-        assert _is_broad_containment_root(ordinary.resolve()) is False
+        assert len(roots) == 1
+        assert roots[0].path == explicit_dir.resolve()
+        assert roots[0].classification == "explicit"
 
     def test_get_containment_roots_when_explicit_root_is_broad_then_warns_on_stderr(
         self, capsys: pytest.CaptureFixture[str]
@@ -278,6 +254,37 @@ class TestBroadRootWarning:
         assert captured.out == ""
         assert "Warning" in captured.err
         assert captured.err.count("\n") == 1
+
+    def test_get_containment_roots_when_configured_root_is_broad_then_warns_on_stderr(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        """DD-1 symmetry: a broad configured trusted root triggers the same
+        class of stderr warning as a broad --root."""
+        # Arrange
+        project_dir = tmp_path / "user-project"
+        project_dir.mkdir()
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(project_dir))
+        monkeypatch.setattr(project_root_module, "_load_trusted_roots", lambda: ["/"])
+
+        # Act
+        get_containment_roots()
+
+        # Assert
+        captured = capsys.readouterr()
+        assert captured.out == ""
+        assert "Warning" in captured.err
+
+    def test_get_containment_roots_when_quiet_true_then_suppresses_broad_root_warning(
+        self, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        """C6: quiet=True suppresses the R-3 broad-root warning entirely."""
+        # Act
+        get_containment_roots("/", quiet=True)
+
+        # Assert
+        captured = capsys.readouterr()
+        assert captured.out == ""
+        assert captured.err == ""
 
     def test_get_containment_roots_when_explicit_root_is_home_then_warns_on_stderr(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
@@ -313,11 +320,13 @@ class TestBroadRootWarning:
     def test_get_containment_roots_when_no_explicit_root_then_no_warning_regardless_of_project_root(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
     ) -> None:
-        """The default (non-exclusive) allowed set never triggers the R-3 warning,
-        even when the project root itself happens to be broad -- R-3 is scoped
-        to the explicit --root escape hatch only."""
+        """The default (non-exclusive) allowed set never triggers the R-3 warning
+        for the PROJECT root specifically, even when the project root itself
+        happens to be broad -- R-3/DD-1 fires for 'explicit' and 'configured'
+        classifications only, never for 'project'."""
         # Arrange
         monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(Path("/")))
+        monkeypatch.setattr(project_root_module, "_load_trusted_roots", lambda: [])
 
         # Act
         get_containment_roots()
@@ -325,88 +334,6 @@ class TestBroadRootWarning:
         # Assert
         captured = capsys.readouterr()
         assert captured.err == ""
-
-    # -------------------------------------------------------------------
-    # H-02 (RED-BUG010 red-team remediation, CWE-1284-adjacent incomplete
-    # allowlist): _is_broad_containment_root previously only flagged the
-    # exact filesystem/drive root and the exact $HOME directory, missing
-    # ancestors of $HOME (e.g. /home, /Users, C:\\Users, $HOME's parent)
-    # that are functionally just as broad -- every user's home directory
-    # lives underneath them. The remediation widens the check to flag any
-    # ANCESTOR OF (or equal to) $HOME, detected portably via
-    # PurePath.relative_to() so it works for PureWindowsPath too (folds
-    # in the H-08 Windows coverage-gap caveat with the same fix).
-    # -------------------------------------------------------------------
-
-    @pytest.mark.parametrize(
-        "home_relative,broad_relative",
-        [
-            (("home", "testuser"), ("home",)),
-            (("Users", "testuser"), ("Users",)),
-            (("Users", "testuser"), ()),
-        ],
-        ids=[
-            "linux-home-multiuser-parent",
-            "macos-users-multiuser-parent",
-            "home-parent-generic",
-        ],
-    )
-    def test_is_broad_containment_root_when_ancestor_of_home_then_true(
-        self,
-        monkeypatch: pytest.MonkeyPatch,
-        tmp_path: Path,
-        home_relative: tuple[str, ...],
-        broad_relative: tuple[str, ...],
-    ) -> None:
-        """An ancestor of $HOME (e.g. /home, /Users, $HOME's parent) is
-        broad, even though it is neither the exact filesystem root nor
-        the exact $HOME directory -- every user's home directory lives
-        underneath it, effectively disabling containment host-wide."""
-        # Arrange
-        fake_home = tmp_path.joinpath(*home_relative)
-        fake_home.mkdir(parents=True)
-        monkeypatch.setattr(Path, "home", classmethod(lambda cls: fake_home))
-        broad_root = tmp_path.joinpath(*broad_relative)
-
-        # Act / Assert
-        assert _is_broad_containment_root(broad_root.resolve()) is True
-
-    def test_is_broad_containment_root_when_windows_users_ancestor_of_home_then_true(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
-        """C:\\Users is an ancestor of a Windows-style $HOME -- the same
-        ancestor-of-home class as /home and /Users (H-08 coverage gap,
-        folded into the H-02 remediation). Verified portably via a
-        stubbed Path.home() returning a PureWindowsPath so this holds
-        independent of the host OS actually running the test (no live
-        Windows host in RoE, per red-vuln's code-reasoning-only verdict)."""
-
-        class _FakeWindowsHome:
-            """Stand-in for Path.home() that resolves to a PureWindowsPath."""
-
-            def resolve(self) -> PureWindowsPath:
-                return PureWindowsPath("C:\\Users\\eng")
-
-        monkeypatch.setattr(Path, "home", classmethod(lambda cls: _FakeWindowsHome()))
-
-        assert _is_broad_containment_root(PureWindowsPath("C:\\Users")) is True
-
-    def test_is_broad_containment_root_when_descendant_of_home_then_false(
-        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-    ) -> None:
-        """A subdirectory beneath $HOME (e.g. ~/projects/foo) is NOT
-        broad -- only $HOME itself and its ancestors are, per the H-02
-        remediation. Prevents over-flagging ordinary project directories
-        that merely happen to live under the user's home directory."""
-        # Arrange
-        fake_home = tmp_path / "home-dir"
-        fake_home.mkdir()
-        monkeypatch.setattr(Path, "home", classmethod(lambda cls: fake_home))
-        descendant = fake_home / "projects" / "foo"
-        descendant.mkdir(parents=True)
-
-        # Act / Assert
-        assert _is_broad_containment_root(descendant.resolve()) is False
 
     def test_get_containment_roots_when_explicit_root_is_ancestor_of_home_then_warns_on_stderr(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
@@ -427,3 +354,139 @@ class TestBroadRootWarning:
         # Assert
         captured = capsys.readouterr()
         assert "Warning" in captured.err
+
+    def test_get_containment_roots_when_explicit_root_is_relative_then_resolved_against_cwd(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """A relative explicit_root resolves the same way Path.resolve() would."""
+        # Arrange
+        monkeypatch.chdir(tmp_path)
+        (tmp_path / "relative" / "dir").mkdir(parents=True)
+
+        # Act
+        roots = get_containment_roots("relative/dir")
+
+        # Assert
+        assert [r.path for r in roots] == [Path("relative/dir").resolve()]
+
+
+# =============================================================================
+# _load_trusted_roots -- I/O adapter reading ast.trusted_roots via the
+# shared LayeredConfigAdapter (build_layered_config_adapter()).
+# =============================================================================
+
+
+class TestLoadTrustedRootsConfig:
+    """_load_trusted_roots(): config precedence for ast.trusted_roots."""
+
+    def test_load_trusted_roots_when_no_config_present_then_returns_empty_list(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """With no TOML files and no env var, the default [] is returned."""
+        # Arrange
+        project_dir = tmp_path / "user-project"
+        project_dir.mkdir()
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(project_dir))
+        monkeypatch.delenv("JERRY_AST__TRUSTED_ROOTS", raising=False)
+        monkeypatch.delenv("JERRY_PROJECT", raising=False)
+
+        # Act
+        result = _load_trusted_roots()
+
+        # Assert
+        assert result == []
+
+    def test_load_trusted_roots_when_root_config_toml_has_ast_trusted_roots_then_returns_list(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """A root-level .jerry/config.toml [ast] trusted_roots entry is read."""
+        # Arrange
+        project_dir = tmp_path / "user-project"
+        jerry_dir = project_dir / ".jerry"
+        jerry_dir.mkdir(parents=True)
+        (jerry_dir / "config.toml").write_text(
+            '[ast]\ntrusted_roots = ["/some/trusted/dir"]\n', encoding="utf-8"
+        )
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(project_dir))
+        monkeypatch.delenv("JERRY_AST__TRUSTED_ROOTS", raising=False)
+        monkeypatch.delenv("JERRY_PROJECT", raising=False)
+
+        # Act
+        result = _load_trusted_roots()
+
+        # Assert
+        assert result == ["/some/trusted/dir"]
+
+    def test_load_trusted_roots_when_project_config_overrides_root_config_then_project_value_used(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """A projects/{JERRY_PROJECT}/.jerry/config.toml entry overrides the
+        root-level .jerry/config.toml entry (LayeredConfigAdapter precedence)."""
+        # Arrange
+        project_dir = tmp_path / "user-project"
+        root_jerry_dir = project_dir / ".jerry"
+        root_jerry_dir.mkdir(parents=True)
+        (root_jerry_dir / "config.toml").write_text(
+            '[ast]\ntrusted_roots = ["/root/level/dir"]\n', encoding="utf-8"
+        )
+        proj_jerry_dir = project_dir / "projects" / "PROJ-999" / ".jerry"
+        proj_jerry_dir.mkdir(parents=True)
+        (proj_jerry_dir / "config.toml").write_text(
+            '[ast]\ntrusted_roots = ["/project/level/dir"]\n', encoding="utf-8"
+        )
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(project_dir))
+        monkeypatch.setenv("JERRY_PROJECT", "PROJ-999")
+        monkeypatch.delenv("JERRY_AST__TRUSTED_ROOTS", raising=False)
+
+        # Act
+        result = _load_trusted_roots()
+
+        # Assert
+        assert result == ["/project/level/dir"]
+
+    def test_load_trusted_roots_when_env_var_set_then_env_value_overrides_all_file_config(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """JERRY_AST__TRUSTED_ROOTS (double underscore) overrides file config."""
+        # Arrange
+        project_dir = tmp_path / "user-project"
+        jerry_dir = project_dir / ".jerry"
+        jerry_dir.mkdir(parents=True)
+        (jerry_dir / "config.toml").write_text(
+            '[ast]\ntrusted_roots = ["/file/level/dir"]\n', encoding="utf-8"
+        )
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(project_dir))
+        monkeypatch.setenv("JERRY_AST__TRUSTED_ROOTS", '["/env/level/dir"]')
+        monkeypatch.delenv("JERRY_PROJECT", raising=False)
+
+        # Act
+        result = _load_trusted_roots()
+
+        # Assert
+        assert result == ["/env/level/dir"]
+
+
+# =============================================================================
+# build_layered_config_adapter -- shared factory (DD-4)
+# =============================================================================
+
+
+class TestBuildLayeredConfigAdapter:
+    """build_layered_config_adapter(): shared LayeredConfigAdapter factory."""
+
+    def test_build_layered_config_adapter_when_called_then_applies_supplied_defaults(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """The factory applies caller-supplied defaults through the
+        resulting adapter's .get()."""
+        # Arrange
+        project_dir = tmp_path / "user-project"
+        project_dir.mkdir()
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(project_dir))
+        monkeypatch.delenv("JERRY_PROJECT", raising=False)
+
+        # Act
+        adapter = build_layered_config_adapter({"ast.trusted_roots": []})
+
+        # Assert
+        assert adapter.get("ast.trusted_roots") == []

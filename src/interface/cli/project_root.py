@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2026 Adam Nowak
 
-"""Shared CLI project-root and containment-root resolution (BUG-010, GH #337).
+"""Shared CLI project-root and containment-root resolution (BUG-010 Option C).
 
 Single source of truth for resolving the USER'S project root across CLI
 namespaces (``config``, ``ast``, ...). Never anchors to the Jerry
@@ -9,38 +9,32 @@ installation's own directory tree, so commands operate on the user's
 repository regardless of where Jerry is installed (plugin checkout,
 marketplace install, or development clone).
 
-Also provides ``get_containment_roots()`` (BUG-010 scope widening, PR #341
-owner review, 2026-08-07): the default set of allowed ``jerry ast`` path
-containment roots widens from the single project root to include OS
-temp/scratchpad directories (covering Claude Code scratchpad writes), and
-an explicit ``--root`` CLI flag makes the allowed set *exactly* that one
-resolved directory -- a user-discretion exclusive override so ``jerry ast``
-can be pointed anywhere the user chooses.
+Also provides ``get_containment_roots()`` (BUG-010 Option C, replacing the
+prior always-widen containment policy): the default set of allowed
+``jerry ast`` path containment roots is the user's project root plus
+zero-or-more user-declared ``ast.trusted_roots`` config entries -- no
+directory is trusted unless the project owns it or the user explicitly
+configured it. An explicit ``--root`` CLI flag makes the allowed set
+*exactly* that one resolved directory -- a user-discretion exclusive
+override so ``jerry ast`` can be pointed anywhere the user chooses.
+
+This module is the I/O boundary (env, filesystem, config) around the pure
+policy decision core in ``containment_policy.py``; all classification and
+broad-root-detection logic lives there.
+
+References:
+    - BUG-010: jerry ast path containment hardening
+    - eng-lead-option-c-plan.md: authoritative implementation plan
 """
 
 from __future__ import annotations
 
 import os
 import sys
-import tempfile
-from pathlib import Path, PurePath
+from pathlib import Path
+from typing import Any
 
-#: Hard-coded macOS/Linux scratchpad root (BUG-010 scope widening).
-#:
-#: Private, monkeypatchable seam: intentionally NOT resolved or
-#: existence-checked at import time -- both happen inside
-#: ``get_containment_roots()`` at call time, so tests can override this
-#: per-test without needing to fake filesystem-level ``/tmp``
-#: non-existence (which is not reliably mockable across
-#: ``os.path.exists``/``Path.exists`` call sites).
-#:
-#: Rationale for registering this alongside ``tempfile.gettempdir()``: on
-#: macOS, ``tempfile.gettempdir()`` resolves under ``$TMPDIR``
-#: (``/var/folders/...``), while Claude Code's scratchpad directories live
-#: under ``/tmp/claude-*`` (canonically ``/private/tmp/...``) -- a
-#: different tree. Registering both covers both locations without
-#: hard-coding Claude-specific paths.
-_HARDCODED_TMP: Path = Path("/tmp")
+from src.interface.cli.containment_policy import ContainmentRoot, resolve_allowed_roots
 
 
 def get_project_root() -> Path:
@@ -60,64 +54,74 @@ def get_project_root() -> Path:
     return Path.cwd()
 
 
-def _is_broad_containment_root(resolved: PurePath) -> bool:
-    """Return True when ``resolved`` is an unusually broad containment root.
+def build_layered_config_adapter(defaults: dict[str, Any]) -> Any:
+    """Construct a ``LayeredConfigAdapter`` anchored to the user's project root.
 
-    "Broad" means the filesystem/drive root itself -- detected portably via
-    ``PurePath.parts`` rather than a hard-coded ``/`` so this works
-    identically for POSIX roots (``/``) and Windows drive roots
-    (``C:\\``, ``D:\\``, ...) -- or an ANCESTOR OF (or equal to) the user's
-    home directory (H-02/H-08 red-team remediation, RED-BUG010, CWE-1284-
-    adjacent incomplete-allowlist gap). The original check only flagged the
-    exact home directory, missing well-known multi-user parents such as
-    ``/home``, ``/Users``, and ``C:\\Users`` -- each of these contains
-    *every* user's home directory on the host, making containment just as
-    effectively disabled as a bare filesystem root, even though none of
-    them is the filesystem root or the exact home directory itself.
+    Shared factory (DD-4): extracts the adapter-construction logic that
+    ``CLIAdapter._create_config_adapter()`` already contains, so it is
+    written once and both call sites (``adapter.py``,
+    ``project_root.py``) share it -- ``jerry ast`` and ``jerry config``
+    resolve the identical config file set with identical precedence
+    (env prefix ``JERRY_``, same ``root_config_path``/
+    ``project_config_path`` derivation from ``JERRY_PROJECT``).
 
-    The ancestor check is deliberately dynamic (derived from the actual
-    ``Path.home()`` at call time) rather than a hard-coded, platform-
-    specific path list: it uses ``PurePath.relative_to()``, which works
-    identically for POSIX paths and ``PureWindowsPath`` instances, so a
-    single check covers ``/home``, ``/Users``, ``C:\\Users``, and any
-    other ancestor of the resolved home directory without enumerating
-    well-known paths by name.
+    Local infrastructure import (not a module-level import) to preserve
+    H-07 layer isolation discipline: this is a pre-existing architectural
+    exception, matching the existing in-repo precedent of
+    ``CLIAdapter._create_config_adapter()``, which already instantiates
+    infrastructure directly from the interface layer.
 
     Args:
-        resolved: An already-resolved, absolute path to check. Accepts any
-            ``PurePath`` (not just the platform-native ``Path``) so pure
-            cross-platform anchor detection can be unit tested without
-            requiring the host OS to match the path flavor under test.
+        defaults: Code-default configuration values for this adapter
+            instance (dot-notation keys).
 
     Returns:
-        True when the path is a filesystem/drive root, the home directory
-        itself, or an ancestor of the home directory.
+        A configured ``LayeredConfigAdapter`` instance.
     """
-    if len(resolved.parts) <= 1:
-        return True
-    try:
-        home = Path.home().resolve()
-    except (RuntimeError, OSError):
-        # Home directory cannot be determined on this system/environment;
-        # a resolvable path can never equal an undeterminable home, so it
-        # is not broad via this criterion.
-        return False
-    if resolved == home:
-        return True
-    # Ancestor-of-home check (H-02/H-08): raises ValueError when `resolved`
-    # is not an ancestor of `home` (e.g. a sibling or a descendant of
-    # home) -- caught and treated as "not broad". TypeError is also
-    # guarded defensively for cross-flavor PurePath comparisons (mixed
-    # POSIX/Windows path objects), which some pathlib implementations may
-    # reject outright rather than returning ValueError.
-    try:
-        home.relative_to(resolved)
-    except (ValueError, TypeError):
-        return False
-    return True
+    from src.infrastructure.adapters.configuration.layered_config_adapter import (
+        LayeredConfigAdapter,
+    )
+
+    root = get_project_root().resolve()
+    jerry_project = os.environ.get("JERRY_PROJECT")
+
+    project_config_path = None
+    if jerry_project:
+        project_config_path = root / "projects" / jerry_project / ".jerry" / "config.toml"
+
+    return LayeredConfigAdapter(
+        env_prefix="JERRY_",
+        root_config_path=root / ".jerry" / "config.toml",
+        project_config_path=project_config_path,
+        defaults=defaults,
+    )
 
 
-def get_containment_roots(explicit_root: str | None = None) -> list[Path]:
+def _load_trusted_roots() -> list[str]:
+    """Read ``ast.trusted_roots`` through the shared ``LayeredConfigAdapter``.
+
+    Precedence (highest to lowest): ``JERRY_AST__TRUSTED_ROOTS`` env var
+    (note the DOUBLE underscore -- ``EnvConfigAdapter`` maps one dot to
+    two underscores; the single-underscore form silently no-ops) ->
+    project config (``projects/{JERRY_PROJECT}/.jerry/config.toml``) ->
+    root config (``.jerry/config.toml``) -> code default ``[]``.
+
+    Relative entries resolve against the current working directory when
+    later converted to absolute paths by the caller -- a foot-gun for a
+    security-relevant config key; use absolute paths.
+
+    Returns:
+        The raw, unresolved list of trusted-root path strings (possibly
+        empty).
+    """
+    config = build_layered_config_adapter({"ast.trusted_roots": []})
+    return [str(entry) for entry in config.get_list("ast.trusted_roots", [])]
+
+
+def get_containment_roots(
+    explicit_root: str | None = None,
+    quiet: bool = False,
+) -> list[ContainmentRoot]:
     """Resolve the set of allowed containment roots for AST path checks.
 
     When ``explicit_root`` is provided (the CLI ``--root`` flag), the
@@ -127,51 +131,72 @@ def get_containment_roots(explicit_root: str | None = None) -> list[Path]:
     run the surrounding tool with permission checks skipped. Jerry's
     containment check is best-effort defense against accidental
     traversal, not a security boundary against a user who has already
-    chosen to grant the tool broad access via ``--root``. When the
-    resolved ``--root`` is unusually broad (a filesystem/drive root, or
-    the user's home directory), a single-line, non-fatal WARNING is
-    printed to stderr -- never stdout, which carries the JSON/render
-    payload -- noting that containment is effectively disabled; the
-    invocation still proceeds (user discretion).
+    chosen to grant the tool broad access via ``--root``.
 
     Without ``explicit_root``, the allowed set defaults to:
         1. The user's project root (``CLAUDE_PROJECT_DIR`` env var, else
            cwd).
-        2. ``tempfile.gettempdir()``, resolved.
-        3. ``/tmp``, resolved, when it exists on this filesystem.
+        2. Zero-or-more user-declared ``ast.trusted_roots`` entries (read
+           via ``_load_trusted_roots()``), each resolved to an absolute
+           path. No directory is auto-trusted; OS temp/scratchpad
+           directories (``tempfile.gettempdir()``, ``/tmp``) are never
+           part of the default set. To grant ``jerry ast`` access to a
+           scratchpad directory (e.g. for Claude Code scratchpad writes),
+           declare it explicitly via ``ast.trusted_roots``.
 
-    Roots 2 and 3 exist to cover Claude Code scratchpad writes: on macOS,
-    ``tempfile.gettempdir()`` resolves under ``$TMPDIR``
-    (``/var/folders/...``), while Claude's scratchpad directories live
-    under ``/tmp/claude-*`` (canonically ``/private/tmp/...``) -- a
-    different tree. Registering both covers both locations without
-    hard-coding Claude-specific paths. On Windows, only
-    ``tempfile.gettempdir()`` applies (``/tmp`` will not exist).
+    When any returned root is unusually broad (a filesystem/drive root,
+    the user's home directory, or an ancestor of it), a single-line,
+    non-fatal WARNING is printed to stderr -- never stdout, which carries
+    the JSON/render payload -- for ``explicit`` (R-3) and ``configured``
+    (DD-1 symmetry extension) classifications; the invocation still
+    proceeds (user discretion). The project root's own broadness is never
+    warned about (unchanged from prior behavior). Pass ``quiet=True`` to
+    suppress this warning entirely (C6).
 
     Args:
         explicit_root: The user-supplied ``--root`` CLI value, or None.
+        quiet: When True, suppresses the broad-root stderr warning.
 
     Returns:
-        A de-duplicated, order-preserving list of resolved absolute Path
-        objects. Exactly one entry when ``explicit_root`` is set; the
-        project root is always the first entry when it is not.
+        An ordered list of ``ContainmentRoot`` entries. Exactly one entry
+        when ``explicit_root`` is set (classification ``"explicit"``);
+        otherwise the project root (classification ``"project"``, always
+        first) followed by de-duplicated configured trusted roots
+        (classification ``"configured"``).
     """
+    project_root = get_project_root().resolve()
+
     if explicit_root is not None:
         resolved_root = Path(explicit_root).resolve()
-        if _is_broad_containment_root(resolved_root):
-            print(
-                f"Warning: --root '{resolved_root}' is an unusually broad "
-                "containment root (a filesystem/drive root or the home "
-                "directory); path containment is effectively disabled for "
-                "this invocation.",
-                file=sys.stderr,
-            )
-        return [resolved_root]
+        roots = resolve_allowed_roots(project_root, [], resolved_root)
+    else:
+        trusted_raw = _load_trusted_roots()
+        trusted_resolved = [Path(entry).resolve() for entry in trusted_raw]
+        roots = resolve_allowed_roots(project_root, trusted_resolved, None)
 
-    roots: list[Path] = [get_project_root().resolve(), Path(tempfile.gettempdir()).resolve()]
-    if _HARDCODED_TMP.exists():
-        roots.append(_HARDCODED_TMP.resolve())
+    if not quiet:
+        for root in roots:
+            if not root.is_broad:
+                continue
+            if root.classification == "explicit":
+                print(
+                    f"Warning: --root '{root.path}' is an unusually broad "
+                    "containment root (a filesystem/drive root or the home "
+                    "directory); path containment is effectively disabled for "
+                    "this invocation.",
+                    file=sys.stderr,
+                )
+            elif root.classification == "configured":
+                print(
+                    f"Warning: configured trusted root '{root.path}' "
+                    "(ast.trusted_roots) is an unusually broad containment "
+                    "root (a filesystem/drive root or the home directory); "
+                    "path containment is effectively widened for this "
+                    "invocation.",
+                    file=sys.stderr,
+                )
+            # "project" classification: no warning -- unchanged from prior
+            # behavior; the project root is always the user's own
+            # repository by construction of get_project_root().
 
-    # De-duplicate while preserving order (e.g. Linux CI: gettempdir()
-    # often IS /tmp; dict.fromkeys() dedupes on Path.__eq__/__hash__).
-    return list(dict.fromkeys(roots))
+    return roots

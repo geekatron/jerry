@@ -587,9 +587,33 @@ def _add_root_argument(parser: argparse.ArgumentParser) -> None:
         default=None,
         help=(
             "Restrict path containment to exactly this directory "
-            "(overrides the default project-root + temp-dir allowed set). "
-            "User discretion: use to run 'jerry ast' against any location."
+            "(overrides the default project-root + configured-trusted-root "
+            "allowed set). User discretion: use to run 'jerry ast' against "
+            "any location."
         ),
+    )
+
+
+def _add_quiet_argument(parser: argparse.ArgumentParser) -> None:
+    """Add the shared ``--quiet`` transparency-suppression flag to an ast subparser.
+
+    When supplied, suppresses the stderr transparency notes and
+    broad-root warnings that ``jerry ast`` may print for this invocation
+    (BUG-010 Option C, C6) -- e.g. when a file is allowed via a
+    ``ast.trusted_roots`` configured root rather than the project root, or
+    when ``--root``/a configured root resolves to an unusually broad
+    location. Default is OFF (warnings/notes print by default); stdout
+    (the JSON/render payload channel) is never touched by these warnings
+    regardless of ``--quiet``.
+
+    Args:
+        parser: The ast subcommand parser to add the flag to.
+    """
+    parser.add_argument(
+        "--quiet",
+        action="store_true",
+        default=False,
+        help="Suppress stderr transparency notes and broad-root warnings for this invocation.",
     )
 
 
@@ -635,6 +659,7 @@ def _add_ast_namespace(
         help="Path to markdown file",
     )
     _add_root_argument(parse_parser)
+    _add_quiet_argument(parse_parser)
 
     # ast render
     render_parser = ast_subparsers.add_parser(
@@ -647,6 +672,7 @@ def _add_ast_namespace(
         help="Path to markdown file",
     )
     _add_root_argument(render_parser)
+    _add_quiet_argument(render_parser)
 
     # ast validate
     validate_parser = ast_subparsers.add_parser(
@@ -670,6 +696,7 @@ def _add_ast_namespace(
         help="Include detailed nav table entries in output.",
     )
     _add_root_argument(validate_parser)
+    _add_quiet_argument(validate_parser)
 
     # ast query
     query_parser = ast_subparsers.add_parser(
@@ -686,6 +713,7 @@ def _add_ast_namespace(
         help="Node type to query (e.g., heading, blockquote, paragraph)",
     )
     _add_root_argument(query_parser)
+    _add_quiet_argument(query_parser)
 
     # ast frontmatter
     frontmatter_parser = ast_subparsers.add_parser(
@@ -698,6 +726,7 @@ def _add_ast_namespace(
         help="Path to markdown file",
     )
     _add_root_argument(frontmatter_parser)
+    _add_quiet_argument(frontmatter_parser)
 
     # ast modify
     modify_parser = ast_subparsers.add_parser(
@@ -720,6 +749,7 @@ def _add_ast_namespace(
         help="New value for the field.",
     )
     _add_root_argument(modify_parser)
+    _add_quiet_argument(modify_parser)
 
     # ast reinject
     reinject_parser = ast_subparsers.add_parser(
@@ -732,6 +762,7 @@ def _add_ast_namespace(
         help="Path to markdown file",
     )
     _add_root_argument(reinject_parser)
+    _add_quiet_argument(reinject_parser)
 
     # ast detect (RE-006: WI-017)
     detect_parser = ast_subparsers.add_parser(
@@ -744,6 +775,7 @@ def _add_ast_namespace(
         help="Path to markdown file",
     )
     _add_root_argument(detect_parser)
+    _add_quiet_argument(detect_parser)
 
     # ast sections (RE-006: WI-017)
     sections_parser = ast_subparsers.add_parser(
@@ -756,6 +788,7 @@ def _add_ast_namespace(
         help="Path to markdown file",
     )
     _add_root_argument(sections_parser)
+    _add_quiet_argument(sections_parser)
 
     # ast metadata (RE-006: WI-017)
     metadata_parser = ast_subparsers.add_parser(
@@ -768,6 +801,7 @@ def _add_ast_namespace(
         help="Path to markdown file",
     )
     _add_root_argument(metadata_parser)
+    _add_quiet_argument(metadata_parser)
 
 
 def _add_agents_namespace(
