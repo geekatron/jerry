@@ -150,6 +150,7 @@ Research Anthropic's official Claude Code documentation, GitHub source, and comm
 | BUG-005 | Bug | Fix Hook Test Step Definitions (GH #214) | completed | high | 3 |
 | BUG-006 | Bug | Fix file_repository.py Hardcoded Path Separator (GH #117) | completed | medium | 1 |
 | BUG-007 | Bug | Fix Broken mkdocs Anchor Links (GH #213) | completed | high | 1 |
+| BUG-010 | Bug | jerry ast Rejects Files Outside Plugin Install Tree (GH #337) | in_progress | high | 5 |
 | EN-004 | Enabler | Memory-Keeper Collision Detection Enhancement | pending | medium | 5 |
 | EN-005 | Enabler | Add .gitattributes Cross-Platform LF (GH #116) | completed | medium | 1 |
 
@@ -192,6 +193,7 @@ Research Anthropic's official Claude Code documentation, GitHub source, and comm
 - [BUG-005: Fix Hook Test Step Definitions (GH #214)](./BUG-005-hook-test-step-defs/BUG-005-hook-test-step-defs.md)
 - [BUG-006: Fix file_repository.py Hardcoded Path Separator (GH #117)](./BUG-006-file-repo-path-sep/BUG-006-file-repo-path-sep.md)
 - [BUG-007: Fix Broken mkdocs Anchor Links (GH #213)](./BUG-007-broken-mkdocs-anchors/BUG-007-broken-mkdocs-anchors.md)
+- [BUG-010: jerry ast Rejects Files Outside Plugin Install Tree (GH #337)](./BUG-010-ast-project-root/BUG-010-ast-project-root.md)
 
 ---
 
@@ -203,9 +205,9 @@ Research Anthropic's official Claude Code documentation, GitHub source, and comm
 +------------------------------------------------------------------+
 | Stories:   [####################] 100% (23/23 completed)          |
 | Enablers:  [################....] 80% (4/5 completed)             |
-| Bugs:      [####################] 100% (7/7 completed)            |
+| Bugs:      [#################...] 88% (7/8 completed)             |
 +------------------------------------------------------------------+
-| Overall:   [###################.] 97% (34/35 items)               |
+| Overall:   [##################..] 94% (34/36 items)               |
 +------------------------------------------------------------------+
 ```
 
@@ -220,12 +222,13 @@ Research Anthropic's official Claude Code documentation, GitHub source, and comm
 | **Total Enablers** | 5 |
 | **Completed Enablers** | 4 |
 | **Pending Enablers** | 1 (EN-004) |
-| **Total Bugs** | 7 |
+| **Total Bugs** | 8 |
 | **Completed Bugs** | 7 |
+| **In Progress Bugs** | 1 (BUG-010, pending PR #341 merge) |
 | **Pending Bugs** | 0 |
-| **Total Effort (points)** | 123 |
+| **Total Effort (points)** | 128 |
 | **Completed Effort** | 118 |
-| **Completion %** | 97% |
+| **Completion %** | 94% |
 
 ---
 
@@ -252,3 +255,4 @@ Research Anthropic's official Claude Code documentation, GitHub source, and comm
 | 2026-03-28 | claude | in_progress | STORY-015 through STORY-020 completed (tier model renumbering). EN-004 created (pending). 83% complete. |
 | 2026-03-29 | claude | in_progress | STORY-011, STORY-013, STORY-014 closed out with delivery evidence. All 20 stories complete. All DoD + functional + non-functional criteria verified. 96% (23/24). Status remains in_progress: EN-004 (MK collision detection, non-blocking, FMEA RPN=105) is the sole remaining item. |
 | 2026-03-30 | claude | in_progress | CI cleanup sprint: STORY-023/024/025 + BUG-001-007 + EN-005 completed with delivery evidence. All stories and bugs done. GH #117, #177, #178, #193, #213, #214, #226, #227, #228 closed. Sole remaining: EN-004 (MK collision detection). 97% (34/35). |
+| 2026-08-12 | claude | in_progress | BUG-010 (jerry ast containment, Option C — GH #337) wired into this feature — it declared `Parent: FEAT-001` and lives under this directory but predated the inventory (parent-side orphan gap found in the BUG-010 worktracker audit). BUG-010 redesigned + C4 tournament PASS (S-014 0.928); in_progress pending PR #341 merge. Now 94% (34/36); remaining: EN-004 + BUG-010. |

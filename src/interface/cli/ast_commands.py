@@ -298,20 +298,20 @@ def _read_file(
     if _ENFORCE_PATH_CONTAINMENT:
         resolved, error = _check_path_containment(file_path, root, quiet)
         if error is not None:
-            print(f"Error: {error}")
+            print(f"Error: {error}", file=sys.stderr)
             return None, 2
         assert resolved is not None  # guaranteed by _check_path_containment
     else:
         resolved = Path(file_path).resolve()
 
     if not resolved.exists():
-        print(f"Error: File not found: {file_path}")
+        print(f"Error: File not found: {file_path}", file=sys.stderr)
         return None, 2
     try:
         content = resolved.read_text(encoding="utf-8")
         return content, 0
     except OSError as exc:
-        print(f"Error reading file {file_path}: {exc}")
+        print(f"Error reading file {file_path}: {exc}", file=sys.stderr)
         return None, 2
 
 
@@ -450,7 +450,7 @@ def ast_validate(
     try:
         entity_schema = get_entity_schema(schema)
     except ValueError as exc:
-        print(f"Error: {exc}")
+        print(f"Error: {exc}", file=sys.stderr)
         return 2
 
     report = validate_document(doc, entity_schema)
@@ -601,7 +601,7 @@ def ast_modify(
     try:
         new_doc = fm.set(key, value)
     except KeyError:
-        print(f"Error: Key '{key}' not found in frontmatter")
+        print(f"Error: Key '{key}' not found in frontmatter", file=sys.stderr)
         return 1
 
     new_content = new_doc.render()
@@ -629,7 +629,8 @@ def ast_modify(
         if write_time_error is not None:
             print(
                 f"Error: Path escapes allowed containment roots at write time: {file_path} "
-                f"({_CONTAINMENT_ESCAPE_HINT})"
+                f"({_CONTAINMENT_ESCAPE_HINT})",
+                file=sys.stderr,
             )
             return 2
         assert resolved is not None  # guaranteed by _check_path_containment
@@ -654,7 +655,7 @@ def ast_modify(
         os.replace(temp_path_str, str(target_path))
         temp_path_str = None  # Mark as renamed (no cleanup needed)
     except OSError as exc:
-        print(f"Error writing file {file_path}: {exc}")
+        print(f"Error writing file {file_path}: {exc}", file=sys.stderr)
         return 2
     finally:
         # Clean up temp file descriptor if still open

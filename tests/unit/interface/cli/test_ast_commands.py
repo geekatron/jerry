@@ -253,10 +253,13 @@ class TestAstParse:
     def test_parse_file_not_found_prints_error(
         self, nonexistent_file: Path, capsys: pytest.CaptureFixture
     ) -> None:
-        """ast_parse prints an error message when file does not exist."""
+        """ast_parse prints an error message to stderr (not stdout) when
+        the file does not exist (GH #371: stdout must stay clean for
+        JSON-consuming pipelines)."""
         ast_parse(str(nonexistent_file))
         captured = capsys.readouterr()
-        assert "not found" in captured.out.lower() or "error" in captured.out.lower()
+        assert captured.out == ""
+        assert "not found" in captured.err.lower() or "error" in captured.err.lower()
 
     def test_parse_output_is_valid_json(
         self, tmp_md_file: Path, capsys: pytest.CaptureFixture
@@ -330,10 +333,12 @@ class TestAstRender:
     def test_render_file_not_found_prints_error(
         self, nonexistent_file: Path, capsys: pytest.CaptureFixture
     ) -> None:
-        """ast_render prints an error message when file does not exist."""
+        """ast_render prints an error message to stderr (not stdout) when
+        the file does not exist (GH #371)."""
         ast_render(str(nonexistent_file))
         captured = capsys.readouterr()
-        assert "not found" in captured.out.lower() or "error" in captured.out.lower()
+        assert captured.out == ""
+        assert "not found" in captured.err.lower() or "error" in captured.err.lower()
 
     def test_render_is_idempotent_on_normalized_input(
         self, tmp_path: Path, capsys: pytest.CaptureFixture
@@ -431,10 +436,24 @@ class TestAstValidate:
     def test_validate_file_not_found_prints_error(
         self, nonexistent_file: Path, capsys: pytest.CaptureFixture
     ) -> None:
-        """ast_validate prints an error message when file does not exist."""
+        """ast_validate prints an error message to stderr (not stdout) when
+        the file does not exist (GH #371)."""
         ast_validate(str(nonexistent_file))
         captured = capsys.readouterr()
-        assert "not found" in captured.out.lower() or "error" in captured.out.lower()
+        assert captured.out == ""
+        assert "not found" in captured.err.lower() or "error" in captured.err.lower()
+
+    def test_validate_with_unknown_schema_prints_error_to_stderr_only(
+        self, tmp_md_file: Path, capsys: pytest.CaptureFixture
+    ) -> None:
+        """ast_validate with an unknown --schema type prints the error to
+        stderr, leaving stdout empty (GH #371: unknown-schema is a
+        diagnostic, not a JSON payload)."""
+        result = ast_validate(str(tmp_md_file), schema="entity")
+        captured = capsys.readouterr()
+        assert result == 2
+        assert captured.out == ""
+        assert "error" in captured.err.lower()
 
     def test_validate_nav_flag_includes_entries(
         self, tmp_path: Path, capsys: pytest.CaptureFixture
@@ -632,10 +651,12 @@ class TestAstQuery:
     def test_query_file_not_found_prints_error(
         self, nonexistent_file: Path, capsys: pytest.CaptureFixture
     ) -> None:
-        """ast_query prints an error message when file does not exist."""
+        """ast_query prints an error message to stderr (not stdout) when
+        the file does not exist (GH #371)."""
         ast_query(str(nonexistent_file), "heading")
         captured = capsys.readouterr()
-        assert "not found" in captured.out.lower() or "error" in captured.out.lower()
+        assert captured.out == ""
+        assert "not found" in captured.err.lower() or "error" in captured.err.lower()
 
     def test_query_output_is_valid_json(
         self, tmp_md_file: Path, capsys: pytest.CaptureFixture
@@ -752,6 +773,17 @@ class TestAstModify:
         """ast_modify returns 1 when key does not exist in frontmatter."""
         result = ast_modify(str(tmp_entity_file), "NonExistent", "value")
         assert result == 1
+
+    def test_modify_missing_key_prints_error_to_stderr_only(
+        self, tmp_entity_file: Path, capsys: pytest.CaptureFixture
+    ) -> None:
+        """ast_modify prints the key-not-found error to stderr, leaving
+        stdout empty (GH #371)."""
+        result = ast_modify(str(tmp_entity_file), "NonExistent", "value")
+        captured = capsys.readouterr()
+        assert result == 1
+        assert captured.out == ""
+        assert "not found" in captured.err.lower()
 
     def test_modify_file_not_found(
         self, nonexistent_file: Path, capsys: pytest.CaptureFixture
@@ -1557,6 +1589,36 @@ class TestBug010ProjectRootContainment:
         assert exit_code2 == 2
         assert content2 is None
 
+    def test_read_file_when_containment_escape_then_error_printed_to_stderr_only(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        """GH #371: the read-time containment-escape diagnostic
+        (``Error: Path escapes allowed containment roots: ...``) MUST be
+        printed to stderr, not stdout -- a consumer piping ``jerry ast``
+        output to a JSON parser (e.g. ``jq``) must never see diagnostic
+        text mixed into stdout."""
+        # Arrange
+        self._no_configured_roots(monkeypatch)
+        monkeypatch.setattr(ast_commands_module, "_ENFORCE_PATH_CONTAINMENT", True)
+        user_root = tmp_path / "user-project"
+        user_root.mkdir()
+        outside = tmp_path / "elsewhere"
+        outside.mkdir()
+        target = outside / "escape.md"
+        target.write_text("# Escape\n", encoding="utf-8")
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(user_root))
+
+        # Act
+        content, exit_code = ast_commands_module._read_file(str(target))
+
+        # Assert
+        assert exit_code == 2
+        assert content is None
+        captured = capsys.readouterr()
+        assert captured.out == ""
+        assert "escapes" in captured.err.lower()
+        assert ast_commands_module._CONTAINMENT_ESCAPE_HINT in captured.err
+
     def test_ast_modify_when_root_given_and_write_target_outside_root_then_rejected_at_write_time(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
@@ -1690,7 +1752,8 @@ class TestBug010ProjectRootContainment:
         # Assert
         assert result == 2
         captured = capsys.readouterr()
-        assert ast_commands_module._CONTAINMENT_ESCAPE_HINT in captured.out
+        assert captured.out == ""
+        assert ast_commands_module._CONTAINMENT_ESCAPE_HINT in captured.err
 
     @pytest.mark.skipif(
         sys.platform == "win32", reason="symlink creation requires elevated privileges on Windows"

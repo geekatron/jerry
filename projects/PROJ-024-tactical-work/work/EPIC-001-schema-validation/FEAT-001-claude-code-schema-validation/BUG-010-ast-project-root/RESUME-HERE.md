@@ -16,7 +16,8 @@
 | `da34a8b8` | Option C implementation (config-declared trust; temp auto-trust + ownership gate removed; `--quiet`). |
 | `cce557c5` | Config-input hygiene fixes (AC-11 blank entry, AC-18 `JERRY_PROJECT` traversal, AC-10 relative warn-and-honor). |
 | `a6240a4d` | Tournament fixes A-1..A-7 (write-path TOCTOU + small items), governance reconciliation, and the full tournament record. |
-| *(this pass)* | Final S-014-gate polish: CHANGELOG Option C entry, this file's refresh, and the write-time error hint. |
+| `e00ed1c4` | Final S-014-gate polish: CHANGELOG Option C entry, this file's refresh, and the write-time error hint. |
+| *(next commit)* | Worktracker audit + tidy, GH #371 (`Error:`->stderr) folded in, end-to-end re-verified. |
 
 ## Verification done
 
@@ -34,9 +35,9 @@
 
 ## Next actions
 
-1. Done — tournament fixes + governance committed at `a6240a4d`.
-2. In progress — final S-014 gate: the first re-score returned **0.909 REVISE** on three doc/consistency items (CHANGELOG Option C entry, this file's stale "uncommitted" note, and the write-time error hint). Those are being closed in the current pass, then re-scored to ≥ 0.92.
-3. On PASS: PR #341 review + merge (use a `Closes #337` trailer so merge to main auto-closes the issue).
+1. Done — tournament fixes + governance at `a6240a4d`; S-014 gap fixes at `e00ed1c4`.
+2. Done — final S-014 re-score **PASS 0.928** (`adv-s014-final-score-optionc.md`). End-to-end verified via a real `.jerry/config.toml` + the live `jerry` CLI. GH #371 (`Error:`->stdout) folded into this unit and fixed; worktracker audit (`wt-audit-optionc.md`) + tidy applied.
+3. **Ready to merge** — PR #341 review + merge (use a `Closes #337` trailer so merge to main auto-closes the issue).
 
 ## Artifacts (this folder)
 
