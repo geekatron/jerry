@@ -1642,6 +1642,59 @@ class TestBug010ProjectRootContainment:
     @pytest.mark.skipif(
         sys.platform == "win32", reason="symlink creation requires elevated privileges on Windows"
     )
+    def test_ast_modify_when_write_time_escape_rejected_then_error_includes_containment_hint(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        """Regression guard: the write-time containment-escape error (A-1
+        TOCTOU recheck) must carry the same `_CONTAINMENT_ESCAPE_HINT`
+        (``configure ast.trusted_roots or pass --root``) that the
+        read-time escape messages in `_check_path_containment` already
+        carry (added by A-6), so a user hitting the write-time escape
+        gets the same actionable remediation guidance as one hitting the
+        read-time escape. Reuses the symlink-swap harness: a symlink that
+        resolves inside an allowed root at read time, then is repointed
+        outside all allowed roots before the write-time recheck runs."""
+        # Arrange
+        monkeypatch.setattr(ast_commands_module, "_ENFORCE_PATH_CONTAINMENT", True)
+        user_root = tmp_path / "user-project"
+        user_root.mkdir()
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(user_root))
+        self._no_configured_roots(monkeypatch)
+
+        original = "# Entity\n\n> **Status:** pending\n\n## Details\n"
+        inside_target = user_root / "real-inside.md"
+        inside_target.write_text(original, encoding="utf-8")
+
+        outside_dir = tmp_path / "outside-everything"
+        outside_dir.mkdir()
+        outside_target = outside_dir / "real-outside.md"
+        outside_target.write_text(original, encoding="utf-8")
+
+        link = user_root / "entity.md"
+        link.symlink_to(inside_target)
+
+        # Read succeeds: symlink currently resolves inside the project root.
+        source, read_exit_code = ast_commands_module._read_file(str(link))
+        assert read_exit_code == 0
+        assert source == original
+
+        # Attacker swaps the symlink to point outside all allowed roots
+        # between the read and the write.
+        link.unlink()
+        link.symlink_to(outside_target)
+
+        # Act
+        with patch.object(ast_commands_module, "_read_file", return_value=(source, 0)):
+            result = ast_modify(str(link), "Status", "done")
+
+        # Assert
+        assert result == 2
+        captured = capsys.readouterr()
+        assert ast_commands_module._CONTAINMENT_ESCAPE_HINT in captured.out
+
+    @pytest.mark.skipif(
+        sys.platform == "win32", reason="symlink creation requires elevated privileges on Windows"
+    )
     def test_ast_modify_when_write_time_check_resolves_swapped_target_then_write_lands_on_validated_path(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:

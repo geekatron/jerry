@@ -627,7 +627,10 @@ def ast_modify(
     if _ENFORCE_PATH_CONTAINMENT:
         resolved, write_time_error = _check_path_containment(file_path, root, quiet=True)
         if write_time_error is not None:
-            print(f"Error: Path escapes allowed containment roots at write time: {file_path}")
+            print(
+                f"Error: Path escapes allowed containment roots at write time: {file_path} "
+                f"({_CONTAINMENT_ESCAPE_HINT})"
+            )
             return 2
         assert resolved is not None  # guaranteed by _check_path_containment
         target_path = resolved

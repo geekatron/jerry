@@ -15,7 +15,8 @@
 | `62b429e8` | Base fix: anchor containment to the user's project root (`CLAUDE_PROJECT_DIR`/cwd). |
 | `da34a8b8` | Option C implementation (config-declared trust; temp auto-trust + ownership gate removed; `--quiet`). |
 | `cce557c5` | Config-input hygiene fixes (AC-11 blank entry, AC-18 `JERRY_PROJECT` traversal, AC-10 relative warn-and-honor). |
-| *(uncommitted)* | Tournament fixes A-1..A-7 (write-path TOCTOU + small items) + governance reconciliation. **Next checkpoint.** |
+| `a6240a4d` | Tournament fixes A-1..A-7 (write-path TOCTOU + small items), governance reconciliation, and the full tournament record. |
+| *(this pass)* | Final S-014-gate polish: CHANGELOG Option C entry, this file's refresh, and the write-time error hint. |
 
 ## Verification done
 
@@ -33,9 +34,9 @@
 
 ## Next actions
 
-1. Checkpoint the tournament fixes + governance reconciliation (pre-commit runs the full suite).
-2. Run the S-014 scorer on the corrected version; target ≥ 0.92.
-3. On PASS: PR #341 review + merge (use a `Closes #337` trailer so merge to main auto-closes it).
+1. Done — tournament fixes + governance committed at `a6240a4d`.
+2. In progress — final S-014 gate: the first re-score returned **0.909 REVISE** on three doc/consistency items (CHANGELOG Option C entry, this file's stale "uncommitted" note, and the write-time error hint). Those are being closed in the current pass, then re-scored to ≥ 0.92.
+3. On PASS: PR #341 review + merge (use a `Closes #337` trailer so merge to main auto-closes the issue).
 
 ## Artifacts (this folder)
 
