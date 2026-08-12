@@ -143,6 +143,14 @@ def _load_trusted_roots() -> list[str]:
     fails ``Path(...).is_absolute()`` and is silently (mis)treated as a
     cwd-relative entry by the caller.
 
+    Windows note: a path embedded in ``.jerry/config.toml`` or in the
+    ``JERRY_AST__TRUSTED_ROOTS`` env var (JSON array form) is parsed as a
+    TOML/JSON string first. A raw backslash-separated Windows path (e.g.
+    ``C:\\Users\\me``) contains invalid TOML/JSON escapes and will fail to
+    parse -- use forward slashes (``C:/Users/me``) or escaped backslashes
+    (``C:\\Users\\me``) in TOML/JSON config. A single path passed directly
+    via the env var without JSON-array wrapping is not affected.
+
     Returns:
         The stripped, unresolved list of non-blank trusted-root path
         strings (possibly empty).

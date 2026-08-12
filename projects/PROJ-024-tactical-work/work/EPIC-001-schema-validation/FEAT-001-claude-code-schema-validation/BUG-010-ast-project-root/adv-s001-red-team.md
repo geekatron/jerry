@@ -74,9 +74,9 @@ This is documented as intentional and consistent with the size-check's own OSErr
 
 **Attack Vector:** `ast_modify` (`ast_commands.py:637-724`) calls `_read_file` once (line 659), which performs the H-01 ownership-gated containment check against a `resolved` path computed *inside* `_check_path_containment`. That `resolved` Path object is never returned to `ast_modify`. Instead, `ast_modify` independently recomputes the write target from the raw string argument:
 ```python
-target_path = Path(file_path).resolve()   # line 675, a SECOND, independent resolve
+target_path = Path(file_path).resolve()  # line 675, a SECOND, independent resolve
 if _ENFORCE_PATH_CONTAINMENT:
-    allowed_roots = get_containment_roots(root)   # line 679, fresh containment set
+    allowed_roots = get_containment_roots(root)  # line 679, fresh containment set
     if not any(target_path.is_relative_to(r) for r in allowed_roots):
         return 2
 # ... mkstemp + os.replace(temp_path_str, str(target_path))   # lines 688-698

@@ -1014,7 +1014,11 @@ class CLIAdapter:
         ``jerry config show``, ``jerry config get ast.trusted_roots``, and
         ``jerry config set ast.trusted_roots ... --scope project|root``.
         Use absolute paths for entries -- relative entries resolve
-        against the current working directory.
+        against the current working directory. On Windows, entries set
+        via ``config.toml`` or the JSON-array form of
+        ``JERRY_AST__TRUSTED_ROOTS`` must use forward slashes (or escaped
+        backslashes) -- a raw ``C:\\Users\\...`` path is not valid
+        TOML/JSON.
 
         Note: This is a local import to avoid infrastructure imports at module level.
 

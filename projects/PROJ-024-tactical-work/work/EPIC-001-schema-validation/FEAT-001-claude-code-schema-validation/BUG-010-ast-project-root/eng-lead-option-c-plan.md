@@ -83,6 +83,7 @@ established).
 @dataclass(frozen=True, slots=True)
 class ContainmentRoot:
     """An allowed containment root with its trust classification."""
+
     path: Path
     classification: Literal["project", "configured", "explicit"]
     is_broad: bool
@@ -207,7 +208,9 @@ to `_add_root_argument`, adding:
 
 ```python
 parser.add_argument(
-    "--quiet", action="store_true", default=False,
+    "--quiet",
+    action="store_true",
+    default=False,
     help="Suppress stderr transparency notes and broad-root warnings for this invocation.",
 )
 ```

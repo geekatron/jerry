@@ -65,6 +65,7 @@ def build_layered_config_adapter(defaults: dict[str, Any]) -> Any:
     from src.infrastructure.adapters.configuration.layered_config_adapter import (
         LayeredConfigAdapter,
     )
+
     ...
     return LayeredConfigAdapter(
         env_prefix="JERRY_",

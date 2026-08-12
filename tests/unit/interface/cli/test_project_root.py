@@ -32,6 +32,7 @@ Pure predicate coverage for ``_is_broad_containment_root`` lives in
 
 from __future__ import annotations
 
+import json
 import tempfile
 from pathlib import Path
 
@@ -187,8 +188,11 @@ class TestGetContainmentRoots:
         trusted_dir.mkdir()
         jerry_dir = project_dir / ".jerry"
         jerry_dir.mkdir()
+        # Forward-slash form (Path.as_posix()) keeps this a valid TOML basic
+        # string on Windows too -- a raw "C:\Users\..." path would embed
+        # invalid TOML escapes (e.g. "\U", "\s") and fail to parse.
         (jerry_dir / "config.toml").write_text(
-            f'[ast]\ntrusted_roots = ["{trusted_dir}"]\n', encoding="utf-8"
+            f'[ast]\ntrusted_roots = ["{trusted_dir.as_posix()}"]\n', encoding="utf-8"
         )
         monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(project_dir))
         monkeypatch.delenv("JERRY_AST__TRUSTED_ROOTS", raising=False)
@@ -210,7 +214,10 @@ class TestGetContainmentRoots:
         trusted_dir = tmp_path / "scratchpad"
         trusted_dir.mkdir()
         monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(project_dir))
-        monkeypatch.setenv("JERRY_AST__TRUSTED_ROOTS", f'["{trusted_dir}"]')
+        # json.dumps escapes backslashes correctly, so a raw Windows path
+        # (e.g. "C:\Users\...") round-trips through JSON parsing intact --
+        # an f-string interpolation would embed invalid JSON escapes.
+        monkeypatch.setenv("JERRY_AST__TRUSTED_ROOTS", json.dumps([str(trusted_dir)]))
 
         # Act
         roots = get_containment_roots()
@@ -704,7 +711,10 @@ class TestLoadTrustedRootsConfig:
         trusted_dir = tmp_path / "scratchpad"
         trusted_dir.mkdir()
         monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(project_dir))
-        monkeypatch.setenv("JERRY_AST__TRUSTED_ROOTS", f'["  {trusted_dir}  "]')
+        # json.dumps escapes backslashes correctly (portable on Windows);
+        # the surrounding two-space padding is preserved inside the JSON
+        # string value to exercise the whitespace-stripping behavior.
+        monkeypatch.setenv("JERRY_AST__TRUSTED_ROOTS", json.dumps([f"  {trusted_dir}  "]))
         monkeypatch.delenv("JERRY_PROJECT", raising=False)
 
         # Act
