@@ -89,6 +89,8 @@ Read-path race (IN-003) is **not** a defect: `_read_file` already reuses the val
 | DA-001/002, DA-003/004/005 (agent can widen own trust; ownership-gate persistence; warn-vs-reject; layer ratchet) | Re-litigate owner-settled decisions (best-effort trust model; DD-2 = remove; AC-10 = warn-and-honor). Actionable residue captured as B-5 (document the model). |
 | IN-002 (`--quiet` unused in Jerry's own docs) | C6 stdout-purity holds regardless (notes are stderr-only); at most a docs improvement. |
 | IN-004 (pip-package project-root fragility), DA-005 (layer ratchet) | Future enhancement, out of scope for BUG-010. |
+| RT-004 (`ast_modify` reads config twice per call — widens the race window) | No action. The A-1 fix made the write reuse the exact resolved path the write-time check validated, so the write no longer depends on a second independent resolution; the remaining double config read is a micro-optimization, not a security defect. |
+| RT-005 (`--quiet` suppresses the R-3/R-4 transparency notes it also relies on for visibility) | Accepted tradeoff (owner decision DD-3 / C6). `--quiet` is opt-in; the default is warnings-on. A caller that suppresses its own visibility has made that choice deliberately. |
 
 ---
 

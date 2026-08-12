@@ -17,7 +17,8 @@
 | `cce557c5` | Config-input hygiene fixes (AC-11 blank entry, AC-18 `JERRY_PROJECT` traversal, AC-10 relative warn-and-honor). |
 | `a6240a4d` | Tournament fixes A-1..A-7 (write-path TOCTOU + small items), governance reconciliation, and the full tournament record. |
 | `e00ed1c4` | Final S-014-gate polish: CHANGELOG Option C entry, this file's refresh, and the write-time error hint. |
-| *(next commit)* | Worktracker audit + tidy, GH #371 (`Error:`->stderr) folded in, end-to-end re-verified. |
+| `18ce85de` | Worktracker audit + tidy; GH #371 (`Error:`->stderr) folded in (`ast_commands.py`); end-to-end re-verified. |
+| `888c94a8` | Completed the #371 sweep (`main.py` router prints -> stderr); reconciled #371 status across all docs. |
 
 ## Verification done
 
@@ -37,8 +38,8 @@
 ## Next actions
 
 1. Done — tournament fixes + governance at `a6240a4d`; S-014 gap fixes at `e00ed1c4`.
-2. Done — end-to-end verified via a real `.jerry/config.toml` + the live `jerry` CLI; GH #371 (`Error:`->stdout) folded in and fixed across the whole `jerry ast` path; worktracker audit (`wt-audit-optionc.md`) + tidy applied. The final formal S-014 re-score against the latest commit is the closing gate (prior pass 0.928 at `e00ed1c4`; residual doc-consistency nits closed in the final commit).
-3. **Ready to merge** — PR #341 review + merge (use a `Closes #337` trailer so merge to main auto-closes the issue).
+2. Done — end-to-end verified via a real `.jerry/config.toml` + the live `jerry` CLI; GH #371 (`Error:`->stdout) folded in and fixed across the whole `jerry ast` path; worktracker audit (`wt-audit-optionc.md`) + tidy applied. Formal S-014 re-score against the final commit `888c94a8`: **PASS 0.9335** (`adv-s014-final-score-888c94a8.md`; per-dimension all >= 0.91).
+3. **Ready to merge** — PR #341 review + merge. Use `Closes #337` and `Closes #371` trailers so both auto-close on merge to main.
 
 ## Artifacts (this folder)
 
