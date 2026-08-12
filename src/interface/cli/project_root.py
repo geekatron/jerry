@@ -69,7 +69,8 @@ def build_layered_config_adapter(defaults: dict[str, Any]) -> Any:
     H-07 layer isolation discipline: this is a pre-existing architectural
     exception, matching the existing in-repo precedent of
     ``CLIAdapter._create_config_adapter()``, which already instantiates
-    infrastructure directly from the interface layer.
+    infrastructure directly from the interface layer. Composition-root
+    cleanup for both call sites is tracked as GitHub issue #373.
 
     Args:
         defaults: Code-default configuration values for this adapter
@@ -134,14 +135,24 @@ def _load_trusted_roots() -> list[str]:
     here before they can reach path resolution. An unfiltered empty
     entry would resolve to the current working directory
     (``Path("").resolve() == Path.cwd()``), silently trusting cwd
-    (RED-BUG010 AC-11).
+    (RED-BUG010 AC-11). Surviving entries are also STRIPPED of leading
+    and trailing whitespace (BUG-010 C4 tournament A-3): the blank-entry
+    filter above already tests ``str(entry).strip()`` truthiness, but a
+    non-blank entry with incidental padding (e.g. ``"  /abs/path  "``)
+    must be returned stripped too -- otherwise the padded value later
+    fails ``Path(...).is_absolute()`` and is silently (mis)treated as a
+    cwd-relative entry by the caller.
 
     Returns:
-        The raw, unresolved list of non-blank trusted-root path strings
-        (possibly empty).
+        The stripped, unresolved list of non-blank trusted-root path
+        strings (possibly empty).
     """
     config = build_layered_config_adapter({"ast.trusted_roots": []})
-    return [str(entry) for entry in config.get_list("ast.trusted_roots", []) if str(entry).strip()]
+    return [
+        stripped
+        for entry in config.get_list("ast.trusted_roots", [])
+        if (stripped := str(entry).strip())
+    ]
 
 
 def get_containment_roots(
@@ -173,15 +184,17 @@ def get_containment_roots(
     When any returned root is unusually broad (a filesystem/drive root,
     the user's home directory, or an ancestor of it), a single-line,
     non-fatal WARNING is printed to stderr -- never stdout, which carries
-    the JSON/render payload -- for ``explicit`` (R-3) and ``configured``
-    (DD-1 symmetry extension) classifications; the invocation still
-    proceeds (user discretion). The project root's own broadness is never
-    warned about (unchanged from prior behavior). A relative
-    ``ast.trusted_roots`` entry is likewise honored, not rejected (owner
-    decision, RED-BUG010 AC-10), but emits its own one-line stderr
-    warning naming the resolved cwd-relative path so the effective trust
-    grant is never silent. Pass ``quiet=True`` to suppress all of these
-    warnings entirely (C6).
+    the JSON/render payload -- for ``explicit`` (R-3), ``configured``
+    (DD-1 symmetry extension), and ``project`` (A-2, BUG-010 C4
+    tournament) classifications; the invocation still proceeds (user
+    discretion). A broad project root (e.g. ``CLAUDE_PROJECT_DIR=/``)
+    previously granted whole-filesystem trust with no signal to the
+    user; it now warns symmetrically with the other two
+    classifications. A relative ``ast.trusted_roots`` entry is likewise
+    honored, not rejected (owner decision, RED-BUG010 AC-10), but emits
+    its own one-line stderr warning naming the resolved cwd-relative
+    path so the effective trust grant is never silent. Pass
+    ``quiet=True`` to suppress all of these warnings entirely (C6).
 
     Args:
         explicit_root: The user-supplied ``--root`` CLI value, or None.
@@ -240,8 +253,19 @@ def get_containment_roots(
                     "invocation.",
                     file=sys.stderr,
                 )
-            # "project" classification: no warning -- unchanged from prior
-            # behavior; the project root is always the user's own
-            # repository by construction of get_project_root().
+            elif root.classification == "project":
+                # A-2 (BUG-010 C4 tournament, RT-002/FM-005): the project
+                # root itself was previously never warned about, so a
+                # broad CLAUDE_PROJECT_DIR (e.g. "/") silently granted
+                # whole-filesystem trust with no signal to the user.
+                # Symmetric with the "explicit" and "configured" warnings
+                # above; suppressible by quiet=True like the others.
+                print(
+                    f"Warning: project root '{root.path}' is an unusually "
+                    "broad containment root (a filesystem/drive root or "
+                    "the home directory); path containment is effectively "
+                    "disabled for this invocation.",
+                    file=sys.stderr,
+                )
 
     return roots

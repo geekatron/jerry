@@ -576,8 +576,10 @@ def _add_root_argument(parser: argparse.ArgumentParser) -> None:
     best-effort defense against accidental traversal, not a security
     boundary against a user who has already chosen to grant the tool
     broad access via ``--root``. Without this flag, the default allowed
-    roots are the user's project root plus OS temp/scratchpad directories
-    (see ``project_root.get_containment_roots``).
+    roots are the user's project root plus zero-or-more explicitly
+    user-declared ``ast.trusted_roots`` config entries (BUG-010 Option
+    C) -- no directory, including OS temp/scratchpad locations, is
+    auto-trusted (see ``project_root.get_containment_roots``).
 
     Args:
         parser: The ast subcommand parser to add the flag to.

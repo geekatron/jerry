@@ -967,6 +967,27 @@ class TestParserAstNamespace:
         args = parser.parse_args(["ast", command, *extra_args, "--root", "/x"])
         assert args.root == "/x"
 
+    def test_add_root_argument_docstring_does_not_reference_removed_temp_scratchpad_default(
+        self,
+    ) -> None:
+        """A-4 (BUG-010 C4 tournament, eng-reviewer F-1/CC-006): the
+        ``_add_root_argument`` docstring must not claim the default
+        allowed roots include "OS temp/scratchpad directories" -- that
+        behavior was REMOVED under Option C (no directory is auto-
+        trusted). The docstring must describe the actual Option C
+        default: the project root plus explicitly-configured
+        ``ast.trusted_roots``, matching the ``--help`` text already
+        generated below it."""
+        from src.interface.cli import parser as parser_module
+
+        docstring = parser_module._add_root_argument.__doc__ or ""
+        # The stale claim was that OS temp/scratchpad dirs are part of
+        # the default allowed set -- that phrasing must be gone.
+        assert "plus os temp" not in docstring.lower()
+        assert "plus temp" not in docstring.lower()
+        # The correct Option C model must be present instead.
+        assert "trusted_roots" in docstring
+
     # -------------------------------------------------------------------
     # BUG-010 Option C, C6: --quiet flag on every ast subcommand.
     # -------------------------------------------------------------------
@@ -1202,21 +1223,6 @@ class TestBug010ProjectRootContainment:
         """Force _load_trusted_roots() to return an empty list for this test."""
         monkeypatch.setattr(project_root_module, "_load_trusted_roots", lambda: [])
 
-    def test_get_repo_root_when_claude_project_dir_set_then_returns_user_root(
-        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-    ) -> None:
-        """Root resolution honors CLAUDE_PROJECT_DIR instead of walking __file__."""
-        # Arrange
-        user_root = tmp_path / "user-project"
-        user_root.mkdir()
-        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(user_root))
-
-        # Act
-        root = ast_commands_module._get_repo_root()
-
-        # Assert
-        assert root == user_root
-
     def test_containment_when_file_in_user_project_then_allowed(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
@@ -1281,6 +1287,33 @@ class TestBug010ProjectRootContainment:
         assert error is not None
         assert "escapes" in error
 
+    def test_containment_when_file_outside_project_root_then_error_includes_remediation_hint(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """A-6 (BUG-010 C4 tournament, FM-007, optional): the containment-
+        escape error carries a short actionable remediation hint (how to
+        grant access) rather than just stating the rejection."""
+        # Arrange
+        self._no_configured_roots(monkeypatch)
+        user_root = tmp_path / "user-project"
+        user_root.mkdir()
+        outside = tmp_path / "elsewhere"
+        outside.mkdir()
+        target = outside / "escape.md"
+        target.write_text("# Escape\n", encoding="utf-8")
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(user_root))
+
+        # Act
+        resolved, error = ast_commands_module._check_path_containment(str(target))
+
+        # Assert
+        assert resolved is None
+        assert error is not None
+        assert "trusted_roots" in error or "--root" in error
+
+    @pytest.mark.skipif(
+        sys.platform == "win32", reason="symlink creation requires elevated privileges on Windows"
+    )
     def test_containment_when_symlink_escapes_project_root_then_rejected(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
@@ -1391,6 +1424,9 @@ class TestBug010ProjectRootContainment:
             target.unlink(missing_ok=True)
             marker_dir.rmdir()
 
+    @pytest.mark.skipif(
+        sys.platform == "win32", reason="symlink creation requires elevated privileges on Windows"
+    )
     def test_containment_when_symlink_target_in_configured_root_then_allowed(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
@@ -1416,6 +1452,9 @@ class TestBug010ProjectRootContainment:
         assert error is None
         assert resolved == link.resolve()
 
+    @pytest.mark.skipif(
+        sys.platform == "win32", reason="symlink creation requires elevated privileges on Windows"
+    )
     def test_containment_when_symlink_escapes_all_configured_roots_then_rejected(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
@@ -1546,6 +1585,9 @@ class TestBug010ProjectRootContainment:
         assert result == 2
         assert target.read_text(encoding="utf-8") == original  # unmodified
 
+    @pytest.mark.skipif(
+        sys.platform == "win32", reason="symlink creation requires elevated privileges on Windows"
+    )
     def test_ast_modify_when_symlink_swapped_between_read_and_write_then_rejected_at_write_time(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
@@ -1596,6 +1638,68 @@ class TestBug010ProjectRootContainment:
         assert result == 2
         assert outside_target.read_text(encoding="utf-8") == original  # unmodified
         assert inside_target.read_text(encoding="utf-8") == original  # unmodified
+
+    @pytest.mark.skipif(
+        sys.platform == "win32", reason="symlink creation requires elevated privileges on Windows"
+    )
+    def test_ast_modify_when_write_time_check_resolves_swapped_target_then_write_lands_on_validated_path(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """A-1 regression (CWE-367 write-path check!=use TOCTOU): the write
+        destination must be EXACTLY the resolved path the write-time
+        containment check validates -- never a separately-resolved value
+        captured before the check ran. Both the pre-swap and post-swap
+        symlink targets live inside the allowed root (so the write-time
+        check accepts either), which isolates the assertion to "which file
+        receives the write" rather than accept/reject. Simulates the TOCTOU
+        window (a swap occurring between the removed line-620 naive
+        resolve() and the write-time recheck) by re-pointing the symlink
+        the instant `_check_path_containment` is invoked -- i.e. as late as
+        possible before the check performs its own fresh resolution. Prior
+        to the fix, `target_path` was captured via a separate, earlier
+        `Path(file_path).resolve()` call that would still observe the
+        pre-swap target here (since nothing swaps the link before that
+        earlier call runs), so this test is RED against the pre-fix code:
+        the write would land on `pre_swap_target` instead of the
+        check-validated `post_swap_target`."""
+        # Arrange
+        monkeypatch.setattr(ast_commands_module, "_ENFORCE_PATH_CONTAINMENT", True)
+        user_root = tmp_path / "user-project"
+        user_root.mkdir()
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(user_root))
+        self._no_configured_roots(monkeypatch)
+
+        original = "# Entity\n\n> **Status:** pending\n\n## Details\n"
+        pre_swap_target = user_root / "pre-swap.md"
+        pre_swap_target.write_text(original, encoding="utf-8")
+        post_swap_target = user_root / "post-swap.md"
+        post_swap_target.write_text(original, encoding="utf-8")
+
+        link = user_root / "entity.md"
+        link.symlink_to(pre_swap_target)
+
+        real_check = ast_commands_module._check_path_containment
+
+        def swap_then_check(
+            file_path: str, explicit_root: str | None = None, quiet: bool = False
+        ) -> tuple[Path | None, str | None]:
+            # Simulate an attacker re-pointing the symlink in the TOCTOU
+            # window between the (now-removed) naive resolve and this
+            # check's own fresh resolution.
+            link.unlink()
+            link.symlink_to(post_swap_target)
+            return real_check(file_path, explicit_root, quiet)
+
+        monkeypatch.setattr(ast_commands_module, "_check_path_containment", swap_then_check)
+
+        with patch.object(ast_commands_module, "_read_file", return_value=(original, 0)):
+            # Act
+            result = ast_modify(str(link), "Status", "done")
+
+        # Assert
+        assert result == 0
+        assert "done" in post_swap_target.read_text(encoding="utf-8")
+        assert pre_swap_target.read_text(encoding="utf-8") == original  # unmodified
 
     def test_ast_modify_when_configured_root_match_then_transparency_note_prints_exactly_once(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
@@ -1791,3 +1895,11 @@ class TestOwnershipGateRemoved:
         assert not hasattr(ast_commands_module, "_check_temp_root_ownership")
         assert not hasattr(ast_commands_module, "_is_temp_default_root_match")
         assert not hasattr(ast_commands_module, "_warn_if_temp_root_match")
+
+    def test_ast_commands_module_when_imported_then_get_repo_root_is_not_defined(self) -> None:
+        """A-5 (BUG-010 C4 tournament, SR-005): ``_get_repo_root`` is dead
+        code -- its sole caller was its own dedicated test (now removed);
+        path containment is computed from ``project_root.get_containment_roots``,
+        not from this legacy single-root convenience accessor. Guard
+        against silent reintroduction."""
+        assert not hasattr(ast_commands_module, "_get_repo_root")

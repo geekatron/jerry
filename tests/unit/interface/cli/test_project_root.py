@@ -317,13 +317,14 @@ class TestGetContainmentRoots:
         captured = capsys.readouterr()
         assert captured.err == ""
 
-    def test_get_containment_roots_when_no_explicit_root_then_no_warning_regardless_of_project_root(
+    def test_get_containment_roots_when_broad_project_root_then_warns_on_stderr(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
     ) -> None:
-        """The default (non-exclusive) allowed set never triggers the R-3 warning
-        for the PROJECT root specifically, even when the project root itself
-        happens to be broad -- R-3/DD-1 fires for 'explicit' and 'configured'
-        classifications only, never for 'project'."""
+        """A-2 (BUG-010 C4 tournament, RT-002/FM-005): a broad PROJECT root
+        (e.g. CLAUDE_PROJECT_DIR='/') now emits the same class of stderr
+        warning as a broad 'explicit' or 'configured' root -- silently
+        granting whole-filesystem trust via the project root is no longer
+        unwarned. stdout stays untouched."""
         # Arrange
         monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(Path("/")))
         monkeypatch.setattr(project_root_module, "_load_trusted_roots", lambda: [])
@@ -333,6 +334,41 @@ class TestGetContainmentRoots:
 
         # Assert
         captured = capsys.readouterr()
+        assert captured.out == ""
+        assert "Warning" in captured.err
+
+    def test_get_containment_roots_when_ordinary_project_root_then_no_warning(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        """An ordinary (non-broad) project root never triggers the A-2
+        warning -- only unusually broad project roots do."""
+        # Arrange
+        project_dir = tmp_path / "user-project"
+        project_dir.mkdir()
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(project_dir))
+        monkeypatch.setattr(project_root_module, "_load_trusted_roots", lambda: [])
+
+        # Act
+        get_containment_roots()
+
+        # Assert
+        captured = capsys.readouterr()
+        assert captured.err == ""
+
+    def test_get_containment_roots_when_broad_project_root_and_quiet_then_warning_suppressed(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        """C6: quiet=True suppresses the A-2 broad-project-root warning too."""
+        # Arrange
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(Path("/")))
+        monkeypatch.setattr(project_root_module, "_load_trusted_roots", lambda: [])
+
+        # Act
+        get_containment_roots(quiet=True)
+
+        # Assert
+        captured = capsys.readouterr()
+        assert captured.out == ""
         assert captured.err == ""
 
     def test_get_containment_roots_when_explicit_root_is_ancestor_of_home_then_warns_on_stderr(
@@ -626,6 +662,58 @@ class TestLoadTrustedRootsConfig:
 
         # Assert
         assert result == ["/a"]
+
+    def test_load_trusted_roots_when_entry_has_leading_and_trailing_whitespace_then_stripped(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        """A-3 (BUG-010 C4 tournament, SR-002): a trusted-root entry with
+        leading/trailing whitespace (e.g. "  /abs/path  ") must be
+        returned STRIPPED, not raw. The blank-entry filter already tests
+        ``str(entry).strip()`` truthiness but previously returned the
+        unstripped raw value, so a leading-space entry like " /abs" would
+        later fail ``Path(" /abs").is_absolute()`` and be silently
+        (mis)treated as a cwd-relative path -- this is a distinct defect
+        from the AC-11 blank-entry filter (which drops purely-blank
+        entries) and from AC-10 (which warns on genuinely relative
+        entries)."""
+        # Arrange
+        project_dir = tmp_path / "user-project"
+        project_dir.mkdir()
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(project_dir))
+        monkeypatch.setenv("JERRY_AST__TRUSTED_ROOTS", '["  /abs/path  "]')
+        monkeypatch.delenv("JERRY_PROJECT", raising=False)
+
+        # Act
+        result = _load_trusted_roots()
+
+        # Assert
+        assert result == ["/abs/path"]
+
+    def test_get_containment_roots_when_trusted_root_has_whitespace_then_treated_as_absolute_no_warning(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        """A-3 end-to-end (real ``_load_trusted_roots``, not mocked): a
+        whitespace-padded absolute trusted root declared via
+        ``JERRY_AST__TRUSTED_ROOTS`` must resolve to the absolute path
+        itself (not a cwd-relative reinterpretation) and must NOT
+        trigger the AC-10 relative-path warning, since after stripping
+        it is genuinely absolute."""
+        # Arrange
+        project_dir = tmp_path / "user-project"
+        project_dir.mkdir()
+        trusted_dir = tmp_path / "scratchpad"
+        trusted_dir.mkdir()
+        monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(project_dir))
+        monkeypatch.setenv("JERRY_AST__TRUSTED_ROOTS", f'["  {trusted_dir}  "]')
+        monkeypatch.delenv("JERRY_PROJECT", raising=False)
+
+        # Act
+        roots = get_containment_roots()
+
+        # Assert
+        assert trusted_dir.resolve() in [r.path for r in roots]
+        captured = capsys.readouterr()
+        assert "relative" not in captured.err.lower()
 
 
 # =============================================================================

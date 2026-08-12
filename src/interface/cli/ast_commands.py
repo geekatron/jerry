@@ -50,7 +50,7 @@ from src.domain.markdown_ast import (
     validate_nav_table,
 )
 from src.interface.cli.containment_policy import ContainmentRoot
-from src.interface.cli.project_root import get_containment_roots, get_project_root
+from src.interface.cli.project_root import get_containment_roots
 
 # ---------------------------------------------------------------------------
 # Path containment constants (WI-018, M-08, M-10)
@@ -63,6 +63,12 @@ _MAX_FILE_SIZE_BYTES: int = 1_048_576
 #: Set to False in test environments where temp files are outside the repo.
 #: Also respects JERRY_DISABLE_PATH_CONTAINMENT env var for subprocess tests.
 _ENFORCE_PATH_CONTAINMENT: bool = os.environ.get("JERRY_DISABLE_PATH_CONTAINMENT", "") != "1"
+
+#: Short actionable remediation hint appended to containment-escape error
+#: messages (A-6, BUG-010 C4 tournament, FM-007): tells the user how to
+#: grant `jerry ast` access to the path they attempted, rather than
+#: leaving them to guess.
+_CONTAINMENT_ESCAPE_HINT: str = "configure ast.trusted_roots or pass --root"
 
 
 def token_to_dict(token: Token) -> dict[str, Any]:
@@ -158,27 +164,6 @@ def node_to_dict(node: SyntaxTreeNode) -> dict[str, Any]:
     }
 
 
-def _get_repo_root() -> Path:
-    """Determine the single-root containment anchor (BUG-010, GH #337).
-
-    Delegates to the shared CLI project-root resolution
-    (``CLAUDE_PROJECT_DIR`` env var, else the current working directory) so
-    resolution anchors to the USER'S repository — never to the Jerry
-    installation's own tree, which made every ``ast`` command reject files
-    in real user projects.
-
-    Retained solely as a legacy single-root convenience accessor (and for
-    its own dedicated test); path containment itself is no longer
-    computed from this function -- see ``project_root.get_containment_roots``
-    for the widened multi-root / exclusive-``--root`` containment logic
-    (BUG-010 scope widening, PR #341 owner review).
-
-    Returns:
-        Resolved absolute path to the user's project root.
-    """
-    return get_project_root().resolve()
-
-
 def _note_if_configured_root_match(matched: ContainmentRoot, file_path: str, quiet: bool) -> None:
     """Print a stderr transparency note when containment matched via a
     configured trusted root.
@@ -256,7 +241,9 @@ def _check_path_containment(
     # classification, never by array index -- BUG-010 Option C, C1 fix)
     matched = next((r for r in allowed_roots if resolved.is_relative_to(r.path)), None)
     if matched is None:
-        return None, f"Path escapes allowed containment roots: {file_path}"
+        return None, (
+            f"Path escapes allowed containment roots: {file_path} ({_CONTAINMENT_ESCAPE_HINT})"
+        )
 
     _note_if_configured_root_match(matched, file_path, quiet)
 
@@ -264,7 +251,10 @@ def _check_path_containment(
     if resolved != realpath:
         # Symlink detected -- verify the real path is also within an allowed root
         if not any(realpath.is_relative_to(r.path) for r in allowed_roots):
-            return None, f"Symlink target escapes allowed containment roots: {file_path}"
+            return None, (
+                f"Symlink target escapes allowed containment roots: {file_path} "
+                f"({_CONTAINMENT_ESCAPE_HINT})"
+            )
 
     # File size check (M-05)
     if resolved.exists():
@@ -617,14 +607,17 @@ def ast_modify(
     new_content = new_doc.render()
 
     # --- Atomic write with TOCTOU mitigation (WI-020, M-21) ---
-    target_path = Path(file_path).resolve()
-
     # Re-verify path containment immediately before write (WI-020, M-21,
-    # C2 fix): calls the IDENTICAL _check_path_containment routine used
-    # at read time -- including a fresh os.path.realpath() symlink
-    # re-resolution -- so a symlink swapped between read and write is
-    # caught. This makes read-time and write-time containment literally
-    # the same function call, not merely "the same algorithm
+    # C2 fix; write-path check=use fix, BUG-010 C4 tournament A-1): calls
+    # the IDENTICAL _check_path_containment routine used at read time --
+    # including a fresh os.path.realpath() symlink re-resolution -- so a
+    # symlink swapped between read and write is caught. The WRITE TARGET
+    # is the exact resolved path THIS check validates -- never a
+    # separately-resolved value captured earlier -- closing a CWE-367
+    # gap where the check's own resolution was discarded and the write
+    # instead used a stale `Path(file_path).resolve()` computed before
+    # the check ran. This makes read-time and write-time containment
+    # literally the same function call, not merely "the same algorithm
     # re-implemented" -- closing the prior TOCTOU gap at the design
     # level. quiet=True is hard-coded here (DD-3), independent of the
     # caller's ``quiet`` value -- a deliberate choice to avoid printing
@@ -632,10 +625,14 @@ def ast_modify(
     # printed once at read time, if at all); the containment
     # ENFORCEMENT itself remains fully unconditional.
     if _ENFORCE_PATH_CONTAINMENT:
-        _, write_time_error = _check_path_containment(file_path, root, quiet=True)
+        resolved, write_time_error = _check_path_containment(file_path, root, quiet=True)
         if write_time_error is not None:
             print(f"Error: Path escapes allowed containment roots at write time: {file_path}")
             return 2
+        assert resolved is not None  # guaranteed by _check_path_containment
+        target_path = resolved
+    else:
+        target_path = Path(file_path).resolve()
 
     temp_fd = None
     temp_path_str = None

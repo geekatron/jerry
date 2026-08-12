@@ -54,65 +54,78 @@ uv run --project ~/.claude/plugins/marketplaces/jerry-framework \
 
 Extract the CLI's existing, correct resolution (`CLAUDE_PROJECT_DIR` env var → else `Path.cwd()`, as implemented in `adapter.py` `_get_project_root()`) into a shared helper module `src/interface/cli/project_root.py`, and use it from both `ast_commands.py` (replacing the `__file__` walk) and `adapter.py` (removing the duplicate). The M-08/M-10 containment and symlink checks remain fully intact — only the anchor changes to the user's project root. BDD test-first per H-20.
 
-**Scope widening (PR #341 owner review, 2026-08-07):** Default containment
-roots extend from the single project root to a set — project root +
-`tempfile.gettempdir()` (resolved) + `/tmp` (resolved, when it exists) — via
-new `project_root.get_containment_roots(explicit_root)`, covering Claude
-Code scratchpad writes (macOS: `$TMPDIR` vs `/tmp/claude-*` are distinct
-trees). A new `--root <path>` flag on every `jerry ast` subcommand makes the
-allowed set *exactly* the resolved `--root` value when supplied (exclusive
-override) — an explicit user-discretion escape hatch, consistent with the
-owner's directive that Jerry can only provide reasonable best-effort
-protection, not a hard boundary against a user's own choices. M-08/M-10
-containment and symlink checks are preserved unchanged, generalized from a
-single root to "any of the allowed roots." Two owner-resolved stderr
-transparency behaviors (stdout is reserved for the JSON/render payload):
-`--root` resolving to an unusually broad location (filesystem/drive root or
-`$HOME`, detected portably via `Path.parts`/`Path.anchor`) prints a
-one-line stderr WARNING and still proceeds (R-3); a path allowed only via a
-temp/scratchpad default root (not the project root, not an explicit
-`--root`) prints a one-line stderr transparency note (R-4).
+**Redesign to Option C — user-declared trusted roots (PR #341, 2026-08-11):**
+The initial scope-widening (auto-trusting `tempfile.gettempdir()`/`/tmp`) was
+found insecure by a C4 adversarial tournament (index-based trust bypass,
+write-path TOCTOU, fail-open ownership gate, uid-0 multi-tenant, `TMPDIR`
+poisoning, stderr/JSON corruption — score 0.64 REVISE) and was **replaced**.
+The default allowed set is now the user's project root **plus zero-or-more
+explicitly user-declared `ast.trusted_roots` config entries** (read via
+Jerry's layered config; env `JERRY_AST__TRUSTED_ROOTS`, note the double
+underscore). No directory is auto-trusted; OS temp/scratchpad paths are never
+in the default set. The temp-root **ownership gate was removed entirely**
+(owner decision: trust is now explicit user declaration — cross-platform
+consistent, and the gate never protected the root/administrator case). `--root`
+remains an exclusive per-invocation override. A `--quiet` flag on all 10
+subcommands suppresses stderr advisory notes so stdout JSON stays clean.
+Config-input hygiene: blank/whitespace entries dropped; `JERRY_PROJECT` `..`
+traversal fails closed; relative `ast.trusted_roots` entries warn-and-honor.
+**Scratchpad access** now requires an explicit `ast.trusted_roots` entry or
+`--root` (turnkey provisioning tracked in #372). M-08/M-10 containment +
+symlink-escape checks are preserved and generalized across the allowed-root
+set. Consolidated tournament record:
+`adv-tournament-consolidated-optionc.md` (this folder).
 
 ---
 
 ## Acceptance Criteria
 
-- [ ] Failing tests written first (H-20 Red): file inside cwd validates; file outside project root still rejected; `CLAUDE_PROJECT_DIR` honored; symlink escape still rejected; write-path re-check consistent
-- [ ] `jerry ast` commands accept files within the user's project root (env var or cwd) regardless of where Jerry is installed
-- [ ] M-08/M-10 containment security preserved: paths and symlink targets outside the resolved project root are still rejected
-- [ ] Root resolution logic exists once (shared helper) and is used by both `ast_commands.py` and `adapter.py`
-- [ ] Full test suite green with >= 90% coverage (H-20b); changelog entry added
-- [ ] `jerry ast` commands accept files under `tempfile.gettempdir()` and
-      `/tmp` (when present) by default, in addition to the project root —
-      the Claude Code scratchpad scenario
-- [ ] `--root <path>` flag exists on all 10 `jerry ast` subcommands and,
-      when supplied, makes containment exclusive to that resolved path
-      (a project-root file is REJECTED when `--root` points elsewhere)
-- [ ] M-08/M-10 containment and symlink-escape checks verified against the
-      widened root set, including a symlink planted inside an allowed temp
-      root pointing outside all allowed roots
+> **Note (2026-08-11):** the always-widen criteria (temp/scratchpad
+> auto-trust, temp-root ownership gate) were **superseded by the Option C
+> redesign** — see [Fix Approach](#fix-approach) and [History](#history).
+> They are struck through below to preserve the record.
+
+- [ ] Failing tests written first (H-20 Red)
+- [ ] `jerry ast` commands accept files within the user's project root
+      (`CLAUDE_PROJECT_DIR` env var, else cwd) regardless of where Jerry is
+      installed
+- [ ] Root resolution logic exists once (shared `project_root.py` helper)
+      and is used by both `ast_commands.py` and `adapter.py`
+- [ ] Default allowed roots = the project root **plus** explicitly-configured
+      `ast.trusted_roots` entries; no temp/scratchpad directory is
+      auto-trusted
+- [ ] `ast.trusted_roots` read via layered config (env
+      `JERRY_AST__TRUSTED_ROOTS` — double underscore — then project config,
+      then root config, then default empty); blank/whitespace entries
+      dropped; relative entries warn-and-honor; a `JERRY_PROJECT` `..`
+      traversal fails closed
+- [ ] `--root <path>` on all 10 `jerry ast` subcommands makes containment
+      exclusive to that resolved path (a project-root file is REJECTED when
+      `--root` points elsewhere)
+- [ ] `--quiet` on all 10 subcommands suppresses stderr advisory notes;
+      stdout carries only the JSON/render payload
+- [ ] M-08/M-10 containment + symlink-escape preserved and generalized across
+      the allowed-root set; `ast_modify` writes to the exact resolved path
+      the write-time check validated (write-path TOCTOU closed, CWE-367)
+- [ ] Broad root (filesystem/drive root, `$HOME`, or an ancestor of `$HOME`)
+      — for project, configured, AND `--root` — prints a one-line stderr
+      WARNING and proceeds; `--quiet` suppresses
+- [ ] A match via a configured (non-project) trusted root prints a one-line
+      stderr transparency note; project-root and `--root` matches do not
 - [ ] `tests/security/test_adversarial_parsers.py::TestA07PathTraversal`
-      re-verified green under the widened default roots (path traversal
-      outside all roots still rejected)
-- [ ] Broad `--root` (filesystem/drive root or `$HOME`) prints a one-line
-      stderr WARNING and still proceeds (R-3); ordinary `--root` values do
-      not warn
-- [ ] A path allowed only via a temp/scratchpad default root (not the
-      project root, not an explicit `--root`) prints a one-line stderr
-      transparency note (R-4); project-root and explicit `--root` matches
-      never print this note
-- [x] H-01 (RED-BUG010, CWE-552/CWE-668/CWE-281): a temp-default-root
-      match is additionally gated on file ownership (`resolved.stat().st_uid
-      == os.geteuid()` on POSIX; no-op on Windows via `os.name` guard) —
-      scoped strictly to temp-default matches, never the project root or
-      an explicit `--root`; a foreign-owned temp-root file is rejected
-      with a descriptive error
-- [x] H-02/H-08 (RED-BUG010, incomplete-allowlist gap): `_is_broad_containment_root`
-      widened to flag any ANCESTOR OF (or equal to) `$HOME` — not just the
-      exact filesystem/drive root or exact `$HOME` — closing the `/home`,
-      `/Users`, `$HOME`'s parent, and `C:\Users` coverage gaps via a
-      single portable `PurePath.relative_to()` check (covers `PureWindowsPath`
-      too, folding in the H-08 Windows caveat)
+      green; full suite green with >= 90% coverage (H-21); changelog entry
+- [ ] C4 adversarial tournament re-score >= 0.92
+- [x] H-02/H-08: `_is_broad_containment_root` flags any ancestor of (or equal
+      to) `$HOME` — cross-platform via `PurePath.relative_to()` (covers
+      `/home`, `/Users`, `C:\\Users`) — retained under Option C
+- [ ] ~~`jerry ast` accepts files under `tempfile.gettempdir()`/`/tmp` by
+      default~~ **SUPERSEDED** by Option C (explicit `ast.trusted_roots`)
+- [ ] ~~temp/scratchpad default-root R-4 transparency note~~ **SUPERSEDED** —
+      generalized to configured-root matches
+- [x] ~~H-01 temp-root ownership gate~~ **REMOVED** in Option C (owner
+      decision: the gate was the source of two tournament Criticals and never
+      protected the root/administrator case; trust is now explicit
+      declaration)
 
 ---
 
@@ -123,3 +136,5 @@ temp/scratchpad default root (not the project root, not an explicit
 | 2026-08-07 | in_progress | Created from GH #337 (filed 2026-08-05). Root cause confirmed in code; fix approach = reuse adapter.py's CLAUDE_PROJECT_DIR/cwd resolution via shared helper. Branch fix/BUG-010-ast-project-root off post-#340 main. |
 | 2026-08-07 | in_progress | Scope widened per PR #341 owner review: default containment roots extended to temp/scratchpad dirs (`tempfile.gettempdir()`, `/tmp`); added `--root` exclusive-override flag across all `jerry ast` subcommands. eng-lead implementation plan produced; eng-backend executed test-first (H-20): 2 existing containment-rejection tests required a `tempfile.gettempdir`/`_HARDCODED_TMP` monkeypatch seam fix (pytest `tmp_path` lives inside the system tempdir and would otherwise falsely pass containment under the widened roots) — verified both tests fail without the seam before restoring it. Owner-resolved R-3 (broad-root stderr WARNING) and R-4 (temp-match stderr transparency note) implemented and test-covered. |
 | 2026-08-07 | in_progress | red-team remediation (RED-BUG010, red-vuln findings): H-01 temp-root ownership gate (`_check_temp_root_ownership`, scoped via new `_is_temp_default_root_match` helper) added to `_check_path_containment` in `ast_commands.py`, closing the multi-user shared-`/tmp` read/write gap (CWE-552/CWE-668/CWE-281). H-02/H-08 `_is_broad_containment_root` widened in `project_root.py` to flag any ancestor of `$HOME` via `PurePath.relative_to()`, closing the `/home`/`/Users`/`C:\Users` incomplete-allowlist gap. eng-backend executed test-first (H-20): 10 new tests written and RED-verified (`AttributeError`/assertion failures) before implementation; GREEN after — 149/149 in the two changed test files, 371/371 across `tests/unit/interface/cli/` + `tests/security/` + `tests/integration/cli/`, `TestA07PathTraversal` re-confirmed green. `ruff format --check` and `ruff check` both exit 0. |
+| 2026-08-11 | in_progress | Always-widen scope (auto-trust temp/`/tmp` + `_check_temp_root_ownership` gate) FAILED a C4 adversarial tournament (0.64 REVISE: index-based trust, write-path TOCTOU, fail-open ownership gate, uid-0 multi-tenant, `TMPDIR` poisoning, stderr/JSON corruption). **Redesigned to Option C** (owner-approved): default allowed set = project root + user-declared `ast.trusted_roots`; temp auto-trust AND the ownership gate removed; `--quiet` flag added; config-input hygiene (blank filter, `JERRY_PROJECT` `..` fail-closed, relative warn-and-honor). Pipeline: eng-lead plan -> eng-backend TDD -> red-team re-check (21 cases; 6 prior Criticals dissolved with PoCs; 3 config-hygiene findings AC-11/AC-18/AC-10 fixed) -> eng-reviewer PASS (S-014 0.955). Owner decisions: remove ownership gate; warn-and-honor relative entries; scratchpad de-scoped to explicit config (turnkey provisioning -> #372); config-adapter composition-root cleanup deferred as an optional purist nit (#373); Error->stdout deferred (#371); session-local config-layer gap filed (#370). Commits 62b429e8 -> da34a8b8 -> cce557c5. |
+| 2026-08-11 | in_progress | Full C4 blind tournament (10 strategies + eng-reviewer) re-run on Option C @ cce557c5. Consolidated record: `adv-tournament-consolidated-optionc.md`. Six prior Criticals independently re-confirmed dissolved; residual = 1 write-path check-vs-use TOCTOU (corroborated by 5 strategies) plus small code/governance items. Fixes applied test-first: A-1 `ast_modify` now writes to the exact resolved path the write-time check validated (CWE-367 closed); A-2 broad-project-root warning; A-3 whitespace trusted-root entry stripped; A-4 stale docstring; A-5 dead `_get_repo_root` removed; A-6 remediation hint; A-7 Windows symlink-test guards. Governance reconciled: this entity, GH #337, `RESUME-HERE.md`, and a decisions + threat-model note. |
