@@ -425,7 +425,7 @@ def _handle_ast(args: Any, json_output: bool) -> int:
     )
 
     if args.command is None:
-        print("No ast command specified. Use 'jerry ast --help'.")
+        print("No ast command specified. Use 'jerry ast --help'.", file=sys.stderr)
         return 1
 
     root = getattr(args, "root", None)
@@ -458,7 +458,7 @@ def _handle_ast(args: Any, json_output: bool) -> int:
     elif args.command == "metadata":
         return ast_metadata(args.file, root=root, quiet=quiet)
 
-    print(f"Unknown ast command: {args.command}")
+    print(f"Unknown ast command: {args.command}", file=sys.stderr)
     return 1
 
 

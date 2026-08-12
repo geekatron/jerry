@@ -31,12 +31,13 @@
 - Relative `ast.trusted_roots` entries: **warn-and-honor** (not reject).
 - Scratchpad access: **explicit config** (`ast.trusted_roots` / `--root`), not auto-provisioned. Turnkey provisioning → [#372](https://github.com/geekatron/jerry/issues/372).
 - Config-adapter composition-root cleanup: optional purist nit, **not a real violation** (the CLI layer is allowed to use adapters; the automated architecture gate passes). Tracked → [#373](https://github.com/geekatron/jerry/issues/373).
-- Deferred: `Error:`→stdout routing ([#371](https://github.com/geekatron/jerry/issues/371)); session-local config-layer gap ([#370](https://github.com/geekatron/jerry/issues/370)).
+- **Fixed in this unit:** `Error:`→stdout routing (GH #371) — all `jerry ast` diagnostics now print to stderr; stdout carries only the JSON/render payload. Closes on merge.
+- Deferred (future work): session-local config-layer gap ([#370](https://github.com/geekatron/jerry/issues/370)); turnkey scratchpad provisioning ([#372](https://github.com/geekatron/jerry/issues/372)); config-adapter composition-root cleanup ([#373](https://github.com/geekatron/jerry/issues/373)).
 
 ## Next actions
 
 1. Done — tournament fixes + governance at `a6240a4d`; S-014 gap fixes at `e00ed1c4`.
-2. Done — final S-014 re-score **PASS 0.928** (`adv-s014-final-score-optionc.md`). End-to-end verified via a real `.jerry/config.toml` + the live `jerry` CLI. GH #371 (`Error:`->stdout) folded into this unit and fixed; worktracker audit (`wt-audit-optionc.md`) + tidy applied.
+2. Done — end-to-end verified via a real `.jerry/config.toml` + the live `jerry` CLI; GH #371 (`Error:`->stdout) folded in and fixed across the whole `jerry ast` path; worktracker audit (`wt-audit-optionc.md`) + tidy applied. The final formal S-014 re-score against the latest commit is the closing gate (prior pass 0.928 at `e00ed1c4`; residual doc-consistency nits closed in the final commit).
 3. **Ready to merge** — PR #341 review + merge (use a `Closes #337` trailer so merge to main auto-closes the issue).
 
 ## Artifacts (this folder)

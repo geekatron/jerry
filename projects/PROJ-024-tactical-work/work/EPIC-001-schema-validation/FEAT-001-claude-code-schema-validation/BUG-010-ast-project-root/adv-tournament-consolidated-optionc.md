@@ -75,7 +75,7 @@ Read-path race (IN-003) is **not** a defect: `_read_file` already reuses the val
 
 | Finding | Status |
 |---------|--------|
-| `Error:` prints to stdout (SR-003, F-3, IN-002-adjacent) | GitHub #371 (owner-deferred) |
+| `Error:` prints to stdout (SR-003, F-3, IN-002-adjacent) | **Fixed in this unit** (GH #371) — all `jerry ast` diagnostics routed to stderr; stdout stays clean JSON |
 | `config set --scope local` no-op (PM-005) | GitHub #370 |
 | Windows subprocess tests excluded from CI; symlink tests not skipif-guarded (PM-002, PM-003, IN-005, FM-004) | **Testing gap — recommend: add a Windows-runnable containment assertion or file a follow-up issue** |
 | comma-in-path CSV split (AC-9, FM-006 minor) | Documented (help text) |

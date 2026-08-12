@@ -1148,6 +1148,22 @@ class TestMainAstRouting:
                 result = main()
         assert result == 1
 
+    def test_main_ast_no_command_prints_error_to_stderr_only(
+        self, capsys: pytest.CaptureFixture
+    ) -> None:
+        """main() with a bare 'jerry ast' (no subcommand) prints the
+        'No ast command specified' diagnostic to stderr, leaving stdout
+        empty (GH #371: the router's own diagnostic print was missed by
+        the original ast_commands.py-scoped fix)."""
+        from src.interface.cli.main import main
+
+        with patch("sys.argv", ["jerry", "ast"]):
+            result = main()
+        captured = capsys.readouterr()
+        assert result == 1
+        assert captured.out == ""
+        assert "no ast command specified" in captured.err.lower()
+
     def test_main_ast_unknown_command_returns_1(self, tmp_md_file: Path) -> None:
         """main() returns 1 for unknown ast subcommand."""
 
@@ -1161,6 +1177,25 @@ class TestMainAstRouting:
         with patch("sys.stdout", new_callable=StringIO):
             result = _handle_ast(FakeArgs(), json_output=False)
         assert result == 1
+
+    def test_handle_ast_unknown_command_prints_error_to_stderr_only(
+        self, tmp_md_file: Path, capsys: pytest.CaptureFixture
+    ) -> None:
+        """_handle_ast prints the 'Unknown ast command' diagnostic to
+        stderr, leaving stdout empty (GH #371, same defect class as the
+        no-subcommand case: a router-level diagnostic, not a JSON/render
+        payload)."""
+        from src.interface.cli.main import _handle_ast
+
+        class FakeArgs:
+            command = "nonexistent"
+            file = str(tmp_md_file)
+
+        result = _handle_ast(FakeArgs(), json_output=False)
+        captured = capsys.readouterr()
+        assert result == 1
+        assert captured.out == ""
+        assert "unknown ast command" in captured.err.lower()
 
     # -------------------------------------------------------------------
     # BUG-010 scope widening (T-6): --root pass-through in main().

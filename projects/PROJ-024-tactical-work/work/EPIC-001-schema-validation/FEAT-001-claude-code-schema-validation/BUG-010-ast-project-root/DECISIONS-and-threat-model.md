@@ -23,7 +23,8 @@ All approved by the repository owner during the BUG-010 review (2026-08-10 → 2
 | DD-1 | Broad-root warning scope | **Extend to configured roots** (and, post-tournament, the project root) | A broad declared root is the same trust posture as a broad `--root`; explicit trust deserves visibility. |
 | Scratchpad | Claude Code scratchpad access | **De-scope to explicit config** | Running `jerry ast` on a scratchpad file now requires an `ast.trusted_roots` entry or `--root`. Consistent with Option C's "explicit trust, no auto-magic" thesis. Optional turnkey provisioning tracked in #372. |
 | Config adapter | Composition-root placement | **Keep as-is + note** | The CLI (interface) layer is allowed to use/construct adapters; the automated architecture gate passes and the existing `jerry config` command already does this. Optional purist cleanup tracked in #373 — not a real violation. |
-| Deferred | `Error:`→stdout (#371), session-local config layer (#370) | **Out of scope** | Pre-existing, broader than this security bug; tracked separately. |
+| Folded in | `Error:`→stdout (#371) | **Fixed in this unit** | Demonstrated during end-to-end testing; all `jerry ast` diagnostic/error messages routed to stderr so stdout carries only the JSON/render payload. Closes on merge. |
+| Deferred | session-local config layer (#370) | **Out of scope** | Pre-existing, broader than this security bug; tracked separately. |
 
 ---
 
