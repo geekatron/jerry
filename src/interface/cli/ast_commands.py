@@ -32,6 +32,7 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 import tempfile
 from pathlib import Path
 from typing import Any
@@ -48,6 +49,8 @@ from src.domain.markdown_ast import (
     validate_document,
     validate_nav_table,
 )
+from src.interface.cli.containment_policy import ContainmentRoot
+from src.interface.cli.project_root import get_containment_roots
 
 # ---------------------------------------------------------------------------
 # Path containment constants (WI-018, M-08, M-10)
@@ -60,6 +63,12 @@ _MAX_FILE_SIZE_BYTES: int = 1_048_576
 #: Set to False in test environments where temp files are outside the repo.
 #: Also respects JERRY_DISABLE_PATH_CONTAINMENT env var for subprocess tests.
 _ENFORCE_PATH_CONTAINMENT: bool = os.environ.get("JERRY_DISABLE_PATH_CONTAINMENT", "") != "1"
+
+#: Short actionable remediation hint appended to containment-escape error
+#: messages (A-6, BUG-010 C4 tournament, FM-007): tells the user how to
+#: grant `jerry ast` access to the path they attempted, rather than
+#: leaving them to guess.
+_CONTAINMENT_ESCAPE_HINT: str = "configure ast.trusted_roots or pass --root"
 
 
 def token_to_dict(token: Token) -> dict[str, Any]:
@@ -155,39 +164,69 @@ def node_to_dict(node: SyntaxTreeNode) -> dict[str, Any]:
     }
 
 
-def _get_repo_root() -> Path:
-    """Determine the repository root directory.
+def _note_if_configured_root_match(matched: ContainmentRoot, file_path: str, quiet: bool) -> None:
+    """Print a stderr transparency note when containment matched via a
+    configured trusted root.
 
-    Uses the location of this file to walk up to the repository root.
-    The repository root is identified by the presence of ``pyproject.toml``.
+    R-4 (generalized, BUG-010 Option C): when a file is allowed only
+    because it falls under a user-declared ``ast.trusted_roots`` entry
+    rather than the project root, the user gets a one-line signal that
+    ``jerry ast`` is operating outside the project via a configured
+    trusted root. Fires only for ``classification == "configured"`` --
+    never for a project-root match (the expected common case) and never
+    for an explicit ``--root`` match (that is the user's own deliberate
+    choice, not a fallback).
 
-    Returns:
-        Resolved absolute path to the repository root.
+    Args:
+        matched: The ``ContainmentRoot`` the resolved path fell under.
+        file_path: The original (un-resolved) file path, for the message.
+        quiet: When True, suppresses this note (C6).
     """
-    current = Path(__file__).resolve()
-    for parent in current.parents:
-        if (parent / "pyproject.toml").exists():
-            return parent
-    # Fallback: use 4 levels up from ast_commands.py
-    # (src/interface/cli/ast_commands.py -> root)
-    return Path(__file__).resolve().parents[3]
+    if quiet or matched.classification != "configured":
+        return
+    print(
+        f"Note: '{file_path}' is outside the project root; jerry ast is "
+        f"operating outside the project root via a configured trusted "
+        f"root: {matched.path}.",
+        file=sys.stderr,
+    )
 
 
-def _check_path_containment(file_path: str) -> tuple[Path | None, str | None]:
-    """Verify that a file path is contained within the repository root (M-08, M-10).
+def _check_path_containment(
+    file_path: str, explicit_root: str | None = None, quiet: bool = False
+) -> tuple[Path | None, str | None]:
+    """Verify that a file path is contained within an allowed root (M-08, M-10).
 
     Resolves the path, resolves symlinks, and verifies containment within
-    the repository root directory. Also enforces the 1 MB file size limit (M-05).
+    at least one of the allowed containment roots (see
+    ``project_root.get_containment_roots``). Also enforces the 1 MB file
+    size limit (M-05).
+
+    When ``explicit_root`` is None, the allowed roots default to the
+    user's project root plus zero-or-more user-declared
+    ``ast.trusted_roots`` entries (BUG-010 Option C) -- a one-line stderr
+    transparency note fires when a path is allowed only via a configured
+    trusted root rather than the project root (R-4). When
+    ``explicit_root`` is supplied, the allowed set is EXACTLY that one
+    resolved directory -- an explicit, user-discretion escape hatch so
+    ``jerry ast`` can be used anywhere. Jerry's containment check is
+    best-effort defense against accidental traversal, not a security
+    boundary against a user who has already chosen to grant the tool
+    broad access.
 
     Args:
         file_path: Path to the file to check.
+        explicit_root: The CLI ``--root`` value, or None to use the
+            default allowed-roots set.
+        quiet: When True, suppresses the R-3 broad-root warning and the
+            R-4 configured-root transparency note (C6).
 
     Returns:
         Tuple of (resolved_path, error_message). If the path is valid and
         contained, error_message is None. Otherwise, resolved_path is None
         and error_message describes the violation.
     """
-    repo_root = _get_repo_root()
+    allowed_roots = get_containment_roots(explicit_root, quiet=quiet)
 
     # Resolve the path (follows symlinks)
     try:
@@ -198,15 +237,24 @@ def _check_path_containment(file_path: str) -> tuple[Path | None, str | None]:
     # Also resolve via os.path.realpath for symlink detection (M-10)
     realpath = Path(os.path.realpath(file_path))
 
-    # Check containment against repo root
-    if not resolved.is_relative_to(repo_root):
-        return None, f"Path escapes repository root: {file_path}"
+    # Check containment against the allowed roots (matched by
+    # classification, never by array index -- BUG-010 Option C, C1 fix)
+    matched = next((r for r in allowed_roots if resolved.is_relative_to(r.path)), None)
+    if matched is None:
+        return None, (
+            f"Path escapes allowed containment roots: {file_path} ({_CONTAINMENT_ESCAPE_HINT})"
+        )
+
+    _note_if_configured_root_match(matched, file_path, quiet)
 
     # Check symlink resolution matches (M-10)
     if resolved != realpath:
-        # Symlink detected -- verify the real path is also within repo root
-        if not realpath.is_relative_to(repo_root):
-            return None, f"Symlink target escapes repository root: {file_path}"
+        # Symlink detected -- verify the real path is also within an allowed root
+        if not any(realpath.is_relative_to(r.path) for r in allowed_roots):
+            return None, (
+                f"Symlink target escapes allowed containment roots: {file_path} "
+                f"({_CONTAINMENT_ESCAPE_HINT})"
+            )
 
     # File size check (M-05)
     if resolved.exists():
@@ -223,43 +271,53 @@ def _check_path_containment(file_path: str) -> tuple[Path | None, str | None]:
     return resolved, None
 
 
-def _read_file(file_path: str) -> tuple[str | None, int]:
+def _read_file(
+    file_path: str, root: str | None = None, quiet: bool = False
+) -> tuple[str | None, int]:
     """Read a file with path containment checks and return its contents.
 
-    Verifies path containment within the repository root (M-08),
-    resolves symlinks (M-10), and enforces file size limits (M-05)
-    before reading.
+    Verifies path containment within an allowed root (M-08), resolves
+    symlinks (M-10), and enforces file size limits (M-05) before reading.
 
     Args:
         file_path: Path to the file to read.
+        root: Optional ``--root`` override. When supplied, containment is
+            restricted to exactly this directory (BUG-010 Option C).
+            When None, the default allowed-roots set applies (project
+            root plus zero-or-more user-declared ``ast.trusted_roots``
+            entries).
+        quiet: When True, suppresses stderr transparency notes and
+            broad-root warnings for this invocation (C6).
 
     Returns:
         A tuple of (content, exit_code). If the file is not found,
-        escapes the repository root, or cannot be read, content is
-        None and exit_code is 2.
+        escapes all allowed containment roots, or cannot be read, content
+        is None and exit_code is 2.
     """
     # --- Path containment check (WI-018, M-08, M-10) ---
     if _ENFORCE_PATH_CONTAINMENT:
-        resolved, error = _check_path_containment(file_path)
+        resolved, error = _check_path_containment(file_path, root, quiet)
         if error is not None:
-            print(f"Error: {error}")
+            print(f"Error: {error}", file=sys.stderr)
             return None, 2
         assert resolved is not None  # guaranteed by _check_path_containment
     else:
         resolved = Path(file_path).resolve()
 
     if not resolved.exists():
-        print(f"Error: File not found: {file_path}")
+        print(f"Error: File not found: {file_path}", file=sys.stderr)
         return None, 2
     try:
         content = resolved.read_text(encoding="utf-8")
         return content, 0
     except OSError as exc:
-        print(f"Error reading file {file_path}: {exc}")
+        print(f"Error reading file {file_path}: {exc}", file=sys.stderr)
         return None, 2
 
 
-def ast_parse(file_path: str, json_output: bool = True) -> int:
+def ast_parse(
+    file_path: str, json_output: bool = True, root: str | None = None, quiet: bool = False
+) -> int:
     """Parse a markdown file and output the AST as JSON.
 
     Reads the file, parses it with JerryDocument, and prints a JSON object
@@ -268,11 +326,15 @@ def ast_parse(file_path: str, json_output: bool = True) -> int:
     Args:
         file_path: Path to the markdown file to parse.
         json_output: Unused flag kept for API symmetry; output is always JSON.
+        root: Optional ``--root`` containment override (BUG-010 Option C).
+            See ``_read_file`` for semantics.
+        quiet: Suppress stderr transparency notes and broad-root warnings
+            for this invocation (C6).
 
     Returns:
         0 on success, 2 if the file cannot be read.
     """
-    source, exit_code = _read_file(file_path)
+    source, exit_code = _read_file(file_path, root, quiet)
     if source is None:
         return exit_code
 
@@ -287,7 +349,7 @@ def ast_parse(file_path: str, json_output: bool = True) -> int:
     return 0
 
 
-def ast_render(file_path: str) -> int:
+def ast_render(file_path: str, root: str | None = None, quiet: bool = False) -> int:
     """Roundtrip parse-render a markdown file through mdformat.
 
     Reads the file, parses it with JerryDocument, renders it via mdformat
@@ -295,11 +357,15 @@ def ast_render(file_path: str) -> int:
 
     Args:
         file_path: Path to the markdown file to render.
+        root: Optional ``--root`` containment override (BUG-010 Option C).
+            See ``_read_file`` for semantics.
+        quiet: Suppress stderr transparency notes and broad-root warnings
+            for this invocation (C6).
 
     Returns:
         0 on success, 2 if the file cannot be read.
     """
-    source, exit_code = _read_file(file_path)
+    source, exit_code = _read_file(file_path, root, quiet)
     if source is None:
         return exit_code
 
@@ -309,7 +375,13 @@ def ast_render(file_path: str) -> int:
     return 0
 
 
-def ast_validate(file_path: str, schema: str | None = None, nav: bool = False) -> int:
+def ast_validate(
+    file_path: str,
+    schema: str | None = None,
+    nav: bool = False,
+    root: str | None = None,
+    quiet: bool = False,
+) -> int:
     """Validate a markdown file against an optional entity schema.
 
     Parses the file to ensure it is valid markdown.  When ``schema`` is
@@ -334,12 +406,16 @@ def ast_validate(file_path: str, schema: str | None = None, nav: bool = False) -
             provided the document is validated against the corresponding
             built-in EntitySchema.
         nav: When True, include detailed nav table entries in the output.
+        root: Optional ``--root`` containment override (BUG-010 Option C).
+            See ``_read_file`` for semantics.
+        quiet: Suppress stderr transparency notes and broad-root warnings
+            for this invocation (C6).
 
     Returns:
         0 on success, 1 if schema violations are found, 2 if the file cannot
         be read or the schema type is unknown.
     """
-    source, exit_code = _read_file(file_path)
+    source, exit_code = _read_file(file_path, root, quiet)
     if source is None:
         return exit_code
 
@@ -374,7 +450,7 @@ def ast_validate(file_path: str, schema: str | None = None, nav: bool = False) -
     try:
         entity_schema = get_entity_schema(schema)
     except ValueError as exc:
-        print(f"Error: {exc}")
+        print(f"Error: {exc}", file=sys.stderr)
         return 2
 
     report = validate_document(doc, entity_schema)
@@ -418,7 +494,13 @@ def ast_validate(file_path: str, schema: str | None = None, nav: bool = False) -
     return 0 if (report.is_valid and nav_result.is_valid) else 1
 
 
-def ast_query(file_path: str, selector: str, json_output: bool = True) -> int:
+def ast_query(
+    file_path: str,
+    selector: str,
+    json_output: bool = True,
+    root: str | None = None,
+    quiet: bool = False,
+) -> int:
     """Query AST nodes by type and output structured JSON.
 
     Reads the file, parses it with JerryDocument, queries all nodes matching
@@ -429,12 +511,16 @@ def ast_query(file_path: str, selector: str, json_output: bool = True) -> int:
         file_path: Path to the markdown file to query.
         selector: The node type string to query (e.g., "heading", "blockquote").
         json_output: Unused flag kept for API symmetry; output is always JSON.
+        root: Optional ``--root`` containment override (BUG-010 Option C).
+            See ``_read_file`` for semantics.
+        quiet: Suppress stderr transparency notes and broad-root warnings
+            for this invocation (C6).
 
     Returns:
         0 on success (including when no nodes match), 2 if the file cannot
         be read.
     """
-    source, exit_code = _read_file(file_path)
+    source, exit_code = _read_file(file_path, root, quiet)
     if source is None:
         return exit_code
 
@@ -450,7 +536,7 @@ def ast_query(file_path: str, selector: str, json_output: bool = True) -> int:
     return 0
 
 
-def ast_frontmatter(file_path: str) -> int:
+def ast_frontmatter(file_path: str, root: str | None = None, quiet: bool = False) -> int:
     """Extract blockquote frontmatter fields from a markdown file as JSON.
 
     Reads the file, parses it with JerryDocument, and prints a JSON object
@@ -459,11 +545,15 @@ def ast_frontmatter(file_path: str) -> int:
 
     Args:
         file_path: Path to the markdown file.
+        root: Optional ``--root`` containment override (BUG-010 Option C).
+            See ``_read_file`` for semantics.
+        quiet: Suppress stderr transparency notes and broad-root warnings
+            for this invocation (C6).
 
     Returns:
         0 on success, 2 if the file cannot be read.
     """
-    source, exit_code = _read_file(file_path)
+    source, exit_code = _read_file(file_path, root, quiet)
     if source is None:
         return exit_code
 
@@ -473,7 +563,9 @@ def ast_frontmatter(file_path: str) -> int:
     return 0
 
 
-def ast_modify(file_path: str, key: str, value: str) -> int:
+def ast_modify(
+    file_path: str, key: str, value: str, root: str | None = None, quiet: bool = False
+) -> int:
     """Modify a frontmatter field in a markdown file and write back.
 
     Reads the file, parses it, modifies the named frontmatter field to the
@@ -485,12 +577,21 @@ def ast_modify(file_path: str, key: str, value: str) -> int:
         file_path: Path to the markdown file.
         key: The frontmatter field name to modify (case-sensitive).
         value: The new value for the field.
+        root: Optional ``--root`` containment override (BUG-010 Option C).
+            Threaded identically into the read-time check and the
+            write-time TOCTOU recheck below, so a single invocation never
+            disagrees on the allowed containment set between read and
+            write.
+        quiet: Suppress stderr transparency notes and broad-root warnings
+            at read time (C6). The write-time internal recheck below
+            always suppresses its own note independent of this flag
+            (DD-3) -- see the recheck comment for rationale.
 
     Returns:
         0 on success, 1 if the key does not exist in frontmatter, 2 if the
         file cannot be read.
     """
-    source, exit_code = _read_file(file_path)
+    source, exit_code = _read_file(file_path, root, quiet)
     if source is None:
         return exit_code
 
@@ -500,20 +601,42 @@ def ast_modify(file_path: str, key: str, value: str) -> int:
     try:
         new_doc = fm.set(key, value)
     except KeyError:
-        print(f"Error: Key '{key}' not found in frontmatter")
+        print(f"Error: Key '{key}' not found in frontmatter", file=sys.stderr)
         return 1
 
     new_content = new_doc.render()
 
     # --- Atomic write with TOCTOU mitigation (WI-020, M-21) ---
-    target_path = Path(file_path).resolve()
-
-    # Re-verify path containment immediately before write
+    # Re-verify path containment immediately before write (WI-020, M-21,
+    # C2 fix; write-path check=use fix, BUG-010 C4 tournament A-1): calls
+    # the IDENTICAL _check_path_containment routine used at read time --
+    # including a fresh os.path.realpath() symlink re-resolution -- so a
+    # symlink swapped between read and write is caught. The WRITE TARGET
+    # is the exact resolved path THIS check validates -- never a
+    # separately-resolved value captured earlier -- closing a CWE-367
+    # gap where the check's own resolution was discarded and the write
+    # instead used a stale `Path(file_path).resolve()` computed before
+    # the check ran. This makes read-time and write-time containment
+    # literally the same function call, not merely "the same algorithm
+    # re-implemented" -- closing the prior TOCTOU gap at the design
+    # level. quiet=True is hard-coded here (DD-3), independent of the
+    # caller's ``quiet`` value -- a deliberate choice to avoid printing
+    # the R-3/R-4 note twice for one logical invocation (it already
+    # printed once at read time, if at all); the containment
+    # ENFORCEMENT itself remains fully unconditional.
     if _ENFORCE_PATH_CONTAINMENT:
-        repo_root = _get_repo_root()
-        if not target_path.is_relative_to(repo_root):
-            print(f"Error: Path escapes repository root at write time: {file_path}")
+        resolved, write_time_error = _check_path_containment(file_path, root, quiet=True)
+        if write_time_error is not None:
+            print(
+                f"Error: Path escapes allowed containment roots at write time: {file_path} "
+                f"({_CONTAINMENT_ESCAPE_HINT})",
+                file=sys.stderr,
+            )
             return 2
+        assert resolved is not None  # guaranteed by _check_path_containment
+        target_path = resolved
+    else:
+        target_path = Path(file_path).resolve()
 
     temp_fd = None
     temp_path_str = None
@@ -532,7 +655,7 @@ def ast_modify(file_path: str, key: str, value: str) -> int:
         os.replace(temp_path_str, str(target_path))
         temp_path_str = None  # Mark as renamed (no cleanup needed)
     except OSError as exc:
-        print(f"Error writing file {file_path}: {exc}")
+        print(f"Error writing file {file_path}: {exc}", file=sys.stderr)
         return 2
     finally:
         # Clean up temp file descriptor if still open
@@ -558,7 +681,7 @@ def ast_modify(file_path: str, key: str, value: str) -> int:
     return 0
 
 
-def ast_reinject(file_path: str) -> int:
+def ast_reinject(file_path: str, root: str | None = None, quiet: bool = False) -> int:
     """Extract all L2-REINJECT directives from a markdown file as JSON.
 
     Reads the file, parses it with JerryDocument, and prints a JSON list
@@ -567,11 +690,15 @@ def ast_reinject(file_path: str) -> int:
 
     Args:
         file_path: Path to the markdown file.
+        root: Optional ``--root`` containment override (BUG-010 Option C).
+            See ``_read_file`` for semantics.
+        quiet: Suppress stderr transparency notes and broad-root warnings
+            for this invocation (C6).
 
     Returns:
         0 on success, 2 if the file cannot be read.
     """
-    source, exit_code = _read_file(file_path)
+    source, exit_code = _read_file(file_path, root, quiet)
     if source is None:
         return exit_code
 
@@ -595,7 +722,7 @@ def ast_reinject(file_path: str) -> int:
 # ---------------------------------------------------------------------------
 
 
-def ast_detect(file_path: str) -> int:
+def ast_detect(file_path: str, root: str | None = None, quiet: bool = False) -> int:
     """Detect the document type of a markdown file.
 
     Uses ``DocumentTypeDetector`` with path-first, structure-fallback
@@ -604,13 +731,17 @@ def ast_detect(file_path: str) -> int:
 
     Args:
         file_path: Path to the markdown file.
+        root: Optional ``--root`` containment override (BUG-010 Option C).
+            See ``_read_file`` for semantics.
+        quiet: Suppress stderr transparency notes and broad-root warnings
+            for this invocation (C6).
 
     Returns:
         0 on success, 2 if the file cannot be read.
     """
     from src.domain.markdown_ast.document_type import DocumentTypeDetector
 
-    source, exit_code = _read_file(file_path)
+    source, exit_code = _read_file(file_path, root, quiet)
     if source is None:
         return exit_code
 
@@ -633,7 +764,7 @@ def ast_detect(file_path: str) -> int:
     return 0
 
 
-def ast_sections(file_path: str) -> int:
+def ast_sections(file_path: str, root: str | None = None, quiet: bool = False) -> int:
     """Extract XML-tagged sections from a markdown file as JSON.
 
     Uses ``XmlSectionParser`` to extract sections. Returns JSON list
@@ -642,6 +773,10 @@ def ast_sections(file_path: str) -> int:
 
     Args:
         file_path: Path to the markdown file.
+        root: Optional ``--root`` containment override (BUG-010 Option C).
+            See ``_read_file`` for semantics.
+        quiet: Suppress stderr transparency notes and broad-root warnings
+            for this invocation (C6).
 
     Returns:
         0 on success, 2 if the file cannot be read.
@@ -649,7 +784,7 @@ def ast_sections(file_path: str) -> int:
     from src.domain.markdown_ast.input_bounds import InputBounds
     from src.domain.markdown_ast.xml_section import XmlSectionParser
 
-    source, exit_code = _read_file(file_path)
+    source, exit_code = _read_file(file_path, root, quiet)
     if source is None:
         return exit_code
 
@@ -676,7 +811,7 @@ def ast_sections(file_path: str) -> int:
     return 0
 
 
-def ast_metadata(file_path: str) -> int:
+def ast_metadata(file_path: str, root: str | None = None, quiet: bool = False) -> int:
     """Extract HTML comment metadata from a markdown file as JSON.
 
     Uses ``HtmlCommentMetadata`` to extract metadata blocks. Returns
@@ -684,6 +819,10 @@ def ast_metadata(file_path: str) -> int:
 
     Args:
         file_path: Path to the markdown file.
+        root: Optional ``--root`` containment override (BUG-010 Option C).
+            See ``_read_file`` for semantics.
+        quiet: Suppress stderr transparency notes and broad-root warnings
+            for this invocation (C6).
 
     Returns:
         0 on success, 2 if the file cannot be read.
@@ -691,7 +830,7 @@ def ast_metadata(file_path: str) -> int:
     from src.domain.markdown_ast.html_comment import HtmlCommentMetadata
     from src.domain.markdown_ast.input_bounds import InputBounds
 
-    source, exit_code = _read_file(file_path)
+    source, exit_code = _read_file(file_path, root, quiet)
     if source is None:
         return exit_code
 

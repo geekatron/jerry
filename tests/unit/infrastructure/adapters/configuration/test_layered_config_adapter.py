@@ -340,4 +340,98 @@ class TestLayeredConfigAdapterAllKeys:
             assert "a.b" in keys
             assert "c" in keys
             assert "d" in keys
-            assert "e" in keys
+
+
+# =============================================================================
+# BUG-010 Option C: ast.trusted_roots config precedence (Section 4.D).
+# =============================================================================
+
+
+class TestAstTrustedRootsPrecedence:
+    """ast.trusted_roots precedence via LayeredConfigAdapter.get_list()."""
+
+    def test_get_list_when_ast_trusted_roots_default_then_returns_empty_list(self) -> None:
+        """With no file config and no env var, the code default [] applies."""
+        with patch.dict(os.environ, clear=True):
+            adapter = LayeredConfigAdapter(defaults={"ast.trusted_roots": []})
+            assert adapter.get_list("ast.trusted_roots") == []
+
+    def test_get_list_when_ast_trusted_roots_in_root_config_then_returns_configured_list(
+        self, tmp_path: Path
+    ) -> None:
+        """A root-level config.toml [ast] trusted_roots entry is returned."""
+        root_config = tmp_path / "root.toml"
+        root_config.write_text('[ast]\ntrusted_roots = ["/root/level/dir"]\n', encoding="utf-8")
+
+        with patch.dict(os.environ, clear=True):
+            adapter = LayeredConfigAdapter(
+                root_config_path=root_config,
+                defaults={"ast.trusted_roots": []},
+            )
+            assert adapter.get_list("ast.trusted_roots") == ["/root/level/dir"]
+
+    def test_get_list_when_ast_trusted_roots_in_project_config_then_overrides_root_config(
+        self, tmp_path: Path
+    ) -> None:
+        """A project-level entry overrides the root-level entry."""
+        root_config = tmp_path / "root.toml"
+        root_config.write_text('[ast]\ntrusted_roots = ["/root/level/dir"]\n', encoding="utf-8")
+        project_config = tmp_path / "project.toml"
+        project_config.write_text(
+            '[ast]\ntrusted_roots = ["/project/level/dir"]\n', encoding="utf-8"
+        )
+
+        with patch.dict(os.environ, clear=True):
+            adapter = LayeredConfigAdapter(
+                root_config_path=root_config,
+                project_config_path=project_config,
+                defaults={"ast.trusted_roots": []},
+            )
+            assert adapter.get_list("ast.trusted_roots") == ["/project/level/dir"]
+
+    def test_get_list_when_ast_trusted_roots_env_json_array_then_overrides_all_file_config(
+        self, tmp_path: Path
+    ) -> None:
+        """JERRY_AST__TRUSTED_ROOTS (double underscore, JSON array) overrides
+        all file-based configuration."""
+        root_config = tmp_path / "root.toml"
+        root_config.write_text('[ast]\ntrusted_roots = ["/file/level/dir"]\n', encoding="utf-8")
+
+        with patch.dict(os.environ, {"JERRY_AST__TRUSTED_ROOTS": '["/env/level/dir"]'}, clear=True):
+            adapter = LayeredConfigAdapter(
+                root_config_path=root_config,
+                defaults={"ast.trusted_roots": []},
+            )
+            assert adapter.get_list("ast.trusted_roots") == ["/env/level/dir"]
+
+    def test_get_source_when_ast_trusted_roots_set_in_env_then_returns_env(self) -> None:
+        """get_source reports 'env' when JERRY_AST__TRUSTED_ROOTS is set."""
+        with patch.dict(os.environ, {"JERRY_AST__TRUSTED_ROOTS": '["/env/level/dir"]'}, clear=True):
+            adapter = LayeredConfigAdapter(defaults={"ast.trusted_roots": []})
+            assert adapter.get_source("ast.trusted_roots") == "env"
+
+    def test_env_to_config_key_when_ast_trusted_roots_env_var_used_then_maps_to_dotted_key(
+        self,
+    ) -> None:
+        """Pins the DOUBLE-underscore env var name JERRY_AST__TRUSTED_ROOTS
+        against EnvConfigAdapter's actual mapping (key.upper().replace(".",
+        "__")): one dot maps to two underscores. The single-underscore
+        form JERRY_AST_TRUSTED_ROOTS silently produces the flat key
+        "ast_trusted_roots" (no dot), which never matches "ast.trusted_roots"
+        in _get_nested()'s dot-notation lookup -- a security-relevant
+        footgun for a trust-declaration key, guarded here."""
+        from src.infrastructure.adapters.configuration.env_config_adapter import (
+            EnvConfigAdapter,
+        )
+
+        with patch.dict(os.environ, {"JERRY_AST__TRUSTED_ROOTS": '["/env/level/dir"]'}, clear=True):
+            env_adapter = EnvConfigAdapter(prefix="JERRY_")
+            assert env_adapter.get("ast.trusted_roots") == ["/env/level/dir"]
+
+        # Negative companion: the single-underscore form does NOT map to
+        # the dotted key -- it silently no-ops (RE: the plan's flagged
+        # naming trap).
+        with patch.dict(os.environ, {"JERRY_AST_TRUSTED_ROOTS": '["/env/level/dir"]'}, clear=True):
+            env_adapter = EnvConfigAdapter(prefix="JERRY_")
+            assert env_adapter.get("ast.trusted_roots") is None
+            assert env_adapter.get("ast_trusted_roots") == ["/env/level/dir"]

@@ -986,38 +986,49 @@ class CLIAdapter:
     def _get_project_root(self) -> Path:
         """Get the project root directory.
 
+        Delegates to the shared CLI resolver (BUG-010: single source of truth
+        for project-root resolution across CLI namespaces).
+
         Returns:
             Path to project root
         """
-        project_dir = os.environ.get("CLAUDE_PROJECT_DIR")
-        if project_dir:
-            return Path(project_dir)
-        return Path.cwd()
+        from src.interface.cli.project_root import get_project_root
+
+        return get_project_root()
 
     def _create_config_adapter(self) -> Any:
         """Create a LayeredConfigAdapter for config commands.
+
+        DD-4 (BUG-010 Option C, non-blocking refactor): delegates
+        construction to the shared
+        ``project_root.build_layered_config_adapter()`` factory rather
+        than duplicating ``LayeredConfigAdapter`` instantiation, so
+        ``jerry config`` and ``jerry ast`` never drift on precedence or
+        config-path resolution.
+
+        ``ast.trusted_roots`` defaults to ``[]`` here (mandate
+        requirement, BUG-010 Option C): this does not change ``jerry
+        ast``'s own config read (which uses
+        ``project_root.build_layered_config_adapter`` directly, not
+        ``CLIAdapter``), but makes the key discoverable/settable via
+        ``jerry config show``, ``jerry config get ast.trusted_roots``, and
+        ``jerry config set ast.trusted_roots ... --scope project|root``.
+        Use absolute paths for entries -- relative entries resolve
+        against the current working directory. On Windows, entries set
+        via ``config.toml`` or the JSON-array form of
+        ``JERRY_AST__TRUSTED_ROOTS`` must use forward slashes (or escaped
+        backslashes) -- a raw ``C:\\Users\\...`` path is not valid
+        TOML/JSON.
 
         Note: This is a local import to avoid infrastructure imports at module level.
 
         Returns:
             LayeredConfigAdapter instance
         """
-        from src.infrastructure.adapters.configuration.layered_config_adapter import (
-            LayeredConfigAdapter,
-        )
+        from src.interface.cli.project_root import build_layered_config_adapter
 
-        root = self._get_project_root()
-        jerry_project = os.environ.get("JERRY_PROJECT")
-
-        project_config_path = None
-        if jerry_project:
-            project_config_path = root / "projects" / jerry_project / ".jerry" / "config.toml"
-
-        return LayeredConfigAdapter(
-            env_prefix="JERRY_",
-            root_config_path=root / ".jerry" / "config.toml",
-            project_config_path=project_config_path,
-            defaults={
+        return build_layered_config_adapter(
+            {
                 "logging.level": "INFO",
                 "work_tracking.auto_snapshot_interval": 10,
                 "work_tracking.quality_gate_enabled": True,
@@ -1029,7 +1040,8 @@ class CLIAdapter:
                 "context_monitor.emergency_threshold": 0.88,
                 "context_monitor.compaction_detection_threshold": 10000,
                 "context_monitor.enabled": True,
-            },
+                "ast.trusted_roots": [],
+            }
         )
 
     def cmd_config_show(

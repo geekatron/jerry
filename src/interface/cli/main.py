@@ -397,7 +397,12 @@ def _handle_ast(args: Any, json_output: bool) -> int:
     ast_commands functions.
 
     Args:
-        args: Parsed arguments with .command, .file, and optional .selector/.schema.
+        args: Parsed arguments with .command, .file, and optional
+            .selector/.schema/.root/.quiet. ``root`` and ``quiet``
+            (BUG-010 Option C) are read defensively via
+            ``getattr(args, "root"/"quiet", None/False)`` and passed
+            through to every command, matching the existing defensive
+            pattern already used for ``schema``/``nav``.
         json_output: Whether JSON output was requested (passed through to commands).
 
     Returns:
@@ -420,35 +425,40 @@ def _handle_ast(args: Any, json_output: bool) -> int:
     )
 
     if args.command is None:
-        print("No ast command specified. Use 'jerry ast --help'.")
+        print("No ast command specified. Use 'jerry ast --help'.", file=sys.stderr)
         return 1
 
+    root = getattr(args, "root", None)
+    quiet = getattr(args, "quiet", False)
+
     if args.command == "parse":
-        return ast_parse(args.file, json_output)
+        return ast_parse(args.file, json_output, root=root, quiet=quiet)
     elif args.command == "render":
-        return ast_render(args.file)
+        return ast_render(args.file, root=root, quiet=quiet)
     elif args.command == "validate":
         return ast_validate(
             args.file,
             getattr(args, "schema", None),
             nav=getattr(args, "nav", False),
+            root=root,
+            quiet=quiet,
         )
     elif args.command == "query":
-        return ast_query(args.file, args.selector, json_output)
+        return ast_query(args.file, args.selector, json_output, root=root, quiet=quiet)
     elif args.command == "frontmatter":
-        return ast_frontmatter(args.file)
+        return ast_frontmatter(args.file, root=root, quiet=quiet)
     elif args.command == "modify":
-        return ast_modify(args.file, args.key, args.value)
+        return ast_modify(args.file, args.key, args.value, root=root, quiet=quiet)
     elif args.command == "reinject":
-        return ast_reinject(args.file)
+        return ast_reinject(args.file, root=root, quiet=quiet)
     elif args.command == "detect":
-        return ast_detect(args.file)
+        return ast_detect(args.file, root=root, quiet=quiet)
     elif args.command == "sections":
-        return ast_sections(args.file)
+        return ast_sections(args.file, root=root, quiet=quiet)
     elif args.command == "metadata":
-        return ast_metadata(args.file)
+        return ast_metadata(args.file, root=root, quiet=quiet)
 
-    print(f"Unknown ast command: {args.command}")
+    print(f"Unknown ast command: {args.command}", file=sys.stderr)
     return 1
 
 
