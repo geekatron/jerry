@@ -8,6 +8,7 @@
 > **Created:** 2026-08-07T00:00:00Z
 > **Parent:** PROJ-032-nuclear-sop-review
 > **Owner:** geekatron
+> **GitHub Issue:** [#374](https://github.com/geekatron/jerry/issues/374)
 
 ---
 

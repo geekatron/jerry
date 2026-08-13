@@ -8,6 +8,7 @@
 > **Created:** 2026-08-07T00:00:00Z
 > **Parent:** EPIC-001
 > **Owner:** geekatron
+> **GitHub Issue:** [#376](https://github.com/geekatron/jerry/issues/376)
 
 ---
 
