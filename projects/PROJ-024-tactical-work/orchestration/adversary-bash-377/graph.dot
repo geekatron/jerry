@@ -1,0 +1,88 @@
+// GH #377 -- Grant Bash to adv-executor and adv-scorer
+// Dependency graph for PROJ-024-tactical-work / EN-011-adversary-bash-access
+// Render: dot -Tsvg graph.dot -o graph.svg
+digraph adversary_bash_377 {
+    rankdir=TB;
+    fontname="Helvetica";
+    labelloc="t";
+    label="GH #377: Grant Bash to adv-executor + adv-scorer -- Failure-Aware Dependency Graph";
+
+    node [fontname="Helvetica", fontsize=11, style="filled"];
+    edge [fontname="Helvetica", fontsize=9];
+
+    // ---------- Legend ----------
+    subgraph cluster_legend {
+        label="Legend";
+        fontsize=11;
+        style="dashed";
+        color="gray50";
+
+        legend_work   [label="work node\n<step> / <jerry agent>", shape=box, fillcolor="lightblue2"];
+        legend_gate   [label="sync gate\n(fan-in / fan-out)", shape=diamond, fillcolor="khaki1"];
+        legend_fail   [label="failure / halt sink", shape=box, style="filled,dashed", fillcolor="mistyrose", color="red3", fontcolor="red4"];
+        legend_term   [label="terminal", shape=box, peripheries=2, fillcolor="palegreen2"];
+
+        legend_work -> legend_gate [style=invis];
+        legend_gate -> legend_fail [style=invis];
+        legend_fail -> legend_term [style=invis];
+    }
+
+    // ---------- Work nodes ----------
+    N1  [label="N1: Create EN-011 + 4 Tasks\n(worktracker decomposition)\nMAIN CONTEXT (no agent)", shape=box, fillcolor="lightblue2"];
+    N2  [label="N2: Pre-implementation security\nsanity-check (STRIDE-lite: shell_execute\ngrant vs. existing accepted WebFetch\nprompt-injection risk)\neng-security", shape=box, fillcolor="lightblue2"];
+    N3  [label="N3: Audit new entity files\n(template compliance, orphan check)\nwt-auditor", shape=box, fillcolor="lightblue2"];
+    N4  [label="N4: RED -- confirm the 3 acceptance\nprobes currently fail (baseline)\nMAIN CONTEXT (no agent)", shape=box, fillcolor="lightblue2"];
+    N5  [label="N5: GREEN -- edit 4 canonical source\nfiles: 2x .agent.yaml (+shell_execute)\n+ 2x .prompt.md (self-check restatement)\nMAIN CONTEXT (no agent)", shape=box, fillcolor="lightblue2"];
+    N6  [label="N6: Build\n`uv run jerry agents build`\nMAIN CONTEXT (CLI)", shape=box, fillcolor="lightblue2"];
+    N7  [label="N7: Validate\n`uv run jerry agents validate`\nMAIN CONTEXT (CLI)", shape=box, fillcolor="lightblue2"];
+    N8  [label="N8: Diff\n`uv run jerry agents diff`\nMAIN CONTEXT (CLI)", shape=box, fillcolor="lightblue2"];
+    N9  [label="N9: Probe -- pin a revision\ngit show \"<sha>:<path>\" | grep -c '^+' == 0\nadv-executor (post-rebuild)", shape=box, fillcolor="lightblue2"];
+    N10 [label="N10: Probe -- publish a\nself-derived count (grep -c / wc -l)\nadv-scorer (post-rebuild)", shape=box, fillcolor="lightblue2"];
+    N11 [label="N11: C3 adversarial quality gate\non the change diff (>= 0.92, H-13)\nadv-selector -> adv-executor(xN) -> adv-scorer", shape=box, fillcolor="lightblue2"];
+    N12 [label="N12: Final AC verification\n(PASS/FAIL, does not close entities)\nwt-verifier", shape=box, fillcolor="lightblue2"];
+    N13 [label="N13: PR review + merge\n(Closes #377; entities closed only\nafter merge to main)\nHuman + GitHub (no agent)", shape=box, peripheries=2, fillcolor="palegreen2"];
+
+    // ---------- Gates ----------
+    GATE0 [label="GATE 0\nfan-in: N1 + N2", shape=diamond, fillcolor="khaki1"];
+    GATE1 [label="GATE 1\nfan-in: N3 + N9 + N10", shape=diamond, fillcolor="khaki1"];
+
+    // ---------- Failure / halt sinks ----------
+    ESC0 [label="ESCALATE (H-31)\neng-security found a NEW risk beyond\nthe issue's own blast-radius argument\n[terminal -- no auto-retry]", shape=box, style="filled,dashed", fillcolor="mistyrose", color="red3", fontcolor="red4"];
+    F6   [label="FAIL: build error\n(YAML syntax / canonical\nschema violation)", shape=box, style="filled,dashed", fillcolor="mistyrose", color="red3", fontcolor="red4"];
+    F7   [label="FAIL: schema invalid, OR\ntool_tier changed unexpectedly\n(executor must stay T4, scorer T2)", shape=box, style="filled,dashed", fillcolor="mistyrose", color="red3", fontcolor="red4"];
+    F8   [label="FAIL: unexpected drift\nbeyond the Bash / tool-list change", shape=box, style="filled,dashed", fillcolor="mistyrose", color="red3", fontcolor="red4"];
+    F9   [label="FAIL: probe fails\n(most likely: .prompt.md self-check\ntext not updated -> agent self-halts\nciting false P-003 violation)", shape=box, style="filled,dashed", fillcolor="mistyrose", color="red3", fontcolor="red4"];
+    F11  [label="FAIL: REVISE / ESCALATE\n(< 0.92 composite, or any\nCritical finding)", shape=box, style="filled,dashed", fillcolor="mistyrose", color="red3", fontcolor="red4"];
+
+    // ---------- Normal flow ----------
+    N1 -> GATE0;
+    N2 -> GATE0;
+    N1 -> N3;
+    GATE0 -> N4;
+    N4 -> N5;
+    N5 -> N6;
+    N6 -> N7;
+    N7 -> N8;
+    N8 -> N9;
+    N8 -> N10;
+    N3 -> GATE1;
+    N9 -> GATE1;
+    N10 -> GATE1;
+    GATE1 -> N11;
+    N11 -> N12;
+    N12 -> N13;
+
+    // ---------- Failure / on-failure-halt edges (dashed red) ----------
+    GATE0 -> ESC0 [style=dashed, color="red3", fontcolor="red4", label="new risk found"];
+    N6 -> F6 [style=dashed, color="red3", fontcolor="red4", label="build error"];
+    F6 -> N5 [style=dashed, color="red3", fontcolor="red4", label="retry (<=3x)"];
+    N7 -> F7 [style=dashed, color="red3", fontcolor="red4", label="validate error"];
+    F7 -> N5 [style=dashed, color="red3", fontcolor="red4", label="retry (<=3x)"];
+    N8 -> F8 [style=dashed, color="red3", fontcolor="red4", label="drift detected"];
+    F8 -> N5 [style=dashed, color="red3", fontcolor="red4", label="retry (<=3x)"];
+    N9 -> F9 [style=dashed, color="red3", fontcolor="red4", label="probe fails"];
+    N10 -> F9 [style=dashed, color="red3", fontcolor="red4", label="probe fails"];
+    F9 -> N5 [style=dashed, color="red3", fontcolor="red4", label="retry (<=3x)"];
+    N11 -> F11 [style=dashed, color="red3", fontcolor="red4", label="score < 0.92"];
+    F11 -> N5 [style=dashed, color="red3", fontcolor="red4", label="H-14 revision (<=3x)"];
+}
