@@ -316,7 +316,7 @@ def _read_file(
 
 
 def ast_parse(
-    file_path: str, json_output: bool = True, root: str | None = None, quiet: bool = False
+    file_path: str, root: str | None = None, quiet: bool = False
 ) -> int:
     """Parse a markdown file and output the AST as JSON.
 
@@ -325,7 +325,6 @@ def ast_parse(
 
     Args:
         file_path: Path to the markdown file to parse.
-        json_output: Unused flag kept for API symmetry; output is always JSON.
         root: Optional ``--root`` containment override (BUG-010 Option C).
             See ``_read_file`` for semantics.
         quiet: Suppress stderr transparency notes and broad-root warnings
@@ -497,7 +496,6 @@ def ast_validate(
 def ast_query(
     file_path: str,
     selector: str,
-    json_output: bool = True,
     root: str | None = None,
     quiet: bool = False,
 ) -> int:
@@ -510,7 +508,6 @@ def ast_query(
     Args:
         file_path: Path to the markdown file to query.
         selector: The node type string to query (e.g., "heading", "blockquote").
-        json_output: Unused flag kept for API symmetry; output is always JSON.
         root: Optional ``--root`` containment override (BUG-010 Option C).
             See ``_read_file`` for semantics.
         quiet: Suppress stderr transparency notes and broad-root warnings
