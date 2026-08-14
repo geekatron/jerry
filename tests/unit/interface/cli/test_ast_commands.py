@@ -1175,7 +1175,7 @@ class TestMainAstRouting:
             file = str(tmp_md_file)
 
         with patch("sys.stdout", new_callable=StringIO):
-            result = _handle_ast(FakeArgs(), json_output=False)
+            result = _handle_ast(FakeArgs())
         assert result == 1
 
     def test_handle_ast_unknown_command_prints_error_to_stderr_only(
@@ -1191,7 +1191,7 @@ class TestMainAstRouting:
             command = "nonexistent"
             file = str(tmp_md_file)
 
-        result = _handle_ast(FakeArgs(), json_output=False)
+        result = _handle_ast(FakeArgs())
         captured = capsys.readouterr()
         assert result == 1
         assert captured.out == ""
