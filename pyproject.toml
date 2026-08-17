@@ -32,7 +32,7 @@ dependencies = [
     "jsonschema[test]>=4.26.0",
     "webvtt-py>=0.5.1",
     "tiktoken>=0.13.0",  # EN-026: Token counting for chunking (BUG-001 fix)
-    "filelock>=3.32.2",
+    "filelock>=3.32.3",
     "markdown-it-py>=4.2.0,<5.0.0",
     "mdformat>=1.0.0,<2.0.0",
     "mdit-py-plugins>=0.6.1",
@@ -45,8 +45,8 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "mypy>=2.3.0",
-    "ruff>=0.16.1",
-    "filelock>=3.32.2",
+    "ruff>=0.16.3",
+    "filelock>=3.32.3",
     "jsonschema>=4.21.0",
 ]
 test = [
@@ -58,7 +58,7 @@ test = [
 # EN-020: Transcript bounded context dependencies (TDD-FEAT-004 v1.2.0)
 transcript = [
     "webvtt-py>=0.5.1",           # VTT/SRT parsing (deterministic)
-    "charset-normalizer>=3.4.9",  # Encoding detection fallback
+    "charset-normalizer>=3.5.0",  # Encoding detection fallback
 ]
 
 [project.scripts]
@@ -213,13 +213,13 @@ constraint-dependencies = [
 
 [dependency-groups]
 dev = [
-    "bump-my-version>=1.5.0",
+    "bump-my-version>=1.5.1",
     "mkdocs-material>=9.7.7",
     "pip-audit>=2.10.1",
     "pip-licenses>=5.5.5",
-    "pre-commit>=4.6.1",
+    "pre-commit>=4.6.2",
     "pyright>=1.1.411",
     "pytest>=9.1.1",
     "pytest-cov>=7.1.0",
-    "ruff>=0.16.1",
+    "ruff>=0.16.3",
 ]
