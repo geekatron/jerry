@@ -75,6 +75,7 @@ See `docs/governance/JERRY_CONSTITUTION.md` for full governance.
 | `/worktracker` | Task/issue management |
 | `/problem-solving` | Research, analysis, root cause |
 | `/nasa-se` | Requirements, V&V, reviews |
+| `/nuclear-sop` | Nuclear-inspired SOP execution: pre-job brief, STAR self-check, hold points, OE capture |
 | `/orchestration` | Multi-phase workflows |
 | `/architecture` | Design decisions |
 | `/adversary` | Adversarial quality reviews, strategy templates, tournament execution, multi-strategy orchestration |
