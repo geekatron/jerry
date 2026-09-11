@@ -60,6 +60,9 @@ lint: ## Run linters (ruff + pyright)
 	uv run ruff check src/ tests/
 	uv run pyright src/
 
+check-plugin-size: ## Check plugins against the 5000-file organization-distribution cap
+	uv run python scripts/check_plugin_size.py
+
 format: ## Format code with ruff
 	uv run ruff check --fix src/ tests/
 	uv run ruff format src/ tests/
