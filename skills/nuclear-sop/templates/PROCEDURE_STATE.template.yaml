@@ -1,0 +1,143 @@
+# PROCEDURE_STATE.yaml -- Execution State Schema
+# Template version: 1.0.0
+# Source: /nuclear-sop Skill Specification Synthesis v2.0.0, Section 1.9
+#
+# PURPOSE: Single source of truth for all execution state in a sop-executor invocation.
+#          Enables cross-session pause/resume without in-context memory.
+#          Tamper detection: consistency checks in STAR-STOP verify this file against execution context.
+#
+# SECURITY: This file contains execution state that controls hold point enforcement.
+#           The hold_resolution and status fields are ONLY modified through designated
+#           hold point release mechanisms (see SR-04 forbidden action in sop-executor).
+#           Manual modification of this file to bypass a HELD state is a security violation.
+#
+# USAGE:    Copy this template to {execution_dir}/PROCEDURE_STATE.yaml at initialization.
+#           sop-executor updates this file after EVERY step completion (not batched).
+#           Do not read from in-context memory; always read from filesystem.
+
+procedure_state:
+
+  # --- Schema Identity ---
+  # REQUIRED. sop-executor checks this on RESUME against its current schema version.
+  # If versions differ: present mismatch to user (P-020); require confirmation before proceeding.
+  # Do not silently resume against an incompatible schema.
+  state_schema_version: "1.0.0"
+
+  # --- Workflow Identity ---
+  # REQUIRED. Populated from workflow definition metadata at initialization.
+  workflow_id: null                   # From workflow definition Section 1 Metadata: e.g., "adr-authoring-c3-001"
+  workflow_version: null              # From workflow definition Section 1 Metadata: e.g., "1.0.0"
+  workflow_definition_path: null      # Repo-relative path to the workflow definition file being executed
+
+  # --- Execution Status ---
+  # REQUIRED. Updated after every state transition.
+  # Valid transitions (state machine; SSOT: rules/nuclear-sop-behavior-rules.md "PROCEDURE_STATE.yaml State Machine"):
+  #   INITIALIZING -> IN-PROGRESS (on user confirm start)
+  #   IN-PROGRESS -> HELD (on hold point activation)
+  #   HELD -> IN-PROGRESS (on hold point release: APPROVED/WAIVED/AUTO-RELEASED)
+  #   HELD -> ABORTED (on REJECT)
+  #   IN-PROGRESS -> IV-PENDING (on IV-HOLD activation)
+  #   IV-PENDING -> IV-PASSED (on sop-verifier ACCEPT disposition)
+  #   IV-PENDING -> IV-REJECTED (on sop-verifier REJECT disposition)
+  #   IV-PASSED -> IN-PROGRESS (if revision steps remain)
+  #   IV-PASSED -> COMPLETED (if no further steps; set by sop-capture after OE entry write per NS-H-06)
+  #   IV-REJECTED -> IN-PROGRESS (return to sop-executor for revision)
+  #   IV-REJECTED -> ABORTED (after 3 rejections + user decision)
+  #   IN-PROGRESS -> COMPLETED (set by sop-capture after OE entry write; NS-H-06 -- sop-executor MUST NOT set COMPLETED)
+  #   INITIALIZING | IN-PROGRESS | HELD | IV-PENDING | IV-PASSED | IV-REJECTED -> RESUMING
+  #     (any non-terminal status; cross-session resume protocol -- sop-executor loading this file
+  #      for a RESUME execution before user confirmation)
+  #   RESUMING -> IN-PROGRESS (on user confirmation of resume per P-020)
+  #   RESUMING -> ABORTED (on resume validation failure: schema mismatch not accepted, or user declines to continue)
+  #   Any non-terminal state -> ABORTED (on user ABORT decision or unrecoverable deviation)
+  #
+  # Terminal states: COMPLETED, ABORTED (no valid transitions out; sop-executor will not resume from these)
+  status: "INITIALIZING"
+  # Valid: INITIALIZING | IN-PROGRESS | HELD | RESUMING |
+  #        IV-PENDING | IV-PASSED | IV-REJECTED | COMPLETED | ABORTED
+
+  # --- Criticality ---
+  # REQUIRED. Set from workflow definition metadata.
+  # Determines: step limits (C1-C2=20, C3=15, C4=10), CONTINUOUS defaults (C3+ unannotated=CONTINUOUS),
+  #             QG-HOLD iteration ceilings (C1=3, C2=5, C3=7, C4=10), verification mode (C1-C2=3-hop, C3+=4-hop)
+  criticality: null                   # C1 | C2 | C3 | C4
+
+  # --- Place-Keeping ---
+  # REQUIRED. Updated after EVERY step sign-off in the STAR-REVIEW phase.
+  # NEVER batch-updated. Write to filesystem immediately after each step.
+  total_steps: 0                      # Total number of [CONTINUOUS] and [REFERENCE] steps in workflow definition
+  current_step: 0                     # Last completed step number (0 = not started)
+  next_step: 1                        # Next step to execute (current_step + 1 on normal progression)
+  steps_completed:                    # Array of completed step records
+    []
+    # Each entry format:
+    # - step: {step number}
+    #   completed_at: "{ISO-8601 timestamp}"
+    #   outcome: "PASS | DEVIATION | WAIVED"    # PASS = STAR-REVIEW matched expectation; DEVIATION = stop-work event; WAIVED = step skipped by user WAIVE at a USER-HOLD (bb-002)
+    #   star_record_path: "{path/to/execution-log.md}#{anchor}"  # Optional: section in execution log
+
+  # --- Hold Point State ---
+  # Updated when hold is activated. Cleared (reset to null) after hold is released.
+  # SECURITY: hold_resolution MUST only be set via the designated release mechanism for each hold type.
+  #           See sop-executor forbidden action SR-04.
+  hold_type: null                     # USER-HOLD | QG-HOLD | IV-HOLD | null
+  held_at_step: null                  # Step number where hold was activated
+  held_at_timestamp: null             # ISO-8601 timestamp of hold activation
+  hold_prompt: null                   # The hold reason text from workflow definition
+  hold_resolution: null               # APPROVED | REJECTED | WAIVED | AUTO-RELEASED | ACCEPT | REJECT | null
+  # USER-HOLD: APPROVED / REJECTED / WAIVED
+  # QG-HOLD:   AUTO-RELEASED
+  # IV-HOLD:   ACCEPT (sop-verifier ACCEPT disposition) | REJECT (sop-verifier REJECT disposition)
+  # USER-HOLD release: APPROVED (user said APPROVE via AskUserQuestion)
+  #                    REJECTED (user said REJECT -- execution direction provided)
+  #                    WAIVED   (user said WAIVE -- hold skipped by P-020 authority)
+  # QG-HOLD release:   AUTO-RELEASED (ps-critic score >= 0.92)
+  # IV-HOLD release:   ACCEPT   (sop-verifier returned ACCEPT disposition; matches sop-verifier output vocabulary)
+  #                    REJECT   (sop-verifier returned REJECT -- revision required; matches sop-verifier output vocabulary)
+
+  # --- Independent Verification (IV-HOLD) State ---
+  # Populated when IV-HOLD is activated.
+  # SECURITY: iv_scope paths MUST be sourced from the workflow definition IV-HOLD annotation.
+  #           sop-executor MUST NOT interpret or generate these paths itself (SR-09, TB-4 path injection prevention).
+  iv_scope: []                        # File paths of work products under verification
+  # Each entry: "{repo-relative path to work product}"
+  iv_criteria_path: null              # Path to acceptance criteria used by sop-verifier
+  iv_iteration: 0                     # Current IV attempt count (1-indexed; max 3 before mandatory user escalation)
+  iv_report_path: null                # Path to sop-verifier's verification report (IV-report.md)
+  iv_disposition: null                # ACCEPT | REJECT | null (set by sop-verifier, read by sop-executor)
+
+  # --- Quality Gate (QG-HOLD) State ---
+  qg_iteration: 0                     # Current QG-HOLD revision count (1-indexed)
+  qg_scores:                          # Array of quality gate scoring records
+    []
+    # Each entry format:
+    # - iteration: {iteration number}
+    #   score: {S-014 composite score, 0.0-1.0}
+    #   critic_findings_path: "{path/to/critic-findings.md}"
+    #   scored_at: "{ISO-8601 timestamp}"
+
+  # --- Execution Log ---
+  execution_log_path: "execution-log.md"  # Relative to execution directory
+  execution_log_revision: 1               # Incremented if log is segmented across sessions
+  execution_log_final: null               # Set by sop-executor at end of Phase 2 to the canonical final log path
+                                          # (status remains IN-PROGRESS; sop-capture HALTs unless this is set and
+                                          # resolves to an existing file, then sets COMPLETED per NS-H-06)
+
+  # --- Stop-Work Events ---
+  stop_work_count: 0                  # Total number of D-2 stop-work events in this execution
+  # Individual stop-work events are recorded in execution-log.md with DEVIATION entries.
+  # This count enables sop-capture to include stop_work_events in OE schema (mandatory field).
+
+  # --- Tamper Detection ---
+  # SECURITY: state_hash provides integrity verification for security-critical fields.
+  # sop-executor computes this hash after every state write; STAR-STOP verifies it on every read.
+  # If the hash does not match the current state: FLAG ANOMALY — state was modified outside
+  # the designated write mechanism (potential hold bypass or external tampering).
+  # Hash scope: status, hold_type, hold_resolution, iv_disposition, current_step, next_step
+  # Algorithm: SHA-256 of the concatenated field values in the order listed above, coerced to strings
+  state_hash: null                    # SHA-256 hex digest; null until first state write
+
+  # --- Timestamps ---
+  started_at: null                    # ISO-8601 timestamp; set at INITIALIZING -> IN-PROGRESS transition
+  last_updated: null                  # ISO-8601 timestamp; updated after every state write
+  completed_at: null                  # ISO-8601 timestamp; set at COMPLETED or ABORTED

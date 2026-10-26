@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **feat(nuclear-sop):** `/nuclear-sop` skill — nuclear-inspired standard-operating-procedure execution for high-rigor workflows: 4 agents (sop-brief, sop-executor, sop-verifier, sop-capture) with STAR self-checking, hold points, place-keeping, and operating-experience capture; agents registered in plugin.json (#269)
+
 ### Changed
 - **docs(proj-024):** close EPIC-004 (security-scan pipeline hardening) — STORY-028 alerting runtime-proven via owner-authorized staged test (alert issue created with detailed body + valid date, then reused via comment, no duplicate); EN-007, FEAT-002, EPIC-004 all completed; closes umbrella issue #301
 - **docs(proj-024):** close BUG-009 (click CVE) with pipeline evidence — resolved 2026-08-06 (fix on main via PR #338, green scheduled scan 31079097567, alert issue #335 auto-closed); records first runtime proof of STORY-028's auto-close criterion (#336)

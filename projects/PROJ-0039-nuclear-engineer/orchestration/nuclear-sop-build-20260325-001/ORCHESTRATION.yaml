@@ -1,0 +1,1483 @@
+# ORCHESTRATION.yaml
+# Machine-readable orchestration state for /nuclear-sop skill build pipeline
+# Document ID: PROJ-0039-ORCH-BUILD-STATE
+# Version: 2.1.0
+# Created: 2026-03-25T00:00:00Z
+# Updated: 2026-03-31 — Checkpoint CP-004: ENG Phase 3 fan-out complete, BARRIER-1 pending
+# Schema Evolution: See docs/schemas/SCHEMA_VERSIONING.md
+
+schema_version: "2.0.0"
+
+# =============================================================================
+# WORKFLOW METADATA
+# =============================================================================
+workflow:
+  id: "nuclear-sop-build-20260325-001"
+  name: "/nuclear-sop Skill Build Pipeline"
+  project_id: "PROJ-0039-nuclear-engineer"
+  version: "2.1.0"
+  created_at: "2026-03-25T00:00:00Z"
+  updated_at: "2026-03-31T00:00:00Z"
+  status: "ACTIVE"  # PLANNED | ACTIVE | PAUSED | COMPLETE | FAILED | CANCELLED
+
+  id_source: "user"           # "user" | "auto" - how the workflow ID was determined
+  id_format: "semantic-date-seq"  # Format: {purpose}-{YYYYMMDD}-{NNN}
+
+  patterns:
+    - CROSS_POLLINATED         # Three pipelines with bidirectional barriers (Pattern 5)
+    - FAN_OUT                  # ENG Phase 3 parallel execution
+    - FAN_IN                   # ENG Phase 3 convergence before BARRIER-1
+    - SEQUENTIAL               # Within each pipeline phase
+
+  upstream_workflow:
+    id: "nuclear-sop-research-20260319-001"
+    status: "COMPLETE"
+    artifacts:
+      synthesis_spec: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-4/ps-synthesizer-001/skill-specification-synthesis.md"
+      adr_001: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-3/ps-architect-001/ADR-001-nuclear-sop-skill-architecture.md"
+      pattern_extraction: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-2/ps-analyst-001/sop-pattern-extraction.md"
+      nuclear_survey: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-1/ps-researcher-001/nuclear-sop-survey.md"
+
+  constraints:
+    max_agent_nesting: 1          # P-003: Single nesting level
+    file_persistence: true        # P-002: All state to filesystem
+    user_authority: true          # P-020: User approves gates and critical decisions; user applies registration edits after QG-E6
+    user_approval_before_phase3_fanout: true  # P-020 + RR-07: User MUST approve implementation plan and authorize 16-file creation in skills/nuclear-sop/ before Group 5 executes
+    max_concurrent_agents: 5      # ENG Phase 3 fan-out: 5 eng-backend agents (001, 002, 003, 004a, 004b — RR-06 split)
+    max_barrier_retries: 5        # Per-direction maximum (upgraded from 3 in v1.0)
+    max_quality_gate_iterations: 5  # RT-M-010 C3 ceiling (upgraded from 3 in v1.0)
+    min_quality_gate_iterations: 3  # H-14: minimum 3 creator-critic-revision cycles required (RR-07)
+    checkpoint_frequency: "PHASE_AND_BARRIER"
+    halt_on_critical_vulnerability: true  # Red team severity-critical finding halts BARRIER-2
+    require_h16_steelman_before_devils_advocate: true  # S-003 before S-002 at every critique cycle
+
+# =============================================================================
+# PATH CONFIGURATION
+# =============================================================================
+# All paths are dynamically constructed using workflow and pipeline identifiers.
+# No hardcoded pipeline names.
+paths:
+  # Base path for all orchestration artifacts (relative to project root)
+  base: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/"
+
+  # Pipeline artifact path pattern
+  # {pipeline_alias} resolved from pipelines.{id}.short_alias
+  # {phase_id} is the phase directory (e.g., "phase-1")
+  # {agent_id} provides agent-level isolation
+  pipeline: "{base}{pipeline_alias}/{phase_id}/{agent_id}/"
+
+  # Cross-pollination barrier path pattern
+  # {barrier_id} is the barrier identifier (e.g., "barrier-1")
+  # {direction} is "eng-to-red" or "red-to-eng"
+  barrier: "{base}cross-pollination/{barrier_id}/{direction}/"
+
+  # Skill output path (NOT orchestration artifacts — these are the deliverables)
+  skill_output: "skills/nuclear-sop/"
+
+  # Examples (resolved):
+  # eng Phase 1: projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/eng/phase-1/eng-architect-001/
+  # Barrier 1:   projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/cross-pollination/barrier-1/eng-to-red/
+  # Skill files: skills/nuclear-sop/
+
+# =============================================================================
+# PIPELINE DEFINITIONS
+# =============================================================================
+pipelines:
+  # ---------------------------------------------------------------------------
+  # PIPELINE A: ENGINEERING (eng)
+  # ---------------------------------------------------------------------------
+  eng:
+    id: "eng"
+    name: "Engineering Pipeline"
+    description: "Secure design, implementation, QA, security review, and final compliance verification of the /nuclear-sop skill"
+
+    # Short alias for path construction
+    # Priority: 1) user override (none), 2) skill default (none for eng-team), 3) auto-derived = "eng"
+    short_alias: "eng"
+    skill_source: "eng-team"
+
+    status: "PLANNED"
+    current_phase: 0
+    total_phases: 6
+    progress_percent: 0
+    # NOTE: ENG Phase 4 task expanded in v2.0 to include 7 performance metrics,
+    #       GAP-09 behavioral baseline recording, and composition pattern validation.
+    # NOTE: ENG Phase 6 task expanded in v2.0 to include routing registration deliverables.
+
+    phases:
+      # -----------------------------------------------------------------------
+      # ENG PHASE 1: Architecture & Threat Model
+      # -----------------------------------------------------------------------
+      - id: 1
+        name: "Architecture & Threat Model"
+        path_id: "phase-1"
+        status: "PENDING"
+        agents:
+          - id: "eng-architect-001"
+            name: "eng-architect"
+            type: "creator"
+            status: "PENDING"
+            inputs:
+              - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-4/ps-synthesizer-001/skill-specification-synthesis.md"
+              - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-3/ps-architect-001/ADR-001-nuclear-sop-skill-architecture.md"
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/eng/phase-1/eng-architect-001/secure-architecture-design.md"
+            task: "Design secure skill architecture; produce STRIDE threat model covering: (1) prompt injection in workflow definitions, (2) hold point bypass, (3) STAR evasion, (4) OE feedback poisoning"
+          - id: "adv-executor-001"
+            name: "adv-executor"
+            type: "critic"
+            status: "BLOCKED"
+            blocked_by: "eng-architect-001"
+            strategies:
+              - "S-003"  # Steelman (MUST precede S-002 per H-16)
+              - "S-007"  # Constitutional AI Critique
+              - "S-002"  # Devil's Advocate
+              - "S-014"  # LLM-as-Judge
+              - "S-004"  # Pre-Mortem Analysis
+              - "S-012"  # FMEA
+              - "S-013"  # Inversion Technique
+            quality_threshold: 0.93
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/eng/phase-1/adv-executor-001/architecture-threat-review.md"
+            inputs:
+              - "eng-architect-001 artifact"
+            validation_criteria:
+              - "(a) STRIDE threat model covers all four attack surfaces"
+              - "(b) Secure design decisions trace to specific threats"
+              - "(c) Architecture respects P-003/P-020/P-022"
+              - "(d) No over-engineering relative to synthesis spec"
+              - "(e) FMEA: failure modes for each attack surface enumerated with RPN scores"
+              - "(f) Inversion: perfectly insecure implementation characterized; design gaps identified"
+        quality_gate:
+          id: "QG-E1"
+          name: "Secure Architecture Review"
+          threshold: 0.93
+          status: "PENDING"
+          score: null
+          iterations_used: 0
+          max_iterations: 5
+          pass_condition: "score >= 0.93 AND all validation_criteria met"
+          fail_action: "Return to eng-architect-001 with critique; revise and resubmit"
+
+      # -----------------------------------------------------------------------
+      # ENG PHASE 2: Implementation Planning & Standards
+      # -----------------------------------------------------------------------
+      - id: 2
+        name: "Implementation Planning & Standards"
+        path_id: "phase-2"
+        status: "BLOCKED"
+        blocked_by: "QG-E1"
+        agents:
+          - id: "eng-lead-001"
+            name: "eng-lead"
+            type: "creator"
+            status: "BLOCKED"
+            blocked_by: "QG-E1"
+            inputs:
+              - "eng-architect-001 artifact"
+              - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-4/ps-synthesizer-001/skill-specification-synthesis.md"
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/eng/phase-2/eng-lead-001/implementation-plan.md"
+            task: "Map all 16 skill files to specific eng-backend agents; define H-34/H-35 compliance standards; plan test harness behavioral bounds verification"
+            file_assignments:
+              eng-backend-001: ["SKILL.md", "nuclear-sop-behavior-rules.md"]
+              eng-backend-002: ["sop-brief.md", "sop-brief.governance.yaml", "PRE_JOB_BRIEF.template.md"]
+              eng-backend-003: ["sop-executor.md", "sop-executor.governance.yaml", "WORKFLOW_DEFINITION.template.md", "PROCEDURE_STATE.template.yaml", "HOLD_POINT_LOG.template.md"]
+              eng-backend-004a: ["sop-verifier.md", "sop-verifier.governance.yaml"]
+              eng-backend-004b: ["sop-capture.md", "sop-capture.governance.yaml", "POST_JOB_BRIEF.template.md"]
+          - id: "adv-scorer-001"
+            name: "adv-scorer"
+            type: "scorer"
+            status: "BLOCKED"
+            blocked_by: "eng-lead-001"
+            strategies:
+              - "S-003"  # Steelman (MUST precede S-002 per H-16)
+              - "S-007"  # Constitutional AI Critique
+              - "S-002"  # Devil's Advocate
+              - "S-014"  # LLM-as-Judge
+              - "S-004"  # Pre-Mortem Analysis
+              - "S-012"  # FMEA
+              - "S-013"  # Inversion Technique
+            quality_threshold: 0.93
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/eng/phase-2/adv-scorer-001/implementation-plan-score.md"
+            validation_criteria:
+              - "(a) All 16 files from synthesis spec accounted for"
+              - "(b) H-34/H-35 compliance plan is concrete and actionable"
+              - "(c) Test harness plan identifies all 7 performance metrics to measure"
+              - "(d) File assignments are correct"
+              - "(e) Pre-mortem: what fails if Phase 3 fan-out runs with this plan?"
+        quality_gate:
+          id: "QG-E2"
+          name: "Implementation Plan Review"
+          threshold: 0.93
+          status: "BLOCKED"
+          score: null
+          iterations_used: 0
+          max_iterations: 5
+          pass_condition: "score >= 0.93 AND all validation_criteria met"
+          fail_action: "Return to eng-lead-001 with scoring breakdown; targeted revision"
+
+      # -----------------------------------------------------------------------
+      # ENG PHASE 3: Implementation (Fan-Out — 4 parallel eng-backend agents)
+      # -----------------------------------------------------------------------
+      - id: 3
+        name: "Implementation (Fan-Out)"
+        path_id: "phase-3"
+        status: "BLOCKED"
+        blocked_by: "QG-E2"
+        execution_mode: "PARALLEL"
+        sub_agents:
+          - id: "eng-backend-001"
+            name: "eng-backend"
+            type: "creator"
+            instance: 1
+            status: "BLOCKED"
+            blocked_by: "QG-E2"
+            files_to_create:
+              - "skills/nuclear-sop/SKILL.md"
+              - "skills/nuclear-sop/rules/nuclear-sop-behavior-rules.md"
+            inputs:
+              - "eng-lead-001 artifact"
+              - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-4/ps-synthesizer-001/skill-specification-synthesis.md"
+            review_artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/eng/phase-3/eng-backend-001/implementation-review.md"
+            critic: "adv-executor-002"
+          - id: "eng-backend-002"
+            name: "eng-backend"
+            type: "creator"
+            instance: 2
+            status: "BLOCKED"
+            blocked_by: "QG-E2"
+            files_to_create:
+              - "skills/nuclear-sop/agents/sop-brief.md"
+              - "skills/nuclear-sop/agents/sop-brief.governance.yaml"
+              - "skills/nuclear-sop/templates/PRE_JOB_BRIEF.template.md"
+            inputs:
+              - "eng-lead-001 artifact"
+              - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-4/ps-synthesizer-001/skill-specification-synthesis.md"
+            review_artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/eng/phase-3/eng-backend-002/implementation-review.md"
+            critic: "adv-executor-003"
+          - id: "eng-backend-003"
+            name: "eng-backend"
+            type: "creator"
+            instance: 3
+            status: "BLOCKED"
+            blocked_by: "QG-E2"
+            files_to_create:
+              - "skills/nuclear-sop/agents/sop-executor.md"
+              - "skills/nuclear-sop/agents/sop-executor.governance.yaml"
+              - "skills/nuclear-sop/templates/WORKFLOW_DEFINITION.template.md"
+              - "skills/nuclear-sop/templates/PROCEDURE_STATE.template.yaml"
+              - "skills/nuclear-sop/templates/HOLD_POINT_LOG.template.md"
+            inputs:
+              - "eng-lead-001 artifact"
+              - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-4/ps-synthesizer-001/skill-specification-synthesis.md"
+            review_artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/eng/phase-3/eng-backend-003/implementation-review.md"
+            critic: "adv-executor-004"
+          # RR-06: eng-backend-004 split into 004a (sop-verifier) and 004b (sop-capture + POST_JOB_BRIEF)
+          # to address scope overload risk identified in ps-critic C3 critique (FM-03, RPN 196)
+          - id: "eng-backend-004a"
+            name: "eng-backend"
+            type: "creator"
+            instance: "4a"
+            scope: "sop-verifier agent + governance yaml"
+            status: "BLOCKED"
+            blocked_by: "QG-E2 AND user_approval_checkpoint"
+            files_to_create:
+              - "skills/nuclear-sop/agents/sop-verifier.md"
+              - "skills/nuclear-sop/agents/sop-verifier.governance.yaml"
+            inputs:
+              - "eng-lead-001 artifact"
+              - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-4/ps-synthesizer-001/skill-specification-synthesis.md"
+            review_artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/eng/phase-3/eng-backend-004a/implementation-review.md"
+            critic: "adv-executor-005a"
+          - id: "eng-backend-004b"
+            name: "eng-backend"
+            type: "creator"
+            instance: "4b"
+            scope: "sop-capture agent + governance yaml + POST_JOB_BRIEF template"
+            status: "BLOCKED"
+            blocked_by: "QG-E2 AND user_approval_checkpoint"
+            files_to_create:
+              - "skills/nuclear-sop/agents/sop-capture.md"
+              - "skills/nuclear-sop/agents/sop-capture.governance.yaml"
+              - "skills/nuclear-sop/templates/POST_JOB_BRIEF.template.md"
+            inputs:
+              - "eng-lead-001 artifact"
+              - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-4/ps-synthesizer-001/skill-specification-synthesis.md"
+            review_artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/eng/phase-3/eng-backend-004b/implementation-review.md"
+            critic: "adv-executor-005b"
+        critics:
+          - id: "adv-executor-002"
+            target: "eng-backend-001"
+            strategies: ["S-003", "S-007", "S-002", "S-014", "S-004", "S-012", "S-013"]
+            # S-003 before S-002 per H-16
+            threshold: 0.93
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/eng/phase-3/adv-executor-002/backend-001-review.md"
+          - id: "adv-executor-003"
+            target: "eng-backend-002"
+            strategies: ["S-003", "S-007", "S-002", "S-014", "S-004", "S-012", "S-013"]
+            threshold: 0.93
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/eng/phase-3/adv-executor-003/backend-002-review.md"
+          - id: "adv-executor-004"
+            target: "eng-backend-003"
+            strategies: ["S-003", "S-007", "S-002", "S-014", "S-004", "S-012", "S-013"]
+            threshold: 0.93
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/eng/phase-3/adv-executor-004/backend-003-review.md"
+          # RR-06: adv-executor-005 split into 005a (reviews 004a) and 005b (reviews 004b)
+          - id: "adv-executor-005a"
+            target: "eng-backend-004a"
+            strategies: ["S-003", "S-007", "S-002", "S-014", "S-004", "S-012", "S-013"]
+            threshold: 0.93
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/eng/phase-3/adv-executor-005a/backend-004a-review.md"
+          - id: "adv-executor-005b"
+            target: "eng-backend-004b"
+            strategies: ["S-003", "S-007", "S-002", "S-014", "S-004", "S-012", "S-013"]
+            threshold: 0.93
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/eng/phase-3/adv-executor-005b/backend-004b-review.md"
+        quality_gate:
+          id: "QG-E3"
+          name: "Implementation Review (per sub-agent)"
+          threshold: 0.93
+          status: "BLOCKED"
+          sub_gate_statuses:
+            QG-E3a: "BLOCKED"   # eng-backend-001 (SKILL.md + rules)
+            QG-E3b: "BLOCKED"   # eng-backend-002 (sop-brief + PRE_JOB_BRIEF)
+            QG-E3c: "BLOCKED"   # eng-backend-003 (sop-executor + templates)
+            QG-E3d-a: "BLOCKED" # eng-backend-004a (sop-verifier + governance.yaml) — RR-06
+            QG-E3d-b: "BLOCKED" # eng-backend-004b (sop-capture + governance.yaml + POST_JOB_BRIEF) — RR-06
+          pass_condition: "ALL sub-gates score >= 0.93"
+          fail_action: "Return specific eng-backend to fix schema/content violations; targeted revision"
+
+      # -----------------------------------------------------------------------
+      # ENG PHASE 4: Test Harness & QA
+      # -----------------------------------------------------------------------
+      - id: 4
+        name: "Test Harness & QA"
+        path_id: "phase-4"
+        status: "BLOCKED"
+        blocked_by: "BARRIER-1"
+        agents:
+          - id: "eng-qa-001"
+            name: "eng-qa"
+            type: "creator"
+            status: "BLOCKED"
+            blocked_by: "BARRIER-1"
+            inputs:
+              - "All skill files in skills/nuclear-sop/"
+              - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/cross-pollination/barrier-1/red-to-eng/barrier-handoff.md"
+              - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-4/ps-synthesizer-001/skill-specification-synthesis.md"
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/eng/phase-4/eng-qa-001/test-strategy.md"
+            task: "Build STAR trap suite (>= 3 deliberate traps); A/B comparison framework; hold point compliance tests; OE schema validation tests; apply /nuclear-sop to guide test harness construction (self-referential validation); instrument all 7 performance metrics (PM-01 through PM-07); record >= 3 GAP-09 behavioral baselines in skills/nuclear-sop/behavioral-baselines/; demonstrate >= 1 composition pattern (nuclear-sop wrapping another skill)"
+            additional_inputs:
+              - "projects/PROJ-0039-nuclear-engineer/research/skill-integration-analysis.md"
+          - id: "adv-executor-006"
+            name: "adv-executor"
+            type: "critic"
+            status: "BLOCKED"
+            blocked_by: "eng-qa-001"
+            strategies:
+              - "S-003"  # Steelman (MUST precede S-002 per H-16)
+              - "S-007"  # Constitutional AI Critique
+              - "S-002"  # Devil's Advocate
+              - "S-014"  # LLM-as-Judge
+              - "S-004"  # Pre-Mortem Analysis
+              - "S-012"  # FMEA
+              - "S-013"  # Inversion Technique
+            quality_threshold: 0.93
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/eng/phase-4/adv-executor-006/test-harness-review.md"
+            validation_criteria:
+              - "(a) STAR trap suite contains >= 3 deliberate traps"
+              - "(b) A/B comparison framework is implemented"
+              - "(c) Hold point compliance tests are deterministic"
+              - "(d) OE schema validation tests exercise schema boundaries"
+              - "(e) /nuclear-sop applied to test harness construction (self-referential)"
+              - "(f) Pre-mortem: what fails if agents execute STAR steps undeterministically"
+              - "(g) All 7 performance metrics present with instrumentation (PM-01 through PM-07)"
+              - "(h) >= 3 GAP-09 behavioral baseline scenarios recorded"
+              - "(i) At least 1 composition pattern demonstrated in worked example"
+        quality_gate:
+          id: "QG-E4"
+          name: "Test Harness Review"
+          threshold: 0.93
+          status: "BLOCKED"
+          score: null
+          iterations_used: 0
+          max_iterations: 5
+
+      # -----------------------------------------------------------------------
+      # ENG PHASE 5: Security Code Review
+      # -----------------------------------------------------------------------
+      - id: 5
+        name: "Security Code Review"
+        path_id: "phase-5"
+        status: "BLOCKED"
+        blocked_by: "QG-E4"
+        agents:
+          - id: "eng-security-001"
+            name: "eng-security"
+            type: "creator"
+            status: "BLOCKED"
+            blocked_by: "QG-E4"
+            inputs:
+              - "All skill files in skills/nuclear-sop/"
+              - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/eng/phase-1/eng-architect-001/secure-architecture-design.md"
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/eng/phase-5/eng-security-001/security-review.md"
+            task: "Manual security review: prompt injection vectors, hold point bypass paths, privilege escalation through tool tier violations, STAR evasion patterns in agent definitions"
+          - id: "adv-executor-007"
+            name: "adv-executor"
+            type: "critic"
+            status: "BLOCKED"
+            blocked_by: "eng-security-001"
+            strategies:
+              - "S-003"  # Steelman (MUST precede S-002 per H-16)
+              - "S-007"  # Constitutional AI Critique
+              - "S-002"  # Devil's Advocate
+              - "S-014"  # LLM-as-Judge
+              - "S-004"  # Pre-Mortem Analysis
+              - "S-012"  # FMEA
+              - "S-013"  # Inversion Technique
+            quality_threshold: 0.93
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/eng/phase-5/adv-executor-007/security-review-critique.md"
+            validation_criteria:
+              - "(a) All prompt injection vectors from threat model are addressed"
+              - "(b) Hold point bypass paths eliminated or documented as accepted risks"
+              - "(c) Tool tier violations enumerated"
+              - "(d) STAR evasion patterns covered by behavioral rules"
+              - "(e) FMEA residual risk table populated"
+        quality_gate:
+          id: "QG-E5"
+          name: "Security Review"
+          threshold: 0.93
+          status: "BLOCKED"
+          score: null
+          iterations_used: 0
+          max_iterations: 5
+
+      # -----------------------------------------------------------------------
+      # ENG PHASE 6: Final Review Gate
+      # -----------------------------------------------------------------------
+      - id: 6
+        name: "Final Review Gate"
+        path_id: "phase-6"
+        status: "BLOCKED"
+        blocked_by: "BARRIER-2"
+        agents:
+          - id: "eng-reviewer-001"
+            name: "eng-reviewer"
+            type: "creator"
+            status: "BLOCKED"
+            blocked_by: "BARRIER-2"
+            inputs:
+              - "All skill files in skills/nuclear-sop/"
+              - "All review outputs from phases 1-5"
+              - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/eng/phase-4/eng-qa-001/test-strategy.md"
+              - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/cross-pollination/barrier-2/red-to-eng/barrier-handoff.md"
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/eng/phase-6/eng-reviewer-001/compliance-verification.md"
+            task: "Final compliance verification against synthesis spec Section 3 ACs; H-34/H-35 schema compliance; compliance evidence matrix; resolve or risk-accept all red team findings; produce routing registration deliverables (trigger map row, CLAUDE.md entry, AGENTS.md entries) as copy-ready content in compliance-verification.md Section: Registration"
+          - id: "adv-executor-008"
+            name: "adv-executor"
+            type: "critic"
+            status: "BLOCKED"
+            blocked_by: "eng-reviewer-001"
+            strategies:
+              - "S-003"  # Steelman (MUST precede S-002 per H-16)
+              - "S-007"  # Constitutional AI Critique
+              - "S-002"  # Devil's Advocate
+              - "S-014"  # LLM-as-Judge
+              - "S-004"  # Pre-Mortem Analysis
+              - "S-012"  # FMEA
+              - "S-013"  # Inversion Technique
+            quality_threshold: 0.93
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/eng/phase-6/adv-executor-008/final-review-critique.md"
+            validation_criteria:
+              - "(a) All synthesis spec Section 3 ACs mapped to pass/fail evidence"
+              - "(b) H-34/H-35 schema compliance verified for all 4 agent definition pairs"
+              - "(c) Compliance evidence matrix is complete and traceable"
+              - "(d) Red team vulnerability findings resolved or risk-accepted with documented rationale"
+              - "(e) Registration deliverables present: trigger map row, CLAUDE.md entry, AGENTS.md entries"
+        quality_gate:
+          id: "QG-E6"
+          name: "Final Compliance Review + Registration"
+          threshold: 0.93
+          status: "BLOCKED"
+          score: null
+          iterations_used: 0
+          max_iterations: 5
+
+  # ---------------------------------------------------------------------------
+  # PIPELINE B: RED TEAM (red)
+  # ---------------------------------------------------------------------------
+  red:
+    id: "red"
+    name: "Red Team Pipeline"
+    description: "Security engagement: attack surface mapping, vulnerability analysis, exploitation methodology for /nuclear-sop skill"
+
+    # Short alias for path construction
+    # Priority: 1) user override (none), 2) skill default (none for red-team), 3) auto-derived = "red"
+    short_alias: "red"
+    skill_source: "red-team"
+
+    status: "PLANNED"
+    current_phase: 0
+    total_phases: 4
+    progress_percent: 0
+
+    phases:
+      # -----------------------------------------------------------------------
+      # RED PHASE 1: Engagement Scope
+      # -----------------------------------------------------------------------
+      - id: 1
+        name: "Engagement Scope"
+        path_id: "phase-1"
+        status: "PENDING"
+        agents:
+          - id: "red-lead-001"
+            name: "red-lead"
+            type: "creator"
+            status: "PENDING"
+            inputs:
+              - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-4/ps-synthesizer-001/skill-specification-synthesis.md"
+              - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-3/ps-architect-001/ADR-001-nuclear-sop-skill-architecture.md"
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/red/phase-1/red-lead-001/engagement-scope.md"
+            task: "Define Rules of Engagement for /nuclear-sop security testing. Scope: agent definitions, templates, behavioral rules. Targets: prompt injection, constraint bypass, hold point evasion, STAR manipulation, OE poisoning"
+        quality_gate: null  # Engagement scope is a planning document; no quality gate
+
+      # -----------------------------------------------------------------------
+      # RED PHASE 2: Reconnaissance & Attack Surface
+      # -----------------------------------------------------------------------
+      - id: 2
+        name: "Reconnaissance & Attack Surface"
+        path_id: "phase-2"
+        status: "BLOCKED"
+        blocked_by: "BARRIER-1"
+        agents:
+          - id: "red-recon-001"
+            name: "red-recon"
+            type: "creator"
+            status: "BLOCKED"
+            blocked_by: "BARRIER-1"
+            inputs:
+              - "All skill files in skills/nuclear-sop/ (shared via BARRIER-1)"
+              - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/red/phase-1/red-lead-001/engagement-scope.md"
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/red/phase-2/red-recon-001/attack-surface-map.md"
+            task: "Map attack surface: all input vectors to each agent, trust boundaries between agents, PROCEDURE_STATE.yaml data flow end-to-end, OE entry injection points"
+          - id: "adv-executor-009"
+            name: "adv-executor"
+            type: "critic"
+            status: "BLOCKED"
+            blocked_by: "red-recon-001"
+            strategies:
+              - "S-003"  # Steelman (MUST precede S-002 per H-16)
+              - "S-007"  # Constitutional AI Critique
+              - "S-002"  # Devil's Advocate
+              - "S-014"  # LLM-as-Judge
+              - "S-004"  # Pre-Mortem Analysis
+              - "S-012"  # FMEA
+              - "S-013"  # Inversion Technique
+            quality_threshold: 0.93
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/red/phase-2/adv-executor-009/recon-review.md"
+            validation_criteria:
+              - "(a) All input vectors to each agent documented"
+              - "(b) Trust boundaries between agents mapped"
+              - "(c) PROCEDURE_STATE.yaml data flow traced end-to-end"
+              - "(d) OE entry injection points enumerated"
+        quality_gate:
+          id: "QG-R2"
+          name: "Attack Surface Review"
+          threshold: 0.93
+          status: "BLOCKED"
+          score: null
+          iterations_used: 0
+          max_iterations: 5
+
+      # -----------------------------------------------------------------------
+      # RED PHASE 3: Vulnerability Analysis
+      # -----------------------------------------------------------------------
+      - id: 3
+        name: "Vulnerability Analysis"
+        path_id: "phase-3"
+        status: "BLOCKED"
+        blocked_by: "QG-R2"
+        agents:
+          - id: "red-vuln-001"
+            name: "red-vuln"
+            type: "creator"
+            status: "BLOCKED"
+            blocked_by: "QG-R2"
+            inputs:
+              - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/red/phase-2/red-recon-001/attack-surface-map.md"
+              - "All skill files in skills/nuclear-sop/"
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/red/phase-3/red-vuln-001/vulnerability-report.md"
+            task: "Identify vulnerabilities: prompt injection in workflow defs, STAR bypass through REFERENCE-classified steps, hold point evasion through WAIVE abuse, OE feedback poisoning, PROCEDURE_STATE.yaml manipulation"
+            severity_levels: ["CRITICAL", "HIGH", "MEDIUM", "LOW", "INFORMATIONAL"]
+            halt_on_severity: "CRITICAL"  # BARRIER-2 halted until CRITICAL findings are resolved
+          - id: "adv-executor-010"
+            name: "adv-executor"
+            type: "critic"
+            status: "BLOCKED"
+            blocked_by: "red-vuln-001"
+            strategies:
+              - "S-003"  # Steelman (MUST precede S-002 per H-16)
+              - "S-007"  # Constitutional AI Critique
+              - "S-002"  # Devil's Advocate
+              - "S-014"  # LLM-as-Judge
+              - "S-004"  # Pre-Mortem Analysis
+              - "S-012"  # FMEA
+              - "S-013"  # Inversion Technique
+            quality_threshold: 0.93
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/red/phase-3/adv-executor-010/vuln-review.md"
+            validation_criteria:
+              - "(a) Each vulnerability has an attack scenario"
+              - "(b) Severity rated with justification"
+              - "(c) Inversion: what would a perfectly secure implementation look like? Does the diff reveal gaps?"
+              - "(d) No vulnerability category from engagement scope is unaddressed"
+        quality_gate:
+          id: "QG-R3"
+          name: "Vulnerability Report Review"
+          threshold: 0.93
+          status: "BLOCKED"
+          score: null
+          iterations_used: 0
+          max_iterations: 5
+
+      # -----------------------------------------------------------------------
+      # RED PHASE 4: Exploitation Methodology
+      # -----------------------------------------------------------------------
+      - id: 4
+        name: "Exploitation Methodology"
+        path_id: "phase-4"
+        status: "BLOCKED"
+        blocked_by: "BARRIER-2"
+        agents:
+          - id: "red-exploit-001"
+            name: "red-exploit"
+            type: "creator"
+            status: "BLOCKED"
+            blocked_by: "BARRIER-2"
+            inputs:
+              - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/red/phase-3/red-vuln-001/vulnerability-report.md"
+              - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/cross-pollination/barrier-2/eng-to-red/barrier-handoff.md"
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/red/phase-4/red-exploit-001/exploitation-methodology.md"
+            task: "Develop PoC exploitation methodology for top vulnerabilities; document how each could be triggered and impact; propose mitigations for unresolved findings"
+        quality_gate: null  # Final engagement report; no further quality gate required
+
+  # ---------------------------------------------------------------------------
+  # PIPELINE C: V&V (vv) — NEW in v2.0
+  # ---------------------------------------------------------------------------
+  vv:
+    id: "vv"
+    name: "V&V Pipeline"
+    description: "Requirements traceability, verification and validation planning, and formal CDR-equivalent technical review of the /nuclear-sop skill via /nasa-se"
+
+    # Short alias for path construction
+    # Priority: 1) user override (none), 2) skill default (none for nasa-se), 3) auto-derived = "vv"
+    short_alias: "vv"
+    skill_source: "nasa-se"
+
+    status: "PLANNED"
+    current_phase: 0
+    total_phases: 3
+    progress_percent: 0
+
+    phases:
+      # -----------------------------------------------------------------------
+      # V&V PHASE 1: Requirements Traceability
+      # -----------------------------------------------------------------------
+      - id: 1
+        name: "Requirements Traceability"
+        path_id: "phase-1"
+        status: "BLOCKED"
+        blocked_by: "BARRIER-1"
+        agents:
+          - id: "nse-requirements-001"
+            name: "nse-requirements"
+            type: "creator"
+            status: "BLOCKED"
+            blocked_by: "BARRIER-1"
+            inputs:
+              - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/cross-pollination/barrier-1/eng-to-vv/barrier-handoff.md"
+              - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-4/ps-synthesizer-001/skill-specification-synthesis.md"
+              - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-2/ps-analyst-001/sop-pattern-extraction.md"
+              - "All skill files in skills/nuclear-sop/ (shared via BARRIER-1)"
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/vv/phase-1/nse-requirements-001/requirements-traceability-matrix.md"
+            task: |
+              Build a requirements traceability matrix mapping all 14 directly implemented nuclear patterns
+              to their implementing agents, templates, and test cases. For each pattern:
+              - Column 1: Nuclear pattern ID and name (from sop-pattern-extraction.md)
+              - Column 2: Gap analysis finding (from sop-pattern-extraction.md)
+              - Column 3: Synthesis spec section implementing it
+              - Column 4: Agent definition file(s) implementing it
+              - Column 5: Template file(s) supporting it
+              - Column 6: Test case ID (from test-strategy.md, if available) or TBD
+              Also trace the 4 approximated patterns with transparency notes.
+              Also document the 4 impossible patterns with acknowledged rationale.
+          - id: "adv-executor-011"
+            name: "adv-executor"
+            type: "critic"
+            status: "BLOCKED"
+            blocked_by: "nse-requirements-001"
+            strategies:
+              - "S-003"  # Steelman (MUST precede S-002 per H-16)
+              - "S-007"  # Constitutional AI Critique
+              - "S-002"  # Devil's Advocate
+              - "S-014"  # LLM-as-Judge
+              - "S-004"  # Pre-Mortem Analysis
+              - "S-012"  # FMEA
+              - "S-013"  # Inversion Technique
+            quality_threshold: 0.93
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/vv/phase-1/adv-executor-011/req-trace-review.md"
+            validation_criteria:
+              - "(a) All 14 directly implemented patterns have trace rows"
+              - "(b) All 4 approximated patterns have transparency notes"
+              - "(c) All 4 impossible patterns have acknowledged rationale"
+              - "(d) Each trace entry links: nuclear pattern → gap analysis → synthesis spec → agent/template → test case"
+              - "(e) Matrix is complete — no pattern without a trace row"
+        quality_gate:
+          id: "QG-V1"
+          name: "Requirements Traceability Review"
+          threshold: 0.93
+          status: "BLOCKED"
+          score: null
+          iterations_used: 0
+          max_iterations: 5
+          pass_condition: "score >= 0.93 AND all validation_criteria met"
+          fail_action: "Return to nse-requirements-001 with critique; revise and resubmit"
+
+      # -----------------------------------------------------------------------
+      # V&V PHASE 2: V&V Plan
+      # -----------------------------------------------------------------------
+      - id: 2
+        name: "V&V Plan"
+        path_id: "phase-2"
+        status: "BLOCKED"
+        blocked_by: "QG-V1 AND QG-E4"
+        agents:
+          - id: "nse-verification-001"
+            name: "nse-verification"
+            type: "creator"
+            status: "BLOCKED"
+            blocked_by: "QG-V1 AND QG-E4"
+            inputs:
+              - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/vv/phase-1/nse-requirements-001/requirements-traceability-matrix.md"
+              - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/eng/phase-4/eng-qa-001/test-strategy.md"
+              - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-3/ps-architect-001/ADR-001-nuclear-sop-skill-architecture.md"
+              - "All skill files in skills/nuclear-sop/"
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/vv/phase-2/nse-verification-001/vv-plan.md"
+            task: |
+              Create a verification and validation plan covering four sections:
+              (a) Requirements verification: for each agent definition, does it satisfy its nuclear pattern requirements?
+                  Verification method defined for each using the LLM behavioral verification vocabulary (RR-05):
+                  BEHAVIORAL-SAMPLE (adversarial test scenario with documented STAR output),
+                  TRACE-INSPECTION (review PROCEDURE_STATE.yaml execution log),
+                  METRIC-REFERENCE (cite PM-01 through PM-07 results from QG-E4), or
+                  STRUCTURAL-ANALYSIS (review agent definition for behavioral rule encoding).
+                  Each requirement MUST be linked to one of these four methods.
+              (b) Design verification: does the 4-agent architecture satisfy each ADR-001 design decision?
+                  Each ADR decision has a verification method.
+              (c) Behavioral validation: does STAR actually catch errors per Section 1.5a of synthesis spec?
+                  Test method references eng-qa-001 PM-01 (STAR catch rate) and PM-02 (false positive rate).
+              (d) Integration validation: do agents compose correctly in 3-hop and 4-hop sequences?
+                  Test cases reference test harness composition pattern (PM-07).
+              Also: open items section with disposition plan for any unresolvable V&V gaps.
+          - id: "adv-executor-012"
+            name: "adv-executor"
+            type: "critic"
+            status: "BLOCKED"
+            blocked_by: "nse-verification-001"
+            strategies:
+              - "S-003"  # Steelman (MUST precede S-002 per H-16)
+              - "S-007"  # Constitutional AI Critique
+              - "S-002"  # Devil's Advocate
+              - "S-014"  # LLM-as-Judge
+              - "S-004"  # Pre-Mortem Analysis
+              - "S-012"  # FMEA
+              - "S-013"  # Inversion Technique
+            quality_threshold: 0.93
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/vv/phase-2/adv-executor-012/vv-plan-review.md"
+            validation_criteria:
+              - "(a) Requirements verification section present with method per agent; each method drawn from LLM verification vocabulary (RR-05)"
+              - "(b) Design verification section present with method per ADR decision"
+              - "(c) Behavioral validation section references PM-01 and PM-02 from test harness; each behavioral claim linked to one of: BEHAVIORAL-SAMPLE / TRACE-INSPECTION / METRIC-REFERENCE / STRUCTURAL-ANALYSIS"
+              - "(d) Integration validation section references PM-07 composition pattern test"
+              - "(e) Open items section with disposition plan; no items left undispositioned"
+        quality_gate:
+          id: "QG-V2"
+          name: "V&V Plan Review"
+          threshold: 0.93
+          status: "BLOCKED"
+          score: null
+          iterations_used: 0
+          max_iterations: 5
+          pass_condition: "score >= 0.93 AND all validation_criteria met"
+          fail_action: "Return to nse-verification-001 with critique; revise and resubmit"
+
+      # -----------------------------------------------------------------------
+      # V&V PHASE 3: Formal Technical Review (CDR-equivalent)
+      # -----------------------------------------------------------------------
+      - id: 3
+        name: "Formal Technical Review (CDR)"
+        path_id: "phase-3"
+        status: "BLOCKED"
+        blocked_by: "BARRIER-3"
+        agents:
+          - id: "nse-reviewer-001"
+            name: "nse-reviewer"
+            type: "creator"
+            status: "BLOCKED"
+            blocked_by: "BARRIER-3"
+            inputs:
+              - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/cross-pollination/barrier-3/all-to-vv/barrier-handoff.md"
+              - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/vv/phase-1/nse-requirements-001/requirements-traceability-matrix.md"
+              - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/vv/phase-2/nse-verification-001/vv-plan.md"
+              - "All skill files in skills/nuclear-sop/"
+              - "All phase outputs listed in BARRIER-3 entrance package"
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/vv/phase-3/nse-reviewer-001/formal-technical-review.md"
+            task: |
+              Conduct CDR-equivalent formal technical review. For each item in requirements-traceability-matrix.md:
+              - Execute the verification method defined in vv-plan.md
+              - Record pass/fail with evidence
+              - Disposition all open items from vv-plan.md
+              Entrance criteria (verified before starting, not during):
+              - All 16 skill files exist (verified at BARRIER-3)
+              - All QGs scored >= 0.93 (verified at BARRIER-3)
+              - Test harness complete with all 7 metrics documented (verified at BARRIER-3)
+              - Registration deliverables present (verified at BARRIER-3)
+              Exit criteria:
+              - All requirements traced and verified
+              - All verification methods executed with evidence
+              - All open items dispositioned (accepted risk, resolved, or escalated)
+              - CDR conclusion: skill is ready for production use
+          - id: "adv-executor-013"
+            name: "adv-executor"
+            type: "critic"
+            status: "BLOCKED"
+            blocked_by: "nse-reviewer-001"
+            strategies:
+              - "S-003"  # Steelman (MUST precede S-002 per H-16)
+              - "S-007"  # Constitutional AI Critique
+              - "S-002"  # Devil's Advocate
+              - "S-014"  # LLM-as-Judge
+              - "S-004"  # Pre-Mortem Analysis
+              - "S-012"  # FMEA
+              - "S-013"  # Inversion Technique
+            quality_threshold: 0.93
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/vv/phase-3/adv-executor-013/cdr-review-critique.md"
+            validation_criteria:
+              - "(a) All requirements in traceability matrix have pass/fail recorded"
+              - "(b) All verification methods in V&V plan executed with evidence"
+              - "(c) All open items dispositioned using mandatory taxonomy (RR-04): RESOLVED (satisfied with evidence), ACCEPTED-RISK (rationale + risk owner documented), WAIVED (inapplicable + rationale), or ESCALATED (user decision per H-31). No item remains OPEN."
+              - "(d) CDR exit criteria met: skill declared ready for production"
+              - "(e) No unresolved items blocking production use"
+        quality_gate:
+          id: "QG-V3"
+          name: "Formal Technical Review (CDR)"
+          threshold: 0.93
+          status: "BLOCKED"
+          score: null
+          iterations_used: 0
+          max_iterations: 5
+          pass_condition: "score >= 0.93 AND all validation_criteria met AND all open items dispositioned"
+          fail_action: "Return to nse-reviewer-001 with critique; if open items cannot be dispositioned after 5 iterations, escalate to user per H-31"
+
+# =============================================================================
+# SYNC BARRIERS
+# =============================================================================
+barriers:
+  # ---------------------------------------------------------------------------
+  # BARRIER 1: After ENG Phase 3 Fan-In + RED Phase 1
+  # ---------------------------------------------------------------------------
+  - id: "barrier-1"
+    name: "Skill Files Built — Red Team Access"
+    status: "BLOCKED"
+
+    sync_condition:
+      required_complete:
+        - "eng-backend-001 COMPLETE AND QG-E3a PASS"
+        - "eng-backend-002 COMPLETE AND QG-E3b PASS"
+        - "eng-backend-003 COMPLETE AND QG-E3c PASS"
+        - "eng-backend-004a COMPLETE AND QG-E3d-a PASS"  # RR-06: split from eng-backend-004
+        - "eng-backend-004b COMPLETE AND QG-E3d-b PASS"  # RR-06: split from eng-backend-004
+        - "red-lead-001 COMPLETE"
+      description: "ALL five eng-backend sub-agents must complete with QG PASS and red-lead must complete (RR-06: 004 split into 004a + 004b)"
+
+    directions:
+      eng_to_red:
+        from_pipeline: "eng"
+        from_phase: "phase-3"
+        to_pipeline: "red"
+        to_phase: "phase-2"
+        artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/cross-pollination/barrier-1/eng-to-red/barrier-handoff.md"
+        content: "All 16 built skill file paths; SKILL.md summary; governance YAML validation status; H-34/H-35 compliance status"
+        quality_threshold: 0.93
+        status: "BLOCKED"
+
+      red_to_eng:
+        from_pipeline: "red"
+        from_phase: "phase-1"
+        to_pipeline: "eng"
+        to_phase: "phase-4"
+        artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/cross-pollination/barrier-1/red-to-eng/barrier-handoff.md"
+        content: "Engagement scope summary; attack vector hypotheses for test trap design; priority attack surfaces for QA targeting"
+        quality_threshold: 0.93
+        status: "BLOCKED"
+
+      eng_to_vv:
+        from_pipeline: "eng"
+        from_phase: "phase-3"
+        to_pipeline: "vv"
+        to_phase: "phase-1"
+        artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/cross-pollination/barrier-1/eng-to-vv/barrier-handoff.md"
+        content: "All 16 built skill file paths; synthesis spec path; pattern extraction path; ADR-001 path; H-34 validation status for all agent pairs"
+        quality_threshold: 0.93
+        status: "BLOCKED"
+
+    unblocks:
+      - "red/phase-2 (red-recon-001)"
+      - "eng/phase-4 (eng-qa-001)"
+      - "vv/phase-1 (nse-requirements-001)"
+
+    quality_gate:
+      threshold: 0.93
+      # RR-01: adv-executor-barrier-1 assigned to run tournament review — was unassigned in v2.0
+      # RR-03: 7 strategies applied (6 C3 required + S-003 per H-16); "6-strategy" text was misleading
+      executor_agent: "adv-executor-barrier-1"
+      executor_artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/cross-pollination/barrier-1/quality-review/barrier-1-tournament-review.md"
+      scoring_mechanism: "tournament-S-003+S-007+S-002+S-014+S-004+S-012+S-013"
+      strategy_count: 7  # 6 C3 required + S-003 per H-16 (RR-03 clarification)
+      h16_enforcement: "S-003 MUST precede S-002 per H-16"
+      review_sequence: "eng-to-red direction first, then red-to-eng, then eng-to-vv; each direction scored independently; all must reach >= 0.93"
+      status: "BLOCKED"
+      max_retries: 5
+
+  # ---------------------------------------------------------------------------
+  # BARRIER 2: After ENG Phase 5 + RED Phase 3
+  # ---------------------------------------------------------------------------
+  - id: "barrier-2"
+    name: "Security Review + Vulnerability Analysis Cross-Pollination"
+    status: "BLOCKED"
+
+    sync_condition:
+      required_complete:
+        - "QG-E5 PASS (eng-security-001 + adv-executor-007)"
+        - "QG-R3 PASS (red-vuln-001 + adv-executor-010)"
+        - "NO severity-CRITICAL vulnerabilities unresolved"
+      description: "Both security review and vulnerability analysis must complete with QG PASS; no unresolved CRITICAL findings"
+
+    directions:
+      eng_to_red:
+        from_pipeline: "eng"
+        from_phase: "phase-5"
+        to_pipeline: "red"
+        to_phase: "phase-4"
+        artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/cross-pollination/barrier-2/eng-to-red/barrier-handoff.md"
+        content: "Security review findings; identified prompt injection vectors; tool tier violations; mitigations applied; residual risk documentation"
+        quality_threshold: 0.93
+        status: "BLOCKED"
+
+      red_to_eng:
+        from_pipeline: "red"
+        from_phase: "phase-3"
+        to_pipeline: "eng"
+        to_phase: "phase-6"
+        artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/cross-pollination/barrier-2/red-to-eng/barrier-handoff.md"
+        content: "Vulnerability report summary; severity ratings; unresolved findings requiring eng-reviewer decision; risk-acceptance candidates"
+        quality_threshold: 0.93
+        status: "BLOCKED"
+
+    unblocks:
+      - "red/phase-4 (red-exploit-001)"
+      - "eng/phase-6 (eng-reviewer-001)"
+
+    quality_gate:
+      threshold: 0.93
+      # RR-01: adv-executor-barrier-2 assigned to run tournament review — was unassigned in v2.0
+      executor_agent: "adv-executor-barrier-2"
+      executor_artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/cross-pollination/barrier-2/quality-review/barrier-2-tournament-review.md"
+      scoring_mechanism: "tournament-S-003+S-007+S-002+S-014+S-004+S-012+S-013"
+      strategy_count: 7  # 6 C3 required + S-003 per H-16 (RR-03 clarification)
+      h16_enforcement: "S-003 MUST precede S-002 per H-16"
+      review_sequence: "eng-to-red direction first, then red-to-eng; each direction scored independently; both must reach >= 0.93"
+      status: "BLOCKED"
+      max_retries: 5
+      critical_vulnerability_halt: true  # Barrier is locked if CRITICAL findings unresolved
+
+  # ---------------------------------------------------------------------------
+  # BARRIER 3: After ENG Phase 6 + RED Phase 4 + V&V Phase 2 (NEW in v2.0)
+  # ---------------------------------------------------------------------------
+  - id: "barrier-3"
+    name: "CDR Entrance Gate — All Pipelines to V&V Phase 3"
+    status: "BLOCKED"
+
+    sync_condition:
+      required_complete:
+        - "QG-E6 PASS (eng-reviewer-001 + adv-executor-008)"
+        - "red-exploit-001 COMPLETE"
+        - "QG-V2 PASS (nse-verification-001 + adv-executor-012)"
+      entrance_criteria:
+        - "(a) All 16 skill files exist in skills/nuclear-sop/"
+        - "(b) All prior QGs scored >= 0.93 (QG-E1 through QG-E6, QG-R2, QG-R3, QG-V1, QG-V2)"
+        - "(c) Test harness complete with all 7 performance metrics documented"
+        - "(d) Registration deliverables written in compliance-verification.md Section: Registration"
+        - "(e) No severity-CRITICAL vulnerabilities unresolved"
+      description: "All three pipelines must complete their final phases before V&V CDR begins"
+
+    directions:
+      all_to_vv:
+        from_pipelines: ["eng", "red", "vv"]
+        to_pipeline: "vv"
+        to_phase: "phase-3"
+        artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/cross-pollination/barrier-3/all-to-vv/barrier-handoff.md"
+        content: |
+          CDR entrance package:
+          - All 16 skill file paths
+          - All QG scores (QG-E1 through QG-E6, QG-R2, QG-R3, QG-V1, QG-V2)
+          - compliance-verification.md path (eng-reviewer-001 output)
+          - exploitation-methodology.md path (red-exploit-001 output)
+          - requirements-traceability-matrix.md path (nse-requirements-001 output)
+          - vv-plan.md path (nse-verification-001 output)
+          - test-strategy.md path with PM-01 through PM-07 results
+          - behavioral-baselines/ path with >= 3 scenario files
+          - Registration deliverables (copy-ready trigger map row, CLAUDE.md entry, AGENTS.md entries)
+        quality_threshold: 0.93
+        status: "BLOCKED"
+
+    unblocks:
+      - "vv/phase-3 (nse-reviewer-001)"
+
+    quality_gate:
+      threshold: 0.93
+      # RR-01: adv-executor-barrier-3 assigned to run tournament review — was unassigned in v2.0
+      executor_agent: "adv-executor-barrier-3"
+      executor_artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/cross-pollination/barrier-3/quality-review/barrier-3-tournament-review.md"
+      scoring_mechanism: "tournament-S-003+S-007+S-002+S-014+S-004+S-012+S-013"
+      strategy_count: 7  # 6 C3 required + S-003 per H-16 (RR-03 clarification)
+      h16_enforcement: "S-003 MUST precede S-002 per H-16"
+      review_scope: "CDR entrance package handoff document (all-to-vv direction); single document scored at >= 0.93"
+      status: "BLOCKED"
+      max_retries: 5
+
+# =============================================================================
+# QUALITY CONFIGURATION
+# =============================================================================
+quality:
+  threshold: 0.93                # All gates: C3 elevated threshold (upgraded from 0.92 in v1.0)
+  criticality: "C3"              # Significant — new skill, 16+ files, API surface change, routing registration
+  scoring_mechanism: "S-014"     # LLM-as-Judge (primary); tournament mode at barriers
+  # RR-03: Strategy count clarification — 6 C3 required strategies plus S-003 per H-16 = 7 total applied
+  # C3 required set (6): S-007, S-002, S-014, S-004, S-012, S-013
+  # H-16 ordering rule adds S-003 (Steelman) BEFORE S-002 at every critique cycle
+  # Total strategies applied at every gate: 7
+  strategy_count_total: 7
+  strategy_count_c3_required: 6
+  required_strategies:           # C3 required set per quality-enforcement.md — ALL run at EVERY gate
+    - "S-007"   # Constitutional AI Critique
+    - "S-002"   # Devil's Advocate
+    - "S-014"   # LLM-as-Judge
+    - "S-004"   # Pre-Mortem Analysis
+    - "S-012"   # FMEA
+    - "S-013"   # Inversion Technique
+  h16_prepend:                   # Applied before S-002 per H-16 — not a "required strategy" per spec but always applied
+    - "S-003"   # Steelman (MUST precede S-002 per H-16)
+  optional_strategies:           # C3 optional set per quality-enforcement.md
+    - "S-001"   # Red Team Analysis
+    - "S-010"   # Self-Refine
+    - "S-011"   # Chain-of-Verification
+  h16_enforcement:
+    rule: "S-003 (Steelman) MUST precede S-002 (Devil's Advocate) at every critique cycle"
+    source: "H-16 (quality-enforcement.md)"
+  barrier_review_mode: "tournament"  # 7 strategies (6 C3 required + S-003 per H-16) run against each handoff document (RR-03)
+  scoring_dimensions:
+    completeness: 0.20
+    internal_consistency: 0.20
+    methodological_rigor: 0.20
+    evidence_quality: 0.15
+    actionability: 0.15
+    traceability: 0.10
+  phase_scores: {}        # Populated by orch-tracker as phases complete
+  barrier_scores: {}      # Populated by orch-tracker as barriers complete
+  workflow_quality: {}    # Populated by orch-tracker on completion
+  min_iterations: 3  # H-14: minimum 3 creator-critic-revision cycles REQUIRED (RR-07)
+  max_iterations: 5  # RT-M-010 C3 ceiling
+
+  # RR-04: CDR disposition taxonomy — required for QG-V3 open item adjudication
+  cdr_disposition_taxonomy:
+    RESOLVED: "Requirement now satisfied with evidence; trace evidence to specific verification method result"
+    ACCEPTED_RISK: "Risk accepted with documented rationale and risk owner; not a defect, a conscious decision"
+    WAIVED: "Requirement acknowledged as inapplicable to LLM-based implementation; rationale documented"
+    ESCALATED: "Unresolvable by nse-reviewer-001; escalated to user per H-31 with full context for user decision"
+    OPEN: "NOT a valid exit state — no open item may remain OPEN at V&V Phase 3 exit"
+
+  # RR-05: LLM behavioral verification method vocabulary — required for QG-V2 verification method definitions
+  llm_verification_vocabulary:
+    BEHAVIORAL_SAMPLE: "Execute adversarial test scenario; document STAR agent output against expected outcome"
+    TRACE_INSPECTION: "Read PROCEDURE_STATE.yaml execution log; verify correct field population for the tested step"
+    METRIC_REFERENCE: "Cite specific PM-01 through PM-07 metric result from QG-E4 test harness; link metric value to pass/fail criterion"
+    STRUCTURAL_ANALYSIS: "Read agent definition file (.md + .governance.yaml); verify behavioral rule encoding and forbidden_actions presence"
+
+  auto_escalation:
+    AE_003: "Implements ADR-001 (nuclear-sop-research-20260319-001/ps/phase-3) — auto-C3 minimum confirmed"
+    AE_002_constraint: "nuclear-sop-behavior-rules.md MUST be placed at skills/nuclear-sop/rules/ NOT .context/rules/ — AE-002 would trigger auto-C3 on all subsequent sessions if placed in .context/rules/ (RR-07: moved from Criticality Assessment to Execution Constraints)"
+
+# =============================================================================
+# EXECUTION QUEUE
+# =============================================================================
+execution_queue:
+  current_group: 0
+  groups:
+    - id: 0
+      name: "Pre-Conditions Verification (Barrier 0)"
+      execution_mode: "SEQUENTIAL"
+      status: "READY"
+      agents: ["pre-conditions-check"]
+      description: "Verify all 4 upstream research artifacts exist; confirm skills/nuclear-sop/ does not exist"
+
+    - id: 1
+      name: "ENG Phase 1 + RED Phase 1 (Parallel Pipeline Start)"
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: "Group 0 PASS"
+      agents: ["eng-architect-001", "red-lead-001"]
+
+    - id: 2
+      name: "QG-E1 (Secure Architecture Review)"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "eng-architect-001 COMPLETE"
+      agents: ["adv-executor-001"]
+
+    - id: 3
+      name: "ENG Phase 2 (Implementation Planning)"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "QG-E1 PASS"
+      agents: ["eng-lead-001"]
+
+    - id: 4
+      name: "QG-E2 (Implementation Plan Review)"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "eng-lead-001 COMPLETE"
+      agents: ["adv-scorer-001"]
+
+    - id: 5
+      name: "ENG Phase 3 Fan-Out (5 parallel eng-backend agents) — RR-06: 004 split into 004a + 004b"
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: "QG-E2 PASS AND user_approval_checkpoint (P-020)"  # RR-07: user approval gate added
+      agents: ["eng-backend-001", "eng-backend-002", "eng-backend-003", "eng-backend-004a", "eng-backend-004b"]
+      note_rr07: "User MUST confirm implementation plan and authorize creation of 16 skill files in skills/nuclear-sop/ before Group 5 executes (P-020)"
+
+    - id: 6
+      name: "QG-E3 Critics (5 parallel adv-executor agents) — RR-06: 005 split into 005a + 005b"
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: "Each eng-backend COMPLETE (per sub-agent)"
+      agents: ["adv-executor-002", "adv-executor-003", "adv-executor-004", "adv-executor-005a", "adv-executor-005b"]
+
+    - id: "7a"
+      name: "BARRIER-1 Handoff Document Creation (3 directions: eng→red, red→eng, eng→vv)"
+      execution_mode: "BARRIER"
+      status: "BLOCKED"
+      blocked_by: "ALL QG-E3 sub-gates PASS AND red-lead-001 COMPLETE"
+      description: "Create the three barrier handoff documents; no quality review yet — review is in Group 7b"
+
+    - id: "7b"
+      name: "BARRIER-1 Quality Review (RR-01: barrier executor assigned)"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "Group 7a COMPLETE (all 3 handoff docs exist)"
+      agents: ["adv-executor-barrier-1"]
+      note_rr01: "Tournament review: 7 strategies applied (S-003 before S-002 per H-16, then S-007, S-002, S-014, S-004, S-012, S-013) against each of the 3 handoff directions. Each direction must score >= 0.93. BARRIER-1 PASS requires all 3 directions >= 0.93."
+
+    - id: 8
+      name: "ENG Phase 4 + RED Phase 2 + V&V Phase 1 (Post-Barrier-1 Parallel)"
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: "BARRIER-1 PASS (adv-executor-barrier-1 Group 7b scores all 3 directions >= 0.93)"
+      agents: ["eng-qa-001", "red-recon-001", "nse-requirements-001"]
+
+    - id: 9
+      name: "QG-E4 + QG-R2 + QG-V1 (Parallel Critics)"
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: "eng-qa-001 COMPLETE / red-recon-001 COMPLETE / nse-requirements-001 COMPLETE (each independently)"
+      agents: ["adv-executor-006", "adv-executor-009", "adv-executor-011"]
+
+    - id: 10
+      name: "RED Phase 3 (Vulnerability Analysis)"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "QG-R2 PASS"
+      agents: ["red-vuln-001"]
+
+    - id: 11
+      name: "QG-R3 (Vulnerability Report Review)"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "red-vuln-001 COMPLETE"
+      agents: ["adv-executor-010"]
+
+    - id: 12
+      name: "ENG Phase 5 (Security Code Review)"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "QG-E4 PASS"  # RR-02: ONLY QG-E4 required — does NOT wait for QG-V1
+      agents: ["eng-security-001"]
+      note_rr02: "ENG Phase 5 depends ONLY on QG-E4 PASS. V&V Phase 2 (Group 14) depends on QG-E4 AND QG-V1. These are independent conditions that may be satisfied at different times."
+
+    - id: 13
+      name: "QG-E5 (Security Review Critique)"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "eng-security-001 COMPLETE"
+      agents: ["adv-executor-007"]
+
+    - id: 14
+      name: "V&V Phase 2 (V&V Plan) — starts when QG-E4 PASS AND QG-V1 PASS"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "QG-E4 PASS AND QG-V1 PASS"
+      agents: ["nse-verification-001"]
+      note: "Runs in parallel with ENG Phase 5 and RED Phase 3 after its prerequisites are met"
+
+    - id: 15
+      name: "QG-V2 (V&V Plan Review)"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "nse-verification-001 COMPLETE"
+      agents: ["adv-executor-012"]
+
+    - id: "16a"
+      name: "BARRIER-2 Handoff Document Creation (2 directions: eng→red, red→eng)"
+      execution_mode: "BARRIER"
+      status: "BLOCKED"
+      blocked_by: "QG-E5 PASS AND QG-R3 PASS AND no-CRITICAL-vulns"
+      description: "Create the two barrier handoff documents; no quality review yet — review is in Group 16b"
+
+    - id: "16b"
+      name: "BARRIER-2 Quality Review (RR-01: barrier executor assigned)"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "Group 16a COMPLETE (both handoff docs exist)"
+      agents: ["adv-executor-barrier-2"]
+      note_rr01: "Tournament review: 7 strategies applied against each of the 2 handoff directions. Both must score >= 0.93. BARRIER-2 PASS requires both directions >= 0.93."
+
+    - id: 17
+      name: "ENG Phase 6 + RED Phase 4 (Post-Barrier-2 Parallel)"
+      execution_mode: "PARALLEL"
+      status: "BLOCKED"
+      blocked_by: "BARRIER-2 PASS (adv-executor-barrier-2 Group 16b scores both directions >= 0.93)"
+      agents: ["eng-reviewer-001", "red-exploit-001"]
+
+    - id: 18
+      name: "QG-E6 (Final Compliance Review + Registration)"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "eng-reviewer-001 COMPLETE"
+      agents: ["adv-executor-008"]
+
+    - id: "19a"
+      name: "BARRIER-3 CDR Entrance Package Creation (1 direction: all→vv)"
+      execution_mode: "BARRIER"
+      status: "BLOCKED"
+      blocked_by: "QG-E6 PASS AND red-exploit-001 COMPLETE AND QG-V2 PASS AND all-5-entrance-criteria-verified"
+      description: "Assemble CDR entrance package handoff document; verify 5 entrance criteria; no quality review yet — review is in Group 19b"
+
+    - id: "19b"
+      name: "BARRIER-3 Quality Review (RR-01: barrier executor assigned)"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "Group 19a COMPLETE (CDR entrance package handoff doc exists)"
+      agents: ["adv-executor-barrier-3"]
+      note_rr01: "Tournament review: 7 strategies applied against CDR entrance package handoff document. Must score >= 0.93. BARRIER-3 PASS unblocks V&V Phase 3."
+
+    - id: 20
+      name: "V&V Phase 3 (Formal Technical Review / CDR)"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "BARRIER-3 PASS (adv-executor-barrier-3 Group 19b scores CDR entrance package >= 0.93)"
+      agents: ["nse-reviewer-001"]
+
+    - id: 21
+      name: "QG-V3 (Formal Technical Review Critique)"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "nse-reviewer-001 COMPLETE"
+      agents: ["adv-executor-013"]
+
+    - id: 22
+      name: "Workflow Completion Verification"
+      execution_mode: "SEQUENTIAL"
+      status: "BLOCKED"
+      blocked_by: "QG-V3 PASS"
+      agents: ["orch-tracker-completion"]
+
+# =============================================================================
+# CHECKPOINTS
+# =============================================================================
+checkpoints:
+  latest_id: null
+  entries: []
+  planned:
+    - id: "CP-001"
+      trigger: "PRE_CONDITIONS_PASS"
+      description: "All upstream artifacts verified; skills/nuclear-sop/ confirmed absent"
+      recovery_point: "Start Group 1 (parallel pipeline start)"
+    - id: "CP-002"
+      trigger: "QG-E1 PASS"
+      description: "ENG Phase 1 + QG-E1 complete; STRIDE threat model validated"
+      recovery_point: "Start ENG Phase 2"
+    - id: "CP-003"
+      trigger: "QG-E2 PASS"
+      description: "ENG Phase 2 + QG-E2 complete; implementation plan validated"
+      recovery_point: "Start ENG Phase 3 fan-out"
+    - id: "CP-004"
+      trigger: "ALL QG-E3 sub-gates PASS AND red-lead-001 COMPLETE"
+      description: "All 16 skill files built and reviewed; RED Phase 1 scoping complete"
+      recovery_point: "BARRIER-1 sync"
+    - id: "CP-005"
+      trigger: "BARRIER-1 PASS (all three directions)"
+      description: "Cross-pollination complete; ENG→RED built files shared; RED→ENG attack hypotheses shared; ENG→V&V skill files shared"
+      recovery_point: "Start ENG Phase 4 + RED Phase 2 + V&V Phase 1 in parallel"
+    # RR-02: CP-006 split into CP-006a (triggers ENG Phase 5) and CP-006b (triggers V&V Phase 2)
+    # ENG Phase 5 depends only on QG-E4; V&V Phase 2 depends on QG-E4 AND QG-V1
+    - id: "CP-006a"
+      trigger: "QG-E4 PASS"
+      description: "Test harness with 7 metrics complete; ENG Phase 5 unlocked. Does NOT wait for QG-V1."
+      recovery_point: "Start ENG Phase 5 (eng-security-001)"
+    - id: "CP-006b"
+      trigger: "QG-E4 PASS AND QG-V1 PASS"
+      description: "Both test harness and requirements traceability matrix complete; V&V Phase 2 unlocked"
+      recovery_point: "Start V&V Phase 2 (nse-verification-001)"
+    - id: "CP-007"
+      trigger: "QG-E5 PASS AND QG-R3 PASS"
+      description: "Security review and vulnerability analysis both complete with PASS"
+      recovery_point: "BARRIER-2 sync"
+    - id: "CP-008"
+      trigger: "BARRIER-2 PASS (both directions)"
+      description: "Cross-pollination complete; security ↔ vulnerability findings exchanged"
+      recovery_point: "Start ENG Phase 6 + RED Phase 4 in parallel"
+    - id: "CP-009"
+      trigger: "QG-V2 PASS"
+      description: "V&V Plan complete and validated; ready for BARRIER-3 when other pipelines also complete"
+      recovery_point: "Await ENG Phase 6 and RED Phase 4 completion for BARRIER-3 sync"
+    - id: "CP-010"
+      trigger: "QG-E6 PASS AND red-exploit-001 COMPLETE AND QG-V2 PASS"
+      description: "All three pipelines completed their final phases; compliance + exploitation + V&V plan all validated"
+      recovery_point: "BARRIER-3 sync"
+    - id: "CP-011"
+      trigger: "BARRIER-3 PASS"
+      description: "CDR entrance package assembled and validated; V&V Phase 3 (CDR) unblocked"
+      recovery_point: "Start V&V Phase 3 (nse-reviewer-001)"
+    - id: "CP-012"
+      trigger: "QG-V3 PASS"
+      description: "Formal technical review (CDR) complete; /nuclear-sop built, tested, hardened, verified, and registered"
+      recovery_point: "Workflow complete — present registration deliverables to user for manual application"
+
+# =============================================================================
+# METRICS
+# =============================================================================
+metrics:
+  execution:
+    # ENG pipeline
+    eng_phases_complete: 0
+    eng_phases_total: 6
+    eng_quality_gates_pass: 0
+    eng_quality_gates_total: 6  # QG-E1 through QG-E6 (QG-E3 counted as 1 compound gate)
+    # RED pipeline
+    red_phases_complete: 0
+    red_phases_total: 4
+    red_quality_gates_pass: 0
+    red_quality_gates_total: 2  # QG-R2, QG-R3
+    # V&V pipeline (NEW in v2.0)
+    vv_phases_complete: 0
+    vv_phases_total: 3
+    vv_quality_gates_pass: 0
+    vv_quality_gates_total: 3  # QG-V1, QG-V2, QG-V3
+    # Barriers
+    barriers_complete: 0
+    barriers_total: 3  # BARRIER-1, BARRIER-2, BARRIER-3 (upgraded from 2 in v1.0)
+    # Overall
+    agents_executed: 0
+    agents_total: 35  # v2.1.0 count: 13 creators (incl. 004a/004b split) + 13 phase adv-executors (incl. 005a/005b) + 3 barrier adv-executors + 1 adv-scorer + 1 orch-tracker-completion + 2 nasa-se creators + 2 pre-conditions + engagement
+    skill_files_created: 0
+    skill_files_total: 16
+    # Performance metrics tracking (ENG Phase 4 deliverables)
+    performance_metrics:
+      PM_01_star_catch_rate: null       # Target: 100%
+      PM_02_star_false_positive_rate: null  # Target: <= 10%
+      PM_03_oe_schema_completeness: null    # Target: 100%
+      PM_04_prereq_detection_rate: null     # Target: 100%
+      PM_05_qg_hold_convergence: null       # Target: <= 3 iterations C2; <= 5 iterations C3
+      PM_06_gap09_baselines_recorded: null  # Target: >= 3
+      PM_07_composition_patterns_validated: null  # Target: >= 1
+
+  quality:
+    gate_pass_rate: null
+    average_score: null
+    lowest_score: null
+    total_iterations: 0
+    checkpoint_recovery_tested: false
+
+  timing:
+    workflow_planned: "2026-03-25T00:00:00Z"
+    workflow_started: null
+    last_activity: null
+    workflow_completed: null
+
+# =============================================================================
+# BLOCKERS AND ISSUES
+# =============================================================================
+blockers:
+  active: []
+  critical_vulnerability_halt: false  # Set to true if red-vuln finds CRITICAL findings
+
+issues:
+  active: []
+  resolved: []
+
+# =============================================================================
+# NEXT ACTIONS
+# =============================================================================
+next_actions:
+  immediate:
+    - action: "Verify pre-conditions: read all 4 upstream artifacts; confirm paths resolve"
+      status: "READY"
+      group: 0
+    - action: "Confirm skills/nuclear-sop/ does not exist"
+      status: "READY"
+      group: 0
+    - action: "If pre-conditions pass: execute eng-architect-001 and red-lead-001 in parallel (Group 1)"
+      status: "BLOCKED — pending Group 0"
+      group: 1
+
+# =============================================================================
+# RESUMPTION CONTEXT
+# =============================================================================
+resumption:
+  recovery_state:
+    last_checkpoint: null
+    current_group: 0
+    workflow_status: "PLANNED"
+    current_activity: "Awaiting pre-conditions verification and execution start"
+    next_step: "Verify pre-conditions (Group 0) then begin parallel pipeline execution"
+    cross_session_portable: true
+    ephemeral_references: false
+
+  files_to_read:
+    - path: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/ORCHESTRATION.yaml"
+      priority: 1
+      purpose: "Machine-readable workflow state. Execution queue, barrier status, quality scores."
+    - path: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/ORCHESTRATION_PLAN.md"
+      priority: 2
+      purpose: "Strategic context. Pipeline definitions, quality gate specs, success criteria."
+    - path: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-build-20260325-001/ORCHESTRATION_WORKTRACKER.md"
+      priority: 3
+      purpose: "Tactical execution dashboard. Per-agent status, blocker log, session log."
+    - path: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-4/ps-synthesizer-001/skill-specification-synthesis.md"
+      priority: 4
+      purpose: "Primary input spec — defines all 16 files and their required content."
+
+  quality_trajectory:
+    gates_completed: []
+    gates_remaining: ["QG-E1", "QG-E2", "QG-E3a", "QG-E3b", "QG-E3c", "QG-E3d", "QG-E4", "QG-E5", "QG-E6", "QG-R2", "QG-R3"]
+    current_gate: null
+    current_gate_iteration: null
+    score_history: {}
