@@ -76,6 +76,19 @@ def _valid_entry(
     }
 
 
+def _unexpired_window() -> tuple[str, str]:
+    """Return ISO ``(accepted_on, review_by)`` dates that are valid on the real clock.
+
+    ``scripts/security/audit_allowlist.py`` reads ``date.today()`` itself (there is no
+    injection point through ``main()`` or the subprocess CLI), so every fixture that must be
+    *unexpired* has to be derived from the current date.  A hard-coded ``review_by`` silently
+    turns into an expired entry once the calendar passes it.
+    The 31-day window is well inside the 90-day cap (``MAX_DAYS``).
+    """
+    today = date.today()
+    return (today - timedelta(days=1)).isoformat(), (today + timedelta(days=30)).isoformat()
+
+
 # ---------------------------------------------------------------------------
 # (a) Valid unexpired entry → exit 0, prints --ignore-vuln <id>
 # ---------------------------------------------------------------------------
@@ -85,16 +98,17 @@ class TestValidUnexpiredEntry:
     """Valid entry with review_by in the future → flags emitted, exit 0."""
 
     def test_main_exits_zero(self, tmp_path: Path) -> None:
+        accepted_on, review_by = _unexpired_window()
         f = _write_allowlist(
             tmp_path,
-            """
+            f"""
             accepted:
               - id: CVE-2099-00001
                 package: example-pkg
                 reason: No fix available yet.
                 accepted_by: geekatron
-                accepted_on: 2026-06-01
-                review_by: 2026-08-30
+                accepted_on: {accepted_on}
+                review_by: {review_by}
                 ticket: https://github.com/geekatron/jerry/issues/999
         """,
         )
@@ -102,16 +116,17 @@ class TestValidUnexpiredEntry:
         assert result == 0
 
     def test_main_prints_ignore_flag(self, tmp_path: Path, capsys: pytest.CaptureFixture) -> None:
+        accepted_on, review_by = _unexpired_window()
         f = _write_allowlist(
             tmp_path,
-            """
+            f"""
             accepted:
               - id: CVE-2099-00001
                 package: example-pkg
                 reason: No fix available yet.
                 accepted_by: geekatron
-                accepted_on: 2026-06-01
-                review_by: 2026-08-30
+                accepted_on: {accepted_on}
+                review_by: {review_by}
                 ticket: https://github.com/geekatron/jerry/issues/999
         """,
         )
@@ -122,16 +137,17 @@ class TestValidUnexpiredEntry:
 
     def test_subprocess_exit_zero_and_flag_present(self, tmp_path: Path) -> None:
         """Subprocess variant — validates the full exit-code contract."""
+        accepted_on, review_by = _unexpired_window()
         f = _write_allowlist(
             tmp_path,
-            """
+            f"""
             accepted:
               - id: CVE-2099-99999
                 package: some-pkg
                 reason: Mitigation in place.
                 accepted_by: geekatron
-                accepted_on: 2026-06-01
-                review_by: 2026-08-30
+                accepted_on: {accepted_on}
+                review_by: {review_by}
                 ticket: https://github.com/geekatron/jerry/issues/999
         """,
         )
