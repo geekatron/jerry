@@ -9,6 +9,9 @@
 .github/dependabot.yml @geekatron
 .github/CODEOWNERS     @geekatron
 .pre-commit-config.yaml @geekatron
+# release.yml runs this script with the release tokens, so a change to it needs the same review.
+scripts/release/            @geekatron
+tests/unit/scripts/release/ @geekatron
 
 # Governance and rule files — changes to framework constraints
 .context/rules/        @geekatron

@@ -2,15 +2,110 @@
 # ADR: projects/PROJ-001-plugin-cleanup/decisions/ADR-RELEASE-001-github-releases.md
 # Security ref: docs/reference/ci-cd-pipeline-security.md
 #
-# Trigger: v* tag push (e.g., v0.0.1, v1.0.0)
-# Permissions: contents:write (required for GitHub Release creation)
-# Artifacts: jerry-plugin-{version}.tar.gz, jerry-plugin-{version}.zip
+# Trigger: v* tag push (e.g., v0.0.1, v1.0.0), or a manual check-only run
+# Permissions: read-only for every job except `release`, which holds the token
+#   that can create the GitHub Release and the permissions for the attestation
+# Artifacts: jerry-plugin-{version}.tar.gz, jerry-plugin-{version}.zip,
+#   checksums.sha256, sbom.cyclonedx.json
 #
 # Jobs:
 #   validate  — extract version from tag, verify against pyproject.toml
 #   ci        — static analysis + tests (pre-release gate)
-#   build     — create plugin archives (.tar.gz, .zip) with checksums
-#   release   — create GitHub Release with auto-generated notes
+#   build     — generate the software bill of materials (SBOM)
+#   release   — check the tag, make both archives and the checksums from the
+#               tagged commit, attest them and create the GitHub Release
+#
+# FOUR JOBS, ONE TRUST BOUNDARY (#433):
+# Dependency code (uv, Python, the packages they install) and a token that can
+# write must never share a job. validate, ci and build run that code, so they
+# have contents: read and check out without credentials. Only `release` can
+# write: to the repository, to the attestation store and to the release. (`build`
+# writes one artifact, `sbom`, to the run's own artifact store.)
+#
+# `release` runs no dependency code. It runs the shell and the tools of the runner
+# image (git, tar, zip and python3) and three pinned actions: actions/checkout,
+# actions/download-artifact (which unpacks the SBOM that `build` made) and
+# actions/attest-build-provenance (which runs a fourth action that its author
+# pins). python3 runs one script, in isolated mode and from the standard library
+# only: scripts/release/assemble_release.py, with its tests in
+# tests/unit/scripts/release. The job reads that file from the git object of the
+# commit that triggered the run and hands it to python3 on standard input, so a
+# file in the work tree cannot change what runs. The repository's own rule is to
+# run Python through uv; `release` has no uv and no dependency, so it uses the
+# image's python3.
+#
+# `release` makes the archives itself and trusts nothing that `build` made except
+# what it checks:
+#   - it takes no value from the outputs of the other jobs. The version comes from
+#     the tag and from pyproject.toml of the tagged commit; the archives, the
+#     checksums and the release notes are made here. The one file that comes from
+#     another job is the SBOM, which is checked for its shape only;
+#   - it checks that the tag is v<version>, is annotated, names the version bump bot
+#     as its tagger (a text field that anyone who can push a tag can write, so this
+#     is a check of shape, not authentication), points at the commit that triggered
+#     the run, and that this commit is on the first-parent line of main; and that
+#     the version of the tag is the [project] version of pyproject.toml at that
+#     commit;
+#   - it reads every file of the archives from the git objects of that commit, never
+#     from the working tree, and writes them into a directory that did not exist. It
+#     reads nothing through a symbolic link. Before it writes anything, the tracked
+#     links under the copied paths must be exactly the two known ones
+#     (.claude/patterns and .claude/rules, which point nowhere in the archives), and
+#     an entry that is not a plain file or a link is refused. A name that is not
+#     valid UTF-8 (the 8-bit Unicode Transformation Format), a name that a file
+#     system could read as .git, and two names that differ only in letter case or
+#     in the form of a character are refused too.
+#     It runs tar and zip without the signing-request variables. It compares the
+#     packed tree with the commit entry by entry, then reads each archive back and
+#     compares it with the tree again;
+#   - it checks that the SBOM is exactly one regular file within a size bound and
+#     valid JavaScript Object Notation (JSON) with the shape of a CycloneDX file;
+#     that checksums.sha256 is made here from the two archives; and that the output
+#     directory holds exactly the four files.
+# What it cannot check: what the SBOM says (the dependency list is only as honest
+# as the build job); that the tools of the runner image are sound; and that this
+# file is the reviewed one (a tag on a commit with a changed release.yml or script
+# runs that changed code). Who may push a v* tag is a setting of the repository,
+# not of this file.
+#
+# The archives are not byte for byte the same from one run to the next: file times,
+# member order and owner numbers come from the run, as before. They hold the same
+# files, links, modes and contents as the tagged commit.
+#
+# What makes a release fail at the tag (all of them fail closed): a tracked link
+# under the copied paths other than the two known ones; a copied path that the
+# commit no longer has; a tracked dist/ (the output directory must not exist before
+# packing); a name of the kinds listed above; release notes of more than 100,000
+# bytes (the application programming interface (API) of GitHub refuses a release
+# body of more than 125,000 characters, and it would do so after the attestation
+# was made; that figure comes from error reports of release tools, GitHub's
+# documentation of the API gives none); a tag that is not of the form that
+# version-bump.yml makes (the tag text is in that file too: change both together).
+# The tests in tests/unit/scripts/release fail first for these, and hold the tag
+# text equal.
+#
+# A manual run (workflow_dispatch) does every check that needs no tag, and the
+# packing, and skips the attestation and the release: `gh workflow run release.yml
+# --ref main`. On a branch there is no tag, so the tag checks are skipped; from a
+# tag ref they run (only for a tag whose release.yml has the manual trigger, and
+# no existing tag has it, so the tag checks first run at the first new tag). GitHub
+# starts a manual run only if the workflow file is on the default branch. After the
+# merge, anyone with write access can start it from any branch, and then the copy of
+# this file on that branch runs: a tag rule does not close that route.
+#
+# All four jobs run on ubuntu-24.04, not ubuntu-latest: release uses the image's
+# python3, git, tar and zip, and a new image can change what they do. That image has
+# Python 3.12.3 as python3 (the runner-images list for Ubuntu 24.04 says so). The
+# script needs 3.11 or newer and refuses an older one with one REJECTED line before it
+# writes anything; a step before it prints the versions that the job really has.
+# Move the pin when the archive tests in tests/unit/scripts/release pass on the newer
+# image (the pull request checks run them on ubuntu-latest). GitHub retires old images
+# after notice. validate and ci run on the same image, so that the archive tests in ci
+# use the tar, zip and git that release uses (they run under uv's Python, not the
+# image's python3).
+#
+# The attestation step cannot run in continuous integration (CI) for a pull
+# request; see #433 for how it is checked.
 
 name: Release
 
@@ -18,9 +113,14 @@ on:
   push:
     tags:
       - "v*"
+  # Check only: no attestation, no release. The event decides that in the
+  # release job; there is no input that could turn it off.
+  workflow_dispatch:
 
+# Least privilege by default. Every job below states its own permissions; only
+# the release job raises them.
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   # ===========================================================================
@@ -28,22 +128,36 @@ jobs:
   # ===========================================================================
   validate:
     name: Validate Release
-    runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.version.outputs.version }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
     steps:
+      # No credentials stay on disk: this job runs dependency code (#433).
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Extract version from tag
         id: version
         run: |
-          VERSION=${GITHUB_REF#refs/tags/v}
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
+            VERSION=${GITHUB_REF#refs/tags/v}
+          else
+            # A manual check-only run on a branch has no tag; the version of
+            # pyproject.toml stands in for it.
+            VERSION=$(awk '/^\[/ { p = ($0 == "[project]"); next } p && /^version = "/ { v = $0; sub(/^version = "/, "", v); sub(/"$/, "", v); print v; exit }' pyproject.toml)
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "Release version: $VERSION"
 
+      # The version comes from the name of the tag, which anyone who can push a tag
+      # chooses. It reaches the shell through env, never pasted into the script text:
+      # a pasted value is run as shell.
       - name: Validate version format
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
-          VERSION=${{ steps.version.outputs.version }}
           if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?$ ]]; then
             echo "Error: Invalid version format '$VERSION'"
             echo "Expected: X.Y.Z or X.Y.Z-suffix (e.g., 1.0.0, 1.0.0-beta.1)"
@@ -52,8 +166,9 @@ jobs:
           echo "Valid version format: $VERSION"
 
       - name: Check version in pyproject.toml
+        env:
+          TAG_VERSION: ${{ steps.version.outputs.version }}
         run: |
-          TAG_VERSION=${{ steps.version.outputs.version }}
           PYPROJECT_VERSION=$(grep -E '^version = ' pyproject.toml | head -1 | sed 's/version = "\(.*\)"/\1/')
           echo "Tag version: $TAG_VERSION"
           echo "pyproject.toml version: $PYPROJECT_VERSION"
@@ -64,10 +179,15 @@ jobs:
           fi
 
       # EN-001/F-001: Use uv directly (H-05 compliance). No pip fallback.
+      #
+      # The uv cache is saved on a tag push only. Anyone with write access can start a
+      # manual run, from the default branch too, and the cache of the default branch is
+      # visible to every later run, so a manual run must not leave one behind (#433).
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
           version: "0.10.9"
+          enable-cache: ${{ github.event_name == 'push' }}
 
       - name: Set up Python
         run: uv python install 3.14
@@ -82,16 +202,25 @@ jobs:
   # ===========================================================================
   ci:
     name: CI Checks
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    # A normal run takes about two minutes; the default limit is six hours.
+    timeout-minutes: 30
     needs: validate
+    permissions:
+      contents: read
     steps:
+      # No credentials stay on disk: this job runs dependency code (#433).
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       # EN-001/F-001: Use uv instead of pip (H-05 compliance)
+      # The cache is saved on a tag push only (see the same step in validate, #433).
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
           version: "0.10.9"
+          enable-cache: ${{ github.event_name == 'push' }}
 
       - name: Set up Python
         run: uv python install 3.14
@@ -109,162 +238,209 @@ jobs:
         run: uv run pyright src/
 
       - name: Run tests
+        env:
+          # The nine archive tests run the real tar and zip. Set to 1, a missing tool
+          # fails them instead of skipping them, so this job cannot pass without them.
+          JERRY_RELEASE_ARCHIVE_TESTS: "1"
         run: |
           # Exclude subprocess tests (require uv) and llm tests (require API keys)
           # Matches ci.yml test-uv job marker exclusions
           uv run pytest -m "not subprocess and not llm" -v --tb=short
 
   # ===========================================================================
-  # Build Plugin Archive
+  # Build the SBOM
   # ===========================================================================
   build:
-    name: Build Plugin Archive
-    runs-on: ubuntu-latest
+    name: Build SBOM
+    runs-on: ubuntu-24.04
+    # A normal run takes about one minute.
+    timeout-minutes: 30
     needs: [validate, ci]
+    # This job runs dependency code (uv, Python and the packages), so it cannot
+    # write: contents: read, no credentials, no id-token. It makes one thing, the SBOM,
+    # and the release job checks the shape of that file and nothing else about it
+    # (#433). It makes no archive and no checksum: the release job makes those.
+    permissions:
+      contents: read
     steps:
+      # No credentials stay on disk: this job runs dependency code (#433).
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      - name: Create plugin archive directory
-        run: |
-          VERSION=${{ needs.validate.outputs.version }}
-          ARCHIVE_NAME="jerry-plugin-$VERSION"
-          mkdir -p dist/$ARCHIVE_NAME
-          echo "Creating archive: $ARCHIVE_NAME"
-
-      - name: Copy plugin files
-        run: |
-          VERSION=${{ needs.validate.outputs.version }}
-          ARCHIVE_NAME="jerry-plugin-$VERSION"
-
-          # Core plugin structure (Claude Code Plugin)
-          cp -r .claude dist/$ARCHIVE_NAME/
-          cp -r .claude-plugin dist/$ARCHIVE_NAME/ 2>/dev/null || true
-          cp -r skills dist/$ARCHIVE_NAME/
-          cp -r src dist/$ARCHIVE_NAME/
-          cp -r docs dist/$ARCHIVE_NAME/
-          cp -r scripts dist/$ARCHIVE_NAME/
-          cp -r hooks dist/$ARCHIVE_NAME/ 2>/dev/null || true
-
-          # Essential files
-          cp CLAUDE.md dist/$ARCHIVE_NAME/
-          cp AGENTS.md dist/$ARCHIVE_NAME/
-          cp GOVERNANCE.md dist/$ARCHIVE_NAME/
-          cp README.md dist/$ARCHIVE_NAME/
-          cp pyproject.toml dist/$ARCHIVE_NAME/
-          cp pytest.ini dist/$ARCHIVE_NAME/
-          cp .gitignore dist/$ARCHIVE_NAME/
-
-          # List contents
-          echo "Archive contents:"
-          ls -la dist/$ARCHIVE_NAME/
-
-      - name: Create .tar.gz archive
-        run: |
-          VERSION=${{ needs.validate.outputs.version }}
-          ARCHIVE_NAME="jerry-plugin-$VERSION"
-          cd dist
-          tar -czvf $ARCHIVE_NAME.tar.gz $ARCHIVE_NAME
-          echo "Created: $ARCHIVE_NAME.tar.gz"
-          ls -lh $ARCHIVE_NAME.tar.gz
-
-      - name: Create .zip archive
-        run: |
-          VERSION=${{ needs.validate.outputs.version }}
-          ARCHIVE_NAME="jerry-plugin-$VERSION"
-          cd dist
-          zip -r $ARCHIVE_NAME.zip $ARCHIVE_NAME
-          echo "Created: $ARCHIVE_NAME.zip"
-          ls -lh $ARCHIVE_NAME.zip
-
-      - name: Generate checksums
-        run: |
-          VERSION=${{ needs.validate.outputs.version }}
-          ARCHIVE_NAME="jerry-plugin-$VERSION"
-          cd dist
-          sha256sum $ARCHIVE_NAME.tar.gz $ARCHIVE_NAME.zip > checksums.sha256
-          cat checksums.sha256
+        with:
+          persist-credentials: false
 
       # SLSA supply chain transparency: CycloneDX SBOM for all runtime + dev dependencies.
       # Uses uv ephemeral tool execution (--with) to avoid adding cyclonedx-bom to the
       # project lockfile. H-05 compliant: uv run, not python directly.
+      #
+      # The tool version is pinned (#433): an unpinned --with fetches whatever is
+      # newest on PyPI when the release runs, which is code that runs in this job
+      # and whose output is published. 7.5.0 was released on 29 September 2026. It
+      # was the newest release when it was chosen, and an unpinned run fetched it
+      # at that time. The pin fixes the tool, not the packages that the tool needs
+      # (chardet is one: it is not in uv.lock; the last release has 5.2.0 and a build
+      # on 27 October 2026 got 7.7.0). The release job checks the shape of the file,
+      # not what it says. To change the pin: choose a release that has been on PyPI for
+      # at least seven days, so that a bad release has had time to be found and pulled
+      # before it runs here, run this workflow by hand (workflow_dispatch; see the note
+      # at the top of this file), and compare the component list of the SBOM with the
+      # one of the last release.
+      #
+      # The cache is saved on a tag push only (see the same step in validate, #433).
       - name: Install uv (for SBOM generation)
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
           version: "0.10.9"
+          enable-cache: ${{ github.event_name == 'push' }}
 
       - name: Set up Python (for SBOM generation)
         run: uv python install 3.14
 
-      - name: Generate SBOM (CycloneDX)
+      - name: Build SBOM (CycloneDX)
         run: |
+          mkdir -p dist
           uv sync --frozen
-          uv run --with cyclonedx-bom \
+          uv run --with cyclonedx-bom==7.5.0 \
             cyclonedx-py environment \
             --of JSON \
             -o dist/sbom.cyclonedx.json
           echo "SBOM generated:"
           head -5 dist/sbom.cyclonedx.json
 
-      - name: Upload build artifacts
+      # The artifact of a manual run is kept one day; that of a tag push, as long as the
+      # default of the repository (a retention of 0 means that default).
+      - name: Upload the SBOM
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: plugin-archives
-          path: |
-            dist/*.tar.gz
-            dist/*.zip
-            dist/checksums.sha256
-            dist/sbom.cyclonedx.json
+          name: sbom
+          path: dist/sbom.cyclonedx.json
+          if-no-files-found: error
+          retention-days: ${{ github.event_name == 'workflow_dispatch' && 1 || 0 }}
+          # "Re-run all jobs" runs this step again in the same run, where the
+          # artifact of the first attempt still exists. Without this the upload
+          # would fail on the name.
+          overwrite: true
 
   # ===========================================================================
-  # Create GitHub Release
+  # Create GitHub Release (#433)
+  # Holds the token that can write and the permissions for the attestation.
+  # Runs the shell, git, tar, zip and python3 of the runner image, and three
+  # pinned actions: actions/checkout, actions/download-artifact, which unpacks
+  # the SBOM that the build job made, and actions/attest-build-provenance. It
+  # makes the archives itself, from the git objects of the tagged commit, and
+  # treats the SBOM as untrusted data. The job id stays `release`: the name of
+  # the job in the checks, in the documentation and in the repository settings
+  # does not change.
   # ===========================================================================
   release:
     name: Create GitHub Release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    # The job holds the token. A normal run takes about one minute.
+    timeout-minutes: 10
     permissions:
       contents: write
       id-token: write        # OIDC token for Sigstore signing (SLSA provenance)
       attestations: write    # Upload attestation to GitHub
-    needs: [validate, build]
+    needs: [validate, ci, build]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
+          # Nothing in this job pushes with git: gh and the attestation action
+          # use the token of the job themselves. So no credentials stay on disk.
+          # This is written out because the job holds a token that can write.
+          persist-credentials: false
 
-      - name: Download build artifacts
+      # The tools of the image decide what the script can rely on. Their versions are
+      # printed, so that a release log says which ones made it.
+      - name: Show the tools this job relies on
+        run: |
+          echo "Image: ${ImageOS:-unknown} ${ImageVersion:-unknown}"
+          python3 --version
+          git --version
+          tar --version | head -n 1
+          zip -v | head -n 2
+
+      # One file comes from the build job: the SBOM. A single named artifact is
+      # extracted directly into the path, so the file is
+      # ${RUNNER_TEMP}/sbom-in/sbom.cyclonedx.json. The script checks that the
+      # directory holds exactly that one file.
+      - name: Download the SBOM
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: plugin-archives
-          path: dist
+          name: sbom
+          path: ${{ runner.temp }}/sbom-in
 
-      - name: Generate SLSA provenance attestation
-        uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 # v4.1.1
-        with:
-          subject-path: |
-            dist/*.tar.gz
-            dist/*.zip
-            dist/checksums.sha256
-            dist/sbom.cyclonedx.json
-
-      - name: Generate release notes
-        id: notes
+      # Every check and the whole assembly are in the script (see its docstring and the
+      # list at the top of this file). Its output is made safe to print. It checks that
+      # the checkout is the commit that triggered the run. The pinned checkout action
+      # stops if a tag moved after this run started; this check does not rely on that.
+      # It writes `version` to the outputs of this step.
+      #
+      # The script is read from the git object of the commit that triggered the run,
+      # not from the work tree, and handed to python3 on standard input. So nothing in
+      # the work tree (a changed file, a link in its place) and no step before this one
+      # can change what runs. pipefail makes a failed git a failed step: python3 would
+      # otherwise run an empty program and succeed.
+      - name: Check the tag, make the archives and check them
+        id: pack
         run: |
-          VERSION=${{ needs.validate.outputs.version }}
+          set -euo pipefail
+          if [[ ! "${GITHUB_SHA}" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "::error::The commit of the run is not a commit id"
+            exit 1
+          fi
+          git cat-file blob "${GITHUB_SHA}:scripts/release/assemble_release.py" \
+            | python3 -I - \
+              --sbom-dir "${RUNNER_TEMP}/sbom-in" \
+              --output-dir "${GITHUB_WORKSPACE}/dist"
 
-          # Get the previous tag for comparison
-          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+      # The release notes are made here, with git, from the history of the tagged
+      # commit. The subjects of the commits are text that anybody who can push a commit
+      # chose. So they are written to the file without control characters, and printed
+      # only inside a window where the runner does not act on commands, with every
+      # character that is not plain text replaced. The version comes from the step
+      # above, and is checked again before it is used. Notes of more than 100,000
+      # bytes are refused here, before anything is attested.
+      - name: Write the release notes
+        env:
+          VERSION: ${{ steps.pack.outputs.version }}
+        run: |
+          set -euo pipefail
+          export LC_ALL=C
 
-          if [[ -n "$PREV_TAG" ]]; then
-            echo "Generating notes from $PREV_TAG to v$VERSION"
-            NOTES=$(git log $PREV_TAG..HEAD --pretty=format:"- %s (%h)" --no-merges | head -50)
-          else
-            echo "No previous tag found, using all commits"
-            NOTES=$(git log --pretty=format:"- %s (%h)" --no-merges | head -50)
+          NUM='(0|[1-9][0-9]{0,5})'
+          VERSION_RE="^${NUM}\\.${NUM}\\.${NUM}(-[0-9A-Za-z]+(\\.[0-9A-Za-z]+){0,3})?\$"
+          if [[ "${#VERSION}" -gt 40 || ! "${VERSION}" =~ ${VERSION_RE} ]]; then
+            echo "::error::The version from the step before is not a version"
+            exit 1
+          fi
+          COMMIT="${GITHUB_SHA}"
+          if [[ ! "${COMMIT}" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "::error::The commit of the run is not a commit id"
+            exit 1
           fi
 
-          # Write to file for multiline support
-          cat > release-notes.md << 'NOTES_EOF'
-          ## Jerry Framework v${{ needs.validate.outputs.version }}
+          # The end token is random, so nothing in a commit subject can guess it.
+          STOP_TOKEN=$(od -An -N16 -tx1 /dev/urandom | tr -d ' \n')
+          if [[ "${#STOP_TOKEN}" != "32" ]]; then
+            echo "::error::Could not create the stop token"
+            exit 1
+          fi
+          echo "::stop-commands::${STOP_TOKEN}"
+          trap 'echo "::${STOP_TOKEN}::"' EXIT
+
+          NOTES="${RUNNER_TEMP}/release-notes.md"
+          PREV_TAG=$(git describe --tags --abbrev=0 --match 'v[0-9]*' "${COMMIT}^" 2> /dev/null || true)
+          if [[ -n "${PREV_TAG}" ]]; then
+            echo "Release notes from ${PREV_TAG} to ${COMMIT}"
+            RANGE="${PREV_TAG}..${COMMIT}"
+          else
+            echo "No previous tag found, using all commits"
+            RANGE="${COMMIT}"
+          fi
+          {
+            printf '## Jerry Framework v%s\n' "${VERSION}"
+            cat << 'NOTES_EOF'
 
           A Claude Code Plugin for behavior and workflow guardrails.
 
@@ -277,10 +453,10 @@ jobs:
           ### What's Changed
 
           NOTES_EOF
-
-          echo "$NOTES" >> release-notes.md
-
-          cat >> release-notes.md << 'FOOTER_EOF'
+            git log "${RANGE}" --no-merges --max-count=50 --pretty=format:'- %s (%h)' \
+              | tr -d '\000-\010\013-\037\177'
+            printf '\n'
+            cat << 'FOOTER_EOF'
 
           ### Verification
 
@@ -292,20 +468,62 @@ jobs:
           ---
           *Released automatically via GitHub Actions*
           FOOTER_EOF
+          } > "${NOTES}"
 
-          cat release-notes.md
+          # The API of GitHub refuses a release body of more than 125,000 characters (see the
+          # header), and the release is made after the attestation. So notes above a bound that
+          # is well under that are refused here, before the attestation, and nothing of them is
+          # printed. Bytes are at least as many as characters, so a byte count is the safe one.
+          NOTES_MAX=100000
+          NOTES_SIZE=$(wc -c < "${NOTES}" | tr -d ' ')
+          if [[ "${NOTES_SIZE}" -gt "${NOTES_MAX}" ]]; then
+            rm -f "${NOTES}"
+            echo "REJECTED: the release notes are ${NOTES_SIZE} bytes; the bound is ${NOTES_MAX} bytes"
+            exit 1
+          fi
+
+          echo "--- release notes ---"
+          tr -c '[:print:]\n' '?' < "${NOTES}" | sed 's/##\[/##?/g'
+          echo "--- end of release notes ---"
+
+      - name: Generate SLSA provenance attestation
+        if: github.event_name == 'push'
+        uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 # v4.1.1
+        with:
+          subject-path: |
+            dist/*.tar.gz
+            dist/*.zip
+            dist/checksums.sha256
+            dist/sbom.cyclonedx.json
 
       - name: Create GitHub Release
-        run: |
-          VERSION="${{ needs.validate.outputs.version }}"
-          PRERELEASE_FLAG=""
-          if [[ "$VERSION" == *-* ]]; then
-            PRERELEASE_FLAG="--prerelease"
-          fi
-          gh release create "v${VERSION}" \
-            --title "Jerry Framework v${VERSION}" \
-            --notes-file release-notes.md \
-            $PRERELEASE_FLAG \
-            dist/*.tar.gz dist/*.zip dist/checksums.sha256 dist/sbom.cyclonedx.json
+        if: github.event_name == 'push'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          export LC_ALL=C
+
+          # The steps before this one checked and made the files and wrote the notes. This
+          # step makes the release from the same tag. The tag name is taken from the event
+          # again, not handed over, and has to be a version tag.
+          [[ "${GITHUB_EVENT_NAME}" == "push" && "${GITHUB_REF_TYPE}" == "tag" ]] \
+            || { echo "::error::A release is made from a tag push only"; exit 1; }
+          TAG="${GITHUB_REF#refs/tags/}"
+          VERSION="${TAG#v}"
+          NUM='(0|[1-9][0-9]{0,5})'
+          VERSION_RE="^${NUM}\\.${NUM}\\.${NUM}(-[0-9A-Za-z]+(\\.[0-9A-Za-z]+){0,3})?\$"
+          [[ "${TAG}" == "v${VERSION}" && "${#VERSION}" -le 40 && "${VERSION}" =~ ${VERSION_RE} ]] \
+            || { echo "::error::The ref is not a version tag"; exit 1; }
+          NOTES="${RUNNER_TEMP}/release-notes.md"
+          [[ -f "${NOTES}" && ! -L "${NOTES}" ]] || { echo "::error::The release notes are missing"; exit 1; }
+
+          # The tag must still exist on origin (--verify-tag); without it gh would make
+          # a tag on the default branch.
+          ARGS=(release create "${TAG}" --verify-tag --title "Jerry Framework v${VERSION}" --notes-file "${NOTES}")
+          if [[ "${VERSION}" == *-* ]]; then
+            ARGS+=(--prerelease)
+          fi
+          ARGS+=("dist/jerry-plugin-${VERSION}.tar.gz" "dist/jerry-plugin-${VERSION}.zip" "dist/checksums.sha256" "dist/sbom.cyclonedx.json")
+          gh "${ARGS[@]}"
