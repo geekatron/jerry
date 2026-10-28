@@ -14,10 +14,72 @@
 # Together they eliminate ~60-70% of unnecessary runs. See research:
 #   projects/PROJ-030-bugs/research/workflow-filtering-research.md
 #
+# TWO JOBS, ONE TRUST BOUNDARY (#418):
+# Dependency code (uv, Python, bump-my-version and everything they install)
+# and a token that can write must never share a job. persist-credentials:
+# false alone does not achieve that: while a job references the PAT, code
+# running in that job could read it from the runner's process memory. A job
+# split is how the exposure is removed.
+#   bump  contents: read. The checkout keeps no credentials and the job never
+#         references the PAT secret. Its first step stops a manual run that
+#         would be a real release on any ref but main. It installs the locked
+#         dependencies, determines the bump type, runs bump-my-version, sets
+#         the project's version line in uv.lock (an edit of that one line, not
+#         a relock), gives the version commit its message (it carries
+#         [skip-bump], so the run that its own push starts is skipped) and
+#         checks the result, then hands ONE commit and its tag to the next job
+#         as a git bundle (artifact version-bump-bundle). Its output `publish`
+#         only says that a bundle exists: bump chooses the content of the
+#         bundle within the limits that push checks.
+#   push  contents: read; the PAT, given to the checkout, does the writing.
+#         GitHub evaluates the condition of this job before it hands the job
+#         a token: a run that is not a dry run gets one only on a ref that
+#         GitHub finds equal to refs/heads/main, whatever bump says. GitHub
+#         ignores letter case in that comparison, so the ref is also compared
+#         exactly: the first step of bump stops a manual real run on any
+#         other ref, and the first check of this job's script refuses a real
+#         push from any ref but refs/heads/main. Runs git and shell only,
+#         plus two pinned actions:
+#         actions/checkout and actions/download-artifact (which unpacks the
+#         artifact that bump made). It treats the bundle as untrusted input.
+#         What it can decide from the event of this run it decides from the
+#         event, not from bump: whether this is a dry run, the size of the step
+#         that a manual run asked for, and whether a pre-release was asked
+#         for. It checks that the bundle is no bigger than ten times a genuine
+#         one and adds exactly one commit on top of the checked-out head,
+#         with exactly the header lines of a commit made by the bot, dated
+#         within a day of the runner clock, with exactly the message
+#         "chore(release): bump version to v<version> [skip-bump]" and nothing
+#         else; that the commit changes every file that the bump
+#         configuration lists, plus the lock file, and nothing else, and only
+#         their version strings (in pyproject.toml exactly two lines change,
+#         the project's version and current_version; in every other listed
+#         file each changed line differs only by the version string, and the
+#         file ends with a line end in both versions or in neither; a lock
+#         file must equal the old one except for the project's own version
+#         line); that the version is one step above the current one (on a
+#         manual run: the step that was asked for; on a push event: no bigger
+#         a step than the commits since the last release tag allow); and that
+#         the tag, with exactly the header lines of a tag made by the bot and
+#         the message "Release v<version>", matches. Then it pushes the commit
+#         and the tag in one atomic push.
+#         On a dry run it does every check, then runs git push --dry-run (with
+#         --atomic when a tag is carried). That shows that origin accepts this
+#         token for a push and, when a tag is carried, that it offers atomic
+#         pushes; the rules of the repository for the ref are tested only by
+#         a real push. Nothing is updated.
+# push has `needs: bump` and no status-check function in its `if:`. Filter A
+# stops the run before any job starts; Filter B and the [skip-bump] marker skip
+# bump, and push is skipped with it.
+# Both jobs have a timeout: the concurrency group below would otherwise wait
+# for a hung job for the default six hours.
+#
 # References:
 #   - EN-108: Version Bumping Strategy
 #   - TASK-003: Design Version Bumping Process
 #   - #187: Dual filtering implementation
+#   - #418 (landing the Dependabot updates; this split has to come first):
+#     dependency code and the write token in separate jobs
 
 name: Version Bump
 
@@ -103,9 +165,15 @@ on:
         description: 'Pre-release label (alpha, beta, rc). Leave empty for stable.'
         required: false
         type: string
+      dry_run:
+        description: 'Dry run: do all the work and every check, run a dry-run push to see that origin accepts this token for a push, but push nothing (no commit, no tag). A run on any branch but main must be a dry run.'
+        required: false
+        type: boolean
+        default: false
 
+# Least privilege by default. Only the push job below raises it.
 permissions:
-  contents: write
+  contents: read
 
 # Prevent concurrent bumps
 concurrency:
@@ -116,6 +184,22 @@ jobs:
   bump:
     name: Determine and Apply Version Bump
     runs-on: ubuntu-latest
+    # A normal run takes about a minute. Without a limit a hung job would hold
+    # the version-bump concurrency group for six hours.
+    timeout-minutes: 30
+
+    # The job that runs dependency code. It cannot write to the repository:
+    # contents: read, a checkout without credentials, and no reference to the
+    # secret that can push (#418).
+    permissions:
+      contents: read
+
+    # 'true' when a bundle exists and the push job should look at it. It stays
+    # empty when there is nothing to bump. This job runs dependency code, so
+    # the value decides nothing but whether the push job starts: a dry run is
+    # decided by the push job from the event.
+    outputs:
+      publish: ${{ steps.publish.outputs.publish }}
 
     # BUG-003 (complete fix): UV_LOCKED prevents all uv sync/run commands
     # from modifying uv.lock AND fails if the lockfile is stale relative to
@@ -139,12 +223,24 @@ jobs:
     # and all !startsWith() return true. workflow_dispatch always passes.
     #   Source: https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/evaluate-expressions#literals
     #
-    # NOTE: Assumes standard merge commits (not squash/rebase).
-    # With standard merges, head_commit.message is "Merge pull request #N..."
-    # which passes all startsWith checks. detect-bump-type reads the
-    # individual commits inside the merge. With rebase merges, only the last
-    # commit's subject is checked, which could skip a PR with mixed types.
-    # (red-exploit V6 — not applicable; Jerry uses standard merges)
+    # MERGE METHODS: head_commit.message depends on how the PR was merged,
+    # and so on which merge methods the repository settings allow (merge
+    # commits, squash merges, rebase merges).
+    #   Merge commit: the message is "Merge pull request #N from <branch>",
+    #     then a blank line and the PR title as the body (when the setting
+    #     merge_commit_message is PR_TITLE). The subject passes every
+    #     startsWith() check below, so Filter B never skips a merge commit,
+    #     whatever the PR title says. Only the [skip-bump] marker can skip it,
+    #     and only when the marker is in the PR title, because the title is the
+    #     body of the merge commit. detect-bump-type reads the individual
+    #     commits inside the merge.
+    #   Squash merge: the message is the squash commit itself. Its subject is
+    #     the PR title (the commit's own title for a single-commit PR), so
+    #     Filter B applies to the PR title. Its body is the PR's commit
+    #     messages unless the merger replaced it, and [skip-bump] anywhere in
+    #     the message skips the run.
+    #   Rebase merge: head_commit is the last replayed commit, so only that
+    #     commit's message is checked, which could skip a PR with mixed types.
     # Verify: GitHub repo Settings > General > Pull Requests > merge method
     #
     # Research: projects/PROJ-030-bugs/research/workflow-filtering-research.md
@@ -152,7 +248,7 @@ jobs:
     # SECURITY: workflow_dispatch has no secondary approval — any actor with
     # repo write access can trigger any bump type. Two threat scenarios:
     #   1. Authorized collaborator: accepted risk (write access = trusted)
-    #   2. Compromised PAT: accepted risk — VERSION_BUMP_PAT has contents:write
+    #   2. Compromised PAT: accepted risk — the bump PAT has contents:write
     #      scope; a compromised PAT can push to main directly anyway, making
     #      workflow_dispatch a less interesting attack vector.
     # If external write contributors are added, configure a GitHub Environment
@@ -196,20 +292,66 @@ jobs:
         !startsWith(github.event.head_commit.message, 'revert(')
       )
 
-    # NOTE on per-step `if:` guards: Steps that modify the repo (bump, push)
+    # NOTE on per-step `if:` guards: Steps that modify the repo (bump, bundle)
     # use `if: steps.bump.outputs.type != 'none'` to skip when there's nothing
     # to bump. The "Job summary" step uses `if: always()` so the run always
     # reports its outcome regardless of skip/success/failure.
 
     steps:
       # ------------------------------------------------------------------
-      # Checkout with PAT for push-through-branch-protection
+      # A real release runs on main only. This is the first step, before the
+      # checkout, any install or anything else: a manual run whose ref is not
+      # main and whose dry_run is not true stops here with one plain reason.
+      # To check a branch, start the run with dry_run true. The values come
+      # through env:, never as an expression inside the script. This step is
+      # the readable early refusal, and it compares the ref exactly. The
+      # condition of the push job, which GitHub evaluates before it hands that
+      # job a token, also keeps the token away from such a run, but GitHub
+      # ignores letter case there: for a branch whose name differs from main
+      # only in case, this step is what stops a manual real run.
+      # ------------------------------------------------------------------
+      - name: Refuse a real release that is not on main
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REF: ${{ github.ref }}
+          INPUT_DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          if [[ "${EVENT_NAME}" == "workflow_dispatch" && "${REF}" != "refs/heads/main" && "${INPUT_DRY_RUN}" != "true" ]]; then
+            echo "::error::a real release runs only on main; to check this branch, start the run with dry_run true"
+            exit 1
+          fi
+
+      # ------------------------------------------------------------------
+      # Checkout WITHOUT credentials. This job runs dependency code, so no
+      # token may stay on disk or be referenced by the job (#418). The
+      # default read-only token fetches the history and is then removed.
       # ------------------------------------------------------------------
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
-          token: ${{ secrets.VERSION_BUMP_PAT }}
+          persist-credentials: false
+
+      # The commit that the bump will build on. The bundle below is made
+      # relative to it, and the push job checks out the commit that triggered
+      # the run and requires it as the head. The checkout action makes a
+      # full-history checkout land on that commit even if the branch has moved
+      # on since the trigger (it fetches the commit again), so both jobs build
+      # on the same one. This check keeps that true: if a later version of the
+      # action took the tip instead, the run would stop here with a clear
+      # message instead of handing over a bundle that the push job cannot use.
+      # A merge that lands after the trigger is not caught here: origin then
+      # refuses the push of the version commit (not a fast-forward), as it did
+      # for the single job.
+      - name: Record base commit
+        id: base
+        run: |
+          BASE_SHA=$(git rev-parse HEAD)
+          if [[ "${BASE_SHA}" != "${GITHUB_SHA}" ]]; then
+            echo "::error::The checkout (${BASE_SHA}) is not the commit that triggered this run (${GITHUB_SHA}); the push job could not use a bundle built on it."
+            exit 1
+          fi
+          echo "sha=${BASE_SHA}" >> "$GITHUB_OUTPUT"
 
       # ------------------------------------------------------------------
       # Set up Python + UV + bump-my-version
@@ -218,6 +360,10 @@ jobs:
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
           version: "0.10.9"
+          # No shared cache in this job. A cache that other jobs of the
+          # repository write could hand this job files it did not build
+          # (#433 deals with the cache in release.yml).
+          enable-cache: false
 
       - name: Set up Python
         run: uv python install 3.14
@@ -297,6 +443,10 @@ jobs:
             exit 1
           fi
 
+          # The version that uv.lock records for the project today, read before
+          # bump-my-version changes it.
+          OLD_VERSION=$(grep -oP '^version = "\K[^"]+' pyproject.toml | head -1)
+
           if [[ -n "$PRERELEASE" ]]; then
             echo "Pre-release: $PRERELEASE"
             uv run bump-my-version bump "$BUMP_TYPE" --no-tag
@@ -305,33 +455,97 @@ jobs:
             uv run bump-my-version bump "$BUMP_TYPE"
           fi
 
-          # BUG-003/FIX: Regenerate uv.lock after version bump.
-          # bump-my-version changes the version in pyproject.toml, making
-          # uv.lock stale. UV_LOCKED blocks subsequent uv commands without
-          # this step. In the prerelease path, the amend also folds the
-          # --no-commit changes from line 171 into the bump commit.
-          # Unset UV_LOCKED temporarily so uv lock can update the file.
-          UV_LOCKED=0 uv lock
-
-          # Guard: verify uv lock only changed the jerry version field,
-          # not transitive dependencies. A broader change could indicate
-          # a supply chain issue (red-exploit Finding 1).
-          LOCK_DIFF=$(git diff --unified=0 uv.lock | grep "^[+-]" | grep -v "^[+-][+-][+-]" || true)
-          LOCK_LINES=$(echo "$LOCK_DIFF" | grep -c "." || true)
-          if [[ "$LOCK_LINES" -gt 2 ]]; then
-            echo "::warning::uv.lock changed more than the version field ($LOCK_LINES diff lines). Review the lockfile changes."
-            git diff uv.lock
+          # BUG-003/FIX: Bring uv.lock up to the new version after the bump,
+          # WITHOUT relocking. bump-my-version changes the version in
+          # pyproject.toml, which makes the project's own entry in uv.lock
+          # stale, and UV_LOCKED blocks the later uv commands until the lock
+          # records the new version.
+          #
+          # uv lock is the wrong tool for that. It re-serializes the whole file
+          # with the pinned uv, and the lock on main may have been written by
+          # another uv: Dependabot's is newer (when this was written, main's
+          # lock had revision 5 and the pinned uv wrote 3). A relock then
+          # changed six lines, not one: the version, the revision line and the
+          # markers of four dependency edges. The push job accepts the
+          # project's version line and nothing else, so it refused the bump.
+          # Instead,
+          # exactly one line is edited in place, and the next step ("Validate
+          # version sync") proves that uv accepts the result. (#429 moves this
+          # edit into a script with tests.)
+          NEW_VERSION=$(grep -oP '^version = "\K[^"]+' pyproject.toml | head -1)
+          PROJECT=$(awk -F'"' '/^name = "/ { print $2; exit }' pyproject.toml)
+          if [[ -z "${PROJECT}" || -z "${OLD_VERSION}" || -z "${NEW_VERSION}" || "${OLD_VERSION}" == "${NEW_VERSION}" ]]; then
+            echo "::error::Cannot update uv.lock: project '${PROJECT}', version '${OLD_VERSION}' before the bump, '${NEW_VERSION}' after it."
+            exit 1
           fi
 
+          # The line is the version line of the project's own entry: directly
+          # under name = "<project>", and followed by the source line of a local
+          # project (an entry of that name from a registry is another package).
+          # It must be found exactly once, in the only entry of that name, and
+          # the rest of the file is copied as it is. LC_ALL=C: every tool
+          # compares bytes.
+          LOCK_NEW=$(mktemp "${RUNNER_TEMP}/uv-lock.XXXXXX")
+          RESULT=$(LC_ALL=C PROJECT="${PROJECT}" OLD="${OLD_VERSION}" NEW="${NEW_VERSION}" OUT="${LOCK_NEW}" awk '
+            function is_local(s) {
+              return s == "source = { editable = \".\" }" || s == "source = { virtual = \".\" }"
+            }
+            BEGIN { project = ENVIRON["PROJECT"]; old = ENVIRON["OLD"]; new = ENVIRON["NEW"]; out = ENVIRON["OUT"] }
+            { line[NR] = $0 }
+            END {
+              for (i = 1; i <= NR; i++) {
+                if (line[i] ~ /\r$/) { crlf++ }
+                if (line[i] == "name = \"" project "\"") { named++ }
+                if (i > 1 && i < NR && line[i - 1] == "name = \"" project "\"" && line[i] == "version = \"" old "\"" && is_local(line[i + 1])) {
+                  line[i] = "version = \"" new "\""
+                  found++
+                }
+              }
+              for (i = 1; i <= NR; i++) { print line[i] > out }
+              close(out)
+              print found + 0, named + 0, crlf + 0
+            }
+          ' uv.lock) || { echo "::error::Could not read uv.lock or write the edited copy."; exit 1; }
+          read -r FOUND NAMED CRLF_LINES <<< "${RESULT}"
+          if [[ "${FOUND}" != "1" || "${NAMED}" != "1" ]]; then
+            rm -f "${LOCK_NEW}"
+            echo "::error::uv.lock cannot be updated in place. It must hold exactly one entry named \"${PROJECT}\", and that entry must be at version \"${OLD_VERSION}\" with the local project as its source, with the version line directly under the name line. Entries named \"${PROJECT}\": ${NAMED}. Entries that match all of it: ${FOUND}. Lines that end in a carriage return: ${CRLF_LINES}. uv.lock was not changed."
+            exit 1
+          fi
+          cat "${LOCK_NEW}" > uv.lock
+          rm -f "${LOCK_NEW}"
+
+          # Guard: the diff of uv.lock must be exactly that one line. This is
+          # git's own account of what the edit did, so any changed line other
+          # than the project's version line stops the bump (a carriage return
+          # that git normalises is not seen here; the push job compares every
+          # byte). *.lock is -diff in .gitattributes, so --text is needed: a
+          # plain git diff only says "Binary files differ" and shows no line
+          # at all.
+          EXPECTED=$(printf -- '-version = "%s"\n+version = "%s"' "${OLD_VERSION}" "${NEW_VERSION}")
+          LOCK_DIFF=$(LC_ALL=C git diff --text --unified=0 HEAD -- uv.lock | LC_ALL=C awk '/^@@/ { body = 1; next } body')
+          if [[ "${LOCK_DIFF}" != "${EXPECTED}" ]]; then
+            echo "::error::uv.lock differs from the committed one in more than the version line of the project. The diff follows."
+            LC_ALL=C git diff --text --unified=0 HEAD -- uv.lock | head -n 40
+            exit 1
+          fi
+          echo "uv.lock: version of ${PROJECT} set from ${OLD_VERSION} to ${NEW_VERSION}, one line, no relock"
+
+          # The amend sets the message of the version commit. The text is
+          # fixed, and the push job accepts exactly this text and nothing else:
+          # the subject is printed in the public release notes. The marker
+          # makes the run that this commit's own push starts skip the job
+          # (Filter B); the type chore( skips it too. The commit_message
+          # setting in pyproject.toml is not read by bump-my-version (its
+          # option is "message"), so the message is set here.
           git add uv.lock
-          git commit --amend --no-edit
+          git commit --amend -m "chore(release): bump version to v${NEW_VERSION} [skip-bump]"
 
           # Re-create the tag at the amended commit SHA.
           # bump-my-version created the tag at the pre-amend commit (C1).
           # The amend creates a new commit (C2), orphaning C1. Without
           # re-tagging, the release tag points to a commit that does NOT
-          # include the regenerated uv.lock. (eng-devsecops Finding 5)
-          NEW_VERSION=$(grep -oP '^version = "\K[^"]+' pyproject.toml | head -1)
+          # include the updated uv.lock.
           if git tag -l "v${NEW_VERSION}" | grep -q .; then
             git tag -d "v${NEW_VERSION}"
             git tag -a "v${NEW_VERSION}" -m "Release v${NEW_VERSION}"
@@ -361,13 +575,61 @@ jobs:
           echo "New version: $NEW_VERSION"
 
       # ------------------------------------------------------------------
-      # Push version commit and tag
+      # Hand the result to the push job (#418)
+      # The push job gets ONE commit on top of the base commit and, for a
+      # release, its annotated tag, packed as a git bundle. This job does not
+      # push: it has no credentials to push with.
       # ------------------------------------------------------------------
-      - name: Push changes
+      - name: Create bundle of the version commit and tag
+        if: steps.bump.outputs.type != 'none'
+        env:
+          BASE_SHA: ${{ steps.base.outputs.sha }}
+          NEW_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          TAG="v${NEW_VERSION}"
+          OUT_DIR="${RUNNER_TEMP}/version-bump"
+          mkdir -p "${OUT_DIR}"
+
+          COUNT=$(git rev-list --count "${BASE_SHA}..HEAD")
+          if [[ "${COUNT}" != "1" ]]; then
+            echo "::error::Expected exactly one version commit on top of ${BASE_SHA}, found ${COUNT}"
+            exit 1
+          fi
+
+          # The commit travels under a fixed ref name. The tag goes with it
+          # when the bump created an annotated one.
+          git update-ref refs/bump/commit HEAD
+          REFS=(refs/bump/commit)
+          if git rev-parse -q --verify "refs/tags/${TAG}^{tag}" > /dev/null; then
+            REFS+=("refs/tags/${TAG}")
+          fi
+
+          git bundle create "${OUT_DIR}/version-bump.bundle" "^${BASE_SHA}" "${REFS[@]}"
+          git bundle verify "${OUT_DIR}/version-bump.bundle"
+          git bundle list-heads "${OUT_DIR}/version-bump.bundle"
+
+      - name: Upload bundle
+        if: steps.bump.outputs.type != 'none'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: version-bump-bundle
+          path: ${{ runner.temp }}/version-bump/version-bump.bundle
+          if-no-files-found: error
+          retention-days: 1
+          # "Re-run all jobs" runs this step again in the same run, where the
+          # artifact of the first attempt still exists. Without this the upload
+          # would fail on the name.
+          overwrite: true
+
+      # Say that a bundle exists. Whether a dry run pushes is not decided here:
+      # this job runs dependency code, so the push job reads that from the event
+      # of the run itself and, on a dry run, checks the bundle and pushes nothing.
+      - name: Hand over to the push job
+        id: publish
         if: steps.bump.outputs.type != 'none'
         run: |
-          git push origin main --follow-tags
-          echo "Pushed version v${{ steps.version.outputs.version }}"
+          echo "publish=true" >> "$GITHUB_OUTPUT"
 
       # ------------------------------------------------------------------
       # Summary
@@ -375,12 +637,749 @@ jobs:
       - name: Job summary
         if: always()
         run: |
-          if [[ "${{ steps.bump.outputs.type }}" == "none" ]]; then
-            echo "## Version Bump: Skipped" >> "$GITHUB_STEP_SUMMARY"
-            echo "No bump-worthy commits since last tag." >> "$GITHUB_STEP_SUMMARY"
+          {
+            if [[ "${{ steps.bump.outputs.type }}" == "none" ]]; then
+              echo "## Version Bump: Skipped"
+              echo "No bump-worthy commits since last tag."
+            else
+              echo "## Version Bump: v${{ steps.version.outputs.version }}"
+              echo "- **Bump type:** ${{ steps.bump.outputs.type }}"
+              echo "- **Tag:** v${{ steps.version.outputs.version }}"
+              echo "- **Trigger:** ${{ github.event_name }}"
+              if [[ "${{ steps.publish.outputs.publish }}" == "true" ]]; then
+                echo "- **Push:** handed to the push job (on a dry run it only checks)"
+              else
+                echo "- **Push:** not reached"
+              fi
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ========================================================================
+  # Push job (#418)
+  # Holds the token that can write. Runs git and shell, plus two pinned
+  # actions: actions/download-artifact, which unpacks the artifact that the
+  # bump job made, and actions/checkout, which receives the token. It treats
+  # the bundle as untrusted. `needs: bump` and an `if:` without a status-check
+  # function: when bump is skipped (Filter B, the marker), failed or cancelled,
+  # this job does not run. (Filter A stops the run before any job starts.)
+  # ========================================================================
+  push:
+    name: Verify and Push Version Commit and Tag
+    needs: bump
+    # GitHub evaluates this condition before it hands the job a token. A run
+    # that is not a dry run gets this job only on a ref that GitHub finds
+    # equal to refs/heads/main, whatever the bump job says. GitHub ignores
+    # letter case in that comparison; the first check of the script below
+    # refuses a real push from any ref but refs/heads/main, compared exactly,
+    # and the first step of bump stops a manual real run on any other ref.
+    # A dry run may start from any branch, which is how this job is tried
+    # before a release. The condition reads inputs.dry_run, which keeps the
+    # boolean. github.event.inputs.dry_run is the text 'true', and
+    # 'true' == true is false (GitHub turns both sides into numbers and the
+    # text becomes NaN), so that spelling would skip every dry run.
+    # A dry run reaches this job too: it does every check, runs git push
+    # --dry-run (with --atomic when a tag is carried) and pushes nothing. To
+    # skip this job on a dry run instead, change the condition to
+    #   needs.bump.outputs.publish == 'true' && github.ref == 'refs/heads/main' && inputs.dry_run != true
+    if: needs.bump.outputs.publish == 'true' && (github.ref == 'refs/heads/main' || inputs.dry_run == true)
+    runs-on: ubuntu-latest
+    # The job holds the token and reads a bundle that it does not trust. A
+    # bundle that makes it hang would also hold the version-bump concurrency
+    # group.
+    timeout-minutes: 10
+    # The PAT, given to the checkout below, does the writing. The token of the
+    # job itself only has to read.
+    permissions:
+      contents: read
+
+    steps:
+      # Download first, so that the token is not on disk while the archive is
+      # unpacked. That is all the order does: this job references the token,
+      # so the token is in the memory of the runner from the first step on.
+      # The download action unpacks an archive that the job running dependency
+      # code made; it is pinned by commit like every action in this file. Keep
+      # this pin and the pin of the checkout below exact, and treat a
+      # Dependabot update of either as a security change: the download action
+      # reads hostile input next to the token. (#430 replaces the download
+      # action with git, shell and the GitHub command-line tool or API; the
+      # checkout stays.)
+      - name: Download bundle
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: version-bump-bundle
+          path: ${{ runner.temp }}/version-bump-in
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          token: ${{ secrets.VERSION_BUMP_PUSH_PAT }}
+          # The push needs the token in the git configuration of the checkout.
+          # This is the default; it is written out because the job depends on it.
+          persist-credentials: true
+
+      - name: Verify the bundle and push
+        env:
+          BUNDLE_DIR: ${{ runner.temp }}/version-bump-in
+          GIT_TERMINAL_PROMPT: "0"
+          # What this run was asked for. It is read from the event here and not
+          # taken from the job that runs dependency code: the size of the step
+          # and the label of a pre-release (manual runs only, empty on a push
+          # event), and whether this is a dry run.
+          INPUT_BUMP_TYPE: ${{ github.event.inputs.bump_type }}
+          INPUT_PRERELEASE: ${{ github.event.inputs.prerelease }}
+          INPUT_DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          set -euo pipefail
+
+          # The checks below compare and index text that an attacker may control.
+          # In the C locale every tool compares bytes, so the verdict does not
+          # depend on the locale or on the awk of the runner.
+          export LC_ALL=C
+
+          # Everything the bundle says is untrusted, and so is everything git
+          # prints about it (ref names, paths, messages). The runner reads a
+          # line of output as a command in two forms: a line that starts with
+          # two colons (after leading white space), and the older form
+          # ##[name] anywhere in a line. So command processing stays off while
+          # the bundle is examined. The end token is random, so the bundle
+          # cannot guess it.
+          STOP_TOKEN=$(od -An -N16 -tx1 /dev/urandom | tr -d ' \n')
+          [[ "${#STOP_TOKEN}" == "32" ]] || { echo "::error::Could not create the stop token"; exit 1; }
+          RESUMED=0
+          # The runner reads standard error apart from standard output, in no
+          # set order: a line on standard error could be read after the end
+          # token or before the stop line. So from here on, standard error is
+          # sent to standard output. A command substitution still captures
+          # only standard output; standard error is logged, not captured.
+          exec 2>&1
+          echo "::stop-commands::${STOP_TOKEN}"
+          resume() {
+            if [[ "${RESUMED}" == "0" ]]; then
+              RESUMED=1
+              echo "::${STOP_TOKEN}::"
+            fi
+          }
+          finish() {
+            local status=$?
+            resume
+            if [[ "${status}" != "0" ]]; then
+              echo "::error::The version push failed or the bundle was rejected. See the log of this step."
+            fi
+          }
+          trap finish EXIT
+
+          fail() {
+            echo "REJECTED: $*"
+            exit 1
+          }
+          # Safe to print: every byte outside a plain character set becomes ?
+          safe() {
+            printf '%s' "$1" | tr -c 'A-Za-z0-9._/ -' '?'
+          }
+          # A NUL byte could hide text from the line-based tools below (the shell
+          # drops it when it reads a line), so an object or a file that has one is
+          # rejected. The file passes only if deleting its NUL bytes changes
+          # nothing; a tool that fails makes the test fail.
+          no_nul() {
+            cmp -s "$1" <(tr -d '\000' < "$1")
+          }
+          # The identity of the bump bot, the shape of a time stamp in a commit
+          # or tag header, and the clock of this runner. in_window "<seconds>
+          # <zone>" succeeds if the time is within one day of that clock, in
+          # the past or in the future: a version commit is made seconds before
+          # this job runs, and the artifact lives for a day.
+          # A time stamp is the seconds, a space, and a time zone: a sign, hours
+          # 00 to 14 and minutes 00 to 59.
+          BOT="github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
+          TS_RE='^[0-9]{1,12} [+-](0[0-9]|1[0-4])[0-5][0-9]$'
+          NOW=$(date +%s)
+          in_window() {
+            local seconds=$(( 10#${1%% *} ))
+            (( seconds >= NOW - 86400 && seconds <= NOW + 86400 ))
+          }
+
+          # --- 0. Where this runs, and what it may do ---------------------------
+          # Whether this is a dry run comes from the event of this run, not from
+          # the job that runs dependency code: that job can say anything. A push
+          # event has no inputs, so a value there means that something is wrong:
+          # the run fails loudly and does not turn itself into a quiet dry run.
+          # On a manual run only the exact value "false" is a real run and
+          # only "true" is a plain dry run; any other value is a dry run too,
+          # with a warning. A dry run pushes nothing.
+          case "${GITHUB_EVENT_NAME}" in
+            push)
+              [[ -z "${INPUT_DRY_RUN:-}" ]] \
+                || fail "a push event carries no dry_run input, but one was set: $(safe "${INPUT_DRY_RUN}")"
+              DRY_RUN=0
+              ;;
+            workflow_dispatch)
+              case "${INPUT_DRY_RUN:-}" in
+                false) DRY_RUN=0 ;;
+                true) DRY_RUN=1 ;;
+                *)
+                  DRY_RUN=1
+                  echo "Warning: the dry_run input is neither true nor false ($(safe "${INPUT_DRY_RUN:-}")); this run is treated as a dry run."
+                  ;;
+              esac
+              ;;
+            *)
+              fail "this job runs for a push or a manual run only, not for $(safe "${GITHUB_EVENT_NAME}")"
+              ;;
+          esac
+          # A real push goes to main and nowhere else. A dry run may start from
+          # any branch (that is how this job is tried before a release) and then
+          # asks about throw-away names, never about main.
+          if [[ "${DRY_RUN}" == "0" ]]; then
+            [[ "${GITHUB_REF}" == "refs/heads/main" ]] \
+              || fail "versions are pushed to main only; this run is on ${GITHUB_REF}"
           else
-            echo "## Version Bump: v${{ steps.version.outputs.version }}" >> "$GITHUB_STEP_SUMMARY"
-            echo "- **Bump type:** ${{ steps.bump.outputs.type }}" >> "$GITHUB_STEP_SUMMARY"
-            echo "- **Tag:** v${{ steps.version.outputs.version }}" >> "$GITHUB_STEP_SUMMARY"
-            echo "- **Trigger:** ${{ github.event_name }}" >> "$GITHUB_STEP_SUMMARY"
+            [[ "${GITHUB_REF}" == refs/heads/* ]] \
+              || fail "a dry run needs a branch; this run is on ${GITHUB_REF}"
+            echo "Dry run: every check runs and nothing is pushed."
           fi
+          BASE=$(git rev-parse HEAD)
+          # A version commit is never the base of the next one on a push event:
+          # its own push starts no run (the marker), and a bundle on top of one
+          # is how a hostile bump job would chain releases. (A manual run may
+          # bump on top of one.)
+          if [[ "${GITHUB_EVENT_NAME}" == "push" ]]; then
+            BASE_AUTHOR=$(git log -1 --format='%an <%ae>' "${BASE}")
+            BASE_SUBJECT=$(git log -1 --format='%s' "${BASE}")
+            if [[ "${BASE_AUTHOR}" == "${BOT}" ]]; then
+              case "${BASE_SUBJECT}" in
+                "chore(release): bump version to v"* | "Bump version: "*)
+                  fail "the checked-out head is a version commit made by the bump bot; a push event never bumps on top of one"
+                  ;;
+              esac
+            fi
+          fi
+          WORK=$(mktemp -d "${RUNNER_TEMP}/bump-verify.XXXXXX")
+          BUNDLE="${BUNDLE_DIR}/version-bump.bundle"
+
+          # --- 1. The artifact is exactly one bundle that builds on this head --
+          [[ -f "${BUNDLE}" && ! -L "${BUNDLE}" ]] || fail "the artifact has no bundle file"
+          [[ "$(find "${BUNDLE_DIR}" -mindepth 1 | wc -l | tr -d ' ')" == "1" ]] \
+            || fail "the artifact holds more than the bundle"
+          # A cap on the size, before git reads the file. A genuine bundle (the
+          # version commit, its tag, and the trees and files that changed,
+          # packed against the checked-out head) is about 1,000 bytes: that is
+          # what the 55 real version commits of this repository's history
+          # made, bundled the way the bump job does, and what the bump job
+          # itself made on macOS, Ubuntu 24.04 and Ubuntu 26.04. The cap is
+          # about ten times that. The file comes from the job that runs
+          # dependency code.
+          BUNDLE_MAX=10240
+          BUNDLE_SIZE=$(wc -c < "${BUNDLE}" | tr -d ' ')
+          (( BUNDLE_SIZE <= BUNDLE_MAX )) \
+            || fail "the bundle is bigger than the cap of ${BUNDLE_MAX} bytes (it has ${BUNDLE_SIZE})"
+          if ! git bundle verify "${BUNDLE}" > "${WORK}/verify.txt" 2>&1; then
+            cat "${WORK}/verify.txt"
+            fail "git bundle verify failed (damaged bundle, or its base is not the checked-out head)"
+          fi
+          echo "bundle verified against ${BASE}"
+
+          # --- 2. Refs: the commit, and at most one release tag ----------------
+          git bundle list-heads "${BUNDLE}" | sed 's/^[^ ]* //' > "${WORK}/refs.txt"
+          TAG_REF=""
+          SAW_COMMIT=0
+          while IFS= read -r ref; do
+            case "${ref}" in
+              refs/bump/commit)
+                [[ "${SAW_COMMIT}" == "0" ]] || fail "the bundle carries more than one commit ref"
+                SAW_COMMIT=1
+                ;;
+              refs/tags/v*)
+                [[ "${ref}" =~ ^refs/tags/v[0-9A-Za-z.-]+$ ]] \
+                  || fail "the bundle carries a tag with an unusual name: $(safe "${ref}")"
+                [[ -z "${TAG_REF}" ]] || fail "the bundle carries more than one tag"
+                TAG_REF="${ref}"
+                ;;
+              *)
+                fail "the bundle carries an unexpected ref: $(safe "${ref}")"
+                ;;
+            esac
+          done < "${WORK}/refs.txt"
+          [[ "${SAW_COMMIT}" == "1" ]] || fail "the bundle has no commit"
+
+          # --- 3. Bring the objects in under quarantine refs --------------------
+          # Nothing is checked out: the new tree is only ever read with git
+          # plumbing. Whether git checks the objects of a bundle while fetching
+          # depends on its version (2.43 does not), so fsck runs here and the
+          # new trees are checked again in step 7.
+          SPECS=("+refs/bump/commit:refs/quarantine/commit")
+          if [[ -n "${TAG_REF}" ]]; then
+            SPECS+=("+${TAG_REF}:refs/quarantine/tag")
+          fi
+          git fetch --quiet --no-tags "${BUNDLE}" "${SPECS[@]}"
+          if ! git fsck --no-dangling --no-progress > "${WORK}/fsck.txt" 2>&1; then
+            cat "${WORK}/fsck.txt"
+            fail "git fsck reports a problem in the fetched objects"
+          fi
+
+          # --- 4. Exactly one commit, on top of the checked-out head ------------
+          [[ "$(git cat-file -t refs/quarantine/commit)" == "commit" ]] || fail "the commit ref is not a commit"
+          COMMIT=$(git rev-parse refs/quarantine/commit)
+          [[ "$(git rev-list --parents -n 1 "${COMMIT}")" == "${COMMIT} ${BASE}" ]] \
+            || fail "the commit must have the checked-out head as its only parent"
+          [[ "$(git rev-list --count "${BASE}..${COMMIT}")" == "1" ]] \
+            || fail "the bundle must add exactly one commit"
+          # The header block of the commit is exactly these five lines, in this
+          # order: tree, the one parent, author, committer, and the empty line.
+          # A duplicate or an extra header line is refused: tools disagree about
+          # which of two author (or committer) lines counts, and a line can hide
+          # behind the empty line. A NUL byte anywhere in the commit is refused,
+          # because the shell drops it from what it reads here.
+          git cat-file commit "${COMMIT}" > "${WORK}/commit.txt"
+          no_nul "${WORK}/commit.txt" || fail "the commit holds a NUL byte"
+          {
+            IFS= read -r H1 && IFS= read -r H2 && IFS= read -r H3 && IFS= read -r H4 && IFS= read -r H5
+          } < "${WORK}/commit.txt" || fail "the header of the commit is incomplete"
+          [[ "${H1}" == "tree $(git rev-parse "${COMMIT}^{tree}")" ]] \
+            || fail "the first header of the commit must be its tree"
+          [[ "${H2}" == "parent ${BASE}" ]] \
+            || fail "the second header of the commit must be its parent, the checked-out head"
+          [[ "${H3}" == "author ${BOT} "* && "${H3#"author ${BOT} "}" =~ ${TS_RE} ]] \
+            || fail "the third header of the commit must be the bump bot as author"
+          [[ "${H4}" == "committer ${BOT} "* && "${H4#"committer ${BOT} "}" =~ ${TS_RE} ]] \
+            || fail "the fourth header of the commit must be the bump bot as committer"
+          [[ -z "${H5}" ]] || fail "the commit has a header that a version commit never has"
+          # Both times are within a day of the clock of this runner.
+          in_window "${H3#"author ${BOT} "}" || fail "the author time of the commit is more than a day from now"
+          in_window "${H4#"committer ${BOT} "}" || fail "the committer time of the commit is more than a day from now"
+
+          # --- 5. The version is one step above the current one -----------------
+          git show "${BASE}:pyproject.toml" > "${WORK}/project.base"
+          git show "${COMMIT}:pyproject.toml" > "${WORK}/project.new"
+          OLD=$(awk -F'"' '/^version = "/ { print $2; exit }' "${WORK}/project.base")
+          NEW=$(awk -F'"' '/^version = "/ { print $2; exit }' "${WORK}/project.new")
+          # Numbers have no leading zero and at most six digits, so the arithmetic
+          # below cannot overflow and one version has one spelling.
+          NUM='(0|[1-9][0-9]{0,5})'
+          SEMVER="^${NUM}\.${NUM}\.${NUM}(-(alpha|beta|rc)\.${NUM})?\$"
+          [[ "${OLD}" =~ ${SEMVER} ]] || fail "the current version is not one that this job knows"
+          [[ "${NEW}" =~ ${SEMVER} ]] || fail "the new version is not one that this job knows"
+          IFS=. read -r OLD_MAJOR OLD_MINOR OLD_PATCH <<< "${OLD%%-*}"
+          IFS=. read -r NEW_MAJOR NEW_MINOR NEW_PATCH <<< "${NEW%%-*}"
+          STEP=""
+          if [[ "${NEW_MAJOR}.${NEW_MINOR}.${NEW_PATCH}" == "${OLD_MAJOR}.${OLD_MINOR}.$((OLD_PATCH + 1))" ]]; then
+            STEP="patch"
+          elif [[ "${NEW_MAJOR}.${NEW_MINOR}.${NEW_PATCH}" == "${OLD_MAJOR}.$((OLD_MINOR + 1)).0" ]]; then
+            STEP="minor"
+          elif [[ "${NEW_MAJOR}.${NEW_MINOR}.${NEW_PATCH}" == "$((OLD_MAJOR + 1)).0.0" ]]; then
+            STEP="major"
+          fi
+          [[ -n "${STEP}" ]] || fail "version ${OLD} to ${NEW} is not a patch, minor or major step"
+          # A manual run names the size of the step, and the bundle must hold
+          # that step. A push event names none, so there the size is checked
+          # against the ceiling from the commit history in step 8b.
+          if [[ "${GITHUB_EVENT_NAME:-}" == "workflow_dispatch" && -n "${INPUT_BUMP_TYPE:-}" \
+                && "${INPUT_BUMP_TYPE}" != "${STEP}" ]]; then
+            fail "the manual run asked for a $(safe "${INPUT_BUMP_TYPE}") step, the bundle holds a ${STEP} step"
+          fi
+          # A pre-release comes only from a manual run that asked for one: with
+          # the prerelease input set, the bump job makes <version>-<label>.1,
+          # and nothing else makes a version with a label. Both the input and
+          # the event are read from this run, not from the bump job.
+          if [[ "${NEW}" == *-* ]]; then
+            [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" && -n "${INPUT_PRERELEASE:-}" ]] \
+              || fail "a pre-release version is accepted only from a manual run that asks for one"
+            [[ "${NEW}" == "${NEW%%-*}-${INPUT_PRERELEASE}.1" ]] \
+              || fail "the label of the pre-release version is not the one that the manual run asked for"
+          elif [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" && -n "${INPUT_PRERELEASE:-}" ]]; then
+            fail "the manual run asked for a pre-release, the bundle holds a stable version"
+          fi
+          echo "version ${OLD} to ${NEW} (${STEP} step)"
+
+          # --- 5b. The message of the commit is the one that the bump job sets ----
+          # One line and nothing else: no body, no trailer, no link, no closing
+          # keyword. The subject is printed in the public release notes.
+          printf 'chore(release): bump version to v%s [skip-bump]\n' "${NEW}" > "${WORK}/message.expected"
+          tail -n +6 "${WORK}/commit.txt" > "${WORK}/message.actual"
+          cmp -s "${WORK}/message.expected" "${WORK}/message.actual" \
+            || fail "the commit message is not the one line that the bump job sets"
+
+          # --- 6. The tag matches the new version --------------------------------
+          # A pre-release carries no tag: the bump job makes none (--no-tag).
+          # (#428 is about the pre-release run; fixing it also changes this rule.)
+          if [[ "${NEW}" == *-* && -n "${TAG_REF}" ]]; then
+            fail "a pre-release version carries no tag"
+          fi
+          TAG="v${NEW}"
+          if [[ -n "${TAG_REF}" ]]; then
+            [[ "${TAG_REF}" == "refs/tags/${TAG}" ]] || fail "the tag does not match version ${NEW}"
+            [[ "$(git cat-file -t refs/quarantine/tag)" == "tag" ]] || fail "the tag is not an annotated tag"
+            # The header block of the tag is exactly these five lines: the
+            # commit, its type, the tag name, the tagger (the bump bot) and the
+            # empty line. Same reasons as for the commit.
+            git cat-file tag refs/quarantine/tag > "${WORK}/tag.txt"
+            no_nul "${WORK}/tag.txt" || fail "the tag holds a NUL byte"
+            {
+              IFS= read -r T1 && IFS= read -r T2 && IFS= read -r T3 && IFS= read -r T4 && IFS= read -r T5
+            } < "${WORK}/tag.txt" || fail "the header of the tag is incomplete"
+            [[ "${T1}" == "object ${COMMIT}" ]] || fail "the tag does not point at the commit"
+            [[ "${T2}" == "type commit" ]] || fail "the tag does not point at a commit"
+            [[ "${T3}" == "tag ${TAG}" ]] || fail "the tag object names another tag"
+            [[ "${T4}" == "tagger ${BOT} "* && "${T4#"tagger ${BOT} "}" =~ ${TS_RE} ]] \
+              || fail "the tagger of the tag must be the bump bot"
+            [[ -z "${T5}" ]] || fail "the tag has a header that a release tag never has"
+            in_window "${T4#"tagger ${BOT} "}" || fail "the tagger time of the tag is more than a day from now"
+            # The message of the tag is exactly "Release v<version>".
+            printf 'Release v%s\n' "${NEW}" > "${WORK}/tag-message.expected"
+            tail -n +6 "${WORK}/tag.txt" > "${WORK}/tag-message.actual"
+            cmp -s "${WORK}/tag-message.expected" "${WORK}/tag-message.actual" \
+              || fail "the tag message is not the one line that the bump job sets"
+          elif [[ "${NEW}" != *-* ]]; then
+            fail "a stable version needs its release tag"
+          fi
+
+          # --- 7. Only the files a version bump edits ----------------------------
+          # Allowed: the project file, every file that the bump configuration of
+          # the checked-out head lists (the filename lines inside the
+          # [[tool.bumpversion.files]] tables and nowhere else), and a lock file
+          # in the repository root.
+          awk -F'"' '
+            /^\[/ { in_files = ($0 == "[[tool.bumpversion.files]]") }
+            in_files && /^filename = "/ { print $2 }
+          ' "${WORK}/project.base" > "${WORK}/allowed.txt"
+          printf '%s\n' "pyproject.toml" >> "${WORK}/allowed.txt"
+          is_allowed() {
+            case "$1" in
+              *$'\n'*) return 1 ;;
+            esac
+            if grep -Fx -- "$1" "${WORK}/allowed.txt" > /dev/null; then
+              return 0
+            fi
+            case "$1" in
+              */*) return 1 ;;
+              *.lock) return 0 ;;
+              *) return 1 ;;
+            esac
+          }
+          # The new trees must be in canonical form (sorted, no duplicate names,
+          # plain modes): encoding a tree again from its own entries must give
+          # the same id. Otherwise the comparison below could be confused.
+          git rev-list --objects "${COMMIT}" "^${BASE}" | cut -d' ' -f1 > "${WORK}/new-objects.txt"
+          git cat-file --batch-check='%(objecttype) %(objectname)' < "${WORK}/new-objects.txt" > "${WORK}/new-types.txt"
+          while read -r otype oid; do
+            if [[ "${otype}" == "tree" ]]; then
+              [[ "$(git ls-tree -z "${oid}" | git mktree -z --missing)" == "${oid}" ]] \
+                || fail "a new tree is not in canonical form"
+            fi
+          done < "${WORK}/new-types.txt"
+          git diff-tree -r --no-renames --raw -z "${BASE}" "${COMMIT}" > "${WORK}/changed.raw"
+          : > "${WORK}/changed.txt"
+          while IFS= read -r -d '' meta; do
+            IFS= read -r -d '' path || fail "unreadable diff"
+            read -r mode_old mode_new _ _ status <<< "${meta#:}"
+            [[ "${status}" == "M" && "${mode_old}" == "100644" && "${mode_new}" == "100644" ]] \
+              || fail "a changed path is not a plain modified file: $(safe "${path}")"
+            is_allowed "${path}" \
+              || fail "the commit changes a file that a version bump does not edit: $(safe "${path}")"
+            printf '%s\n' "${path}" >> "${WORK}/changed.txt"
+          done < "${WORK}/changed.raw"
+          grep -Fx -- "pyproject.toml" "${WORK}/changed.txt" > /dev/null || fail "the project file is not in the commit"
+          # The commit also holds every other file that the bump configuration
+          # lists (and, below, the lock file): a bump changes all of them,
+          # because the bump tool stops when a listed file does not hold the
+          # version. A commit that leaves one out is half a bump. It would be
+          # pushed, and the version check of the release would then fail after
+          # the tag is public, and every later bump would stop. So it is refused.
+          while IFS= read -r wanted; do
+            grep -Fx -- "${wanted}" "${WORK}/changed.txt" > /dev/null \
+              || fail "the commit does not change $(safe "${wanted}"), which a version bump always changes"
+          done < "${WORK}/allowed.txt"
+          # The project file holds the version twice: as the version of the
+          # project (read above as the new version) and as current_version in
+          # the settings of the bump tool. Both move.
+          grep -Fx -- "current_version = \"${NEW}\"" "${WORK}/project.new" > /dev/null \
+            || fail "the project file does not carry the new version in current_version"
+
+          # --- 8. Only the version strings changed -------------------------------
+          # Plain files: same number of lines, the file ends with a line end in
+          # both versions or in neither, and every changed line is the old line
+          # with the old version replaced by the new one. The project file is
+          # stricter: exactly two lines change, version = "OLD" and
+          # current_version = "OLD", each into the same line with the new
+          # version, and every other line is equal byte for byte. A file that
+          # has a NUL byte is rejected (see no_nul above).
+          ends_with_line_end() {
+            [[ "$(tail -c 1 "$1" | od -An -tx1 | tr -d ' \n')" == "0a" ]]
+          }
+          check_lines() {
+            git show "${BASE}:$1" > "${WORK}/before.txt"
+            git show "${COMMIT}:$1" > "${WORK}/after.txt"
+            if ! no_nul "${WORK}/before.txt" || ! no_nul "${WORK}/after.txt"; then
+              return 1
+            fi
+            local before_ends=0 after_ends=0
+            if ends_with_line_end "${WORK}/before.txt"; then before_ends=1; fi
+            if ends_with_line_end "${WORK}/after.txt"; then after_ends=1; fi
+            [[ "${before_ends}" == "${after_ends}" ]] || return 1
+            if [[ "$1" == "pyproject.toml" ]]; then
+              awk -v old="${OLD}" -v new="${NEW}" '
+                FILENAME == ARGV[1] { before[FNR] = $0; n = FNR; next }
+                {
+                  if (FNR > n) { bad = 1; next }
+                  if (($0 "") != (before[FNR] "")) {
+                    if (($0 "") == ("version = \"" new "\"") && (before[FNR] "") == ("version = \"" old "\"")) { v++ }
+                    else if (($0 "") == ("current_version = \"" new "\"") && (before[FNR] "") == ("current_version = \"" old "\"")) { c++ }
+                    else { bad = 1 }
+                  }
+                }
+                END {
+                  if (bad || FNR != n || v != 1 || c != 1) { exit 1 }
+                  exit 0
+                }
+              ' "${WORK}/before.txt" "${WORK}/after.txt"
+              return
+            fi
+            awk -v old="${OLD}" -v new="${NEW}" '
+              function swap(s,   out, i) {
+                out = ""
+                while ((i = index(s, old)) > 0) {
+                  out = out substr(s, 1, i - 1) new
+                  s = substr(s, i + length(old))
+                }
+                return out s
+              }
+              FILENAME == ARGV[1] { before[FNR] = $0; n = FNR; next }
+              {
+                if (FNR > n) { bad = 1; next }
+                if (($0 "") != (before[FNR] "") && ($0 "") != (swap(before[FNR]) "")) { bad = 1 }
+                if (($0 "") != (before[FNR] "")) { changed++ }
+              }
+              END {
+                if (bad || FNR != n || !changed) { exit 1 }
+                exit 0
+              }
+            ' "${WORK}/before.txt" "${WORK}/after.txt"
+          }
+          # Lock files. The new lock must equal the old one byte for byte except
+          # for one line: the project's own version line, directly under its
+          # name line, which moves from the old to the new version. The bump
+          # job edits that line and does not relock, so nothing else changes:
+          # a revision line, a marker or any other line that differs is
+          # refused. Every difference is refused, whatever its TOML spelling: a
+          # package, a wheel, a URL or a hash written in another valid form is
+          # an added line like any other. The expected lock is made from the
+          # old one, so cmp compares every byte, line ends and NUL bytes
+          # included.
+          PROJECT=$(awk -F'"' '/^name = "/ { print $2; exit }' "${WORK}/project.base")
+          [[ -n "${PROJECT}" ]] || fail "the project file has no name"
+          # How many times does this lock record the project at the old version?
+          records_project() {
+            PROJECT="${PROJECT}" OLD="${OLD}" awk '
+              BEGIN { project = ENVIRON["PROJECT"]; old = ENVIRON["OLD"] }
+              {
+                if ((prev "") == ("name = \"" project "\"") && ($0 "") == ("version = \"" old "\"")) { c++ }
+                prev = $0
+              }
+              END { print c + 0 }
+            ' "$1"
+          }
+          # lock_exact OLD_LOCK NEW_LOCK succeeds if NEW_LOCK is OLD_LOCK with the
+          # line above changed and nothing else.
+          lock_exact() {
+            cmp -s <(PROJECT="${PROJECT}" OLD="${OLD}" NEW="${NEW}" awk '
+              BEGIN { project = ENVIRON["PROJECT"]; old = ENVIRON["OLD"]; new = ENVIRON["NEW"] }
+              {
+                line = $0
+                if (!moved && (prev "") == ("name = \"" project "\"") && ($0 "") == ("version = \"" old "\"")) {
+                  line = "version = \"" new "\""
+                  moved = 1
+                }
+                print line
+                prev = $0
+              }
+            ' "$1") "$2"
+          }
+          while IFS= read -r path; do
+            case "${path}" in
+              *.lock) ;;
+              *) check_lines "${path}" || fail "$(safe "${path}") changes more than the version string" ;;
+            esac
+          done < "${WORK}/changed.txt"
+          # Every lock file in the repository root is checked, whether or not the
+          # commit touched it: one that records the project must record the new
+          # version afterwards; any other must be unchanged.
+          git ls-tree --name-only -z "${BASE}" > "${WORK}/root.raw"
+          while IFS= read -r -d '' path; do
+            case "${path}" in
+              *.lock) ;;
+              *) continue ;;
+            esac
+            git show "${BASE}:${path}" > "${WORK}/lock.base"
+            git show "${COMMIT}:${path}" > "${WORK}/lock.new"
+            if ! no_nul "${WORK}/lock.base" || ! no_nul "${WORK}/lock.new"; then
+              fail "$(safe "${path}") holds a NUL byte"
+            fi
+            if [[ "$(records_project "${WORK}/lock.base")" == "1" ]]; then
+              grep -Fx -- "${path}" "${WORK}/changed.txt" > /dev/null \
+                || fail "the commit does not change $(safe "${path}"), which records the project and which a version bump always changes"
+              lock_exact "${WORK}/lock.base" "${WORK}/lock.new" \
+                || fail "$(safe "${path}") changes more than the version of the project, or does not carry the new one"
+            elif ! cmp -s "${WORK}/lock.base" "${WORK}/lock.new"; then
+              fail "$(safe "${path}") changed but does not record the project"
+            fi
+          done < "${WORK}/root.raw"
+          echo "changed files: $(wc -l < "${WORK}/changed.txt" | tr -d ' '), each changed line differs only by the version string"
+
+          # --- 8b. What the commits since the last release allow -----------------
+          # On a push event nobody asked for a size: the job that runs dependency
+          # code chose it. The commits since the last release tag put a ceiling
+          # on it, and nothing more than a ceiling. It reads the same commits
+          # as the detection tool that the bump job calls, but on purpose more
+          # generously, so that it should never be lower than the tool's answer
+          # and a genuine bump fits under it. What it counts: a subject is a
+          # feat, fix or perf when, after anything but letters, it starts with
+          # that word (in any case) and then a ( or a ! or a :; a !: anywhere
+          # in a subject counts as a breaking change; any body line with
+          # "change:" after a space or a hyphen counts as a breaking-change
+          # footer; and a message that holds the record separators of the tool
+          # lifts the ceiling to major. The answer must be one word of none,
+          # patch, minor or major; anything else is an error.
+          # It stops a release when no commit asks for one (ceiling none) and a
+          # bigger step than the commits justify. It needs the history of the
+          # checked-out head and the release tags, which the depth-1 checkout
+          # does not have; they are fetched from origin here, after the objects
+          # of the bundle were checked. A manual run names its own size, so
+          # there the ceiling is only printed, and failing to compute it is not
+          # an error, except on a dry run: that is how this step is tried
+          # before a release, and it must show the problem.
+          # Keep this in step with the detection tool (src/version/domain/
+          # value_objects/conventional_commit.py and services/bump_type_detector.py):
+          # a commit type that the tool starts to count must be counted here
+          # too, or a genuine bump on a push event is refused. (#427 adds a
+          # test that compares the two.)
+          history_ceiling() {
+            local tag range top body
+            if [[ "$(git rev-parse --is-shallow-repository)" == "true" ]]; then
+              git fetch --quiet --no-tags --unshallow origin "+${BASE}:refs/quarantine/base" || return 1
+            fi
+            git fetch --quiet --no-tags origin "+refs/tags/v*:refs/tags/v*" || return 1
+            tag=$(git describe --tags --abbrev=0 --match 'v*' "${BASE}" 2> /dev/null) || tag=""
+            if [[ -n "${tag}" ]]; then
+              range="${tag}..${BASE}"
+            else
+              range="${BASE}"
+            fi
+            git log --format=%B "${range}" -- > "${WORK}/history.messages" || return 1
+            git log --format=%s "${range}" -- > "${WORK}/history.subjects" || return 1
+            git log --format=%b "${range}" -- > "${WORK}/history.bodies" || return 1
+            if grep -F -e '---JERRY-' "${WORK}/history.messages" > /dev/null; then
+              echo major
+              return 0
+            fi
+            top=$(awk '
+              { line = tolower($0) }
+              line ~ /!:/ { if (r < 3) r = 3 }
+              line ~ /^[^a-z]*feat(\(|!|:)/ { if (r < 2) r = 2 }
+              line ~ /^[^a-z]*(fix|perf)(\(|!|:)/ { if (r < 1) r = 1 }
+              END { print r + 0 }
+            ' "${WORK}/history.subjects") || return 1
+            body=$(awk '
+              { line = tolower($0) }
+              line ~ /[ -]change:/ { found = 1 }
+              END { print found + 0 }
+            ' "${WORK}/history.bodies") || return 1
+            if [[ "${body}" == "1" ]]; then
+              top=3
+            fi
+            case "${top}" in
+              0) echo none ;;
+              1) echo patch ;;
+              2) echo minor ;;
+              3) echo major ;;
+              *) return 1 ;;
+            esac
+          }
+          rank_of() {
+            case "$1" in
+              none) echo 0 ;;
+              patch) echo 1 ;;
+              minor) echo 2 ;;
+              major) echo 3 ;;
+              *) echo 9 ;;
+            esac
+          }
+          if [[ "${GITHUB_EVENT_NAME}" == "push" ]]; then
+            CEILING=$(history_ceiling) || fail "could not read the commit history since the last release tag"
+            [[ "${CEILING}" =~ ^(none|patch|minor|major)$ ]] \
+              || fail "the ceiling from the commit history is not one of none, patch, minor, major"
+            echo "history ceiling: ${CEILING}"
+            (( $(rank_of "${STEP}") <= $(rank_of "${CEILING}") )) \
+              || fail "the commits since the last release allow at most a ${CEILING} step, the bundle holds a ${STEP} step"
+          else
+            CEILING=$(history_ceiling) || CEILING=""
+            [[ "${CEILING}" =~ ^(none|patch|minor|major)$ ]] || CEILING=""
+            if [[ -z "${CEILING}" ]]; then
+              [[ "${DRY_RUN}" == "0" ]] \
+                || fail "could not read the commit history since the last release tag (a push event would be refused)"
+              CEILING="not available"
+            fi
+            echo "history ceiling (printed only, a manual run names its size): ${CEILING}"
+          fi
+
+          # --- 9. Push -------------------------------------------------------------
+          # From here on only verified data is printed: ${COMMIT} is a commit id
+          # and ${TAG} is v followed by a version that matched the pattern above.
+          resume
+          if [[ -n "${TAG_REF}" ]]; then
+            rc=0
+            git ls-remote --exit-code --tags origin "refs/tags/${TAG}" > /dev/null 2>&1 || rc=$?
+            if [[ "${rc}" != "2" ]]; then
+              echo "::error::Tag ${TAG} exists on origin, or origin could not be queried (ls-remote exit ${rc}). Nothing was pushed."
+              exit 1
+            fi
+          fi
+          if [[ "${DRY_RUN}" == "1" ]]; then
+            # Check-only: run git push --dry-run, and stop. On main the
+            # question is about the real names. On any other branch it is about
+            # throw-away names, because a commit that sits on another branch is
+            # never a fast-forward of main: the question about main would be
+            # refused and would show nothing. --dry-run sends no object and
+            # updates no ref. It shows that origin accepts this token for a
+            # push and, when a tag is carried (that push uses --atomic), that
+            # origin offers atomic pushes: if it does not, git stops here with
+            # an error. The rules of the repository for the ref are tested only
+            # by a real push.
+            if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
+              ASK_BRANCH="refs/heads/main"
+              ASK_TAG="refs/tags/${TAG}"
+            else
+              ASK_BRANCH="refs/heads/version-bump-dry-run-${GITHUB_RUN_ID}"
+              ASK_TAG="refs/tags/version-bump-dry-run-${GITHUB_RUN_ID}"
+            fi
+            if [[ -n "${TAG_REF}" ]]; then
+              git push --dry-run --atomic origin "${COMMIT}:${ASK_BRANCH}" "refs/quarantine/tag:${ASK_TAG}"
+            else
+              git push --dry-run origin "${COMMIT}:${ASK_BRANCH}"
+            fi
+            {
+              echo "## Version push, dry run: ${NEW}"
+              echo "- **Commit:** ${COMMIT}"
+              echo "- **Result:** every check passed and origin accepted this token for a push to ${ASK_BRANCH}; the rules of the repository are tested only by a real push"
+              echo "- **Pushed:** nothing"
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "Dry run complete: nothing was pushed"
+            exit 0
+          fi
+          if [[ -n "${TAG_REF}" ]]; then
+            # One atomic push: origin updates the branch and the tag together or
+            # not at all. Two pushes could leave the commit on main without its
+            # tag, and the next run would then bump a second time. (If origin
+            # does not support atomic pushes, git stops before it sends anything.)
+            git push --atomic origin "${COMMIT}:refs/heads/main" "refs/quarantine/tag:refs/tags/${TAG}"
+          else
+            git push origin "${COMMIT}:refs/heads/main"
+          fi
+          {
+            echo "## Version push: ${NEW}"
+            echo "- **Commit:** ${COMMIT}"
+            if [[ -n "${TAG_REF}" ]]; then
+              echo "- **Tag:** ${TAG}"
+            else
+              echo "- **Tag:** none (pre-release)"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "Pushed ${COMMIT} to main"

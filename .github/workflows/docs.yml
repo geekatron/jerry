@@ -1,11 +1,31 @@
 # Jerry Framework Documentation Pipeline
-# Deploys MkDocs site to GitHub Pages on push to main.
+# Builds the MkDocs site and publishes it to GitHub Pages on push to main.
 #
 # Trigger: push to main when docs/, mkdocs.yml, or overrides/ change
-# Permissions: contents:write (required for gh-pages branch push)
-# Jobs: deploy (single job — builds and deploys MkDocs via uv run)
 #
-# Security ref: docs/reference/ci-cd-pipeline-security.md
+# TWO JOBS, ONE TRUST BOUNDARY (#418, landing the Dependabot updates; this
+# split has to come first):
+# Dependency code and a token that can write must never share a job.
+#   build   contents: read. The checkout keeps no credentials. Installs the
+#           locked dependencies and builds the site; this is the only job
+#           that runs dependency code. The site leaves the job as an
+#           artifact.
+#   deploy  contents: write. Runs git and shell, plus two pinned actions:
+#           actions/checkout, which receives the token, and
+#           actions/download-artifact, which unpacks the artifact that build
+#           made. It treats the artifact as untrusted data and runs on main
+#           only (GitHub checks the ref before it hands the job a token, and
+#           the step checks it again): regular files and directories only, no
+#           path with a component that starts with a dot (deploy adds
+#           .nojekyll itself), no more files or bytes than the caps below, the
+#           custom domain file unchanged (and absent if the repository has
+#           none). It commits the site as one new commit and force-pushes that
+#           commit to gh-pages, which is what mkdocs gh-deploy --force did.
+# deploy has `needs: build`, so a build that fails or is cancelled publishes
+# nothing.
+#
+# Security ref: docs/reference/ci-cd-pipeline-security.md (it describes the
+# one-job layout until #432 lands)
 
 name: docs
 
@@ -18,30 +38,238 @@ on:
       - 'mkdocs.yml'
       - 'overrides/**'
 
+# Least privilege by default. Only the deploy job below raises it.
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: docs-deploy
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  build:
+    name: Build documentation
     runs-on: ubuntu-latest
+    # A normal run takes a few minutes at most; the default limit is six hours.
+    timeout-minutes: 30
+    permissions:
+      contents: read
     steps:
+      # No credentials stay on disk: this job runs dependency code (#418).
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Configure Git Credentials
-        run: |
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+        with:
+          persist-credentials: false
       # EN-001/H-002: Use uv with --frozen instead of pip with floating constraint
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
           version: "0.10.9"
+          # No shared cache in this job. A cache that other jobs of the
+          # repository write could hand this job files it did not build
+          # (#433 deals with the cache in release.yml).
+          enable-cache: false
       - name: Set up Python
         run: uv python install 3.14
       - name: Install dependencies
         run: uv sync --frozen --extra dev
-      - name: Deploy docs
-        run: uv run mkdocs gh-deploy --force
+      - name: Build documentation
+        run: uv run mkdocs build --clean
+      - name: Upload site
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: docs-site
+          path: site
+          if-no-files-found: error
+          retention-days: 1
+          # Files that start with a dot are left out of the artifact. This is
+          # the default; it is written out because the site depends on it (the
+          # deploy job adds .nojekyll itself).
+          include-hidden-files: false
+          # "Re-run all jobs" runs this step again in the same run, where the
+          # artifact of the first attempt still exists. Without this the upload
+          # would fail on the name.
+          overwrite: true
+
+  # ========================================================================
+  # Deploy job (#418)
+  # Holds the token that can write. Runs git and shell, plus two pinned
+  # actions: actions/download-artifact, which unpacks the artifact that the
+  # build job made, and actions/checkout, which receives the token.
+  # ========================================================================
+  deploy:
+    name: Deploy documentation
+    needs: build
+    # GitHub evaluates this condition before it hands the job a token: the site
+    # is published from main and nowhere else. The trigger of this workflow
+    # says so too, and the step checks the ref once more; this keeps it true if
+    # a trigger is added.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    # The job holds the token and reads a site that it does not trust.
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      # Download first, so that the token is not on disk while the archive is
+      # unpacked. That is all the order does: the token of this job (contents:
+      # write) is in the memory of the runner from the first step on. The
+      # download action unpacks an archive that the job running dependency code
+      # made; it is pinned by commit like every action in this file. Keep this
+      # pin and the pin of the checkout below exact, and treat a Dependabot
+      # update of either as a security change: the download action reads
+      # hostile input next to the token. (#430 replaces the download action
+      # with git, shell and the GitHub command-line tool or API; the checkout
+      # stays.)
+      - name: Download site
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: docs-site
+          path: ${{ runner.temp }}/docs-site
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The push needs the token in the git configuration of the checkout.
+          # This is the default; it is written out because the job depends on it.
+          persist-credentials: true
+      - name: Check the site and publish it to gh-pages
+        env:
+          SITE_DIR: ${{ runner.temp }}/docs-site
+          GIT_TERMINAL_PROMPT: "0"
+        run: |
+          set -euo pipefail
+
+          # The checks below test file names that the site controls (character
+          # classes, patterns). In the C locale every tool compares bytes, so
+          # the verdict does not depend on the locale of the runner.
+          export LC_ALL=C
+
+          # git refuses a path that some file systems read as .git (a name with
+          # a zero-width character that macOS ignores, or the short name git~1
+          # of Windows) only while these two settings are on. Whether they are
+          # on by default depends on the system (for protectHFS it is off on
+          # Linux), so they are set here for every git command of this step.
+          export GIT_CONFIG_COUNT=2
+          export GIT_CONFIG_KEY_0=core.protectHFS GIT_CONFIG_VALUE_0=true
+          export GIT_CONFIG_KEY_1=core.protectNTFS GIT_CONFIG_VALUE_1=true
+
+          # The site is untrusted data, and so is whatever git prints about its
+          # files. The runner reads a line of output as a command in two forms:
+          # a line that starts with two colons (after leading white space), and
+          # the older form ##[name] anywhere in a line. So command processing
+          # stays off while the site is examined. The end token is random, so
+          # the site cannot guess it.
+          STOP_TOKEN=$(od -An -N16 -tx1 /dev/urandom | tr -d ' \n')
+          [[ "${#STOP_TOKEN}" == "32" ]] || { echo "::error::Could not create the stop token"; exit 1; }
+          RESUMED=0
+          # The runner reads standard error apart from standard output, in no
+          # set order: a line on standard error could be read after the end
+          # token or before the stop line. So from here on, standard error is
+          # sent to standard output. A command substitution still captures
+          # only standard output; standard error is logged, not captured.
+          exec 2>&1
+          echo "::stop-commands::${STOP_TOKEN}"
+          resume() {
+            if [[ "${RESUMED}" == "0" ]]; then
+              RESUMED=1
+              echo "::${STOP_TOKEN}::"
+            fi
+          }
+          finish() {
+            local status=$?
+            resume
+            if [[ "${status}" != "0" ]]; then
+              echo "::error::The documentation was not published. See the log of this step."
+            fi
+          }
+          trap finish EXIT
+
+          fail() {
+            echo "REJECTED: $*"
+            exit 1
+          }
+
+          # --- 0. Where this runs ---------------------------------------------------
+          # The site is published from main and nowhere else. The trigger of this
+          # workflow says so too; the check keeps it true if a trigger is added.
+          [[ "${GITHUB_REF}" == "refs/heads/main" ]] \
+            || fail "the site is published from main only; this run is on ${GITHUB_REF}"
+
+          # --- 1. What the site may contain --------------------------------------
+          [[ -d "${SITE_DIR}" ]] || fail "the built site is missing"
+          [[ -f "${SITE_DIR}/index.html" ]] || fail "the built site has no index.html"
+          # Each listing goes to a file and must stay empty; a find that fails
+          # fails the step.
+          CHECK=$(mktemp -d "${RUNNER_TEMP}/pages-check.XXXXXX")
+          find "${SITE_DIR}" ! -type f ! -type d > "${CHECK}/other.txt" || fail "could not list the site"
+          [[ ! -s "${CHECK}/other.txt" ]] \
+            || fail "the site holds something other than regular files and directories"
+          # No path component may start with a dot. That covers .git and every
+          # look-alike of it, and hidden folders such as .well-known, where
+          # certificate-domain proofs and security contact files are read on
+          # the live domain. (The artifact leaves hidden files out, but that
+          # setting sits in the job that is not trusted.) deploy adds
+          # .nojekyll itself below.
+          find "${SITE_DIR}" -mindepth 1 -name '.*' > "${CHECK}/dot.txt" || fail "could not list the site"
+          [[ ! -s "${CHECK}/dot.txt" ]] || fail "the site holds a path with a component that starts with a dot"
+          find "${SITE_DIR}" -name '*[[:cntrl:]]*' > "${CHECK}/cntrl.txt" || fail "could not list the site"
+          [[ ! -s "${CHECK}/cntrl.txt" ]] || fail "the site holds a path with a control character"
+          # Caps on the size, before git reads the site. When the caps were set,
+          # the live site held 115 files (the 114 of a build and .nojekyll) and
+          # 6,852,016 bytes, the largest file 1,026,914 bytes. The caps are
+          # about three times that. The 10-minute timeout bounds time, not
+          # disk.
+          SITE_FILES_MAX=350
+          SITE_BYTES_MAX=20971520
+          SITE_FILES=$(find "${SITE_DIR}" -type f | wc -l | tr -d ' ') || fail "could not count the site"
+          (( SITE_FILES <= SITE_FILES_MAX )) \
+            || fail "the site holds more files than the cap of ${SITE_FILES_MAX} (it has ${SITE_FILES})"
+          SITE_BYTES=$(find "${SITE_DIR}" -type f -exec cat -- {} + | wc -c | tr -d ' ') || fail "could not measure the site"
+          (( SITE_BYTES <= SITE_BYTES_MAX )) \
+            || fail "the site holds more bytes than the cap of ${SITE_BYTES_MAX} (it has ${SITE_BYTES})"
+          # The custom domain is set by this file. It must be the one in the
+          # repository. If the repository has none, the site must have none
+          # either (without docs/CNAME a comparison could only report a
+          # difference, whatever the site holds).
+          if [[ -f docs/CNAME ]]; then
+            cmp -s "${SITE_DIR}/CNAME" docs/CNAME || fail "CNAME differs from docs/CNAME"
+          else
+            [[ ! -e "${SITE_DIR}/CNAME" && ! -L "${SITE_DIR}/CNAME" ]] \
+              || fail "the site has a CNAME file, but the repository has no docs/CNAME"
+          fi
+
+          # --- 2. One new commit with the site as its tree ------------------------
+          # The site is read from outside the repository, into a separate index.
+          # It is never copied into the checkout, so nothing in it can reach the
+          # git configuration or the hooks of this repository.
+          GIT_DIR=$(git rev-parse --absolute-git-dir)
+          export GIT_DIR
+          export GIT_WORK_TREE="${SITE_DIR}"
+          export GIT_INDEX_FILE="${RUNNER_TEMP}/pages.index"
+          rm -f "${GIT_INDEX_FILE}"
+          git -C "${SITE_DIR}" add --all --force -- .
+          EMPTY=$(git hash-object -w --stdin < /dev/null)
+          git update-index --add --cacheinfo "100644,${EMPTY},.nojekyll"
+          TREE=$(git write-tree)
+          FILES=$(git ls-files | wc -l | tr -d ' ')
+          export GIT_AUTHOR_NAME="github-actions[bot]"
+          export GIT_AUTHOR_EMAIL="41898282+github-actions[bot]@users.noreply.github.com"
+          export GIT_COMMITTER_NAME="${GIT_AUTHOR_NAME}"
+          export GIT_COMMITTER_EMAIL="${GIT_AUTHOR_EMAIL}"
+          COMMIT=$(git commit-tree "${TREE}" -m "Deployed ${GITHUB_SHA:0:7} (workflow run ${GITHUB_RUN_ID})")
+          unset GIT_WORK_TREE GIT_INDEX_FILE
+
+          # --- 3. Push ---------------------------------------------------------------
+          # Same effect as the one-job version of this workflow: the branch is
+          # replaced by one new commit without a parent. Only gh-pages is
+          # written. Command processing stays off through the push: the server
+          # prints messages of its own, and they may hold text that the site
+          # chose (file names in a warning). Only the summary comes after it.
+          echo "Publishing ${FILES} files as ${COMMIT} to gh-pages"
+          git push --force origin "${COMMIT}:refs/heads/gh-pages"
+          resume
+          {
+            echo "## Documentation deployed"
+            echo "- **Commit:** ${COMMIT}"
+            echo "- **Files:** ${FILES}"
+            echo "- **Source:** ${GITHUB_SHA}"
+          } >> "$GITHUB_STEP_SUMMARY"
