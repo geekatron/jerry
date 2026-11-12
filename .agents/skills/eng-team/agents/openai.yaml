@@ -1,0 +1,8 @@
+# Codex port version: codex-1.0.0 (independent of Jerry /eng-team v1.0.0; see SKILL.md header)
+interface:
+  display_name: "Eng-Team — Secure Engineering"
+  short_description: "Secure software engineering methodology: threat modeling, secure implementation, DevSecOps, security review, incident response."
+  default_prompt: "Apply the secure-engineering workflow. Pick the role that fits the task (or run the 8-step workflow end to end), load its reference file, and produce L0/L1/L2 artifacts."
+
+policy:
+  allow_implicit_invocation: true
