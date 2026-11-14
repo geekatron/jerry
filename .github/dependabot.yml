@@ -1,6 +1,6 @@
 # Dependabot Configuration -- Risk-Tiered Dependency Management (#188)
 #
-# DESIGN RATIONALE (7 decisions):
+# DESIGN RATIONALE (8 decisions):
 #
 # D1: uv group structure (verified #188; update when dep count changes)
 #   - "uv-minor-patch" group: patch + minor updates together (low ceremony).
@@ -170,6 +170,28 @@
 #     like "risk:low" would require creating the label first and provides
 #     marginal value at this scale.
 #
+# D8: Cooldown (added 2026-11)
+#   - GitHub applies a default 3-day cooldown to VERSION updates even when
+#     none is configured (docs: "Apply a default cooldown period of 3 days
+#     to version updates, even when `cooldown` is not configured"). This
+#     file raises it to 7 days (14 for uv major versions) for uv,
+#     github-actions and pre-commit. The durations are a judgment: a
+#     wait before adopting fresh releases that a weekly update cadence
+#     already tolerates. A small sample of public incident
+#     timelines (10 incidents; 8 attack windows under a week, 9 under 14
+#     days) is consistent with them but does not derive them. Review on
+#     2027-01-31 against observed adoption lag and any new incident
+#     evidence; revert this block if it delays fixes that matter.
+#   - NOT delayed: security updates (docs: "The `cooldown` option is only
+#     available for version updates, not security updates"). A malicious
+#     "fix release" could still be proposed at once, so human review,
+#     pip-audit and a supply-chain check remain the controls for security
+#     PRs. In Oct 2026 most dependency traffic was security updates and
+#     hand-made bumps, which the cooldown does not cover.
+#   - github-actions and pre-commit accept only `default-days`; among the
+#     three ecosystems in this file only uv accepts the semver-* keys
+#     (docs, cooldown section, which marks support per ecosystem).
+#
 # REFERENCES:
 #   - Research: projects/PROJ-030-bugs/research/merge-queue-vs-dependabot-grouping.md
 #   - Risk analysis (FMEA): projects/PROJ-030-bugs/research/dependabot-risk-analysis.md
@@ -179,6 +201,7 @@
 #   - Filter B: .github/workflows/version-bump.yml (#187)
 #   - SHA pinning: EN-001
 #   - Dependabot options: https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference
+#   - Cooldown incident sample (10 incidents, 2025-11-21): https://blog.yossarian.net/2025/11/21/We-should-all-be-using-dependency-cooldowns
 
 version: 2
 
@@ -199,6 +222,10 @@ updates:
       - "dependencies"
       - "ci"
     open-pull-requests-limit: 10
+    # D8: see the cooldown rationale in the header (default-days only for
+    # Actions).
+    cooldown:
+      default-days: 7
     groups:
       # D2: Patch + minor SHA rotations are low-risk for pinned actions.
       # Produces ~1 grouped PR per week instead of ~7 individual PRs.
@@ -225,6 +252,10 @@ updates:
     labels:
       - "dependencies"
     open-pull-requests-limit: 10
+    # D8: 7 days for everything, 14 for majors (security updates unaffected).
+    cooldown:
+      default-days: 7
+      semver-major-days: 14
     # D3: Only bump direct dependencies declared in pyproject.toml.
     # Transitive deps (gherkin-official, mako, markupsafe, coverage,
     # pluggy, etc.) update when their parent direct dep is bumped and
@@ -317,3 +348,6 @@ updates:
     labels:
       - "dependencies"
     open-pull-requests-limit: 5
+    # D8: default-days only (semver-* keys are not supported for pre-commit).
+    cooldown:
+      default-days: 7
