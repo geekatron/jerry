@@ -238,6 +238,42 @@ updates:
     # Each gets its own PR for individual review of breaking changes.
 
   # ==================================================================
+  # GitHub Actions (shared audit step) -- added 2026-11 (extends D2)
+  # ==================================================================
+  # Composite actions live OUTSIDE .github/workflows, and directory "/"
+  # does not cover them (docs, for "/": "Dependabot will search the
+  # `/.github/workflows` directory, as well as the `action.yml/action.yaml`
+  # file from the root directory"). Evidence of the gap: the shared audit
+  # step, .github/actions/security-audit/action.yml, pins
+  # astral-sh/setup-uv v8.1.0 while every workflow file that names setup-uv
+  # pins v9.0.0 (2026-11).
+  # That step runs the dependency audit, so a stale pin there matters.
+  # VALIDATE on the first Monday run after merge: the docs do not describe
+  # composite-action directories. The Dependabot log should list
+  # action.yml and astral-sh/setup-uv; if it does not, remove this entry.
+  # The 7-day cooldown below can delay the first PR.
+  - package-ecosystem: "github-actions"
+    directory: "/.github/actions/security-audit"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    commit-message:
+      prefix: "ci"
+    labels:
+      - "dependencies"
+      - "ci"
+    open-pull-requests-limit: 5
+    # D8: default-days only, as for the workflows' entry above.
+    cooldown:
+      default-days: 7
+    groups:
+      # D2: patch + minor SHA rotations together; majors stay individual.
+      security-audit-minor-patch:
+        update-types:
+          - "minor"
+          - "patch"
+
+  # ==================================================================
   # uv -- weekly check for Python dependency updates
   # ==================================================================
   # Uses uv ecosystem (not pip) so Dependabot updates both pyproject.toml
