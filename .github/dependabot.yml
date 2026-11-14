@@ -60,11 +60,22 @@
 #     classified as direct — this is Jerry's sole dependency manifest
 #     (uv ecosystem; H-05 uv-only mandate). uv.lock is updated atomically
 #     alongside pyproject.toml in each Dependabot PR.
-#     Debug: if an unexpected PR appears, check pyproject.toml — if the
-#     package is not declared there it should not be getting a PR (the
-#     allow: direct policy should have suppressed it; file a bug).
-#   - CAVEAT: Transitive dep compromises will NOT generate a Dependabot
-#     PR. Compensating DETECTION controls: `pip-audit` in CI catches
+#     Debug: if an unexpected VERSION-update PR appears, check
+#     pyproject.toml — if the package is not declared there it should not
+#     be getting one (the allow: direct policy should have suppressed it;
+#     file a bug). SECURITY-update PRs for undeclared packages are
+#     expected: see the CAVEAT below.
+#   - CAVEAT (corrected 2026-11): transitive dep VERSION updates do not
+#     generate a Dependabot PR, but transitive dep SECURITY updates can.
+#     In Oct 2026 the uv security PRs for pip, httpx2, httpcore2, anyio,
+#     urllib3, virtualenv and certifi were security updates for indirect
+#     uv.lock entries (PR metadata `dependency-type: indirect`), and
+#     `allow: direct` did not stop them. Docs: "Dependabot can update an
+#     indirect (transitive) dependency to a secure version". Not every
+#     advisory gets a PR, or gets one at once (on 2026-10-24 there was
+#     none for certifi or filelock), so the DETECTION controls below
+#     remain required.
+#     Compensating DETECTION controls: `pip-audit` in CI catches
 #     known CVEs; `uv.lock` diff review on grouped PRs is the PRIMARY
 #     mechanism for spotting transitive shifts (requirements files no
 #     longer exist; uv.lock is the sole source of transitive visibility).
@@ -84,17 +95,30 @@
 #   - GitHub Actions are all direct references (no transitive concept), so
 #     no `allow` restriction is needed there.
 #
-# D4: Security update handling
-#   - Security updates are ungrouped by default. Each CVE gets its own PR
-#     with clear visibility into what vulnerability it addresses.
+# D4: Security update handling (updated 2026-11)
+#   - Security updates stay UNGROUPED: each CVE gets its own PR with clear
+#     visibility into what vulnerability it addresses. A group for uv
+#     security updates was considered in 2026-10 and not adopted: every uv
+#     security fix would go through one PR that a single failing or stuck
+#     member can hold, it cannot be tested before a real advisory, and its
+#     safety net (an owner and a response target for security alerts) is
+#     not decided. Re-entry conditions: that owner and response target
+#     exist, and a check fails when an advisory has no open PR or a group
+#     PR is stuck. Limit such a group to `update-types: [minor, patch]` so
+#     that majors stay individual.
 #   - Dependabot security updates are event-driven (triggered by GitHub
 #     Advisory Database updates), not schedule-driven. The `schedule`
 #     interval controls version updates only. Security update PRs are
 #     created as soon as a compatible fix is available, regardless of the
 #     configured schedule.
-#   - Note: `open-pull-requests-limit` applies to security PRs too (CC-005).
-#     At Jerry's scale this is unlikely to saturate, but a burst of CVEs
-#     could compete with version update PRs for queue slots.
+#   - Note (corrected 2026-11): security-update PRs have their own fixed
+#     limit; docs: "Security update pull requests are subject to a
+#     separate, fixed limit of 10 open pull requests, which cannot be
+#     configured using `open-pull-requests-limit`". So
+#     `open-pull-requests-limit` configures version updates only, and the
+#     earlier note (CC-005) that it applies to security PRs is superseded.
+#     Unmerged security PRs use up the 10, so an aging backlog of them can
+#     hold back new ones.
 #   - Security updates must be enabled in repo Settings > Code security >
 #     Dependabot security updates. No additional dependabot.yml config is
 #     needed to keep them ungrouped (that is the default behavior).
@@ -105,11 +129,18 @@
 #   - "ci" for actions, "deps" for uv, "chore" for pre-commit. Unchanged
 #     from current config for ci/deps. "chore" for pre-commit because hook
 #     SHA rotations are maintenance (not feature-deps, not CI infra).
-#   - "ci" and "deps" prefixes are caught by version-bump.yml Filter B
-#     (#187) which skips the version-bump job. "chore" prefix is NOT
-#     filtered by Filter B — pre-commit hook SHA bumps do not change
-#     jerry's version, so this is intentional. If Filter B should also
-#     skip "chore" commits, update .github/workflows/version-bump.yml.
+#   - "ci", "deps" AND "chore" are all in version-bump.yml Filter B's skip
+#     list (#187; also docs, style, refactor, test, build, revert).
+#     Correction (2026-11): this note used to say "chore" was NOT filtered.
+#     Filter B reads the first line of the head commit message, so it
+#     decides squash merges (normally the PR title) and rebase merges (the
+#     last replayed commit). A merge commit's message starts with "Merge
+#     pull request", which passes Filter B; for a merge commit only the
+#     "[skip-bump]" marker can skip the job, and it must be in the PR
+#     title, which becomes the merge commit's body. The marker anywhere in
+#     the head commit message skips the job. Otherwise
+#     `jerry ci detect-bump-type` decides: only feat (minor), fix or perf
+#     (patch), `!` or a "BREAKING CHANGE:" footer (major) bump the version.
 #   - No downstream impact from prefix choice beyond Filter B. Labels
 #     provide the risk-level signaling (see D7).
 #
@@ -197,7 +228,8 @@ updates:
     # D3: Only bump direct dependencies declared in pyproject.toml.
     # Transitive deps (gherkin-official, mako, markupsafe, coverage,
     # pluggy, etc.) update when their parent direct dep is bumped and
-    # uv.lock is regenerated.
+    # uv.lock is regenerated. (Observed 2026-10: `allow: direct` did not
+    # stop security updates for indirect lock entries -- see the D3 caveat.)
     allow:
       - dependency-type: "direct"
     groups:
@@ -214,6 +246,13 @@ updates:
     # NOTE: ruff uses 0.x versioning where 0.x->0.(x+1) is semantically
     # major (new default-enabled lint rules). Dependabot classifies these
     # as "minor" — review ruff grouped PRs with extra care. (PM-008)
+    # RUFF LOCKSTEP (2026-11): ruff is pinned twice -- in uv.lock (used by CI
+    # and `uv run ruff`) and as the ruff-pre-commit hook rev in
+    # .pre-commit-config.yaml (used locally; no workflow runs pre-commit).
+    # Merge a ruff bump in one ecosystem only together with, or after, the
+    # matching bump in the other, so both report the same version (history:
+    # the ruff 0.15 -> 0.16 update forced a 324-file Markdown reformat; see
+    # CHANGELOG).
     #
     # REVIEWER GUIDE for grouped PRs (DA-004, RT-001):
     #   If a grouped PR fails CI:
@@ -233,7 +272,11 @@ updates:
     #     4. For grouped PRs: scan each package individually, not just CI result
     #   Post-merge regression (PM-003):
     #     If breakage surfaces after merge (CI passed but runtime fails):
-    #     1. Revert the merged PR: `git revert <merge-commit>`
+    #     1. Revert the merged PR: `git revert <commit>` for a squash merge,
+    #        or `git revert -m 1 <merge-commit>` for a merge commit (without
+    #        -m git refuses: "is a merge but no -m option was given"). To
+    #        re-land, revert the revert; merging the same branch again
+    #        reports "Already up to date" and does nothing.
     #     2. Open an issue tracking which dep caused the regression
     #     3. Re-merge the group without the problematic dep
 
@@ -256,10 +299,14 @@ updates:
   # independent (a ruff bump has no relationship to a commitizen bump),
   # and SHA-pinned updates benefit from individual changelog review.
   # This mirrors the D2 rationale for major GitHub Actions updates.
+  # Exception (2026-11): the ruff hook shadows the ruff version in uv.lock --
+  # see RUFF LOCKSTEP in the uv block. No workflow runs pre-commit, so a
+  # green CI result on a hook PR proves nothing about the hook.
   #
   # "chore" prefix: hook SHA rotations are maintenance, not a feature
   # dependency update or CI infrastructure change. See D5 for Filter B
-  # (version-bump.yml) implications — "chore" is not filtered.
+  # (version-bump.yml) implications — "chore" IS in the skip list, and a
+  # merge commit passes Filter B (D5).
   - package-ecosystem: "pre-commit"
     directory: "/"
     schedule:
