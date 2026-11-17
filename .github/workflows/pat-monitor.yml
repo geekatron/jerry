@@ -1,5 +1,5 @@
 # PAT Expiration Monitor
-# Checks if the VERSION_BUMP_PAT is approaching expiration by attempting
+# Checks if the VERSION_BUMP_PUSH_PAT is approaching expiration by attempting
 # an authenticated API call. Runs weekly and creates an issue if the PAT
 # fails or is within the warning window.
 #
@@ -21,7 +21,7 @@ permissions:
 
 jobs:
   check-pat:
-    name: Check VERSION_BUMP_PAT
+    name: Check VERSION_BUMP_PUSH_PAT
     runs-on: ubuntu-latest
     steps:
       - name: Test PAT authentication
@@ -29,7 +29,7 @@ jobs:
         run: |
           # Attempt an authenticated API call with the PAT
           HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-            -H "Authorization: token ${{ secrets.VERSION_BUMP_PAT }}" \
+            -H "Authorization: token ${{ secrets.VERSION_BUMP_PUSH_PAT }}" \
             -H "Accept: application/vnd.github+json" \
             "https://api.github.com/repos/${{ github.repository }}")
 
@@ -51,13 +51,13 @@ jobs:
         run: |
           # Get token metadata to check expiration
           RESPONSE=$(curl -s \
-            -H "Authorization: token ${{ secrets.VERSION_BUMP_PAT }}" \
+            -H "Authorization: token ${{ secrets.VERSION_BUMP_PUSH_PAT }}" \
             -H "Accept: application/vnd.github+json" \
             "https://api.github.com/repos/${{ github.repository }}")
 
           # If we got here, PAT works. Check rate limit headers for auth confirmation.
           RATE_INFO=$(curl -s -I \
-            -H "Authorization: token ${{ secrets.VERSION_BUMP_PAT }}" \
+            -H "Authorization: token ${{ secrets.VERSION_BUMP_PUSH_PAT }}" \
             -H "Accept: application/vnd.github+json" \
             "https://api.github.com/rate_limit")
 
@@ -71,11 +71,11 @@ jobs:
         with:
           script: |
             const status = '${{ steps.pat-check.outputs.status }}';
-            const title = `VERSION_BUMP_PAT expired or invalid (HTTP ${status})`;
+            const title = `VERSION_BUMP_PUSH_PAT expired or invalid (HTTP ${status})`;
             const body = [
               '## PAT Monitor Alert',
               '',
-              `The \`VERSION_BUMP_PAT\` secret returned HTTP ${status}.`,
+              `The \`VERSION_BUMP_PUSH_PAT\` secret returned HTTP ${status}.`,
               '',
               '### Impact',
               '- Version bump workflow will fail on push to main',
@@ -87,7 +87,7 @@ jobs:
               '   - Repository access: `geekatron/jerry` only',
               '   - Permissions: `Contents: Read and write`',
               '   - Expiration: 90 days',
-              '3. Update the `VERSION_BUMP_PAT` repository secret',
+              '3. Update the `VERSION_BUMP_PUSH_PAT` repository secret',
               '',
               '### References',
               '- EN-108: Version Bumping Strategy',
@@ -123,9 +123,9 @@ jobs:
           STATUS="${{ steps.pat-check.outputs.status }}"
           if [[ "$STATUS" == "200" ]]; then
             echo "## PAT Monitor: Healthy" >> "$GITHUB_STEP_SUMMARY"
-            echo "VERSION_BUMP_PAT is valid and functional." >> "$GITHUB_STEP_SUMMARY"
+            echo "VERSION_BUMP_PUSH_PAT is valid and functional." >> "$GITHUB_STEP_SUMMARY"
           else
             echo "## PAT Monitor: ACTION REQUIRED" >> "$GITHUB_STEP_SUMMARY"
-            echo "VERSION_BUMP_PAT returned HTTP $STATUS." >> "$GITHUB_STEP_SUMMARY"
+            echo "VERSION_BUMP_PUSH_PAT returned HTTP $STATUS." >> "$GITHUB_STEP_SUMMARY"
             echo "An issue has been created for tracking." >> "$GITHUB_STEP_SUMMARY"
           fi
