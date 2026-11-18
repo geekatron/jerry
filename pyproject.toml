@@ -204,12 +204,19 @@ replace = "(v{new_version})"
 # =============================================================================
 [tool.uv]
 constraint-dependencies = [
-    "urllib3>=2.7.0",
-    "pip>=26.1.2",
+    # Where a comment names advisories, their fix sets the floor, or the locked release where the comment says so (read at osv.dev on 2026-11-12).
+    "urllib3>=2.8.0",  # GHSA-8988-9cw3-xx77, GHSA-gh4c-6fx4-qh6g, GHSA-vxq7-64xx-v4gw
+    "pip>=26.2",  # GHSA-qwm4-qh6w-59xr
     "msgpack>=1.2.4",
     "pydantic-settings>=2.14.2",
-    "mako>=1.3.12",
+    "mako>=1.4.2",  # GHSA-5639-2j2p-m4mx
     "click>=8.3.3",
+    "anyio>=4.14.2",  # GHSA-3w57-8xmc-8v26, GHSA-5p39-cfhj-2xmp, GHSA-82r6-8w77-94w6
+    "certifi>=2026.10.19",  # GHSA-6q48-6c7w-9gw2 (fixed from 2026.10.18; the locked release)
+    "filelock>=4.2.1",  # GHSA-v4x8-3wr5-3wq8 and 16 more, all fixed in 4.2.1
+    "httpcore2>=2.10.0",  # GHSA-7mj9-2mp8-4m2p
+    "httpx2>=2.12.0",  # GHSA-8xx6-hgc6-gc2m
+    "virtualenv>=21.14.13",  # GHSA-cx6f-vjhg-g3cc
 ]
 
 [dependency-groups]
