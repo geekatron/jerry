@@ -101,9 +101,11 @@ outputs:
 
   vuln-details:
     description: >
-      When vuln-found is 'true', the pip-audit findings table (package, version,
-      CVE/advisory ID, fix versions, description) for inclusion in downstream
-      alerts. Empty string when the audit is clean.
+      When vuln-found is 'true', a bounded copy of the pip-audit findings for
+      inclusion in downstream alerts: every finding (package, version, advisory
+      ID, fix versions) first, then the advisory descriptions, each shortened.
+      At most 40,000 bytes, with control and invisible (default-ignorable)
+      characters removed (advisory text is untrusted). Empty string when the audit is clean.
     value: ${{ steps.audit.outputs.vuln-details }}
 
 runs:
@@ -201,99 +203,45 @@ runs:
     #
     #    FAIL-CLOSED: set vuln-found BEFORE any exit so callers using
     #    `if: always()` can read the output even when this step exits 1.
+    #
+    #    UNTRUSTED TEXT: the advisory descriptions in pip-audit's output come
+    #    from third-party advisory databases (PyPI, OSV). They are data, never
+    #    commands, and the job log of a public repository is public. The raw
+    #    output is never printed: it goes to a file, and one sanitizer makes
+    #    the only copy that is shown: in the log, in the step summary and in
+    #    the export, whose degraded form holds only the verdict and advisory
+    #    ids matched in the raw output by fixed patterns. The sanitizer
+    #    removes control characters, bidirectional controls and all
+    #    default-ignorable characters.
+    #    In the log the copy has "| " in front of every line, shows "##[" as
+    #    "## [", and sits inside a random ::stop-commands:: window. The runner
+    #    reads a "::" command only at the start of a line, which the prefix
+    #    stops, and the older "##[" form anywhere in a line, which the broken
+    #    marker and the window each stop. Without a random token the copy is
+    #    not printed at all.
+    #
+    #    FAIL-SAFE EXPORT: the export for the alert issue is a convenience, not
+    #    the audit. A tool that fails while the export is built degrades the
+    #    export (down to advisory IDs only) and prints a ::warning::; it does
+    #    not change the verdict, and the report runs in a condition, so a
+    #    failing command in it cannot end the step. The step exits 1 on purpose
+    #    only for the D5 guard and for fail-on-vuln=true, after the outputs.
+    #
+    #    SCRIPT FILE: the script of this step is run-pip-audit.sh, in this folder. It is a file
+    #    because GitHub reads a run: string that holds an expression as one expression and
+    #    refuses one of more than 21,000 characters ("Exceeded max expression length 21000"); the
+    #    script had grown past that. The step starts it with the flags that shell: bash uses
+    #    (errexit, pipefail), and the four values it needs reach it through env: below, so the
+    #    run: string holds no expression and is not a template.
+    #    tests/security/test_run_template_length_guard.py fails when a run: string that holds an
+    #    expression comes near the limit.
     # ------------------------------------------------------------------
     - name: Run pip-audit
       id: audit
       shell: bash
-      run: |
-        echo "## Security Audit Results" >> "$GITHUB_STEP_SUMMARY"
-
-        IGNORE_FLAGS="${{ steps.allowlist.outputs.ignore_flags }}"
-
-        # Run pip-audit. Capture output AND tee to a temp file for the D5 guard.
-        # shellcheck disable=SC2086  # word-splitting of IGNORE_FLAGS is intentional
-        set +e
-        uv run pip-audit \
-          --requirement ${{ inputs.requirements-path }} \
-          --strict \
-          --desc \
-          $IGNORE_FLAGS \
-          2>&1 | tee /tmp/pip-audit-output.txt
-        AUDIT_EXIT=$?
-        set -e
-
-        # ------------------------------------------------------------------
-        # D5 MEANINGFUL-AUDIT GUARD
-        # Two independent assertions (belt-and-suspenders):
-        #   (1) pip-audit output contains a recognizable verdict sentinel.
-        #   (2) The requirements file has >= min-audited-packages entries
-        #       (non-empty, non-comment lines), proving a full tree was scanned.
-        # FAIL-CLOSED: either assertion failing exits 1 with ::error::.
-        # ------------------------------------------------------------------
-
-        # Assertion 1: recognizable verdict present.
-        VERDICT_LINE=$(grep -E "(No known vulnerabilities found|Found [0-9]+ known vulnerabilit)" \
-          /tmp/pip-audit-output.txt | head -1 || true)
-        if [[ -z "$VERDICT_LINE" ]]; then
-          # FAIL-CLOSED: no verdict sentinel = silent failure or neutered invocation.
-          echo "::error::D5 guard: pip-audit did not produce a recognizable verdict line. " \
-               "Possible silent failure or neutered invocation. Audit result not trusted."
-          exit 1
-        fi
-
-        # Assertion 2: package floor.
-        # Count non-empty, non-comment lines in the requirements file
-        # (these are the packages pip-audit was asked to check).
-        REQ_COUNT=$(grep -c -v '^\s*#\|^\s*$' ${{ inputs.requirements-path }} || echo 0)
-        MIN_PKGS=${{ inputs.min-audited-packages }}
-        if [[ "$REQ_COUNT" -lt "$MIN_PKGS" ]]; then
-          # FAIL-CLOSED: too few packages = the full dep tree was not exported.
-          # This catches uv export producing a near-empty file (Scan-B signature).
-          echo "::error::D5 guard: requirements file contains only $REQ_COUNT packages " \
-               "(floor: $MIN_PKGS). The full dependency tree was not audited. " \
-               "Check that uv export --all-extras --no-emit-project ran correctly."
-          exit 1
-        fi
-        echo "D5 guard passed: verdict found, $REQ_COUNT packages in scope (floor: $MIN_PKGS)."
-
-        # ------------------------------------------------------------------
-        # Set outputs BEFORE any exit so `if: always()` callers can read them.
-        # FAIL-CLOSED note: outputs are written here, before the fail-on-vuln
-        # exit below, ensuring vuln-found is set regardless of whether the
-        # job ultimately exits 0 or 1.
-        # ------------------------------------------------------------------
-        if [[ "$AUDIT_EXIT" -eq 0 ]]; then
-          echo "No known unfixed vulnerabilities found." >> "$GITHUB_STEP_SUMMARY"
-          echo "vuln-found=false" >> "$GITHUB_OUTPUT"
-          echo "clean=true" >> "$GITHUB_OUTPUT"
-          echo "vuln-details=" >> "$GITHUB_OUTPUT"
-        else
-          echo "::warning::pip-audit found vulnerabilities in the dependency tree"
-          cat /tmp/pip-audit-output.txt >> "$GITHUB_STEP_SUMMARY"
-          # Set outputs BEFORE the conditional exit below.
-          echo "vuln-found=true" >> "$GITHUB_OUTPUT"
-          echo "clean=false" >> "$GITHUB_OUTPUT"
-
-          # STORY-028 AC-4: expose the findings (package/version/CVE ID/fix
-          # version/description) so the rolling alert issue lists them instead
-          # of only linking to the run. Multiline value via the heredoc form of
-          # GITHUB_OUTPUT. A random delimiter prevents a crafted package
-          # description from prematurely closing the block. pip-audit output is
-          # our own locked dependency tree (trusted), but the random delimiter
-          # is defense-in-depth and the GitHub-recommended pattern.
-          VULN_DELIM="VULN_DETAILS_$(openssl rand -hex 8)"
-          {
-            echo "vuln-details<<${VULN_DELIM}"
-            cat /tmp/pip-audit-output.txt
-            echo "${VULN_DELIM}"
-          } >> "$GITHUB_OUTPUT"
-
-          if [[ "${{ inputs.fail-on-vuln }}" == "true" ]]; then
-            echo "::error::pip-audit found unfixed vulnerabilities (fail-on-vuln=true)"
-            exit 1
-          else
-            # Non-blocking: emit warning, exit 0, let the rolling issue be the forcing function.
-            echo "::warning::Vulnerabilities found but fail-on-vuln=false — not blocking this run. " \
-                 "The scheduled security scan will open/update a CVE alert issue."
-          fi
-        fi
+      env:
+        ALLOWLIST_IGNORE_FLAGS: ${{ steps.allowlist.outputs.ignore_flags }}
+        REQUIREMENTS_PATH: ${{ inputs.requirements-path }}
+        MIN_AUDITED_PACKAGES: ${{ inputs.min-audited-packages }}
+        FAIL_ON_VULN: ${{ inputs.fail-on-vuln }}
+      run: bash --noprofile --norc -eo pipefail "$GITHUB_ACTION_PATH/run-pip-audit.sh"
