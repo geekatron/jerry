@@ -12,7 +12,7 @@ data, so the tests also pin what happens to it: control and format characters ar
 finding is listed before any description, and the text reaches the job log, the step summary and
 the issue body only in a protected form.
 
-The tests run the real ``run:`` scripts of the audit step, the alert step and the close step.  Only
+The tests run the real scripts of the audit step, the alert step and the close step.  Only
 the network edges are test doubles: a ``uv`` that replays a *synthetic* pip-audit table (verdict on
 standard error, table on standard output, laid out like pip-audit's columns format), and a ``gh``
 that records its calls and enforces the body limit like the API (in bytes, which is stricter than
@@ -24,6 +24,13 @@ each operating system exercises its own tools.  The tests need those tools, and 
 particular: without it they skip locally and fail when ``CI`` is ``true``.  The subprocess
 environment passes ``LANG``, ``LC_ALL`` and ``LC_CTYPE`` through from the test process, so the same
 file can be run under different locales.
+
+The alert and close steps run as their ``run:`` strings.  The audit step's script is a file next to
+``action.yml``, started by the step's one-line ``run:`` as the runner starts it: with the step's
+``env:`` mapping, read from the YAML (each expression in it is given a test value, and an expression
+without one fails the test), and ``GITHUB_ACTION_PATH`` naming the folder of the file.  The file is the
+one the action runs, except that each test's copy of it writes its two ``/tmp/`` paths into the test's
+own folder, so that tests cannot see each other's files; a test pins that these are the only two.
 
 A script's standard output and standard error are merged into one stream (``log``), like the
 runner's job log, and every step runs with a time limit and without standard input.  Output that is
@@ -59,7 +66,13 @@ pytestmark = [
 
 ROOT = Path(__file__).resolve().parents[2]
 ACTION_FILE = ROOT / ".github" / "actions" / "security-audit" / "action.yml"
+ACTION_DIR = ACTION_FILE.parent
 WORKFLOW_FILE = ROOT / ".github" / "workflows" / "security-scan.yml"
+# The audit step's whole run: text: one command that starts the script file in the action's folder with
+# the flags of `shell: bash` (the runner starts that shell as bash --noprofile --norc -eo pipefail).
+AUDIT_RUN_LINE = re.compile(
+    r'bash --noprofile --norc -eo pipefail "\$GITHUB_ACTION_PATH/(?P<name>[A-Za-z0-9._-]+)"'
+)
 ENV_STRING_LIMIT = 131_072  # Linux: one environment or argument string (32 pages of 4 KiB)
 BODY_LIMIT = 65_536  # GitHub: issue or comment body, as reported by the API
 RUN_URL = "https://example.test/owner/repo/actions/runs/1"
@@ -209,6 +222,7 @@ DEFAULT_IGNORABLE = [
 _UV_STUB = """#!/usr/bin/env bash
 PATH="$REAL_PATH"
 if printf '%s\\n' "$@" | grep -qx 'pip-audit'; then
+  { printf '%s\\0' "$@"; printf '\\001'; } >> "${UV_LOG:-/dev/null}"
   if [ -n "${STUB_VERDICT:-}" ]; then echo "$STUB_VERDICT" >&2; fi
   cat "$STUB_TABLE"
   exit "${STUB_AUDIT_EXIT:-1}"
@@ -396,6 +410,59 @@ def _step(path: Path, *, name: str | None = None, step_id: str | None = None) ->
 def _audit_step() -> dict:
     """The composite action's ``audit`` step."""
     return _step(ACTION_FILE, step_id="audit")
+
+
+def _audit_script_path() -> Path:
+    """The script file that the audit step's ``run:`` line starts, in the action's folder."""
+    run = _audit_step()["run"]
+    match = AUDIT_RUN_LINE.fullmatch(run.strip())
+    assert match, f"the audit step's run: is not the one-line start of a script file: {run!r}"
+    path = ACTION_DIR / match["name"]
+    assert path.is_file(), f"the audit step starts {path.name}, which is not a file in {ACTION_DIR}"
+    return path
+
+
+def _audit_script() -> str:
+    """The text of the audit step's script file: the file the action runs."""
+    return _audit_script_path().read_text(encoding="utf-8")
+
+
+def _script_of(step: str) -> str:
+    """The script that ``step`` (``"audit"`` or ``"alert"``) runs: the audit file, or a ``run:`` string."""
+    return _audit_script() if step == "audit" else _alert_step()["run"]
+
+
+def _isolated_action_dir(tmp_path: Path) -> Path:
+    """A folder with the audit script as the action has it, but with its ``/tmp/`` paths in ``tmp_path``.
+
+    The script writes ``/tmp/pip-audit-output.txt`` (and falls back to ``/tmp/pip-audit-work.$$``
+    when mktemp fails): the same path for every run.  Each test gets the script with those paths
+    in its own folder, so that tests cannot see each other's files.  That is the only change made
+    to the text of the file; ``test_audit_script_when_read_then_it_names_only_the_two_tmp_paths``
+    pins that there are exactly these two.
+    """
+    action_dir = tmp_path / "action"
+    action_dir.mkdir(parents=True, exist_ok=True)
+    copy = action_dir / _audit_script_path().name
+    copy.write_text(_audit_script().replace("/tmp/", f"{tmp_path}/"), encoding="utf-8")
+    return action_dir
+
+
+def _step_env(step: dict, values: dict[str, str]) -> dict[str, str]:
+    """The ``env:`` mapping of ``step``, each expression in it replaced by its test value.
+
+    The runner evaluates the expressions of the mapping before it starts the step; a test gives
+    each one a value.  An expression that has no value fails the test, so that an input added to
+    the mapping cannot go unnoticed.
+    """
+    env: dict[str, str] = {}
+    for name, template in step["env"].items():
+        value = str(template)
+        for expression, replacement in values.items():
+            value = value.replace(expression, replacement)
+        assert "${{" not in value, f"env {name}: no test value for the expression in {template!r}"
+        env[name] = value
+    return env
 
 
 def _alert_step() -> dict:
@@ -598,6 +665,7 @@ def _run_audit_step(
     *,
     verdict: str | None = None,
     fail_on_vuln: str = "true",
+    ignore_flags: str = "",
     requirements: str | None = None,
     requirements_present: bool = True,
     stubs: dict[str, str] | None = None,
@@ -605,24 +673,29 @@ def _run_audit_step(
     audit_exit: int = 1,
     env_extra: dict[str, str] | None = None,
 ) -> AuditRun:
-    """Run the audit step on a replayed table, as the runner does (bash -eo pipefail)."""
+    """Run the audit step on a replayed table, as the runner does (bash -eo pipefail).
+
+    The step's ``run:`` line is started with the step's ``env:`` mapping (read from the YAML, with
+    a test value for each expression) and ``GITHUB_ACTION_PATH`` naming the folder of the script
+    file that the line starts.
+    """
     _require_openssl()
     tmp_path.mkdir(parents=True, exist_ok=True)
-    script = _audit_step()["run"].replace("/tmp/", f"{tmp_path}/")
+    action_dir = _isolated_action_dir(tmp_path)
     requirements_path = tmp_path / "requirements.txt"
     if requirements is None:
         requirements = "".join(f"pkg{i}==1.0.{i}\n" for i in range(25))
     if requirements_present:
         requirements_path.write_text(requirements, encoding="utf-8")
-    expressions = {
-        "${{ steps.allowlist.outputs.ignore_flags }}": "",
-        "${{ inputs.requirements-path }}": str(requirements_path),
-        "${{ inputs.min-audited-packages }}": "20",
-        "${{ inputs.fail-on-vuln }}": fail_on_vuln,
-    }
-    for expression, value in expressions.items():
-        script = script.replace(expression, value)
-    assert "${{" not in script, "unsubstituted expression left in the step"
+    step_env = _step_env(
+        _audit_step(),
+        {
+            "${{ steps.allowlist.outputs.ignore_flags }}": ignore_flags,
+            "${{ inputs.requirements-path }}": str(requirements_path),
+            "${{ inputs.min-audited-packages }}": "20",
+            "${{ inputs.fail-on-vuln }}": fail_on_vuln,
+        },
+    )
     data = table if isinstance(table, bytes) else table.encode("utf-8")
     (tmp_path / "table.txt").write_bytes(data)
     bindir = _stubs_dir(tmp_path, stubs)
@@ -632,15 +705,18 @@ def _run_audit_step(
         # One finding per line below the header and the separator, with or without a final line feed.
         verdict = _verdict(max(data.rstrip(b"\n").count(b"\n") - 1, 0))
     extra = {
+        "GITHUB_ACTION_PATH": str(action_dir),
         "GITHUB_OUTPUT": str(github_output),
         "GITHUB_STEP_SUMMARY": str(summary),
         "STUB_TABLE": str(tmp_path / "table.txt"),
         "STUB_VERDICT": verdict,
         "STUB_AUDIT_EXIT": str(audit_exit),
+        "UV_LOG": str(tmp_path / "uv.log"),
+        **step_env,
         **(env_extra or {}),
     }
-    # GitHub runs `shell: bash` as: bash --noprofile --norc -eo pipefail
-    command = ["bash", "--noprofile", "--norc", "-eo", "pipefail", "-c", script]
+    # GitHub runs `shell: bash` as: bash --noprofile --norc -eo pipefail <the step's run: text>
+    command = ["bash", "--noprofile", "--norc", "-eo", "pipefail", "-c", _audit_step()["run"]]
     process = _run_script(command, _env(tmp_path, bindir, locale, extra))
     raw = github_output.read_bytes()
     outputs, delimiter = _parse_outputs(raw)
@@ -648,7 +724,11 @@ def _run_audit_step(
 
 
 def _calls(log: Path) -> list[list[str]]:
-    """The recorded ``gh`` invocations: one list of arguments per call."""
+    """The recorded ``gh`` or ``uv`` invocations in ``log``: one list of arguments per call.
+
+    Both stubs append to their log in the same form: each argument followed by a NUL byte, and a
+    byte with the value 1 after the last argument of each call.
+    """
     if not log.exists():
         return []
     chunks = [c for c in log.read_bytes().split(b"\x01") if c]
@@ -1000,11 +1080,11 @@ class TestAuditStepExportIsBounded:
 
         assert run.process.returncode == 1, "fail-on-vuln=true exits 1 only after the outputs"
         assert run.details is not None, _inert(run.log)
-        assert len(run.details.encode("utf-8")) <= _constant(_audit_step()["run"], "VULN_MAX_TOTAL")
+        assert len(run.details.encode("utf-8")) <= _constant(_audit_script(), "VULN_MAX_TOTAL")
         assert len(run.details.encode("utf-8")) < ENV_STRING_LIMIT
 
     def test_constants_when_read_from_the_script_then_match_the_documented_bounds(self) -> None:
-        audit, alert = _audit_step()["run"], _alert_step()["run"]
+        audit, alert = _audit_script(), _alert_step()["run"]
 
         assert _constant(audit, "VULN_MAX_DESC") == 400
         assert _constant(audit, "VULN_MAX_FIXED") == 300
@@ -1029,7 +1109,7 @@ class TestAuditStepExportIsBounded:
     def test_description_clip_when_exported_then_every_line_is_within_the_bound(
         self, tmp_path: Path
     ) -> None:
-        limit = _constant(_audit_step()["run"], "VULN_MAX_DESC")
+        limit = _constant(_audit_script(), "VULN_MAX_DESC")
         run = _run_audit_step(tmp_path, _table(rows=34, width=6_000))
 
         assert run.details is not None
@@ -1049,7 +1129,7 @@ class TestAuditStepExportIsBounded:
         assert int(notice["findings"]) == int(notice["listed"]) == len(findings) == 34
         assert int(notice["shown"]) == int(notice["short"]) == len(descriptions) == 34
         assert int(notice["omitted"]) == 0 and notice["fixed"] is None
-        assert int(notice["bytes"]) == _constant(_audit_step()["run"], "VULN_MAX_DESC")
+        assert int(notice["bytes"]) == _constant(_audit_script(), "VULN_MAX_DESC")
 
     def test_300_long_rows_when_exported_then_every_id_listed_and_omissions_counted(
         self, tmp_path: Path
@@ -1057,7 +1137,7 @@ class TestAuditStepExportIsBounded:
         run = _run_audit_step(tmp_path, _table(rows=300, width=600))
 
         assert run.details is not None
-        assert len(run.details.encode("utf-8")) <= _constant(_audit_step()["run"], "VULN_MAX_TOTAL")
+        assert len(run.details.encode("utf-8")) <= _constant(_audit_script(), "VULN_MAX_TOTAL")
         findings, descriptions, _ = _sections(run.details)
         notice = _notice(run.details)
         assert [line.split()[2] for line in findings] == _ids(300)
@@ -1071,7 +1151,7 @@ class TestAuditStepExportIsBounded:
         run = _run_audit_step(tmp_path, _table(rows=2_000, width=50))
 
         assert run.details is not None
-        assert len(run.details.encode("utf-8")) <= _constant(_audit_step()["run"], "VULN_MAX_TOTAL")
+        assert len(run.details.encode("utf-8")) <= _constant(_audit_script(), "VULN_MAX_TOTAL")
         findings, descriptions, _ = _sections(run.details)
         notice = _notice(run.details)
         assert int(notice["findings"]) == 2_000
@@ -1117,7 +1197,7 @@ class TestAuditStepExportIsBounded:
         findings, _, _ = _sections(run.details)
         notice = _notice(run.details)
         assert [line.split()[2] for line in findings] == _ids(5)
-        limit = _constant(_audit_step()["run"], "VULN_MAX_FIXED")
+        limit = _constant(_audit_script(), "VULN_MAX_FIXED")
         assert max(len(line.encode("utf-8")) for line in findings) == limit
         assert int(notice["fixed"]) == 1 and int(notice["fixedbytes"]) == limit
 
@@ -1201,7 +1281,7 @@ class TestAuditStepExportIsBounded:
     def test_character_split_by_the_description_clip_when_exported_then_valid_utf8(
         self, tmp_path: Path, char: str
     ) -> None:
-        limit = _constant(_audit_step()["run"], "VULN_MAX_DESC")
+        limit = _constant(_audit_script(), "VULN_MAX_DESC")
         for offset in range(1, len(char.encode("utf-8"))):  # the clip falls inside the character
             text = "y" * (limit - offset) + char + "z" * 50
             table = _tabulate([HEADER, *[_finding(i, text) for i in range(3)]])
@@ -1227,8 +1307,8 @@ class TestAuditStepExportIsBounded:
     def test_total_cap_when_the_export_tool_overproduces_then_the_value_stays_within_the_cap(
         self, tmp_path: Path
     ) -> None:
-        cap = _constant(_audit_step()["run"], "VULN_MAX_TOTAL")
-        line_cap = _constant(_audit_step()["run"], "VULN_MAX_LINE")
+        cap = _constant(_audit_script(), "VULN_MAX_TOTAL")
+        line_cap = _constant(_audit_script(), "VULN_MAX_LINE")
         # 60 KB of short lines and two long ones (one ASCII, one of three-byte characters, which a
         # cut that counts characters would not shorten enough); a three-byte character straddles
         # the byte at which the total cap falls.
@@ -1493,6 +1573,9 @@ class TestAuditStepExportIsBounded:
 
         assert run.process.returncode == 1
         assert "D5 guard: requirements file contains only 0 packages" in run.log
+        assert re.search(r"only 0 packages +\(floor: 20\)", run.log), (
+            "the floor is the input's value"
+        )
 
     def test_requirements_file_missing_when_audited_then_the_guard_fails_closed(
         self, tmp_path: Path
@@ -1937,7 +2020,7 @@ class TestAuditStepFailsSafe:
         assert run.outputs["vuln-found"] == "true" and run.outputs["clean"] == "false"
         assert run.details and DEGRADED in run.log
         assert all(identifier in run.details for identifier in _ids(34))
-        assert len(run.details.encode("utf-8")) <= _constant(_audit_step()["run"], "VULN_MAX_TOTAL")
+        assert len(run.details.encode("utf-8")) <= _constant(_audit_script(), "VULN_MAX_TOTAL")
         assert not _foreign_commands(run.log), _inert("\n".join(_foreign_commands(run.log)))
 
     @pytest.mark.parametrize("tool", [*TOOLS, "openssl"])
@@ -2835,6 +2918,33 @@ class TestStartedByHand:
         assert observed["schedule"][1].get("vuln-found") == "true"
 
 
+class TestAuditStepInputs:
+    """What reaches the audit script through the step's ``env:`` mapping, and what it does with it."""
+
+    @pytest.mark.parametrize(
+        "flags",
+        ["", "--ignore-vuln CVE-2026-0001 --ignore-vuln GHSA-aaaa-bbbb-cccc"],
+        ids=["no-flags", "two-flags"],
+    )
+    def test_pip_audit_when_started_then_it_gets_the_requirements_file_and_each_flag(
+        self, tmp_path: Path, flags: str
+    ) -> None:
+        run = _run_audit_step(tmp_path, _table(rows=2, width=20), ignore_flags=flags)
+
+        assert run.process.returncode == 1, _inert(run.log)
+        assert _calls(tmp_path / "uv.log") == [
+            [
+                "run",
+                "pip-audit",
+                "--requirement",
+                str(tmp_path / "requirements.txt"),
+                "--strict",
+                "--desc",
+                *flags.split(),
+            ]
+        ]
+
+
 class TestWorkflowStructure:
     """Properties of the YAML that the behaviour tests cannot see."""
 
@@ -2849,6 +2959,70 @@ class TestWorkflowStructure:
     def test_shell_when_read_from_the_yaml_then_it_matches_the_flags_the_harness_uses(self) -> None:
         assert _audit_step()["shell"] == "bash"  # runs as: bash --noprofile --norc -eo pipefail
         assert "shell" not in _alert_step() and "shell" not in _close_step()  # runs as: bash -e
+
+    def test_audit_step_when_read_from_the_yaml_then_it_starts_a_script_file_without_expressions(
+        self,
+    ) -> None:
+        # GitHub reads a run: string that holds an expression as ONE expression and refuses one of
+        # more than 21,000 characters.  The audit step's script is a file, started by a one-line
+        # run: that holds no expression; an expression written in the file would never be evaluated.
+        assert _audit_script_path().is_file()
+        assert "${{" not in _audit_step()["run"]
+        assert "${{" not in _audit_script()
+
+    def test_audit_env_when_read_from_the_yaml_then_each_input_reaches_the_script_by_one_name(
+        self,
+    ) -> None:
+        expected = {
+            "ALLOWLIST_IGNORE_FLAGS": "${{ steps.allowlist.outputs.ignore_flags }}",
+            "REQUIREMENTS_PATH": "${{ inputs.requirements-path }}",
+            "MIN_AUDITED_PACKAGES": "${{ inputs.min-audited-packages }}",
+            "FAIL_ON_VULN": "${{ inputs.fail-on-vuln }}",
+        }
+        script = _audit_script()
+
+        assert _audit_step()["env"] == expected
+        for name in expected:
+            assert re.search(r"\$\{?" + name + r"\b", script), f"the script never reads {name}"
+
+    def test_audit_script_when_read_then_it_names_only_the_two_tmp_paths_the_harness_moves(
+        self,
+    ) -> None:
+        assert re.findall(r"/tmp/[\w.$-]+", _audit_script()) == [
+            "/tmp/pip-audit-output.txt",
+            "/tmp/pip-audit-work.$$",
+        ]
+
+    def test_audit_script_when_started_without_flags_then_it_stops_at_its_first_failing_command(
+        self, tmp_path: Path
+    ) -> None:
+        # The runner starts a `run:` text with bash -e -o pipefail; a file that the step starts has
+        # them only if the step passes them or the file sets them.  The file sets them itself, as its
+        # first command, so that it also stops when it is started on its own.
+        script = _isolated_action_dir(tmp_path) / _audit_script_path().name
+        lines = script.read_text(encoding="utf-8").splitlines()
+        first = next(line for line in lines if line.strip() and not line.lstrip().startswith("#"))
+        env = _env(
+            tmp_path,
+            _stubs_dir(tmp_path),
+            None,
+            {
+                "GITHUB_OUTPUT": str(tmp_path / "output.txt"),
+                "GITHUB_STEP_SUMMARY": str(tmp_path / "missing-folder" / "summary.md"),
+                "REQUIREMENTS_PATH": str(tmp_path / "requirements.txt"),
+                "MIN_AUDITED_PACKAGES": "20",
+                "FAIL_ON_VULN": "false",
+                "ALLOWLIST_IGNORE_FLAGS": "",
+            },
+        )
+
+        process = _run_script(["bash", str(script)], env)
+
+        assert first == "set -eo pipefail"
+        assert process.returncode == 1
+        assert "D5 guard" not in process.stdout.decode("utf-8", errors="replace"), (
+            "the script went on after the failed write to the step summary"
+        )
 
     def test_workflow_permissions_when_parsed_then_they_are_unchanged(self) -> None:
         doc = yaml.safe_load(WORKFLOW_FILE.read_text(encoding="utf-8"))
@@ -2912,6 +3086,9 @@ class TestWorkflowStructure:
                 assert not found, (
                     f"step {step.get('name')!r} reads {found.group(0)!r} in its {key!r}"
                 )
+        # The audit step's script is a file, not its run: string.
+        found = reads.search(_audit_script())
+        assert not found, f"the audit script reads {found.group(0)!r}"
 
     def test_messages_when_read_from_the_scripts_then_none_claims_the_findings_are_in_a_log(
         self,
@@ -2922,12 +3099,12 @@ class TestWorkflowStructure:
         claim = re.compile(
             r"\b(?:is|are) in (?:the |this )?(?:workflow )?(?:run |job )?log\b", re.I
         )
-        for script in (_audit_step()["run"], _alert_step()["run"], _close_step()["run"]):
+        for script in (_audit_script(), _alert_step()["run"], _close_step()["run"]):
             assert not claim.findall(script)
 
     def test_sanitizer_lists_when_compared_then_the_two_copies_are_identical(self) -> None:
         action, workflow = (
-            _sanitize_sed_lines(_audit_step()["run"]),
+            _sanitize_sed_lines(_audit_script()),
             _sanitize_sed_lines(_alert_step()["run"]),
         )
 
@@ -2944,7 +3121,7 @@ class TestSanitizerList:
     def test_every_default_ignorable_code_point_when_filtered_then_it_is_removed(
         self, step: str
     ) -> None:
-        script = (_audit_step if step == "audit" else _alert_step)()["run"]
+        script = _script_of(step)
         points = [code for low, high in DEFAULT_IGNORABLE for code in range(low, high + 1)]
         lines = "".join(f"<{chr(code)}>\n" for code in points)
 
@@ -2961,7 +3138,7 @@ class TestSanitizerList:
     def test_characters_next_to_the_ranges_when_filtered_then_they_are_kept(
         self, step: str
     ) -> None:
-        script = (_audit_step if step == "audit" else _alert_step)()["run"]
+        script = _script_of(step)
         changed = [*DEFAULT_IGNORABLE, *self.OTHER_CHANGES]
         neighbours = sorted(
             {
@@ -2986,7 +3163,7 @@ class TestSanitizerList:
     def test_other_changes_when_filtered_then_the_ranges_are_removed_or_become_spaces(
         self, step: str
     ) -> None:
-        script = (_audit_step if step == "audit" else _alert_step)()["run"]
+        script = _script_of(step)
         cases = {0x85: " ", 0x2028: " ", 0x2029: " ", 0x2800: " ", 0x80: "", 0x9F: "", 0xFFF9: ""}
         lines = "".join(f"<{chr(code)}>\n" for code in cases)
 

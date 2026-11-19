@@ -6,8 +6,9 @@
 CI runs ``pytest -m "<expression>"`` (the "Test uv" cells of ci.yml and release.yml).  A test file
 that carries a marker which the expression leaves out is deselected from every job without any
 message, and a regression suite that never runs protects nothing.  This file reads the
-expressions from the workflow files (it does not copy them) and reads ``test_security_alert_bounds.py``
-and itself with ``ast`` (it does not import them).  For each of the two files it fails if
+expressions from the workflow files (it does not copy them) and reads ``test_security_alert_bounds.py``,
+``test_run_template_length_guard.py`` and itself with ``ast`` (it does not import them).  For each of
+the three files it fails if
 
 * a marker that CI's expression leaves out is carried anywhere in the file, however pytest is
   imported (``import pytest as pt`` and ``from pytest import mark as m`` are followed);
@@ -37,9 +38,10 @@ ROOT = Path(__file__).resolve().parents[2]
 WORKFLOWS = ROOT / ".github" / "workflows"
 REGRESSION_FILE = Path(__file__).with_name("test_security_alert_bounds.py")
 GUARD_FILE = Path(__file__)
+LENGTH_GUARD_FILE = Path(__file__).with_name("test_run_template_length_guard.py")
 # The files that must stay selected, each with the least number of test functions it must define: the
 # number it defines now.  A parametrized test counts once here; pytest collects one test per case.
-GUARDED_FILES = {REGRESSION_FILE: 140, GUARD_FILE: 15}
+GUARDED_FILES = {REGRESSION_FILE: 145, GUARD_FILE: 15, LENGTH_GUARD_FILE: 22}
 FILE_IDS = [path.name for path in GUARDED_FILES]
 
 
@@ -253,7 +255,7 @@ class TestCiSelection:
 
 
 class TestGuardedFilesStayCollected:
-    """Both test files must run in every job that selects tests with CI's expressions."""
+    """All three test files must run in every job that selects tests with CI's expressions."""
 
     @pytest.mark.parametrize("path", list(GUARDED_FILES), ids=FILE_IDS)
     def test_file_when_parsed_then_it_defines_at_least_its_floor_of_tests(self, path: Path) -> None:
