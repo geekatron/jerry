@@ -52,7 +52,7 @@ dev = [
 test = [
     "pytest>=9.1.1",
     "pytest-archon>=0.0.6",
-    "pytest-bdd>=8.0.0",
+    "pytest-bdd>=9.0.1",
     "pytest-cov>=7.1.0",
 ]
 # EN-020: Transcript bounded context dependencies (TDD-FEAT-004 v1.2.0)
