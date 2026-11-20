@@ -1,14 +1,15 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2026 Adam Nowak
 
-"""Guard: the Codecov upload names only ``coverage.xml``, and ``codecov.yml`` makes failures show.
+"""Guard: the Codecov upload names only ``coverage.xml``; ``.github/codecov.yml`` shows failures.
 
 Codecov's uploader searches the whole checkout for coverage reports.  It found an old report that
 was committed as project evidence and sent it with the real one.  Codecov refused such uploads as
 expired: the last upload of ``main`` that it processed was on 25 February 2026, and nothing on the
-pull requests said so.  This test reads ``.github/workflows/ci.yml`` and ``codecov.yml`` as they
-are in the repository and fails if the upload step may search the tree again, or if the settings
-that report failures are missing.
+pull requests said so.  This test reads ``.github/workflows/ci.yml`` and ``.github/codecov.yml``
+(Codecov reads its settings from the repository root, ``dev/`` or ``.github/``) as they are in the
+repository and fails if the upload step may search the tree again, or if the settings that report
+failures are missing.
 """
 
 from __future__ import annotations
@@ -85,9 +86,9 @@ def test_workflow_when_read_then_the_one_upload_step_sends_only_coverage_xml() -
 def test_settings_file_when_read_then_the_setting_has_the_wanted_value(
     setting: str, expected: bool, why: str
 ) -> None:
-    """codecov.yml exists at the repository root, and ``setting`` in it is ``expected``."""
-    value = _read("codecov.yml", NO_FILE)
+    """.github/codecov.yml exists, and ``setting`` in it is ``expected``."""
+    value = _read(".github/codecov.yml", NO_FILE)
     for key in setting.split("."):
         value = value.get(key) if isinstance(value, dict) else None
-    message = f"codecov.yml: {setting} is {_shown(value)}, but it must be {expected}: {why}"
+    message = f".github/codecov.yml: {setting} is {_shown(value)}, but it must be {expected}: {why}"
     assert value is expected, message
