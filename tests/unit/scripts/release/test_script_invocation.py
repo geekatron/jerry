@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import ast
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -304,6 +305,146 @@ def test_the_notes_step_refuses_a_version_that_is_not_a_version(
     assert result.returncode != 0
     assert not (runner_temp / "release-notes.md").exists()
     assert not (repo / "evil").exists()
+
+
+# --- the marker that stops the version bump: cut out of the subjects, every commit kept ----------
+
+SKIP_BUMP_MARKER = "[skip-bump]"
+
+# Each case is the subject of a commit and the subject as the notes must list it (None where
+# only the absence of the marker matters). The commit that the version bump makes ends its
+# subject with the marker, and so do others, several of them security fixes: the marker is cut
+# out and the commit stays in the list. version-bump.yml skips a bump when
+# contains(github.event.head_commit.message, '[skip-bump]') is true, and that function "is not
+# case sensitive" (GitHub's documentation of expressions), so the cut ignores case too. One
+# blank takes the place of the marker and of the blanks next to it, so a cut never joins the
+# two sides of the marker.
+MARKER_CASES = [
+    pytest.param(
+        "chore(release): bump version to v1.2.3 [skip-bump]",
+        "chore(release): bump version to v1.2.3",
+        id="the-version-commit",
+    ),
+    pytest.param("fix: before [skip-bump] after", "fix: before after", id="in-the-middle"),
+    pytest.param("[skip-bump] fix: at the start", "fix: at the start", id="at-the-start"),
+    pytest.param("fix: one [skip-bump] two [skip-bump]", "fix: one two", id="twice"),
+    # A cut that left nothing in its place would make a marker out of this one. What stays of
+    # the two halves is not the point, so the text is not pinned: no marker may be left.
+    pytest.param("fix: a [skip-[skip-bump]bump] b", None, id="one-inside-another"),
+    # The control characters are removed first, so these markers are whole when they are cut.
+    pytest.param("fix: a [skip-\x01bump] b", "fix: a b", id="a-control-character-inside"),
+    pytest.param("fix: a [skip-bump\x7f] b", "fix: a b", id="a-delete-character-inside"),
+    pytest.param("fix: a [SKIP-BUMP] b", "fix: a b", id="in-capitals"),
+    pytest.param("fix: a [Skip-Bump] b", "fix: a b", id="in-mixed-case"),
+    pytest.param("docs: arrow → [skip-bump]", "docs: arrow →", id="with-an-arrow"),
+    pytest.param("[skip-bump]fix: no blank", "fix: no blank", id="glued-to-the-bullet"),
+    pytest.param("chore: ##[skip-bump][add-mask]x", "chore: ## [add-mask]x", id="joins-nothing"),
+    # Text that is not the marker stays as it is.
+    pytest.param("fix: [skip-bumps] stays", "fix: [skip-bumps] stays", id="one-letter-more"),
+    pytest.param("fix: skip-bump stays", "fix: skip-bump stays", id="no-brackets"),
+    pytest.param("fix: [skip bump] stays", "fix: [skip bump] stays", id="a-blank-for-the-hyphen"),
+    pytest.param("fix: [skip-bump stays", "fix: [skip-bump stays", id="not-closed"),
+    pytest.param("fix: [skip-\tbump] stays", "fix: [skip-\tbump] stays", id="a-tab-inside"),
+    pytest.param(
+        "fix(api): [WIP] handle [id] and (x) stays",
+        "fix(api): [WIP] handle [id] and (x) stays",
+        id="other-brackets",
+    ),
+    pytest.param(
+        "feat:  two  blanks  stay", "feat:  two  blanks  stay", id="blanks-away-from-a-marker"
+    ),
+]
+
+
+def repo_with_subjects(
+    make_repo: Callable[..., tuple[Path, str]], git_in: Callable[..., str], subjects: list[str]
+) -> tuple[Path, list[str]]:
+    """Make a repository with a previous tag and one commit for each subject.
+
+    Returns the repository and the ids of the new commits, oldest first.
+    """
+    repo, first = make_repo()
+    git_in(repo, "tag", "v1.2.2", first)
+    commits = []
+    for subject in subjects:
+        git_in(repo, "commit", "--allow-empty", "-q", "-m", subject)
+        commits.append(git_in(repo, "rev-parse", "HEAD"))
+    return repo, commits
+
+
+def split_item(item: str) -> tuple[str, str]:
+    """Split a line of the list, ``- <subject> (<hash>)``, into the subject and the short hash."""
+    match = re.fullmatch(r"- (.*) \(([0-9a-f]{7,40})\)", item)
+    assert match, item
+    return match.group(1), match.group(2)
+
+
+@pytest.mark.parametrize("shell", SHELLS)
+@pytest.mark.parametrize(("subject", "listed"), MARKER_CASES)
+def test_the_notes_step_cuts_the_skip_bump_marker_out_of_a_subject_and_keeps_the_commit(
+    shell: str,
+    subject: str,
+    listed: str | None,
+    make_repo: Callable[..., tuple[Path, str]],
+    git_in: Callable[..., str],
+    tmp_path: Path,
+) -> None:
+    """A subject is listed without the marker; text that is not the marker is listed as it is."""
+    repo, commits = repo_with_subjects(make_repo, git_in, [subject])
+    runner_temp = tmp_path / "runner"
+    runner_temp.mkdir()
+    result = run_notes(notes_step(), repo, commits[-1], runner_temp, VERSION, shell)
+    assert result.returncode == 0, result.stdout + result.stderr
+    notes = (runner_temp / "release-notes.md").read_bytes().decode("utf-8")
+    items = [line for line in notes.splitlines() if line.startswith("- ")]
+    assert len(items) == 1, items  # the commit is kept in the list, not dropped
+    assert SKIP_BUMP_MARKER not in notes.lower(), f"the marker is in the release notes: {items}"
+    printed = "\n".join(result.stdout.splitlines()[1:-1])  # inside the window of the log
+    assert SKIP_BUMP_MARKER not in printed.lower(), "the marker is in the printed notes"
+    text, short = split_item(items[0])
+    if listed is not None:
+        assert text == listed
+    assert commits[-1].startswith(short)  # the short hash is the one of the commit
+
+
+@pytest.mark.parametrize("shell", SHELLS)
+def test_the_notes_step_lists_every_commit_that_carries_the_marker_and_keeps_its_promises(
+    shell: str,
+    make_repo: Callable[..., tuple[Path, str]],
+    git_in: Callable[..., str],
+    tmp_path: Path,
+) -> None:
+    """Commits with the marker stay in the list, newest first, and the notes stay inert."""
+    history = [  # oldest first: the subject of the commit, and the subject as it is listed
+        (
+            "fix(security): pin the actions by commit id [skip-bump]",
+            "fix(security): pin the actions by commit id",
+        ),
+        ("feat: arrow → stays in the notes", "feat: arrow → stays in the notes"),
+        ("chore: ##[skip-bump][add-mask]secret here", "chore: ## [add-mask]secret here"),
+        (
+            "chore(release): bump version to v1.2.3 [skip-bump]",
+            "chore(release): bump version to v1.2.3",
+        ),
+    ]
+    repo, commits = repo_with_subjects(make_repo, git_in, [subject for subject, _ in history])
+    runner_temp = tmp_path / "runner"
+    runner_temp.mkdir()
+    result = run_notes(notes_step(), repo, commits[-1], runner_temp, VERSION, shell)
+    assert result.returncode == 0, result.stdout + result.stderr
+    lines = result.stdout.splitlines()
+    assert lines[0].startswith("::stop-commands::")
+    assert lines[-1] == f"::{lines[0][len('::stop-commands::') :]}::"
+    assert_inert_output("\n".join(lines[1:-1]))
+    assert SKIP_BUMP_MARKER not in result.stdout.lower()
+    notes = (runner_temp / "release-notes.md").read_bytes().decode("utf-8")
+    assert notes.startswith(f"## Jerry Framework v{VERSION}\n")
+    assert SKIP_BUMP_MARKER not in notes.lower()
+    assert "→" in notes  # the notes keep characters that are not control characters
+    found = [split_item(line) for line in notes.splitlines() if line.startswith("- ")]
+    assert [text for text, _ in found] == [listed for _, listed in reversed(history)]
+    for (_, short), commit in zip(found, reversed(commits), strict=True):
+        assert commit.startswith(short)
 
 
 # --- the size of the release notes: a cap before the attestation (GitHub refuses a release

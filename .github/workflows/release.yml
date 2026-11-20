@@ -453,8 +453,14 @@ jobs:
           ### What's Changed
 
           NOTES_EOF
+            # The commit that the version bump makes ends its subject with [skip-bump]. That
+            # marker is cut out, whatever the case of its letters (the bump workflow ignores
+            # case too), after the control characters are gone. One blank takes the place of
+            # the marker and of the blanks beside it, so the text on its two sides cannot
+            # join into a new marker. The commit stays in the list.
             git log "${RANGE}" --no-merges --max-count=50 --pretty=format:'- %s (%h)' \
-              | tr -d '\000-\010\013-\037\177'
+              | tr -d '\000-\010\013-\037\177' \
+              | sed -E 's/[[:blank:]]?\[skip-bump\][[:blank:]]*/ /gI'
             printf '\n'
             cat << 'FOOTER_EOF'
 
