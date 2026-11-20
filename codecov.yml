@@ -1,0 +1,22 @@
+# Codecov settings for this repository.
+# Reference: https://docs.codecov.com/docs/codecovyml-reference
+codecov:
+  notify:
+    # When an upload cannot be processed, say so on the pull request instead of staying silent.
+    notify_error: true
+
+coverage:
+  status:
+    # Both statuses report success whatever the coverage, so low coverage cannot fail them.
+    project:
+      default:
+        informational: true
+    patch:
+      default:
+        informational: true
+
+# Post the coverage comment on pull requests.
+comment:
+  # Ask for the project coverage number: newer Codecov accounts may hide it by default.
+  hide_project_coverage: false
+  require_changes: false
