@@ -299,6 +299,16 @@ updates:
     # stop security updates for indirect lock entries -- see the D3 caveat.)
     allow:
       - dependency-type: "direct"
+    # HOLD (2026-11-19): webvtt-py stays below 0.6. From 0.6.0 it skips
+    # malformed cues when reading instead of raising MalformedCaptionError
+    # (unless strict=True), so the transcript parser would report a damaged
+    # file as complete instead of failed, and 0.8.0 reads 899 cues where
+    # 0.5.1 read 896 in one test transcript. Two tests caught both in the
+    # group pull request #444. Remove this entry once the parser handles
+    # skipped cues and those tests are updated (follow-up issue).
+    ignore:
+      - dependency-name: "webvtt-py"
+        versions: [">=0.6.0"]
     groups:
       # D1: Patch + minor updates grouped together. SemVer contract says
       # these should be backward-compatible. CI catches the exceptions.
