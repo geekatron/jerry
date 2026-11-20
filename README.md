@@ -75,6 +75,10 @@ After installation, run `/plugin` in Claude Code and check the **Installed** tab
 
 See [docs/INSTALLATION.md](docs/INSTALLATION.md) for detailed instructions and troubleshooting.
 
+### Updating
+
+Already installed? Run `/plugin marketplace update jerry-framework` in Claude Code to get the newest version. If you installed from a local clone, as above, run `git pull` in that folder first. See [Updating](docs/INSTALLATION.md#updating) for details.
+
 ## Platform Support
 
 Jerry is **primarily developed and tested on macOS**. We are actively working on cross-platform portability, with Windows support as the immediate priority.
