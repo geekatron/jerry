@@ -326,6 +326,9 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: coverage.xml
+          # Send only the named report. The search also sent an old committed report,
+          # and Codecov refused the upload as expired.
+          disable_search: true
           flags: uv
           fail_ci_if_error: false
 
