@@ -1,15 +1,17 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2026 Adam Nowak
 
-"""Guard: the Codecov upload names only ``coverage.xml``; ``.github/codecov.yml`` shows failures.
+"""Guard: the Codecov upload names only ``coverage.xml``; ``.github/codecov.yml`` pins its settings.
 
 Codecov's uploader searches the whole checkout for coverage reports.  It found an old report that
 was committed as project evidence and sent it with the real one.  Codecov refused such uploads as
 expired: the last upload of ``main`` that it processed was on 25 February 2026, and nothing on the
 pull requests said so.  This test reads ``.github/workflows/ci.yml`` and ``.github/codecov.yml``
 (Codecov reads its settings from the repository root, ``dev/`` or ``.github/``) as they are in the
-repository and fails if the upload step may search the tree again, or if the settings that report
-failures are missing.
+repository and fails if the upload step may search the tree again, if the settings that report
+failures are missing, or if the layout of the pull request comment is not the one that was written
+out: its ``files`` item puts each changed file, with its coverage and how many lines it leaves
+uncovered, in the comment, and the other parts add the Coverage Diff counts and the legend.
 """
 
 from __future__ import annotations
@@ -24,7 +26,7 @@ pytestmark = pytest.mark.security
 
 ROOT = Path(__file__).resolve().parents[2]
 ACTION = "codecov/codecov-action@"
-NO_FILE = "Codecov would use its defaults, which say nothing on a pull request when uploads fail"
+NO_FILE = "Codecov would use its defaults: no notice of a failed upload, and a layout of its own"
 # The settings of codecov.yml that are checked: the path, the value it must have, and why.
 SETTINGS = {
     "codecov.notify.notify_error": (True, "without it a refused upload goes unseen"),
@@ -38,6 +40,14 @@ SETTINGS = {
     ),
     "comment.hide_project_coverage": (False, "the comment must show the project coverage number"),
     "comment.require_changes": (False, "the comment must be posted when coverage does not change"),
+    # The layout is pinned as written, so that no part goes unseen: a part that is removed takes a
+    # table, the Coverage Diff block or the legend out of the comment. The file item stays a plain
+    # ``files``: Codecov adds the table of files with uncovered lines only for the exact names
+    # ``files`` and ``tree``, so ``files:25`` would lose it (from Codecov's code; not tried).
+    "comment.layout": (
+        "header, diff, flags, files, footer",
+        "the comment must keep every part of its layout, the file tables among them",
+    ),
 }
 
 
@@ -84,11 +94,14 @@ def test_workflow_when_read_then_the_one_upload_step_sends_only_coverage_xml() -
     ("setting", "expected", "why"), [(k, *v) for k, v in SETTINGS.items()], ids=list(SETTINGS)
 )
 def test_settings_file_when_read_then_the_setting_has_the_wanted_value(
-    setting: str, expected: bool, why: str
+    setting: str, expected: bool | str, why: str
 ) -> None:
     """.github/codecov.yml exists, and ``setting`` in it is ``expected``."""
     value = _read(".github/codecov.yml", NO_FILE)
     for key in setting.split("."):
         value = value.get(key) if isinstance(value, dict) else None
-    message = f".github/codecov.yml: {setting} is {_shown(value)}, but it must be {expected}: {why}"
-    assert value is expected, message
+    message = (
+        f".github/codecov.yml: {setting} is {_shown(value)}, but it must be {expected!r}: {why}"
+    )
+    # The type is compared too: a number or a text (1, 0, "false") must not stand in for a boolean.
+    assert type(value) is type(expected) and value == expected, message
