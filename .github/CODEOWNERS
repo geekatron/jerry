@@ -21,3 +21,13 @@ docs/governance/       @geekatron
 # to prevent supply-chain attacks via the action script or CVE suppression abuse.
 .github/actions/   @geekatron
 .github/security/  @geekatron
+
+# Scripts, configuration and dependency files that a job with write permissions
+# runs or reads as code.
+/scripts/security/        @geekatron
+/scripts/sync_versions.py @geekatron
+/pyproject.toml           @geekatron
+/uv.lock                  @geekatron
+/pytest.ini               @geekatron
+/mkdocs.yml               @geekatron
+/overrides/               @geekatron
