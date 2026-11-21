@@ -16,7 +16,20 @@ coverage:
         informational: true
 
 # Post the coverage comment on pull requests.
+# Reference: https://docs.codecov.com/docs/pull-request-comments
 comment:
+  # The parts of the comment, in this order:
+  #   header  the coverage of the patch and of the whole project, and the two commits compared
+  #   diff    the Coverage Diff block: files, lines, hits, misses and partials, base against head
+  #   flags   the coverage of each flag that the workflow uploads (here: uv)
+  #   files   the changed files, each with its coverage; also a table of the ones that have
+  #           uncovered lines, which Codecov puts right after the header. Each table shows at
+  #           most 10 files by default and links to the rest
+  #   footer  the legend of the figures, the commits of the last update, and a link to the docs
+  layout: "header, diff, flags, files, footer"
+  # Keep one comment and update it in place; only the first comment sends an email.
+  behavior: default
   # Ask for the project coverage number: newer Codecov accounts may hide it by default.
   hide_project_coverage: false
+  # Post the comment even when coverage does not change.
   require_changes: false
