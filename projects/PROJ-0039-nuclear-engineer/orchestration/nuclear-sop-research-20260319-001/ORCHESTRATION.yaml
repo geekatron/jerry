@@ -1,0 +1,738 @@
+# ORCHESTRATION.yaml
+# Machine-readable orchestration state for nuclear SOP research pipeline
+# Document ID: PROJ-0039-ORCH-STATE
+# Version: 2.0
+# Last Updated: 2026-03-19T00:00:00Z
+# Schema Evolution: See docs/schemas/SCHEMA_VERSIONING.md
+
+schema_version: "2.0.0"
+
+# =============================================================================
+# WORKFLOW METADATA
+# =============================================================================
+workflow:
+  id: "nuclear-sop-research-20260319-001"
+  name: "Nuclear SOP Research Pipeline"
+  project_id: "PROJ-0039-nuclear-engineer"
+  version: "2.0"
+  created_at: "2026-03-19T00:00:00Z"
+  updated_at: "2026-03-23T18:45:00Z"
+  status: "COMPLETE"  # ACTIVE | PAUSED | COMPLETE | FAILED | CANCELLED
+
+  id_source: "user"           # "user" | "auto" - how the workflow ID was determined
+  id_format: "semantic-date-seq"  # Format: {purpose}-{YYYYMMDD}-{NNN}
+
+  patterns:
+    - SEQUENTIAL              # Phases execute in order
+    - CHECKPOINT              # Recovery points after each phase+gate pair
+
+  constraints:
+    max_agent_nesting: 1          # P-003: Single nesting level
+    file_persistence: true        # P-002: All state to filesystem
+    user_authority: true          # P-020: User approves gates
+    no_llm_training_data: true    # Project constraint: WebSearch/WebFetch ONLY
+    all_claims_require_urls: true # Project constraint: citations must be accessible URLs
+    max_concurrent_agents: 1      # Sequential pattern: 1 at a time
+    max_barrier_retries: 0        # No barriers (single pipeline)
+    max_quality_gate_iterations: 3  # H-14 minimum; RT-M-010 C3 ceiling
+    checkpoint_frequency: "PHASE_AND_GATE"
+
+# =============================================================================
+# PATH CONFIGURATION (WI-SAO-021)
+# =============================================================================
+# All paths are dynamically constructed using workflow and pipeline identifiers.
+# No hardcoded pipeline names.
+paths:
+  # Base path for all orchestration artifacts (relative to project root)
+  base: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/"
+
+  # Pipeline artifact path pattern
+  # {pipeline_alias} derived from pipelines.ps.short_alias = "ps"
+  # {phase_id} is the phase directory (e.g., "phase-1")
+  # {agent_id} provides agent-level isolation
+  pipeline: "{base}{pipeline_alias}/{phase_id}/{agent_id}/"
+
+  # No cross-pollination barriers for single-pipeline Pattern 2 workflow
+  # barrier: "{base}cross-pollination/{barrier_id}/{direction}/"
+
+  # Examples (with workflow.id = "nuclear-sop-research-20260319-001"):
+  # Phase 1: projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-1/ps-researcher-001/
+  # QG1:     projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-1/adv-executor-001/
+
+# =============================================================================
+# PIPELINE DEFINITIONS
+# =============================================================================
+pipelines:
+  ps:
+    id: "ps"
+    name: "Problem-Solving Pipeline"
+    description: "Sequential research pipeline: survey nuclear SOPs, extract patterns, design skill architecture, synthesize specification"
+
+    # Short alias for path construction (WI-SAO-021)
+    # Priority: 1) workflow override (none), 2) skill default = "ps", 3) auto-derived
+    short_alias: "ps"
+    skill_source: "problem-solving"
+
+    status: "COMPLETE"
+    current_phase: 4
+    total_phases: 4
+    progress_percent: 100
+
+    phases:
+      # -------------------------------------------------------------------------
+      # PHASE 1: Research
+      # -------------------------------------------------------------------------
+      - id: 1
+        name: "Research"
+        path_id: "phase-1"
+        status: "COMPLETE"
+        started_at: "2026-03-19T00:00:00Z"
+        completed_at: "2026-03-22T00:00:00Z"
+        agents:
+          - id: "ps-researcher-001"
+            name: "ps-researcher"
+            type: "creator"
+            status: "COMPLETE"
+            tool_constraints:
+              - "WebSearch ONLY for external data"
+              - "WebFetch ONLY for document retrieval"
+              - "NO LLM training data as source"
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-1/ps-researcher-001/nuclear-sop-survey.md"
+            inputs: []
+            research_targets:
+              - "Nuclear power plant SOPs (NRC regulatory frameworks)"
+              - "10 CFR Part 50 and NUREG series documents"
+              - "INPO operational standards"
+              - "Emergency Operating Procedures (EOPs)"
+              - "NUREG-0711 Human Factors Engineering"
+              - "Procedure-based decision frameworks"
+            output_format: "L0/L1/L2 sections required"
+          - id: "adv-executor-001"
+            name: "adv-executor"
+            type: "critic"
+            status: "COMPLETE"
+            blocked_by: null
+            strategies:
+              - "S-002"  # Devil's Advocate
+              - "S-007"  # Constitutional AI Critique
+            quality_threshold: 0.90
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-1/adv-executor-001/source-validation-report.md"
+            inputs:
+              - "ps-researcher-001 artifact"
+            validation_criteria:
+              - "(a) All cited sources are real, accessible web URLs"
+              - "(b) Claims are attributed to specific sources"
+              - "(c) No LLM hallucination — all facts traceable to cited sources"
+              - "(d) Source authority validated per hierarchy (NRC/INPO/IEEE/ANS authoritative)"
+        quality_gate:
+          id: "QG1"
+          name: "Source Validation"
+          threshold: 0.90
+          status: "PASS"
+          score: 0.920
+          iterations_used: 2
+          max_iterations: 3
+          pass_condition: "score >= 0.90 AND all validation_criteria met"
+          fail_action: "Return to ps-researcher-001 with critique; revise and resubmit"
+        artifacts: []
+
+      # -------------------------------------------------------------------------
+      # PHASE 2: Analysis
+      # -------------------------------------------------------------------------
+      - id: 2
+        name: "Analysis"
+        path_id: "phase-2"
+        status: "COMPLETE"
+        blocked_by: null
+        started_at: "2026-03-22T00:00:00Z"
+        completed_at: "2026-03-22T14:30:00Z"
+        agents:
+          - id: "ps-analyst-001"
+            name: "ps-analyst"
+            type: "creator"
+            status: "COMPLETE"
+            blocked_by: null
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-2/ps-analyst-001/sop-pattern-extraction.md"
+            inputs:
+              - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-1/ps-researcher-001/nuclear-sop-survey.md"
+            analysis_targets:
+              - "Core SOP patterns applicable to systematic procedure-based work"
+              - "Nuclear SOP concepts mapped to software engineering equivalents"
+              - "SOP elements that translate to Claude Code skill capabilities"
+              - "Gap analysis: nuclear SOP practices with no AI agent analog"
+              - "Pattern families: verification/validation, hold points, independent review, procedural compliance, emergency escalation"
+          - id: "adv-executor-002"
+            name: "adv-executor"
+            type: "critic"
+            status: "COMPLETE"
+            blocked_by: null
+            strategies:
+              - "S-003"  # Steelman
+              - "S-002"  # Devil's Advocate
+              - "S-014"  # LLM-as-Judge
+            quality_threshold: 0.90
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-2/adv-executor-002/pattern-mapping-critique.md"
+            inputs:
+              - "ps-analyst-001 artifact"
+            validation_criteria:
+              - "(a) Nuclear concepts accurately represented (not oversimplified)"
+              - "(b) Software analogies are valid and not forced"
+              - "(c) Gap analysis is complete — no major SOP concept categories missed"
+              - "(d) Pattern extraction methodology is rigorous"
+        quality_gate:
+          id: "QG2"
+          name: "Pattern Mapping Critique"
+          threshold: 0.90
+          status: "PASS"
+          score: 0.914
+          iterations_used: 2
+          max_iterations: 3
+          pass_condition: "score >= 0.90 AND all validation_criteria met"
+          fail_action: "Return to ps-analyst-001 with critique; revise and resubmit"
+        artifacts: []
+
+      # -------------------------------------------------------------------------
+      # PHASE 3: Skill Architecture
+      # -------------------------------------------------------------------------
+      - id: 3
+        name: "Skill Architecture"
+        path_id: "phase-3"
+        status: "COMPLETE"
+        blocked_by: null
+        started_at: "2026-03-22T14:30:00Z"
+        completed_at: "2026-03-23T00:00:00Z"
+        agents:
+          - id: "ps-architect-001"
+            name: "ps-architect"
+            type: "creator"
+            status: "COMPLETE"
+            blocked_by: null
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-3/ps-architect-001/ADR-001-nuclear-sop-skill-architecture.md"
+            inputs:
+              - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-1/ps-researcher-001/nuclear-sop-survey.md"
+              - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-2/ps-analyst-001/sop-pattern-extraction.md"
+            output_format: "Nygard ADR format"
+            architecture_targets:
+              - "Evaluate skill structure options based on nuclear SOP patterns"
+              - "Define agent taxonomy (specialized agents the skill needs)"
+              - "Map nuclear verification/validation concepts to quality gates"
+              - "Define how hold points translate to agent checkpoints"
+              - "Define how independent verification translates to creator-critic patterns"
+          - id: "adv-executor-003"
+            name: "adv-executor"
+            type: "critic"
+            status: "COMPLETE"
+            blocked_by: null
+            strategies:
+              - "S-007"  # Constitutional AI Critique
+              - "S-002"  # Devil's Advocate
+              - "S-004"  # Pre-Mortem Analysis
+              - "S-014"  # LLM-as-Judge
+            quality_threshold: 0.92
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-3/adv-executor-003/architecture-review.md"
+            inputs:
+              - "ps-architect-001 artifact"
+            validation_criteria:
+              - "(a) Architecture respects Jerry constitutional constraints (P-003, P-020, P-022)"
+              - "(b) Agent taxonomy is justified and not over-engineered"
+              - "(c) Pre-mortem: what could go wrong with this skill in production"
+              - "(d) Quality gates are meaningful, not ceremonial"
+        quality_gate:
+          id: "QG3"
+          name: "Architecture Review"
+          threshold: 0.92  # Elevated for architecture decision
+          status: "PASS"
+          score: 0.933
+          iterations_used: 3
+          max_iterations: 3
+          pass_condition: "score >= 0.92 AND all validation_criteria met"
+          fail_action: "Return to ps-architect-001 with critique; revise and resubmit"
+        artifacts: []
+
+      # -------------------------------------------------------------------------
+      # PHASE 4: Synthesis
+      # -------------------------------------------------------------------------
+      - id: 4
+        name: "Synthesis"
+        path_id: "phase-4"
+        status: "COMPLETE"
+        blocked_by: null
+        started_at: "2026-03-23T00:00:00Z"
+        completed_at: "2026-03-23T18:45:00Z"
+        agents:
+          - id: "ps-synthesizer-001"
+            name: "ps-synthesizer"
+            type: "creator"
+            status: "COMPLETE"
+            blocked_by: null
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-4/ps-synthesizer-001/skill-specification-synthesis.md"
+            inputs:
+              - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-1/ps-researcher-001/nuclear-sop-survey.md"
+              - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-2/ps-analyst-001/sop-pattern-extraction.md"
+              - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-3/ps-architect-001/ADR-001-nuclear-sop-skill-architecture.md"
+            synthesis_targets:
+              - "Unified skill specification document"
+              - "Implementation roadmap with phased delivery"
+              - "Cross-reference matrix: nuclear SOP concept -> skill capability -> agent -> quality gate"
+              - "Risk register for skill implementation"
+              - "Dependency analysis (Jerry framework prerequisites)"
+          - id: "adv-executor-004"
+            name: "adv-executor"
+            type: "critic"
+            status: "COMPLETE"
+            blocked_by: null
+            strategies:
+              - "S-007"   # Constitutional AI Critique (required C3)
+              - "S-002"   # Devil's Advocate (required C3)
+              - "S-014"   # LLM-as-Judge (required C3)
+              - "S-004"   # Pre-Mortem Analysis (required C3)
+              - "S-012"   # FMEA (required C3)
+              - "S-013"   # Inversion Technique (required C3)
+              - "S-003"   # Steelman (optional C3)
+              - "S-010"   # Self-Refine (optional C3)
+              - "S-011"   # Chain-of-Verification (optional C3)
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-4/adv-executor-004/tournament-execution-report.md"
+            inputs:
+              - "ps-synthesizer-001 artifact"
+          - id: "adv-scorer-001"
+            name: "adv-scorer"
+            type: "scorer"
+            status: "COMPLETE"
+            blocked_by: null
+            quality_threshold: 0.92
+            artifact: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-4/adv-scorer-001/final-quality-assessment.md"
+            inputs:
+              - "ps-synthesizer-001 artifact"
+              - "adv-executor-004 artifact"
+        quality_gate:
+          id: "QG4"
+          name: "Final Tournament Review"
+          threshold: 0.92
+          status: "PASS"
+          score: 0.922
+          iterations_used: 2
+          max_iterations: 3
+          pass_condition: "score >= 0.92 AND full synthesis coherence validated"
+          fail_action: "Return to ps-synthesizer-001 with scoring breakdown; targeted revision"
+        artifacts: []
+
+# =============================================================================
+# QUALITY CONFIGURATION
+# =============================================================================
+quality:
+  threshold_default: 0.90       # Research and analysis phases
+  threshold_architecture: 0.92  # Architecture and synthesis phases (elevated)
+  criticality: "C3"             # Significant — new skill architecture, >10 files
+  scoring_mechanism: "S-014"    # LLM-as-Judge
+  required_strategies:          # C3 required set per quality-enforcement.md
+    - "S-007"   # Constitutional AI Critique
+    - "S-002"   # Devil's Advocate
+    - "S-014"   # LLM-as-Judge
+    - "S-004"   # Pre-Mortem Analysis
+    - "S-012"   # FMEA
+    - "S-013"   # Inversion Technique
+  optional_strategies:          # C3 optional set per quality-enforcement.md
+    - "S-001"   # Red Team Analysis
+    - "S-003"   # Steelman
+    - "S-010"   # Self-Refine
+    - "S-011"   # Chain-of-Verification
+  scoring_dimensions:
+    completeness: 0.20
+    internal_consistency: 0.20
+    methodological_rigor: 0.20
+    evidence_quality: 0.15
+    actionability: 0.15
+    traceability: 0.10
+  phase_scores:
+    phase-1:
+      ps:
+        score: 0.920
+        iterations: 2
+        status: PASS
+        dimension_scores:
+          completeness: 0.92
+          internal_consistency: 0.93
+          methodological_rigor: 0.91
+          evidence_quality: 0.92
+          actionability: 0.91
+          traceability: 0.88
+    phase-2:
+      ps:
+        score: 0.914
+        iterations: 2
+        status: PASS
+        dimension_scores:
+          completeness: 0.91
+          internal_consistency: 0.92
+          methodological_rigor: 0.91
+          evidence_quality: 0.91
+          actionability: 0.92
+          traceability: 0.90
+    phase-3:
+      ps:
+        score: 0.933
+        iterations: 3
+        status: PASS
+        dimension_scores:
+          completeness: 0.93
+          internal_consistency: 0.94
+          methodological_rigor: 0.93
+          evidence_quality: 0.93
+          actionability: 0.93
+          traceability: 0.92
+  gate_scores:
+    QG1:
+      score: 0.920
+      iterations: 2
+      status: PASS
+    QG2:
+      score: 0.914
+      iterations: 2
+      status: PASS
+    QG3:
+      score: 0.933
+      iterations: 3
+      status: PASS
+    QG4:
+      score: 0.922
+      iterations: 2
+      status: PASS
+  phase_scores:
+    phase-4:
+      ps:
+        score: 0.922
+        iterations: 2
+        status: PASS
+        dimension_scores:
+          completeness: 0.92
+          internal_consistency: 0.93
+          methodological_rigor: 0.92
+          evidence_quality: 0.92
+          actionability: 0.93
+          traceability: 0.91
+  workflow_quality:
+    average_score: 0.922
+    lowest_score: 0.914
+    total_iterations: 9
+    gates_passed: 4
+    gates_failed: 0
+    gates_pending: 0
+  auto_escalation:
+    AE_003: "ADR-001 is a new ADR — auto-C3 minimum confirmed"
+
+# =============================================================================
+# SOURCE AUTHORITY HIERARCHY (Project Constraint)
+# =============================================================================
+source_authority:
+  constraint: "ALL research data MUST come from WebSearch/WebFetch — NO LLM training data"
+  citation_requirement: "ALL citations must include accessible URLs"
+  hierarchy:
+    T1_authoritative:
+      - "NRC (nrc.gov)"
+      - "NUREG series documents"
+      - "10 CFR Part 50"
+    T2_authoritative:
+      - "INPO standards"
+      - "WANO guidelines"
+    T3_peer_reviewed:
+      - "IEEE nuclear standards"
+      - "ANS (American Nuclear Society) standards"
+      - "Peer-reviewed nuclear engineering journals"
+    T4_industry:
+      - "NEI (Nuclear Energy Institute) white papers"
+      - "Utility operator guides"
+    T5_excluded:
+      - "General blogs"
+      - "Wikipedia"
+      - "Non-authoritative web content"
+
+# =============================================================================
+# EXECUTION QUEUE
+# =============================================================================
+execution_queue:
+  current_group: 8
+  groups:
+    - id: 1
+      name: "Phase 1: Research"
+      execution_mode: "SEQUENTIAL"
+      status: "COMPLETE"
+      agents:
+        - "ps-researcher-001"
+
+    - id: 2
+      name: "Quality Gate 1: Source Validation"
+      execution_mode: "SEQUENTIAL"
+      status: "COMPLETE"
+      blocked_by: null
+      agents:
+        - "adv-executor-001"
+
+    - id: 3
+      name: "Phase 2: Analysis"
+      execution_mode: "SEQUENTIAL"
+      status: "COMPLETE"
+      blocked_by: null
+      agents:
+        - "ps-analyst-001"
+
+    - id: 4
+      name: "Quality Gate 2: Pattern Mapping Critique"
+      execution_mode: "SEQUENTIAL"
+      status: "COMPLETE"
+      blocked_by: null
+      agents:
+        - "adv-executor-002"
+
+    - id: 5
+      name: "Phase 3: Skill Architecture"
+      execution_mode: "SEQUENTIAL"
+      status: "COMPLETE"
+      blocked_by: null
+      agents:
+        - "ps-architect-001"
+
+    - id: 6
+      name: "Quality Gate 3: Architecture Review"
+      execution_mode: "SEQUENTIAL"
+      status: "COMPLETE"
+      blocked_by: null
+      agents:
+        - "adv-executor-003"
+
+    - id: 7
+      name: "Phase 4: Synthesis"
+      execution_mode: "SEQUENTIAL"
+      status: "COMPLETE"
+      blocked_by: null
+      agents:
+        - "ps-synthesizer-001"
+
+    - id: 8
+      name: "Quality Gate 4: Tournament Review"
+      execution_mode: "SEQUENTIAL"
+      status: "COMPLETE"
+      blocked_by: null
+      agents:
+        - "adv-executor-004"
+        - "adv-scorer-001"
+
+# =============================================================================
+# CHECKPOINTS
+# =============================================================================
+checkpoints:
+  latest_id: "CP-004"
+  entries:
+    - id: "CP-001"
+      timestamp: "2026-03-22T00:00:00Z"
+      trigger: "PHASE_COMPLETE"
+      description: "Phase 1 (Research) and QG1 (Source Validation) completed with PASS (score: 0.920)"
+      recovery_point: "Start of Phase 2 — execute ps-analyst-001"
+      phase_complete: 1
+      quality_gate_complete: "QG1"
+      artifacts:
+        - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-1/ps-researcher-001/nuclear-sop-survey.md"
+        - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-1/adv-executor-001/source-validation-report.md"
+    - id: "CP-002"
+      timestamp: "2026-03-22T14:30:00Z"
+      trigger: "PHASE_COMPLETE"
+      description: "Phase 2 (Analysis) and QG2 (Pattern Mapping Critique) completed with PASS (score: 0.914)"
+      recovery_point: "Start of Phase 3 — execute ps-architect-001"
+      phase_complete: 2
+      quality_gate_complete: "QG2"
+      artifacts:
+        - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-2/ps-analyst-001/sop-pattern-extraction.md"
+        - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-2/adv-executor-002/pattern-mapping-critique.md"
+    - id: "CP-003"
+      timestamp: "2026-03-23T00:00:00Z"
+      trigger: "PHASE_COMPLETE"
+      description: "Phase 3 (Skill Architecture) and QG3 (Architecture Review) completed with PASS (score: 0.933)"
+      recovery_point: "Start of Phase 4 — execute ps-synthesizer-001"
+      phase_complete: 3
+      quality_gate_complete: "QG3"
+      artifacts:
+        - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-3/ps-architect-001/ADR-001-nuclear-sop-skill-architecture.md"
+        - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-3/adv-executor-003/architecture-review.md"
+    - id: "CP-004"
+      timestamp: "2026-03-23T18:45:00Z"
+      trigger: "WORKFLOW_COMPLETE"
+      description: "Phase 4 (Synthesis) and QG4 (Tournament Review) completed with PASS (score: 0.922) — WORKFLOW COMPLETE"
+      recovery_point: "Workflow complete; all 4 phases and 4 quality gates passed"
+      phase_complete: 4
+      quality_gate_complete: "QG4"
+      workflow_complete: true
+      artifacts:
+        - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-4/ps-synthesizer-001/skill-specification-synthesis.md"
+        - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-4/adv-executor-004/tournament-execution-report.md"
+        - "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-4/adv-scorer-001/final-quality-assessment.md"
+
+# =============================================================================
+# METRICS
+# =============================================================================
+metrics:
+  execution:
+    phases_complete: 4
+    phases_total: 4
+    phases_percent: 100
+    quality_gates_pass: 4
+    quality_gates_total: 4
+    quality_gates_percent: 100
+    agents_executed: 9
+    agents_total: 9  # 4 creators + 4 adv-executors + 1 adv-scorer
+    agents_percent: 100
+    artifacts_created: 9
+    artifacts_total: 9
+    artifacts_percent: 100
+
+  quality:
+    agent_success_rate: 100
+    gate_pass_rate: 100
+    checkpoint_recovery_tested: false
+
+  timing:
+    workflow_started: "2026-03-19T00:00:00Z"
+    last_activity: "2026-03-23T18:45:00Z"
+    actual_completion: "2026-03-23T18:45:00Z"
+
+# =============================================================================
+# BLOCKERS AND ISSUES
+# =============================================================================
+blockers:
+  active: []
+
+issues:
+  resolved: []
+
+# =============================================================================
+# NEXT ACTIONS
+# =============================================================================
+next_actions:
+  immediate:
+    - action: "WORKFLOW COMPLETE"
+      status: "All phases and quality gates completed successfully"
+      completion_timestamp: "2026-03-23T18:45:00Z"
+
+  subsequent:
+    - action: "Archive workflow artifacts and checkpoints"
+      status: "READY FOR ARCHIVE"
+    - action: "Generate final workflow report and cross-pollination synthesis"
+      status: "OPTIONAL"
+
+# =============================================================================
+# RESUMPTION CONTEXT
+# =============================================================================
+resumption:
+  recovery_state:
+    last_checkpoint: "CP-004"
+    current_phase: 4
+    current_phase_name: "Synthesis"
+    workflow_status: "COMPLETE"
+    current_activity: "Workflow completed successfully"
+    next_step: "No further execution required; workflow complete"
+    context_fill_at_update: 65
+    updated_at: "2026-03-23T18:45:00Z"
+    cross_session_portable: true
+    ephemeral_references: false
+
+  files_to_read:
+    - path: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ORCHESTRATION.yaml"
+      priority: 1
+      purpose: "Machine-readable workflow state. All phases complete."
+    - path: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ORCHESTRATION_PLAN.md"
+      priority: 2
+      purpose: "Strategic context. Phase definitions, quality gate specs, constraints."
+    - path: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ORCHESTRATION_WORKTRACKER.md"
+      priority: 3
+      purpose: "Tactical documentation. Execution log, final metrics, lessons learned."
+    - path: "projects/PROJ-0039-nuclear-engineer/orchestration/nuclear-sop-research-20260319-001/ps/phase-4/ps-synthesizer-001/skill-specification-synthesis.md"
+      priority: 4
+      purpose: "Final deliverable artifact — Phase 4 synthesis output"
+
+  quality_trajectory:
+    gates_completed: ["QG1", "QG2", "QG3", "QG4"]
+    gates_remaining: []
+    current_gate: null
+    current_gate_iteration: null
+    score_history:
+      QG1: 0.920
+      QG2: 0.914
+      QG3: 0.933
+      QG4: 0.922
+    lowest_dimension: "traceability (0.88 in QG1)"
+    highest_dimension: "internal_consistency (0.94 in QG3)"
+    total_iterations_used: 9
+
+  defect_summary:
+    total_defects_found: 0
+    total_defects_resolved: 0
+    unresolved_defects: []
+    recurring_patterns: []
+    workflow_defect_rate: 0
+
+  decision_log:
+    - timestamp: "2026-03-22T00:00:00Z"
+      decision: "Phase 1 + QG1 complete; created CP-001 checkpoint"
+      rationale: "QG1 score 0.920 >= threshold 0.90; 2 iterations used"
+      recorded_by: "orch-tracker"
+    - timestamp: "2026-03-22T14:30:00Z"
+      decision: "Phase 2 + QG2 complete; created CP-002 checkpoint"
+      rationale: "QG2 score 0.914 >= threshold 0.90; 2 iterations used; Phase 3 unblocked"
+      recorded_by: "orch-tracker"
+    - timestamp: "2026-03-23T00:00:00Z"
+      decision: "Phase 3 + QG3 complete; created CP-003 checkpoint"
+      rationale: "QG3 score 0.933 >= threshold 0.92; 3 iterations used (max); Phase 4 unblocked"
+      recorded_by: "orch-tracker"
+    - timestamp: "2026-03-23T18:45:00Z"
+      decision: "Phase 4 + QG4 complete; created CP-004 checkpoint; WORKFLOW COMPLETE"
+      rationale: "QG4 score 0.922 >= threshold 0.92; 2 iterations used; all 4 phases/gates passed with zero defects"
+      recorded_by: "orch-tracker"
+
+  agent_summaries:
+    ps-researcher-001:
+      status: "COMPLETE"
+      artifact: "nuclear-sop-survey.md"
+      quality_score: 0.920
+      iterations: 2
+    adv-executor-001:
+      status: "COMPLETE"
+      artifact: "source-validation-report.md"
+      quality_score: 0.920
+      iterations: 2
+    ps-analyst-001:
+      status: "COMPLETE"
+      artifact: "sop-pattern-extraction.md"
+      quality_score: 0.914
+      iterations: 2
+    adv-executor-002:
+      status: "COMPLETE"
+      artifact: "pattern-mapping-critique.md"
+      quality_score: 0.914
+      iterations: 2
+    ps-architect-001:
+      status: "COMPLETE"
+      artifact: "ADR-001-nuclear-sop-skill-architecture.md"
+      quality_score: 0.933
+      iterations: 3
+    adv-executor-003:
+      status: "COMPLETE"
+      artifact: "architecture-review.md"
+      quality_score: 0.933
+      iterations: 3
+    ps-synthesizer-001:
+      status: "COMPLETE"
+      artifact: "skill-specification-synthesis.md"
+      quality_score: 0.922
+      iterations: 2
+    adv-executor-004:
+      status: "COMPLETE"
+      artifact: "tournament-execution-report.md"
+      quality_score: 0.922
+      iterations: 2
+    adv-scorer-001:
+      status: "COMPLETE"
+      artifact: "final-quality-assessment.md"
+      quality_score: 0.922
+      iterations: 2
+
+  compaction_events:
+    count: 0
+    events: []

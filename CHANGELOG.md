@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **feat(nuclear-sop):** `/nuclear-sop` skill — nuclear-inspired standard-operating-procedure execution for high-rigor workflows: 4 agents (sop-brief, sop-executor, sop-verifier, sop-capture) with STAR self-checking, hold points, place-keeping, and operating-experience capture; agents registered in plugin.json (#269)
+
 ### Changed
 - **ci(dependabot):** hold `webvtt-py` below 0.6 in Dependabot's uv updates — from 0.6.0 it skips malformed cues instead of raising, so the transcript parser would report a damaged file as complete; the hold lifts once the parser handles skipped cues (Dependabot #444)
 - **build(deps):** raise the `pytest-bdd` floor to 9.0.1 in the `test` extra, so pytest 9.2 can come in — pytest 9.2.0 removed the private `FixtureManager._arg2fixturedefs` that pytest-bdd 8.1.0 reads, which failed every scenario in Dependabot's #444; pytest-bdd 9.0.1 fixes it (pytest-dev/pytest-bdd#850), and as a major release it is outside Dependabot's minor-and-patch group
