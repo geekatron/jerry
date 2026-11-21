@@ -309,7 +309,7 @@ jobs:
       # The artifact of a manual run is kept one day; that of a tag push, as long as the
       # default of the repository (a retention of 0 means that default).
       - name: Upload the SBOM
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: sbom
           path: dist/sbom.cyclonedx.json
@@ -365,7 +365,7 @@ jobs:
       # ${RUNNER_TEMP}/sbom-in/sbom.cyclonedx.json. The script checks that the
       # directory holds exactly that one file.
       - name: Download the SBOM
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: sbom
           path: ${{ runner.temp }}/sbom-in
@@ -494,7 +494,7 @@ jobs:
 
       - name: Generate SLSA provenance attestation
         if: github.event_name == 'push'
-        uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 # v4.1.1
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
           subject-path: |
             dist/*.tar.gz
