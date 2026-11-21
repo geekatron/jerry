@@ -27,9 +27,11 @@ on:
 permissions:
   contents: read
 
-# Cancel in-progress runs for the same branch
+# A pull request's runs share one group (its number); a newer run cancels an older one. A push has
+# no pull request, so its group is its own run id (the fallback on GitHub's concurrency page)
+# and no other run can cancel it. In one shared group, main's head run was once cancelled.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
   cancel-in-progress: true
 
 jobs:
