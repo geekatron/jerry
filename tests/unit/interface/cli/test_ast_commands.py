@@ -25,6 +25,7 @@ Test Categories:
 
 from __future__ import annotations
 
+import inspect
 import json
 import sys
 import tempfile
@@ -1175,7 +1176,7 @@ class TestMainAstRouting:
             file = str(tmp_md_file)
 
         with patch("sys.stdout", new_callable=StringIO):
-            result = _handle_ast(FakeArgs(), json_output=False)
+            result = _handle_ast(FakeArgs())
         assert result == 1
 
     def test_handle_ast_unknown_command_prints_error_to_stderr_only(
@@ -1191,7 +1192,7 @@ class TestMainAstRouting:
             command = "nonexistent"
             file = str(tmp_md_file)
 
-        result = _handle_ast(FakeArgs(), json_output=False)
+        result = _handle_ast(FakeArgs())
         captured = capsys.readouterr()
         assert result == 1
         assert captured.out == ""
@@ -2054,3 +2055,32 @@ class TestOwnershipGateRemoved:
         not from this legacy single-root convenience accessor. Guard
         against silent reintroduction."""
         assert not hasattr(ast_commands_module, "_get_repo_root")
+
+
+# =============================================================================
+# GH #378: unused json_output parameter removed from the ast command path
+# =============================================================================
+#
+# ast_parse and ast_query always serialize their output as JSON; the
+# json_output parameter they accepted was never read, and _handle_ast only
+# existed to forward the global --json flag into them. These guards prevent
+# silent reintroduction of the dead parameter.
+# =============================================================================
+
+
+class TestJsonOutputParameterRemoved:
+    """GH #378: guard against reintroduction of the unused json_output parameter."""
+
+    def test_ast_parse_when_inspected_then_has_no_json_output_parameter(self) -> None:
+        """ast_parse must not expose json_output -- it always emits JSON."""
+        assert "json_output" not in inspect.signature(ast_parse).parameters
+
+    def test_ast_query_when_inspected_then_has_no_json_output_parameter(self) -> None:
+        """ast_query must not expose json_output -- it always emits JSON."""
+        assert "json_output" not in inspect.signature(ast_query).parameters
+
+    def test_handle_ast_when_inspected_then_has_no_json_output_parameter(self) -> None:
+        """_handle_ast must not accept json_output -- no ast command reads it."""
+        from src.interface.cli.main import _handle_ast
+
+        assert "json_output" not in inspect.signature(_handle_ast).parameters

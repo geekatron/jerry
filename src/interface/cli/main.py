@@ -118,7 +118,7 @@ def main() -> int:
     elif args.namespace == "context":
         return _handle_context(args)
     elif args.namespace == "ast":
-        return _handle_ast(args, json_output)
+        return _handle_ast(args)
     elif args.namespace == "agents":
         return _handle_agents(args, json_output)
     elif args.namespace == "ci":
@@ -390,7 +390,7 @@ def _handle_context(args: Any) -> int:
     return 1
 
 
-def _handle_ast(args: Any, json_output: bool) -> int:
+def _handle_ast(args: Any) -> int:
     """Route ast namespace commands.
 
     Does not require the CLIAdapter; calls the domain layer directly via
@@ -403,7 +403,6 @@ def _handle_ast(args: Any, json_output: bool) -> int:
             ``getattr(args, "root"/"quiet", None/False)`` and passed
             through to every command, matching the existing defensive
             pattern already used for ``schema``/``nav``.
-        json_output: Whether JSON output was requested (passed through to commands).
 
     Returns:
         Exit code: 0 (success), 1 (validation failure), 2 (parse error).
@@ -432,7 +431,7 @@ def _handle_ast(args: Any, json_output: bool) -> int:
     quiet = getattr(args, "quiet", False)
 
     if args.command == "parse":
-        return ast_parse(args.file, json_output, root=root, quiet=quiet)
+        return ast_parse(args.file, root=root, quiet=quiet)
     elif args.command == "render":
         return ast_render(args.file, root=root, quiet=quiet)
     elif args.command == "validate":
@@ -444,7 +443,7 @@ def _handle_ast(args: Any, json_output: bool) -> int:
             quiet=quiet,
         )
     elif args.command == "query":
-        return ast_query(args.file, args.selector, json_output, root=root, quiet=quiet)
+        return ast_query(args.file, args.selector, root=root, quiet=quiet)
     elif args.command == "frontmatter":
         return ast_frontmatter(args.file, root=root, quiet=quiet)
     elif args.command == "modify":
