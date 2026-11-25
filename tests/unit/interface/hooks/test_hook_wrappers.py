@@ -154,6 +154,31 @@ class TestHooksJsonStructure:
         assert "hooks" in hooks_json
         assert "description" in hooks_json
 
+    def test_hook_entry_keys_when_hooks_json_read_then_only_matcher_and_hooks(
+        self, hooks_json: dict
+    ) -> None:
+        """GIVEN hooks.json WHEN reading each event entry THEN its keys are only matcher, hooks.
+
+        #468: The entries of hooks.json use only "matcher" and "hooks". Claude Code does not
+        define "_comment" there: it ignored the two such keys and printed a notice at every
+        session start. The allowed set is written out here, not read from
+        schemas/hooks.schema.json: that schema was once widened to let "_comment" through, and
+        this test must not follow it if that recurs.
+        """
+        allowed_keys = {"matcher", "hooks"}
+        offenders: list[str] = []
+        for event, entries in hooks_json["hooks"].items():
+            for index, entry in enumerate(entries):
+                extra_keys = sorted(set(entry) - allowed_keys)
+                if extra_keys:
+                    quoted = ", ".join(f'"{key}"' for key in extra_keys)
+                    offenders.append(f"{quoted} in hooks.{event}[{index}]")
+
+        assert not offenders, (
+            'hooks/hooks.json entries may have only "matcher" and "hooks" (#468); remove: '
+            + ", ".join(offenders)
+        )
+
     def test_session_start_registered(self, hooks_json: dict) -> None:
         """GIVEN hooks.json WHEN checking SessionStart THEN points to hooks/session-start.py."""
         assert "SessionStart" in hooks_json["hooks"]

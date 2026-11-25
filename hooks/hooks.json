@@ -38,7 +38,6 @@
     "PreToolUse": [
       {
         "matcher": "Write|Edit|MultiEdit|NotebookEdit|Bash",
-        "_comment": "#150: Consolidated enforcement pipeline. SecurityEnforcementEngine (security checks) + PreToolEnforcementEngine (architecture) + StalenessDetector, all via single CLI path.",
         "hooks": [
           {
             "type": "command",
@@ -50,7 +49,6 @@
     ],
     "SubagentStop": [
       {
-        "_comment": "STORY-024: Consolidated to single CLI path. Handoff orchestration superseded by /orchestration skill.",
         "hooks": [
           {
             "type": "command",
