@@ -97,21 +97,21 @@ S-014 scoring rubric.
 
 5. **Extracting entity context for scoring setup:**
    ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast frontmatter {artifact_path}
+   uv run --directory "${CLAUDE_PLUGIN_ROOT}" jerry ast frontmatter {artifact_path}
    # Returns: {"Type": "story", "Status": "in_progress", "Parent": "FEAT-001", ...}
    # Use the "Type" field to select the appropriate schema for Completeness scoring
    ```
 
 6. **Checking nav table compliance for Completeness dimension (H-23/H-24):**
    ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast validate {artifact_path} --nav
+   uv run --directory "${CLAUDE_PLUGIN_ROOT}" jerry ast validate {artifact_path} --nav
    # Returns: {"is_valid": true/false, "missing_entries": [...], "orphaned_entries": [...]}
    # Nav table violations = Completeness dimension deduction (missing sections)
    ```
 
 7. **Schema validation for entity deliverables:**
    ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast validate {artifact_path} --schema {entity_type}
+   uv run --directory "${CLAUDE_PLUGIN_ROOT}" jerry ast validate {artifact_path} --schema {entity_type}
    # Returns: {"schema_valid": true/false, "schema_violations": [...]}
    # Schema violations inform Completeness (0.20) and Methodological Rigor (0.20) scoring
    # Inspect schema_violations array for field_path and message details

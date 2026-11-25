@@ -45,18 +45,18 @@ type-safe results.
 
 1. **Extracting entity metadata via AST (replaces Grep for status/type):**
    ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast frontmatter projects/PROJ-009/.../EN-001-example.md
+   uv run --directory "${CLAUDE_PLUGIN_ROOT}" jerry ast frontmatter projects/PROJ-009/.../EN-001-example.md
    # Returns: {"Type": "enabler", "Status": "completed", "Parent": "FEAT-001", ...}
    ```
 
 2. **Parsing file structure for hierarchy analysis:**
    ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast parse projects/PROJ-009/.../EN-001-example.md
+   uv run --directory "${CLAUDE_PLUGIN_ROOT}" jerry ast parse projects/PROJ-009/.../EN-001-example.md
    # Returns: {"has_frontmatter": true, "heading_count": 8, "node_types": [...]}
    ```
 
 **Enforcement (H-33):** For hierarchy diagram generation, MUST use
-`jerry ast frontmatter` via `uv run --directory ${CLAUDE_PLUGIN_ROOT}` to extract entity type, status,
+`jerry ast frontmatter` via `uv run --directory "${CLAUDE_PLUGIN_ROOT}"` to extract entity type, status,
 and parent relationships. DO NOT use Grep patterns on `> **Status:**` for
 frontmatter extraction. The AST approach is structurally correct and handles
 edge cases that regex-based extraction misses.

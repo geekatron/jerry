@@ -97,21 +97,21 @@ use the `/ast` skill instead of regex or raw text parsing.
 
 5. **Extracting status and parent from existing requirements docs:**
    ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast frontmatter projects/${JERRY_PROJECT}/requirements/PROJ-002-e-101-propulsion-reqs.md
+   uv run --directory "${CLAUDE_PLUGIN_ROOT}" jerry ast frontmatter projects/${JERRY_PROJECT}/requirements/PROJ-002-e-101-propulsion-reqs.md
    # Returns: {"Type": "story", "Status": "baselined", "Parent": "EPIC-001", ...}
    # Use Status and Parent fields to verify traceability chain before adding new requirements
    ```
 
 6. **Validating nav table compliance of requirements documents (H-23/H-24):**
    ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast validate projects/${JERRY_PROJECT}/requirements/PROJ-002-e-101-propulsion-reqs.md --nav
+   uv run --directory "${CLAUDE_PLUGIN_ROOT}" jerry ast validate projects/${JERRY_PROJECT}/requirements/PROJ-002-e-101-propulsion-reqs.md --nav
    # Returns: {"is_valid": true/false, "missing_entries": [...], "orphaned_entries": [...]}
    # Missing nav entries indicate incomplete document structure
    ```
 
 7. **Parsing requirements doc structure for completeness assessment:**
    ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast parse projects/${JERRY_PROJECT}/requirements/PROJ-002-e-101-propulsion-reqs.md
+   uv run --directory "${CLAUDE_PLUGIN_ROOT}" jerry ast parse projects/${JERRY_PROJECT}/requirements/PROJ-002-e-101-propulsion-reqs.md
    # Returns: {"heading_count": N, "has_frontmatter": true/false, "node_types": [...]}
    # Use heading_count to verify required sections present (L0/L1/L2 + Traceability)
    ```
