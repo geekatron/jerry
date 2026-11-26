@@ -616,7 +616,7 @@ wheels = [
 
 [[package]]
 name = "jerry"
-version = "0.31.10"
+version = "0.31.11"
 source = { editable = "." }
 dependencies = [
     { name = "filelock" },
