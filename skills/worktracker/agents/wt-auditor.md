@@ -74,13 +74,13 @@ machine-readable results.
 
 5. **Extracting metadata via AST (replaces Grep for frontmatter patterns):**
    ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast frontmatter projects/PROJ-009/.../EN-001-example.md
+   uv run --directory "${CLAUDE_PLUGIN_ROOT}" jerry ast frontmatter projects/PROJ-009/.../EN-001-example.md
    # Returns: {"Type": "enabler", "Status": "completed", "Parent": "FEAT-001", ...}
    ```
 
 6. **Schema-based template compliance (replaces manual section checking):**
    ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast validate projects/PROJ-009/.../EN-001-example.md --schema enabler
+   uv run --directory "${CLAUDE_PLUGIN_ROOT}" jerry ast validate projects/PROJ-009/.../EN-001-example.md --schema enabler
    # Returns: {
    #   "schema_valid": true/false,
    #   "schema_violations": [
@@ -94,12 +94,12 @@ machine-readable results.
 
 7. **Validating nav table compliance (H-23/H-24):**
    ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast validate projects/PROJ-009/.../EN-001-example.md --nav
+   uv run --directory "${CLAUDE_PLUGIN_ROOT}" jerry ast validate projects/PROJ-009/.../EN-001-example.md --nav
    # Returns: {"is_valid": true/false, "missing_entries": [...], "orphaned_entries": [...]}
    ```
 
 **Enforcement (H-33):** For the `template_compliance` audit check type,
-MUST use `jerry ast validate path --schema entity_type` via `uv run --directory ${CLAUDE_PLUGIN_ROOT}`.
+MUST use `jerry ast validate path --schema entity_type` via `uv run --directory "${CLAUDE_PLUGIN_ROOT}"`.
 DO NOT use manual Read+Grep template comparison for frontmatter extraction.
 The AST schema validation checks required frontmatter fields, valid status
 values, required sections, and nav table compliance in a single call.

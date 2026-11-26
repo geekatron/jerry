@@ -59,7 +59,7 @@ review criteria.
 
 1. **Checking nav table compliance for documentation reviews:**
    ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast validate {file_path} --nav
+   uv run --directory "${CLAUDE_PLUGIN_ROOT}" jerry ast validate {file_path} --nav
    # Returns: {"is_valid": true/false, "missing_entries": [...], "orphaned_entries": [...]}
    # Nav table violations = documentation review finding (severity: MEDIUM for H-23/H-24)
    # All Claude-consumed markdown > 30 lines must have a nav table (H-23)
@@ -67,7 +67,7 @@ review criteria.
 
 2. **Extracting entity context for review scope determination:**
    ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast frontmatter {file_path}
+   uv run --directory "${CLAUDE_PLUGIN_ROOT}" jerry ast frontmatter {file_path}
    # Returns: {"Type": "story", "Status": "in_progress", "Parent": "FEAT-001", ...}
    # Use to determine review scope and applicable schema
    ```
@@ -75,7 +75,7 @@ review criteria.
 3. **Schema compliance for entity file documentation reviews:**
    ```bash
    # First extract entity type from frontmatter output, then validate:
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast validate {file_path} --schema {entity_type}
+   uv run --directory "${CLAUDE_PLUGIN_ROOT}" jerry ast validate {file_path} --schema {entity_type}
    # Schema violations = documentation review findings (severity: HIGH for required fields)
    # Inspect schema_violations array for severity, field_path, and message details
    ```

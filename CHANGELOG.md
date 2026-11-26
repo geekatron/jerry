@@ -50,6 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **fix(ci):** restrict push triggers to `main`/`master` branches — closes untrusted-branch CI trigger attack surface (TASK-022)
 - **fix(ci):** migrate lint, type-check, security jobs to `uv sync --frozen` — eliminates 4 H-05 violations and closes supply chain gap (TASK-017)
 - **fix(ci):** scan full dependency tree via `uv export --all-extras` for pip-audit — replaces 3-package hand-picked list with complete lockfile audit (TASK-018)
+- **fix(hooks):** quote `${CLAUDE_PLUGIN_ROOT}` in the six hook commands of `hooks/hooks.json` — On macOS, Claude Desktop keeps plugins under Application Support, a path with a space, so the shell split the unquoted path, uv could not find the plugin folder and the hooks failed, and the failing PreToolUse hook refused every Bash, Write and Edit call; the agent and skill instructions that pass the plugin folder to `uv run --directory` quote it now too, because Claude Code puts the path into their text, and a new test starts each hook command from a folder whose path has a space (#435)
 
 ### Changed
 - **docs(proj-024):** worktracker traceability for the ruff 0.16.1 formatting alignment — EN-010/TASK-036 entities with full evidence chain including the review-rejected `projects/**` formatter-exclusion shortcut and its correction; EPIC-003 Phase 4 reopen/re-close window documented (#339)

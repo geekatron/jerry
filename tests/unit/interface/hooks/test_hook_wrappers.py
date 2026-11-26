@@ -20,7 +20,11 @@ References:
 from __future__ import annotations
 
 import json
+import shutil
+import subprocess
+import sys
 from pathlib import Path
+from typing import NamedTuple
 
 import pytest
 
@@ -134,6 +138,185 @@ class TestWrapperScriptsCorrectCliCommand:
 
 
 # =============================================================================
+# Helpers: start hook commands from a plugin folder whose path has a space (#435)
+# =============================================================================
+#
+# These helpers model how a command hook is started. They do not run Claude Code, uv or Jerry.
+#
+# What the model follows, from Claude Code's documentation:
+#   - Hooks reference, "Exec form and shell form" (https://code.claude.com/docs/en/hooks):
+#     a command hook without `args` is passed to `sh -c` on macOS and Linux; one with `args` is
+#     spawned directly with no shell, and the placeholder is substituted into `command` and into
+#     each `args` element; both forms export CLAUDE_PLUGIN_ROOT in the hook's environment.
+#   - Plugins reference, "Where each variable resolves"
+#     (https://code.claude.com/docs/en/plugins/manifest-reference): for hook commands the
+#     placeholder resolves "Anywhere in `command` and `args`".
+# The documentation describes both a replaced placeholder and an exported variable, so a
+# shell-form command is started both ways: with the placeholder replaced in the text before
+# `sh -c` ("placeholder-replaced"), and with the text as written and the variable left for the
+# shell to expand ("variable-expanded"). A hook with `args` is started with no shell
+# ("exec-form"). On Windows, Claude Code uses Git Bash or PowerShell; this model does not cover it.
+#
+# uv is replaced by the small /bin/sh script in _UV_STAND_IN; its folder is the only entry on PATH.
+# It checks what uv would check here (the folder after --directory exists, the script file exists),
+# fails with the error text that #435 reports for uv when one is missing, records its arguments
+# and, for a script, runs the script with this test's own Python. It never starts Jerry and never
+# installs anything.
+
+# The placeholder that the hooks.json commands use for the plugin folder.
+_PLACEHOLDER = "${CLAUDE_PLUGIN_ROOT}"
+
+# Seconds that one start of a hook command may take; a start takes a fraction of a second.
+_START_TIMEOUT_SECONDS = 30
+
+# The uv stand-in. It handles `uv run [options] --directory DIR TARGET [arguments]` where TARGET is
+# a .py file (run with the Python in STAND_IN_PYTHON) or `jerry` (the wrapper's own call, which only
+# exits 0). Options other than --directory are skipped, so the value of an option that takes one
+# is taken as the target. A target that is neither a .py file, nor `jerry`, nor an existing path
+# makes the stand-in print `stand-in uv: unsupported option or target` and exit 3, so such a
+# failure is not mistaken for uv's missing-file error.
+# Each call is appended to STAND_IN_LOG as its arguments, each followed by a NUL byte, and then a
+# byte with the value 1.
+_UV_STAND_IN = r"""#!/bin/sh
+{ printf '%s\0' "$@"; printf '\001'; } >> "$STAND_IN_LOG"
+fail() {
+    echo "error: No such file or directory (os error 2)" >&2
+    exit 2
+}
+if [ "$1" != run ]; then
+    echo "stand-in uv: only 'uv run' is supported" >&2
+    exit 3
+fi
+shift
+directory=
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        --directory)
+            [ "$#" -ge 2 ] || fail
+            directory=$2
+            shift 2
+            ;;
+        -*) shift ;;
+        *) break ;;
+    esac
+done
+[ -z "$directory" ] || [ -d "$directory" ] || fail
+case "$1" in
+    jerry) exit 0 ;;
+    *.py)
+        [ -f "$1" ] || fail
+        exec "$STAND_IN_PYTHON" "$@"
+        ;;
+    *)
+        if [ ! -e "$1" ]; then
+            echo "stand-in uv: unsupported option or target" >&2
+            exit 3
+        fi
+        echo "stand-in uv: cannot run '$1'" >&2
+        exit 3
+        ;;
+esac
+"""
+
+
+@pytest.fixture(scope="module")
+def uv_stand_in_dir(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    """Return a folder with the uv stand-in in it, written once for the module.
+
+    On the macOS machine where this test was written, the first run of a newly written script took
+    0.2 to 0.5 seconds and later runs 0.04 seconds, so the tests share one script.
+    """
+    bin_dir = tmp_path_factory.mktemp("uv-stand-in")
+    stand_in = bin_dir / "uv"
+    stand_in.write_text(_UV_STAND_IN, encoding="utf-8")
+    stand_in.chmod(0o755)
+    return bin_dir
+
+
+class _HookStart(NamedTuple):
+    """How one start of a hook command ended: exit code, stderr text and the uv calls it made."""
+
+    returncode: int
+    stderr: str
+    calls: list[list[str]]
+
+
+def _command_hooks() -> list[tuple[str, dict]]:
+    """Return every command hook in hooks/hooks.json as an ``(event, hook)`` pair."""
+    hooks_json = json.loads((PROJECT_ROOT / "hooks" / "hooks.json").read_text())
+    return [
+        (event, hook)
+        for event, entries in hooks_json["hooks"].items()
+        for entry in entries
+        for hook in entry.get("hooks", [])
+        if hook.get("type") == "command"
+    ]
+
+
+def _start_cases() -> list[object]:
+    """Return one test case per command hook in hooks.json and per way its command is started.
+
+    A hook with ``args`` is started with no shell. Any other hook is started both with the
+    placeholder replaced in its text and with the text as written (see the notes above).
+    """
+    cases: list[object] = []
+    for event, hook in _command_hooks():
+        forms = ["exec-form"] if "args" in hook else ["placeholder-replaced", "variable-expanded"]
+        cases.extend(pytest.param(event, hook, form, id=f"{event}-{form}") for form in forms)
+    return cases
+
+
+def _uv_calls(log: Path) -> list[list[str]]:
+    """Return the calls that the uv stand-in recorded in ``log``: one list of arguments per call."""
+    if not log.exists():
+        return []
+    chunks = [chunk for chunk in log.read_bytes().split(b"\x01") if chunk]
+    return [[arg.decode("utf-8") for arg in chunk.split(b"\0")[:-1]] for chunk in chunks]
+
+
+def _start_hook(hook: dict, form: str, plugin_root: Path, uv_dir: Path, log: Path) -> _HookStart:
+    """Start one hook command from ``plugin_root`` with the uv stand-in as the only tool on PATH.
+
+    ``plugin_root`` gets a copy of the real wrapper scripts in hooks/. ``uv_dir`` holds the
+    stand-in and ``log`` receives its calls. ``form`` is one of the forms that ``_start_cases``
+    names. The environment holds CLAUDE_PLUGIN_ROOT in each form, as the documentation says.
+    """
+    hooks_dir = plugin_root / "hooks"
+    hooks_dir.mkdir(parents=True)
+    for script in (PROJECT_ROOT / "hooks").glob("*.py"):
+        shutil.copy2(script, hooks_dir / script.name)
+    root = str(plugin_root)
+    env = {
+        "PATH": str(uv_dir),
+        "CLAUDE_PLUGIN_ROOT": root,
+        "STAND_IN_LOG": str(log),
+        "STAND_IN_PYTHON": sys.executable,
+    }
+    command = hook["command"]
+    if form == "exec-form":
+        argv = [part.replace(_PLACEHOLDER, root) for part in [command, *hook["args"]]]
+    elif form == "placeholder-replaced":
+        argv = ["/bin/sh", "-c", command.replace(_PLACEHOLDER, root)]
+    else:
+        argv = ["/bin/sh", "-c", command]
+    done = subprocess.run(
+        argv,
+        input=b"{}",
+        capture_output=True,
+        env=env,
+        cwd=log.parent,
+        timeout=_START_TIMEOUT_SECONDS,
+        check=False,
+    )
+    return _HookStart(done.returncode, done.stderr.decode("utf-8", "replace"), _uv_calls(log))
+
+
+def _short(value: object, tmp_path: Path) -> str:
+    """Return the text of ``value`` with the pytest temporary folder shortened to ``<tmp>``."""
+    return str(value).replace(str(tmp_path), "<tmp>")
+
+
+# =============================================================================
 # Tests: hooks.json Structure
 # =============================================================================
 
@@ -238,6 +421,49 @@ class TestHooksJsonStructure:
             for hook in entry.get("hooks", []):
                 if "hooks/pre-tool-use.py" in hook.get("command", ""):
                     assert hook["timeout"] == 5000
+
+    @pytest.mark.skipif(
+        sys.platform == "win32",
+        reason="starts commands with /bin/sh and a /bin/sh stand-in for uv; Windows has neither",
+    )
+    @pytest.mark.parametrize(("event", "hook", "form"), _start_cases())
+    def test_hook_start_when_plugin_path_has_space_then_uv_gets_whole_paths(
+        self, tmp_path: Path, uv_stand_in_dir: Path, event: str, hook: dict, form: str
+    ) -> None:
+        """GIVEN a command hook in hooks.json and a plugin folder whose path has a space
+        WHEN the command is started from that folder (#435)
+        THEN the hook exits 0 with nothing on stderr, and uv gets the same arguments as from a
+        folder without a space, with the folder path swapped (so no path splits at the space).
+
+        #435 reports that a plugin folder under "Application Support" splits an unquoted
+        ${CLAUDE_PLUGIN_ROOT}. The start is modelled, not run in Claude Code: see the notes above
+        _UV_STAND_IN. The start from a folder without a space gives the arguments to expect, and
+        shows that the set-up works.
+        """
+        plain_root = tmp_path / "plugins" / "jerry"
+        spaced_root = tmp_path / "Application Support" / "jerry"
+
+        control = _start_hook(hook, form, plain_root, uv_stand_in_dir, tmp_path / "control.log")
+        started = _start_hook(hook, form, spaced_root, uv_stand_in_dir, tmp_path / "spaced.log")
+
+        wanted = [
+            [arg.replace(str(plain_root), str(spaced_root)) for arg in call]
+            for call in control.calls
+        ]
+        assert control.returncode == 0 and not control.stderr and control.calls, (
+            f"{event} ({form}): the command does not start even from a folder whose path has no "
+            f"space, so the command or this set-up is broken. exit code {control.returncode}, "
+            f"stderr {control.stderr!r}, uv received {_short(control.calls, tmp_path)}"
+        )
+        report = (
+            f"{event} ({form}) from a folder whose path has a space: "
+            f"exit code {started.returncode}, stderr {started.stderr!r}; "
+            f"uv received {_short(started.calls, tmp_path)}; "
+            f"uv should receive {_short(wanted, tmp_path)}"
+        )
+        assert started.returncode == 0, report
+        assert not started.stderr, report
+        assert started.calls == wanted, report
 
 
 # =============================================================================

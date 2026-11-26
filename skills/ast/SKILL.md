@@ -81,7 +81,7 @@ All operations are invoked via `jerry ast <command>`. In agent context, use the
 `--directory` prefix:
 
 ```bash
-uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast <command> [args]
+uv run --directory "${CLAUDE_PLUGIN_ROOT}" jerry ast <command> [args]
 ```
 
 ### jerry ast parse

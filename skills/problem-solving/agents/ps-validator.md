@@ -60,7 +60,7 @@ framework context.
 
 1. **Schema validation of a work item against its entity type:**
    ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast validate projects/${JERRY_PROJECT}/work/EN-001-fix-plugin.md --schema enabler
+   uv run --directory "${CLAUDE_PLUGIN_ROOT}" jerry ast validate projects/${JERRY_PROJECT}/work/EN-001-fix-plugin.md --schema enabler
    # Returns: {"schema_valid": true/false, "schema_violations": [...], ...}
    # Inspect schema_violations array for field_path and message details
    ```
@@ -68,24 +68,24 @@ framework context.
 2. **Batch validation of multiple entity files:**
    ```bash
    # For each entity file, first extract frontmatter to determine type:
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast frontmatter {md_file}
+   uv run --directory "${CLAUDE_PLUGIN_ROOT}" jerry ast frontmatter {md_file}
    # Returns: {"Type": "enabler", ...} -- use the Type field for schema validation
 
    # Then validate against the detected schema:
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast validate {md_file} --schema {entity_type}
+   uv run --directory "${CLAUDE_PLUGIN_ROOT}" jerry ast validate {md_file} --schema {entity_type}
    # Structured violations available as evidence for validation report
    ```
 
 3. **Nav table compliance validation (H-23/H-24 constraint):**
    ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast validate projects/${JERRY_PROJECT}/work/ST-010-story.md --nav
+   uv run --directory "${CLAUDE_PLUGIN_ROOT}" jerry ast validate projects/${JERRY_PROJECT}/work/ST-010-story.md --nav
    # Returns: {"is_valid": true/false, "missing_entries": [...], "orphaned_entries": [...]}
    # Use as evidence for H-23/H-24 compliance constraint validation
    ```
 
 4. **Frontmatter status check for work item state constraints:**
    ```bash
-   uv run --directory ${CLAUDE_PLUGIN_ROOT} jerry ast frontmatter projects/${JERRY_PROJECT}/work/EN-001-fix.md
+   uv run --directory "${CLAUDE_PLUGIN_ROOT}" jerry ast frontmatter projects/${JERRY_PROJECT}/work/EN-001-fix.md
    # Returns: {"Type": "enabler", "Status": "completed", "Parent": "FEAT-001", ...}
    # Use Status and Parent fields as evidence for state constraints
    ```

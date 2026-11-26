@@ -210,7 +210,7 @@ cat hooks/hooks.json | python -m json.tool
   "hooks": [
     {
       "event": "SessionStart",
-      "command": "PYTHONPATH=\"${CLAUDE_PLUGIN_ROOT}\" uv run ${CLAUDE_PLUGIN_ROOT}/src/interface/cli/session_start.py"
+      "command": "PYTHONPATH=\"${CLAUDE_PLUGIN_ROOT}\" uv run \"${CLAUDE_PLUGIN_ROOT}/src/interface/cli/session_start.py\""
     }
   ]
 }
@@ -347,7 +347,7 @@ PYTHONPATH="." uv run src/interface/cli/session_start.py
 
 ```json
 {
-  "command": "PYTHONPATH=\"${CLAUDE_PLUGIN_ROOT}\" uv run ${CLAUDE_PLUGIN_ROOT}/path/to/script.py"
+  "command": "PYTHONPATH=\"${CLAUDE_PLUGIN_ROOT}\" uv run \"${CLAUDE_PLUGIN_ROOT}/path/to/script.py\""
 }
 ```
 
@@ -364,7 +364,7 @@ PYTHONPATH="." uv run src/interface/cli/session_start.py
 "command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/foo.py"
 
 // After (working)
-"command": "uv run ${CLAUDE_PLUGIN_ROOT}/scripts/foo.py"
+"command": "uv run \"${CLAUDE_PLUGIN_ROOT}/scripts/foo.py\""
 ```
 
 **Why:** Only `uv run` reads PEP 723 inline metadata.
