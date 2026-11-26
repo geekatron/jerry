@@ -73,6 +73,12 @@ def marketplace_schema(marketplace_schema_path: Path) -> dict:
 
 
 @pytest.fixture
+def hooks_schema(project_root: Path) -> dict:
+    """Load the hooks JSON schema."""
+    return json.loads((project_root / "schemas" / "hooks.schema.json").read_text())
+
+
+@pytest.fixture
 def validation_script_path(project_root: Path) -> Path:
     """Get the path to the validation script."""
     return project_root / "scripts" / "validate_plugin_manifests.py"
@@ -310,6 +316,87 @@ class TestMarketplaceSchemaAdditionalProperties:
             or "not allowed" in error_message
             or "was unexpected" in error_message
         )
+
+
+# =============================================================================
+# Test: Hooks schema does not allow keys that Claude Code does not define
+# =============================================================================
+
+
+class TestHooksSchemaAdditionalProperties:
+    """Contract: hooks.schema.json must not allow "_comment" on an entry of a hook event (#468).
+
+    Claude Code does not define that key: it ignored "_comment" in hooks/hooks.json and
+    printed a notice at session start. The schema was widened to allow "_comment" (see #51),
+    so the repository's checks passed while Claude Code reported the key.
+    """
+
+    def test_entry_with_comment_key_when_validated_then_additional_properties_error(
+        self,
+        hooks_schema: dict,
+    ) -> None:
+        """GIVEN an entry with "_comment" WHEN validated THEN additionalProperties rejects it.
+
+        #468: the error must come from additionalProperties and name "_comment", so this
+        test cannot pass for another reason.
+        """
+        # Arrange - minimal hooks document whose one entry carries the extra key
+        invalid_hooks = {
+            "hooks": {
+                "PreToolUse": [
+                    {
+                        "matcher": "Bash",
+                        "hooks": [{"type": "command", "command": "echo test", "timeout": 5000}],
+                        "_comment": "Not a key Claude Code defines.",
+                    }
+                ]
+            }
+        }
+
+        # Act & Assert - should raise ValidationError
+        with pytest.raises(jsonschema.ValidationError) as exc_info:
+            jsonschema.validate(invalid_hooks, hooks_schema, cls=jsonschema.Draft202012Validator)
+
+        # Verify the error is about additional properties and names the extra key
+        error = exc_info.value
+        assert error.validator == "additionalProperties", (
+            f"Expected an additionalProperties error, got {error.validator}: {error.message}"
+        )
+        assert "_comment" in error.message, (
+            f"Expected the error to name _comment, got: {error.message}"
+        )
+
+    def test_entry_without_comment_key_when_validated_then_schema_accepts_it(
+        self,
+        hooks_schema: dict,
+    ) -> None:
+        """GIVEN an entry with only matcher and hooks WHEN validated THEN it passes.
+
+        #468: positive control for the test above. The same document without "_comment"
+        validates, so that test can only fail because of "_comment".
+        """
+        # Arrange - the same document as above, without the extra key
+        valid_hooks = {
+            "hooks": {
+                "PreToolUse": [
+                    {
+                        "matcher": "Bash",
+                        "hooks": [{"type": "command", "command": "echo test", "timeout": 5000}],
+                    }
+                ]
+            }
+        }
+
+        # Act & Assert - should validate without errors
+        try:
+            jsonschema.validate(valid_hooks, hooks_schema, cls=jsonschema.Draft202012Validator)
+        except jsonschema.ValidationError as e:
+            pytest.fail(
+                "Validation failed for an entry with only matcher and hooks.\n"
+                f"Error: {e.message}\n"
+                f"Schema path: {list(e.absolute_schema_path)}\n"
+                f"Instance path: {list(e.absolute_path)}"
+            )
 
 
 # =============================================================================

@@ -69,10 +69,6 @@
             "$ref": "#/$defs/hookDefinition"
           },
           "description": "Array of hook definitions to execute when matcher matches."
-        },
-        "_comment": {
-          "type": "string",
-          "description": "Optional human-readable comment explaining the matcher configuration."
         }
       },
       "additionalProperties": false
